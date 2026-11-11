@@ -56,6 +56,18 @@
       if(nav && nav.parentElement!==document.body && config.id!=='v18MobileDrawer')
         document.body.appendChild(nav);
     });
+    // The original V18 drawer-state observer can rewrite aria-controls to an
+    // offscreen 94vw sliding drawer after the visible drilldown has mounted.
+    // Keep one real menu owner: the accessible, viewport-aligned bgMobileNav.
+    var canonical=document.getElementById('bgMobileNav');
+    var legacy=document.getElementById('v18MobileDrawer');
+    var toggle=document.getElementById('mobileToggle');
+    document.body.classList.toggle('bg-site-mobile-canonical-nav',Boolean(canonical)&&mobile);
+    if(canonical && mobile && toggle){
+      if(legacy && legacy.getAttribute('aria-hidden')!=='true')legacy.setAttribute('aria-hidden','true');
+      if(legacy && legacy.classList.contains('open'))legacy.classList.remove('open');
+      if(toggle.getAttribute('aria-controls')!=='bgMobileNav')toggle.setAttribute('aria-controls','bgMobileNav');
+    }
     var open=activeMenu();
     document.body.classList.toggle('bg-site-mobile-menu-open',Boolean(open)&&mobile);
     var headers=document.querySelectorAll('header.v17-header,nav.bgkop');
