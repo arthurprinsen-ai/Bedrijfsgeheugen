@@ -10,3 +10,5 @@
 - Tests planned: `portal-v2/tests/business-os-home.test.mjs`; `tests/brain-business-os-one-roof-20261111.test.mjs`; original protected Required/BRAIN/CodeQL + preview browser checks.
 - Outcome at source-edit stage: **CANDIDATE ONLY**. Do not mark production shipped, all loops green, paid orders won or Red Dot-ready without exact independent provider verification.
 - Next original owner: protected merge + exact production readback; #4215 and #4198 remain OPEN until true downstream consumer/measurement/learning proof.
+
+- Protected admission failure #43012618440 observed at 2026-11-11 11:31 UTC: `PR_MACHINE_METADATA_INVALID:CANDIDATE_TYPE_INVALID` because `feature` is not supported. Corrected immutable PR metadata to supported `Candidate-Type: implementation` without changing admission policy. Re-run original exact-head checks on this ledger commit; no success claimed yet.
