@@ -6,7 +6,7 @@ Obligation-ID: portal|all-native-forms|cleared-numeric-unknown-not-zero|20261111
 Delivery-Lane: portal
 Candidate-Type: recovery
 Base-SHA: 4c7cd7760216d04ef0937f02498f7de091f8dd41
-Change-Scope: portal-v2/form-primitives.js, portal-v2/portal-impact-engine.js, portal-v2/tests/form-primitives.test.mjs, portal-v2/tests/portal-impact-engine.test.mjs, tests/brain-portal-cleared-numeric-input-20261111.test.mjs, docs/changes/2026-11-11-portal-cleared-fields-source-truth.md, docs/development-ledger-events/2026-11-11-portal-cleared-field-source-truth.md, brain/learning/2026-11-11-portal-cleared-numeric-input-v1.json.
+Change-Scope: portal-v2/form-primitives.js, portal-v2/portal-impact-engine.js, portal-v2/tests/form-primitives.test.mjs, portal-v2/tests/portal-impact-engine.test.mjs, tests/brain-portal-cleared-numeric-input-20261111.test.mjs, portal-v2/index.html, platform/system-map/canonical-system-map.mjs, docs/changes/2026-11-11-portal-cleared-fields-source-truth.md, docs/development-ledger-events/2026-11-11-portal-cleared-field-source-truth.md, brain/learning/2026-11-11-portal-cleared-numeric-input-v1.json
 Writer-Lease-Owner: original Portal V2 / original P0 #4215
 Writer-Lease-NonOwner-Action: HOLD on overlapping paths
 
@@ -18,6 +18,9 @@ The canonical shared native form normalizer converted a cleared numeric string t
 2. Clearing a required field emits its empty normalized value into the original portal domain state even while the native validity error remains visible; malformed non-empty edits remain rejected. This prevents a hidden, previously entered customer fact from surviving the customer's clear action.
 3. The existing causal impact engine treats null/empty as unknown when comparing before/after values and calculating deltas, so zero-to-unknown is a changed input and not a fabricated numeric effect.
 4. No new database, outbox, scheduler, provider, autonomous agent or change to tenant authorization.
+
+## Generated portal map synchronization
+The original required preflight regenerated explanationInventory hash 0aa61fd9cf4899ca5888a70283d132a7e6aabb356f9fbbdf535e8cc8bd046cb0 after the source change. The existing platform/system-map/canonical-system-map.mjs and portal-v2/index.html version token now match that exact generated output. No bypass or new generator.
 
 ## Automated regression
 - portal-v2/tests/form-primitives.test.mjs: missing/invalid/explicit-zero for all numeric types, required-field clearing vs malformed input.
