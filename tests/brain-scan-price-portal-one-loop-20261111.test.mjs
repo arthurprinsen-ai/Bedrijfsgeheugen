@@ -30,7 +30,7 @@ test('website scans and pricing use existing original CRO producer, not a second
  assert.match(oneRoof,/\/en\/zelfscan/);
  assert.match(growth,/page_view/);assert.match(growth,/primary_cta_click/);
  assert.match(growth,/selfscan_start/);assert.match(growth,/frisse_blik_start/);
- assert.match(growth,/route=pathname.indexOf\('\/en\/'\)/);
+ assert.match(growth,/pathname=pathname.indexOf\('\/en\/'\)/);
  assert.match(growth,/actionPath=safePath.indexOf\('\/en\/'\)/);
  assert.match(growth,/actionDest.hostname===window.location.hostname/);
  assert.match(oldTracker,/getElementById\('bg-growth-measurement'\)/);
