@@ -77,5 +77,20 @@
     "source_state": "SOURCE_CANDIDATE_CI_PENDING",
     "next_natural_agent_application": "EVIDENCE_DUE",
     "independent_production_browser_readback": "EVIDENCE_DUE"
+  },
+  "browser_prerequisite_handoff": {
+    "original_ci_owner": ".github/workflows/lane-website.yml#browser",
+    "already_proven_pattern": ".github/workflows/website-cross-browser-screenshot-assurance.yml",
+    "image": "mcr.microsoft.com/playwright:v1.61.0-noble",
+    "js_client": "playwright@1.61.0",
+    "npm_script_policy": "ignore-scripts",
+    "fresh_apt_os_dependency_install": false,
+    "real_browser_smoke": "REQUIRED_NOT_YET_VERIFIED",
+    "regression_tests": [
+      "tests/brain-website-lane-ubuntu26-playwright-v1.test.mjs",
+      "tests/delivery-website-browser-runtime-single-install.test.mjs"
+    ],
+    "previous_historical_incident": "ci|cross-browser|playwright-181-os-packages-install-30m-timeout|20261105-v1",
+    "outcome": "SOURCE_CANDIDATE_CI_AND_PRODUCTION_READBACK_DUE"
   }
 }
