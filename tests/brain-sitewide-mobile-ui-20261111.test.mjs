@@ -72,3 +72,28 @@ test('existing website UX agent and website skill inherit mobile screenshot recu
   assert.match(skill,/same original owner/);
   assert.match(skill,/320 and 390px/);
 });
+
+
+test('sitewide acceptance distinguishes visibility from actual interactions and cannot falsely green ordinary menu text',()=>{
+  const team=fs.readFileSync('platform/agents/agent-team.mjs','utf8');
+  const skill=fs.readFileSync('skills/website-portal-coherence.md','utf8');
+  const contrast=fs.readFileSync('tools/site-shell/v18-header-menu-contrast-check.mjs','utf8');
+  const learning=JSON.parse(fs.readFileSync('brain/learning/2026-11-11-website-sitewide-ux-acceptance-v1.json','utf8'));
+  assert.match(team,/inventory-sitewide-interactions-with-observed-outcomes/);
+  assert.match(team,/verify-wcag-aa-normal-text-contrast-in-real-browser/);
+  assert.match(team,/reconcile-unproven-route-selector-viewport-to-original-website-owner/);
+  assert.match(team,/reject-website-all-green-from-visibility-only-sweeps/);
+  assert.match(team,/sitewide-functional-coverage-fail-closed-release/);
+  assert.match(skill,/277 routes × drie viewports = 831/);
+  assert.match(skill,/functioneel succes/);
+  assert.match(skill,/minimaal \*\*4,5:1\*\*/);
+  assert.match(skill,/\*\*3,78:1\*\*/);
+  assert.match(skill,/EVIDENCE_DUE/);
+  assert.match(skill,/consumer-ACK/);
+  assert.match(skill,/ONE BRAIN/);
+  assert.match(contrast,/MENU_CONTRAST_MIN_RATIO \|\| '3'/);
+  assert.equal(learning.fingerprint,'website|sitewide|interaction-coverage-and-normal-text-contrast|20261111-v1');
+  assert.equal(learning.acceptance.full_site_interactions,'EVIDENCE_DUE');
+  assert.equal(learning.acceptance.normal_text_wcag_aa,'EVIDENCE_DUE');
+  assert.equal(learning.acceptance.production_promotion,'DO_NOT_PROMOTE_WITHOUT_REQUIRED_GATES_AND_READBACK');
+});
