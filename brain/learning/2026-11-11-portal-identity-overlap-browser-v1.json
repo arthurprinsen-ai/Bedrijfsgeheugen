@@ -29,10 +29,10 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-portal-identity-overlap-browser-20261111.test.mjs",
-      "portal-v2/tests/portal-overlapping-field-handoff.test.mjs"
+      "tests/brain-portal-identity-overlap-browser-20261111.test.mjs"
     ],
     "shadow": [
+      "portal-v2/tests/portal-overlapping-field-handoff.test.mjs",
       "portal-v2/tests/portal-server-handoff-restart.test.mjs",
       "portal-v2/tests/portal-causal-propagation.test.mjs"
     ],
