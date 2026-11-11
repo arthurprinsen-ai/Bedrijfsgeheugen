@@ -5,6 +5,9 @@ test('original portal process slice does not add a parallel scheduler, database 
  const source=readFileSync(new URL('../portal-v2/modules/process-portfolio.js',import.meta.url),'utf8');
  const view=readFileSync(new URL('../portal-v2/modules/process-portfolio-view.js',import.meta.url),'utf8');
  const board=readFileSync(new URL('../portal-v2/modules/delivery-board.js',import.meta.url),'utf8');
+ const impact=readFileSync(new URL('../portal-v2/portal-impact-engine.js',import.meta.url),'utf8');
+ assert.match(impact,/deliveryPlan:'taken-werkstromen'/);
+ assert.match(impact,/process','people','project','finance'/);
  const site=readFileSync(new URL('../tools/ci/netlify-build-entry.mjs',import.meta.url),'utf8');
  assert.match(source,/nextConsumerReceipt:'EVIDENCE_DUE'/);
  assert.match(source,/evidenceVerified:false/);

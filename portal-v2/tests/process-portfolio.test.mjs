@@ -50,3 +50,13 @@ test('original board retains one canonical writer and no new process scheduler o
  assert.match(board,/bindProcessPortfolio/);
  assert.doesNotMatch(process,/fetch\(|localStorage|sessionStorage|setInterval|cron\.schedule|service_role/);
 });
+
+test('original workflow changes invalidate relevant domain pages without claiming execution or economics',async()=>{
+ const {sourcePageForPath,impactForMutation}=await import('../portal-impact-engine.js');
+ assert.equal(sourcePageForPath('portal.deliveryPlan'),'taken-werkstromen');
+ const impact=impactForMutation({path:'portal.deliveryPlan',before:{portal:{deliveryPlan:{processes:[]}}},after:{portal:{deliveryPlan:{processes:[{id:'p-12345678'}]}}}});
+ for(const page of ['taken-werkstromen','roadmap','mensen','businesscase','advies'])assert.ok(impact.affectedPages.includes(page),page);
+ assert.ok(impact.reviewDomains.includes('process'));
+ assert.equal(impact.externalExecutionAuthorized,false);
+ assert.equal(impact.evidenceStatus,'OBSERVED_NOT_VERIFIED');
+});

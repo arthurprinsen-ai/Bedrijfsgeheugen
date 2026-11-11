@@ -14,3 +14,6 @@ Dit is een bronvastgelegde werklaag, geen universele server-side workflow-engine
 
 ## Acceptatie
 `portal-v2/tests/process-portfolio.test.mjs`, `tests/brain-process-portfolio-20261111.test.mjs`, bestaande delivery-board tests en alle originele admission/Required/BRAIN/CodeQL. Alleen groene beschermde merge plus exact-current-main Netlify READY en onafhankelijke browser/tenant readback mogen als live worden gemarkeerd. Site-scans, prijzen en checkout blijven uit #5611; sitewide mobiele herstelcode uit #5613 blijft eigenaar van siteheader/menu. Geen wijziging aan de commerciële catalogus.
+
+## Doorwerking naar de bestaande bedrijfsintelligentie
+De originele Portal V2 impactmotor koppelt `portal.deliveryPlan` nu expliciet aan `taken-werkstromen` en markeert roadmap, mensen, businesscase, advies, wijzigingen en audittrail als relevante herbeoordelingen. Dat is een bronafhankelijkheidskaart binnen de bestaande Brain-handoff; geen uitvoering, geen berekende financiële baat en geen zelfstandig bericht naar een provider. De bestaande `PortalModel` BusinessInput-vangroute blijft leidend.

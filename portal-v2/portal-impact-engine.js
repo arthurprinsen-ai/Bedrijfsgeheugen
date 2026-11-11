@@ -8,6 +8,8 @@ import { PORTAL_PAGE_INDEX } from './page-registry.js';
 const REGISTERED_PAGES=Object.freeze(new Set(Object.keys(PORTAL_PAGE_INDEX)));
 const OBSERVATION_SURFACES=Object.freeze(['overzicht','advies','wijzigingen','audittrail','learning-writeback','powerhouse-control-center']);
 const REVIEW_RULES=Object.freeze([
+  // An authored workflow is a source observation and review trigger, never a financial outcome or approved provider action.
+  {pattern:/^portal\.deliveryPlan(?:\.|$)/,domains:['process','people','project','finance'],pages:['taken-werkstromen','roadmap','mensen','businesscase','advies','wijzigingen','audittrail']},
   // Size is an applicability input, not evidence that a legal threshold is met.
   {pattern:/^portal\.profile\.(?:employees|sector)(?:\.|$)/,domains:['organization-size','regulatory-applicability','csrd-esrs'],pages:['profiel','compliance-governance','csrd-impact','wet-regelgeving','due-diligence','advies']},
   {pattern:/^portal\.(?:data-ai-passport|dataAi|aiScan|aiCapabilities|aiCapabilitySources|aiAct|ai-capabilities|ai-technologie-actueel|koppelingen|trust-center|eu-ai-act-audit|csrd-impact|instellingen)(?:\.|$)/,domains:['ai-runtime','data-residency','privacy-security','supplier','finance','csrd-esrs'],pages:['data-ai-passport','koppelingen','trust-center','compliance-governance','csrd-impact','businesscase','roadmap','data-ai','ai-capabilities','powerhouse-control-center','wet-regelgeving']},
@@ -35,7 +37,7 @@ const SECTION_PAGE=Object.freeze({
   compliance:'compliance-governance',aiCapabilities:'ai-capabilities',strategy:'strategie-naar-maandagochtend',strategicModels:'strategiemodellen',business_context:'bedrijfssituatie',
   strategyDna:'strategy-dna',canvases:'canvassen',finalConclusion:'eindconclusie',dueDiligence:'due-diligence',
   freshness:'actueel-houden',changes:'wijzigingen',advice:'advies',offer:'offerte',roadmap:'roadmap',tasks:'taken-werkstromen',
-  project:'overzicht',integrations:'koppelingen',connections:'koppelingen',documents:'documenten',notes:'documenten',access:'gebruikers',
+  project:'overzicht',deliveryPlan:'taken-werkstromen',integrations:'koppelingen',connections:'koppelingen',documents:'documenten',notes:'documenten',access:'gebruikers',
   external:'ondernemersdata',regulatory:'wet-regelgeving',sources:'bronnenbibliotheek'
 });
 

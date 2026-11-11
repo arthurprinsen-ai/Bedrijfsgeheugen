@@ -8,3 +8,4 @@
 - Security: no tenant/credential bypass, external sends, new scheduler, provider API, SQL migration or checkout change. Every approval is explicitly pending authorised external receipt, never self-approved.
 - Evidence: tests + GitHub protected admission/Required/BRAIN/CodeQL; exact Netlify SHA and authenticated two-tenant readback still required. Do not claim release complete until those return.
 - Open: real company-wide source→consumer→Powerhouse→Heartbeat→learning chain, notifications, independent approval receipt and Red Dot real user acceptance.
+- Extra source lineage: `portal-v2/portal-impact-engine.js` maps `portal.deliveryPlan` explicitly to tasks and review domains (process/people/project/finance), with OBSERVED_NOT_VERIFIED and externalExecutionAuthorized=false. No new BusinessInput type or backend mutation.
