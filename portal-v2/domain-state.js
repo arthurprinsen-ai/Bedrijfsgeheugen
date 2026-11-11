@@ -453,7 +453,27 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   }
   return stateResult;
  }
- function flush(){if(activePortalFlush)return activePortalFlush;activePortalFlush=performPortalFlush().finally(()=>{activePortalFlush=null});return activePortalFlush;}
+ // A second EXPLICIT save during an in-flight tenant handoff must not be
+ // satisfied by the older snapshot's promise. Coalesce those callers and run
+ // at most one follow-up once the original authority has finished. No timer,
+ // new writer, silent typing autosave or retry after a failed predecessor.
+ let queuedExplicitPortalFlush=null;
+ function flush(){
+  if(activePortalFlush){
+   if(!queuedExplicitPortalFlush){
+    queuedExplicitPortalFlush=activePortalFlush.then(()=>{
+     queuedExplicitPortalFlush=null;
+     if(domain.status()==='dirty'||domain.status()==='error'||
+        pendingBusinessInputs.size>0||pendingImpacts.length>0||journalCleanupPending)
+      return flush();
+     return domain.snapshot();
+    },error=>{queuedExplicitPortalFlush=null;throw error;});
+   }
+   return queuedExplicitPortalFlush;
+  }
+  activePortalFlush=performPortalFlush().finally(()=>{activePortalFlush=null});
+  return activePortalFlush;
+ }
  let activeRefresh=null;
  function refresh(){
   if(activeRefresh)return activeRefresh;
