@@ -220,7 +220,11 @@ Deno.serve(async(req:Request)=>{
   let stored=created;
   if(!stored){const {data,error}=await client.from('scan_inzendingen').select('id,submission_key,score,tenant_identity_status,powerhouse_event_id,aangemaakt').eq('submission_key',scan.submissionKey).maybeSingle();if(error||!data)return json({error:'SCAN_READBACK_FAILED'},500);stored=data;}
   const dedupe=`scan:${scan.submissionKey}`;
-  const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:scan.kind==='bedrijfslek_scan'?'website.bedrijfslek':scan.kind==='workshop_scan'?'website.workshop_scan':'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,scan_kind:scan.kind,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
+  // Public provider smoke checks exercise the real original scan protocol.
+  // They are NOT customer conversions, market signals or Heartbeat learning.
+  // Both canonical fixture fields must match to avoid blanket suppression.
+  const productionSmoke=scan.doel==='__PRODUCTION_SMOKE__'&&scan.omvang==='verification-only';
+  const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:scan.kind==='bedrijfslek_scan'?'website.bedrijfslek':scan.kind==='workshop_scan'?'website.workshop_scan':'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,scan_kind:scan.kind,tenant_identity_status:'unverified',learning_scope:productionSmoke?'testing_only':'aggregate_only',synthetic_production_smoke:productionSmoke},state:'observed',data_quality:productionSmoke?'SYNTHETIC':'OBSERVED',confidence:0.9};
   const {data:eventCreated,error:eventError}=await client.from('powerhouse_runtime_events').upsert(eventRow,{onConflict:'dedupe_key',ignoreDuplicates:true}).select('event_id,dedupe_key').maybeSingle();
   if(eventError)return json({error:'POWERHOUSE_EVENT_FAILED',scan_id:stored.id,detail:eventError.message.slice(0,300)},500);
   let event=eventCreated;
@@ -256,8 +260,11 @@ Deno.serve(async(req:Request)=>{
     intent_owner:'bedrijfsgeheugen',source:'website',medium:'unattributed',
     occurred_at:scan.datum||new Date().toISOString(),page_role:'diagnosis',
     funnel_stage:scan.kind==='bedrijfslek_scan'?'assessment':'lead',value:0,
+    is_robot:productionSmoke,
     payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,
-      scan_kind:scan.kind,privacy_scope:'no_pii'}
+      scan_kind:scan.kind,privacy_scope:'no_pii',
+      synthetic_production_smoke:productionSmoke,
+      measurement_scope:productionSmoke?'NOT_CUSTOMER_CONVERSION':'ANONYMOUS_SCAN'}
   },{onConflict:'event_id',ignoreDuplicates:true});
   if(growthError)return json({ok:false,error:'SCAN_GROWTH_HANDOFF_FAILED',
     scan_id:stored.id,event_id:event.event_id,retryable:true},503);

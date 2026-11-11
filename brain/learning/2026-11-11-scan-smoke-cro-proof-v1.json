@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "date": "2026-11-11",
+  "type": "ORIGINAL_SCAN_TECHNICAL_SMOKE_CONVERSION_TRUTH",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "fingerprint": "powerhouse|scan|production-smoke-entered-real-cro-outcomes|20261111-v1",
+  "original_owner": "Original Supabase powerhouse-scan-ingest / ONE BRAIN / Heartbeat growth receiver",
+  "parent_issues": [
+    4198,
+    4215
+  ],
+  "observed": {
+    "recent_provider_smoke_scans": 2,
+    "source_to_runtime_to_growth_acks_proven": 2,
+    "robot_flag_false_before": 2
+  },
+  "root_cause": {
+    "observed": "Existing real provider production proof inserted smoke scans under generic OBSERVED and growth_events.is_robot=false",
+    "unknowns": [
+      "actual real tenant source consent",
+      "provider-verified business outcome",
+      "applied causal next-run learning"
+    ]
+  },
+  "fix": {
+    "historical_record_repair": {
+      "actual_rows_marked": 2,
+      "independent_readback_marked": 2,
+      "still_false": 0
+    },
+    "future": "Same original Edge classifies exactly two canonical smoke fields, retaining source/consumer receipts but synthetic-only data-quality and no-conversion scope",
+    "no_second_writer": true,
+    "no_scheduler": true,
+    "no_fake_lead": true
+  },
+  "compiler": {
+    "failure_class": "SYNTHETIC_SCAN_MISCOUNTED_AS_CUSTOMER_CONVERSION",
+    "scope": "SCAN_CRO",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-scan-smoke-cro-proof-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-scan-smoke-cro-proof-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-scan-smoke-cro-proof-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "DO_NOT_TREAT_PROVIDER_SMOKE_AS_CUSTOMER_LEAD",
+    "PRESERVE_TECHNICAL_EDGE_RECEIPT",
+    "SOURCE_TWO_FIELD_FIXTURE_MATCH_ONLY",
+    "NO_PROVEN_CRO_UNTIL_REAL_OUTCOME_AND_HOLDOUT"
+  ],
+  "evidence": {
+    "required": "Protected Required/CodeQL, exact current-main Netlify and original Supabase GitHub Integration Edge ACTIVE + source readback, provider smoke result",
+    "limitation": "Scoped data-quality repair not customer conversion or full Heartbeat closed loop"
+  }
+}
