@@ -25,7 +25,10 @@ export function processPortfolioMarkup(state,{today=new Date().toISOString().sli
   return '<article class="v2processcard"><header><div><strong>'+esc(p.title)+'</strong>'+
    '<small>'+esc(p.owner||'Eigenaar ontbreekt')+' · '+esc(p.targetDate||'Geen einddatum')+
    '</small></div><span>'+p.completeByCustomer+'/'+p.steps.length+' invoerstappen</span></header>'+
-   '<ol>'+steps+'</ol><form data-process-replan="'+esc(p.id)+'" aria-label="Eigenaar en planning bijwerken">'+
+   '<ol>'+steps+'</ol><p data-process-handoffs="'+p.pendingHandoffs.length+'">'+
+   (p.pendingHandoffs.length?esc(p.pendingHandoffs.length)+' stap(pen) wachten nog op onafhankelijk vervolg- of goedkeuringsbewijs. Eigenaar: '+esc(p.owner||'Niet bekend')+'.':
+   'Nog geen geregistreerde processtappen die een extern vervolgbewijs vragen.')+'</p>'+
+   '<form data-process-replan="'+esc(p.id)+'" aria-label="Eigenaar en planning bijwerken">'+
    '<label>Procesverantwoordelijke<input name="owner" required maxlength="120" value="'+esc(p.owner||'')+'"></label>'+
    '<label>Einddatum<input name="targetDate" type="date" value="'+esc(p.targetDate||'')+'"></label>'+
    '<button type="submit">Planning bijwerken</button></form>'+
@@ -33,7 +36,7 @@ export function processPortfolioMarkup(state,{today=new Date().toISOString().sli
  }).join('');
  return '<section class="v2processportfolio" data-process-portfolio><details><summary>'+
   '<strong>Processen & overdrachten</strong><span>'+portfolio.open+' processen · '+
-  portfolio.pendingApprovals+' goedkeuringen open · '+portfolio.overdue+' termijnen verstreken</span>'+
+  portfolio.pendingApprovals+' goedkeuringen open · '+portfolio.pendingHandoffsCount+' vervolgbewijzen open · '+portfolio.overdue+' termijnen verstreken</span>'+
   '</summary><div class="v2processbody"><p>Gebruik één bestaand bedrijfsplan met eigenaren, afhankelijkheden en deadlines. '+
   'Goedkeuring vraagt altijd een bevoegde, onafhankelijk bevestigde handeling.</p>'+
   (portfolio.open?'<p class="v2processhandoff" data-process-handoff="'+esc(handoffEvidence?.status||'EVIDENCE_DUE')+'" role="status">'+

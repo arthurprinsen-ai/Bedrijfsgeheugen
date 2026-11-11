@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "fingerprint": "portal|process|missing-independent-stage-receipt-visibility|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_PORTAL_PROCESS_HANDOFF_VISIBILITY",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Portal V2 deliveryPlan / original domain-state Brain handoff",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "gap": "Original customer process UX lacks per-stage unresolved consumer evidence inventory",
+    "independent_process_stage_results_proven": 0
+  },
+  "root_cause": {
+    "observed": "Original process view aggregated stages but did not show pending owner-correlated source intents",
+    "unknowns": [
+      "actual authorized approver response",
+      "independent per-stage consumer receipts",
+      "verified Powerhouse/Heartbeat outcomes",
+      "applied learning"
+    ]
+  },
+  "fix": {
+    "scope": "Read-only per-stage pending handoff projection, original UI and existing agent/skill commitments",
+    "no_second_scheduler": true,
+    "no_second_store": true,
+    "no_new_provider_send": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-process-original-stage-handoff-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-process-original-stage-handoff-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-process-original-stage-handoff-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "PRESERVE_ORIGINAL_INTENT",
+    "NO_CUSTOMER_EVIDENCE_AS_EXTERNAL_ACK",
+    "KEEP_TENANT_SOURCE_REVISION",
+    "REQUIRE_ORIGINAL_PROVIDER_AND_LEARNING_PROOF"
+  ],
+  "evidence": {
+    "required": "protected Required+BRAIN+CodeQL; exact Netlify SHA and authenticated two-tenant production browser readback",
+    "limitation": "Independent provider execution/outcome and Heartbeat learning remain unproven"
+  },
+  "compiler": {
+    "failure_class": "PORTAL_PROCESS_INDEPENDENT_RECEIPT_VISIBILITY_GAP",
+    "scope": "PORTAL_V2",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  }
+}

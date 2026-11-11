@@ -109,12 +109,32 @@ export function processStepState(process,step,{today=null}={}){
   evidenceVerified:false
  });
 }
+// Derived read-only inventory from the one original tenant-owned deliveryPlan.
+// A client-supplied "verified" flag is never independent consumer evidence.
+export function pendingProcessHandoffs(state){
+ const pending=[];
+ for(const process of normalizeProcessPortfolio(state).processes){
+  for(const step of Array.isArray(process.steps)?process.steps:[]){
+   if(step.status!=='submitted'&&step.status!=='approval_requested')continue;
+   pending.push(Object.freeze({
+    processId:String(process.id||''),stepId:String(step.id||''),
+    intentId:typeof step.intentId==='string'?step.intentId:null,
+    owner:String(step.owner||process.owner||''),
+    evidenceState:step.status==='approval_requested'
+     ?'AUTHORIZED_APPROVAL_RECEIPT_DUE':'INDEPENDENT_RESULT_DUE'
+   }));
+  }
+ }
+ return Object.freeze(pending);
+}
 export function processPortfolioOverview(state,{today=null}={}){
+ const pendingHandoffs=pendingProcessHandoffs(state);
  const items=normalizeProcessPortfolio(state).processes.map(p=>{
   const steps=Array.isArray(p.steps)?p.steps:[];
   const stages=steps.map(s=>processStepState(p,s,{today}));
   return Object.freeze({
    ...p,steps,stages,completeByCustomer:stages.filter(x=>x.submitted).length,
+   pendingHandoffs:pendingHandoffs.filter(h=>h.processId===p.id),
    next:stages.find(x=>x.eligible)||null,
    overdue:stages.filter(x=>x.overdue).length,
    pendingApprovals:stages.filter(x=>x.awaitingApproval).length,
@@ -124,6 +144,7 @@ export function processPortfolioOverview(state,{today=null}={}){
  return Object.freeze({
   items,open:items.length,overdue:items.reduce((n,p)=>n+p.overdue,0),
   pendingApprovals:items.reduce((n,p)=>n+p.pendingApprovals,0),
+  pendingHandoffsCount:pendingHandoffs.length,
   fullyVerified:0
  });
 }

@@ -124,3 +124,29 @@ test('replan rejects missing owner, unknown process and invalid date without rec
  assert.match(html,/Planning bijwerken/);
  assert.match(readFileSync(new URL('../modules/process-portfolio-view.js',import.meta.url),'utf8'),/onChange\(revised\)/);
 });
+
+test('each submitted stage stays in the original unresolved handoff inventory until independently proven',async()=>{
+ const {pendingProcessHandoffs}=await import('../modules/process-portfolio.js');
+ let state=create();
+ state=recordProcessStepIntent(state,{processId:id,stepId:'intake',action:'submit',intentId:i1,observedAt:date});
+ state=recordProcessStepIntent(state,{processId:id,stepId:'requirements',action:'submit',intentId:i2,observedAt:date});
+ state=recordProcessStepIntent(state,{processId:id,stepId:'review',action:'request',intentId:'i-33333333',observedAt:date});
+ // A same-tenant customer payload is NOT an authoritative provider receipt.
+ state.processes[0].steps[0].evidence.verified=true;
+ const pending=pendingProcessHandoffs(state);
+ assert.equal(pending.length,3);
+ assert.deepEqual(pending.map(item=>item.intentId),[i1,i2,'i-33333333']);
+ assert.equal(pending[2].evidenceState,'AUTHORIZED_APPROVAL_RECEIPT_DUE');
+ assert.equal(pending[0].evidenceState,'INDEPENDENT_RESULT_DUE');
+ assert.equal(processPortfolioOverview(state).pendingHandoffsCount,3);
+ assert.equal(processPortfolioOverview(state).items[0].pendingHandoffs.length,3);
+ assert.equal(processPortfolioOverview(state).fullyVerified,0);
+ const markup=processPortfolioMarkup(state);
+ assert.match(markup,/3 vervolgbewijzen open/);
+ assert.match(markup,/data-process-handoffs="3"/);
+ assert.doesNotMatch(markup,/Alle stappen geverifieerd/);
+ assert.deepEqual(pendingProcessHandoffs(state),pendingProcessHandoffs(state),'read-only reconciliation is deterministic');
+ const before=structuredClone(state);
+ pendingProcessHandoffs(state);
+ assert.deepEqual(state,before,'inventory never mutates customer state or sends messages');
+});
