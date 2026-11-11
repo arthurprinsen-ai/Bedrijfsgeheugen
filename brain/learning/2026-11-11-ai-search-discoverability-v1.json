@@ -1,0 +1,46 @@
+{
+  "fingerprint": "seo|public-ai-search-discovery-and-proposition-truth|20261111-v1",
+  "date": "2026-11-11",
+  "status": "CANDIDATE",
+  "production_proven": false,
+  "ai_citation_proven": false,
+  "existing_executor": "Powerhouse SEO Order Engine",
+  "single_scheduler": true,
+  "problem": "Website AI-search crawler declarations and public AI-readable company profile lagged the actual portal-plus-advisory proposition; AI answer visibility was not externally proven.",
+  "root_cause": "Claude-SearchBot and Claude-User were not explicitly listed (though wildcard access permitted), and llms.txt falsely said Bedrijfsgeheugen has no own product.",
+  "solution": "Keep the existing canonical SEO loop; explicitly list Claude search/user bots and align llms.txt with the current portal/service proposition, with a regression test.",
+  "prevention": [
+    "Never confuse training bots with search or user retrieval bots.",
+    "Never claim a crawler allow rule or llms.txt guarantees a ChatGPT/Claude answer citation.",
+    "Keep public machine-readable company descriptions truthful to existing current product pages.",
+    "Use original SEO/CRO owner and downstream source-verified AI visibility measurement; no second scheduler or fabricated citation outcomes."
+  ],
+  "acceptance": [
+    "Protected PR Required/CodeQL/website checks pass",
+    "Merge to protected main and exact Netlify deployment verified",
+    "Read back LIVE robots.txt and llms.txt",
+    "Measure a repeatable sample of unbranded ChatGPT and Claude prompts, recording actually observed citations and links to existing canonical pages; persist original SEO/Heartbeat learning"
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_INFORMATION_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-discovery-20261111.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_at_audit": "GitHub repository main robots.txt and llms.txt, 2026-11-11",
+    "observed_crawler_state": "OAI-SearchBot and ChatGPT-User explicitly allowed; Claude-SearchBot/Claude-User inherited wildcard Allow / but lacked explicit policy entries.",
+    "observed_proposition_drift": "llms.txt said 'adviesbureau zonder eigen product'; public product/portal pages describe own portal and services.",
+    "external_official_sources": [
+      "https://developers.openai.com/api/docs/bots",
+      "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler"
+    ],
+    "production_readback": "PENDING; source code changes alone do not prove current live deployment or AI citation."
+  }
+}
