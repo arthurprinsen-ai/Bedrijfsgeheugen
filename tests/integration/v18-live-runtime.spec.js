@@ -152,3 +152,58 @@ test('over-ons preview restores accepted mission ambition belief and story', asy
   await page.keyboard.press('Escape');
   await expect(nav).toHaveAttribute('aria-hidden', 'true');
 });
+
+
+test('mobile navigation stays at the top and genuinely closes across public routes', async ({ page }) => {
+  for (const route of ['/', '/product', '/over-ons', '/kennis/', '/prijzen']) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto(previewUrl.replace(/\/$/, '') + route, { waitUntil: 'domcontentloaded' });
+    const toggle = page.locator('#mobileToggle:visible, #bgkopKnop:visible').first();
+    await expect(toggle, 'menu toggle at ' + route).toBeVisible();
+    await page.evaluate(() => window.scrollTo(0, 600));
+    await page.waitForTimeout(150);
+    const top = await toggle.evaluate(el => el.getBoundingClientRect().top);
+    expect(top, 'sticky menu on ' + route).toBeGreaterThanOrEqual(0);
+    expect(top, 'sticky menu on ' + route).toBeLessThan(140);
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    const controlled = await toggle.getAttribute('aria-controls');
+    const panel = page.locator('#' + controlled);
+    await expect(panel, 'menu opens on ' + route).toBeVisible();
+    await toggle.click();
+    await expect(toggle, 'menu closes on ' + route).toHaveAttribute('aria-expanded', 'false');
+    await expect(panel, 'overlay closes on ' + route).toBeHidden();
+  }
+});
+
+test('knowledge comparison image can be dragged without losing native range access', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(previewUrl.replace(/\/$/, '') + '/kennis/', { waitUntil: 'domcontentloaded' });
+  const frame = page.locator('#compareFrame');
+  const range = page.locator('#compareRange');
+  await expect(frame).toBeVisible();
+  await expect(range).toBeVisible();
+  await expect(frame).toHaveAttribute('data-bg-drag-bound', 'true');
+  const rect = await frame.boundingBox();
+  await page.mouse.move(rect.x + rect.width * 0.3, rect.y + rect.height * 0.55);
+  await page.mouse.down();
+  await page.mouse.move(rect.x + rect.width * 0.84, rect.y + rect.height * 0.55, {steps:6});
+  await page.mouse.up();
+  expect(Number(await range.inputValue())).toBeGreaterThan(75);
+  await range.fill('20');
+  expect(Number(await range.inputValue())).toBe(20);
+});
+
+test('secondary Powerhouse CTA retains visible contrast after shared styles', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto(previewUrl, {waitUntil: 'domcontentloaded'});
+  const cta = page.locator('.pgl-actions .pgl-btn.secondary');
+  await expect(cta).toBeVisible();
+  await expect(cta).toHaveText(/Bekijk Powerhouse|View Powerhouse/i);
+  const style=await cta.evaluate(el => {
+    const s=getComputedStyle(el);
+    return {color:s.color,background:s.backgroundColor};
+  });
+  expect(style.color).not.toBe(style.background);
+  expect(style.background).not.toBe('rgb(255, 255, 255)');
+});
