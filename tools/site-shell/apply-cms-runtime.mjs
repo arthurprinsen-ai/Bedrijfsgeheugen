@@ -24,7 +24,19 @@ for(const file of [...new Set(targets)]){
   if(!html.includes('/assets/mobile-viewport-cleanup.js')){
     html=html.replace(/<\/head>/i,'<script src="/assets/mobile-viewport-cleanup.js?v=20261015" defer data-bg-mobile-fix="1"></script>\n</head>');
   }
-  // Public pages share one header/menu/CTA/slider repair, including nested /kennis.\n  // Keep portal/authenticated applications isolated from marketing-site CSS.\n  const rel=path.relative(root,file).replaceAll(path.sep,'/');\n  const publicPage=!/^(?:portal|portal-next|portal-v2|intern)\\//.test(rel);\n  if(publicPage){\n    if(!html.includes('id="bg-sitewide-mobile-ui-20261111"')){\n      html=html.replace(/<\\/head>/i,mobileUiStyle+'\\n</head>');\n    }\n    if(!html.includes('data-bg-sitewide-mobile-ui=')){\n      html=html.replace(/<\\/head>/i,mobileUiScript+'\\n</head>');\n    }\n  }\n  if(html!==before){fs.writeFileSync(file,html);changed++;}
+  // Public pages share one header/menu/CTA/slider repair, including nested /kennis.
+  // Keep portal/authenticated applications isolated from marketing-site CSS.
+  const rel=path.relative(root,file).replaceAll(path.sep,'/');
+  const publicPage=!/^(?:portal|portal-next|portal-v2|intern)\//.test(rel);
+  if(publicPage){
+    if(!html.includes('id="bg-sitewide-mobile-ui-20261111"')){
+      html=html.replace(/<\/head>/i,mobileUiStyle+'\n</head>');
+    }
+    if(!html.includes('data-bg-sitewide-mobile-ui=')){
+      html=html.replace(/<\/head>/i,mobileUiScript+'\n</head>');
+    }
+  }
+  if(html!==before){fs.writeFileSync(file,html);changed++;}
 }
 
 const inventory={
