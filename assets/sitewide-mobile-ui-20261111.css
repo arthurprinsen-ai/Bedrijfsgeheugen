@@ -114,6 +114,10 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
     min-height:0!important;overflow-y:auto!important;
     padding-top:6px!important;padding-bottom:calc(70px + env(safe-area-inset-bottom,0px))!important
   }
+  /* The 94vw historical V18 drawer is inert once the canonical menu exists. */
+  body.bg-site-mobile-canonical-nav #v18MobileDrawer{
+    display:none!important;visibility:hidden!important;pointer-events:none!important
+  }
   .bg-sitewide-menu-close{display:none!important}
   body.bg-site-mobile-menu-open :is(.wa,.whatsapp-float,.floating-whatsapp,.whatsapp-button,[data-whatsapp-float]){
     display:none!important;visibility:hidden!important;pointer-events:none!important
