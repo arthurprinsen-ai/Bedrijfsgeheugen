@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "fingerprint": "portal|website|one-roof-company-os-source-verified-conversion|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_PORTAL_SITE_ONE_ROOF_PRODUCT_CONTRACT",
+  "status": "PROTECTED_CANDIDATE_CI_EVIDENCE_DUE",
+  "original_owner": "Original Portal V2 / original website canonical Netlify build",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "failure_class": "FRAGMENTED_COMPANY_NAV_AND_SCAN_CONVERSION_STORY",
+  "observed": {
+    "repo": "arthurprinsen-ai/Bedrijfsgeheugen",
+    "main_at_intake": "ebecd9ac425b8701cfa1694680c8250eb3f8dbb9",
+    "production_netlify_deploy_at_intake": "6af440da55518d7e245c153b",
+    "production_ready_before_candidate": true,
+    "original_loop_last_attested": {
+      "green": 8,
+      "red": 7,
+      "content_handoffs_open": 433
+    },
+    "current_candidate_production_verified": false,
+    "red_dot_award_ready": false,
+    "verified_real_customer_completed_cycle": false
+  },
+  "root_cause": {
+    "observed": "Existing Portal V2 has company, work, scan, decision, integration and outcome capabilities, while owner-facing one-roof workspace and marketing conversion story are not joined into one discoverable, source-aware journey.",
+    "cause": "Commercial positioning and Portal V2 user navigation are maintained by different presentations; a website-only HTML edit can be overwritten by the original Netlify build generators.",
+    "unknowns": [
+      "Current authorised two-tenant guided user completion",
+      "Actual independent business-loop and CRO handoff closure",
+      "Award jury outcome"
+    ]
+  },
+  "fix": {
+    "scope": "One authenticated company workspace projection inside existing entrepreneur disclosure; original one-hero page navigation and one canonical Netlify build pass for home/pricing/scan in Dutch and English.",
+    "non_goals": [
+      "new backend",
+      "new company database",
+      "new scheduler",
+      "second portal",
+      "price changes",
+      "publishing/CRM double-send"
+    ],
+    "original_business_authorities": [
+      "portal-v2 stateClient authenticated tenant snapshot",
+      "entrepreneur-journey-model/ONE BRAIN readback",
+      "Powerhouse action/outcome proof",
+      "existing commercial offer/checkout catalog"
+    ],
+    "truth_gate": "Producer echo is not downstream ACK; pending original handoff and absent outcome/learning remain visible as EVIDENCE_DUE."
+  },
+  "compiler": {
+    "failure_class": "WEBSITE_PORTAL_JOURNEY_DISCONNECTED",
+    "scope": "PORTAL_WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-business-os-one-roof-20261111.test.mjs",
+      "portal-v2/tests/business-os-home.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-business-os-one-roof-20261111.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/business-os-home.test.mjs"
+    ]
+  },
+  "prevention": [
+    "DO_NOT_DUPLICATE_POWERHOUSE_OR_PORTAL_WRITER",
+    "NEVER_MARK_HANDOFF_GREEN_ON_PRODUCER_ECHO",
+    "NO_FALSE_VALUE_KPI_OR_PRICE_CHANGE",
+    "ONLY_EDIT_WEBSITE_PROPOSITION_VIA_CANONICAL_BUILD_PHASE",
+    "REQUIRE_REAL_USER_MOBILE_A11Y_TESTS_BEFORE_AWARD_READY"
+  ],
+  "evidence": {
+    "source": "GitHub canonical repo / portal-v2 / original Netlify site",
+    "required": "Protected Required/BRAIN/CodeQL, protected merge, exact SHA Netlify READY, real browser readback, authenticated tenant source and receiver proof.",
+    "limitation": "This candidate ships a connected UX/marketing surface, not a universal process engine, independent consumer closure, actual business outcome or Red Dot award."
+  },
+  "next_action": "Auto-merge only after all original required gates; independently readback Netlify current SHA, / and /prijzen and /portal-v2 in authenticated tenants; keep #4198/#4215 open until full proven handoffs."
+}
