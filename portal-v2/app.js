@@ -452,7 +452,7 @@ mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClie
 mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient});
 // Close tenant-bound visual detail whenever the authenticated subject changes.
 // Do not expose user identifiers through the DOM event payload.
-let portalVisualAuthSubject=null;
+let portalVisualAuthSubject='';
 portalStateClient.subscribe(snap=>{
  const nextVisualSubject=(snap.mode==='authenticated'||snap.mode==='empty')&&snap.user&&!portalStateClient.isDemo()
    ? String(snap.user.id||'') : '';
