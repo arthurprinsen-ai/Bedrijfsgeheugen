@@ -3296,16 +3296,8 @@
     {
       "version": "20261110160055",
       "name": "linkedin_org_readback_sticky_provider_health_v1"
-    },
-    {
-      "version": "20261111093500",
-      "name": "original_loop_assurance_fault_isolation_v1"
-    },
-    {
-      "version": "20261111094222",
-      "name": "original_loop_assurance_fault_isolation_v1"
     }
   ],
-  "captured_at": "2026-11-11T09:48:29.379346Z",
+  "captured_at": "2026-11-10T16:02:00.683Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
