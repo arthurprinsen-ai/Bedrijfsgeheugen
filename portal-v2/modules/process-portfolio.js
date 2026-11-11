@@ -25,7 +25,7 @@ export const PROCESS_TEMPLATES=Object.freeze([
   ['decision','Offerte of plan laten goedkeuren','approval',14],
   ['delivery','Geleverde werkzaamheden registreren','task',7],
   ['measure','Resultaat en vervolgactie beoordelen','task',0]]}
-].map(x=>Object.freeze({...x,steps:Object.freeze(x.steps.map(s=>Object.freeze(s.slice())))}))));
+].map(x=>({id:x.id,label:x.label,steps:x.steps.map(s=>s.slice())})));
 const clone=v=>typeof structuredClone==='function'?structuredClone(v):JSON.parse(JSON.stringify(v));
 const validDate=v=>{
  if(typeof v!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(v))return false;
