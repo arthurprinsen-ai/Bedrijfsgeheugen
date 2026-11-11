@@ -4,8 +4,11 @@ const optionMarkup=(options,value,multiple=false)=>(options||[]).map(option=>{co
 export function normalizeFieldValue(field={},raw){
  const type=field.type||'text';
  if(['number','currency','percentage','range'].includes(type)){
+  // Empty/invalid customer input is unknown, never an observed zero.
+  // A genuine explicit "0" remains zero; a range still enforces its bounds.
+  if(raw==null||String(raw).trim()==='')return null;
   let value=Number(raw);
-  if(!Number.isFinite(value))value=0;
+  if(!Number.isFinite(value))return null;
   if(type==='range'){
    if(Number.isFinite(Number(field.min)))value=Math.max(Number(field.min),value);
    if(Number.isFinite(Number(field.max)))value=Math.min(Number(field.max),value);
