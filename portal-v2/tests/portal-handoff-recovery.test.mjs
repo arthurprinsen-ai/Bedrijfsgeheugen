@@ -141,3 +141,71 @@ test('existing portal timer supplies retry without an extra scheduler or false c
  assert.match(ui,/domainState\.pendingHandoffs\?\.\(\)/);
  assert.match(ui,/het gevolgadvies is nog niet bewezen/);
 });
+
+test('a second explicitly requested save during Brain in-flight ACK commits the newer same-tenant snapshot once',async()=>{
+ let entered,release;
+ const firstEntered=new Promise(resolve=>{entered=resolve;});
+ const blockFirst=new Promise(resolve=>{release=resolve;});
+ let persisted={portal:{profile:{employees:10}}};
+ const inputs=[];
+ const client={
+  load:async()=>({mode:'authenticated',state:clone(persisted)}),
+  write:async next=>({mode:'authenticated',state:persisted=clone(next)}),
+  currentUser:()=>({id:'company-a',app_metadata:{tenantId:'tenant-a'}}),
+  isDemo:()=>false,authHeaders:async()=>({authorization:'Bearer company-a'})
+ };
+ const domain=createPortalDomainState(client,{legacyStorage:null,
+  businessInputSaver:async input=>{
+   inputs.push(clone(input));
+   if(inputs.length===1){entered();await blockFirst;}
+   return {stored:true};
+  }
+ });
+ await domain.init();
+ domain.set('portal.profile.employees',20);
+ const first=domain.flush();
+ await firstEntered;
+ domain.set('portal.profile.employees',21);
+ const second=domain.flush();
+ const duplicate=domain.flush();
+ assert.strictEqual(second,duplicate,'concurrent explicit callers share exactly one queued follow-up');
+ release();
+ await Promise.all([first,second,duplicate]);
+ assert.deepEqual(inputs.map(x=>x.answers.employees),[20,21],
+  'each separately requested state revision reaches original Brain once');
+ assert.equal(persisted.portal.profile.employees,21);
+ assert.equal(domain.get('portal.profile.employees'),21);
+ assert.equal(domain.status(),'saved');
+ assert.equal(domain.pendingHandoffs().pending,false);
+});
+
+test('new unsaved typing during Brain ACK still requires an explicit second save',async()=>{
+ let entered,release;
+ const firstEntered=new Promise(resolve=>{entered=resolve});
+ const block=new Promise(resolve=>{release=resolve});
+ let persisted={portal:{profile:{employees:10}}};
+ const inputs=[];
+ const client={
+  load:async()=>({mode:'authenticated',state:clone(persisted)}),
+  write:async next=>({mode:'authenticated',state:persisted=clone(next)}),
+  currentUser:()=>({id:'company-a'}),isDemo:()=>false,
+  authHeaders:async()=>({authorization:'Bearer company-a'})
+ };
+ const domain=createPortalDomainState(client,{legacyStorage:null,businessInputSaver:async input=>{
+  inputs.push(clone(input));
+  if(inputs.length===1){entered();await block;}
+  return {stored:true};
+ }});
+ await domain.init();
+ domain.set('portal.profile.employees',20);
+ const first=domain.flush();
+ await firstEntered;
+ domain.set('portal.profile.employees',21);
+ release();
+ await first;
+ assert.equal(domain.status(),'dirty','no automatic save of unsent customer typing');
+ assert.equal(inputs.length,1);
+ await domain.flush();
+ assert.deepEqual(inputs.map(x=>x.answers.employees),[20,21]);
+ assert.equal(domain.status(),'saved');
+});
