@@ -91,8 +91,14 @@ export function createPowerhouseRuntimeBridge({
   const authHeadersProvider=()=>stateClient.authHeaders();
   const principalFromSnapshot=()=>{
     const snap=stateClient.getSnapshot?.();
-    return !stopped&&snap?.mode==='authenticated'&&!stateClient.isDemo?.()
-      ? clean(snap.user?.id) : '';
+    if(stopped||snap?.mode!=='authenticated'||stateClient.isDemo?.())return '';
+    const user=snap.user;
+    const id=clean(user?.id);
+    if(!id)return '';
+    // Same identity can switch between business tenants. Only server-issued
+    // app_metadata is trusted for the tenant membership boundary.
+    const tenant=clean(user?.app_metadata?.tenantId||user?.appMetadata?.tenantId);
+    return tenant?`${id}::tenant:${tenant}`:id;
   };
   let queuePrincipal=principalFromSnapshot();
   function currentPrincipal(){
@@ -189,13 +195,22 @@ export function createPowerhouseRuntimeBridge({
     const record=input?.__action
       ?buildPortalAction({...payload,observedAt})
       :buildPortalEvidence({...payload,observedAt});
+    // A repeat of the exact original source revision is the SAME handoff.
+    // Never create a concurrent duplicate with an identical provider idempotency key.
+    if([...pending.values()].some(entry=>entry.principal===principal
+       &&entry.record.idempotencyKey===record.idempotencyKey))return true;
     const previous=pending.get(key);
-    if(previous?.timer)clearTimeout(previous.timer);
+    // Debounce only UNSENT transient UI input. Once a message is ready or
+    // in-flight, its immutable payload stays pending through failure/retry.
+    // Later interactions get a distinct key rather than deleting the old one.
+    const pendingKey=previous&&(previous.ready||previous.inflight)
+      ?`${key}:${record.id}`:key;
+    if(pendingKey===key&&previous?.timer)clearTimeout(previous.timer);
     const entry={record,principal,ready:false,inflight:false,timer:null};
-    pending.set(key,entry);
+    pending.set(pendingKey,entry);
     entry.timer=setTimeout(()=>{
       entry.timer=null;
-      if(pending.get(key)!==entry)return;
+      if(pending.get(pendingKey)!==entry)return;
       entry.ready=true;
       void flushPending();
     },delay);

@@ -1,0 +1,54 @@
+{
+  "fingerprint": "portal|v2|runtime-bridge-unacked-overwrite-and-same-user-tenant|20261111-v1",
+  "date": "2026-11-11",
+  "type": "PORTAL_ORIGINAL_HANDSHAKE_FAIL_CLOSED",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "owner": "existing Portal V2 #4215 / existing Powerhouse runtime bridge",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "A subsequent UI signal replaced an already-ready/inflight unacknowledged record in the original Map because all signals in a visual category shared one key. In addition, the runtime bridge principal was only the login user ID, not the same user's distinct trusted business tenant.",
+  "compiler": {
+    "failure_class": "PORTAL_BRAIN_UNACKED_RECORD_REPLACED_AND_TENANT_MEMBERSHIP_IGNORED",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rules": [
+    "PORTAL_READY_OR_INFLIGHT_HANDOFF_IMMUTABLE_UNTIL_ACK",
+    "PORTAL_DISTINCT_SIGNALS_HAVE_DISTINCT_RETRY_HANDOFF_IDENTITIES",
+    "PORTAL_SAME_IDEMPOTENCY_KEY_NOT_DUPLICATE",
+    "PORTAL_SAME_USER_DIFFERENT_SERVER_TENANT_REVOKES_OLD_QUEUE",
+    "PORTAL_HTTP_2XX_NOT_AN_ACK_WITHOUT_IDENTICAL_BRAIN_ID_AND_CORRELATION",
+    "PORTAL_UNSENT_UI_RUNTIME_HANDOFF_NOT_CLAIMED_DURABLE_AFTER_TAB_CLOSE"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-runtime-bridge-handshake-no-loss-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-runtime-bridge-handshake-no-loss-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-runtime-bridge-handshake-no-loss-20261111.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_paths": [
+      "portal-v2/powerhouse-runtime-bridge.js",
+      "portal-v2/tests/powerhouse-runtime-bridge.test.mjs"
+    ],
+    "runtime_accepted_source_sha": null,
+    "provider_deploy_id": null,
+    "same_session_ack_retry": "TEST_PENDING",
+    "independent_tenant_provider_readback": "NOT_PROVEN",
+    "all_content_handoffs_resolved": "NOT_PROVEN",
+    "real_customer_brain_heartbeat_consumer_ack": "NOT_PROVEN",
+    "runtime_ui_unsent_after_browser_restart": "NOT_DURABLE"
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "production_proven": false,
+  "skill_targets": [
+    "portal-living-interface",
+    "powerhouse-continuity"
+  ]
+}
