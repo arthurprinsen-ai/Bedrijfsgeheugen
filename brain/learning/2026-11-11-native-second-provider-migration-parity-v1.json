@@ -1,0 +1,63 @@
+{
+  "fingerprint": "powerhouse|migration|native-second-version-source-lock-drift|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ONE_BRAIN_IMMUTABLE_NATIVE_PROVIDER_MIGRATION_PARITY",
+  "status": "NATIVE_SECOND_VERSION_SOURCE_PROTECTED_CANDIDATE_LOCK_825",
+  "owner": "Original ONE BRAIN / Supabase protected migration history authority",
+  "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": {
+    "observed": "Native Supabase applied migration ledger has 826 distinct versions, including 20261111093500 and an additional 20261111094222 both named original_loop_assurance_fault_isolation_v1. Original protected source history lock still listed 824 before this PR, and only the first migration source file was present.",
+    "reason_for_second_native_execution": "NOT_INDEPENDENTLY_ESTABLISHED; do not infer who or what dispatched an extra version",
+    "risk": "Provider-native/source history divergence prevents trustworthy independent source parity and may block future protected releases.",
+    "remediation": "Current protected main #5605 has verified original 09:35 SQL source in 825/825 applied-history lock. This normal protected PR proposes only genuine native 09:42 exact SQL source mirror while leaving original 825-row lock unchanged for PR admission; then a separate protected source-only lock 826/826 correction after independent native provider readback. No native history changes and no additional provider mutation."
+  },
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "prevention_rules": [
+    "NO_ALTER_OR_DELETE_AUTHORITATIVE_SUPABASE_MIGRATION_LEDGER",
+    "COMPARE_NATIVE_VERSION_NAME_AND_EXACT_SQL_BEFORE_SOURCE_LOCK_REPAIR",
+    "NO_SECOND_SCHEDULER_EXECUTOR_OR_RUNTIME_WRITE_FROM_LEDGER_PARITY",
+    "FAIL_CLOSED_ON_FUTURE_UNMATCHED_NATIVE_PROVIDER_MIGRATION",
+    "NO_SOURCE_MERGE_IS_PROOF_OF_REAL_CONSUMER_OUTCOME"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-826-provider-source-migration-parity-20261111.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_project_id": "adhjwmvyoixzjtmiroln",
+    "readback_at_utc": "2026-11-11T09:48:29.379346Z",
+    "provider_native_distinct_applied_pairs": 826,
+    "provider_native_versions": [
+      {
+        "version": "20261111093500",
+        "name": "original_loop_assurance_fault_isolation_v1",
+        "statement_count": 3
+      },
+      {
+        "version": "20261111094222",
+        "name": "original_loop_assurance_fault_isolation_v1",
+        "statement_count": 1,
+        "exact_source_match": true
+      }
+    ],
+    "original_source_migration": "supabase/migrations/20261111093500_original_loop_assurance_fault_isolation_v1.sql",
+    "exact_native_second_source_mirror": "supabase/migrations/20261111094222_original_loop_assurance_fault_isolation_v1.sql",
+    "original_protected_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5604",
+    "confirmed_original_function_has_both_exception_guards": true,
+    "original_15_loops_latest_readback": "8 GREEN / 7 RED, not end-to-end closed",
+    "content_handoff_open": 433,
+    "impact": "SOURCE_PARITY_FIX_ONLY; NO NEW CUSTOMER_DELIVERY_OR_PAID_REVENUE",
+    "canonical_main_825_parity": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5605"
+  },
+  "production_proven": false,
+  "customer_outcome": "NOT_PROVEN",
+  "next_action": "Protect-check/merge current-main-based exact second SQL file with native 825-row lock unchanged. Then separate provider-attested source-lock correction to 826/826, without re-executing the SQL; customer/content outcome still EVIDENCE_DUE."
+}
