@@ -181,7 +181,12 @@ async function runInteraction(browserName,browser,interaction,route){
   const context=await browser.newContext({viewport:contract.viewports[viewportName]});
   const page=await context.newPage();
   await gotoSettled(page,base+route);
-  const found=await page.evaluate(candidates=>candidates.find(selector=>document.querySelector(selector))||null,interaction.selectorCandidates);
+  const found=await page.evaluate(candidates=>candidates.find(selector=>{
+    const node=document.querySelector(selector);
+    if(!node)return false;
+    const rect=node.getBoundingClientRect(),style=getComputedStyle(node);
+    return rect.width>0&&rect.height>0&&style.display!=='none'&&style.visibility!=='hidden';
+  })||null,interaction.selectorCandidates);
   const violations=[];
   if(!found){
     violations.push(`interaction trigger missing: ${interaction.id}`);
@@ -195,6 +200,31 @@ async function runInteraction(browserName,browser,interaction,route){
     const fallback=found==='#bgkopKnop'?'#bgkopMob':'#v18MobileDrawer';
     const panel=controls&&await page.locator('#'+controls).count()?page.locator('#'+controls).first():page.locator(fallback).first();
     if(!(await panel.isVisible().catch(()=>false)))violations.push(`mobile panel not visible: ${controls||fallback}`);
+    // A visually open drawer is not a successful interaction until the user
+    // can close it with the very same visible menu control.
+    await trigger.click().catch(error=>violations.push(`close click failed: ${error.message}`));
+    await sleep(220);
+    if(await trigger.getAttribute('aria-expanded').catch(()=>null)!=='false')violations.push('mobile menu did not close');
+    if(await panel.isVisible().catch(()=>true))violations.push('mobile panel still intercepts touches after close');
+    // Restore normal scrolling and verify the header remains reachable.
+    await page.evaluate(()=>window.scrollTo(0,500));
+    await sleep(90);
+    const top=await trigger.evaluate(el=>el.getBoundingClientRect().top).catch(()=>-1);
+    if(top<0||top>150)violations.push(`mobile sticky header unreachable after scroll: top=${top}`);
+  } else if(interaction.assert==='knowledge_compare_drag'){
+    const frame=page.locator('#compareFrame');
+    const input=page.locator('#compareRange');
+    await frame.scrollIntoViewIfNeeded().catch(error=>violations.push(`compare frame not scrollable: ${error.message}`));
+    const rect=await frame.boundingBox().catch(()=>null);
+    if(!rect||!(await input.count())) violations.push('knowledge comparison or native range missing');
+    else {
+      await page.mouse.move(rect.x+rect.width*0.25,rect.y+rect.height*0.55);
+      await page.mouse.down();
+      await page.mouse.move(rect.x+rect.width*0.84,rect.y+rect.height*0.55,{steps:5});
+      await page.mouse.up();
+      const value=Number(await input.inputValue().catch(()=>NaN));
+      if(!Number.isFinite(value)||value<75)violations.push(`knowledge slider drag did not update range: ${value}`);
+    }
   } else if(interaction.assert==='desktop_mega_visible'){
     const trigger=page.locator(found).first();
     await trigger.hover().catch(()=>{});
