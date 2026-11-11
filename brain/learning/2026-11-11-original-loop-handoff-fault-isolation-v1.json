@@ -56,5 +56,16 @@
   "production_applied_verified": false,
   "failed_helper_fault_injection_proven_in_production": false,
   "regression": "tests/brain-15-loop-assurance-isolated-failure-20261111.test.mjs",
-  "independent_acceptance": "Protected CI, original Supabase migration and provider source-lock equality, actual cron #171 natural owner readback, 15 loop/source status readback, two auth tenants and truly observed downstream provider/outcome/learning still EVIDENCE_DUE."
+  "independent_acceptance": "Protected CI, original Supabase migration and provider source-lock equality, actual cron #171 natural owner readback, 15 loop/source status readback, two auth tenants and truly observed downstream provider/outcome/learning still EVIDENCE_DUE.",
+  "evidence": {
+    "source": "Supabase public.powerhouse_loop_assurance_state_v1, public.brain_obligations, public.brain_reconciliation_jobs and pg_get_functiondef on 2026-11-11",
+    "status": "SOURCE_STRUCTURAL_GAP_VERIFIED__PRODUCTION_FIX_EVIDENCE_DUE",
+    "observed_original_cron_job_id": 171,
+    "observed_cron_success": true,
+    "original_unsolved_content_handoffs": 433,
+    "original_escalated_unknown_results": 2,
+    "provider_applied_new_migration": false,
+    "exception_fault_injection_proven": false,
+    "code_test": "tests/brain-15-loop-assurance-isolated-failure-20261111.test.mjs"
+  }
 }
