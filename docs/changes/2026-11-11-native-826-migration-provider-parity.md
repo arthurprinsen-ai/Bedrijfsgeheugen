@@ -17,3 +17,7 @@ Het originele #171-schema en de 15 lussen blijven onveranderd actief. De oorspro
 ## Acceptatie
 
 Verifieer dezelfde protected HEAD in Required, BRAIN, CodeQL en native Supabase preview, en sluit met een beschermde merge plus onafhankelijke actuele `supabase_migrations.schema_migrations` 826/826 vergelijking. De native provider ledger is autoritatief en mag niet gereset, gedelete, teruggeschreven of vals geconstrueerd worden. Een extra bronbestandsversie mag geen tweede scheduler, worker, provideractie of uitvoeringsresultaat aanmaken.
+
+## Afsluitende beschermde bronlock-correctie (fase 3)
+
+Protected PR #5607 heeft de tweede native 09:42 SQL-bron exact gemerged (main `18a3568cf822f01771faea548c348f8eb6481902`), na Required, backend, CodeQL en native Supabase-preview 826 met service-role ACL. Op 11 november 2026 om 10:04:49 UTC bevestigde de originele productieprovider opnieuw 826 unieke toegepaste versions. Deze fase-3-PR wijzigt **uitsluitend** de historische 825→826 lock, dezelfde reeds bestaande regressie/learning en het menselijke bewijs; er wordt geen nieuwe SQL aan productie aangeboden. Eerste 825 bronregistraties blijven byte-inhoudelijk dezelfde. Provider en GitHub liggen pas na beschermd merge en actuele provider+main readback werkelijk 826/826 gelijk. Reeds uitstaande 433 CONTENT_HANDOFF, 7 rode lussen, oude RESULT_UNKNOWN en 2-tenant klant→effect blijven afzonderlijk OPEN/EVIDENCE_DUE.

@@ -2,7 +2,7 @@
   "fingerprint": "powerhouse|migration|native-second-version-source-lock-drift|20261111-v1",
   "date": "2026-11-11",
   "type": "ONE_BRAIN_IMMUTABLE_NATIVE_PROVIDER_MIGRATION_PARITY",
-  "status": "NATIVE_SECOND_VERSION_SOURCE_PROTECTED_CANDIDATE_LOCK_825",
+  "status": "NATIVE_PROVIDER_826_LOCK_SOURCE_CORRECTION_PROTECTED_CANDIDATE",
   "owner": "Original ONE BRAIN / Supabase protected migration history authority",
   "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
@@ -10,7 +10,7 @@
     "observed": "Native Supabase applied migration ledger has 826 distinct versions, including 20261111093500 and an additional 20261111094222 both named original_loop_assurance_fault_isolation_v1. Original protected source history lock still listed 824 before this PR, and only the first migration source file was present.",
     "reason_for_second_native_execution": "NOT_INDEPENDENTLY_ESTABLISHED; do not infer who or what dispatched an extra version",
     "risk": "Provider-native/source history divergence prevents trustworthy independent source parity and may block future protected releases.",
-    "remediation": "Current protected main #5605 has verified original 09:35 SQL source in 825/825 applied-history lock. This normal protected PR proposes only genuine native 09:42 exact SQL source mirror while leaving original 825-row lock unchanged for PR admission; then a separate protected source-only lock 826/826 correction after independent native provider readback. No native history changes and no additional provider mutation."
+    "remediation": "Original protected #5605 verified 09:35 historical provider record and source lock 825/825. Original protected #5607 merged exact provider 09:42 SQL source file on top of lock 825, native Supabase Preview passed. This third protected, source-lock-only PR appends the genuinely already applied 09:42 native identity, preserving 825 prior rows and NO provider SQL apply; after protection merge independently read back native provider and Git source 826/826."
   },
   "compiler": {
     "failure_class": "SCHEMA_DRIFT",
@@ -55,9 +55,13 @@
     "original_15_loops_latest_readback": "8 GREEN / 7 RED, not end-to-end closed",
     "content_handoff_open": 433,
     "impact": "SOURCE_PARITY_FIX_ONLY; NO NEW CUSTOMER_DELIVERY_OR_PAID_REVENUE",
-    "canonical_main_825_parity": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5605"
+    "canonical_main_825_parity": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5605",
+    "original_protected_sql_source_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5607",
+    "original_source_main_with_alias": "18a3568cf822f01771faea548c348f8eb6481902",
+    "provider_readback_after_source_merge": "2026-11-11T10:04:49.12366Z",
+    "exact_native_version_name_pairs": 826
   },
   "production_proven": false,
   "customer_outcome": "NOT_PROVEN",
-  "next_action": "Protect-check/merge current-main-based exact second SQL file with native 825-row lock unchanged. Then separate provider-attested source-lock correction to 826/826, without re-executing the SQL; customer/content outcome still EVIDENCE_DUE."
+  "next_action": "Protected exact head Required/BRAIN/CodeQL, protected merge, independent original native 826 applied ledger and original Git main lock exact equality, original scheduler #171 continues; customer delivery/outcome remains EVIDENCE_DUE."
 }
