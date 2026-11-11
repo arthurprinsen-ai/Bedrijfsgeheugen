@@ -9,3 +9,10 @@ Original owner and incident: #4198; related customer Portal #4215.
 - Unknown historical dispatch cause remains OPEN for original ONE BRAIN owner; do not claim provider or customer handoff fixed from lock-only repair.
 - Existing natural 15-loop control remains 8 GREEN/7 RED and 433 content handoffs OPEN; source closure is not commercial outcome closure.
 - Acceptance: protected Required/backend/BRAIN/CodeQL + hosted preview, merge exact main, native provider/source lock 826/826 readback, unchanged 15-loop and scheduler active, original issue stays EVIDENCE_DUE where actual outcomes absent.
+
+## 2026-11-11 10:04 UTC — fase 3 beschermde lockexactheid
+
+- Original protected #5607 merged source alias `20261111094222_original_loop_assurance_fault_isolation_v1.sql` to main `18a3568cf822f01771faea548c348f8eb6481902` with Required, CodeQL and hosted preview proven.
+- Native original Supabase provider once again returned 826 distinct version/name identities, latest 20261111094222. No production SQL replay or native ledger mutation needed.
+- This candidate changes only existing source lock to append last original native version, original regression/machine record and change/ledger updates; protected admission and CodeQL still required. No second executor/cron/provider writer.
+- Original 15-loop health and external handoff/measurement evidence remain unresolved; no administrative FULFILLED migration into commercial truth.
