@@ -60,14 +60,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-business-os-one-roof-20261111.test.mjs",
-      "portal-v2/tests/business-os-home.test.mjs"
+      "tests/brain-business-os-one-roof-20261111.test.mjs"
     ],
     "shadow": [
       "tests/brain-business-os-one-roof-20261111.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/business-os-home.test.mjs"
+      "tests/brain-business-os-one-roof-20261111.test.mjs"
     ]
   },
   "prevention": [
@@ -80,7 +79,8 @@
   "evidence": {
     "source": "GitHub canonical repo / portal-v2 / original Netlify site",
     "required": "Protected Required/BRAIN/CodeQL, protected merge, exact SHA Netlify READY, real browser readback, authenticated tenant source and receiver proof.",
-    "limitation": "This candidate ships a connected UX/marketing surface, not a universal process engine, independent consumer closure, actual business outcome or Red Dot award."
+    "limitation": "This candidate ships a connected UX/marketing surface, not a universal process engine, independent consumer closure, actual business outcome or Red Dot award.",
+    "admission_failure_20261111": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:portal-v2/tests/business-os-home.test.mjs; canonical replay must point only at tests/brain-*. Portal-specific suite runs in its original portal lane."
   },
   "next_action": "Auto-merge only after all original required gates; independently readback Netlify current SHA, / and /prijzen and /portal-v2 in authenticated tenants; keep #4198/#4215 open until full proven handoffs."
 }
