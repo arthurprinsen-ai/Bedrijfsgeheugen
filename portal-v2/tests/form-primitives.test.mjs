@@ -28,3 +28,16 @@ test('shared form primitive preserves explicit native step constraints',()=>{
   assert.match(html,/min="0"/);
   assert.match(html,/max="30000"/);
 });
+
+test('empty and invalid numeric customer answers remain unknown instead of becoming measured zero',()=>{
+  for(const type of ['number','currency','percentage','range']){
+    const field={type,min:1,max:5};
+    for(const raw of ['',null,undefined,'   ','not-a-number','Infinity']){
+      assert.equal(normalizeFieldValue(field,raw),null,`${type} / ${String(raw)} must remain unknown`);
+    }
+  }
+  for(const type of ['number','currency','percentage']){
+    assert.equal(normalizeFieldValue({type},'0'),0,`${type} explicit zero must survive`);
+  }
+  assert.equal(normalizeFieldValue({type:'range',min:1,max:5},'0'),1);
+});
