@@ -141,3 +141,11 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
   #bgMobileNav .bg-mobile-shell,#bgSharedMobileNav .bg-shared-mobile-shell{padding-inline:16px!important}
   header.v17-header .brand,nav.bgkop .bgkop-logo{min-width:0!important;max-width:calc(100% - 98px)!important}
 }
+
+/* One mobile navigation must never be covered by the canonical global
+   WhatsApp contact widget (whose z-index is 100000 in shared components). */
+@media(max-width:1100px){
+  body.bg-site-mobile-menu-open a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]{
+    display:none!important;visibility:hidden!important;pointer-events:none!important
+  }
+}

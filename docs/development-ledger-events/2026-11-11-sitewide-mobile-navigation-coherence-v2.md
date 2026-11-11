@@ -15,3 +15,6 @@ Admission metadata fixed, then the protected integration closure required a brai
 
 ## Real mobile geometry red gate — 2026-11-11 13:26 UTC
 The actual 320/390px browser gate failed **8/8** on original candidate SHA 1354e973: measured menu left 335/408px, right 636/775px, and top 0 even though the fixed header ends at 64px. No production promotion; the gate was correctly red. These values match the historical 94vw V18 drawer parked to the right of the viewport. The legacy V18 menu-state observer still assigns mobileToggle aria-controls to v18MobileDrawer while the accessible bgMobileNav drilldown is available. Recovery stays in PR #5618: make aria-controls point at the one visible canonical menu, suppress the legacy drawer when canonical exists, and add diagnostic menu ownership to the browser gate. Await new real browser and protected checks, then exact production readback; no waiver.
+
+## Navigation obstruction audit
+The original canonical WhatsApp widget in tools/site-shell/components.mjs uses .bg-whatsapp-contact at z-index 100000, not merely .wa; the new full-width drawer z-index 2050 would still be obscured. Added actual selector to the public menu-open CSS and the same browser gate. This is still the same PR and original build, not a separate executor.

@@ -57,7 +57,7 @@ try {
         const header=document.querySelector('header.v17-header,nav.bgkop');
         const menu=document.getElementById(owner);
         const h=header.getBoundingClientRect(),m=menu.getBoundingClientRect();
-        const float=document.querySelector('.wa,.whatsapp-float,[data-whatsapp-float]');
+        const float=document.querySelector('.wa,.whatsapp-float,.bg-whatsapp-contact,[data-whatsapp-float]');
         return {owner,parent:menu.parentElement?.tagName,canonicalAvailable:!!document.getElementById('bgMobileNav'),
           toggleControls:document.getElementById('mobileToggle')?.getAttribute('aria-controls'),
           computedTransform:getComputedStyle(menu).transform,
