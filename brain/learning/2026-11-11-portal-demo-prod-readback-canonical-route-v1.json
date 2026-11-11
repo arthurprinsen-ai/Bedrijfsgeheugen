@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "fingerprint": "portal|prod-readback|legacy-demo-redirect-navigation-race|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_PORTAL_PRODUCTION_BROWSER_READBACK_RECOVERY",
+  "status": "PROTECTED_CANDIDATE_CI_EVIDENCE_DUE",
+  "original_owner": "Original Portal V2 production DOM readback",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "original_run_id": 43028996822,
+    "release_sha": "f7aa5af45e5a7da2ee55078324adb60dc891438c",
+    "netlify_deploy_id": "6af46cc891e46f47ab9a0d75",
+    "test_passed": 15,
+    "test_skipped": 1,
+    "test_failed": 1
+  },
+  "root_cause": {
+    "observed": "Legacy /klantportaal 301 redirected to original /portaal/demo; overlapping navigation during back-to-back retries in production browser test",
+    "unknowns": [
+      "fresh postrelease full DOM results",
+      "actual two-tenant authenticated business chain"
+    ]
+  },
+  "fix": {
+    "scope": "Original Playwright demo bootstrap URL only",
+    "original_route": "/portaal/demo",
+    "does_not_change": "browser scope, mobile assertions, product code, auth, provider or production redirects"
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_BROWSER_REDIRECT_RETRY_RACE",
+    "scope": "PORTAL_READBACK",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-demo-canonical-readback-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-demo-canonical-readback-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-demo-canonical-readback-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "CANONICAL_DEMO_ROUTE_NO_LEGACY_301_IN_BROWSER_PROBE",
+    "DO_NOT_BYPASS_MOBILE_PARITY",
+    "DO_NOT_MARK_RELEASE_GREEN_WITH_FAILED_E2E"
+  ],
+  "evidence": {
+    "source": "GitHub Portal V2 Production DOM Readback run 43028996822",
+    "required": "protected PR CI and fresh independent postmerge Portal V2 DOM readback",
+    "limitation": "Test setup recovery alone is not end-to-end customer outcome proof"
+  }
+}
