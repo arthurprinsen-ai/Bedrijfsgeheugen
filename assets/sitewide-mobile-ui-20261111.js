@@ -82,10 +82,29 @@
     range.dispatchEvent(new Event('input',{bubbles:true}));
     update();
   }
+  function fixUnreadableButtons() {
+    // Repair computed white-on-white controls, without changing intentionally
+    // transparent controls on photographic or dark backgrounds.
+    document.querySelectorAll('main a[href],main button:not(:disabled)').forEach(function(control) {
+      if (!control.textContent || !control.textContent.trim()) return;
+      var style=getComputedStyle(control);
+      var bg=style.backgroundColor.match(/^rgba?\((\d+)[, ]+(\d+)[, ]+(\d+)(?:[, /]+([\d.]+))?/i);
+      var fg=style.color.match(/^rgba?\((\d+)[, ]+(\d+)[, ]+(\d+)/i);
+      if (!bg || !fg) return;
+      var alpha=bg[4]===undefined?1:Number(bg[4]);
+      var lightBg=alpha>.95 && Number(bg[1])>238 && Number(bg[2])>238 && Number(bg[3])>238;
+      var lightText=Number(fg[1])>220 && Number(fg[2])>220 && Number(fg[3])>220;
+      if (lightBg && lightText) {
+        control.style.setProperty('color','#14171a','important');
+        control.setAttribute('data-bg-contrast-repaired','true');
+      }
+    });
+  }
   function init() {
     if (!document.body) return;
     ensureCloseButtons();
     knowledgeCompare();
+    fixUnreadableButtons();
   }
   document.addEventListener('click',function(event) {
     var close=event.target.closest && event.target.closest('[data-bg-sitewide-close]');
