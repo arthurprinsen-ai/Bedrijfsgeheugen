@@ -1,0 +1,59 @@
+{
+  "version": 1,
+  "date": "2026-11-11",
+  "type": "ORIGINAL_PRICING_ADVISOR_CRO_HANDOFF",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "fingerprint": "pricing|package-advisor|three-fields-not-measured-or-linked|20261111-v1",
+  "original_owner": "Original website canonical pricing builder / original SEO Order Engine / ONE BRAIN",
+  "parent_issues": [
+    4198,
+    4215
+  ],
+  "observed": {
+    "gap": "Three-field package finder CTA did not enter original CRO intent producer; two navigation routes competed",
+    "paid_orders_claimed": 0
+  },
+  "root_cause": {
+    "observed": "Unmarked /pakketadvies link is outside original automatic known-route fallback; click JS sets location while native anchor also navigates",
+    "unknowns": [
+      "provider-verified buyer conversions",
+      "two genuine tenant business traces",
+      "actual Heartbeat experiment learning"
+    ]
+  },
+  "fix": {
+    "scope": "Single native package advice link updated on selector changes; mark existing original CRO action intent",
+    "no_new_sender": true,
+    "no_new_schedule": true,
+    "no_new_data_store": true
+  },
+  "compiler": {
+    "failure_class": "PRICING_ADVISOR_UNMEASURED_INTENT_AND_DOUBLE_NAVIGATION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-advisor-original-cro-handoff-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-advisor-original-cro-handoff-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-advisor-original-cro-handoff-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "NO_SECOND_CRO_PRODUCER",
+    "PRESERVE_NATIVE_KEYBOARD_ANCHOR",
+    "NO_FALSE_PAID_ORDER",
+    "PRESERVE_ALL_THREE_CATEGORICAL_CHOICES",
+    "NO_LOCALIZED_ROUTE_CLAIM_WITHOUT_PAGE"
+  ],
+  "evidence": {
+    "required": "protected Required/CodeQL, generated System Map, current-main Netlify READY exact SHA and browser production readback",
+    "limitations": "Real payment order/provider/Heartbeat learning not proven; English package destination not natively localized"
+  }
+}
