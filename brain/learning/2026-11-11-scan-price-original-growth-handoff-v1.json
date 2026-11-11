@@ -61,6 +61,19 @@
   ],
   "evidence": {
     "required": "Protected Required/BRAIN/CodeQL; exact Netlify READY and original Edge ACTIVE source; independent scan and CRO provider observations",
-    "limitations": "Unit fixtures are not actual new scan provider readback; no causal uplift or next-cycle learning proven"
+    "limitations": "Unit fixtures are not actual new scan provider readback; no causal uplift or next-cycle learning proven",
+    "historical_source_repair": {
+      "executed": true,
+      "source": "original public.scan_inzendingen with independently present runtime event",
+      "event_store": "public.growth_events",
+      "inserted_rows": 4,
+      "confirmed_matching_rows": 62,
+      "scans_total": 62,
+      "missing_after": 0,
+      "occurred_at": "original August 2026 scan timestamp",
+      "attribution": "unattributed",
+      "side_effects": "No provider send or new customer identity",
+      "release_scope": "Historical scoped DB repair only; future code still protected candidate"
+    }
   }
 }
