@@ -92,8 +92,9 @@
     "docs/development-ledger-events/2026-11-11-original-all-loop-autonomous-cro-handoff.md"
   ],
   "evidence": {
-    "source": "read-only original Supabase production observation 2026-11-11",
-    "observations": {
+    "native_original_source": "Supabase project adhjwmvyoixzjtmiroln",
+    "readback": "2026-11-11 original 15-loop state, CONTENT_HANDOFF, native migration ledger, original CRO readiness",
+    "live_evidence": {
       "project": "adhjwmvyoixzjtmiroln",
       "original_active_loops": 15,
       "green": 8,
@@ -112,10 +113,8 @@
       "holdout_assignments": 0,
       "real_customer_outcome_verified": false
     },
-    "acceptance_boundary": "The observed 15 original monitoring loops and native migration version parity do not prove two authenticated tenant consumer ACK, provider action, CRO effect, paid revenue or next-natural-run learning",
-    "original_issues": [
-      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
-      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
-    ]
+    "immutable_source_proof": "protected PR #5605 and #5607 native source identities; migration-history.lock.json 826/826",
+    "scope_limitation": "Agent/skill handoff policies and source lock do not prove eligible CRO assignment or customer result",
+    "regression": "tests/brain-original-all-loop-cro-handoff-continuity-20261111.test.mjs"
   }
 }
