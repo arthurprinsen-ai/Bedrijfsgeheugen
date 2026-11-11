@@ -94,7 +94,7 @@ export function renderCompanyIntelligenceContext(input={},surface='executive-coc
   const expectedValue=model.expected==null?'Verwachting nog niet onderbouwd':
     model.expectedUnit==='EUR'?euro(model.expected):esc(String(model.expected)+' '+model.expectedUnit);
   const memory=(model.outcome||model.hasUnverifiedOutcome)?`<div class="ci-memory" data-outcome-proof="${model.outcome?'verified':'evidence-due'}"><div><small>Outcome Memory</small><strong>${verifiedValue}</strong></div>
-    <p>Verwacht ${expectedValue} → werkelijk resultaat ${verifiedValue}. Een bronstatus, interne actie of concept is geen bedrijfsresultaat.</p>
+    <p>Verwacht ${expectedValue} → werkelijk gerealiseerd ${verifiedValue}. Een bronstatus, interne actie of concept is geen bedrijfsresultaat.</p>
     ${model.learning?`<p><b>Geleerd en gekoppeld:</b> ${esc(model.learning)}</p>`:'<p>Leereffect nog niet onafhankelijk aangetoond.</p>'}</div>`:'';
 
   return `<section class="ci-context" data-company-intelligence-context data-context-surface="${esc(surface)}">
