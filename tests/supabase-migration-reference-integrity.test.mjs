@@ -16,6 +16,7 @@ async function walk(dir) {
 function referencedMigrations(text) {
   const refs=new Set();
   // Negative assertions (a retired migration must stay absent) do not read the file.
+  text=text.replace(/assert\.equal\(\s*existsSync\(\s*new URL\(\s*(['"])[^'"]+\1\s*,\s*import\.meta\.url\s*\)\s*\)\s*,\s*false\s*\)\s*;?/g,'');
   text=text.replace(/assert\.equal\(\s*existsSync\([^)]*\)\s*,\s*false/g,'');
   const patterns=[
     /(?:readFile|readFileSync|existsSync|access)\s*\(\s*(?:new URL\(\s*)?['"](?:\.\.\/)?(supabase\/migrations\/[0-9][A-Za-z0-9_-]*\.sql)/g,
@@ -35,4 +36,14 @@ test('migration files actually read by tests and Brain scripts resolve to canoni
     }
   }
   assert.deepEqual(missing,[],`stale migration file references:\n${missing.join('\n')}`);
+});
+
+test('only explicitly asserted absent nested URL migrations are excluded; actual reads still fail closed',()=>{
+  const retired='supabase/migrations/20261110140500_original_commercial_verified_research_resume_v1.sql';
+  const negative=`assert.equal(existsSync(new URL('../${retired}',import.meta.url)),false);`;
+  const realRead=`readFileSync(new URL('../${retired}',import.meta.url),'utf8')`;
+  assert.deepEqual(referencedMigrations(negative),[],
+    'a deliberate missing migration must not appear as a positive required source');
+  assert.deepEqual(referencedMigrations(realRead),[retired],
+    'an actual required SQL read must still be rejected when its file is absent');
 });

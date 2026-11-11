@@ -5,7 +5,11 @@ import {verifyAlreadyApplied818HistoryReconciliation as check} from '../tools/ci
 
 const original=readFileSync(new URL('../supabase/migrations/20261109152200_original_social_provider_refresh_learning_v1.sql',import.meta.url),'utf8');
 const mirror=readFileSync(new URL('../supabase/migrations/20261109152945_original_social_provider_refresh_learning_v1.sql',import.meta.url),'utf8');
-const headLock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+const currentLock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+// The one-time 818-reconciliation guard tests the exact historic Nov 9
+// snapshot. Subsequent independently applied provider migrations must not
+// mutate or disable that historical negative-security regression.
+const headLock={...currentLock,applied:currentLock.applied.filter(x=>x.version<='20261109152945')};
 const baseLock={...headLock,applied:headLock.applied.slice(0,-2),captured_at:'2026-11-06T15:30:00.000Z'};
 const input={
  baseSha:'3e55c792504ddbaf0916244213c58b9e827f120e',
@@ -22,8 +26,10 @@ test('only 818 exact already-applied provider versions, source SQL and lock are 
  assert.equal(result.hostedPreviewRequired,true);
  assert.equal(result.providerHistoryAttestedByCandidate,false);
  assert.equal(headLock.applied.length,818);
- const sources=readdirSync(new URL('../supabase/migrations/',import.meta.url)).filter(x=>/^\d{14}_.*\.sql$/.test(x));
- assert.equal(sources.length,818);
+ const sources=readdirSync(new URL('../supabase/migrations/',import.meta.url)).filter(x=>/^\d{14}_.*\.sql$/.test(x)).sort();
+ assert.equal(sources.length,currentLock.applied.length,'the CURRENT full provider lock must keep its exact source SQL');
+ assert.deepEqual(sources,currentLock.applied.map(x=>x.version+'_'+x.name+'.sql').sort());
+ assert.deepEqual(currentLock.applied.slice(0,818),headLock.applied,'later supplier migrations cannot rewrite historical 818 snapshot');
  assert.deepEqual(headLock.applied.slice(-2),[
    {version:'20261109152200',name:'original_social_provider_refresh_learning_v1'},
    {version:'20261109152945',name:'original_social_provider_refresh_learning_v1'}
