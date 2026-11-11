@@ -64,5 +64,19 @@
     "canary": [
       "tests/brain-portal-cro-autonomous-decision-handoff-20261111.test.mjs"
     ]
+  },
+  "root_cause": {
+    "status": "NOT_INDEPENDENTLY_ESTABLISHED",
+    "observed_gap": "Original CRO decisions have 14 REVIEW_REQUIRED candidates, zero eligible treatment/holdout assignments and no mature causal effects; upstream customer-to-experiment handoff still lacks independently proven end-to-end receipts. No single runtime code defect is proven.",
+    "next_diagnostic": "Original CRO owner should inspect each canonical candidate source/lease/consent/assignment eligibility and link the earliest failed consumer to canonical P0 #4215."
+  },
+  "evidence": {
+    "source": "original Supabase project adhjwmvyoixzjtmiroln read-only SQL on 2026-11-11 at 08:58 UTC",
+    "readiness": "LATENT_WAITING_FOR_ELIGIBLE_ACTION",
+    "assignments": 0,
+    "candidates_review_required": 14,
+    "matured_experiment_evidence": "INSUFFICIENT_MATURED_ASSIGNMENTS",
+    "independent_customer_to_cro_outcome": "EVIDENCE_DUE",
+    "test": "tests/brain-portal-cro-autonomous-decision-handoff-20261111.test.mjs"
   }
 }
