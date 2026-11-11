@@ -109,3 +109,72 @@ test('first-party form intent types are accepted without accepting form contents
   assert.throws(()=>normalizeBehaviorEvent({event_id:'not-safe',event_type:'form_start',canonical,form_fields:{email:'private@example.com'}}),/PII fields/);
   assert.throws(()=>normalizeBehaviorEvent({event_id:'no-outcome',event_type:'paid_order',canonical}),/unsupported behavior event/);
 });
+
+test('one canonical growth producer measures NL and EN pricing, scan and checkout routes without duplicate start events',()=>{
+ const ORIGIN='https://www.bedrijfsgeheugen.nl';
+ const html=injectGrowthMeasurement('<html><body><main></main></body></html>',
+   {canonical:ORIGIN+'/prijzen',page_role:'money',funnel_stage:'decide'});
+ const script=html.match(/<script id="bg-growth-measurement">([\\s\\S]*?)<\\/script>/)?.[1];
+ assert.ok(script);
+ const cases=[
+   ['/zelfscan','zelfscan','selfscan_start'],['/en/zelfscan','zelfscan','selfscan_start'],
+   ['/frisse-blik','frisse-blik','frisse_blik_start'],['/en/frisse-blik','frisse-blik','frisse_blik_start'],
+   ['/prijzen','prijzen',null],['/en/prijzen','prijzen',null],
+   ['/afsluiten?plan=starter','checkout',null],['/en/afsluiten?plan=starter','checkout',null],
+   ['/contact','contact',null],['/en/contact','contact',null],
+   ['/aanmelden','aanmelden',null],['/en/aanmelden','aanmelden',null]
+ ];
+ for(const [route,action,startType] of cases){
+  const sent=[],listeners={};let next=0;
+  const location={origin:ORIGIN,hostname:'www.bedrijfsgeheugen.nl',pathname:'/prijzen',href:ORIGIN+'/prijzen'};
+  const href=ORIGIN+route;
+  vm.runInNewContext(script,{
+   window:{location,addEventListener:()=>{}},location,URL,URLSearchParams,
+   navigator:{webdriver:false,sendBeacon:()=>false},
+   crypto:{randomUUID:()=>String(++next)},
+   sessionStorage:{getItem:()=>'',setItem:()=>{}},localStorage:{getItem:()=>null},
+   document:{referrer:'',visibilityState:'visible',querySelector:()=>null,body:{getAttribute:()=>''},
+    documentElement:{scrollHeight:2100,clientHeight:1000},
+    addEventListener:(name,fn)=>{listeners[name]=fn;}},
+   fetch:(_url,options)=>{sent.push(JSON.parse(options.body));return Promise.resolve({ok:true});},
+   setTimeout:()=>0,Blob,Date,Math
+  });
+  const el={href,getAttribute:()=>null,hasAttribute:()=>false,closest:selector=>selector==='main'?{}:null};
+  listeners.click({target:{closest:selector=>selector==='a'?el:null}});
+  const clicks=sent.filter(e=>e.event_type==='primary_cta_click');
+  assert.equal(clicks.length,1,route);
+  assert.equal(clicks[0].cta_action,action,route);
+  assert.equal(clicks[0].target_canonical,href,route);
+  assert.equal(clicks[0].source,'website',route);
+  assert.equal(clicks[0].medium,'unattributed',route);
+  const starts=sent.filter(e=>e.event_type==='selfscan_start'||e.event_type==='frisse_blik_start');
+  assert.equal(starts.length,startType?1:0,route);
+  if(startType)assert.equal(starts[0].event_type,startType,route);
+  assert.ok(sent.every(e=>!Object.hasOwn(e,'email')&&!Object.hasOwn(e,'phone')));
+ }
+});
+
+test('even an explicitly marked cross-origin EN scan link cannot create a false scan-start event',()=>{
+ const ORIGIN='https://www.bedrijfsgeheugen.nl';
+ const html=injectGrowthMeasurement('<html><body><main></main></body></html>',{canonical:ORIGIN+'/prijzen'});
+ const script=html.match(/<script id="bg-growth-measurement">([\\s\\S]*?)<\\/script>/)?.[1];
+ const sent=[],listeners={};let next=0;
+ const location={origin:ORIGIN,hostname:'www.bedrijfsgeheugen.nl',pathname:'/prijzen',href:ORIGIN+'/prijzen'};
+ vm.runInNewContext(script,{
+  window:{location,addEventListener:()=>{}},location,URL,URLSearchParams,
+  navigator:{webdriver:false,sendBeacon:()=>false},
+  crypto:{randomUUID:()=>String(++next)},
+  sessionStorage:{getItem:()=>'',setItem:()=>{}},localStorage:{getItem:()=>null},
+  document:{referrer:'',visibilityState:'visible',querySelector:()=>null,body:{getAttribute:()=>''},
+   documentElement:{scrollHeight:2100,clientHeight:1000},
+   addEventListener:(name,fn)=>{listeners[name]=fn;}},
+  fetch:(_url,options)=>{sent.push(JSON.parse(options.body));return Promise.resolve({ok:true});},
+  setTimeout:()=>0,Blob,Date,Math
+ });
+ const el={href:'https://untrusted.example/en/zelfscan',
+  getAttribute:n=>n==='data-bg-conversion'?'bedrijfslek':null,
+  hasAttribute:()=>false,closest:selector=>selector==='main'?{}:null};
+ listeners.click({target:{closest:selector=>selector==='a'?el:null}});
+ assert.equal(sent.filter(e=>e.event_type==='primary_cta_click').length,1);
+ assert.equal(sent.filter(e=>e.event_type==='selfscan_start').length,0);
+});
