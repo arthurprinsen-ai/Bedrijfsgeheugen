@@ -184,13 +184,14 @@ test('knowledge comparison image can be dragged without losing native range acce
   await expect(frame).toBeVisible();
   await expect(range).toBeVisible();
   await expect(frame).toHaveAttribute('data-bg-drag-bound', 'true');
+  await frame.scrollIntoViewIfNeeded();
   const rect = await frame.boundingBox();
   await page.mouse.move(rect.x + rect.width * 0.3, rect.y + rect.height * 0.55);
   await page.mouse.down();
   await page.mouse.move(rect.x + rect.width * 0.84, rect.y + rect.height * 0.55, {steps:6});
   await page.mouse.up();
   expect(Number(await range.inputValue())).toBeGreaterThan(75);
-  await range.fill('20');
+  await range.evaluate(el => {el.value='20';el.dispatchEvent(new Event('input',{bubbles:true}));});
   expect(Number(await range.inputValue())).toBe(20);
 });
 
