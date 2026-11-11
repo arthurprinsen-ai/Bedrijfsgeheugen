@@ -48,6 +48,7 @@ export function instantiateProcess(state,{id,templateId,title,owner='',targetDat
  if(typeof id!=='string'||!/^p-[a-zA-Z0-9-]{8,90}$/.test(id))throw new Error('PROCESS_ID_REQUIRED');
  if(next.processes.some(p=>p.id===id))return next; // retry without duplicate
  if(!String(title||'').trim()||String(title).trim().length>120)throw new Error('PROCESS_TITLE_REQUIRED');
+ if(!String(owner||'').trim())throw new Error('PROCESS_OWNER_REQUIRED');
  if(String(owner).length>120)throw new Error('PROCESS_OWNER_TOO_LONG');
  if(targetDate&&!validDate(targetDate))throw new Error('PROCESS_TARGET_DATE_INVALID');
  const steps=tpl.steps.map(([key,label,kind,days],i)=>({

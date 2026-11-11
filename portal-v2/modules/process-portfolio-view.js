@@ -34,7 +34,7 @@ export function processPortfolioMarkup(state,{today=new Date().toISOString().sli
   'Goedkeuring vraagt altijd een bevoegde, onafhankelijk bevestigde handeling.</p>'+
   '<form data-process-create><label>Procesvorm<select name="templateId" required>'+opts+'</select></label>'+
   '<label>Procesnaam<input name="title" maxlength="120" required placeholder="Bijvoorbeeld nieuwe productlijn"></label>'+
-  '<label>Verantwoordelijke<input name="owner" maxlength="120" placeholder="Naam of team"></label>'+
+  '<label>Verantwoordelijke<input name="owner" maxlength="120" required placeholder="Naam of team"></label>'+
   '<label>Gewenste einddatum<input name="targetDate" type="date"></label>'+
   '<button type="submit">Proces starten</button></form><p data-process-error role="status"></p>'+
   (cards||'<p class="v2processempty">Nog geen proces. Kies een procesvorm om te beginnen.</p>')+

@@ -27,10 +27,11 @@ test('dependency, owner and approval gates cannot be bypassed by customer click'
  assert.throws(()=>recordProcessStepIntent(data,{processId:id,stepId:'prepare',action:'submit',intentId:'i-44444444',observedAt:date}),/NOT_READY/);
 });
 test('never create dated tasks without a valid customer-provided deadline or title',()=>{
- assert.throws(()=>instantiateProcess({}, {id,templateId:'reorder',title:'X',targetDate:'2026-02-30'}),/INVALID/);
- const data=instantiateProcess({}, {id,templateId:'service-delivery',title:'Advies'});
+ assert.throws(()=>instantiateProcess({}, {id,templateId:'reorder',title:'X',owner:'Lead',targetDate:'2026-02-30'}),/INVALID/);
+ const data=instantiateProcess({}, {id,templateId:'service-delivery',title:'Advies',owner:'Lead'});
  assert.equal(data.processes[0].steps[0].dueDate,null);
- assert.equal(processPortfolioOverview(data).items[0].next,null);
+ assert.equal(processPortfolioOverview(data).items[0].next.id,'discovery');
+ assert.throws(()=>instantiateProcess({}, {id:'p-87654321',templateId:'reorder',title:'Bestelling'}),/OWNER_REQUIRED/);
  assert.throws(()=>instantiateProcess({}, {id,templateId:'reorder',title:''}),/TITLE_REQUIRED/);
 });
 test('mobile-first disclosure escapes customer text and makes unverified status explicit',()=>{
