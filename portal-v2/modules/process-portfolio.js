@@ -63,6 +63,38 @@ export function instantiateProcess(state,{id,templateId,title,owner='',targetDat
  });
  return next;
 }
+// Customer-controlled owner and planning revision. Exact same source document;
+// never manufactures a delivery, approval, Brain acknowledgement or outcome.
+export function reviseProcessPlan(state,{processId,owner,targetDate=''}={}){
+ const next=normalizeProcessPortfolio(state);
+ const process=next.processes.find(item=>item.id===processId);
+ if(!process)throw new Error('PROCESS_NOT_FOUND');
+ const nextOwner=String(owner??'').trim();
+ if(!nextOwner)throw new Error('PROCESS_OWNER_REQUIRED');
+ if(nextOwner.length>120)throw new Error('PROCESS_OWNER_TOO_LONG');
+ if(targetDate&&!validDate(targetDate))throw new Error('PROCESS_TARGET_DATE_INVALID');
+ const nextDate=targetDate||null;
+ const previousOwner=String(process.owner||'').trim();
+ const changedOwner=nextOwner!==previousOwner;
+ const changedDate=nextDate!==(process.targetDate||null);
+ if(!changedOwner&&!changedDate)return next;
+ const template=PROCESS_TEMPLATES.find(item=>item.id===process.templateId);
+ if(changedDate&&!template)throw new Error('PROCESS_REPLAN_TEMPLATE_UNKNOWN');
+ const offsets=new Map((template?.steps||[]).map(([key,,kind,days])=>[key,days]));
+ process.owner=nextOwner;
+ process.targetDate=nextDate;
+ process.steps=(Array.isArray(process.steps)?process.steps:[]).map(step=>({
+  ...step,
+  owner:changedOwner&&(!String(step.owner||'').trim()||String(step.owner).trim()===previousOwner)
+    ?nextOwner:step.owner,
+  dueDate:changedDate&&offsets.has(step.id)
+    ?(nextDate?minus(nextDate,offsets.get(step.id)):null):step.dueDate
+ }));
+ // Review, submitted intents and original evidence stay intact, not reassessed as approved.
+ process.nextConsumerReceipt='EVIDENCE_DUE';
+ return next;
+}
+
 export function processStepState(process,step,{today=null}={}){
  const dependencies=(step.dependsOn||[]).filter(key=>
   !process.steps.some(s=>s.id===key&&s.status==='submitted'));

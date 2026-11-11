@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {instantiateProcess,recordProcessStepIntent,processPortfolioOverview,PROCESS_TEMPLATES} from '../modules/process-portfolio.js';
+import {instantiateProcess,reviseProcessPlan,recordProcessStepIntent,processPortfolioOverview,PROCESS_TEMPLATES} from '../modules/process-portfolio.js';
 import {processPortfolioMarkup} from '../modules/process-portfolio-view.js';
 const id='p-12345678',i1='i-11111111',i2='i-22222222',date='2026-11-11T11:00:00Z';
 const create=()=>instantiateProcess({features:[{id:'f1'}]},{id,templateId:'product-intro',title:'Nieuwe SKU',owner:'Team A',targetDate:'2026-12-31'});
@@ -90,4 +90,37 @@ test('the original UI keeps disclosure open after mutations and exposes domain-s
  assert.match(board,/receiptListeners=new WeakMap/);
  assert.match(domain,/receiptScope=Symbol/);
  assert.match(domain,/stored\.push\(\{\.\.\.saved,statePath:item\.statePath,bindingGeneration:item\.generation\}\)/);
+});
+
+test('replan updates owner and backwards dates without dropping original intents, stories or approvals',()=>{
+ let plan=create();
+ plan=recordProcessStepIntent(plan,{processId:id,stepId:'intake',action:'submit',intentId:i1,observedAt:date});
+ plan.processes[0].steps[1].owner='Specialist';
+ const before=structuredClone(plan);
+ const changed=reviseProcessPlan(plan,{processId:id,owner:'Team B',targetDate:'2027-01-31'});
+ assert.deepEqual(plan,before,'original state remains immutable');
+ assert.equal(changed.processes[0].owner,'Team B');
+ assert.equal(changed.processes[0].steps[0].owner,'Team B');
+ assert.equal(changed.processes[0].steps[1].owner,'Specialist','explicit step owner preserved');
+ assert.equal(changed.processes[0].steps[4].dueDate,'2027-01-31');
+ assert.equal(changed.processes[0].steps[0].status,'submitted');
+ assert.equal(changed.processes[0].steps[0].intentId,i1);
+ assert.equal(changed.processes[0].steps[0].evidence.verified,false);
+ assert.equal(changed.processes[0].nextConsumerReceipt,'EVIDENCE_DUE');
+ assert.deepEqual(changed.features,[{id:'f1'}]);
+ assert.deepEqual(reviseProcessPlan(changed,{processId:id,owner:'Team B',targetDate:'2027-01-31'}),changed);
+ const noDate=reviseProcessPlan(changed,{processId:id,owner:'Team B',targetDate:''});
+ assert.equal(noDate.processes[0].targetDate,null);
+ assert.equal(noDate.processes[0].steps[4].dueDate,null);
+});
+test('replan rejects missing owner, unknown process and invalid date without recording a false result',()=>{
+ const plan=create();
+ assert.throws(()=>reviseProcessPlan(plan,{processId:'p-unknownxx',owner:'Team'}),/NOT_FOUND/);
+ assert.throws(()=>reviseProcessPlan(plan,{processId:id,owner:''}),/OWNER_REQUIRED/);
+ assert.throws(()=>reviseProcessPlan(plan,{processId:id,owner:'B',targetDate:'2026-02-30'}),/DATE_INVALID/);
+ assert.equal(plan.processes[0].nextConsumerReceipt,'EVIDENCE_DUE');
+ const html=processPortfolioMarkup(plan);
+ assert.match(html,/data-process-replan="p-12345678"/);
+ assert.match(html,/Planning bijwerken/);
+ assert.match(readFileSync(new URL('../modules/process-portfolio-view.js',import.meta.url),'utf8'),/onChange\(revised\)/);
 });

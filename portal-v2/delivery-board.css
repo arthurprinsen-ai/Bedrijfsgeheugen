@@ -20,3 +20,8 @@
 .v2processstep button{flex-shrink:0;background:#fff;color:#16495c}.v2processcard>p{font-size:.72rem;color:#56717f;margin:12px 0 0}
 @media(max-width:720px){.v2processportfolio details>summary{display:block}.v2processportfolio details>summary span{display:block;margin-top:6px}.v2processbody form{grid-template-columns:1fr}.v2processstep{align-items:stretch;flex-direction:column}.v2processstep button{width:100%}.v2processcard header{flex-direction:column}}
 @media(prefers-reduced-motion:reduce){.v2processportfolio *{scroll-behavior:auto;animation:none;transition:none}}
+
+/* Replanning stays inside the original customer deliveryPlan; no second writer. */
+.v2processcard [data-process-replan]{border-top:1px solid #e1eaee;margin:14px 0 0;padding:12px 0 0;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end}
+.v2processcard [data-process-replan]>button{grid-column:1/-1;justify-self:start}
+@media(max-width:720px){.v2processcard [data-process-replan]{grid-template-columns:minmax(0,1fr)}.v2processcard [data-process-replan]>button{width:100%}}

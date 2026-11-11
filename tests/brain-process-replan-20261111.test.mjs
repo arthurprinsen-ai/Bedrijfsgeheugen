@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {instantiateProcess,reviseProcessPlan} from '../portal-v2/modules/process-portfolio.js';
+test('original process replan is tenant-scoped document input and never bypasses approval or Brain truth',()=>{
+ const id='p-87654321';
+ const initial=instantiateProcess({stories:[{id:'s1'}]},{id,templateId:'reorder',title:'Order',owner:'Ops',targetDate:'2026-12-31'});
+ const changed=reviseProcessPlan(initial,{processId:id,owner:'Supply',targetDate:'2027-01-31'});
+ assert.deepEqual(changed.stories,[{id:'s1'}]);
+ assert.equal(changed.processes[0].steps[0].dueDate,'2027-01-10');
+ assert.equal(changed.processes[0].steps[2].kind,'approval');
+ assert.equal(changed.processes[0].steps[2].status,'not_started');
+ assert.equal(changed.processes[0].nextConsumerReceipt,'EVIDENCE_DUE');
+ const board=readFileSync(new URL('../portal-v2/modules/delivery-board.js',import.meta.url),'utf8');
+ const view=readFileSync(new URL('../portal-v2/modules/process-portfolio-view.js',import.meta.url),'utf8');
+ const model=readFileSync(new URL('../portal-v2/modules/process-portfolio.js',import.meta.url),'utf8');
+ assert.match(board,/domainState\.set\('portal\.deliveryPlan',state\)/);
+ assert.match(view,/data-process-replan/);
+ assert.match(view,/reviseProcessPlan/);
+ for(const source of [view,model])assert.doesNotMatch(source,/fetch\(|localStorage|service_role|setInterval|cron\.schedule|create\s+table/);
+});
