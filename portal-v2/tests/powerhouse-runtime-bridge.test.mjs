@@ -313,7 +313,7 @@ test('tenant membership switch for the SAME user revokes all previous tenant pen
 test('the same source revision never creates concurrent duplicate runtime Brain evidence',async()=>{
  const bus=new FakeBus();let successful=false;const sent=[];
  const bridge=createPowerhouseRuntimeBridge({
-  stateClient:{getSnapshot:()=>({mode:'authenticated',user:{id:'tenant-A',app_metadata:{tenantId:'a'}}),
+  stateClient:{getSnapshot:()=>({mode:'authenticated',user:{id:'tenant-A',app_metadata:{tenantId:'a'}}}),
    authHeaders:async()=>({authorization:'Bearer a'}),subscribe:()=>()=>{},isDemo:()=>false},
   domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
   fetchImpl:async(_url,opts={})=>{
