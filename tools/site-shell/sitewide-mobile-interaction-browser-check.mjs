@@ -121,7 +121,10 @@ try {
         assert.equal(await frame.getAttribute('data-bg-knowledge-side'),'after','knowledge slider right view not readable');
         await range.press('Home');
         const box=await range.boundingBox();
-        assert.ok(box && box.width>100 && box.height>100,'knowledge range lacks large visible touch target');
+        assert.ok(
+          box && box.width>100 && box.height>=44,
+          `knowledge native visible touch rail is too small: ${JSON.stringify(box)}`
+        );
         await range.click({position:{x:Math.floor(box.width*.65),y:Math.floor(box.height*.5)},timeout:10000});
         const clicked=Number(await range.inputValue());
         assert.ok(clicked>0&&clicked<100,`knowledge visual frame did not respond to pointer click: ${clicked}`);
