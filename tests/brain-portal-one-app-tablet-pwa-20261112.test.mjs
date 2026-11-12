@@ -7,7 +7,7 @@ const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const fingerprint='portal|app|one-installable-phone-tablet-shell|20261112-v1';
 
 test('historical: same original site and portal install to one standalone customer app, with proper icon files',()=>{
- const m=JSON.parse(read('app.webmanifest'));
+ const m=JSON.parse(read('portal-v2/app.webmanifest'));
  assert.equal(m.id,'https://www.bedrijfsgeheugen.nl/portal-v2/');
  assert.equal(m.start_url,'https://www.bedrijfsgeheugen.nl/portal-v2/');
  assert.equal(m.scope,'https://www.bedrijfsgeheugen.nl/');
@@ -17,7 +17,7 @@ test('historical: same original site and portal install to one standalone custom
  assert.ok(m.shortcuts.some(x=>x.url.includes('?page=actieve-acties')));
  assert.ok(m.shortcuts.some(x=>x.url.includes('?page=outcomes-evidence')));
  for(const item of m.icons)assert.ok(item.src.startsWith('https://www.bedrijfsgeheugen.nl/'));
- const icon=readFileSync(new URL('../assets/merk/app-icon-192.png',import.meta.url));
+ const icon=readFileSync(new URL('../portal-v2/app-icon-192.png',import.meta.url));
  assert.equal(icon.subarray(1,4).toString('ascii'),'PNG');
  assert.equal(icon.readUInt32BE(16),192);assert.equal(icon.readUInt32BE(20),192);
  assert.ok(existsSync(new URL('../assets/merk/icon-512.png',import.meta.url)));
@@ -26,7 +26,7 @@ test('historical: same original site and portal install to one standalone custom
 test('shadow: full URL manifest links on both original entrypoints, one original public page builder for all routes',()=>{
  const home=read('index.html'),portal=read('portal-v2/index.html'),builder=read('tools/site-shell/apply-cms-runtime.mjs');
  for(const html of [home,portal]){
-  assert.match(html,/<link rel="manifest" href="https:\/\/www\.bedrijfsgeheugen\.nl\/app\.webmanifest">/);
+  assert.match(html,/<link rel="manifest" href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/app\.webmanifest">/);
  }
  assert.match(portal,/viewport-fit=cover/);
  assert.match(portal,/apple-mobile-web-app-title/);
@@ -34,7 +34,7 @@ test('shadow: full URL manifest links on both original entrypoints, one original
  assert.match(portal,/app-feel\.css\?v=20261112/);
  assert.match(builder,/publicPage=!/);
  assert.match(builder,/data-bg-app-manifest/);
- assert.match(builder,/https:\/\/www\.bedrijfsgeheugen\.nl\/app\.webmanifest/);
+ assert.match(builder,/https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/app\.webmanifest/);
 });
 
 test('canary: reuse original four-tab dock on tablets, no parallel navigation, keyboard/touch and full-site form fit',()=>{
