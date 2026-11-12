@@ -26,6 +26,9 @@ for (const [path,route] of moneyPages) {
     const ld=[...html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)]
       .map(x=>{try{return JSON.parse(x[1]);}catch{return null;}}).filter(Boolean)
       .flatMap(j=>Array.isArray(j['@graph'])?j['@graph']:[j]);
+    const breadcrumb=ld.find(j=>j['@type']==='BreadcrumbList');
+    assert.ok(breadcrumb,'structured breadcrumb exists');
+    assert.equal(breadcrumb.itemListElement?.[1]?.item,origin+'/systemen-koppelen','structured breadcrumb agrees with visible link');
     const faq=ld.find(j=>j['@type']==='FAQPage');
     assert.ok(faq,'valid FAQ schema');
     assert.ok(faq.mainEntity.some(item=>item.acceptedAnswer?.text===price),'FAQ JSON-LD must match visible price');
