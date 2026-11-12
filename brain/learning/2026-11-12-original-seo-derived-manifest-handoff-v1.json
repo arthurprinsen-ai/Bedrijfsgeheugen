@@ -1,0 +1,98 @@
+{
+  "fingerprint": "seo|original-derived-daily-manifest-ack|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "original SEO resolver #105 -> existing daily source archive #175 -> ONE BRAIN #140 -> original commercial Heartbeat -> Portal",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN_AFTER_NEW_DERIVED_SOURCE",
+  "root_cause": "Original SEO resolver v536 was independently deployed source-equal to main and wrote a verified deduplicated derived SEO observation, but original daily source archive #175 only archived 20 predefined sources and omitted 'seo-opportunity-intelligence'. ONE BRAIN #140 and commercial Heartbeat independently verified the 20-source SHA, but the derived opportunity observation was not part of their daily source revision. This creates a silent omission even though the original evidence source table preserved the data.",
+  "evidence": {
+    "production_at": "2026-11-12T20:14:00Z",
+    "producer_version": 536,
+    "producer_exact_main_source_match": true,
+    "source_key": "seo-opportunity-intelligence",
+    "source_observation_id": "e1dd5ffa-8aa7-47cf-a979-64197d3e71d9",
+    "dedupe_key": "seo-opportunity-resolver:2026-11-12",
+    "producer_response": "HTTP_200",
+    "derived_counts": {
+      "forecast_receipts": 5,
+      "owner_handoff_receipts": 2,
+      "actual_cro_executions": 0,
+      "verified_outcome_lift": 0
+    },
+    "original_source_manifest": {
+      "date": "2026-11-12",
+      "source_count": 20,
+      "includes_derived_seo": false,
+      "original_revision": "d3babe73edb07aebb77b54e30285d0a428f0ce30a9ecb7a7970b17794ad88e55"
+    },
+    "original_brain_consumer": {
+      "accepted": true,
+      "consumer": "original powerhouse-content-orchestrator-140",
+      "same_revision": true
+    },
+    "original_heartbeat": {
+      "ack_verified": true,
+      "same_revision": true,
+      "observed_at": "2026-11-12T20:14:00.016956Z"
+    },
+    "original_obligation": {
+      "state": "OPEN",
+      "optimization_status": "NOT_EXECUTED",
+      "causal_lift_proven": false
+    },
+    "original_crons": {
+      "resolver": 105,
+      "daily_archive": 175,
+      "consumer": 140,
+      "all_active": true
+    },
+    "regression": [
+      "tests/brain-original-seo-derived-manifest-handoff-20261112.test.mjs"
+    ]
+  },
+  "fix": [
+    "Extend only original #175 daily manifest producer to include one source_key 'seo_opportunity_intelligence' derived from original source observations with exact same tenant and local day window.",
+    "Retain observation_id, original observed_at, evidence hash and source key; not a DataForSEO/GSC/GA4 provider measurement. Preserve other 20 sources without changing any ownership.",
+    "Fail closed if original projection source owner registry or source definition drift, avoid any additional cron, writer or source table.",
+    "Require original #140 to consume the changed 21-source SHA; original Heartbeat must compare against current persisted manifest and matched current SHA; portal/optimizations require separately proven downstream execution/outcome receipts."
+  ],
+  "prevention_rule": "No original source may be labeled handed off merely because it exists in the evidence spine; require its actual own daily-manifest row and immutable source-revision evidence, exact named consumer SHA ACK, and downstream Heartbeat SHA readback. Missing source is explicitly MISSING, not green. Derived opportunity evidence must never be attributed as real search queries, provider ranking, new visits, leads, experiments or revenue.",
+  "compiler": {
+    "failure_class": "DERIVED_EVIDENCE_DAILY_MANIFEST_HANDOFF_GAP",
+    "scope": "DATA_SPINE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-derived-manifest-handoff-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-seo-derived-manifest-handoff-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-derived-manifest-handoff-20261112.test.mjs"
+    ],
+    "expected": "Source registry intact, original #175 now emits 21 source rows including derived-source identity, original #140 ACK equals new SHA, Heartbeat acknowledges same SHA without fabricated CRO outcome."
+  },
+  "delivery": {
+    "migration": "supabase/migrations/20261112214500_original_seo_derived_brain_manifest_handoff_v1.sql",
+    "test": "tests/brain-original-seo-derived-manifest-handoff-20261112.test.mjs",
+    "agent": "platform/agents/agent-team.mjs",
+    "skill": ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    "ledger": "docs/development-ledger-events/2026-11-12-original-seo-derived-daily-manifest-handoff-v1.md"
+  },
+  "no_parallel_executor": true,
+  "no_new_cron": true,
+  "acceptance": [
+    "protected CI+Supabase Preview",
+    "native migration and #175 function readback",
+    "original archive writes own derived row",
+    "original #140 processed ACK matches revised SHA",
+    "commercial Heartbeat same revised SHA",
+    "real-world CRO outcome separately verified"
+  ]
+}

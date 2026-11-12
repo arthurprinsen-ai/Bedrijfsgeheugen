@@ -40,7 +40,8 @@
     "Missing source health metadata cannot be counted as healthy; generic transport or processing OK is not independent outcome verification.",
     "The free scan, paid service, pricing, privacy and delivery promises must agree across all public pages and the actual customer journey.",
     "Explain assumptions, alternatives including no-change, scope, human support and the actual next step; never imply guaranteed ROI or deadlines without proof.",
-    "Do not mark source-to-consumer handoff complete without identical tenant, source revision, obligation id, idempotency key, original owner, processed ACK and independent result evidence."
+    "Do not mark source-to-consumer handoff complete without identical tenant, source revision, obligation id, idempotency key, original owner, processed ACK and independent result evidence.",
+    "A portal AI answer cannot be labelled independently verified from a declared status alone: require an identified source, explicit independent verification state and a concrete evidence reference; unknown or contradictory fields must fail closed."
   ],
   "portal_surfaces": {
     "all_pages": [
