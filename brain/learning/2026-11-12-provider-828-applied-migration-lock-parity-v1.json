@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|provider-828-lock-parity|20261112-v1",
+  "obligation_id": "supabase|migration-history|provider-828-lock-parity|20261112-v1",
+  "title": "Never strand downstream protected website/Portal V2 releases after a provider-applied migration becomes source-merged",
+  "status": "CANDIDATE",
+  "root_cause": "Original protected #5648 applied and merged production blog handoff migration 20261112140500 but original provider-backed source lock remained at 827 although production ledger reached 828, repeating predecessor #5646→#5647 parity drift and blocking #5644.",
+  "impact": "Whole protected release queue can stall, despite successful portal/browser tests; original production database remains healthy.",
+  "fix": "Append exact production provider-applied version/name to original migration-history.lock.json in protected original migration lane, retaining previous 827 identities and full SQL source; never rerun applied DDL, mutate provider ledger or bypass Required/CodeQL.",
+  "prevention_rule": "Original migration delivery owner must atomically hand off verified applied migration identity and provider readback to original lock source updater and downstream guarded CI before candidate consumers advance; detect 827→828 drift, preserve idempotent correlation/owner/ACK and keep obligations OPEN until processed; do not create a parallel scheduler.",
+  "regression_contract": "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs; tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+  "tests": [
+    "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Production provider 2026-11-12T13:41:02.290Z: 828 applied rows including exactly one 20261112140500/original_blog_provider_identity_handoff_v1",
+    "Original main #5648 includes SQL source, lock source at 827, #5644 protected dependency pending",
+    "Original provider-owned release ensures no fake migration status; exact protected CI and provider readback remain required."
+  ],
+  "outcome": "Source lock parity candidate pending protected checks and independent 828/828 readback; tenant/consumer handoffs and actual app live still separately due.",
+  "compiler": {
+    "failure_class": "PROVIDER_SOURCE_PARITY",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  }
+}

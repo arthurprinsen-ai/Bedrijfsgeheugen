@@ -1,0 +1,5 @@
+# Provider-backed Supabase lock 828/828
+
+Original backend migration owner and #4198; dependency original blog handoff #5648 → Portal V2 app #5644. Provider-readback at 2026-11-12T13:41:02.290Z recorded 828 actual applied migrations with one exact 20261112140500/original_blog_provider_identity_handoff_v1; source migration exists on protected main. The original lock retained 827 historic identities.
+
+**Same protected original delivery:** append exact provider identity only, keep all previous 827, no SQL migration/replay or database update; source Brain learning, human changes and activity ledger co-released with historical/shadow/canary tests. Original protected Required/CodeQL, Supabase preview owned check, main merge, independent production source/provider parity readback required. Repeated 827/828 drift requires original migration owner receipt handshake and preventive enforcement; no parallel executor. Original app #5644 cannot be called live until its own protected checks, exact Netlify READY and browser evidence. Actual Powerhouse/Heartbeat consumer ACK and 441 historical CONTENT_HANDOFF obligations remain separate.
