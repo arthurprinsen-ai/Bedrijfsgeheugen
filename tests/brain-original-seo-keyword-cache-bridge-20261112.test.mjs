@@ -117,3 +117,17 @@ test('daily Brain archives recent source truth, never claims an older provider c
  assert.ok(source.includes("KEYWORD_TENANT_SOURCE_READBACK_FAILED"));
  assert.doesNotMatch(source,/cron\.schedule|CREATE TABLE|DROP TABLE|DISABLE TRIGGER/);
 });
+
+test('original DataForSEO Edge function is explicitly registered for protected-main release parity',()=>{
+ const cfg=readFileSync(new URL('../supabase/config.toml',import.meta.url),'utf8');
+ const marker='[functions.powerhouse-dataforseo-intelligence]';
+ assert.equal(cfg.split(marker).length-1,1,'the same original producer must have exactly one declaration');
+ const body=cfg.slice(cfg.indexOf(marker),cfg.indexOf('[functions.',cfg.indexOf(marker)+marker.length));
+ assert.match(body,/enabled\s*=\s*true/);
+ assert.match(body,/verify_jwt\s*=\s*false/);
+ assert.match(body,/entrypoint\s*=\s*"\.\/functions\/powerhouse-dataforseo-intelligence\/index\.ts"/);
+ const edge=readFileSync(new URL('../supabase/functions/powerhouse-dataforseo-intelligence/index.ts',import.meta.url),'utf8');
+ assert.match(edge,/x-powerhouse-token/);
+ assert.match(edge,/powerhouse_daily_scheduler_token/);
+ assert.match(edge,/NO_NEW_PROVIDER_KEYWORDS/);
+});

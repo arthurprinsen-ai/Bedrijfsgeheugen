@@ -1,0 +1,68 @@
+{
+  "fingerprint": "seo|dataforseo|original-edge-config-provider-readback|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN",
+  "owner": "original powerhouse-dataforseo-intelligence / Supabase GitHub Integration (same existing producer)",
+  "root_cause": "Protected main PR #5677 deployed original SEO resolver and native canonical-source-tenant migration, but original DataForSEO producer remained at version 12. Supabase Edge Production Authority main run 43285163799 job 131416515932 rejected the original producer function because supabase/config.toml lacked the explicit [functions.powerhouse-dataforseo-intelligence] declaration. The existing correctly fail-closed protected deploy was not bypassed. Native production Supabase subsequently applied the 834th original migration 20261112203000 while GitHub's verified applied-source lock remained at only 833, causing correct protected migration-parity failures in the next recovery PR. The historic 833 sources must not be rewritten.",
+  "evidence": {
+    "origin_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5677",
+    "merged_main_sha": "5ea1ae7dbab400e2d3e835e7cbaab7dab5356a8c",
+    "guarded_failure": "SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:powerhouse-dataforseo-intelligence",
+    "original_provider_version": 12,
+    "original_provider_source_outdated": true,
+    "original_resolver_version": 530,
+    "native_migration_applied": "20261112203000_original_seo_keyword_tenant_alignment_v1",
+    "original_internal_auth": "x-powerhouse-token validated against secret before provider operation",
+    "no_new_scheduler": true,
+    "tests": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "native_migration_count": 834,
+    "native_migration_readback_utc": "2026-11-12T19:04:18.464Z",
+    "source_lock_previous_count": 833
+  },
+  "fix": [
+    "Register existing original Edge producer exactly once in supabase/config.toml, enabled=true, preserve production verify_jwt=false and existing internal scheduler token authorization.",
+    "Add dependency-free original Brain regression asserting exact source declaration, entrypoint and existing token checks.",
+    "Use original protected CI + Supabase GitHub Integration for deployment; independently verify actual provider version and byte-equivalent original protected-main source.",
+    "Keep original #105→#175→#140 Heartbeat/Portal receipt and real measured traffic growth unverified until actual production consumer and outcomes prove them.",
+    "Append only native provider-verified 834th exact version/name to existing source migration-history.lock.json while preserving original 833-version immutable prefix and capture timestamp evidence; update original 833-prefix regression to assert both 833rd and 834th identities."
+  ],
+  "prevention_rule": "No new or modified original Edge function can be called production-live if absent from the canonical supabase/config.toml declaration or if provider source code differs from exact protected main. Preserve existing JWT mode and original internal token gate; fail closed, never deploy directly from GitHub Actions as an alternate provider authority. Never admit a new release with an independently applied native migration absent from the source history lock; verify exactly matched provider count, version, name, unchanged original prefix and only then protect merge.",
+  "regressions": [
+    "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs",
+    "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
+  ],
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-dataforseo-original-edge-config-deployment-gap-v1.md",
+  "compiler": {
+    "failure_class": "SOURCE_DEPLOYMENT_REGISTRY_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "expected": "Original DataForSEO Edge producer is declared once, retaining internal token gate and native verified JWT mode; original deployed function byte equals protected main; same original data spine remains open until source/consumer/outcome proof. Original 834th native migration source lock matches full provider history without changes to prior 833."
+  },
+  "delivery": {
+    "original_supabase_edge": "supabase/functions/powerhouse-dataforseo-intelligence/index.ts",
+    "configuration": "supabase/config.toml",
+    "protected_merge_required": true,
+    "deployment_authority": "Supabase GitHub Integration",
+    "original_executor_only": true,
+    "original_function_readback_required": true,
+    "source_lock": "supabase/migration-history.lock.json"
+  }
+}

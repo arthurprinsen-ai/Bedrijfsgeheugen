@@ -236,6 +236,15 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-kansenradar/index.ts"
  
+# Original DataForSEO producer: protected-main release parity for the EXISTING
+# scheduler-token-protected Edge function, no new cron, sender or service.
+# Preserve native deployed verify_jwt=false; entrypoint validates the original
+# x-powerhouse-token before service-role provider/cache work.
+[functions.powerhouse-dataforseo-intelligence]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-dataforseo-intelligence/index.ts"
+
 # Original GA4/Data Spine collection via existing pg_cron #42 and bg_roep_functie.
 # Preserve verified production verify_jwt=false: original private
 # x-powerhouse-token (Vault) is checked in Edge BEFORE provider work.
