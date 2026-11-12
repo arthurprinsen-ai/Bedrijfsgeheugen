@@ -114,7 +114,7 @@ test('private source, tenant route and provider data are never stored by the ser
 test('governance remains the original website and Portal V2, not a new executor or order source',()=>{
  const registry=JSON.parse(read('config/brain-delivery-system.json'));
  const websiteLane=registry.lanes.find(item=>item.id==='website');
- for(const file of ['app.webmanifest','offline.html','service-worker.js'])assert.ok(websiteLane?.paths.includes(file),file+' must be owned by original website delivery');
+ for(const file of ['app.webmanifest','service-worker.js'])assert.ok(websiteLane?.paths.includes(file),file+' must be owned by original website delivery');
  const skill=read('.agents/skills/portal-living-interface/SKILL.md');
  const agents=read('platform/agents/agent-team.mjs');
  const global=read('AGENTS.md');
@@ -123,6 +123,8 @@ test('governance remains the original website and Portal V2, not a new executor 
  assert.match(global,/site-portal\|ux-pwa\|gripdock-single-app-responsive-original-loop\|20261112-v1/);
  assert.match(agents,/verify-original-gripdock-pwa-tablet-touch-and-private-offline-fallback-without-parallel-router/);
  assert.equal(fingerprint.length>30,true);
+ assert.ok(websiteLane?.paths.includes('assets/'),'static offline page must inherit original assets/ website lane');
+ assert.equal(websiteLane?.paths.includes('offline.html'),false,'offline file is not a root marketing route');
  const pwa=read('assets/grip-app-experience.js');
  const sw=read('service-worker.js');
  for(const file of [pwa,sw])assert.doesNotMatch(file,/fetch\(.+\{method:\s*['"]POST|\.insert\(|\.upsert\(|setInterval\(/);
