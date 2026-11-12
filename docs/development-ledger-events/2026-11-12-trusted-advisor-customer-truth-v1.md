@@ -22,3 +22,6 @@ Retain original application and its writer lease. Align copy with the actual fre
 - original ONE BRAIN consumer processed ACK and consent-safe subsequent conversion measurements
 
 **Release and measured trust status: NOT_PROVEN.** Do not close on a candidate commit or claim conversion/retention uplift without actual outcomes.
+
+## Specialist-agent en originele overdracht — aanvullend bronbewijs
+De geregistreerde `agent-trusted-advisor` in `platform/agents/agent-team.mjs` is een adviesrol binnen de bestaande agent fabric, zonder eigen planner, publicatie- of schrijfrechten. De originele redactieraad gebruikt dezelfde rol voor website/social/blog/e-mail en de bestaande CMS-gate behoudt het publicatierecht. Het `brain/policies/trusted-advisor-assurance-v1.json`-contract vereist tenant, source revision, obligation, eigenaar, idempotency key, daadwerkelijke consumer **processed** ACK en onafhankelijke uitkomstreferentie in dezelfde lineage. Deze registratie is **broncodeborging**, geen aangetoond runtime-ACK. Test: `tests/brain-trusted-advisor-agent-one-loop-20261112.test.mjs`. Volgende verificatie: exact PR-head Required/BRAIN/CodeQL, beschermde merge, productie-SHA, provider/browserreadback en originele ONE BRAIN-consumerstatus. Bij ontbreken: zelfde fingerprint heropenen; geen tweede executor.
