@@ -3308,8 +3308,12 @@
     {
       "version": "20261112131500",
       "name": "original_no_publish_provider_side_effect_fence_v1"
+    },
+    {
+      "version": "20261112140500",
+      "name": "original_blog_provider_identity_handoff_v1"
     }
   ],
-  "captured_at": "2026-11-12T13:18:08.784Z",
+  "captured_at": "2026-11-12T13:37:15.498091Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
