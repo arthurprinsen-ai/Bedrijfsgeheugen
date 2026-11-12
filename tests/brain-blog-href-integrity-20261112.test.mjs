@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 
 test('new blog preflight rejects broken, noncanonical and unsafe href attributes', () => {
-  const script = String.raw\`
+  const script = String.raw`
 from scripts.ci.blog_technical_seo_gate import validate_public_href_targets as check
 BASE = "https://www.bedrijfsgeheugen.nl"
 paths = ["/", "/frisse-blik", "/afas-koppeling", "/blog/valid/"]
@@ -25,7 +25,7 @@ for bad in [
         pass
     else:
         raise AssertionError("Unexpectedly accepted href: " + repr(bad))
-\`;
+`;
   const result = spawnSync('python3', ['-c', script], { encoding: 'utf8' });
   assert.equal(result.status, 0, result.stderr || result.stdout || 'Python blog link verification failed');
 });
