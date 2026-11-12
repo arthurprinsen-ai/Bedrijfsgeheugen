@@ -13,7 +13,8 @@
     "Never confuse training bots with search or user retrieval bots.",
     "Never claim a crawler allow rule or llms.txt guarantees a ChatGPT/Claude answer citation.",
     "Keep public machine-readable company descriptions truthful to existing current product pages.",
-    "Use original SEO/CRO owner and downstream source-verified AI visibility measurement; no second scheduler or fabricated citation outcomes."
+    "Use original SEO/CRO owner and downstream source-verified AI visibility measurement; no second scheduler or fabricated citation outcomes.",
+    "Every newly edited public SEO/AI-discovery root file must be classified in canonical protected delivery website lane before CI; fail admission until repaired, never bypass."
   ],
   "acceptance": [
     "Protected PR Required/CodeQL/website checks pass",
@@ -30,7 +31,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-ai-discovery-20261111.test.mjs"
+      "tests/brain-ai-discovery-20261111.test.mjs",
+      "tests/brain-delivery-seo-order.test.mjs"
     ]
   },
   "evidence": {
@@ -60,8 +62,9 @@
     "original_pr": 5631,
     "original_head_before_agent_update": "c352091f35c0db7ad5157cdf2c67d2b732addd3f",
     "observed": "Required and CodeQL were queued overnight with 0 jobs, confirmed 2026-11-12; prior close/reopen created new queued runs without jobs",
-    "safe_recovery": "Preserve original PR, protected auto-merge, native tests and check runs; investigate GitHub Actions provider queue/capacity, do not forge checks or bypass protected branch",
+    "safe_recovery": "Registered both public files in canonical config/brain-delivery-system.json website lane, guarded by tests/brain-ai-discovery-20261111.test.mjs; rerun original Required/CodeQL on newest commit and protected auto-merge only if green",
     "owner": "original GitHub protected delivery / BG169",
-    "state": "OPEN_PROVIDER_RUNNER_QUEUE"
+    "state": "SOURCE_FIX_COMMITTED_REQUIRED_REPLAY_PENDING",
+    "root_cause": "Required admission job 43172573294 explicitly failed with unclassified delivery path: llms.txt, robots.txt; native GitHub runner queue was transient and its replay revealed the concrete defect"
   }
 }
