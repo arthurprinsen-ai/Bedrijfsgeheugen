@@ -38,5 +38,38 @@
   "no_new_executor": true,
   "no_new_scheduler": true,
   "outcome_measurement": "NOT_MEASURED",
-  "runtime_two_tenant_readback": "NOT_MEASURED"
+  "runtime_two_tenant_readback": "NOT_MEASURED",
+  "fingerprint": "portal|domain-state|same-member-tenant-switch-refreshes-old-hydration|20261112-v1",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-tenant-refresh-fence-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-tenant-refresh-fence-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-tenant-refresh-fence-20261112.test.mjs"
+    ],
+    "expected": "member+tenant fingerprint and hydrated principal must match throughout original source refresh; orphan mutations must be rejected before any local or canonical write"
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/839086756f2559b9abeb8decc8d945e2f0a3d919/portal-v2/domain-state.js",
+    "original_defect": "refresh previously matched member ID/email but not currentPrincipal's tenant; portal-root customer edits could record impact without a mapped BusinessInput",
+    "regression_tests": [
+      "tests/brain-portal-tenant-refresh-fence-20261112.test.mjs",
+      "portal-v2/tests/portal-handoff-recovery.test.mjs"
+    ],
+    "admission_error": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43322840031",
+    "admission_remedy": "Added explicit compiler AUTH security context, historical_replay/shadow/canary executable tests and source evidence",
+    "release_status": "SOURCE_CANDIDATE",
+    "two_real_tenant_readback": "NOT_YET_PROVEN",
+    "consumer_processed_ack": "NOT_YET_PROVEN"
+  }
 }
