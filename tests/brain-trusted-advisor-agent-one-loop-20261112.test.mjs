@@ -26,7 +26,7 @@ test('original editorial council includes advisory role across existing channels
   const brief=buildEditorialCouncilBrief({channel});
   assert.ok(brief.roles.includes('trusted-advisor-specialist'),channel);
   assert.equal(brief.trust_policy,'one-brain-trusted-advisor-external-quality-v1');
-  assert.match(brief.instruction,/geen eigen publicatierechten of tweede planner/);
+  assert.match(brief.instruction,/zonder eigen publicatierechten of tweede planner/);
   assert.match(brief.instruction,/ook niets doen/);
  }
 });
