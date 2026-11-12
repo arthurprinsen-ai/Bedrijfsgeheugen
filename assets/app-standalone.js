@@ -5,17 +5,18 @@
  'use strict';
  const win=window,doc=document;
  let deferredPrompt=null;
+ let installed=false;
  const standalone=()=>Boolean(win.matchMedia?.('(display-mode: standalone)').matches||navigator.standalone===true);
  const appleDevice=()=>/iPad|iPhone|iPod/.test(navigator.userAgent||'')
   ||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
- const actionContainer=()=>doc.querySelector('#portalAccountPanel .portal-popover-links');
+ const actionContainer=()=>doc.querySelector('#portalAccountPanel .portal-popover-links')||doc.querySelector('footer .bg-app-install-slot');
  let button=null;
  let note=null;
  const clearNote=()=>{note?.remove();note=null;};
  function syncAction(){
   const container=actionContainer();
   if(!container)return;
-  const eligible=!standalone()&&(Boolean(deferredPrompt)||appleDevice());
+  const eligible=!standalone()&&!installed&&(Boolean(deferredPrompt)||appleDevice());
   if(!eligible){button?.remove();button=null;clearNote();return;}
   if(button)return;
   button=doc.createElement('button');
@@ -40,7 +41,7 @@
  win.addEventListener('beforeinstallprompt',event=>{
   event.preventDefault();deferredPrompt=event;syncAction();
  });
- win.addEventListener('appinstalled',()=>{deferredPrompt=null;syncAction();});
+ win.addEventListener('appinstalled',()=>{installed=true;deferredPrompt=null;syncAction();});
  if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',syncAction,{once:true});
  else syncAction();
  if(win.isSecureContext&&'serviceWorker' in navigator){
