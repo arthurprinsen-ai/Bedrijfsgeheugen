@@ -29,9 +29,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "Test: empty OBSERVED snapshot rejected and no all-null evaluation written",
-      "Test: observed numerical zero and exact Buffer aliases remain valid",
-      "Test: partial scope source cannot become verified post window"
+      "tests/brain-social-obligation-evidence-ack-20261110.test.mjs"
     ]
   },
   "skill_targets": [
