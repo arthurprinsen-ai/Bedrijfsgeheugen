@@ -64,7 +64,11 @@ function padVan(bestand) {
 
 // het kruimelpad van de pagina zelf overnemen; anders er een afleiden
 function kruimelsVan(html, bestand) {
-  const blok = html.match(/<nav class="bgkruim"[^>]*>([\s\S]*?)<\/nav>/);
+  // Commercial integration pages historically carried a stale AI breadcrumb before
+  // their canonical Koppelingen breadcrumb. Prefer the final page-owned trail.
+  const trails = [...html.matchAll(/<nav class="bgkruim"[^>]*>([\s\S]*?)<\/nav>/g)];
+  const integrationOwner = new Set(['exact-online-koppeling.html', 'twinfield-koppeling.html', 'api-koppeling-laten-maken.html']).has(bestand);
+  const blok = integrationOwner ? trails.at(-1) : trails[0];
   if (blok) {
     const schakels = [...blok[1].matchAll(/<a href="([^"]+)"[^>]*>([\s\S]*?)<\/a>|<span aria-current="page">([\s\S]*?)<\/span>/g)]
       .map(m => m[3] !== undefined
