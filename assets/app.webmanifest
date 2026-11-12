@@ -1,0 +1,53 @@
+{
+  "name": "Bedrijfsgeheugen — grip op je bedrijf",
+  "short_name": "Bedrijfsgeheugen",
+  "id": "https://www.bedrijfsgeheugen.nl/",
+  "start_url": "https://www.bedrijfsgeheugen.nl/",
+  "scope": "https://www.bedrijfsgeheugen.nl/",
+  "lang": "nl-NL",
+  "dir": "ltr",
+  "description": "Eén plek voor bedrijfskennis, scans, inzichten en het klantenportaal.",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#F7F9FC",
+  "theme_color": "#122E39",
+  "categories": [
+    "business",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "https://www.bedrijfsgeheugen.nl/assets/merk/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://www.bedrijfsgeheugen.nl/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mijn bedrijf",
+      "url": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+      "description": "Open het beveiligde klantenportaal"
+    },
+    {
+      "name": "Zelfscan",
+      "url": "https://www.bedrijfsgeheugen.nl/zelfscan",
+      "description": "Krijg inzicht in jouw bedrijf"
+    },
+    {
+      "name": "Ontdek",
+      "url": "https://www.bedrijfsgeheugen.nl/product",
+      "description": "Bekijk wat Bedrijfsgeheugen doet"
+    }
+  ]
+}

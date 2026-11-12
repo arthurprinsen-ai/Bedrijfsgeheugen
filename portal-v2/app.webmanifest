@@ -1,0 +1,53 @@
+{
+  "name": "Bedrijfsgeheugen — mijn bedrijf",
+  "short_name": "Mijn bedrijf",
+  "id": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+  "start_url": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+  "scope": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+  "lang": "nl-NL",
+  "dir": "ltr",
+  "description": "Dagelijkse bedrijfsregie. Gegevens, acties, resultaten en verwerking op één plek.",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#F7F9FC",
+  "theme_color": "#122E39",
+  "categories": [
+    "business",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "https://www.bedrijfsgeheugen.nl/assets/merk/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://www.bedrijfsgeheugen.nl/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Vandaag",
+      "url": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+      "description": "Jouw dagelijkse overzicht"
+    },
+    {
+      "name": "Acties",
+      "url": "https://www.bedrijfsgeheugen.nl/portal-v2/?page=actieve-acties",
+      "description": "Jouw acties"
+    },
+    {
+      "name": "Resultaat",
+      "url": "https://www.bedrijfsgeheugen.nl/portal-v2/?page=outcomes-evidence",
+      "description": "Bekijk gemeten resultaten"
+    }
+  ]
+}

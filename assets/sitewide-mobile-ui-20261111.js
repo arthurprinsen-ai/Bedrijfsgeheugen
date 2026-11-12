@@ -123,9 +123,49 @@
       }
     });
   }
+  /* A single public-site app dock, not a second drawer, content router or telemetry writer.
+     Every destination is an existing real page on this same origin. The original
+     canonical mobile menu and its owning handlers remain unchanged. */
+  function ensurePublicAppDock() {
+    if(!document.body || document.querySelector('[data-bg-public-app-dock]'))return;
+    var current=location.pathname||'/';
+    if(current.length>1 && current.endsWith('/'))current=current.slice(0,-1);
+    if(['/portal','/portal-v2','/portal-next','/intern'].some(function(prefix){return current===prefix||current.startsWith(prefix+'/');}))return;
+    if(!document.querySelector('nav.bgkop,header.v17-header'))return;
+    var english=(document.documentElement.lang||'').toLowerCase().startsWith('en');
+    var sections=[
+      {name:english?'Home':'Vandaag',path:'/',icon:'⌂',isCurrent:current==='/'||current==='/en'},
+      {name:english?'Explore':'Ontdek',path:'/product',icon:'◇',isCurrent:current==='/product'||current==='/prijzen'},
+      {name:english?'Scan':'Scan',path:'/zelfscan',icon:'◎',isCurrent:current==='/zelfscan'||current==='/frisse-blik'},
+      {name:english?'My business':'Mijn bedrijf',path:'/portal-v2/',icon:'▦',isCurrent:false}
+    ];
+    var dock=document.createElement('nav');
+    dock.className='bg-mobile-app-dock';
+    dock.dataset.bgPublicAppDock='v1';
+    dock.setAttribute('aria-label',english?'Bedrijfsgeheugen quick navigation':'Bedrijfsgeheugen snelnavigatie');
+    for(var i=0;i<sections.length;i++){
+      var item=sections[i];
+      var link=document.createElement('a');
+      link.href='https://www.bedrijfsgeheugen.nl'+item.path;
+      link.className='bg-mobile-app-dock-link';
+      link.dataset.bgAppDestination=item.path;
+      if(item.isCurrent)link.setAttribute('aria-current','page');
+      var symbol=document.createElement('span');
+      symbol.className='bg-mobile-app-dock-symbol';
+      symbol.setAttribute('aria-hidden','true');
+      symbol.textContent=item.icon;
+      var label=document.createElement('span');
+      label.className='bg-mobile-app-dock-label';
+      label.textContent=item.name;
+      link.append(symbol,label);
+      dock.appendChild(link);
+    }
+    document.body.appendChild(dock);
+  }
   function init() {
     if (!document.body) return;
     ensureCloseButtons();
+    ensurePublicAppDock();
     syncMenuGeometry();
     knowledgeCompare();
     fixUnreadableButtons();

@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "date": "2026-11-12",
+  "type": "PUBLIC_SITE_PORTAL_V2_STANDALONE_MOBILE_TABLET_OWNED_APP_SURFACE",
+  "fingerprint": "website|portal|standalone-app-native-phone-tablet-one-navigation|20261112-v1",
+  "status": "PROTECTED_CANDIDATE_AWAITING_DEPLOYMENT_AND_MOBILE_EVIDENCE",
+  "original_owner": "Existing public website UX/CMS builder and existing authenticated Portal V2 router",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "source": "Current main 74e86d9de5d2e4eb6e248daa9c9181ffa97bd45c: public pages shared one mobile menu/script but had no webmanifest or unified bottom taskbar; Portal V2 had an original authorized four-tab dock only <=760px, not tablet",
+    "unknowns": [
+      "Real Safari Add to Home Screen install acceptance",
+      "real Android PWA install UI",
+      "iPad/Android tablet task completion",
+      "measured conversion uplift"
+    ],
+    "no_business_data_changed": true
+  },
+  "root_cause": {
+    "observed": "Public site and tenant Portal V2 interacted as distinct desktop-first layouts; the original four-tab portal navigation had a phone-only breakpoint, while public website lacked a consistent thumb-first action surface and standalone app identity",
+    "unknowns": [
+      "actual user task success and time-to-action",
+      "multitenant real-user validation"
+    ]
+  },
+  "fix": {
+    "source": "One existing public CMS/Netlify builder, original mobile script and stylesheet; original Portal V2 four-tab router with tablet-only CSS and separate origin-scoped web manifests",
+    "new_vendor_or_provider": false,
+    "no_new_worker_or_cron": true,
+    "no_new_service_worker_or_private_cache": true,
+    "no_private_source_access": true,
+    "truth_boundary": "Standalone web-app presentation does not imply native binary, offline synchronization, confirmed purchases or measured commercial outcomes"
+  },
+  "compiler": {
+    "failure_class": "SITE_PORTAL_APP_FEEL_MOBILE_TABLET_NAV_INCONSISTENCY",
+    "scope": "WEBSITE_PORTAL_UX",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-portal-standalone-app-20261112.test.mjs",
+      "tests/site-shell-mobile-sitewide-recovery-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-portal-standalone-app-20261112.test.mjs",
+      "portal-v2/tests/mobile-responsive-shell.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/sitewide-mobile-interaction-browser-check.mjs",
+      "tests/integration/portal-v2-mobile-shell.spec.js"
+    ]
+  },
+  "prevention": [
+    "ONE_PUBLIC_HEADER_MENU_OWNER_AND_SINGLE_APP_DOCK",
+    "EXISTING_CANONICAL_PUBLIC_CMS_BUILD_REFRESHES_OLD_INLINE_CSS",
+    "FULL_HTTPS_HREFS_AND_REAL_ROUTES",
+    "SEPARATE_PUBLIC_AND_PROTECTED_PORTAL_WEBAPP_SCOPES",
+    "NO_CUSTOMER_API_OR_TENANT_CACHE",
+    "ONE_ORIGINAL_PORTAL_V2_AUTH_ROUTER_ON_PHONE_AND_TABLET",
+    "FOCUS_SAFE_AREA_TOUCH_AND_REDUCED_MOTION",
+    "PROTECTED_RELEASE_AND_INDEPENDENT_BROWSER_READBACK"
+  ],
+  "evidence": {
+    "required": "Original protected PR Required/CodeQL + original Netlify exact current main and independent production browser/Portal V2 DOM proof + separate actual device installation and real UX outcomes for effect claims",
+    "limitations": "Scope is installable/standalone presentation only; no App Store/Play Store listing, offline functionality, push notifications, user usability results, awards or commercial conversion improvement asserted"
+  }
+}

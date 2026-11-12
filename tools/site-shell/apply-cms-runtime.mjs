@@ -12,7 +12,7 @@ for(const dirName of ['blog','en','pages','portal','portal-next','kennis','behoe
 }
 
 const mobileUiStyle='<style id="bg-sitewide-mobile-ui-20261111">\n'+fs.readFileSync(path.join(root,'assets/sitewide-mobile-ui-20261111.css'),'utf8')+'\n</style>';
-const mobileUiScript='<script src="/assets/sitewide-mobile-ui-20261111.js?v=20261111b" defer data-bg-sitewide-mobile-ui="1"></script>';
+const mobileUiScript='<script src="/assets/sitewide-mobile-ui-20261111.js?v=20261112app" defer data-bg-sitewide-mobile-ui="1"></script>';
 
 let changed=0,covered=0;
 for(const file of [...new Set(targets)]){
@@ -32,10 +32,38 @@ for(const file of [...new Set(targets)]){
   const rel=path.relative(root,file).replaceAll(path.sep,'/');
   const publicPage=!/^(?:portal|portal-next|portal-v2|intern)\//.test(rel);
   if(publicPage){
-    if(!html.includes('id="bg-sitewide-mobile-ui-20261111"')){
+    // A real standalone public-web-app identity on each already-owned public
+    // page. Do not add a service worker or cache customer documents/API data.
+    // Full canonical URLs make installed shortcuts stable for nested routes.
+    if(!html.includes('data-bg-app-manifest="public-v1"')){
+      html=html.replace(/<\/head>/i,'<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/assets/app.webmanifest" data-bg-app-manifest="public-v1">\n</head>');
+    }
+    if(!html.includes('apple-mobile-web-app-capable')){
+      html=html.replace(/<\/head>/i,'<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="default">\n</head>');
+    }
+    if(!html.includes('rel="apple-touch-icon"')){
+      html=html.replace(/<\/head>/i,'<link rel="apple-touch-icon" href="https://www.bedrijfsgeheugen.nl/apple-touch-icon.png">\n</head>');
+    }
+    // Regenerate a previously inlined stylesheet from the SINGLE source;
+    // otherwise existing pages keep stale mobile CSS despite a new deploy.
+    const styleStart=html.indexOf('<style id="bg-sitewide-mobile-ui-20261111">');
+    if(styleStart!==-1){
+      const styleEnd=html.indexOf('</style>',styleStart);
+      if(styleEnd!==-1){
+        html=html.slice(0,styleStart)+mobileUiStyle+html.slice(styleEnd+'</style>'.length);
+      }
+    }else{
       html=html.replace(/<\/head>/i,mobileUiStyle+'\n</head>');
     }
-    if(!html.includes('data-bg-sitewide-mobile-ui=')){
+    // One versioned script, not two competing mobile navigation owners.
+    const scriptMarker=html.indexOf('data-bg-sitewide-mobile-ui="1"');
+    if(scriptMarker!==-1){
+      const scriptStart=html.lastIndexOf('<script',scriptMarker);
+      const scriptEnd=html.indexOf('</script>',scriptMarker);
+      if(scriptStart!==-1&&scriptEnd!==-1){
+        html=html.slice(0,scriptStart)+mobileUiScript+html.slice(scriptEnd+'</script>'.length);
+      }
+    }else{
       html=html.replace(/<\/head>/i,mobileUiScript+'\n</head>');
     }
   }

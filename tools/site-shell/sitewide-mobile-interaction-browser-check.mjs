@@ -11,6 +11,7 @@ const pairs=[
   {route:'/contact',width:390},
   {route:'/product',width:390},
   {route:'/product',width:320},
+  {route:'/product',width:820},
   {route:'/',width:320},
   {route:'/kennis/',width:320}
 ];
@@ -44,6 +45,22 @@ try {
       const toggle=page.locator('#bgkopKnop:visible, #mobileToggle:visible').first();
       await toggle.waitFor({state:'visible',timeout:15000});
       await page.waitForTimeout(200);
+      // A visible one-owner native dock on both phones and tablets. The real
+      // public navigation stays enabled, with four existing full-URL routes.
+      const appDock=page.locator('[data-bg-public-app-dock="v1"]');
+      await appDock.waitFor({state:'visible',timeout:10000});
+      const links=appDock.locator('a');
+      assert.equal(await links.count(),4,route+': public native app needs four real routes');
+      const dockGeometry=await appDock.evaluate(node=>{
+        const r=node.getBoundingClientRect();
+        const links=[...node.querySelectorAll('a')].map(a=>{
+          const box=a.getBoundingClientRect();
+          return {height:box.height,href:a.href};
+        });
+        return {bottom:r.bottom,screen:innerHeight,links};
+      });
+      assert.ok(Math.abs(dockGeometry.bottom-dockGeometry.screen)<5,route+': dock is not anchored to screen bottom');
+      assert.ok(dockGeometry.links.every(link=>link.height>=44&&link.href.startsWith('https://www.bedrijfsgeheugen.nl/')),route+': dock tap target or route not trusted');
       const header=page.locator('header.v17-header:visible, nav.bgkop:visible').first();
       assert.ok(await header.count(),`${route} visible header absent`);
       await toggle.click({timeout:10000});

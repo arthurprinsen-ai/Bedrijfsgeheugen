@@ -103,3 +103,31 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
   expect(overflow).toBeLessThanOrEqual(1);
   expect(errors).toEqual([]);
 });
+
+test('tablet uses the original four-tab protected portal dock, without horizontal scroll',async({page})=>{
+  const preview=process.env.PREVIEW_URL;
+  if(!preview)throw new Error('PREVIEW_URL is required');
+  await page.setViewportSize({width:820,height:1180});
+  const errors=[];
+  page.on('pageerror',error=>errors.push(String(error?.message||error)));
+  const response=await page.goto(preview+'/klantportaal?klant=demoAI&bg_tablet_app='+Date.now(),{
+    waitUntil:'domcontentloaded',timeout:45000
+  });
+  expect(response?.status()).toBeLessThan(400);
+  await page.locator('.portal-mobile-primary').waitFor({state:'visible'});
+  await expect(page.locator('.sidebar')).toBeHidden();
+  await expect(page.locator('.portal-hamburger')).toBeHidden();
+  const targets=await page.locator('.portal-mobile-primary [data-mobile-primary-target]').evaluateAll(nodes=>
+    nodes.map(node=>({target:node.dataset.mobilePrimaryTarget,height:node.getBoundingClientRect().height})));
+  expect(targets.map(x=>x.target)).toEqual(['overzicht','actieve-acties','outcomes-evidence','hub:portal']);
+  expect(targets.every(x=>x.height>=44)).toBeTruthy();
+  const more=page.locator('[data-mobile-primary-target="hub:portal"]');
+  await more.click();
+  await expect(page.locator('#allPages')).toBeVisible();
+  await expect(page.locator('.app')).toHaveJSProperty('inert',true);
+  await page.locator('#closePages').click();
+  await expect(page.locator('#allPages')).toBeHidden();
+  const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+  expect(errors).toEqual([]);
+});

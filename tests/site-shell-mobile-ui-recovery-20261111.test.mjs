@@ -10,13 +10,14 @@ const config=JSON.parse(fs.readFileSync('config/powerhouse-website-cross-browser
 
 test('final canonical Netlify phase injects one public sitewide repair, including nested knowledge and English',()=>{
   assert.match(builder,/sitewide-mobile-ui-20261111\.css/);
-  assert.match(builder,/sitewide-mobile-ui-20261111\.js\?v=20261111b/);
+  assert.match(builder,/sitewide-mobile-ui-20261111\.js\?v=20261112app/);
   assert.match(builder,/bg-sitewide-mobile-ui-20261111/);
   assert.match(builder,/data-bg-sitewide-mobile-ui=/);
   assert.match(builder,/'kennis'/);
   assert.match(builder,/'en'/);
   assert.match(builder,/publicPage=!\/\^\(\?:portal\|portal-next\|portal-v2\|intern\)/);
-  assert.match(builder,/if\(!html\.includes\('id="bg-sitewide-mobile-ui-20261111"'\)\)/);
+  assert.match(builder,/const styleStart=html\.indexOf/);
+  assert.match(builder,/const scriptMarker=html\.indexOf/);
 });
 
 test('iPhone header remains sticky and menus have independent close controls',()=>{

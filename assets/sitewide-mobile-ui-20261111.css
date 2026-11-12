@@ -207,3 +207,44 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
     display:none!important;visibility:hidden!important;pointer-events:none!important
   }
 }
+
+/* 2026-11-12 — ONE mobile/web-app navigation surface on public marketing pages.
+   Native real links and original menu remain the only navigation authority. */
+.bg-mobile-app-dock{display:none}
+@media(max-width:1024px){
+  body:has(.bg-mobile-app-dock){padding-bottom:calc(79px + env(safe-area-inset-bottom,0px))!important}
+  .bg-mobile-app-dock{
+    display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+    align-items:stretch;position:fixed;left:0;right:0;bottom:0;z-index:1498;
+    padding:7px max(10px,env(safe-area-inset-right,0px)) calc(7px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));
+    background:rgba(253,254,255,.97);border-top:1px solid #dce5e8;
+    box-shadow:0 -12px 26px rgba(13,35,50,.11);backdrop-filter:blur(18px);
+    -webkit-backdrop-filter:blur(18px);box-sizing:border-box;
+  }
+  .bg-mobile-app-dock-link{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+    min-height:52px;min-width:0;border-radius:14px;text-decoration:none!important;
+    font:700 11px/1.25 system-ui,-apple-system,sans-serif;color:#405b66!important;
+    background:transparent;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  }
+  .bg-mobile-app-dock-link[aria-current="page"]{
+    color:#135a57!important;background:#e8f5f0;
+  }
+  .bg-mobile-app-dock-link:hover,.bg-mobile-app-dock-link:active{background:#e8f5f0;color:#135a57!important}
+  .bg-mobile-app-dock-link:focus-visible{outline:3px solid #176b77;outline-offset:1px}
+  .bg-mobile-app-dock-symbol{font-size:24px;line-height:1;min-height:25px}
+  .bg-mobile-app-dock-label{font-size:11px;line-height:1.2;text-align:center;white-space:normal}
+  body.bg-site-mobile-menu-open .bg-mobile-app-dock{visibility:hidden;pointer-events:none}
+  body:has(.bg-mobile-app-dock) a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]{
+    bottom:calc(88px + env(safe-area-inset-bottom,0px))!important;
+  }
+}
+@media(max-width:390px){
+  .bg-mobile-app-dock{padding-inline:max(4px,env(safe-area-inset-left,0px))}
+  .bg-mobile-app-dock-link{min-height:55px}
+  .bg-mobile-app-dock-label{font-size:10.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .bg-mobile-app-dock{backdrop-filter:none;-webkit-backdrop-filter:none}
+  .bg-mobile-app-dock-link{scroll-behavior:auto;transition:none}
+}
