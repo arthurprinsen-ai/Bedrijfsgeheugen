@@ -1,0 +1,79 @@
+/* BEDRIJFSGEHEUGEN APP V1 — same authenticated Portal V2 source, native-feeling
+   interaction. No Revolut colors/assets, no cloned UI, no extra navigation owner. */
+:root{--bg-app-ink:#13343e;--bg-app-focus:#176a73;--bg-app-calm:#f3f8f7}
+@supports (min-height:100dvh){
+ .app{min-height:100dvh}
+ .sidebar{max-height:100dvh}
+}
+.app :is(button,a[href],summary,[role="button"]){
+ touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
+.app :is(button,a[href],summary,[role="button"]):focus-visible{
+ outline:3px solid var(--bg-app-focus);outline-offset:3px;
+}
+.app :is(input,textarea,select){accent-color:var(--bg-app-focus)}
+.app .eh-quick-card{transform-origin:center;will-change:auto}
+.app .portal-mobile-primary{--bg-dock-ease:cubic-bezier(.2,.8,.2,1)}
+.app .portal-mobile-primary button{
+ transition:background .22s var(--bg-dock-ease),color .22s var(--bg-dock-ease),transform .18s var(--bg-dock-ease);
+}
+.app .portal-mobile-primary button.is-current{background:#d9f2e8;color:#124f43;box-shadow:inset 0 0 0 1px #a7dac7}
+.app .portal-mobile-primary button.is-current .portal-mobile-primary-icon{transform:translateY(-1px)}
+.app .eh-quick-card[data-evidence-status="confirmed"]{border-color:#a2d8c9}
+.app .eh-quick-card[data-evidence-status="pending"]{border-color:#e2d2a4}
+.app .portal-popover .bg-app-install-hint{background:var(--bg-app-calm);color:#264951;padding:12px;border-radius:12px;font-size:13px;line-height:1.5;margin:8px 0}
+@media(hover:hover) and (pointer:fine){
+ .app .portal-mobile-primary button:hover{background:#e9f5f2}
+ .app .eh-quick-card:hover{border-color:#5caaa3}
+}
+@media(hover:none) and (pointer:coarse) and (prefers-reduced-motion:no-preference){
+ .app :is(.eh-main-action,.eh-quick-card,.portal-mobile-primary button):active{transform:scale(.985)}
+}
+@media(max-width:900px){
+ .app .main{max-width:100%;min-width:0}
+ .app .topbar{max-width:100%;min-width:0}
+ .app :is(input[type="text"],input[type="search"],input[type="email"],input[type="number"],textarea,select){font-size:max(16px,1rem)}
+ .app .portalview{max-width:100%}
+ .app .portal-mobile-primary button{min-height:54px}
+ .app .portal-quick-switch-results{max-width:min(510px,calc(100vw - 28px))}
+}
+@media(min-width:761px) and (max-width:900px){
+ /* Tablet portrait: the desktop sidebar is hidden at 900px by original shell;
+    provide the SAME four-tab canonical dock used on phones, not a second menu. */
+ body:has(.portal-mobile-primary){padding-bottom:calc(88px + env(safe-area-inset-bottom))!important}
+ .app .portal-hamburger{display:none!important}
+ .app .portal-mobile-primary{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:stretch;
+  position:fixed;inset:auto 0 0;z-index:90;
+  width:100%;background:rgba(255,255,255,.96);
+  border-top:1px solid #d5e5e2;box-shadow:0 -12px 30px rgba(14,39,51,.09);
+  padding:9px max(20px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-right));
+  backdrop-filter:blur(18px)
+ }
+ .app .portal-mobile-primary button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:56px;min-width:0;border:0;border-radius:14px;background:transparent;color:#47656d;font:700 12px/1.25 system-ui,sans-serif}
+ .app .portal-mobile-primary-icon{font-size:24px;line-height:1}
+ body:has(.allpages.open) .portal-mobile-primary{visibility:hidden;pointer-events:none}
+ .app .allpages .sheet{width:min(640px,calc(100vw - 28px));max-height:calc(100dvh - 32px);border-radius:24px;overflow:auto}
+ .app .topbar{grid-template-columns:1fr!important}
+ .app .welcome{grid-column:1}
+ .app .topactions{grid-column:1;width:100%}
+ .app .topactions .searchrow{width:100%}
+ .app .topactions .searchrow .search{width:100%;min-width:0}
+}
+@media(max-width:760px){
+ .app .portal-mobile-primary{border-top-color:#d5e5e2;background:rgba(255,255,255,.97)}
+ .app .portal-mobile-primary button{min-height:54px!important;border-radius:14px}
+ .app .eh-quick-grid{gap:9px}
+ .app .eh-next.eh-focus{border-radius:23px}
+ .app .eh-focus .eh-main-action{min-height:50px}
+ .app .portal-quick-switch-results{max-height:min(50dvh,450px)}
+}
+@media(display-mode:standalone){
+ html,body{overscroll-behavior-y:contain}
+ .app .portal-mobile-primary{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+ .app .sidebar{padding-top:max(18px,env(safe-area-inset-top))}
+}
+@media(prefers-reduced-motion:reduce){
+ .app .portal-mobile-primary button,.app .eh-quick-card{transition:none!important;transform:none!important}
+ .app *{scroll-behavior:auto!important}
+}
