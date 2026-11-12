@@ -13,7 +13,11 @@ const read=(metrics,key)=>metrics?.[key]??metrics?.[legacy[key]];
  * observation is never promoted to an exact post window. */
 export function isSourceQualifiedSocialSnapshot(s,externalPostId){
   const quality=String(s?.data_quality??s?.dataQuality??'');
-  if(['OBSERVED','PROVIDER_OBSERVED'].includes(quality))return true;
+  // A provider label alone is not a metric. Historical snapshots may carry
+  // data_quality=OBSERVED with metrics={}; those must not monopolize the hourly
+  // evaluation window or create an all-null apparent success.
+  if(['OBSERVED','PROVIDER_OBSERVED'].includes(quality))
+    return fields.some(key=>valid(read(s?.metrics,key)));
   if(quality!=='PROVIDER_OBSERVED_LINKED'||!externalPostId||
     s?.source!=='windsor-linkedin-company')return false;
   const id=String(s?.source_event_id??s?.sourceEventId??'');
