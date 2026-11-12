@@ -7,6 +7,11 @@
 <meta name="description" content="Bedrijfsgeheugen brengt dagelijkse ondernemingssturing samen: externe en interne signalen, strategische gevolgen, beslissingen, acties met een eigenaar en verifieerbare resultaten.">
 <title>Bedrijfsgeheugen · Klantenportaal V2</title>
 <base href="/portal-v2/">
+<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/app.webmanifest" data-bg-app-manifest="1">
+<link rel="apple-touch-icon" href="https://www.bedrijfsgeheugen.nl/apple-touch-icon.png">
+<meta name="theme-color" content="#112f3b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Bedrijfsgeheugen">
 <style id="portalBoot">html.v2-hydrating body>*{visibility:hidden!important}html.v2-hydrating body::before{content:"Portaal laden…";position:fixed;inset:0;display:grid;place-items:center;background:#f7f9fc;color:#526076;font:600 15px system-ui;z-index:2147483647}</style>
 <link rel="stylesheet" href="./app.css">
 <link rel="stylesheet" href="./saas-theme.css">
@@ -27,6 +32,7 @@
 <style>@import url("./insight-lens.css?v=20261020-1");</style>
 <link rel="stylesheet" href="./living-interface.css?v=20261102-1">
 <link rel="stylesheet" href="./connected-data-sources.css?v=20261102-1">
+<style>@import url("./grip-native.css?v=20261112");</style>
 </head>
 <body>
 <div class="app">
@@ -141,6 +147,7 @@
 <section class="portal-popover" id="portalAccountPanel" role="dialog" aria-label="Account en beheer" hidden><div class="portal-popover-head"><h2>Account & beheer</h2><button class="portal-popover-close" type="button" data-popover-close aria-label="Sluiten">×</button></div><div class="portal-popover-meta"><span class="avatar">AP</span><div><strong>Arthur Prinsen</strong><small>Beheerder</small></div></div><div class="portal-popover-links"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=instellingen">Instellingen <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=gebruikers">Gebruikers <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=koppelingen">Data & koppelingen <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=rapportages">Rapportages & beheer <span>→</span></a></div></section>
 
 <div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Alle onderdelen van je ondernemingssturing</h3><small style="color:#7280a1">Eén zelfstandige V2-shell met native functionaliteit, Brain, Datahub en Powerhouse — zonder koppeling met een tweede portaal.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
+<script defer src="/assets/grip-app-experience.js?v=20261112" data-bg-app-experience="1"></script>
 <script type="module" src="./app.js?bg_explain=364cac3a47d67342928da7b6aa5a20fcb59092607c923bcaa3bd04dd414d42c8"></script>
 <script type="module" src="./topbar-actions.js"></script>
 <dialog id="portalAskAiDialog" class="portal-ai-dialog" aria-labelledby="portalAskAiTitle">
