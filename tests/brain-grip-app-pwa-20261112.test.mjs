@@ -71,12 +71,13 @@ test('existing single original Portal V2 task dock extends to tablet, with nativ
 test('private source, tenant route and provider data are never stored by the service worker',async()=>{
  const code=read('service-worker.js');
  assert.doesNotThrow(()=>new Function(code));
- assert.doesNotMatch(code,/cache\.put\(|caches\.match\(request\)|caches\.addAll\(|localStorage|sessionStorage/);
+ assert.match(code,/cache\.put\(OFFLINE,new Response\(/);
+ assert.doesNotMatch(code,/cache\.put\(request|caches\.match\(request\)|caches\.addAll\(|localStorage|sessionStorage/);
  const listeners={};
  const stored=[];
  const offlineResponse={offline:true};
  const cache={
-  add:async url=>{stored.push(url);},
+  put:async url=>{stored.push(url);},
   match:async url=>url==='/offline.html'?offlineResponse:null
  };
  let failed=false;
@@ -88,8 +89,8 @@ test('private source, tenant route and provider data are never stored by the ser
    clients:{claim:()=>Promise.resolve()}
   },
   caches:{open:async()=>cache,keys:async()=>['bg-offline-20261001-v1','other-app-cache'],delete:async()=>true},
-  fetch:async req=>{if(failed)throw Error('NETWORK_UNAVAILABLE');return {network:true,url:req.url};},
-  Response:{error:()=>({error:true})},
+  fetch:async req=>{if(failed)throw Error('NETWORK_UNAVAILABLE');if(req==='/offline.html')return {ok:true,text:async()=>'<html>Offline notice</html>'};return {network:true,url:req.url};},
+  Response:class {constructor(body,options){this.body=body;this.options=options;}static error(){return {error:true};}},
   URL,
   Promise
  };
