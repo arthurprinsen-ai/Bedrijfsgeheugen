@@ -40,6 +40,7 @@ test('canonical last Netlify build phase injects the same public UX once per pag
     write('assets/grip-app-experience.js',gripJs);
     const page='<!doctype html><html lang="nl"><head><title>Test</title></head><body><main><h1>Page</h1></main></body></html>';
     for(const p of ['index.html','kennis/index.html','pages/contact.html','portal/index.html'])write(p,page);
+    write('offline.html',page);
     for(let i=0;i<2;i++){
       const result=spawnSync(process.execPath,[injector],{cwd:tmp,encoding:'utf8'});
       assert.equal(result.status,0,result.stderr||result.stdout);
@@ -57,6 +58,7 @@ test('canonical last Netlify build phase injects the same public UX once per pag
     const portal=fs.readFileSync(path.join(tmp,'portal/index.html'),'utf8');
     assert.doesNotMatch(portal,/bg-sitewide-mobile-ui-20261111/);
     assert.doesNotMatch(portal,/data-bg-app-experience|data-bg-app-manifest|bg-grip-app-ui/);
+    assert.equal(fs.readFileSync(path.join(tmp,'offline.html'),'utf8'),page,'offline safety page must not get scripts, CMS or task dock');
   }finally{
     fs.rmSync(tmp,{recursive:true,force:true});
   }
