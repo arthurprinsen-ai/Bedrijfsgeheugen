@@ -24,7 +24,7 @@
     "no_new_scheduler": true,
     "no_fake_customer_proof": true,
     "same_original_portal_route_authority": true,
-    "privacy_contract": "Service worker caches only public /offline.html, all authenticated/data/asset/provider requests network only"
+    "privacy_contract": "Service worker caches only public /assets/offline.html, all authenticated/data/asset/provider requests network only"
   },
   "compiler": {
     "failure_class": "SITE_PORTAL_MOBILE_TABLET_APP_UX_AND_PRIVATE_OFFLINE_CACHE_GAP",
