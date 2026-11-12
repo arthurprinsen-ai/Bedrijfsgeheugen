@@ -117,14 +117,15 @@
     ]
   },
   "agent": {
-    "id": "agent-trusted-advisor",
-    "runtime": "existing platform/agents/agent-team.mjs + original editorial council",
+    "id": "agent-governance-ai-act",
+    "runtime": "existing agent-governance-ai-act in original platform/agents/agent-team.mjs + original editorial council",
     "owner": "original Portal V2 / CMS editorial owner",
-    "authority": "advisory-quality-specialist-only",
+    "authority": "advisory-quality-specialist-role-within-approved-14-agents",
     "new_scheduler": false,
     "new_writer": false,
     "may_publish": false,
-    "may_claim_verified_outcome_without_receipt": false
+    "may_claim_verified_outcome_without_receipt": false,
+    "role": "trusted-advisor-specialist"
   },
   "original_handoff_contract": {
     "chain": [
