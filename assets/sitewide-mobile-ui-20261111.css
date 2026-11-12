@@ -207,3 +207,27 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
     display:none!important;visibility:hidden!important;pointer-events:none!important
   }
 }
+
+/* 12 Nov 2026: original sitewide responsive layer, app-like touch behavior.
+   Same existing website menu/slider owners; no extra overlays or sticky nav. */
+@media(max-width:1100px){
+ html,body{max-width:100%;overscroll-behavior-x:none}
+ main :is(a[href],button,summary,[role="button"]){touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+ main :is(input[type="text"],input[type="email"],input[type="search"],textarea,select){font-size:max(16px,1rem)}
+ main :is(a[href],button,summary):focus-visible{outline:3px solid #197e77;outline-offset:3px}
+ main :is(.hero-actions,.pgl-actions,.cta-row) > a[href] {min-height:48px}
+}
+@media(hover:none) and (pointer:coarse) and (prefers-reduced-motion:no-preference){
+ main :is(a[data-money-primary],a[data-money-secondary],.hero-actions>a[href],.pgl-actions>a[href]):active{
+  transform:scale(.988);transition:transform .14s ease-out
+ }
+}
+@media(display-mode:standalone){
+ :root{--bg-installed-safe-bottom:env(safe-area-inset-bottom)}
+ body{min-height:100dvh}
+ body>header.v17-header,body>nav.bgkop{padding-top:env(safe-area-inset-top)}
+}
+@media(prefers-reduced-motion:reduce){
+ main :is(a[href],button,summary){transition:none!important}
+ html{scroll-behavior:auto!important}
+}
