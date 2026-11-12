@@ -29,7 +29,7 @@ const pricingMarkup = `
 </section>`;
 
 const shell = ({ pricing = false, extraBeforeFooter = '', mobile = 'Oplossingen Platform Prijzen Kennis Over ons Meer' } = {}) => ensureReleaseMarker(`<!doctype html><html><head></head><body>
-<div class="bg-uniform-trust" data-bg-component="trustbar">Vaste prijs, geen uurtje-factuurtje · In twee weken draaiend · Voor het Nederlandse mkb</div>
+<div class="bg-uniform-trust" data-bg-component="trustbar">Duidelijke afspraken vooraf · Klein beginnen, resultaat toetsen · Voor het Nederlandse mkb</div>
 <header class="v17-header" data-bg-component="header"><nav>hoofdmenu</nav></header>
 <aside class="v18-mobile-drawer" data-bg-component="mobile-menu">${mobile}</aside>
 <main data-bg-component="main">inhoud${pricing ? pricingMarkup : ''}</main>
