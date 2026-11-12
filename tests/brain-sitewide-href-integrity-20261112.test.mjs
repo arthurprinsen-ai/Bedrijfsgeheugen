@@ -34,7 +34,9 @@ test('rejects unsafe, incomplete and noncanonical rendered hrefs without discard
 
 test('functional portal and static asset links do not masquerade as missing SEO canonicals',()=>{
   const r=check(['https://www.bedrijfsgeheugen.nl/portal-v2/',
-    '/assets/logo.svg','/api/growth-event','/klantportaal','/offerte']);
+    '/assets/logo.svg','/api/growth-event','/klantportaal','/offerte',
+    '/gebruiksvoorwaarden','/cookiebeleid','/systeemstatus',
+    '/afsluiten?plan=starter&trial=1','/pakketadvies']);
   assert.deepEqual(r.failures,[]);
 });
 
