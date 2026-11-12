@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "parent_issue": 4198,
+  "fingerprint": "powerhouse|seo-website-blog-dataforseo-ai|daily-source-brain-heartbeat-handoff-gap|20261112-v1",
+  "obligation_id": "original-daily-source-manifest-brain-heartbeat-v1-20261112",
+  "root_cause": "The existing original growth source collector #175 persisted only GA4 CSV, GSC, website events, social and revenue goal. It did not persist daily source-backed DataForSEO, SEO provider keyword recency, external signal acceptance, web-page CRO funnels, blog live readback, AI-content recommendation status, or technical audit proof boundaries. Other original BRAIN/Heartbeat functions never read the daily source table at all, so a fresh source row did not imply downstream consumption.",
+  "impact": "Fresh provider activity could be wrongly interpreted as current keyword opportunity data. Original GSC summary contained a stale actual provider date despite recent source registry activity. Website daily metrics and SEO intelligence did not produce BRAIN/Heartbeat consumer ACKs, leaving CRO experiment decisions untraceable.",
+  "evidence": {
+    "production_source_date": "2026-11-12",
+    "original_job_ids": [
+      175,
+      140
+    ],
+    "website_pageviews": 17,
+    "website_cta_clicks": 0,
+    "website_leads": 0,
+    "blog_live_proven": 1,
+    "ai_content_recommendations": 43,
+    "ai_recommendations_executed": 0,
+    "provider_activity_records": 4,
+    "provider_plan_limit_records": 3,
+    "approved_external_signals": 0,
+    "seo_keyword_provider_rows": 0,
+    "independent_technical_site_audit_in_db": false,
+    "initial_restored_snapshot_days": [
+      "2026-11-11",
+      "2026-11-12"
+    ],
+    "additional_snapshots_persisted": 14,
+    "initial_brain_producer_manifest": {
+      "date_11": "89d66bd7e396416306a1f54e65910bc120e08d49dd5f2a76bf619f78e5caa1c4",
+      "date_12": "eec9269fd7a69758b30fda34eb5740191d536a6ca492e571f80423f487bff42a"
+    }
+  },
+  "prevention": "Keep original #175 as producer of 7 additional per-day source classes, with exact raw-source revision and quality status, then store SHA256 canonical tenant/day/source manifest in the ORIGINAL ONE BRAIN obligation. Existing #140 independently re-reads that source manifest and produces idempotent consumer ACK, source-bound CRO test recommendation (never an asserted actual experiment) and original Heartbeat readback. Missing provider keyword/audit data, failed reads, unverified blogs, causal effects and revenue must stay visibly pending. Retain original provider and security controls; no second scheduler.",
+  "compiler": {
+    "failure_class": "DATA_LINEAGE",
+    "scope": "ORIGINAL_POWERHOUSE_BRAIN_HEARTBEAT",
+    "repeat_count": 2,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-daily-source-brain-heartbeat-one-loop-20261112.test.mjs"
+    ]
+  },
+  "test": "tests/brain-original-daily-source-brain-heartbeat-one-loop-20261112.test.mjs",
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders",
+    "powerhouse-daily-data-one-loop"
+  ],
+  "governance": {
+    "protected_required": true,
+    "codeql": true,
+    "supabase_preview": true,
+    "independent_provider_runtime_readback": true,
+    "never_create_second_cron": true,
+    "never_fake_experiment": true
+  }
+}
