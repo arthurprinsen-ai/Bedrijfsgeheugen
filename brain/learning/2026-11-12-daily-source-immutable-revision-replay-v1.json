@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "growth|daily-source|immutable-payload-hash-upsert|20261112-v1",
+  "obligation_id": "growth|daily-source|immutable-payload-hash-upsert|20261112-v1",
+  "title": "Never mutate immutable ONE BRAIN obligation payload_sha256 during source revision replay",
+  "status": "FIX_CANDIDATE",
+  "root_cause": "Original #175 function from applied #5663 SQL attempts DO UPDATE payload_sha256 when a post metric/source row changes existing original day SHA, violating original brain_guard_obligation_identity trigger P0001 on 2026-11-11 replay.",
+  "impact": "New posts_publication_and_metrics source cannot be archived for already materialized days, blocking next original #140 consumer and Heartbeat CRO data handoff. Failed SQL transaction rolled back; no existing identity corrupted.",
+  "fix": "Replace original service-role-only #175/#140 funcs: keep immutable payload_sha256 and obligation identity intact; store refreshed daily SHA in mutable evidence.source_revision and reset consumer ack exactly when source revision differs. #140 compares independent recomputed manifest SHA against mutable current revision.",
+  "prevention_rule": "Tests must replay same existing OPEN immutable daily obligation with a changed external metric; original row ID, initial payload and lease remain immutable. Only source evidence revision and consumer ACK transition; no duplicate post or false experiment. Native SQL guard stays untouched.",
+  "owner": "original Powerhouse growth-source #175 and ONE BRAIN/Heartbeat original consumer #140",
+  "tests": [
+    "tests/brain-original-daily-source-immutable-revision-20261112.test.mjs"
+  ],
+  "regression_contract": "tests/brain-original-daily-source-immutable-revision-20261112.test.mjs; exact production same-day source store + provider history + original #140 consumer SHA and Heartbeat",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-daily-source-immutable-revision-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-daily-source-immutable-revision-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-daily-source-immutable-revision-20261112.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Real production P0001 on original SQL 20261112184500 during 2026-11-11 one-time archived source replay; trigger immutable identity read back unchanged",
+    "Original ONE BRAIN observed incident growth|daily-source|immutable-payload-hash-upsert|20261112-v1",
+    "Original provider 832 native applied and source Git lock 832/832 before fix"
+  ],
+  "outcome": "FIX_CANDIDATE. Production SQL patch, actual rearchive+consumer+Heartbeat readback and next real CRO outcome still evidence due; do not claim green.",
+  "compiler": {
+    "failure_class": "SOURCE_OBLIGATION_IDENTITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
