@@ -53,5 +53,6 @@
   "skill_targets": [
     "powerhouse-seo-conversion-orders",
     "powerhouse-social-cro-funnel"
-  ]
+  ],
+  "prevention_rule": "Do not demand a social-media external_id for verified first-party blogs. Require original HTTPS /blog URL, HTTP 200, exact Netlify deploy ID, live time, and source state. For social channels always demand exact external post ID, original provider truth and readback. NEVER infer GA4/GSC metric, analysis, later learning or commercial result from deployment proof."
 }
