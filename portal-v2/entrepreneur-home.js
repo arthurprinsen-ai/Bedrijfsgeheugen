@@ -5,6 +5,7 @@ import {buildEntrepreneurJourneyModel,journeyGuidance,isBrainAckForImpact} from 
 import {renderEntrepreneurJourney} from './entrepreneur-journey-view.js';
 import {renderDecisionWorld} from './decision-world.js';
 import {renderOneRoofWorkspace} from './business-os-home.js';
+import {renderDailyControls} from './daily-controls.js';
 
 const add=(parent,tag,className,text)=>{
   const node=parent.ownerDocument.createElement(tag);
@@ -120,8 +121,9 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       ?journey.autopilot.outcomes+' onafhankelijk geverifieerde resultaten beschikbaar · zie onderbouwing'
       :'Nog geen onafhankelijk bewezen financieel resultaat.');
     proof.setAttribute('role','status');
-    // One read-only, interactive map of this exact authenticated journey.
-    renderDecisionWorld(next,{home:model,journey,selectedStage:worldStage,onSelect:id=>{worldStage=id;}});
+    // A concise personal control surface, using ONLY the current authenticated
+    // source, existing Brain receipts and exact customer evidence. No fake KPIs.
+    renderDailyControls(host,{authenticated:loggedIn&&Boolean(customerState),home:model,journey,pendingHandoff:domainState.pendingHandoffs?.()});
     const advanced=add(host,'details','eh-advanced');
     advanced.dataset.entrepreneurDetails='true';
     advanced.open=expanded;
@@ -129,6 +131,10 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     add(summary,'span','','Meer inzicht en instellingen');
     add(summary,'small','','Doelen, brongegevens, metingen en achtergrond');
     advanced.addEventListener('toggle',()=>{expanded=advanced.open;});
+    // Keep the five-step interactive decision map, but reveal it only on demand.
+    // One visible primary action beats an always-expanded second dashboard.
+    const deeperWorld=add(advanced,'div','eh-deep-world');
+    renderDecisionWorld(deeperWorld,{home:model,journey,selectedStage:worldStage,onSelect:id=>{worldStage=id;}});
     // One view of this principal's source state; reuses the original route and
     // handoff owner, never creates a parallel business database or executor.
     renderOneRoofWorkspace(advanced,{

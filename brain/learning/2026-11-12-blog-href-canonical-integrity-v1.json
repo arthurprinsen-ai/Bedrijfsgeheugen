@@ -1,0 +1,63 @@
+{
+  "fingerprint": "seo|blog-href-canonical-integrity|20261112-v1",
+  "date": "2026-11-12",
+  "owner": "original Powerhouse SEO Order Engine / BG169",
+  "status": "SOURCE_CANDIDATE",
+  "incident": "New blog SEO preflight verifies internal link count but not canonical destination existence",
+  "root_cause": "Body anchor href targets were counted, not resolved against final public canonical sitemap",
+  "fix": [
+    "Validate all content anchors for allowed HTTPS/root-relative syntax",
+    "Reject unpublished/absent same-origin canonical targets before protected publish",
+    "Preserve existing original Blog Writer/SEO owner and sitewide live audit"
+  ],
+  "regression": [
+    "tests/brain-blog-href-integrity-20261112.test.mjs",
+    "scripts/ci/blog_technical_seo_gate.py"
+  ],
+  "production_proven": false,
+  "ai_citation_proven": false,
+  "expected_independent_readback": [
+    "protected Required/BRAIN/CodeQL",
+    "Netlify exact deployed SHA",
+    "public blog HTML and sitemap plus live HTTP internal links",
+    "original ONE BRAIN/Heartbeat/Portal consumer ACK"
+  ],
+  "no_parallel_scheduler": true,
+  "compiler": {
+    "failure_class": "BROKEN_INTERNAL_LINK",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-href-integrity-20261112.test.mjs"
+    ]
+  },
+  "ci_incident": {
+    "run_id": 43206343814,
+    "reason": "LEARNING_FAILURE_CLASS_REQUIRED",
+    "root_cause": "New learning record initially lacked mandatory canonicalization compiler/evaluation fields",
+    "recovery": "Added machine-enforceable CI classifier and required behavioral historical replay; exact-head Required retest pending",
+    "state": "SOURCE_FIXED_RETEST_PENDING"
+  },
+  "prevention": [
+    "Every new blog must validate every first-party body href against final canonical sitemap before protected merge",
+    "External HTTPS links require independent live HTTP/redirect observation in original sitewide daily audit",
+    "All releases require Brain learning, activity ledger, human change note, exact-head Required/CodeQL and independent production readback"
+  ],
+  "evidence": {
+    "source_files": [
+      "scripts/ci/blog_technical_seo_gate.py",
+      "tests/brain-blog-href-integrity-20261112.test.mjs"
+    ],
+    "native_historical_replay": {
+      "run_id": 43206696622,
+      "passed": true,
+      "test_count": 1
+    },
+    "external_http_readback": "PENDING_NOT_LIVE",
+    "source_audit": "2026-11-12 blog anchor count gate did not resolve target URLs against final sitemap"
+  }
+}
