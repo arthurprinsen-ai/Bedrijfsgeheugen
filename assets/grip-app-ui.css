@@ -1,0 +1,45 @@
+/* Bedrijfsgeheugen GripDock — product-specific, never a copied bank UI.
+   Complements the existing single public menu; exactly 3 real tasks + install. */
+.bg-gripdock{display:none}
+.bg-app-install-dialog{border:0;background:transparent;padding:12px;max-width:min(92vw,490px);max-height:min(90dvh,630px);overflow:auto;color:#15323a}
+.bg-app-install-dialog::backdrop{background:rgba(8,31,42,.57);backdrop-filter:blur(6px)}
+.bg-app-install-body{padding:clamp(23px,5vw,39px);border-radius:25px;background:#fff;box-shadow:0 22px 60px rgba(10,29,40,.2)}
+.bg-app-install-body h2{font:850 clamp(23px,4.8vw,31px)/1.13 system-ui;letter-spacing:-.04em;margin:15px 0;color:#132f39}
+.bg-app-install-body p{font:400 15px/1.6 system-ui;color:#4c6671;margin:0 0 20px}
+.bg-app-eyebrow{font:850 11px/1 system-ui;color:#157a72;letter-spacing:.11em}
+.bg-app-install-close{min-height:48px;padding:11px 20px;border-radius:12px;background:#133f43;color:#fff;border:0;font:750 15px system-ui;cursor:pointer}
+.bg-app-install-close:focus-visible{outline:3px solid #22958c;outline-offset:3px}
+@media(max-width:1180px){
+ body:has(> .bg-gripdock){padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))!important}
+ .bg-gripdock{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;
+  position:fixed;bottom:0;left:0;right:0;z-index:980;
+  background:rgba(251,253,253,.97);
+  border-top:1px solid #dce5e7;box-shadow:0 -12px 36px rgba(16,44,53,.1);
+  padding:8px max(10px,env(safe-area-inset-right,0px)) calc(7px + env(safe-area-inset-bottom,0px)) max(10px,env(safe-area-inset-left,0px));
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+ }
+ .bg-gripdock[data-installed="true"]{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .bg-gripdock-action{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+  min-width:0;min-height:52px;padding:4px 3px;border:0;border-radius:13px;
+  background:transparent;color:#3e5660!important;font:750 11px/1.25 system-ui;text-align:center;
+  text-decoration:none!important;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+ .bg-gripdock-icon{display:grid;place-items:center;min-width:24px;min-height:26px;font:700 23px/1 system-ui;color:#17434b}
+ .bg-gripdock-label{max-width:100%;white-space:normal;text-align:center}
+ .bg-gripdock-action[aria-current="page"]{background:#dff4ea;color:#124d42!important}
+ .bg-gripdock-action[aria-current="page"] .bg-gripdock-icon{color:#0c745d}
+ .bg-gripdock-action:hover,.bg-gripdock-action:active{background:#eaf7f3}
+ .bg-gripdock-action:focus-visible{outline:3px solid #177e82;outline-offset:-2px}
+ body.bg-site-mobile-menu-open > .bg-gripdock,
+ body:has(dialog[open]) > .bg-gripdock,
+ body:has(:is(input,textarea,select):focus) > .bg-gripdock{visibility:hidden;pointer-events:none}
+ /* Keep the canonical WhatsApp contact reachable, not laid over the new task dock. */
+ body > a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]{bottom:calc(91px + env(safe-area-inset-bottom,0px))!important}
+}
+@media(min-width:761px) and (max-width:1180px){
+ .bg-gripdock{width:min(92vw,620px);left:50%;right:auto;transform:translateX(-50%);
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));border:1px solid #cbdde0;border-radius:23px;
+  padding:9px;box-shadow:0 14px 48px rgba(18,44,54,.2)}
+}
+@media(max-width:360px){.bg-gripdock{gap:2px;padding-inline:5px}.bg-gripdock-action{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.bg-gripdock{backdrop-filter:none;-webkit-backdrop-filter:none}}
