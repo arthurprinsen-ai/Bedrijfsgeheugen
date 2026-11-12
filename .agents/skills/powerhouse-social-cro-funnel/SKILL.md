@@ -234,3 +234,8 @@ Geen extra uitvoerder, scheduler, publicatie, e-mail, providerconsent-bypass, ve
 ## 2026-11-12 — Prevent empty-metric social evaluation loops
 
 The original hourly `social-learning-evaluate` must accept an `OBSERVED` / `PROVIDER_OBSERVED` snapshot only when at least one genuine, nonnegative numerical provider metric exists (including exact legacy Buffer aliases). A source quality label with `metrics={}` or all-null values is **not** a measurement. Such windows remain an original `UNVERIFIED_OR_PARTIAL_WINDOW` obligation under the same tenant/post/24–48–72h identity and are never counted as evaluated, learned, republished, or monetized. The single original hourly scheduler, explicit evidence acknowledgements, and bounded historical replay stay authoritative. Regression: `tests/brain-social-obligation-evidence-ack-20261110.test.mjs`.
+
+
+## 2026-11-12 — Never turn an existing provider post into SKIPPED
+
+In the ONE original publication flow, a no-publish decision is forbidden whenever an external post ID, historical publication timestamp or source/provider side-effect receipt already exists, even if the workflow status is CONTENT_READY or SKIPPED. The original `record_content_publication_skip` must fail closed (`NO_PUBLISH_PROVIDER_REFERENCE_MUST_RECONCILE`), preserve provider side effects, and send to original provider readback. An independently verified provider ID and permalink can repair historic false no-publication reports, but do NOT close or fabricate 24/48/72-hour metric, learning or outcome receipts. Original BRAIN owner, tenant, day, idempotency and provider identity remain unchanged. Regression: `tests/brain-original-no-publish-provider-side-effect-20261112.test.mjs`.
