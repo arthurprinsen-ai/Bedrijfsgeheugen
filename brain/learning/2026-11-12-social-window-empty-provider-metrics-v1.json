@@ -11,7 +11,8 @@
   "prevention_rule": "A source quality label never substitutes for an actual numerical observed metric. No empty, all-null, or partial-scope provider snapshot can count as evaluated or learned. Do not promote a 24/48/72h obligation to MEASUREMENT_VERIFIED without exact source post/time/field and deterministic original evaluation. If provider evidence does not exist, keep same original owner and obligation OPEN, do not synthesize metrics, repost, increase sending, or invent orders/revenue. Check if production total distinct verified evaluations increases after protected deploy; monitoring process success without end-to-end post/evaluation/Brain ACK is insufficient.",
   "regression_contract": "tests/brain-social-obligation-evidence-ack-20261110.test.mjs",
   "tests": [
-    "tests/brain-social-obligation-evidence-ack-20261110.test.mjs"
+    "tests/brain-social-obligation-evidence-ack-20261110.test.mjs",
+    "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
   ],
   "evidence": [
     "Supabase 2026-11-12: 183 OPEN overdue learning of 196 total, 441 OPEN CONTENT_HANDOFF and 12 FULFILLED",
@@ -29,7 +30,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-social-obligation-evidence-ack-20261110.test.mjs"
+      "tests/brain-social-obligation-evidence-ack-20261110.test.mjs",
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
     ]
   },
   "skill_targets": [
