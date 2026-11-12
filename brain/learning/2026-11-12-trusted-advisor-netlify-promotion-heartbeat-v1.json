@@ -1,0 +1,47 @@
+{
+  "fingerprint": "website|trusted-advisor-source-only-prod-identity-heartbeat|20261112-v1",
+  "date": "2026-11-12",
+  "owner": "original Netlify Git-linked build and original website canonical brand-shell production verifier",
+  "obligation_id": "website|trusted-advisor-source-only-prod-identity-heartbeat|20261112-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "root_cause": "Original PR #5701 updated only verifier, test, documentation and skill paths classified as governance. The existing Netlify selective build policy intentionally returned skip, so provider deployed commit did not advance, while a separate postmerge exact-release verifier expected a valid production source identity. This is a source-vs-provider release identity handoff gap, not an application code defect.",
+  "observed_evidence": [
+    {
+      "deploy_id": "6af64350b459c7cc43e89005",
+      "provider_state": "error",
+      "provider_message": "Failed during stage 'checking build content for changes': Canceled build due to no content change",
+      "attempted_commit": "0c5a499670a216c5c079d5fc41a15326a79ddfa1",
+      "previous_healthy_deploy": "6af63e1c9ed9ad102dbe179c",
+      "previous_healthy_commit": "839086756f2559b9abeb8decc8d945e2f0a3d919"
+    }
+  ],
+  "correction": "Use previously established original netlify.toml comment-only production heartbeat via protected GitHub PR; keep selective ignore command and build command unchanged. Do not mark live until Netlify latest READY commit matches the merged heartbeat SHA, and original brand-shell readback passes independently.",
+  "prevention_rule": "A governance-only website-verifier correction is not a provider release; if original exact-SHA production verification requires a new provider identity, route a minimal protected deploy heartbeat through the existing Netlify Git pipeline, never direct publish or fake current SHA.",
+  "regressions": [
+    "tests/brain-trusted-advisor-netlify-heartbeat-20261112.test.mjs"
+  ],
+  "no_parallel_executor": true,
+  "customer_effect": "NOT_MEASURED",
+  "consumer_processed_ack": "NOT_PROVEN_FOR_TENANT",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-advisor-netlify-heartbeat-20261112.test.mjs"
+    ],
+    "expected": "Original selective ignore remains intact; only explicit netlify.toml config change requires production, and verifier/source claims agree"
+  },
+  "evidence": {
+    "prior_source_only_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5701",
+    "provider_readback": "Netlify production deploy 6af64350b459c7cc43e89005 confirmed skip",
+    "source_policy": "tools/ci/netlify-ignore-build.mjs",
+    "required_outcome": "protected exact-head CI + Netlify ready exact SHA + original canonical brand shell and production release readback PASS, with customer effects separately pending"
+  },
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-trust-verifier-netlify-promotion-heartbeat-v1.md"
+}
