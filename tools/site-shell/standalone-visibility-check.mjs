@@ -1,6 +1,8 @@
 import { chromium } from 'playwright';
 import { routesFromSitemap } from './public-route-inventory.mjs';
 import { auditRenderedHrefs } from './sitewide-href-integrity.mjs';
+import { auditSeoPage, summarizeSeoAudit } from './seo-health-score.mjs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { inspectRenderedSeoPage, summarizeRenderedSeoAudit } from './seo-site-audit-intelligence.mjs';
 import { visibilityRetryPolicy } from './visibility-retry-policy.mjs';
 import { formatClsFailure } from './layout-shift-evidence.mjs';
@@ -139,6 +141,22 @@ async function readVisibleState(page, url) {
                   hrefs: Array.from(document.querySelectorAll('a[href]')).slice(0, 500).map(node => node.getAttribute('href')),
                   hrefCount: document.querySelectorAll('a[href]').length,
                   seo: {
+                    title:document.title,
+                    description:document.querySelector('meta[name="description"]')?.content||'',
+                    canonical:document.querySelector('link[rel="canonical"]')?.href||'',
+                    metaRobots:document.querySelector('meta[name="robots"]')?.content||'',
+                    htmlLang:document.documentElement.lang,
+                    hasViewport:!!document.querySelector('meta[name="viewport"]'),
+                    h1Count:document.querySelectorAll('main h1').length,
+                    imageCount:document.images.length,
+                    imagesMissingAlt:Array.from(document.images).filter(i=>!i.hasAttribute('alt')).length,
+                    imagesMissingDimensions:Array.from(document.images).filter(i=>!i.getAttribute('width')||!i.getAttribute('height')).length,
+                    stylesheetCount:document.querySelectorAll('link[rel="stylesheet"]').length,
+                    invalidJsonLd:Array.from(document.querySelectorAll('script[type="application/ld+json"]')).filter(node=>{try{JSON.parse(node.textContent||'');return false;}catch{return true;}}).length,
+                    hreflangCount:document.querySelectorAll('link[rel="alternate"][hreflang]').length,
+                    hreflang:Array.from(document.querySelectorAll('link[rel="alternate"][hreflang]')).slice(0,80).map(node=>({lang:node.hreflang,href:node.href}))
+                  },
+                  seo: {
                     title: document.title || '',
                     description: document.querySelector('meta[name="description"]')?.content || '',
                     canonical: document.querySelector('link[rel="canonical"]')?.href || '',
@@ -185,6 +203,7 @@ const browser = await chromium.launch({ headless: true });
 const failures = [];
 let hrefsChecked = 0;
 let hrefRoutesChecked = 0;
+const seoPages = [];
 const seoPages = [];
 try {
   const runViewport = async viewport => {
@@ -302,6 +321,7 @@ try {
                 });
                 hrefRoutesChecked += 1;
                 hrefsChecked += hrefAudit.hrefsChecked;
+                seoPages.push(auditSeoPage({route,snapshot:state.seo,sitemapRoutes:routes}));
                 seoPages.push(inspectRenderedSeoPage({route,meta:state.seo}));
                 for (const finding of hrefAudit.failures) failures.push(`${route} desktop href: ${finding}`);
               }
@@ -333,6 +353,19 @@ const seoSiteReadout=summarizeRenderedSeoAudit({
 });
 console.log('SEO_SITE_AUDIT_V1 '+JSON.stringify(seoSiteReadout));
 if (!seoSiteReadout.coverageComplete) failures.push('SEO_SITE_AUDIT_COVERAGE_INCOMPLETE');
+const seoReport=summarizeSeoAudit({
+  pages:seoPages,sitemapRoutes:routes,releaseSha:process.env.GITHUB_SHA||'UNKNOWN',
+  source:baseUrl
+});
+mkdirSync('.artifacts',{recursive:true});
+writeFileSync('.artifacts/sitewide-seo-health-report.json',JSON.stringify(seoReport,null,2)+'\n');
+console.log('SITEWIDE_SEO_HEALTH_REPORT '+JSON.stringify({
+  status:seoReport.status,health_score_percent:seoReport.health_score_percent,
+  expected:seoReport.pages.expected,scanned:seoReport.pages.scanned,
+  issues:seoReport.issue_counts,rule_count:seoReport.rule_count,
+  top_issues:seoReport.issue_types.slice(0,8)
+}));
+if(!seoReport.coverage_complete) failures.push('SEO_HEALTH_COVERAGE_INCOMPLETE: '+seoReport.pages.scanned+'/'+seoReport.pages.expected);
 if (hrefRoutesChecked !== routes.length) failures.push(`HREF_AUDIT_ROUTE_COVERAGE_INCOMPLETE: ${hrefRoutesChecked}/${routes.length}`);
 if (failures.length) {
   const message = `Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`;
