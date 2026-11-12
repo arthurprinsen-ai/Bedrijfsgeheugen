@@ -5,17 +5,22 @@
   "status": "SOURCE_CANDIDATE",
   "production_proven": false,
   "original_scheduler_only": true,
-  "incident": "Whole-site browser sweep checked NL/EN sitemap routes for visibility/CLS but not all rendered anchor href targets",
-  "root_cause": "Original technical SEO HTML scan covers root/blog source, not localized rendered EN DOM; sitewide browser pass lacked href parity",
+  "incident": "Original sitewide browser test first detected 15 actual candidate href violations: 8 missing EN-only model locale destinations, missing EN checkout aliases, and # placeholder fallbacks on privacy/connect",
+  "root_cause": "Locale link runtime blindly constructed /en/ for Dutch-only AI model comparison and non-localized checkout routes; two site anchors used inert # href rather than semantic fallbacks",
   "fix": [
     "Run pure canonical href verifier within original full sitemap Playwright desktop sweep",
     "Reject unsafe links, missing canonical targets and truncated link inventories instead of marking route green",
-    "Keep existing original ONE BRAIN/Powerhouse/Heartbeat source-to-consumer processed ACK"
+    "Keep existing original ONE BRAIN/Powerhouse/Heartbeat source-to-consumer processed ACK",
+    "Correct original assets/js/i18n.js English locale fallback for eight NL-only AI model/comparison routes and shared /afsluiten functional checkout",
+    "Replace privacy/connect inert '#' anchors with real canonical cookie-fragment and mailto fallbacks"
   ],
   "regression": [
     "tests/brain-sitewide-href-integrity-20261112.test.mjs",
     "tools/site-shell/sitewide-href-integrity.mjs",
-    "tools/site-shell/standalone-visibility-check.mjs"
+    "tools/site-shell/standalone-visibility-check.mjs",
+    "assets/js/i18n.js",
+    "connect.html",
+    "privacy.html"
   ],
   "compiler": {
     "failure_class": "BROKEN_INTERNAL_LINK",
@@ -49,6 +54,15 @@
     "original_consumer_processed_ack": "NOT_YET_PROVEN",
     "observed_open_content_batch": 84,
     "observed_overdue_content_batch": 69,
-    "observed_overdue_social_learning": 183
+    "observed_overdue_social_learning": 183,
+    "candidate_browser_run_id": 43220422656,
+    "candidate_browser_job_id": 131192041304,
+    "detected_issues": 15,
+    "failed_categories": [
+      "MISSING_EN_AI_MODEL_CANONICAL",
+      "EN_CHECKOUT_ROUTE_ABSENT",
+      "EMPTY_OR_PLACEHOLDER_HREF"
+    ],
+    "corrected_source_candidate": true
   }
 }
