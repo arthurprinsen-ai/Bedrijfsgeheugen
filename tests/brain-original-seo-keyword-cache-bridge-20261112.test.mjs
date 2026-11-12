@@ -69,6 +69,7 @@ test('the original existing cron #105 owns writes and checks independent durable
  assert.match(source,/SEO_ORIGINAL_KEYWORD_CONSUMER_READBACK_MISMATCH/);
  assert.match(source,/observed_at:expectedRow.observed_at|sourceProjection\.rows\.map\(x=>x\.observed_at\)/);
  assert.match(source,/source_projection:sourceProjectionReceipt/);
+ assert.match(source,/projectionFresh\\?200:207/);
  assert.match(source,/sourceObservationError/);
  assert.match(source,/sourceProjectionStatus=projectionFresh\?'OBSERVED_ORIGINAL_CACHE_WITH_READBACK':'MISSING_FRESH_OWNED_CACHE'/);
  assert.match(source,/new Date\(Date\.now\(\)-7\*86400000\)/);
@@ -78,8 +79,8 @@ test('the original existing cron #105 owns writes and checks independent durable
 test('the new original tenant alignment migration is strict and preserves all other source users',()=>{
  const source=readFileSync(new URL('../supabase/migrations/20261112203000_original_seo_keyword_tenant_alignment_v1.sql',import.meta.url),'utf8');
  assert.match(source,/powerhouse_daily_source_archive_v1/);
- assert.match(source,/WHERE k\.tenant_id='bedrijfsgeheugen'/);
- assert.match(source,/WHERE k\.tenant_id='canonical'/);
+ assert.match(source,/WHERE k\\.tenant_id=''bedrijfsgeheugen''/);
+ assert.match(source,/WHERE k\\.tenant_id=''canonical''/);
  assert.match(source,/tenant_canonical_only_keyword_projection/);
  assert.match(source,/KEYWORD_TENANT_SOURCE_DEFINITION_DRIFT/);
  assert.doesNotMatch(source,/cron\.schedule|CREATE TABLE|DISABLE TRIGGER/);
