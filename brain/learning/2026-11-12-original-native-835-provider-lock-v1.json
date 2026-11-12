@@ -1,0 +1,58 @@
+{
+  "fingerprint": "supabase|original-native-835-applied-source-lock|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "owner": "original Supabase native GitOps provider-history source → GitHub protected migration-lock parity → original ONE BRAIN/Powerhouse release",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN",
+  "root_cause": "After protected PR #5681 merged the original skipped-provider-reference migration at native version 20261112211000, Supabase production had 835 actually applied version/name identities while canonical GitHub source lock still had only 834. Subsequent unrelated original SEO source registry candidate PR #5685 had to rebase on newer protected main, but an ordinary new-migration PR cannot alter the provider-applied lock. The protected guard correctly rejected a combined lock+proposed-migration diff with UNEXPECTED_PROTECTED_BASE.",
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "native_count": 835,
+    "latest_native_version": "20261112211000",
+    "latest_native_name": "original_skipped_provider_reference_readback_handoff_v1",
+    "verified_native_readback_utc": "2026-11-12T19:35:39.196767Z",
+    "historical_lock_count": 834,
+    "historical_last_version": "20261112203000",
+    "original_834_prefix_unchanged": true,
+    "original_sql": "supabase/migrations/20261112211000_original_skipped_provider_reference_readback_handoff_v1.sql",
+    "protected_guard": "UNEXPECTED_PROTECTED_BASE",
+    "guard": "tools/ci/protected-supabase-pr-migration-tests.mjs",
+    "replay": [
+      "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ]
+  },
+  "fix": [
+    "In a dedicated original provider-applied history PR with NO new migration SQL, append only independently verified exact 835th native version/name to canonical supabase/migration-history.lock.json; keep original 834 records unmodified.",
+    "Regress native 834th and new 835th identities plus absence of duplicate versions.",
+    "Merge only through existing protected Required/Brain/CodeQL checks, then update original SEO #5685 to new main without changing the existing proposed 20261112203500 native migration or treating it as applied.",
+    "Retain original #105→#175→#140/Heartbeat chain active; verify true producer/consumer ack only after original SEO migration/provider readback."
+  ],
+  "prevention_rule": "Provider-applied migration lock reconciliation must be separate from any PR proposing a NEW migration. A candidate cannot declare proposed versions as already applied, invent native identities, or edit older migrations. Always preserve exact producer/consumer and source revision evidence.",
+  "compiler": {
+    "failure_class": "NATIVE_PROVIDER_HISTORY_SOURCE_LAG",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
+    ],
+    "expected": "835 independently applied provider version/name records; original 834 prefix unchanged; no new migration proposed in this PR."
+  },
+  "delivery": {
+    "source_lock": "supabase/migration-history.lock.json",
+    "regression": "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs",
+    "ledger": "docs/development-ledger-events/2026-11-12-original-native-835-provider-lock.md"
+  }
+}
