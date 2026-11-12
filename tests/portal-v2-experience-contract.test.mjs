@@ -38,7 +38,8 @@ test('portal state remains fail-closed and backend writes go through canonical A
   assert.match(state,/const API_URL='\/api\/portal-state'/);
   assert.match(state,/if\(!user\)throw new Error\('AUTH_REQUIRED'\)/);
   assert.match(state,/savePortalBusinessInput\(buildPortalBusinessInput/);
-  assert.match(state,/body\?\.stored===false/);
+  assert.match(state,/body\?\.stored!==true\|\|body\?\.stale!==false/);
+  assert.match(state,/PORTAL_STATE_READBACK_NOT_AUTHENTICATED/);
 });
 
 test('visual assurance covers six routes across four first-class viewports',()=>{
