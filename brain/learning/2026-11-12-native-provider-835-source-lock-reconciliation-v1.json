@@ -1,0 +1,24 @@
+{
+  "obligation_id": "original-native-provider-835-source-lock-reconciliation-20261112",
+  "fingerprint": "supabase|migration-history|native-provider-835-lock-stale-postmerge|20261112-v1",
+  "status": "CANDIDATE",
+  "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "source": "supabase_migrations.schema_migrations",
+  "provider_project": "adhjwmvyoixzjtmiroln",
+  "observed_at": "2026-11-12T19:31:33.643581Z",
+  "provider_applied_count": 835,
+  "prior_locked_count": 834,
+  "provider_applied_identity": {
+    "version": "20261112211000",
+    "name": "original_skipped_provider_reference_readback_handoff_v1"
+  },
+  "original_merged_pr": 5681,
+  "original_main_sha": "6f5300cb52f64057e26d025ad52a39cf43301cdf",
+  "original_production_consumer_proven": "16/16 SOURCE_CONFLICT to OVERDUE_PROVIDER_READBACK; still OPEN",
+  "root_cause": "Protected main migration 835 applied via original GitOps after PR #5681, while 834-entry immutable Git source lock stayed unchanged; 14 original BRAIN regression tests legitimately rejected non-equal provider-source manifests, blocking terminalization.",
+  "fix": "Append only actually-provider-applied version/name 835 to existing original lock with exact historical prefix equality, keep SQL and all existing tests unchanged; add focused provider835 regression, same original skill and human evidence. Never grant LIVE/FULFILLED for missing provider post readback.",
+  "regression_ref": "tests/brain-native-835-original-provider-append-only-parity-20261112.test.mjs",
+  "release_gate": "EXACT_HEAD_REQUIRED_BRAIN_CODEQL_PREVIEW_PROTECTED_MERGE_ORIGINAL_TERMINAL_READBACK_REQUIRED",
+  "no_new_scheduler": true,
+  "no_provider_replay": true
+}
