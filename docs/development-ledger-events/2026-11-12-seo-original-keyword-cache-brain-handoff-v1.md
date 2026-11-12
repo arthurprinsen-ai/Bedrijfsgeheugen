@@ -29,3 +29,6 @@ Regression `tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs`. Or
 - Learning/agent/skill source-linked and ready for protected release; no second execution path.
 
 Next recovery if any gate fails: inspect exact failing protected check and keep original #105/#175/#140 lease active; record same P0, update one candidate and re-run full exact-head checks. Never bypass production Supabase GitHub Integration or history lock.
+
+
+- SOURCE_PROVIDER_EMPTY_GREEN_DEFECT — original `dataforseo-intelligence` producer 2026-11-12 04:21 UTC reported `ok` with `items=0;stored=0`; bounded source-quality fix included in the same original provider function, regression in `tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs`; original producer kept active.
