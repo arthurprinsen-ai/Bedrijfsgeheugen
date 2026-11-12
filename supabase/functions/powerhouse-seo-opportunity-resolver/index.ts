@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import owners from './intent-owners.json' with { type: 'json' };
+import {planOriginalSeoKeywordCacheProjection} from './keyword-cache-bridge.mjs';
 import { decideSeoBlogCandidate } from './blog-decision.mjs';
 import { selectOriginalSeoMoneyHandoffs,SEO_MONEY_OWNER_HANDOFF } from './money-page-handoff.mjs';
 
@@ -70,7 +71,7 @@ Deno.serve(async(req:Request)=>{
       db.from('bg_zoekwoordkansen')
         .select('zoekwoord,zoekvolume,concurrentie,cpc,kansscore,positie,rankende_url,bron,opgehaald_op')
         .eq('bron','dataforseo')
-        .gte('opgehaald_op',new Date(Date.now()-14*86400000).toISOString())
+        .gte('opgehaald_op',new Date(Date.now()-7*86400000).toISOString())
         .order('opgehaald_op',{ascending:false})
         .limit(500),
       db.from('bg_zoekprestaties')
@@ -122,6 +123,47 @@ Deno.serve(async(req:Request)=>{
       const prior=latestByKeyword.get(key);
       if(!prior||Date.parse(row.opgehaald_op)>Date.parse(prior.opgehaald_op)) latestByKeyword.set(key,row);
     }
+
+    // Reuse ORIGINAL daily SEO resolver #105: never create a second keyword collector.
+    // Source observed_at is the real upstream cache timestamp, not this run's clock.
+    const {data:priorProjection,error:priorError}=await db.from('powerhouse_seo_keyword_intelligence_v1')
+      .select('keyword,observed_at').eq('tenant_id','canonical')
+      .eq('locale','nl').eq('market','Netherlands').limit(500);
+    if(priorError)throw new Error('SEO_CANONICAL_KEYWORD_READ:'+priorError.message);
+    const sourceProjection=planOriginalSeoKeywordCacheProjection([...latestByKeyword.values()],{
+      resolveOwner:ownerFor,existingRows:priorProjection||[],asOf:observedAt,maxAgeDays:7,maxRows:80
+    });
+    let projectionReadback=0;
+    if(sourceProjection.rows.length){
+      const {error:projectionError}=await db.from('powerhouse_seo_keyword_intelligence_v1').upsert(
+        sourceProjection.rows,{onConflict:'tenant_id,locale,market,keyword'});
+      if(projectionError)throw new Error('SEO_ORIGINAL_KEYWORD_PROJECTION_WRITE:'+projectionError.message);
+      const {data:readback,error:readbackError}=await db.from('powerhouse_seo_keyword_intelligence_v1')
+        .select('keyword,observed_at,canonical_owner,search_volume').eq('tenant_id','canonical')
+        .eq('locale','nl').eq('market','Netherlands')
+        .in('keyword',sourceProjection.rows.map(x=>x.keyword)).limit(100);
+      if(readbackError)throw new Error('SEO_ORIGINAL_KEYWORD_PROJECTION_READBACK:'+readbackError.message);
+      const seen=new Map((readback||[]).map((x:any)=>[x.keyword.toLocaleLowerCase('nl'),x]));
+      for(const expectedRow of sourceProjection.rows){
+        const actual:any=seen.get(expectedRow.keyword.toLocaleLowerCase('nl'));
+        if(!actual||actual.canonical_owner!==expectedRow.canonical_owner||
+          Date.parse(actual.observed_at)!==Date.parse(expectedRow.observed_at)||
+          Number(actual.search_volume)!==expectedRow.search_volume){
+          throw new Error('SEO_ORIGINAL_KEYWORD_CONSUMER_READBACK_MISMATCH:'+expectedRow.keyword);
+        }
+        projectionReadback++;
+      }
+    }
+    const latestProjectionAt=[...(priorProjection||[]).map((x:any)=>x.observed_at),
+      ...sourceProjection.rows.map(x=>x.observed_at)].map(x=>Date.parse(x)).filter(Number.isFinite);
+    const projectionFresh=latestProjectionAt.some(ms=>Date.parse(observedAt)-ms<=7*86400000 && ms<=Date.parse(observedAt));
+    const sourceProjectionStatus=projectionFresh?'OBSERVED_ORIGINAL_CACHE_WITH_READBACK':'MISSING_FRESH_OWNED_CACHE';
+    const sourceProjectionReceipt={
+      ...Object.fromEntries(Object.entries(sourceProjection).filter(([key])=>key!=='rows')),
+      status:sourceProjectionStatus,readback_processed_rows:projectionReadback,
+      latest_source_observed_at:latestProjectionAt.length?new Date(Math.max(...latestProjectionAt)).toISOString():null,
+      cache_not_live_provider_fetch:true,no_causal_growth_claim:true
+    };
 
     const gscByQuery=new Map<string,any>();
     for(const row of gscResult.data||[]){
@@ -224,19 +266,20 @@ Deno.serve(async(req:Request)=>{
     }
 
     const {error:hError}=await db.from('bg_gezondheid').insert({
-      gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'ok',
+      gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:projectionFresh?'ok':'onvolledig',
       detail:'keywords='+latestByKeyword.size+'; gsc_queries='+gscByQuery.size+'; top='+top.length+'; blog_recommendations='+recommendations+'; money_owner_handoffs='+ownerHandoffsWritten+'; execution_readback=EVIDENCE_DUE',
-      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,execution_readback:'EVIDENCE_DUE'}
+      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,source_projection:sourceProjectionReceipt,execution_readback:'EVIDENCE_DUE'}
     });
     if(hError) throw new Error('HEALTH_WRITE:'+hError.message);
-    await db.rpc('powerhouse_record_source_observation_v1',{
+    const {error:sourceObservationError}=await db.rpc('powerhouse_record_source_observation_v1',{
       p_source_key:'seo-opportunity-intelligence',
       p_dedupe_key:'seo-opportunity-resolver:'+runDate,
       p_external_event_id:'seo-opportunity-resolver:'+runDate,
       p_observed_at:observedAt,
       p_evidence:{contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action}))}
     });
-    return json({ok:true,contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))});
+    if(sourceObservationError)throw new Error('SEO_SOURCE_OBSERVATION_WRITE:'+sourceObservationError.message);
+    return json({ok:projectionFresh,contract:CONTRACT,source_projection:sourceProjectionReceipt,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT,run_date:runDate}}).then(()=>{},()=>{});
