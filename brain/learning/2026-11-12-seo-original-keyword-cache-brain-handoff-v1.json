@@ -81,6 +81,12 @@
       "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
     ],
     "expected": "180 original cache rows / 95 within 7 days, but zero recent canonical keyword intelligence; after natural #105 only owner-matched cached observations are projected without fake timestamps, #175 reads canonical source tenant, #140 verifies hash.",
-    "note": "The existing tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs remains a supplementary provider test; canonical replay is dependency-free tests/brain-* only."
+    "note": "Security-sensitive canonical-tenant source repair: original dependency-free Brain suite runs historical_replay, shadow and canary; supplemental provider test remains independent.",
+    "shadow": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ]
   }
 }
