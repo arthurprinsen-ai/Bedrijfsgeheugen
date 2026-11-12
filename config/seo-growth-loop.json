@@ -497,6 +497,56 @@
         },
         "on_failure": "same original Website/SEO owner lease -> one BRAIN failure fingerprint -> bounded repair -> protected Required/CodeQL/Netlify -> independent public route check -> original consumer ACK; no second executor, no fake green",
         "release_proven": false
+      },
+      "ahrefs_class_audit_v1": {
+        "fingerprint": "seo|ahrefs-class-sitemap-audit-and-dataforseo-commercial-opportunities|20261112-v1",
+        "exact_scope": "Ahrefs-inspired issue taxonomy; NOT full parity with proprietary Site Explorer, Ahrefs 170+ rules, backlink index or Brand Radar",
+        "measured_code": "tools/site-shell/seo-site-audit-intelligence.mjs",
+        "existing_crawl_owner": "tools/site-shell/standalone-visibility-check.mjs (current website release lane, no new scheduler)",
+        "mandatory_discovery": "public sitemap NL and EN; no 100-percent coverage claim if any sitemap URL is unscanned or hash unverified",
+        "measured_rules": [
+          "title present and length",
+          "meta description present and length",
+          "single H1",
+          "self-canonical",
+          "noindex-in-sitemap",
+          "NL/EN HTML lang",
+          "invalid JSON-LD",
+          "ALT attribute presence",
+          "oversized intrinsic image dimensions",
+          "OG title/description presence",
+          "duplicate sitewide title/description",
+          "all rendered internal hrefs from existing href gate"
+        ],
+        "delegated_existing_separate_checks": [
+          "robots.txt accessibility",
+          "sitemap parity",
+          "mobile and tablet functional UI",
+          "CLS <= 0.1",
+          "WCAG normal contrast",
+          "security headers",
+          "checkout and scan conversion"
+        ],
+        "external_provider_required": [
+          "real CRUX LCP/INP by source",
+          "real external HTTPS redirect status",
+          "Google Search Console clicks, impressions, position and freshness",
+          "DataForSEO keywords, domain/competitor opportunities",
+          "indexed backlinks and referring domains",
+          "LLM mentions and actual ChatGPT/Claude cited response URLs"
+        ],
+        "not_built_or_proven": [
+          "170+ Ahrefs proprietary issue checks",
+          "Ahrefs exact backlink index",
+          "Ahrefs Web Analytics/Rank Tracker/Content Explorer full parity",
+          "24/7 continuous crawler",
+          "complete real-time Google and LLM source referrals"
+        ],
+        "observed_coverage_report": "SEO_SITE_AUDIT_V1 with scoped rule counts, severity, scanned/discovered, canonical source SHA, issue samples, real denominator; warnings are not full-site green",
+        "severity_priority": "P0 crawlability/canonical/noindex / P1 invalid structured data or broken indexable href / P2 metadata, images, duplicate intent / P3 enhancements",
+        "original_readback_to_owner": "BG169 -> exact GitHub/Netlify readback -> ONE BRAIN tenant+source revision+idempotency -> original consumer PROCESSED ACK -> Powerhouse/Heartbeat/Portal -> 7/14/28d measured effect -> original next natural run",
+        "no_new_executor": true,
+        "auto_publish_without_provider_proof": false
       }
     }
   },
@@ -520,6 +570,61 @@
       "NO_ACTION_EVIDENCE_INSUFFICIENT"
     ],
     "first_mover_objective": "detect commercially meaningful Dutch search demand early, combine with external market signals, and publish through the existing protected content chain only when a distinct intent gap is proven",
-    "execution_guard": "no duplicate publisher; no direct main; exact production readback remains terminal proof"
+    "execution_guard": "no duplicate publisher; no direct main; exact production readback remains terminal proof",
+    "dataforseo_daily_guard_v1": {
+      "fingerprint": "seo|provider-current-business-fit-and-owner-gate|20261112-v1",
+      "engine": "tools/site-shell/seo-site-audit-intelligence.mjs#triageExternalSeoOpportunities",
+      "source_required": "DataForSEO original provider ID + published keyword last_updated_time + location and language; GSC independent query/page observation if available",
+      "reject_unrelated": "No high-volume dictionary queries, online dice, irrelevant consumer topics or generic traffic without explicit >=0.75 documented business fit and canonical intent owner",
+      "staleness": "older than 30 days = source stale, recover original same owner before execution; rank updates and AI search volume not equal to human referrals",
+      "opportunity_actions": [
+        "OPTIMIZE_EXISTING_OWNER_PAGE",
+        "REPAIR_CRAWLABILITY",
+        "REPAIR_QUERY_PAGE_INTENT_MATCH",
+        "CREATE_ONLY_VERIFIED_UNIQUE_INTENT_GAP",
+        "NO_SAFE_ACTION_PENDING_SOURCE"
+      ],
+      "handoff": "one existing BG169 change lease, protected CI, exact Netlify prod readback, ONE BRAIN processing ACK, Powerhouse and Heartbeat review, measured CRO experiment outcome",
+      "measured_market_sample_20261112": [
+        {
+          "term": "afas koppeling",
+          "google_estimated_searches_month": 170,
+          "google_provider_updated": "2026-10-19",
+          "ai_estimated_searches_month": 22,
+          "ai_period": "2026-10",
+          "owner": "/afas-koppeling",
+          "state": "REQUIRES_ORIGINAL_SOURCE_FRESHNESS_AND_GSC_LINKAGE"
+        },
+        {
+          "term": "ai governance",
+          "google_estimated_searches_month": 390,
+          "google_provider_updated": "2026-09-17",
+          "ai_estimated_searches_month": 7,
+          "ai_period": "2026-10",
+          "owner": "/ai-governance",
+          "state": "STALE_GOOGLE_SOURCE"
+        },
+        {
+          "term": "bedrijfsprocessen automatiseren",
+          "google_estimated_searches_month": 170,
+          "google_provider_updated": "2026-10-20",
+          "ai_estimated_searches_month": 3,
+          "ai_period": "2026-10",
+          "owner": "/bedrijfsprocessen-automatiseren",
+          "state": "REQUIRES_SOURCE_FRESHNESS"
+        },
+        {
+          "term": "exact online koppeling",
+          "google_estimated_searches_month": 70,
+          "google_provider_updated": "2026-11-12",
+          "ai_estimated_searches_month": 5,
+          "ai_period": "2026-10",
+          "owner": "/exact-online-koppeling",
+          "state": "REQUIRES_REAL_RANK_AND_GSC_CHECK"
+        }
+      ],
+      "sample_disclaimer": "Market-size estimates NOT actual organic clicks, visits, ranks, paid revenue or provider AI citation share; never automatically publish from samples",
+      "provider_budget": "bounded, cost-aware; freshness check before paid call; no unbounded 1000-keyword/LLM crawl"
+    }
   }
 }
