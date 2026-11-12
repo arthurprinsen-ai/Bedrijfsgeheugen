@@ -18,3 +18,7 @@
 - The original Required admission accepted machine PR metadata and emitted `ADMITTED`; the mandatory learning gate then rejected the new machine record with `LEARNING_FAILURE_CLASS_REQUIRED`. No Portal/CodeQL bypass or relaxed validator.
 - Original bounded correction: `compiler.failure_class=AUTH`, `security_sensitive=true`, deterministic executable `evaluation.historical_replay`, `evaluation.shadow` and `evaluation.canary`, with a concrete `evidence` object and unchanged source-authority boundary.
 - Prevention rule: every newly authored `brain/learning/*.json` must be checked against `scripts/brain/learning-canonicalization-gate.mjs` before opening PR. An invented status or text-only test cannot replace executable evaluation. Exact-head CI remains OPEN pending independent proof.
+
+## CI recovery — original executable replay run 43323168817
+- Authentic original learning historical replay executed Node and failed with `SyntaxError: Illegal return statement`. The new arrow-body expression was correctly ended by `;` but retained a second `};` from the removed block. This terminated `refresh` early; no runtime release was made.
+- Corrected only the residual brace in `portal-v2/domain-state.js`. Prevention: the original admission learning contract executes `node --test` on changed Brain tests before any protected merge; mandatory Portal and CodeQL checks must remain unchanged. Do not infer live from a passing syntax check.
