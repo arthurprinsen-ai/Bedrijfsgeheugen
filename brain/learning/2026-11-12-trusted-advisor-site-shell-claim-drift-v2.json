@@ -14,11 +14,11 @@
     "Update existing English navigation translations, and extend existing trustbar regression suite."
   ],
   "regression_contract": [
-    "tests/site-shell-trustbar-css-only-repair.test.mjs"
+    "tests/brain-trusted-advisor-site-shell-claims-20261112.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/site-shell-trustbar-css-only-repair.test.mjs"
+      "tests/brain-trusted-advisor-site-shell-claims-20261112.test.mjs"
     ],
     "expected": "Original canonical header, generator trustbar, gate and English translations agree; no universal two-week or fixed-pricing claim; browser readback required separately."
   },
