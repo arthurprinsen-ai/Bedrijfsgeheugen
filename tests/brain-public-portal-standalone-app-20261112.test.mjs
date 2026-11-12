@@ -28,7 +28,7 @@ test('historical: two standalone web-app identities link to existing real routes
 
 test('shadow: public app dock uses actual canonical destinations, no new menu or client-data store',()=>{
  assert.doesNotThrow(()=>new Function(originalScript));
- assert.match(originalScript,/data\.bgPublicAppDock='v1'/);
+ assert.match(originalScript,/dataset\.bgPublicAppDock='v1'/);
  assert.match(originalScript,/document\.querySelector\('\[data-bg-public-app-dock\]'\)/);
  assert.match(originalScript,/\/portal-v2\//);
  assert.match(originalScript,/https:\/\/www\.bedrijfsgeheugen\.nl/);
@@ -45,7 +45,7 @@ test('shadow: public app dock uses actual canonical destinations, no new menu or
 
 test('canary: exactly one original public build injects full-URL web-app head metadata',()=>{
  assert.match(originalBuilder,/data-bg-app-manifest="public-v1"/);
- assert.match(originalBuilder,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/app\.webmanifest"/);
+ assert.match(originalBuilder,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/assets\/app\.webmanifest"/);
  assert.match(originalBuilder,/const styleStart=html\.indexOf/);
  assert.match(originalBuilder,/const scriptMarker=html\.indexOf/);
  assert.match(originalBuilder,/20261112app/);
