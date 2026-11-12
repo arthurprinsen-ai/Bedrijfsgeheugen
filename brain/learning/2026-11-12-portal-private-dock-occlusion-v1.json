@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "portal|ux|public-dock-overlays-private-more|20261112-v1",
+  "obligation_id": "portal|ux|public-dock-overlays-private-more|20261112-v1",
+  "title": "Prevent public dock intercepting real Portal V2 mobile Meer after hydration",
+  "status": "FIX_CANDIDATE",
+  "root_cause": "Real 390px production Playwright mobile More button could not receive click: public bg-app-public-dock-link intercepts pointer events; URL-only exclusion did not cover routed private portal shell.",
+  "impact": "Mobile private menu inaccessible; independent Portal V2 Production DOM Readback failed after a successful Netlify release.",
+  "fix": "One original app JS DOM-based private portal guard and public dock CSS fail-closed at late hydration; no second UX router, customer-data store or worker.",
+  "prevention_rule": "Public website dock and original Portal V2 four-tab navigation are mutually exclusive, including rewritten URLs and async hydration. Real browser click proof, not visibility alone.",
+  "regression_contract": "tests/brain-portal-private-dock-occlusion-20261112.test.mjs; tests/integration/portal-v2-mobile-shell.spec.js",
+  "tests": [
+    "tests/brain-portal-private-dock-occlusion-20261112.test.mjs",
+    "tests/integration/portal-v2-mobile-shell.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-private-dock-occlusion-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-private-dock-occlusion-20261112.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43231847224",
+    "Deploy 6af5c526562a7a2788ce0af4; source 1d86248d701315ba148938bc84dc5310af985d5d",
+    "Registered Brain failure occurrence github:arthurprinsen-ai/Bedrijfsgeheugen:workflow:43231847224:job:131228907570"
+  ],
+  "outcome": "Candidate pending protected source, browser, exact current Netlify and independent production mobile DOM readback; customer/Powerhouse/Heartbeat outcome not claimed.",
+  "compiler": {
+    "failure_class": "UI_OCCLUSION",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "portal-living-interface"
+  ]
+}
