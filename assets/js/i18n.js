@@ -34,7 +34,7 @@
     '/amazon-ai-modellen','/chatgpt-vs-claude','/chatgpt-vs-gemini','/claude-vs-gemini'
   ]);
   const SHARED_FUNCTIONAL_ROUTES = new Set(['/afsluiten']);
-  const normalizeRouteKey = route => route.replace(/\\/+$/,'') || '/';
+  const normalizeRouteKey = route => route.replace(/\/+$/,'') || '/';
   const localizedHref = target => {
     const normalized = normalizeLocale(target);
     const stripped = location.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
