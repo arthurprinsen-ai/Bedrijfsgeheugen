@@ -93,3 +93,14 @@ test('a plausible URL without independently scored original intent-owner confide
  assert.equal(r.accepted,0);
  assert.equal(r.rejected.owner,1);
 });
+
+test('original direct DataForSEO producer logs an empty response without falsely green current keywords',()=>{
+ const source=readFileSync(new URL('../supabase/functions/powerhouse-dataforseo-intelligence/index.ts',import.meta.url),'utf8');
+ assert.ok(source.includes("status:stored>0?'ok':'onvolledig'"));
+ assert.ok(source.includes('source_data_available:stored>0'));
+ assert.ok(source.includes('provider_response_empty:items.length===0'));
+ assert.ok(source.includes("status:stored>0?'KEYWORD_SOURCE_OBSERVED':'NO_NEW_PROVIDER_KEYWORDS'"));
+ assert.ok(source.includes('stored>0?200:207'));
+ assert.ok(source.includes("p_source_key:'dataforseo-intelligence'"));
+ assert.ok(source.includes('no_data_returned:items.length===0'));
+});
