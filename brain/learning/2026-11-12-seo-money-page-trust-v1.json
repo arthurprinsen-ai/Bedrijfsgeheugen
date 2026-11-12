@@ -1,0 +1,48 @@
+{
+  "fingerprint": "seo|money-page-pricing-breadcrumb-canonical-trust|20261112-v1",
+  "date": "2026-11-12",
+  "parent_p0": "#4198",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "original commercial SEO money-page delivery owner",
+  "status": "CANDIDATE_NOT_LIVE",
+  "root_cause": "Three integration money pages show an incorrect AI breadcrumb first. V18 build selects first nav. Their visible and FAQ-schema price range of 1500–5000 contradicts existing central systems guide with 3500–12000 scoped estimate.",
+  "evidence": {
+    "affected_routes": [
+      "/exact-online-koppeling",
+      "/twinfield-koppeling",
+      "/api-koppeling-laten-maken"
+    ],
+    "central_price_authority": "/systemen-koppelen",
+    "commercial_outcome_proven": false
+  },
+  "fix": "Remove wrong duplicate breadcrumb, point canonical Koppelingen parent to /systemen-koppelen, align indicative one-way vs complex pricing consistently in FAQ and schema, preserve same-origin absolute JSON-LD URLs and add offline translation.",
+  "prevention": [
+    "Retain one authoritative breadcrumb per page, including in V18 rebuilds.",
+    "Always match published price ranges between visible FAQ, JSON-LD and the central service guide.",
+    "Verify original Netlify production readback before PROVEN; never infer visits or revenue."
+  ],
+  "compiler": {
+    "failure_class": "SEO_MONEY_PAGE_TRUST_PRICE_AND_BREADCRUMB_DRIFT",
+    "scope": "COMMERCIAL_SEO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-money-page-trust-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-money-page-trust-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-money-page-trust-20261112.test.mjs"
+    ],
+    "expected": "One correct source breadcrumb, central price alignment in visible/structured data, V18 route safety and offline translation; Netlify live readback separately."
+  },
+  "delivery": {
+    "status": "AWAITING_CHECKS_PROTECTED_MAIN_AND_PROVIDER_READBACK",
+    "seo_handoff": "original #105 -> #175 -> ONE BRAIN #140 -> Heartbeat",
+    "cro_effect": "OPEN"
+  }
+}
