@@ -1,0 +1,17 @@
+# 12 November 2026 — Eén installeerbare Bedrijfsgeheugen-app voor website en Portal V2
+
+Original owner: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215. Related commercial loop: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+## Audit: exact existing user experience
+The existing Portal V2 already had a mobile fixed four-task navigation dock (Vandaag / Acties / Resultaat / Meer) and canonical navigation, but it stopped at 760px. Tablet widths retained a 260px desktop sidebar and a hamburger. There was no web manifest on the homepage or the portal, and so no explicit standalone app/home-screen setup. The original public site had a shared responsive/menu-recovery layer; do **not** add a parallel menu or another checkout.
+
+## Original one-app implementation
+- `app.webmanifest` identifies the original company site and its authenticated customer portal as one installed standalone app with main screen Portal V2, shortcut links to Today, Acties, Resultaat and HTTPS icons 192px/512px. App permissions are still given by **the original browser/provider**, not by this manifest.
+- `portal-v2/app-feel.css` reuses the original, already wired bottom dock at phone and tablet width through 1024px, removes the cramped sidebar on tablets, retains the complete page registry via existing Meer dialog, accommodates iOS safe areas, focus, coarse taps, reduced motion, and a readable input size.
+- `portal-v2/install-app.js` adds an accessible install button within existing Help panel; only a real user click invokes supported OS `beforeinstallprompt`, otherwise it explains the real browser menu or Safari Share > Add to Home Screen. Only browser `appinstalled` confirms installation. No fake install or credentials access. **No service worker and no offline private customer data cache**.
+- Existing public `assets/sitewide-mobile-ui-20261111.css` gains app-like touch/fit rules across mobile/tablet while preserving one original menu/slider executor. Original `tools/site-shell/apply-cms-runtime.mjs` inserts the one webmanifest full HTTPS link on each public page during the existing production build, excluding portal and internal pages. Both `index.html` and `portal-v2/index.html` also have the one absolute manifest URL. Existing `assets/merk/icon-512.png` retained, one 192px source icon added.
+
+## Quality and traceability
+Original Website UX agent, Portal Living Interface skill, Website Portal Coherence skill and `AGENTS.md` updated. Same-original ONE BRAIN learning with failure class, measurable limitations, historical/shadow/canary test. Regression `tests/brain-portal-one-app-tablet-pwa-20261112.test.mjs` checks authentic manifest, two actual icon sizes, original tablet dock, public builder, real OS click gating and no private cache. Existing Portal V2 Playwright mobile, website cross-browser screenshot, protected Source Map integrity, Required/CodeQL, current Netlify exact main and independent DOM/readback stay mandatory.
+
+**Status after source creation: candidate only, not yet deployed or real-user outcome measured.** The desired UX is inspired by delightful and direct digital banking control, without copying Revolut visuals, navigation labels or identity. App Store distribution, true offline support, real mobile user task reduction, customer connector completion and verified next-cycle Heartbeat learning remain explicit EVIDENCE_DUE rather than an invented guarantee.
