@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "date": "2026-11-12",
+  "type": "ORIGINAL_PORTAL_WEBSITE_INSTALLABLE_APP_MOBILE_TABLET_INTERACTION",
+  "fingerprint": "portal|app|one-installable-phone-tablet-shell|20261112-v1",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Original Portal V2 + original public website UX agent; customer data and Brain authority unchanged",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "original_mobile_dock": "Four original task-oriented nav routes already exist for <=760px",
+    "tablet_gap": "The existing original fixed dock disappears above 760px, the 260px desktop sidebar remains through tablet widths",
+    "install_gap": "No website or Portal V2 webapp manifest was present on latest main before change",
+    "public_website": "Original sitewide mobile CSS and one header/menu correction engine already cover public paths",
+    "user_goal": "Revolut-level simple, one-handed, native-like mobile/tablet app; not copied Revolut visual brand"
+  },
+  "root_cause": {
+    "observed": "Tablet viewport uses old desktop geometry rather than existing mobile app dock; no installable manifest/OS install flow; public forms and controls require consistent touch geometry and responsive boundaries",
+    "unknowns": [
+      "real customer completion speed and retention after change",
+      "authenticated two-tenant mobile field-task usability",
+      "browser/device-specific install prompt support including iOS"
+    ]
+  },
+  "fix": {
+    "scope": "Reuse same Portal V2 router/dock at 761–1024, standalone PWA manifest+icons and truthful opt-in install, original website sitewide mobile CSS app polish, original build injection to public pages",
+    "existing_router": "navigatePortal",
+    "existing_role_gate": true,
+    "existing_identity_source": true,
+    "no_new_scheduler": true,
+    "no_new_provider_writer": true,
+    "no_private_offline_cache": true,
+    "no_revolut_brand_copy": true
+  },
+  "compiler": {
+    "failure_class": "ORIGINAL_TABLET_SHELL_DESKTOP_GEOMETRY_AND_MISSING_INSTALLABLE_WEBAPP",
+    "scope": "PORTAL_PUBLIC_WEBSITE_UX",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-one-app-tablet-pwa-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-one-app-tablet-pwa-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-one-app-tablet-pwa-20261112.test.mjs"
+    ]
+  },
+  "prevention": [
+    "ONE_EXISTING_DOCK_ON_PHONE_AND_TABLET",
+    "ORIGINAL_NATIVE_ROUTE_AND_TENANT_AUTH_ONLY",
+    "ONE_INSTALLABLE_ORIGINAL_SITE_AND_PORTAL_MANIFEST",
+    "NO_OFFLINE_PRIVATE_TENANT_CACHE_OR_FABRICATED_INSTALL",
+    "44PX_TOUCH_TARGET_AND_16PX_MOBILE_FORM_INPUT",
+    "SAFE_AREA_FOCUS_AND_REDUCED_MOTION",
+    "REQUIRE_PROTECTED_CI_NETLIFY_DOM_AND_BROWSER_READBACK"
+  ],
+  "evidence": {
+    "required": "Protected PR Required+CodeQL, original website/portal viewport tests, Netlify exact-main current READY, original Portal V2 production DOM + production release readback and Skill Projection",
+    "limitations": "An installable standalone website is not native App Store software, offline availability or measured real-user conversion uplift; no evidence of actual customer Heartbeat business success"
+  }
+}
