@@ -13,8 +13,8 @@
     "post_measurements_imported": 0,
     "reported_sync_status": "ok",
     "independent_windsor_period": "2026-10-13/2026-11-11",
-    "widsor_ga4_source_split_sessions": 37,
-    "note": "GA4 sessions can exist without any tagged social_posts.source_campaign_id match; zero imported social metrics does not mean zero website sessions."
+    "note": "GA4 sessions can exist without any tagged social_posts.source_campaign_id match; zero imported social metrics does not mean zero website sessions.",
+    "windsor_ga4_channel_session_sum": 37
   },
   "root_cause": "Existing GA4 collector imported only campaign-key matched social-post measurements. Nonempty GA4 provider page rows with no matching campaigns were labeled IMPORTED/ok with zero imported measurements. Duplicate source readbacks repeated ok without proving an attributed prior batch. Channel source and downstream post attribution were conflated.",
   "fix": [
