@@ -3336,8 +3336,12 @@
     {
       "version": "20261112203000",
       "name": "original_seo_keyword_tenant_alignment_v1"
+    },
+    {
+      "version": "20261112211000",
+      "name": "original_skipped_provider_reference_readback_handoff_v1"
     }
   ],
-  "captured_at": "2026-11-12T19:04:18.464Z",
+  "captured_at": "2026-11-12T19:33:02.783237Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
