@@ -117,15 +117,36 @@ jobs:
           # Exact display title and original workflow source are rechecked by
           # require_workflow below; request at most once per PR+head identity.
           expected_title="BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}"
+          # An exact PR-number flight cannot legitimately predate the PR itself.
+          # Use its immutable provider created_at minus a bounded 10-minute
+          # clock-skew margin to avoid unbounded historical Actions scans (504).
+          # This is a COMPLETE time-qualified search, not a first-page shortcut.
+          pr_created_at="$(jq -r '.created_at // empty' <<<"$pr")"
+          if ! since="$(node --input-type=module - "$pr_created_at" <<'NODE'
+          import {originalBrainFlightSince} from './tools/delivery/brain-verification-flight-index.mjs';
+          console.log(originalBrainFlightSince(process.argv[2]));
+          NODE
+          )"; then
+            echo "::error::BRAIN_FLIGHT_PR_CREATION_TIME_UNVERIFIED"; exit 78
+          fi
+          created_filter="$(node -e 'process.stdout.write(encodeURIComponent(">="+process.argv[1]))' "$since")"
+          query="repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&created=${created_filter}&per_page=100"
           # workflow_dispatch is indexed under main SHA, NOT the PR head SHA.
-          # Double-check the original main-indexed provider flight before dispatch.
+          # Double-check full provider pagination for this PR-era cohort.
           for guard_check in 1 2; do
-            # Use ALL native pages. A first 100-run page is never sufficient
-            # to prove absence when GitHub reports >100 historical runs.
-            if ! list="$(gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&per_page=100")"; then
+            # GitHub caps filtered Actions searches at 1000. The index rejects
+            # cap saturation, missing/duplicate pages and pre-cutoff identities.
+            fetched=false
+            for provider_attempt in 1 2; do
+              if list="$(gh api --paginate --slurp "$query")"; then
+                fetched=true; break
+              fi
+              [ "$provider_attempt" = 2 ] || sleep 2
+            done
+            if [ "$fetched" != true ]; then
               echo "::error::BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED"; exit 78
             fi
-            if ! selected="$(printf '%s' "$list" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title")"; then
+            if ! selected="$(printf '%s' "$list" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title" --since "$since")"; then
               echo "::error::BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN"; exit 78
             fi
             status="$(jq -r '.status // "INVALID"' <<<"$selected")"
