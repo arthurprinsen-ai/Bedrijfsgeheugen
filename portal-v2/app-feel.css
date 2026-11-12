@@ -68,3 +68,10 @@ body{overscroll-behavior-y:contain;-webkit-tap-highlight-color:transparent}
  :where(.eh-quick-card,.eh-goal,.eh-main-action){transition:none!important;transform:none!important}
  .portal-mobile-primary{backdrop-filter:none!important}
 }
+
+/* The existing Help panel owns the optional browser install action. */
+.portal-install-action{display:block;width:100%;text-align:left;min-height:44px;padding:12px 14px;border:1px solid #b7d8d3;border-radius:12px;background:#e7f4f0;color:#164f49;font:750 .87rem/1.35 system-ui,sans-serif;cursor:pointer}
+.portal-install-action:hover,.portal-install-action:focus-visible{background:#d6efe5}
+.portal-install-action:focus-visible{outline:3px solid #176d70;outline-offset:2px}
+.portal-install-action[hidden],.portal-install-status[hidden]{display:none!important}
+.portal-install-status{font-size:.8rem;color:#3c5f69;line-height:1.45;margin:9px 0 0}
