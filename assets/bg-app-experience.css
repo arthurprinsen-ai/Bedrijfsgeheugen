@@ -44,3 +44,12 @@ html{scroll-padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
  .bg-app-public-dock-link:active{transform:none}
  .bg-app-public-dock{backdrop-filter:none}
 }
+
+/* Real 390px production regression: a public navigation dock must NEVER
+   intercept the original private Portal V2 four-tab menu after late hydration. */
+body:has(#portalView) .bg-app-public-dock,
+body:has(#portalFullMenuToggle) .bg-app-public-dock,
+body:has([data-portal-mobile-primary]) .bg-app-public-dock{
+ display:none!important;visibility:hidden!important;pointer-events:none!important
+}
+body.bg-app-public-has-dock:has(#portalView){padding-bottom:0!important}

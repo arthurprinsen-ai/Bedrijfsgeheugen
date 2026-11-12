@@ -1,0 +1,3 @@
+# Original UX defect event
+
+UTC: 2026-11-12T13:59:26Z; source: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43231847224; original issue #4215. Root cause: public dock had z-index and pointer interception over original Portal V2 mobile Meer button, despite private shell being hydrated. Source stage FIX_CANDIDATE: existing app shell DOM and CSS guards; no new runner or data authority. BRAIN fingerprint `portal|ux|public-dock-overlays-private-more|20261112-v1`; owner original Website UX / Portal V2; verified only after actual protected merge, production DOM click, independently observed result and recurrence test. Other ONE BRAIN content obligations remain unaffected and open.

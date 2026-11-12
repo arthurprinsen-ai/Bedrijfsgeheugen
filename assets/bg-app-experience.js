@@ -20,6 +20,9 @@
  }
  function mountDock(){
   if(isPortal||document.querySelector('[data-bg-app-public-dock]')||!document.body)return;
+  // A routed public URL may hydrate into the real private Portal V2 shell.
+  // Only the original four-tab portal dock is allowed above private controls.
+  if(document.querySelector('#portalView, #portalFullMenuToggle, [data-portal-mobile-primary], .portal-mobile-primary'))return;
   var nav=add('nav','bg-app-public-dock');
   nav.dataset.bgAppPublicDock='1';
   nav.setAttribute('aria-label','Snelle navigatie Bedrijfsgeheugen');

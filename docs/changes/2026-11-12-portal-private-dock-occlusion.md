@@ -1,0 +1,5 @@
+# Original Portal V2 mobile menu pointer interception
+
+Evidence: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43231847224; job 131228907570; immutable Netlify deploy 6af5c526562a7a2788ce0af4, SHA 1d86248d701315ba148938bc84dc5310af985d5d. True browser click blocked by public dock link after async hydration on 390×844, not a merely visual discrepancy.
+
+Fix existing `assets/bg-app-experience.js/.css`: reject public dock on private Portal V2 DOM independent of URL; fail-closed CSS pointer interception after late hydration. Preserve one existing tenant router/four-tab dock, consent, storage and background executor. Regression `tests/brain-portal-private-dock-occlusion-20261112.test.mjs`; original `tests/integration/portal-v2-mobile-shell.spec.js` requires a real More click. Existing Portal Living Interface skill and AGENTS updated; machine learning recorded. Acceptance = protected Required+CodeQL, Netlify CURRENT READY exact source, mobile live DOM readback, repeated next run. No false customer-action success.
