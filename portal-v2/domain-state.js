@@ -494,7 +494,6 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
      &&hydratedPrincipal===principalKey&&currentPrincipal()===principalKey
      &&!stateClient.isDemo?.()&&!activeInit&&!activePortalFlush
      &&pendingBusinessInputs.size===0&&pendingImpacts.length===0&&!browserLegacyLiftPending;
-  };
   // Reuse the existing focus/visibility/15-minute revalidation, never a new scheduler.
   // Only replay an already-attempted, same-principal handoff; never auto-save typing.
   if(!samePrincipal()&&!pendingHandoffs().retryable)
