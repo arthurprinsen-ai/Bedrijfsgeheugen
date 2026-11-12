@@ -22,5 +22,28 @@
     "active Supabase Edge bundle with original helper",
     "original audit run source CAS probe receipts",
     "exact provider owner readback and BRAIN independent ACK before closure"
-  ]
+  ],
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "title": "Historical SKIPPED provider references must be consumed by same original publisher audit",
+  "impact": "Sixteen original #171 OPEN provider-readback tasks had no historical executor because the social publisher only queried runDate; actual historical external create must never be replayed on unknown 400/403.",
+  "compiler": {
+    "failure_class": "CONSUMER_HANDOFF_MISSING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-skipped-provider-readback-executor-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-skipped-provider-readback-executor-20261112.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ],
+  "outcome": "CANDIDATE: source and original #171 handoff are proven, while native publisher's bounded provider readback implementation, live edge deployment, exact source CAS, and external post identity remain unverified until independently observed."
 }
