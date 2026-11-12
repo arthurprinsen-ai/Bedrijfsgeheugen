@@ -111,6 +111,9 @@ test('private source, tenant route and provider data are never stored by the ser
 });
 
 test('governance remains the original website and Portal V2, not a new executor or order source',()=>{
+ const registry=JSON.parse(read('config/brain-delivery-system.json'));
+ const websiteLane=registry.lanes.find(item=>item.id==='website');
+ for(const file of ['app.webmanifest','offline.html','service-worker.js'])assert.ok(websiteLane?.paths.includes(file),file+' must be owned by original website delivery');
  const skill=read('.agents/skills/portal-living-interface/SKILL.md');
  const agents=read('platform/agents/agent-team.mjs');
  const global=read('AGENTS.md');
