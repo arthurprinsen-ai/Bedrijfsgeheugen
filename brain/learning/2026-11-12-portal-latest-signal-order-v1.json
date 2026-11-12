@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "portal|source|stale-larger-signal-overrides-recent-observation|20261112-v1",
+  "obligation_id": "portal|source|stale-larger-signal-overrides-recent-observation|20261112-v1",
+  "title": "Portal signal selection must be source-time monotonic, not driven by older large deltas",
+  "status": "FIX_CANDIDATE",
+  "root_cause": "The current Portal V2 monitoring.js condition newer||stronger lets an older high-magnitude delta overwrite a newer verified observation, causing stale advice despite correct source archive.",
+  "impact": "Last observed market/KPI signal and CRO recommendation can regress in time when out-of-order ingestion arrives; customer exposure and conversion impact are not proven.",
+  "fix": "Compare observed_at strictly before magnitude; use abs(delta) only on equal source time. Keep original tenant read-model and original provider/source records.",
+  "prevention_rule": "Portal uses authorized tenant-scoped newest provider time first, fingerprint+source reference, original producer revision, consumer processed ACK, actual outcome. Never treat missing external data or the magnitude of old observations as current success.",
+  "tests": [
+    "tests/brain-portal-latest-source-observation-20261112.test.mjs",
+    "tests/portal-v2-monitoring-learning.test.mjs"
+  ],
+  "regression_contract": "tests/brain-portal-latest-source-observation-20261112.test.mjs; tests/portal-v2-monitoring-learning.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-source-observation-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-latest-source-observation-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-latest-source-observation-20261112.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Source file portal-v2/operating-system/monitoring.js on protected main 1f0f70183a2889aec335cb6437f9b0bd65490e18",
+    "Daily 2026-11-11 and 12 original SHA256 source manifests accepted by original #140, unproven 4 source categories remain incomplete",
+    "Protected admission correction: machine regression moved to canonical tests/brain-* path; original runtime regression remains intact."
+  ],
+  "outcome": "Fix candidate; requires independent production portal browser readback, not evidence of user, CRO, lead or revenue improvement.",
+  "owner": "original Portal V2 / ONE BRAIN projection owner",
+  "no_new_writer": true,
+  "compiler": {
+    "failure_class": "SOURCE_OBSERVATION_ORDER",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

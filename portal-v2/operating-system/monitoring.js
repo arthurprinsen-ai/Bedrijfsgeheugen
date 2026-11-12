@@ -5,9 +5,14 @@ export function dedupeSignals(signals=[]){
  const map=new Map();
  for(const signal of signals){
   const key=fingerprint(signal),prev=map.get(key);
-  const newer=!prev||observedAt(signal.observed_at)>=observedAt(prev.observed_at);
-  const stronger=!prev||Math.abs(Number(signal.delta)||0)>Math.abs(Number(prev.delta)||0);
-  if(newer||stronger)map.set(key,Object.freeze({...signal,fingerprint:key}));
+  // Source chronology is primary. Older, larger deviations may never
+  // override a more recently observed provider event for this fingerprint.
+  const nextAt=observedAt(signal.observed_at);
+  const prevAt=prev?observedAt(prev.observed_at):0;
+  const newer=nextAt>prevAt;
+  const sameTimeStronger=prev && nextAt===prevAt &&
+    Math.abs(Number(signal.delta)||0)>Math.abs(Number(prev.delta)||0);
+  if(!prev||newer||sameTimeStronger)map.set(key,Object.freeze({...signal,fingerprint:key}));
  }
  return Object.freeze([...map.values()]);
 }
