@@ -34,6 +34,8 @@ export function mountPortalQuickSwitcher({documentRef=globalThis.document,stateC
  input.setAttribute('role','combobox');
  input.setAttribute('aria-autocomplete','list');
  input.setAttribute('aria-expanded','false');
+ input.setAttribute('aria-keyshortcuts','Control+K Meta+K');
+ input.spellcheck=false;
  input.setAttribute('aria-controls','portalQuickSwitchResults');
  input.autocomplete='off';
  const list=documentRef.createElement('div');
