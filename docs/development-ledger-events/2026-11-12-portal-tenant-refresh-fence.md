@@ -22,3 +22,7 @@
 ## CI recovery — original executable replay run 43323168817
 - Authentic original learning historical replay executed Node and failed with `SyntaxError: Illegal return statement`. The new arrow-body expression was correctly ended by `;` but retained a second `};` from the removed block. This terminated `refresh` early; no runtime release was made.
 - Corrected only the residual brace in `portal-v2/domain-state.js`. Prevention: the original admission learning contract executes `node --test` on changed Brain tests before any protected merge; mandatory Portal and CodeQL checks must remain unchanged. Do not infer live from a passing syntax check.
+
+## CI recovery — native semantic learning run 43323411876
+- Original learning compiler and executable replay advanced, but the subsequent independent `scripts/brain/material-writeback-closure-guard.mjs` rejected the candidate with `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: semantic_learning`.
+- Root cause: the machine record used descriptive `observed_root_causes` and `correction` arrays but lacked required canonical semantic keys `root_cause` and `prevention` (original `evidence` already existed). Added explicit nonempty machine-readable fields, with the same truthful fact/contract and no change to the guard. Required/CodeQL remain pending on a fresh exact head.
