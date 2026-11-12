@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|one-brain|duplicate-original-24h-social-alias-left-unacked|20261112-v1",
+  "parent_issue": 4198,
+  "owner": "original powerhouse-runtime-scheduler-mux-v1 (#171)",
+  "problem": "Two original legacy aliases were OPEN while the canonical original 24h obligation already MEASUREMENT_VERIFIED with exact source event and stored evaluation; original ONE BRAIN mirrored the duplicates OPEN indefinitely.",
+  "source_proven_repair": [
+    {
+      "alias": "dispatch-readback-6aa90f62fc3e50043d7adcc2",
+      "verified": "social-snapshot:6aa90f62fc3e50043d7adcc2:24",
+      "evaluation": "evaluation:6aa90f62fc3e50043d7adcc2:24",
+      "source_event": "buffer:6aa90f62fc3e50043d7adcc2:2026-09-16T13:09:40.482Z"
+    },
+    {
+      "alias": "measure-6aa9147bbc24766c896877ea",
+      "verified": "social-snapshot:6aa9147bbc24766c896877ea:24",
+      "evaluation": "evaluation:6aa9147bbc24766c896877ea:24",
+      "source_event": "buffer:6aa9147bbc24766c896877ea:2026-09-16T13:08:44.650Z"
+    }
+  ],
+  "original_live_outcome": "2026-11-12 original SQL CAS: 2 legacy source aliases MEASUREMENT_VERIFIED and 2 original BRAIN consumers FULFILLED, source/evaluation identity checked, no new provider or outcome.",
+  "prevention": "Inside the original #171 assurance function, positive-ACK only 24h measurement/readback aliases with the same canonical tenant/post/window, exact original Buffer source event, numeric observation inside 18–30h of source publishing, linked persisted evaluation, original provider dispatch published for company readback, original BRAIN child OPEN. Acknowledge both source alias and BRAIN child transactionally, bounded to 24. No additional worker or authority. Missing 48/72h and provider-admin LinkedIn source claims remain unproven.",
+  "regression": "tests/brain-original-social-legacy-alias-ack-20261112.test.mjs",
+  "no_inference": [
+    "new_provider_publication",
+    "linkedin_native_authorization",
+    "48_hour_metric",
+    "72_hour_metric",
+    "causal_lift",
+    "revenue",
+    "experiment_winner"
+  ],
+  "same_owner": true,
+  "proof_link": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}
