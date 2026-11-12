@@ -20,3 +20,13 @@ One original protected website candidate updates the three existing pages, their
 
 ## Prevention
 One breadcrumb authority per money page; visible and structured pricing must match the existing canonical commercial guide. Future build must reject regressions, require protected main and independent production readback, and write back outcomes into the same original ONE BRAIN lineage.
+
+
+## 12 Nov 2026 — original post-build money-page price/card drift + one-loop handoff
+
+- Actual original current production readback: /exact-online-koppeling provider page parse shows decision card "Prijs & scope" at €1,500–€5,000, while PR #5700 candidate FAQ/FAQPage refers to €3,500–€6,000 one-way and up to €12,000 complex.
+- Root cause: original `assets/stijl.js` money-page meta (not raw HTML) is consumed by `tools/site-shell/money-prerender.mjs` and survives after source FAQ changes. Initial regression verified only source FAQ, not the final built page.
+- Original fix: modify exact same PR #5700 with canonical Exact/Twinfield price authority, offline EN cache, final-built regression; update existing SEO agent + two existing skills, ONE BRAIN learning and human ledger. No second writer, scheduler or page.
+- Durable source handoffs: existing recommendation dedupe keys for Exact/Twinfield → original website owner → protected release/Netlify readback → original #175→#140→Heartbeat exact revision SHA, then existing CRO treatment/holdout and independent outcomes.
+- Prevent recurrence: require final built markup pricing and schema consistency + downstream source receipt; incomplete GA4/GSC or unexecuted CRO remains EVIDENCE_DUE, no declared traffic/revenue.
+- Verification pending: updated candidate Required/CodeQL + final browser/EN/CTA checks, protected merge, exact Netlify main READY + real public page readback, original recommendation consumer ACK and later causal effect/learning.
