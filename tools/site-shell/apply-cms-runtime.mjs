@@ -32,6 +32,11 @@ for(const file of [...new Set(targets)]){
   const rel=path.relative(root,file).replaceAll(path.sep,'/');
   const publicPage=!/^(?:portal|portal-next|portal-v2|intern)\//.test(rel);
   if(publicPage){
+    // One manifest identifies the original site+Portal V2 as the same installable
+    // app. Every public landing page offers the canonical installation entry.
+    if(!html.includes('href="https://www.bedrijfsgeheugen.nl/app.webmanifest"')){
+      html=html.replace(/<\/head>/i,'<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/app.webmanifest" data-bg-app-manifest="1">\n</head>');
+    }
     if(!html.includes('id="bg-sitewide-mobile-ui-20261111"')){
       html=html.replace(/<\/head>/i,mobileUiStyle+'\n</head>');
     }
