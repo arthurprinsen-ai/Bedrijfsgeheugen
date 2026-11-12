@@ -29,10 +29,10 @@ export function inspectRenderedSeoPage({route,meta,origin=SITE}){
   try{url=new URL(text(meta.canonical))}catch{}
   if(!url||url.origin!==origin||cleanPath(url.pathname)!==cleanPath(route)||url.search||url.hash)
     add('canonicals','CANONICAL_MISMATCH','error','Use the exact self-canonical on the public sitemap route');
-  if(/(?:^|[,;\s])noindex(?:[,;\s]|$)/i.test(text(meta.robots)))
+  if(/(?:^|[,;\s])noindex(?:[,;\s]|$)/i.test(text(meta.robots??meta.metaRobots)))
     add('indexability','SITEMAP_NOINDEX','error','Remove from sitemap or correct noindex authority');
   const expectedLang=route.startsWith('/en/')||route==='/en'?'en':'nl';
-  if(!text(meta.lang).toLowerCase().startsWith(expectedLang))
+  if(!text(meta.lang??meta.htmlLang).toLowerCase().startsWith(expectedLang))
     add('localization','HTML_LANG_MISMATCH','warning','Review locale and translated route');
   if(asNumber(meta.imagesMissingAlt)>0)
     add('images','IMAGES_MISSING_ALT','warning','Add suitable ALT descriptions or decorative empty ALT');
@@ -43,8 +43,8 @@ export function inspectRenderedSeoPage({route,meta,origin=SITE}){
   if(asNumber(meta.uncompressedImageCount)>0)
     add('images','OVERSIZED_IMAGE_DIMENSIONS','notice','Inspect images with exceptionally large intrinsic dimensions');
   return {route,issues,metadata:{title,description},metrics:{
-    images:asNumber(meta.images),imagesMissingAlt:asNumber(meta.imagesMissingAlt),
-    structuredData:asNumber(meta.jsonLdCount),canonical:text(meta.canonical),lang:text(meta.lang)
+    images:asNumber(meta.images??meta.imageCount),imagesMissingAlt:asNumber(meta.imagesMissingAlt),
+    structuredData:asNumber(meta.jsonLdCount),canonical:text(meta.canonical),lang:text(meta.lang??meta.htmlLang)
   }};
 }
 
