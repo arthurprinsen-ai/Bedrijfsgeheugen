@@ -43,6 +43,10 @@ test('private-data safety: only public static offline document cached; network o
  assert.match(offline,/voeren we geen acties uit/);
  assert.match(offline,/https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
  assert.doesNotMatch(offline,/Authorization|access_token|refresh_token/);
+ assert.doesNotMatch(offline,/onclick=|onload=/);
+ const delivery=JSON.parse(read('config/brain-delivery-system.json'));
+ const website=delivery.lanes.find(lane=>lane.id==='website');
+ for(const name of ['app-offline.html','app-sw.js','app.webmanifest'])assert.ok(website.paths.includes(name),'unclassified public app asset '+name);
 });
 
 test('public website and private portal opt into their own manifest with real full HTTPS hrefs',()=>{
