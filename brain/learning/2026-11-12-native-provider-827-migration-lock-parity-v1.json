@@ -30,8 +30,16 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
-      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
     ]
   }
 }
