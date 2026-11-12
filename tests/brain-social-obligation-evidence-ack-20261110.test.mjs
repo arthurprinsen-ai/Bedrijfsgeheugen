@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {verifiedSocialWindowAck,isSourceQualifiedSocialSnapshot} from '../supabase/functions/_shared/social-learning-window-ack.mjs';
+import {verifiedSocialWindowAck,isSourceQualifiedSocialSnapshot,selectQualifiedSocialCohortSnapshot} from '../supabase/functions/_shared/social-learning-window-ack.mjs';
 import {runScheduledTenants,runEvaluation} from '../netlify/functions/social-learning-evaluate.mjs';
 
 const postId='6aaa57852bae7e96e951773d';
@@ -142,4 +142,42 @@ test('original hourly evaluator does not report an empty snapshot as completed o
   assert.equal(result.missedObligations,1);
   assert.equal(calls.length,1);
   assert.equal(calls[0].type,'UNVERIFIED_OR_PARTIAL_WINDOW');
+});
+
+test('cohort evidence excludes partial, mismatched, null-only and out-of-window metrics without changing the 6h gate',()=>{
+  const providerId='urn:li:share:7526178124292718592';
+  const candidate={tenant_id:'bedrijfsgeheugen',post_id:'company:'+providerId,
+    external_post_id:providerId,published_at:'2026-11-11T07:04:56Z'};
+  const observedAt='2026-11-12T09:30:00Z';
+  const valid={tenant_id:candidate.tenant_id,post_id:candidate.post_id,source:'windsor-linkedin-company',
+    data_quality:'PROVIDER_OBSERVED_LINKED',observed_at:observedAt,
+    source_event_id:'windsor:linkedin-company:'+providerId+':2026-11-12',
+    metrics:{impressions:0,scope:'company_post_analytics',provider_post_urn:providerId,
+      provider_organization_urn:'urn:li:organization:18234216',
+      independent_proof:'EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT',
+      source_quality_before_link:'PROVIDER_OBSERVED'}};
+  const pick=(snapshots,post=candidate,windowHours=24)=>
+    selectQualifiedSocialCohortSnapshot({post,snapshots,windowHours,toleranceHours:6});
+  assert.equal(pick([valid])?.source_event_id,valid.source_event_id);
+  assert.equal(pick([{...valid,data_quality:'OBSERVED_PARTIAL_SCOPE'}]),null);
+  assert.equal(pick([{...valid,tenant_id:'canonical'}]),null);
+  assert.equal(pick([{...valid,post_id:'different'}]),null);
+  assert.equal(pick([{...valid,source_event_id:'windsor:linkedin-company:urn:li:share:7520000000000000000:2026-11-12'}]),null);
+  assert.equal(pick([{...valid,metrics:{...valid.metrics,provider_post_urn:'different'}}]),null);
+  assert.equal(pick([{...valid,metrics:{}}]),null);
+  assert.equal(pick([{...valid,observed_at:'2026-11-12T14:12:23Z'}]),null);
+  assert.equal(pick([{...valid,source:''}]),null);
+  assert.equal(pick([{...valid,observed_at:'not-a-time'}]),null);
+  assert.equal(pick([valid],{...candidate,external_post_id:''}),null);
+  assert.equal(pick([valid],candidate,168),null);
+  assert.equal(selectQualifiedSocialCohortSnapshot({post:candidate,snapshots:[valid],windowHours:24,toleranceHours:8}),null);
+  assert.equal(pick([{...valid,data_quality:'OBSERVED',source:'buffer',
+    metrics:{likes:0}}])?.metrics?.likes,0);
+});
+
+test('the original authenticated social-learning-store uses source-qualified cohorts, not raw latest rows',async()=>{
+  const edge=await readFile(new URL('../supabase/functions/social-learning-store/index.ts',import.meta.url),'utf8');
+  assert.match(edge,/selectQualifiedSocialCohortSnapshot\(\{/);
+  assert.match(edge,/post:p,snapshots:byPost\.get\(p\.post_id\)/);
+  assert.doesNotMatch(edge,/if\(d<=tolerance&&d<delta\)/);
 });
