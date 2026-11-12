@@ -21,8 +21,8 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "legacy portal source with missing healthy metadata and processing status ok",
-      "legacy 7-versus-12 question and automatic email contradictory website copy"
+      "tests/brain-trusted-advisor-assurance-v1.test.mjs",
+      "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs"
     ],
     "expected": "Missing healthy remains insufficient_evidence; generic ok cannot become verified; 12-question and instant-result copy consistent across four main routes"
   },
