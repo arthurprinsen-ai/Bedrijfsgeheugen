@@ -5,6 +5,7 @@
 # op 20 augustus 2026: de hele inhoud van _redirects was hier twee keer
 # ingeplakt door een workflow.
 
+# trusted-advisor canonical brand-shell readback production heartbeat: 20261112-v1
 # Bedrijfsgeheugen — routing, headers en caching
 #
 # OMGEVINGSVARIABELEN (Site configuration → Environment variables)
