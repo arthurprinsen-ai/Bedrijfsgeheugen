@@ -142,8 +142,14 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
   await savePortalBusinessInput(buildPortalBusinessInput(nextState),{fetchFn:fetchImpl,authorization:headers.authorization});
   const response=await fetchImpl(API_URL,{method:'POST',headers:{...headers,'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(nextState||{})});
   const body=await response.json().catch(()=>({}));
-  if(!response.ok||body?.stored===false)throw new Error(body?.error||`PORTAL_STATE_WRITE_${response.status}`);
-  return load();
+  if(!response.ok)throw new Error(body?.error||`PORTAL_STATE_WRITE_${response.status}`);
+  // A 2xx response alone, an omitted stored flag, or an explicitly stale
+  // projection is NOT an authenticated persistence/consumer receipt.
+  if(body?.stale===true)throw new Error(body?.error||'PORTAL_STATE_STALE_PROJECTION');
+  if(body?.stored!==true||body?.stale!==false)throw new Error(body?.error||'PORTAL_STATE_ACK_INCOMPLETE');
+  const confirmed=await load();
+  if(confirmed?.mode!=='authenticated')throw new Error('PORTAL_STATE_READBACK_NOT_AUTHENTICATED');
+  return confirmed;
  }
 
  return Object.freeze({apiUrl:API_URL,isDemo:()=>demo,isCustomer:()=>customer,getSnapshot:()=>current,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)},load,write,currentUser:()=>demo?DEMO_USER:identityUser(identityProvider()),authHeaders:async()=>demo?{accept:'application/json'}:headersFor(identityUser(identityProvider()))});

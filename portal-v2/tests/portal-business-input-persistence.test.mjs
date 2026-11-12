@@ -21,7 +21,7 @@ test('authenticated write stores canonical business input before portal projecti
   const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,options={})=>{
     calls.push({url,options});
     if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'revision-1',brainRecordId:'brain-input-1',currentStateRecordId:'brain-state-1',organismImpactRecordId:'brain-impact-1'});
-    if(url==='/api/portal-state'&&options.method==='POST')return response({stored:true});
+    if(url==='/api/portal-state'&&options.method==='POST')return response({stored:true,stale:false});
     if(url==='/api/portal-state'&&options.method==='GET')return response({portal:{profile:{employees:24}}});
     throw new Error(`unexpected ${url}`);
   }});
