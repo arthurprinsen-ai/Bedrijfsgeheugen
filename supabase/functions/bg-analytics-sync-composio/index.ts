@@ -86,8 +86,8 @@ Deno.serve(async(req:Request)=>{
    primaryFailure=error instanceof Error?error.message.slice(0,300):'unknown';const failureClass=classifyFailure(primaryFailure);
    if(failureClass!=='AUTH')throw new Error(`DIRECT_NON_AUTH_FAILURE:${primaryFailure}`);
    const apiKey=await secret(db,'WINDSOR_API_KEY');const accountId=(await secret(db,'WINDSOR_GA4_ACCOUNT_ID'))||DEFAULT_WINDSOR_ACCOUNT;
-   if(apiKey){try{rows=await windsorGA4(apiKey,accountId,day);sourceRoute=WINDSOR_SOURCE}catch(fallbackError){const cached=await recentWindsorReadback(db);if(!cached)throw fallbackError;sourceRoute='windsor-verified-readback-cache';await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:Number(cached.rows_total||0),pages_bijgewerkt:Number(cached.rows_attributed||0),metingen_ingevuld:Number(cached.rows_attributed||0),status:'ok',fout:`primary AUTH failed; live Windsor API failed; reused verified Windsor readback ${cached.run_id}`,uitgevoerd_op:new Date().toISOString()});const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,status:'READBACK_REUSED',source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure,readback_run_id:cached.run_id,readback_completed_at:cached.completed_at};await writeRuntime(db,`ga4-failover:${day}:${cached.run_id}`, 'observed',out);await bewijs(true,out);return json(out,200)}}
-   else {const cached=await recentWindsorReadback(db);if(!cached)throw new Error(`WINDSOR_FALLBACK_UNAVAILABLE:missing WINDSOR_API_KEY; primary=${primaryFailure}`);sourceRoute='windsor-verified-readback-cache';await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:Number(cached.rows_total||0),pages_bijgewerkt:Number(cached.rows_attributed||0),metingen_ingevuld:Number(cached.rows_attributed||0),status:'ok',fout:`primary AUTH failed; WINDSOR_API_KEY absent; reused verified Windsor readback ${cached.run_id}`,uitgevoerd_op:new Date().toISOString()});const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,status:'READBACK_REUSED',source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure,readback_run_id:cached.run_id,readback_completed_at:cached.completed_at};await writeRuntime(db,`ga4-failover:${day}:${cached.run_id}`, 'observed',out);await bewijs(true,out);return json(out,200)}
+   if(apiKey){try{rows=await windsorGA4(apiKey,accountId,day);sourceRoute=WINDSOR_SOURCE}catch(fallbackError){const cached=await recentWindsorReadback(db);if(!cached)throw fallbackError;sourceRoute='windsor-verified-readback-cache';await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:Number(cached.rows_total||0),pages_bijgewerkt:Number(cached.rows_attributed||0),metingen_ingevuld:Number(cached.rows_attributed||0),status:Number(cached.rows_attributed||0)>0?'ok':'partial',fout:`primary AUTH failed; live Windsor API failed; reused verified Windsor readback ${cached.run_id}`,uitgevoerd_op:new Date().toISOString()});const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,status:Number(cached.rows_attributed||0)>0?'READBACK_REUSED_ATTRIBUTED':'READBACK_REUSED_SOURCE_ONLY',source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure,readback_run_id:cached.run_id,readback_completed_at:cached.completed_at};await writeRuntime(db,`ga4-failover:${day}:${cached.run_id}`, 'observed',out);await bewijs(Number(cached.rows_attributed||0)>0,out,Number(cached.rows_attributed||0)>0?null:'ATTRIBUTION_NOT_PROVEN');return json(out,Number(cached.rows_attributed||0)>0?200:207)}}
+   else {const cached=await recentWindsorReadback(db);if(!cached)throw new Error(`WINDSOR_FALLBACK_UNAVAILABLE:missing WINDSOR_API_KEY; primary=${primaryFailure}`);sourceRoute='windsor-verified-readback-cache';await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:Number(cached.rows_total||0),pages_bijgewerkt:Number(cached.rows_attributed||0),metingen_ingevuld:Number(cached.rows_attributed||0),status:Number(cached.rows_attributed||0)>0?'ok':'partial',fout:`primary AUTH failed; WINDSOR_API_KEY absent; reused verified Windsor readback ${cached.run_id}`,uitgevoerd_op:new Date().toISOString()});const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,status:Number(cached.rows_attributed||0)>0?'READBACK_REUSED_ATTRIBUTED':'READBACK_REUSED_SOURCE_ONLY',source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure,readback_run_id:cached.run_id,readback_completed_at:cached.completed_at};await writeRuntime(db,`ga4-failover:${day}:${cached.run_id}`, 'observed',out);await bewijs(Number(cached.rows_attributed||0)>0,out,Number(cached.rows_attributed||0)>0?null:'ATTRIBUTION_NOT_PROVEN');return json(out,Number(cached.rows_attributed||0)>0?200:207)}
   }
 
   // HTTP200 with zero returned rows is verified emptiness, NOT a successful import
@@ -130,13 +130,74 @@ Deno.serve(async(req:Request)=>{
    return json(result,consentLimited?200:503);
   }
   const headers=['date','pagePath','sessionCampaignName','sessions','activeUsers','eventCount'];const csv=[headers.join(','),...rows.map((r:any)=>headers.map(h=>csvCell(r[h])).join(','))].join('\n')+'\n';if(new TextEncoder().encode(csv).byteLength>5_000_000)throw new Error('GA4_CSV_TOO_LARGE');const csvHash=await sha256(csv);
-  const {data:existing}=await db.from('bg_ga4_csv_batches').select('run_id,status,completed_at').eq('period_start',day).eq('period_end',day).eq('csv_sha256',csvHash).eq('source',sourceRoute).limit(1);
-  if(existing?.length){const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,status:'DUPLICATE_READBACK',source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure,existing_run_id:existing[0].run_id,csv_sha256:csvHash};await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:rows.length,pages_bijgewerkt:0,metingen_ingevuld:0,status:'ok',fout:null,uitgevoerd_op:new Date().toISOString()});await writeRuntime(db,`ga4-sync:${day}:${csvHash}:${sourceRoute}`,'observed',out);await bewijs(true,out);return json(out,200)}
+  const {data:existing}=await db.from('bg_ga4_csv_batches').select('run_id,status,completed_at,rows_total,rows_attributed').eq('period_start',day).eq('period_end',day).eq('csv_sha256',csvHash).eq('source',sourceRoute).limit(1);
+  if(existing?.length){
+    // A previously recorded empty attribution is not new social measurement.
+    // Provider page rows remain genuine source evidence, never zero visitors.
+    const prev=existing[0], attributionProven=prev.status==='IMPORTED'&&Number(prev.rows_attributed||0)>0;
+    const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,
+      status:attributionProven?'DUPLICATE_ATTRIBUTED_READBACK':'DUPLICATE_SOURCE_ONLY_READBACK',
+      source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure,
+      existing_run_id:prev.run_id,csv_sha256:csvHash,
+      provider_rows_observed:Number(prev.rows_total||0),
+      social_post_measurements_imported:0,
+      previous_attributed_rows:Number(prev.rows_attributed||0),
+      source_data_available:Number(prev.rows_total||0)>0,
+      website_visitors:'NOT_INFERRED_FROM_SOCIAL_POST_IMPORT'};
+    await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,
+      pages_opgehaald:Number(prev.rows_total||0),pages_bijgewerkt:0,metingen_ingevuld:0,
+      status:attributionProven?'ok':'partial',
+      fout:attributionProven?null:'GA4_SOURCE_OBSERVED_WITHOUT_ATTRIBUTED_POST_MEASUREMENTS',
+      uitgevoerd_op:new Date().toISOString()});
+    await writeRuntime(db,`ga4-sync:${day}:${csvHash}:${sourceRoute}`,'observed',out);
+    await bewijs(attributionProven,out,attributionProven?null:'ATTRIBUTION_NOT_PROVEN');
+    return json(out,attributionProven?200:207);
+  }
   const batch=await db.from('bg_ga4_csv_batches').insert({run_id:runId,period_start:day,period_end:day,csv_sha256:csvHash,csv_bytes:new TextEncoder().encode(csv).byteLength,csv_text:csv,source:sourceRoute,status:'RECEIVED',rows_total:rows.length,detail:{property,source_route:sourceRoute,primary_failure:primaryFailure,contract:FAILOVER_CONTRACT}});if(batch.error)throw new Error(`GA4_BATCH_STORE:${batch.error.message}`);
   const campaigns=[...new Set(rows.map((r:any)=>clean(r.sessionCampaignName)).filter(Boolean))] as string[];let matched:any[]=[];if(campaigns.length){const lookup=await db.from('social_posts').select('tenant_id,post_id,platform,external_post_id,source_campaign_id,topic,content_pillar,audience,funnel_stage,format,hook_type,narrative_type,emotion,cta_type,published_at').eq('tenant_id','bedrijfsgeheugen').in('source_campaign_id',campaigns);if(lookup.error)throw new Error(`CAMPAIGN_LOOKUP:${lookup.error.message}`);matched=lookup.data||[]}
   const byCampaign=new Map<string,any[]>();for(const p of matched){const k=clean(p.source_campaign_id);if(k)byCampaign.set(k,[...(byCampaign.get(k)||[]),p])}const imports:any[]=[];let unmatched=0;
   for(const r of rows){const campaign=clean(r.sessionCampaignName);if(!campaign)continue;const matches=byCampaign.get(campaign)||[];if(matches.length!==1){unmatched++;continue}const p=matches[0];imports.push({...p,campaign_key:campaign,source_campaign_id:campaign,observed_at:new Date().toISOString(),bron:sourceRoute==='google-analytics-data-api'?'ga4-direct':'ga4-windsor',source_event_id:`ga4:${day}:${p.post_id}:${r.pagePath||'/'}`,metrics:{sessions:Number(r.sessions||0),active_users:Number(r.activeUsers||0),event_count:Number(r.eventCount||0),page_path:r.pagePath||'/',ga4_date:r.date||day}})}
   let imported=0;for(let i=0;i<imports.length;i+=500){const posts=imports.slice(i,i+500);const res=await fetch(`${url}/functions/v1/bg-post-import`,{method:'POST',headers:{authorization:`Bearer ${serviceKey}`,'content-type':'application/json'},body:JSON.stringify({posts})});const body:any=await res.json().catch(()=>({}));if(!res.ok)throw new Error(`POST_IMPORT_${res.status}:${String(body?.error||'').slice(0,140)}`);imported+=Number(body?.metingen||posts.length)}
-  const status=unmatched>0?'PARTIAL':'IMPORTED';await db.from('bg_ga4_csv_batches').update({status,rows_attributed:imports.length,rows_unmatched:unmatched,completed_at:new Date().toISOString(),detail:{property,source_route:sourceRoute,primary_failure:primaryFailure,campaigns:campaigns.length,matched_posts:matched.length,metrics_imported:imported,contract:FAILOVER_CONTRACT}}).eq('run_id',runId);await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:rows.length,pages_bijgewerkt:imports.length,metingen_ingevuld:imported,status:status==='IMPORTED'?'ok':'partial',fout:unmatched?`${unmatched} campaign rows unmatched or ambiguous`:null,uitgevoerd_op:new Date().toISOString()});const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,rows:rows.length,attributed:imports.length,unmatched,imported,csv_sha256:csvHash,status,source:sourceRoute,source_route:sourceRoute,primary_failure:primaryFailure};await writeRuntime(db,`ga4-sync:${day}:${csvHash}:${sourceRoute}`,'observed',out);await bewijs(true,out);return json(out,unmatched?207:200)
+  // Source-only organic/direct sessions are real GA4 observations; they are
+  // NOT proof of tagged LinkedIn/Instagram post attribution or zero visitors.
+  // A social campaign that cannot be matched needs original-owner recovery.
+  const campaignRows=rows.filter((r:any)=>clean(r.sessionCampaignName));
+  const sourceOnlyRows=Math.max(0,rows.length-campaignRows.length);
+  const campaignAttributionGap=unmatched>0;
+  const noPostMeasurements=imports.length===0;
+  const status=campaignAttributionGap||noPostMeasurements?'PARTIAL':'IMPORTED';
+  const reason=campaignAttributionGap?'GA4_CAMPAIGN_ID_UNMATCHED_OR_AMBIGUOUS':
+    noPostMeasurements?'GA4_SOURCE_OBSERVED_NO_SOCIAL_POST_ATTRIBUTION':null;
+  const finishedAt=new Date().toISOString();
+  const batchUpdate=await db.from('bg_ga4_csv_batches').update({status,
+    rows_attributed:imports.length,rows_unmatched:unmatched,completed_at:finishedAt,
+    detail:{property,source_route:sourceRoute,primary_failure:primaryFailure,
+      campaigns:campaigns.length,source_only_rows:sourceOnlyRows,
+      tagged_campaign_rows:campaignRows.length,matched_posts:matched.length,
+      metrics_imported:imported,source_data_available:true,
+      post_attribution_state:status==='IMPORTED'?'OBSERVED':'INCOMPLETE',
+      no_social_campaign_is_not_zero_website_traffic:true,
+      contract:FAILOVER_CONTRACT}}).eq('run_id',runId);
+  if(batchUpdate.error)throw new Error('GA4_BATCH_READBACK_WRITE_FAILED:'+batchUpdate.error.message);
+  const sync=await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,
+    pages_opgehaald:rows.length,pages_bijgewerkt:imports.length,
+    metingen_ingevuld:imported,status:status==='IMPORTED'?'ok':'partial',
+    fout:reason,uitgevoerd_op:finishedAt});
+  if(sync.error)throw new Error('GA4_ATTRIBUTION_RECEIPT_WRITE_FAILED:'+sync.error.message);
+  const repair=campaignAttributionGap?await originalGa4EmptyRepair(db,day,sourceRoute,{
+    reason:'GA4_CAMPAIGN_ATTRIBUTION_REPAIR_REQUIRED',source_data_available:true,
+    provider_report_rows:rows.length,tagged_campaign_rows:campaignRows.length,
+    unlinked_campaign_rows:unmatched,imported_posts:imports.length,
+    do_not_infer_zero_visitors:true}):null;
+  const out={ok:true,contract:FAILOVER_CONTRACT,run_id:runId,day,rows:rows.length,
+    attributed:imports.length,unmatched,source_only_rows:sourceOnlyRows,
+    imported,csv_sha256:csvHash,status,source:sourceRoute,source_route:sourceRoute,
+    primary_failure:primaryFailure,reason,
+    source_data_available:true,
+    website_visitors:'NOT_INFERRED_FROM_SOCIAL_POST_IMPORT',
+    ...(repair?{original_brain_repair:repair}:{})};
+  await writeRuntime(db,`ga4-sync:${day}:${csvHash}:${sourceRoute}`,'observed',out);
+  await bewijs(status==='IMPORTED',out,status==='IMPORTED'?null:'ATTRIBUTION_INCOMPLETE');
+  return json(out,status==='IMPORTED'?200:207);
  }catch(error){const detail=error instanceof Error?error.message.slice(0,500):'unknown';const failureClass=classifyFailure(detail);await db.from('bg_ga4_sync').insert({run_id:runId,afgelopen_uur:started,pages_opgehaald:0,pages_bijgewerkt:0,metingen_ingevuld:0,status:'error',fout:detail,uitgevoerd_op:new Date().toISOString()});const out={error:'ANALYTICS_SYNC_FAILED',contract:FAILOVER_CONTRACT,run_id:runId,detail,failure_class:failureClass,source_route:sourceRoute,primary_failure:primaryFailure};await writeRuntime(db,`ga4-failover-error:${runId}`,'error',out);await bewijs(false,out,failureClass);return json(out,503)}
 });
