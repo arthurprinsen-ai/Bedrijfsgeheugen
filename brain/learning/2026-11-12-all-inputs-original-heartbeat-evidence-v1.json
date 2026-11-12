@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "date": "2026-11-12",
+  "type": "ORIGINAL_ALL_INPUTS_SOURCE_TO_HEARTBEAT_RECEIPT_TRUTH",
+  "fingerprint": "portal|all-fields-external-scans-pricing|original-source-consumer-heartbeat-receipts|20261112-v1",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Original Portal V2 BusinessInput→ONE BRAIN→Powerhouse→Heartbeat with current #4215/#4198 owners",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "scan_source_rows": 66,
+    "scan_original_runtime_receipts": 66,
+    "scan_original_growth_receipts": 66,
+    "commercial_handoff_health": "DEGRADED",
+    "broken_or_unproven_handoffs_7d": 7,
+    "provider_readback_proven_7d": 1,
+    "linked_experiment_treatments_7d": 0,
+    "customer_connector_definitions": 0,
+    "customer_connector_executions": 0,
+    "portal_customer_state_rows": 1,
+    "observation_at_utc": "2026-11-12T07:00:17Z"
+  },
+  "root_cause": {
+    "observed": "Technical source/website/scan success and conditional customer BusinessInput/Brain receipt can be mistaken for complete cross-surface Powerhouse/Heartbeat outcome while genuine connector and outcome receipts are still missing",
+    "unknowns": [
+      "two separately authorized real tenant original data-to-Heartbeat provider trajectories",
+      "actual qualified provider orders and holdouts",
+      "independent next-run applied learning"
+    ]
+  },
+  "fix": {
+    "scope": "Existing agent/task, three specialist skills and global AGENTS.md closed-loop evidence policy, machine source contract and regression",
+    "no_new_scheduler": true,
+    "no_new_provider_writer": true,
+    "no_fake_customer": true,
+    "existing_original_obligations_preserved": true
+  },
+  "compiler": {
+    "failure_class": "ORIGINAL_ALL_INPUTS_PREMATURE_HEARTBEAT_GREEN_WITH_MISSING_CUSTOMER_ACK",
+    "scope": "PORTAL_WEBSITE_GROWTH",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-all-inputs-one-loop-contract-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-all-inputs-one-loop-contract-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-all-inputs-one-loop-contract-20261112.test.mjs"
+    ]
+  },
+  "prevention": [
+    "ONE_ORIGINAL_TENANT_REVISION_AND_BRAIN_ACK",
+    "NO_FAKE_CONNECTED_CUSTOMER_DATA",
+    "NO_SCAN_OR_PRICING_INTENT_AS_ORDER",
+    "NO_TECHNICAL_SMOKE_AS_CUSTOMER_LEARNING",
+    "REQUIRE_PROVIDER_ID_OUTCOME_AND_MATURE_HOLDOUT",
+    "APPLIED_NEXT_NATURAL_RUN_BEFORE_FULL_GREEN",
+    "RECONCILE_OPEN_ORIGINAL_OWNER_OBLIGATIONS_WITHOUT_DUPLICATE_WORKERS"
+  ],
+  "evidence": {
+    "required": "Protected PR Required + CodeQL, exact main Netlify READY + production readback, original skill projection, original provider ID and genuine Heartbeat effect for full business acceptance",
+    "limitations": "This release makes agent/skill quality gate source-verifiable, but cannot on its own provide human-authorized connectors, customer outcomes, mature experiment control or applied learning"
+  }
+}
