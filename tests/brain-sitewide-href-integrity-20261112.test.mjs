@@ -74,3 +74,15 @@ test('privacy and connector fallback anchors have a real destination rather than
   assert.match(connect,/href="mailto:arthur@bedrijfsgeheugen\.nl\?subject=/);
   assert.doesNotMatch(privacy,/<a href="#" onclick="if\(window\.bgOpenCookies\)/);
 });
+
+test('installed app dock never emits HTTP preview anchors into the public HTML href graph',()=>{
+  const app=readFileSync('assets/bg-app-experience.js','utf8');
+  assert.match(app,/var origin=location\.protocol==='https:' \? location\.origin : 'https:\/\/www\.bedrijfsgeheugen\.nl'/);
+  assert.match(app,/link\.href=origin\+item\[0\]/);
+  assert.doesNotMatch(app,/var origin=location\.origin;/);
+  const r=auditRenderedHrefs({route:'/prijzen',
+    hrefs:['https://www.bedrijfsgeheugen.nl/prijzen','https://www.bedrijfsgeheugen.nl/'],
+    sitemapRoutes,expectedCount:2});
+  assert.deepEqual(r.failures,[]);
+  assert.ok(check(['http://127.0.0.1:4173/prijzen']).failures.some(x=>x.startsWith('UNSAFE_OR_HTTP_HREF')));
+});
