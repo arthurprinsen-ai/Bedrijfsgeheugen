@@ -1,0 +1,70 @@
+{
+  "fingerprint": "seo|original-nine-source-count-fail-closed|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "original growth-source archive #175 -> ONE BRAIN #140 -> commercial Heartbeat, original SEO #105",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN_FOR_NINTH_ORIGINAL_SOURCE",
+  "root_cause": "Original #175 archive SQL was extended through protected native migration 837 to include derived SEO observation as a ninth WITH s source. Its original manifest completeness invariant still required v_saved=8 and raised GROWTH_SOURCE_MANIFEST_INCOMPLETE:9 on exact production original function invocation. The transaction rolled back atomically: no new daily source revision was persisted, and existing 20-source Brain/Heartbeat ACK must not be reclassified as the new 21-source proof.",
+  "evidence": {
+    "native_migration_837_applied": "20261112214500_original_seo_derived_brain_manifest_handoff_v1",
+    "original_function_readback": {
+      "has_derived_source": true,
+      "has_missing_and_observed_quality": true,
+      "hardcoded_previous_source_count": 8,
+      "actual_source_upsert_rowcount": 9
+    },
+    "original_execution": {
+      "error_code": "23514",
+      "error": "GROWTH_SOURCE_MANIFEST_INCOMPLETE:9",
+      "function": "powerhouse_daily_source_archive_v1(date)",
+      "date": "2026-11-12",
+      "transaction_rolled_back": true
+    },
+    "original_heartbeat": {
+      "previous_source_rows": 20,
+      "previous_revision": "d3babe73edb07aebb77b54e30285d0a428f0ce30a9ecb7a7970b17794ad88e55",
+      "previous_ack": true,
+      "current_21_source_proof": false
+    },
+    "missing_cro_proof": true,
+    "regression": "tests/brain-original-seo-nine-source-count-20261112.test.mjs"
+  },
+  "fix": [
+    "Within a new original protected native migration, guard the exact previous function source and original projection source owner, and replace exactly one fail-closed v_saved<>8 with v_saved<>9.",
+    "Keep the invariant, source-based count, full rollback on mismatch and provider readback; never remove or relax to a self-fulfilling >= bound.",
+    "Confirm original #175 resuming produces ninth owned row without discarding other source rows; original #140 consumer must ACK new SHA; existing Heartbeat compares same SHA.",
+    "Record permanent prevention and regression through existing SEO skill/agent and Brain learning; do not add a scheduler, agent executor, direct DB bypass or experimental uplift claim."
+  ],
+  "prevention_rule": "A versioned expansion or removal of original daily source manifest must atomically update strict expected per-owner source row count, the exact source-set/tenant contract and preview regression; a mismatch must roll back without partial writes. Never treat an old ACK of a smaller source-set as proof of a newly added source. Source receipt is not CRO execution, traffic or lead effect.",
+  "compiler": {
+    "failure_class": "CANONICAL_SOURCE_MANIFEST_EXPECTED_COUNT_DRIFT",
+    "scope": "DATA_SPINE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-nine-source-count-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-seo-nine-source-count-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-nine-source-count-20261112.test.mjs"
+    ],
+    "expected": "Original 9-source #175 source upsert is allowed only when exact expected=9; emits derived SEO row, original #140 current full-manifest SHA ACK and Heartbeat matched receipt, while commercial obligation remains OPEN pending measured action/outcome."
+  },
+  "delivery": {
+    "migration": "supabase/migrations/20261112220500_original_seo_manifest_nine_source_guard_v1.sql",
+    "regression": "tests/brain-original-seo-nine-source-count-20261112.test.mjs",
+    "agent": "platform/agents/agent-team.mjs",
+    "skill": ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    "ledger": "docs/development-ledger-events/2026-11-12-original-seo-nine-source-count-fail-closed-v1.md"
+  },
+  "original_executor_only": true,
+  "no_parallel_schedule": true,
+  "no_provider_measurement_fiction": true
+}
