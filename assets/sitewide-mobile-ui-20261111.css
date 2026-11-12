@@ -207,3 +207,49 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
     display:none!important;visibility:hidden!important;pointer-events:none!important
   }
 }
+
+
+/* 2026-11-12 public-site app experience: responsive, tap-first, same website.
+   Do not create a second mobile menu, checkout or source of customer truth. */
+@media(max-width:1024px){
+  html{scroll-padding-top:calc(84px + env(safe-area-inset-top))}
+  body{overscroll-behavior-x:none;-webkit-tap-highlight-color:transparent}
+  main{max-width:100%;min-width:0}
+  main :is(.wrap,.lead,.hero,.rij,.afdrij,.fotokaart,.bgregel,.bgkpi){min-width:0;max-width:100%}
+  main :is(button,[role="button"],input[type="submit"],a.knop,a.bgknop,.bg-money-order-path>a[href]){min-height:44px;touch-action:manipulation}
+  main :is(input:not([type="checkbox"]):not([type="radio"]),select,textarea){max-width:100%;font-size:16px}
+  main :is(img,svg,video){max-width:100%;height:auto}
+  main :is(h1,h2,h3,p){overflow-wrap:break-word}
+  main :is(.fotokaart,.bgkpi,.bgregel){border-radius:clamp(14px,2.5vw,22px)}
+  main a[href]:focus-visible,main button:focus-visible,
+  nav.bgkop a[href]:focus-visible,nav.bgkop button:focus-visible{
+    outline:3px solid #ffe86b!important;outline-offset:3px
+  }
+  main :is(.knop,.bgknop,.v18-button,.bg-money-order-path>a[href]){
+    transition:transform .16s ease,box-shadow .16s ease,background-color .16s ease
+  }
+  main :is(.knop,.bgknop,.v18-button,.bg-money-order-path>a[href]):active{
+    transform:scale(.985)
+  }
+}
+@media(max-width:760px){
+  body{max-width:100vw;overflow-x:clip}
+  main :is(.hero,.lead,.afdrij,.rij){min-width:0}
+  main :is(.knop,.bgknop,.bg-money-order-path>a[href]){
+    white-space:normal;line-height:1.35;text-align:center;
+    max-inline-size:100%
+  }
+  main :is(.fotokaart,.bgkpi,.bgregel){scroll-margin-top:86px}
+  :is(#bgMobileNav,#bgSharedMobileNav,#v18MobileDrawer){
+    overscroll-behavior:contain
+  }
+}
+@media(max-width:420px){
+  main :is(input,select,textarea){min-width:0}
+  main :is(.hero,.lead){max-width:100%}
+}
+@media(prefers-reduced-motion:reduce){
+  main :is(.knop,.bgknop,.v18-button,.bg-money-order-path>a[href]){
+    transition:none!important;transform:none!important
+  }
+}
