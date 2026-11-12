@@ -3332,8 +3332,12 @@
     {
       "version": "20261112194500",
       "name": "original_growth_source_revision_identity_fix_v1"
+    },
+    {
+      "version": "20261112203000",
+      "name": "original_seo_keyword_tenant_alignment_v1"
     }
   ],
-  "captured_at": "2026-11-12T16:22:09.982Z",
+  "captured_at": "2026-11-12T19:05:30.734Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
