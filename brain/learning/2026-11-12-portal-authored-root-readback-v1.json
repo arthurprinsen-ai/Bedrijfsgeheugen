@@ -25,5 +25,16 @@
     "machine_enforceable": true,
     "security_sensitive": true,
     "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+    ],
+    "shadow": [
+      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+    ]
   }
 }
