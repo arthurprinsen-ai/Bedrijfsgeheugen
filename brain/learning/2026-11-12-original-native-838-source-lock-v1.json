@@ -1,0 +1,52 @@
+{
+  "fingerprint": "supabase|original-native-provider-838-source-lock-ack|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "original Supabase native migration history source writer → protected Git lock consumer → ONE BRAIN",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "root_cause": "The repaired SEO archive migration 20261112230000 was applied natively as migration #838 after protected PR #5696, and live source/Brain/Heartbeat handoff was independently proven, but GitHub protected main migration-history.lock.json retained only 837 applied versions from its previous observation. This is a genuine original provider-to-source-lock lag, not a second database migration request.",
+  "evidence": {
+    "native_project": "adhjwmvyoixzjtmiroln",
+    "native_rows": 838,
+    "native_latest_version": "20261112230000",
+    "native_latest_name": "original_seo_daily_archive_cardinality_guard_v1",
+    "observed_at": "2026-11-12T21:47:11.470031Z",
+    "previous_lock_rows": 837,
+    "protected_merged_main": "e95e5e771a55ee9a886206015883b189537182ad",
+    "production_source_manifest_sha": "8072d22b4f2039af96cb84d1ded840169b35659ff6f5b8f78c4f19272bbbc22b",
+    "original_140_same_revision_ack": true,
+    "commercial_heartbeat_same_revision_ack": true,
+    "actual_cro_experiment_executed": false
+  },
+  "fix": [
+    "Append exactly the independently observed version/name #838 to the existing immutable source lock, preserving the prior 837 entries.",
+    "Set captured_at to the genuine native readback timestamp and protect with exact regression.",
+    "Merge through existing protected GitHub Required/CodeQL and verify main Git lock 838/838 against native source; never replay an already applied migration."
+  ],
+  "prevention_rule": "Treat actual applied provider migration history and original Git source lock as a producer→consumer handshake. After every native applied release, require exact count, ordered version/name identities, observed_at and source-lock protected ACK. Any mismatch is OPEN until reconciled; do not bypass the source-lock gate.",
+  "compiler": {
+    "failure_class": "NATIVE_MIGRATION_SOURCE_LOCK_CONSUMER_LAG",
+    "scope": "ORIGINAL_PROVIDER_SOURCE_LINEAGE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs"
+    ],
+    "expected": "Protected source lock has exactly 838 entries, latest identity matches the native provider and historical first 837 unchanged; no new SQL executed."
+  },
+  "delivery": {
+    "source_lock": "supabase/migration-history.lock.json",
+    "status": "CANDIDATE_NOT_MERGED",
+    "provider_latest_version": "20261112230000"
+  }
+}
