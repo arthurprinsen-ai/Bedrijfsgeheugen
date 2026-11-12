@@ -43,16 +43,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-public-portal-standalone-app-20261112.test.mjs",
-      "tests/site-shell-mobile-sitewide-recovery-20261111.test.mjs"
+      "tests/brain-public-portal-standalone-app-20261112.test.mjs"
     ],
     "shadow": [
-      "tests/brain-public-portal-standalone-app-20261112.test.mjs",
-      "portal-v2/tests/mobile-responsive-shell.test.mjs"
+      "tests/brain-public-portal-standalone-app-20261112.test.mjs"
     ],
     "canary": [
-      "tools/site-shell/sitewide-mobile-interaction-browser-check.mjs",
-      "tests/integration/portal-v2-mobile-shell.spec.js"
+      "tests/brain-public-portal-standalone-app-20261112.test.mjs"
     ]
   },
   "prevention": [
@@ -67,6 +64,10 @@
   ],
   "evidence": {
     "required": "Original protected PR Required/CodeQL + original Netlify exact current main and independent production browser/Portal V2 DOM proof + separate actual device installation and real UX outcomes for effect claims",
-    "limitations": "Scope is installable/standalone presentation only; no App Store/Play Store listing, offline functionality, push notifications, user usability results, awards or commercial conversion improvement asserted"
+    "limitations": "Scope is installable/standalone presentation only; no App Store/Play Store listing, offline functionality, push notifications, user usability results, awards or commercial conversion improvement asserted",
+    "browser_canary_paths": [
+      "tools/site-shell/sitewide-mobile-interaction-browser-check.mjs",
+      "tests/integration/portal-v2-mobile-shell.spec.js"
+    ]
   }
 }
