@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "seo|original-175-nine-derived-sources-guard-ack|20261112-v1",
+  "obligation_id": "seo|original-175-nine-derived-sources-guard-ack|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "title": "Derived SEO ninth-row archive guard rejects source and prevents new Brain/Heartbeat ACK",
+  "status": "CANDIDATE",
+  "root_cause": "Original migration 20261112214500 added the ninth source seo_opportunity_intelligence to existing powerhouse_daily_source_archive_v1(date), but the existing terminal source insert-count guard v_saved<>8 was not updated. The function now constructs nine rows and correctly raises GROWTH_SOURCE_MANIFEST_INCOMPLETE:9, leaving 12-Nov 20-row daily manifest without derived SEO row and preventing a new Brain/Heartbeat sourceRevision ACK.",
+  "impact": "Previously persisted original SEO observation is not represented in same-day daily source manifest; old 20-source consumer ACK may be stale although runtime architecture reports wired.",
+  "fix": "New guarded native GitOps migration changes only the original archive function's terminal count from 8 to 9, asserts exact prior derived owner/status markers and immutable function identity. Retains original canonical #175/#140/Heartbeat lanes, source manifests, tenant security and scheduled jobs.",
+  "prevention_rule": "Every change to the original source UNION inventory must atomically update the exact inserted-source count and pass a no-extra-source historical/shadow/canary regression in protected CI and actual native preview before main; producer success is never a consumer ACK.",
+  "owner": "Original Powerhouse source archive #175 → original ONE BRAIN #140 / commercial Heartbeat; one existing scheduler",
+  "regression_contract": "tests/brain-original-seo-derived-ninth-source-guard-20261112.test.mjs",
+  "tests": [
+    "tests/brain-original-seo-derived-ninth-source-guard-20261112.test.mjs",
+    "tests/brain-original-seo-derived-manifest-handoff-20261112.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-derived-ninth-source-guard-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-seo-derived-ninth-source-guard-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-derived-ninth-source-guard-20261112.test.mjs"
+    ]
+  },
+  "evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "applied_migrations_before": 837,
+    "original_migration": "20261112214500_original_seo_derived_brain_manifest_handoff_v1",
+    "observed_derived_observations": 1,
+    "daily_source_rows_before": 20,
+    "derived_rows_before": 0,
+    "daily_source_last_checked": "2026-11-12T20:01:48.206117+00:00",
+    "native_function_has_derived_marker": true,
+    "native_function_has_old_guard": true,
+    "original_job_id": 175,
+    "original_brain_job_id": 140,
+    "existing_runtime_scheduler": 171,
+    "original_source_observation_at": "2026-11-12T19:59:35.662+00:00"
+  },
+  "outcome": "CANDIDATE_NOT_LIVE; requires native preview and protected merge, independent function-text native readback, original #175 same-day source receipt, new #140 exact SHA consumer ACK, Heartbeat exact SHA and later CRO outcome.",
+  "compiler": {
+    "failure_class": "PROVIDER_SOURCE_PARITY",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
