@@ -1,0 +1,51 @@
+{
+  "name": "Bedrijfsgeheugen — mijn bedrijf",
+  "short_name": "Mijn bedrijf",
+  "description": "Dagelijks grip op gegevens, acties, resultaten en het Bedrijfsbrein.",
+  "id": "/portal-v2/",
+  "start_url": "/portal-v2/",
+  "scope": "/portal-v2/",
+  "display": "standalone",
+  "lang": "nl-NL",
+  "dir": "ltr",
+  "orientation": "any",
+  "background_color": "#f8fafb",
+  "theme_color": "#112e39",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/merk/app-icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/merk/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Vandaag",
+      "short_name": "Vandaag",
+      "url": "/portal-v2/"
+    },
+    {
+      "name": "Mijn acties",
+      "short_name": "Acties",
+      "url": "/portal-v2/?page=actieve-acties"
+    },
+    {
+      "name": "Mijn resultaten",
+      "short_name": "Resultaten",
+      "url": "/portal-v2/?page=outcomes-evidence"
+    },
+    {
+      "name": "Mijn gegevens",
+      "short_name": "Gegevens",
+      "url": "/portal-v2/?page=ingevulde-gegevens"
+    }
+  ]
+}
