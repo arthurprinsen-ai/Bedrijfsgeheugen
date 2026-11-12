@@ -49,5 +49,21 @@
     "Reject unknown intent owner, business-fit less than 0.75, stale provider metrics >30d",
     "No green terminal status for coverage incomplete or absent original consumer processed ACK"
   ],
-  "activity_ledger": "docs/development-ledger-events/2026-11-12-ahrefs-class-seo-ai-growth-single-chain.md"
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-ahrefs-class-seo-ai-growth-single-chain.md",
+    "original_owner": "Powerhouse SEO Order Engine / BG169",
+    "new_parallel_executor": false
+  },
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-seo-audit-intelligence-20261112.test.mjs"
+    ]
+  }
 }
