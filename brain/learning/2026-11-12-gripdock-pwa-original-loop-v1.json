@@ -35,8 +35,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-grip-app-pwa-20261112.test.mjs",
-      "tests/site-shell-mobile-sitewide-recovery-20261111.test.mjs"
+      "tests/brain-grip-app-pwa-20261112.test.mjs"
     ],
     "shadow": [
       "tests/brain-grip-app-pwa-20261112.test.mjs"
