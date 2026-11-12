@@ -71,5 +71,7 @@
     "release_status": "SOURCE_CANDIDATE",
     "two_real_tenant_readback": "NOT_YET_PROVEN",
     "consumer_processed_ack": "NOT_YET_PROVEN"
-  }
+  },
+  "root_cause": "Periodic Portal V2 refresh compared user ID/email alone, not the hydrated same-member tenant identity; direct root/runtime/journal writes could create an orphan impact without section BusinessInput.",
+  "prevention": "Before an authenticated customer refresh, compare currentPrincipal member+server-issued tenant to hydratedPrincipal and repeat the check after asynchronous readback. Reject unmapped portal root and internal public writes before mutation; run original historical/shadow/canary and two-tenant regression before protected merge."
 }
