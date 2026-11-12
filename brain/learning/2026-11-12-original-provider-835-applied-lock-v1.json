@@ -51,5 +51,20 @@
     "powerhouse-continuity"
   ],
   "no_new_executor": true,
-  "production_proven": false
+  "production_proven": false,
+  "evidence": {
+    "contract": "ORIGINAL_NATIVE_835_PROVIDER_HISTORY_LOCK_SOURCE_ATTESTATION_20261112",
+    "source": "supabase_migrations.schema_migrations (official Supabase production)",
+    "provider_applied_versions_observed": 835,
+    "verified_unchanged_prefix": 834,
+    "latest_version": "20261112211000",
+    "latest_name": "original_skipped_provider_reference_readback_handoff_v1",
+    "source_and_provider_identity_equal_before_append": true,
+    "failed_original_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43290248396",
+    "failed_original_terminal_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43290199939",
+    "original_16_consumer_handoffs_reconciled_to_open_provider_readback": true,
+    "provider_external_get_verified": false,
+    "production_source_lock_merge_verified": false,
+    "no_source_code_or_native_migration_replay": true
+  }
 }
