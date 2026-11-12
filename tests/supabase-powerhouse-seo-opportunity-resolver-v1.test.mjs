@@ -21,8 +21,9 @@ test('resolver consumes GSC, cached DataForSEO and external market forecasts bef
   assert.match(fn,/bg_zoekwoordkansen/);
   assert.match(fn,/powerhouse_forecasts/);
   assert.match(fn,/opgehaald_op.*72\*3600000/s);
-  assert.match(fn,/opgehaald_op.*14\*86400000/s);
+  assert.match(fn,/opgehaald_op.*7\*86400000/s);
   assert.match(sourceConfig.resolver?.read_order?.join('>')||'',/google-search-console>dataforseo-cache>powerhouse-market-forecasts/);
+  assert.equal(sourceConfig.resolver.freshness_hours['dataforseo-cache'],168);
 });
 
 test('resolver improves an existing owner first and only creates content for a distinct high-value gap',()=>{
