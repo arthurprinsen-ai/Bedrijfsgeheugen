@@ -6,13 +6,14 @@
   "production_proven": false,
   "original_scheduler_only": true,
   "incident": "Original sitewide browser test first detected 15 actual candidate href violations: 8 missing EN-only model locale destinations, missing EN checkout aliases, and # placeholder fallbacks on privacy/connect",
-  "root_cause": "Eight Dutch-only AI-model/comparison pages had an EN switch to a canonical absent from the published sitemap, and connect/privacy had inert # links; EN checkout is a VALID independently browser-tested noindex functional route, not a broken page",
+  "root_cause": "Eight Dutch-only AI-model/comparison pages had an EN switch to a canonical absent from the published sitemap, and connect/privacy had inert # links; EN checkout is a VALID independently browser-tested noindex functional route, not a broken page; later installable app origin inherited http:// localhost during CI browser sweep",
   "fix": [
     "Run pure canonical href verifier within original full sitemap Playwright desktop sweep",
     "Reject unsafe links, missing canonical targets and truncated link inventories instead of marking route green",
     "Keep existing original ONE BRAIN/Powerhouse/Heartbeat source-to-consumer processed ACK",
     "Recognize /en/afsluiten as an existing noindex functional checkout with separate checkout-browser-check proof; do NOT rewrite it to NL or invent a sitemap entry",
-    "Replace privacy/connect inert '#' anchors with real canonical cookie-fragment and mailto fallbacks"
+    "Replace privacy/connect inert '#' anchors with real canonical cookie-fragment and mailto fallbacks",
+    "Use canonical HTTPS origin for public app dock anchors under HTTP local release browser; retain native HTTPS origin for actual production/HTTPS preview"
   ],
   "regression": [
     "tests/brain-sitewide-href-integrity-20261112.test.mjs",
@@ -20,7 +21,8 @@
     "tools/site-shell/standalone-visibility-check.mjs",
     "assets/js/i18n.js",
     "connect.html",
-    "privacy.html"
+    "privacy.html",
+    "assets/bg-app-experience.js"
   ],
   "compiler": {
     "failure_class": "BROKEN_INTERNAL_LINK",
@@ -68,6 +70,10 @@
     "second_candidate_browser_findings": 1,
     "second_issue": "EN checkout noindex route incorrectly treated as missing indexed canonical",
     "second_issue_proof": "tools/site-shell/checkout-browser-check.mjs verifies both /afsluiten and /en/afsluiten; tools/site-shell/checkout-build-integrity.mjs verifies en/afsluiten.html",
-    "treatment": "exempt exact verified noindex functional EN checkout while preserving hard fail on missing first-party indexable URLs"
+    "treatment": "exempt exact verified noindex functional EN checkout while preserving hard fail on missing first-party indexable URLs",
+    "third_candidate_browser_run_id": 43232244775,
+    "third_browser_failed_issues": 279,
+    "third_browser_root_cause": "public PWA dock link.href=location.origin+route used local http base",
+    "corrected_app_shell": "assets/bg-app-experience.js"
   }
 }
