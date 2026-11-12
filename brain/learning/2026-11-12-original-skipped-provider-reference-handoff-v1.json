@@ -29,5 +29,25 @@
   "migration": "supabase/migrations/20261112211000_original_skipped_provider_reference_readback_handoff_v1.sql",
   "evidence_state": "PENDING_EXACT_HEAD_PROTECTED_CI_MERGE_NATIVE_PROVIDER_MIGRATION_AND_ORIGINAL_CONSUMER_READBACK",
   "no_new_executor": true,
-  "no_false_green": true
+  "no_false_green": true,
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "title": "Route historical skipped provider references to original exact-ID readback without replay",
+  "impact": "Sixteen historical conflicting source states (SKIPPED with external reference) were wrongly classified as publication gaps; this risks duplicate provider side effects and hides the actual source/consumer reconciliation obligation.",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-skipped-provider-reference-readback-handoff-20261112.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ],
+  "outcome": "One protected candidate; original historical source-level no-republish containment is live for all 16, but candidate code/migration/consumer handoff is not proven live until protected merge, official native migration and original BRAIN readback."
 }
