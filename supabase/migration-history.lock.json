@@ -3320,8 +3320,12 @@
     {
       "version": "20261112162500",
       "name": "original_metric_source_temporal_handoff_v1"
+    },
+    {
+      "version": "20261112173000",
+      "name": "original_daily_source_brain_heartbeat_v1"
     }
   ],
-  "captured_at": "2026-11-12T15:15:55.802Z",
+  "captured_at": "2026-11-12 15:44:16.957989+00",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

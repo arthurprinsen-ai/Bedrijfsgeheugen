@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "parent_issue": 4198,
+  "fingerprint": "provider|supabase|original-daily-growth-migration-applied-not-locked|20261112-v1",
+  "obligation_id": "original-source-migration-831-provider-lock-20261112",
+  "owner": "existing protected Supabase migration authority",
+  "failure_class": "DATA_INTEGRITY",
+  "root_cause": "Native Supabase successfully deployed source-to-BRAIN #175/#140 migration 20261112173000, but source migration-history.lock.json on main remained one applied version behind. CI rejects new migration candidates with such divergence.",
+  "prevention": "Append only provider-applied migration version/name to protected lock in independent protected history-only commit, using actual Supabase 831-count and exact deployed source SQL match. New migration remains unapplied until another protected release. No fake history.",
+  "evidence": {
+    "native_count": 831,
+    "original_lock_count": 830,
+    "provider_version": "20261112173000",
+    "provider_name": "original_daily_source_brain_heartbeat_v1",
+    "source_exact_after_whitespace_normalization": true,
+    "readback_at": "2026-11-12 15:44:16.957989+00",
+    "original_merged_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5660",
+    "new_migration_not_in_lock": true
+  },
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "SUPABASE_PROVIDER_MIGRATION_LOCK",
+    "repeat_count": 1,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-source-831-migration-lock-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-source-831-migration-lock-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-source-831-migration-lock-20261112.test.mjs"
+    ]
+  },
+  "regression": "tests/brain-original-source-831-migration-lock-20261112.test.mjs",
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders"
+  ],
+  "no_second_executor": true,
+  "actual_source_readback_required": true
+}
