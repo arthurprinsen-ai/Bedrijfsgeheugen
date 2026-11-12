@@ -3316,8 +3316,12 @@
     {
       "version": "20261112144500",
       "name": "original_social_legacy_alias_acks_v1"
+    },
+    {
+      "version": "20261112162500",
+      "name": "original_metric_source_temporal_handoff_v1"
     }
   ],
-  "captured_at": "2026-11-12T14:28:01.055Z",
+  "captured_at": "2026-11-12T15:15:55.802Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

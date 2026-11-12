@@ -1,0 +1,5 @@
+# Original protected Supabase migration lock 830/830
+
+The original Supabase project `adhjwmvyoixzjtmiroln` independently reported 830 applied version/name rows on 2026-11-12T15:15:55.802Z, latest exact `20261112162500/original_metric_source_temporal_handoff_v1`. Original protected #5652 merged the exact SQL source to main `6c67120161a891c3434032a5418afdc8d9cbc8d5`. Original source lock had 829; no native DDL was missing. This changes the **source lock only**, preserving its earlier 829 native identities; it does not replay DDL or mutate Supabase migration history.
+
+Original owner: ONE BRAIN/Supabase protected migration history writer; issue #4198. Prevention: provider-applied version/name → original source lock consumer processed ACK with exact correlation → protected Required/CodeQL/Supabase Preview → main + provider readback. One writer, no second scheduler, no artificial terminal commercial outcome. Agent skill, BRAIN machine learning, change docs and development ledger versioned in the same original release. Original customer/Powerhouse/Heartbeat downstream effects remain independent.
