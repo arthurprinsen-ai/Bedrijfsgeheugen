@@ -37,5 +37,22 @@
     "No second SEO executor or duplicate publication/provider action",
     "Failures and lessons stay with original owner and are tested at next run"
   ],
-  "regression_reference": "tests/brain-sitewide-seo-health-score-20261112.test.mjs"
+  "regression_reference": "tests/brain-sitewide-seo-health-score-20261112.test.mjs",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-seo-health-score-20261112.test.mjs"
+    ]
+  },
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-sitewide-rendered-href-integrity-v1.md",
+    "original_owner": "Powerhouse SEO Order Engine / BG169",
+    "new_parallel_executor": false
+  }
 }
