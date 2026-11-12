@@ -72,3 +72,34 @@ test('personal-life radar queries are short and rotate without relaxing evidence
  assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
  assert.match(radar,/MAX_AGE_DAYS=45/);
 });
+
+import {MIRA_SOURCE_TOPIC_QUERIES,MIRA_SOURCE_ALTERNATE_QUERIES,selectMiraSourceQueries} from '../supabase/functions/_shared/mira-source-query-rotation.mjs';
+
+test('original Mira low-recall rotating query variants keep 6 business + 2 personal slots and all proof gates',()=>{
+ assert.equal(MIRA_SOURCE_TOPIC_QUERIES.length,12);
+ assert.equal(Object.keys(MIRA_SOURCE_ALTERNATE_QUERIES).length,12);
+ const original=new Set(),alternates=new Set();
+ for(let offset=0;offset<48;offset++){
+  const day=new Date(Date.UTC(2026,10,1+offset)).toISOString().slice(0,10);
+  const all=selectCanonicalRadarSourceQueries(day);
+  const business=all.filter(x=>x.channel==='instagram_company');
+  assert.equal(all.length,8);
+  assert.equal(business.length,6);
+  assert.equal(all.filter(x=>x.channel==='linkedin_personal').length,2);
+  assert.deepEqual(business.map(x=>x.query),selectMiraSourceQueries(day).slice(0,6));
+  assert.equal(new Set(all.map(x=>x.query)).size,8);
+  for(const {query} of business){
+   const fam=MIRA_SOURCE_TOPIC_QUERIES.find(f=>f.query===query||MIRA_SOURCE_ALTERNATE_QUERIES[f.topic]===query);
+   assert.ok(fam,'each query is inside the approved original portal family list');
+   assert.ok(query.split(/\s+/).length<=5);
+   if(query===fam.query)original.add(fam.topic);else alternates.add(fam.topic);
+  }
+ }
+ assert.equal(original.size,12);
+ assert.equal(alternates.size,12);
+ assert.throws(()=>selectMiraSourceQueries('2026-02-30'),/MIRA_RUN_DATE_INVALID/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(originalSql,/x\.metadata->>'contract'='mira-entrepreneur-portal-story-v1'/);
+ assert.match(originalSql,/prior\.source_url=x\.source_url or prior\.source_hash=x\.source_hash/);
+ assert.doesNotMatch(radar,/cron\.schedule|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
+});

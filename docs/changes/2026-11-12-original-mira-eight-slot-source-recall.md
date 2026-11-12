@@ -1,0 +1,8 @@
+# 2026-11-12 — Acht-slot Mira-bronrotatie herstellen
+De originele cron #120 blijft actief: POST 200 op 11 november 20:02 UTC, maar inhoudelijk NO_FRESH_PUBLIC_PROBLEM_SIGNAL voor 12 november. In originele Supabase zijn 373 Mira-signalen, 34 recente eligible, zeven echte PH-P###-scènes en nul na 90-daags URL/hash-dedupe. Bronrecall, niet ontbrekende scheduler, is de concrete bottleneck.
+
+Originele `supabase/functions/_shared/mira-source-query-rotation.mjs` gebruikt op afwisselende kalenderdagen kortere alternatieve zoekfrasen voor dezelfde twaalf erkende problemen, binnen dezelfde vaste zes zakelijke + twee persoonlijke dagelijkse providerverzoeken. Geen extra betaalde calls, geen nieuwe publisher, geen nieuw schema, geen versoepeling van externe bron-datering, score >=0,72, 90d URL/hash, 3d topic, unieke dagwinnaar, identiteitsverificatie >=0,940 of provider-ID.
+
+Regressie over 48 opeenvolgende dagen vereist acht unieke providerqueries, zes Mira/twee personal en beide zoekvarianten over twaalf categorieën. Protected exact-head Required/CodeQL/BRAIN, originele merge, Supabase actieve Edge source parity en volgende natuurlijke cron met echte bronreadback zijn **nog afzonderlijk verplicht**. Pas bij echte nieuwe unieke bron -> dagwinnaar -> video -> Meta readback -> consumer ACK/leren is downstream groen.
+
+Los daarvan: 16 historische SKIPPED-publicaties hebben interne bron-ID/tijd-contradictie; provider 400/403 mag niet tot replay, verwijderclaim of valse live-promotie leiden. Beide incidenten in originele ONE BRAIN VALIDATED en parent #4198: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
