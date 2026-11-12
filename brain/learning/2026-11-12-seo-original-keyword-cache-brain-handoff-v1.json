@@ -1,0 +1,76 @@
+{
+  "fingerprint": "seo|original-cache-canonical-owner-and-brain-tenant-handshake|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "owner": "original SEO resolver #105 and source archive #175 → Brain #140 → Powerhouse/Heartbeat",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN_FOR_NEW_SOURCE_REVISION",
+  "root_cause": "The original #105 SEO resolver read real DataForSEO cache bg_zoekwoordkansen, but never projected its source-proven observations into powerhouse_seo_keyword_intelligence_v1 used by the original #175 daily Brain handoff. The archive also filtered the wrong tenant ('bedrijfsgeheugen' instead of original source 'canonical'), making valid historical source invisible. A scheduler success was conflated with fresh keyword delivery and executed CRO.",
+  "evidence": {
+    "production_readback_at": "2026-11-12",
+    "original_cache": {
+      "table": "public.bg_zoekwoordkansen",
+      "source": "dataforseo",
+      "total_records": 180,
+      "within_7_days": 95,
+      "latest_source_timestamp": "2026-11-09T06:00:08.939Z"
+    },
+    "original_intelligence": {
+      "table": "public.powerhouse_seo_keyword_intelligence_v1",
+      "total_records": 15,
+      "tenant": "canonical",
+      "latest_source_timestamp": "2026-10-25T05:02:00.755Z",
+      "records_current_7_days": 0
+    },
+    "original_source_handoff": {
+      "producer_cron": 175,
+      "consumer_cron": 140,
+      "brain_period": "2026-11-12",
+      "actual_consumer_ack": true,
+      "optimization_status": "NOT_EXECUTED",
+      "day_keyword_quality": "MISSING_PROVIDER_KEYWORDS"
+    },
+    "source_identity": "provider DataForSEO event ID absent in legacy cache; do not synthesize one",
+    "tests": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ]
+  },
+  "fix": [
+    "Add pure cached-keyword selection in existing resolver #105 that only projects the original owned NL DataForSEO-cache observations newer than existing row, preserving source observed_at, market, original canonical page and conversion destination.",
+    "Upsert to existing canonical keyword table with readback of exact keyword, observed_at, URL owner and estimated search volume. No new provider call, cron, table, identity or supposed GA4 traffic.",
+    "Add fail-closed append-only SQL migration to correct the exact original #175 keyword source tenant filter without touching historical identity, other source queries or security grants.",
+    "Update existing SEO agent/skill and original learning documents; require next real source archive/current SHA consumer ACK and measured CRO outcome before success."
+  ],
+  "prevention_rule": "No Powerhouse scheduler success, DataForSEO cache availability, estimated search volume, page score or first-party event count may be treated as proven current source-to-Brain processing or extra visitors without actual tenant-accurate source timestamp, original writer readback, immutable-source-revision-guard, named consumer processed ACK and measured downstream outcome.",
+  "regression_contract": "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs",
+  "future_measurement": {
+    "natural_original_cron_105": "actual source projection rows and recorded cache observed_at",
+    "natural_original_cron_175": "same protected source manifest; no simulated current-day keyword rows",
+    "original_consumer_140": "matched current source_revision; OPEN until acted",
+    "seo_effect": "7/14/28 complete-day GSC/GA4 and qualified CTA/scan/lead paid provider readbacks; no anticipated uplift claim"
+  },
+  "original_only": true,
+  "no_parallel_scheduler": true,
+  "no_backdating": true,
+  "delivery": {
+    "migration": "supabase/migrations/20261112203000_original_seo_keyword_tenant_alignment_v1.sql",
+    "source": "supabase/functions/powerhouse-seo-opportunity-resolver/index.ts",
+    "skill": ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    "agent": "platform/agents/agent-team.mjs",
+    "ledger": "docs/development-ledger-events/2026-11-12-seo-original-keyword-cache-brain-handoff-v1.md"
+  },
+  "compiler": {
+    "failure_class": "SOURCE_TENANT_PROJECTION_GAP",
+    "scope": "DATA_SPINE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "expected": "180 original cache rows / 95 within 7 days, but zero recent canonical keyword intelligence; after natural #105 only owner-matched cached observations are projected without fake timestamps, #175 reads canonical source tenant, #140 verifies hash."
+  }
+}
