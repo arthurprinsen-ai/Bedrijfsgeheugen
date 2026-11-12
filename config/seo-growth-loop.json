@@ -472,7 +472,32 @@
       ],
       "no_parallel_executor": true,
       "no_duplicate_intent_content": true,
-      "never_claim_sales_without_provider_readback": true
+      "never_claim_sales_without_provider_readback": true,
+      "rendered_href_integrity": {
+        "fingerprint": "seo|rendered-nl-en-href-full-inventory-and-consumer-ack|20261112-v1",
+        "original_executor": "Powerhouse SEO Order Engine / BG169; original website lane browser only",
+        "inventory": "final public sitemap NL and generated EN; all discovered public indexable routes",
+        "source": "existing tools/site-shell/standalone-visibility-check.mjs desktop DOM inside current three-viewport full-site sweep",
+        "checks": [
+          "every rendered a[href] accounted for without truncation",
+          "HTTPS-only absolute external links and safe mailto/tel/fragment",
+          "no empty placeholder javascript data scheme-relative HTTP apex-host or ambiguous relative href",
+          "first-party page target present in final canonical sitemap or explicitly nonindexed functional route",
+          "real HTTP/redirect and fragment/interaction effects require separate independent browser/provider readback"
+        ],
+        "coverage_goal_percent": 100,
+        "allow_partial_coverage_green": false,
+        "consumer_handoff": {
+          "original_tenant_and_content_revision": true,
+          "original_owner_and_idempotency_key": true,
+          "original_producer_accepted_ack": true,
+          "consumer_processing_receipt_required": true,
+          "heartbeat_and_portal_original_projection": true,
+          "learning_next_natural_run_verification": true
+        },
+        "on_failure": "same original Website/SEO owner lease -> one BRAIN failure fingerprint -> bounded repair -> protected Required/CodeQL/Netlify -> independent public route check -> original consumer ACK; no second executor, no fake green",
+        "release_proven": false
+      }
     }
   },
   "failure_policy": {
