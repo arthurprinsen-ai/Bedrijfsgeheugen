@@ -84,3 +84,11 @@ test('the new original tenant alignment migration is strict and preserves all ot
  assert.match(source,/KEYWORD_TENANT_SOURCE_DEFINITION_DRIFT/);
  assert.doesNotMatch(source,/cron\.schedule|CREATE TABLE|DISABLE TRIGGER/);
 });
+
+test('a plausible URL without independently scored original intent-owner confidence cannot authorize projection',()=>{
+ const unsignedOwner=()=>({route:'https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken',
+   role:'money',primary_cta:{url:'https://www.bedrijfsgeheugen.nl/frisse-blik'}});
+ const r=planOriginalSeoKeywordCacheProjection([base],{resolveOwner:unsignedOwner,asOf:now});
+ assert.equal(r.accepted,0);
+ assert.equal(r.rejected.owner,1);
+});
