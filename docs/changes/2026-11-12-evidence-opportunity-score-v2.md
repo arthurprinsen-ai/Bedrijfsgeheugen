@@ -1,0 +1,10 @@
+# Commerciële SEO-kansen op vier onafhankelijke bewijstypen
+
+Voor Bedrijfsgeheugen geeft de bestaande SEO-executor een kans pas door wanneer er een gekoppelde eigen omzetwaardige dienst, actuele Google-zoekvraag, een exact canonical page-intent ownership record en aantoonbare broncontext zijn. De score is transparant en telt tot 100 (fit 30, haalbaarheid 20, vraag 15, eigen GSC-gat 15, markt 10, technische/externe 10).
+
+Vermijd schijnprecisie: Google Ads betaald CPC/competition is geen organische SEO moeilijkheid, Search Console ontbrekende data is geen 0 klikken, AI-prompt volume is geen Claude/ChatGPT referral. Externe trends alleen als onafhankelijk geverifieerde dated HTTPS observaties, en geen nieuwe blog op basis van één social bericht.
+
+De bestaande triage draagt `scoreVersion`, componenten, geverifieerde indicaties, `missingEvidence`, originele canonical owner en `recommendedAction`. Hoofdactiviteit is eerst bestaande commerciële pagina verbeteren; creëer slechts nieuwe pagina bij uniek bewezen intentie. Originele BG169 agent + skill, één beschermde CI/CD, daarna BRAIN/Powerhouse/Heartbeat en aantoonbaar verwerkte consumer ACK, echte leads/omzet en leertoepassing. Details: `docs/development-ledger-events/2026-11-12-evidence-opportunity-score-v2.md`.
+## Original protected delivery blocker reconciled
+
+The 12 November original database-provider source-lock repair was independently merged through protected PR [#5665](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5665): actual Supabase 832 applied versions and canonical main 832 source versions, last `20261112184500_original_daily_post_publication_metric_ack_v1`. Earlier SEO candidate checks using historical base 8aff counted three unrelated original lock-repair files. Re-target this same original #5659 candidate to current protected main, preserve strictly nine originally scoped scoring/agent/skill/test files, then require a *new exact-head* Required and CodeQL run rather than enlarging the scope budget or bypassing migration lock tests. No database DDL, new executor, automatic blog publication, measurement or revenue claim from the score release.
