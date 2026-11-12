@@ -32,7 +32,13 @@
     "initial_brain_producer_manifest": {
       "date_11": "89d66bd7e396416306a1f54e65910bc120e08d49dd5f2a76bf619f78e5caa1c4",
       "date_12": "eec9269fd7a69758b30fda34eb5740191d536a6ca492e571f80423f487bff42a"
-    }
+    },
+    "learning_eval_modes": [
+      "historical_replay",
+      "shadow",
+      "canary"
+    ],
+    "safety_contract": "Original consumer is not accepted until source SHA256 identity recheck, and no synthetic provider metric or CRO winner is claimed."
   },
   "prevention": "Keep original #175 as producer of 7 additional per-day source classes, with exact raw-source revision and quality status, then store SHA256 canonical tenant/day/source manifest in the ORIGINAL ONE BRAIN obligation. Existing #140 independently re-reads that source manifest and produces idempotent consumer ACK, source-bound CRO test recommendation (never an asserted actual experiment) and original Heartbeat readback. Missing provider keyword/audit data, failed reads, unverified blogs, causal effects and revenue must stay visibly pending. Retain original provider and security controls; no second scheduler.",
   "compiler": {
@@ -44,6 +50,12 @@
   },
   "evaluation": {
     "historical_replay": [
+      "tests/brain-original-daily-source-brain-heartbeat-one-loop-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-daily-source-brain-heartbeat-one-loop-20261112.test.mjs"
+    ],
+    "canary": [
       "tests/brain-original-daily-source-brain-heartbeat-one-loop-20261112.test.mjs"
     ]
   },
