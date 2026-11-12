@@ -1682,6 +1682,19 @@
         "protected_merge_and_production_readback_required": true,
         "one_brain_heartbeat_portal_learning_handoff_required": true,
         "status": "POLICY_CANDIDATE_PENDING_PROTECTED_MERGE_AND_RUNTIME_EVIDENCE"
+      },
+      "ai_answer_visibility": {
+        "fingerprint": "seo|public-ai-search-discovery-and-proposition-truth|20261111-v1",
+        "authority": "config/seo-growth-loop.json#optimization.ai_answer_visibility",
+        "owner": "existing Powerhouse SEO Order Engine / BG169",
+        "agent": "agent-seo-content",
+        "no_new_scheduler": true,
+        "requires_actual_provider_answer_receipts": true,
+        "unobserved_visibility": "NOT_MEASURED",
+        "technical_live_requires_exact_production_readback": true,
+        "original_brain_heartbeat_portal_handoff": true,
+        "production_status": "CANDIDATE_NOT_LIVE_PROVEN",
+        "citation_status": "NOT_MEASURED"
       }
     },
     {
