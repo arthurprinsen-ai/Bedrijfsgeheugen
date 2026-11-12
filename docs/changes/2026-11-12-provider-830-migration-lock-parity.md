@@ -1,0 +1,7 @@
+# Canonical provider-applied migration source lock 830/830 — 12 November 2026
+
+Original #5652 protected main: `6c67120161a891c3434032a5418afdc8d9cbc8d5`. Original Supabase production project `adhjwmvyoixzjtmiroln` native ledger readback at 2026-11-12T15:15:03.959Z has 830 applied migration pairs, including exactly one `20261112162500/original_metric_source_temporal_handoff_v1`. The merged original source SQL is present, but source `supabase/migration-history.lock.json` held 829.
+
+One original migration-history writer appends precisely the already-provider-applied #830 identity. Preserve 829 immutable prior source records, no production DDL, no direct ledger mutation, no parallel executor. New original Powerhouse Continuity skill rule requires producer exact provider readback→source lock consumer PROCESSED ACK→protected downstream gate; prevent recurring 827/828/829/830 drift without falsely closing user-value outcomes. Protected Required+CodeQL+provider preview+main merge and independent 830/830 source/provider readback required. 
+
+Regression: tests/brain-cro-production-migration-lock-20261029.test.mjs, tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs. ONE BRAIN lesson `supabase|migration-history|provider-830-lock-parity|20261112-v1`; parent issue #4198. Original UX #4215 and real customer/Powerhouse/Heartbeat outcome/learning remain open independently.
