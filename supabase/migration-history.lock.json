@@ -3344,8 +3344,12 @@
     {
       "version": "20261112211600",
       "name": "original_seo_opportunity_source_registry_v1"
+    },
+    {
+      "version": "20261112214500",
+      "name": "original_seo_derived_brain_manifest_handoff_v1"
     }
   ],
-  "captured_at": "2026-11-12T19:04:18.464Z",
+  "captured_at": "2026-11-12T20:39:22.938468Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
