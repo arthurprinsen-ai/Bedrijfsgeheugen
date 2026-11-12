@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|provider-833-lock-parity|20261112-v1",
+  "obligation_id": "supabase|migration-history|provider-833-lock-parity|20261112-v1",
+  "title": "Applied native #833 source/Brain/Heartbeat migration must reach original Git source lock before downstream releases",
+  "status": "CANDIDATE",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "root_cause": "Original protected #5667 native 20261112194500 migration applied successfully exactly once (833 applied) while GitHub migration-history.lock.json remained 832; original provider/source lock consumer handoff not atomic, recurrent since #827.",
+  "impact": "Subsequent protected Portal V2/SEO/AI candidates fail native provider/source parity despite valid production Brain and Heartbeat changes; potential stranded release, no evidence missing SQL.",
+  "fix": "Under original protected migration source writer append only exact provider-applied identity 20261112194500/original_growth_source_revision_identity_fix_v1 to original lock while preserving prior 832 unchanged. No DDL replay, new scheduler or mutable external provider state.",
+  "prevention_rule": "Every original native applied migration must carry exact version/name/SQL source/observed_at into original source lock PROCESSED readback under single owner/lease before dependent protected admission. Fail closed on mismatch.",
+  "owner": "Original Supabase native migration-history source writer / ONE BRAIN backend owner",
+  "tests": [
+    "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
+  ],
+  "regression_contract": "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 833,
+    "provider_exact_version_count": 1,
+    "provider_observed_at": "2026-11-12T16:22:09.982905Z",
+    "source_lock_before": 832,
+    "source_lock_after_candidate": 833,
+    "source_sql": "supabase/migrations/20261112194500_original_growth_source_revision_identity_fix_v1.sql",
+    "original_source_pr": 5667
+  },
+  "outcome": "Candidate, protected Required+CodeQL+native provider preview and main/actual provider 833/833 independent source readback due. No provider-link/revenue/experiment claim.",
+  "compiler": {
+    "failure_class": "PROVIDER_SOURCE_PARITY",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
