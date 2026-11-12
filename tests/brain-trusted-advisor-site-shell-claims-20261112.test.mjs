@@ -20,3 +20,9 @@ test('trusted advisor original site-shell claim source never promises a universa
   assert.ok(!gate.includes(value),value+' is still required by sitewide guard');
  }
 });
+
+test('canonical trustbar checkmarks resolve in the original cached English route',()=>{
+ const patch=JSON.parse(readFileSync('config/bg-static-i18n-en.d/2026-11-12-trusted-advisor-site-shell-checkmark.json','utf8'));
+ assert.equal(patch['✓ Duidelijke afspraken vooraf'],'✓ Clear agreements upfront');
+ assert.equal(patch['✓ Klein beginnen, resultaat toetsen'],'✓ Start small, validate the results');
+});
