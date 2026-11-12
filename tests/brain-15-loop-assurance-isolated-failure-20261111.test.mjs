@@ -47,7 +47,13 @@ test('same original privileges and no extra scheduler, sender or silent completi
  }
  const lock=JSON.parse(read('supabase/migration-history.lock.json'));
  assert.ok(lock.applied.some(row=>row.version==='20261111093500'&&row.name==='original_loop_assurance_fault_isolation_v1'),'native applied original 09:35 source must be recognized');
- assert.equal(lock.applied.length,826,'native original provider identities must match the source lock after protected source reconciliation');
+ assert.ok(lock.applied.length>=826,'original provider history cannot lose any of its first 826 identities');
+ assert.deepEqual(lock.applied.slice(824,826),[
+  {version:'20261111093500',name:'original_loop_assurance_fault_isolation_v1'},
+  {version:'20261111094222',name:'original_loop_assurance_fault_isolation_v1'}
+ ],'original 826-entry prefix and source ordering must remain intact after provider append-only migrations');
+ assert.equal(new Set(lock.applied.map(row=>row.version)).size,lock.applied.length,
+  'all subsequent applied source versions must remain unique');
  assert.ok(lock.applied.some(row=>row.version==='20261111094222'&&row.name==='original_loop_assurance_fault_isolation_v1'),'native second actual 09:42 source must be recognized without replay');
 });
 
