@@ -273,6 +273,56 @@
         "evidence_policy": "measure search, engagement, selfscan progression, qualified lead, proposal, paid order and realized revenue; do not infer demand or revenue from traffic alone"
       }
     },
+    "ai_answer_visibility": {
+      "fingerprint": "seo|public-ai-search-discovery-and-proposition-truth|20261111-v1",
+      "owner": "existing Powerhouse SEO Order Engine / BG169",
+      "scheduler": "reuse existing daily Powerhouse SEO Order Engine, never create second scheduler",
+      "source_integrity": [
+        "robots.txt search/user bot permissions",
+        "llms.txt product and service truth",
+        "sitemap.xml NL/EN canonical discoverability",
+        "public URL 200 response",
+        "truthful Organization, SoftwareApplication and FAQ JSON-LD"
+      ],
+      "ai_search_user_agents": [
+        "OAI-SearchBot",
+        "ChatGPT-User",
+        "Claude-SearchBot",
+        "Claude-User"
+      ],
+      "training_bots_separate": [
+        "GPTBot",
+        "ClaudeBot"
+      ],
+      "citation_sample": {
+        "prompt_panel_size_target": 20,
+        "priority": "unbranded Dutch business-problem questions",
+        "providers": [
+          "ChatGPT",
+          "Claude"
+        ],
+        "required_receipt_fields": [
+          "provider",
+          "timestamp",
+          "prompt_version",
+          "answer_url_if_available",
+          "observed_mention",
+          "observed_citation",
+          "canonical_target_url",
+          "discovery_method",
+          "confidence",
+          "qualified_lead",
+          "paid_order"
+        ],
+        "unavailable_state": "NOT_MEASURED; never infer 0% visibility",
+        "warning": "Do not fabricate AI platform access or citations; only verified provider answer content counts"
+      },
+      "decision_policy": "Fix existing intent-owner pages first; no duplicate content, unsupported ranking claims, bot simulation, cloaking, extra event store or unconsented tracking",
+      "handoff": "original BG169 SEO Order Engine -> ONE BRAIN with owner ACK -> Heartbeat -> Portal -> next original daily cycle",
+      "live_gate": "original Required+CodeQL+preview (where applicable) -> protected merge -> exact Netlify READY commit -> public robots/llms live readback",
+      "visibility_proven": false,
+      "production_proven": false
+    },
     "sitewide_daily_audit": {
       "fingerprint": "seo|sitewide|daily-audit-to-conversion-learning|20261110-v1",
       "scheduler_authority": "existing Powerhouse SEO Order Engine daily automation (id 6ad5b66790548191ad87ca89c4fd00ab); NO second scheduler",
