@@ -49,3 +49,26 @@ test('existing sitewide browser gate must audit ALL rendered routes, NL and EN, 
   assert.match(browser,/viewport\.name==='desktop'/);
   assert.match(browser,/hrefs: Array\.from\(document\.querySelectorAll\('a\[href\]'\)\)/);
 });
+
+test('the original locale runtime does not invent English URLs for NL-only model pages or checkout',()=>{
+  const source=readFileSync('assets/js/i18n.js','utf8');
+  for(const slug of ['/openai-ai-modellen','/claude-ai-modellen','/gemini-ai-modellen','/mistral-ai-modellen','/amazon-ai-modellen','/chatgpt-vs-claude','/chatgpt-vs-gemini','/claude-vs-gemini']) {
+    assert.ok(source.includes("'"+slug+"'"),'NL-only locale fallback not registered: '+slug);
+  }
+  assert.match(source,/NL_ONLY_AI_MODEL_ROUTES\.has\(key\)/);
+  assert.match(source,/NL_ONLY_AI_MODEL_ROUTES\.has\(strippedKey\)/);
+  assert.match(source,/\/en\/ai-modelwijzer/);
+  assert.match(source,/SHARED_FUNCTIONAL_ROUTES\.has\(strippedKey\)/);
+  assert.match(source,/normalizeRouteKey/);
+});
+
+test('privacy and connector fallback anchors have a real destination rather than a no-op href',()=>{
+  const privacy=readFileSync('privacy.html','utf8');
+  const connect=readFileSync('connect.html','utf8');
+  assert.match(privacy,/<h2 id="cookies">Cookies<\/h2>/);
+  assert.match(privacy,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/privacy#cookies"/);
+  assert.match(connect,/id="wMailto"/);
+  assert.doesNotMatch(connect,/<a href="#" id="wMailto">/);
+  assert.match(connect,/href="mailto:arthur@bedrijfsgeheugen\.nl\?subject=/);
+  assert.doesNotMatch(privacy,/<a href="#" onclick="if\(window\.bgOpenCookies\)/);
+});
