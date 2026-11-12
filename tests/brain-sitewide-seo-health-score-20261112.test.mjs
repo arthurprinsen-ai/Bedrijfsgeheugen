@@ -49,3 +49,15 @@ test('original full website lane is the writer and retains one auditable artifac
  assert.match(lane,/Retain original technical SEO health report/);
  assert.match(lane,/\.artifacts\/sitewide-seo-health-report\.json/);
 });
+
+test('two specialist diagnostics share one DOM snapshot but never duplicate route counts',()=>{
+ const browser=readFileSync('tools/site-shell/standalone-visibility-check.mjs','utf8');
+ assert.equal((browser.match(/seo:\s*\{/g)||[]).length,1);
+ assert.match(browser,/const seoPages = \[\];/);
+ assert.match(browser,/const seoIntelligencePages = \[\];/);
+ assert.match(browser,/seoPages\.push\(auditSeoPage/);
+ assert.match(browser,/seoIntelligencePages\.push\(inspectRenderedSeoPage/);
+ assert.match(browser,/reports:seoIntelligencePages,expectedRoutes:routes\.length/);
+ assert.match(browser,/pages:seoPages,sitemapRoutes:routes/);
+ assert.doesNotMatch(browser,/const seoPages = \[\];\s*const seoPages = \[\];/);
+});
