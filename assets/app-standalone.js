@@ -46,7 +46,7 @@
  else syncAction();
  if(win.isSecureContext&&'serviceWorker' in navigator){
   win.addEventListener('load',()=>{
-   navigator.serviceWorker.register('/app-sw.js',{scope:'/',updateViaCache:'none'})
+   navigator.serviceWorker.register('/assets/app-sw.js',{scope:'/',updateViaCache:'none'})
     .catch(()=>{ /* App still remains an online-first authenticated website. */ });
   },{once:true});
  }
