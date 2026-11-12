@@ -23,3 +23,11 @@ test('original P0 source correction preserves immutable BRAIN identity, current 
  assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_daily_source_archive_v1\(date\) TO service_role/);
  assert.doesNotMatch(sql,/\bcron\.schedule\s*\(/i);
 });
+
+test('original native 835th verified source lock preserves former 834th and registered SQL identity',()=>{
+ assert.equal(lock.applied.length,835,'all and only actual native provider-applied versions must be acknowledged');
+ assert.deepEqual(lock.applied[833],{version:'20261112203000',name:'original_seo_keyword_tenant_alignment_v1'});
+ assert.deepEqual(lock.applied[834],{version:'20261112211000',name:'original_skipped_provider_reference_readback_handoff_v1'});
+ assert.ok(existsSync(new URL('../supabase/migrations/20261112211000_original_skipped_provider_reference_readback_handoff_v1.sql',import.meta.url)));
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,835,'no duplicate provider versions');
+});
