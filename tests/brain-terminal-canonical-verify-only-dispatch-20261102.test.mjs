@@ -157,7 +157,7 @@ test('provider-created PR lower bound scopes a complete original flight history 
   assert.equal(originalBrainFlightSince(prCreated),'2026-11-12T16:57:05Z');
   assert.throws(()=>originalBrainFlightSince('not-a-date'),/BRAIN_PROVIDER_PR_CREATED_AT_INVALID/);
   assert.throws(()=>originalBrainFlightSince('2026-13-50T17:07:05Z'),/BRAIN_PROVIDER_PR_CREATED_AT_INVALID/);
-  assert.match(terminal,/created=\\\$\{created_filter\}/);
+  assert.match(terminal,/created=\$\{created_filter\}/);
   assert.match(terminal,/gh api --paginate --slurp "\$query"/);
   assert.match(terminal,/for guard_check in 1 2; do/);
 });
