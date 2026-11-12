@@ -547,6 +547,26 @@
         "original_readback_to_owner": "BG169 -> exact GitHub/Netlify readback -> ONE BRAIN tenant+source revision+idempotency -> original consumer PROCESSED ACK -> Powerhouse/Heartbeat/Portal -> 7/14/28d measured effect -> original next natural run",
         "no_new_executor": true,
         "auto_publish_without_provider_proof": false
+      },
+      "deterministic_health_score": {
+        "version": "sitewide-seo-health-v1-20261112",
+        "original_lane": ".github/workflows/lane-website.yml / website browser",
+        "source": "tools/site-shell/seo-health-score.mjs",
+        "artifact": ".artifacts/sitewide-seo-health-report.json",
+        "artifact_upload": "sitewide-seo-health-${candidate_sha}",
+        "deterministic_issue_types": 17,
+        "score": "Count fully crawled sitemap URLs with zero observed ERROR findings divided by expected sitemap URLs * 100; null for incomplete URL coverage",
+        "parity_claim": "NOT_AHREFS_170_RULES",
+        "missing_external_source_is_unknown": true,
+        "release_gate": "existing fail-closed href/HTTP/CLS browser gate plus exact SEO scan coverage; new issue types are reported and assigned, not silently counted as green",
+        "caveats": [
+          "17 independently auditable on-page rules are not Ahrefs' 170+ rules",
+          "AI citations, GSC, backlinks and real-user Core Web Vitals require separate provider source events",
+          "Browser-produced artifact alone is not a ONE BRAIN downstream consumer processed acknowledgment"
+        ],
+        "owner": "existing Powerhouse SEO Order Engine / BG169",
+        "handoff": "original tenant_id, source revision, owner, idempotency, producer receipt, independently processed named ONE BRAIN → Powerhouse → Heartbeat → Portal ACK",
+        "completion_definition": "source scan + artifact + protected CI + exact Netlify production readback + measured effect + original downstream consumer ACK; otherwise leave obligation OPEN"
       }
     }
   },
