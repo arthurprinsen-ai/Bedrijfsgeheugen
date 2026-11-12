@@ -17,6 +17,7 @@
   "correction": "Existing answer assurance presenter fails closed for missing or contradictory independent verification declaration, concrete reference, or identifiable source; preserve existing server tenant routing.",
   "prevention_rule": "No status-only Verified claim in customer chat or portal, and no brand fallback posing as cited provenance.",
   "regressions": [
+    "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs",
     "portal-v2/tests/trusted-advisor-assurance.test.mjs"
   ],
   "original_handoff": "Portal V2 -> existing tenant BusinessInput -> original ONE BRAIN -> Powerhouse / Heartbeat -> authorized action -> independent readback -> learning",
@@ -28,5 +29,21 @@
     "backend receipt authority validation and original consumer_processed_ack",
     "consent-qualified measured 7/14/28 day effects"
   ],
-  "activity_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-answer-proof-gate-v1.md"
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-answer-proof-gate-v1.md",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs"
+    ],
+    "expected": "unproven or contradictory answer source/claim verification/reference never displays Verified"
+  }
 }
