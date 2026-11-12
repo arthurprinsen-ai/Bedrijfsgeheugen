@@ -25,7 +25,8 @@ test('derived source is explicitly distinct from external provider measurements 
  assert.match(sql,/o\.observation_id::text\|\|':'\|\|o\.observed_at::text/);
  assert.match(sql,/md5\(o\.evidence::text\)/);
  assert.match(sql,/o\.observed_at>=v_start AND o\.observed_at<v_end/);
- assert.doesNotMatch(sql,/\bcron\.schedule\s*\(|\bGRANT\b|\bALTER\s+TABLE\b|\bDROP\s+TABLE\b|\bDELETE\s+FROM\b|\bTRUNCATE\b/i);
+ const executable=sql.replace(/^--.*$/gm,'');
+ assert.doesNotMatch(executable,/\bcron\.schedule\s*\(|\bGRANT\b|\bALTER\s+TABLE\b|\bDROP\s+TABLE\b|\bDELETE\s+FROM\b|\bTRUNCATE\b/i);
 });
 
 test('same original source event feeds current raw revision and named ONE BRAIN plus Heartbeat',()=>{
