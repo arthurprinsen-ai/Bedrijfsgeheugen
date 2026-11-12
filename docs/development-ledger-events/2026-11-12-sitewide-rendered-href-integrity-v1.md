@@ -10,3 +10,5 @@
 - Failure resolution: original same-lineage bounded replay, no bypass and no second scheduler, mark source not measured not zero; record true cause, owner, next retry and regression.
 
 - False-positive preventie: `PUBLIC_UTILITY_ROUTES` blijft bron voor juridische/niet-geïndexeerde routes; checkout `/afsluiten` heeft bron-robots `noindex,nofollow`; `/pakketadvies` is een bestaande functionele prijsadviesbestemming. Validator en test delen deze uitzonderingen, maar echte HTTP/UX/provider-readback blijft verplicht. Gewone ontbrekende nieuwe geldpagina's zijn geen utility-exempties.
+
+- Regressie `43220422656` website browser faalde doelbewust met 15 href-bevindingen; echte oorzaken aangetroffen in blind `assets/js/i18n.js` locale fallback plus `connect.html` en `privacy.html` anchors. Correctie in dezelfde PR: geen /en/ AI-model 404, gedeelde `/afsluiten` functioneel, werkende mailto en cookie-fragmentfallback; regressietest uitgebreid. Nieuw exact-head bewijs verplicht. Geen oude mislukking als groen afmelden.
