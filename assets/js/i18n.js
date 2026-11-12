@@ -33,7 +33,6 @@
     '/openai-ai-modellen','/claude-ai-modellen','/gemini-ai-modellen','/mistral-ai-modellen',
     '/amazon-ai-modellen','/chatgpt-vs-claude','/chatgpt-vs-gemini','/claude-vs-gemini'
   ]);
-  const SHARED_FUNCTIONAL_ROUTES = new Set(['/afsluiten']);
   const normalizeRouteKey = route => route.replace(/\/+$/,'') || '/';
   const localizedHref = target => {
     const normalized = normalizeLocale(target);
@@ -41,7 +40,6 @@
     const key = normalizeRouteKey(stripped);
     const pathname = normalized === 'en'
       ? NL_ONLY_AI_MODEL_ROUTES.has(key) ? '/en/ai-modelwijzer'
-        : SHARED_FUNCTIONAL_ROUTES.has(key) ? key
         : '/en' + (stripped === '/' ? '/' : stripped)
       : (stripped === '/' ? '/' : stripped);
     return pathname.replace(/\/+/g,'/') + location.search + location.hash;
@@ -61,13 +59,9 @@
     if (NON_PAGE_PREFIXES.some(prefix => lowerPath.startsWith(prefix))) return raw;
     const stripped = url.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
     if (stripped.startsWith('/portal') || stripped.startsWith('/klantportaal')) return raw;
-    // No fabricated EN checkout or NL-only AI-model route; preserve the valid
-    // published functional/standalone target under the original site identity.
+    // These eight standalone model pages have no EN counterpart; keep their
+    // original Dutch canonical target in internal content links.
     const strippedKey = normalizeRouteKey(stripped);
-    if (SHARED_FUNCTIONAL_ROUTES.has(strippedKey)) {
-      url.pathname = strippedKey;
-      return url.pathname + url.search + url.hash;
-    }
     if (normalizeLocale(target) === 'en' && NL_ONLY_AI_MODEL_ROUTES.has(strippedKey)) {
       url.pathname = strippedKey;
       return url.pathname + url.search + url.hash;
