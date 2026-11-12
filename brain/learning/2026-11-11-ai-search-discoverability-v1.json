@@ -1,7 +1,7 @@
 {
   "fingerprint": "seo|public-ai-search-discovery-and-proposition-truth|20261111-v1",
   "date": "2026-11-11",
-  "status": "CANDIDATE",
+  "status": "CANDIDATE_AWAITING_GITHUB_ACTIONS_REQUIRED_AND_CODEQL",
   "production_proven": false,
   "ai_citation_proven": false,
   "existing_executor": "Powerhouse SEO Order Engine",
@@ -41,6 +41,27 @@
       "https://developers.openai.com/api/docs/bots",
       "https://support.claude.com/en/articles/8896518-does-anthropic-crawl-data-from-the-web-and-how-can-site-owners-block-the-crawler"
     ],
-    "production_readback": "PENDING; source code changes alone do not prove current live deployment or AI citation."
+    "production_readback": "PENDING; source code changes alone do not prove current live deployment or AI citation.",
+    "readback_after_agent_update": "NOT_LIVE: current main before patch remained 8a24c75a, Netlify deploy 6af4c384a3da4d8a0a372692; current PR release after update needs new exact-head Required+CodeQL"
+  },
+  "updated_at": "2026-11-12",
+  "preventative_owner_contract": {
+    "original_owner": "Powerhouse SEO Order Engine / BG169",
+    "agent": "agent-seo-content",
+    "one_brain_handoff": "BG169 -> ONE BRAIN owner ACK -> Heartbeat -> Portal -> next original daily SEO cycle",
+    "scheduler_count_change": 0,
+    "no_false_green": true,
+    "citation_sampling": "20 unbranded problem prompts, actual ChatGPT/Claude provider answers only; otherwise NOT_MEASURED",
+    "technical_source_proof": "public robots.txt/llms.txt + current Netlify deployed main commit",
+    "production_gate": "protected Required+CodeQL success, merge, READY exact current-main, public HTTP readback"
+  },
+  "ci_incident": {
+    "fingerprint": "github-actions|protected-required-codeql-queued-zero-jobs|pr5631",
+    "original_pr": 5631,
+    "original_head_before_agent_update": "c352091f35c0db7ad5157cdf2c67d2b732addd3f",
+    "observed": "Required and CodeQL were queued overnight with 0 jobs, confirmed 2026-11-12; prior close/reopen created new queued runs without jobs",
+    "safe_recovery": "Preserve original PR, protected auto-merge, native tests and check runs; investigate GitHub Actions provider queue/capacity, do not forge checks or bypass protected branch",
+    "owner": "original GitHub protected delivery / BG169",
+    "state": "OPEN_PROVIDER_RUNNER_QUEUE"
   }
 }
