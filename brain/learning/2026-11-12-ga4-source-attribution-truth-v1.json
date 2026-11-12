@@ -52,5 +52,23 @@
     "subsequent natural original scheduler trace",
     "original ONE BRAIN obligation and named consumer processed ACK",
     "independent 7d/28d visitor and conversion measurement"
-  ]
+  ],
+  "evidence": {
+    "provider_observation": {
+      "observed_at": "2026-11-12T12:05:05.702Z",
+      "source": "public.bg_ga4_sync",
+      "provider_page_rows": 9,
+      "post_measurements_imported": 0,
+      "reported_sync_status": "ok",
+      "independent_windsor_period": "2026-10-13/2026-11-11",
+      "note": "GA4 sessions can exist without any tagged social_posts.source_campaign_id match; zero imported social metrics does not mean zero website sessions.",
+      "windsor_ga4_channel_session_sum": 37
+    },
+    "source_ledger": "docs/development-ledger-events/2026-11-12-ga4-source-attribution-truth-v1.md",
+    "tests": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ],
+    "original_owner": "bg-analytics-sync-composio",
+    "no_production_claim": true
+  }
 }
