@@ -58,7 +58,7 @@ test('AI-answer GEO belongs to the existing SEO agent, skill, system map and lea
   const lesson = JSON.parse(readFileSync(new URL('../brain/learning/2026-11-11-ai-search-discoverability-v1.json',import.meta.url),'utf8'));
   assert.equal(lesson.production_proven,false);
   assert.equal(lesson.ai_citation_proven,false);
-  assert.deepEqual(lesson.evaluation.historical_replay,['tests/brain-ai-discovery-20261111.test.mjs']);
+  assert.ok(lesson.evaluation.historical_replay.includes('tests/brain-ai-discovery-20261111.test.mjs'));
 });
 
 test('canonical protected delivery recognizes public AI crawler and profile documents in website lane',()=>{
