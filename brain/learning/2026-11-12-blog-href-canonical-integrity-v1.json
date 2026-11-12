@@ -41,5 +41,23 @@
     "root_cause": "New learning record initially lacked mandatory canonicalization compiler/evaluation fields",
     "recovery": "Added machine-enforceable CI classifier and required behavioral historical replay; exact-head Required retest pending",
     "state": "SOURCE_FIXED_RETEST_PENDING"
+  },
+  "prevention": [
+    "Every new blog must validate every first-party body href against final canonical sitemap before protected merge",
+    "External HTTPS links require independent live HTTP/redirect observation in original sitewide daily audit",
+    "All releases require Brain learning, activity ledger, human change note, exact-head Required/CodeQL and independent production readback"
+  ],
+  "evidence": {
+    "source_files": [
+      "scripts/ci/blog_technical_seo_gate.py",
+      "tests/brain-blog-href-integrity-20261112.test.mjs"
+    ],
+    "native_historical_replay": {
+      "run_id": 43206696622,
+      "passed": true,
+      "test_count": 1
+    },
+    "external_http_readback": "PENDING_NOT_LIVE",
+    "source_audit": "2026-11-12 blog anchor count gate did not resolve target URLs against final sitemap"
   }
 }
