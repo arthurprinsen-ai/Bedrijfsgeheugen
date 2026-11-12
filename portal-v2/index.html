@@ -3,6 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#123643">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mijn bedrijf">
+<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/app.webmanifest">
+<link rel="apple-touch-icon" href="https://www.bedrijfsgeheugen.nl/apple-touch-icon.png">
 <meta name="robots" content="noindex,nofollow">
 <meta name="description" content="Bedrijfsgeheugen brengt dagelijkse ondernemingssturing samen: externe en interne signalen, strategische gevolgen, beslissingen, acties met een eigenaar en verifieerbare resultaten.">
 <title>Bedrijfsgeheugen · Klantenportaal V2</title>
@@ -27,6 +33,7 @@
 <style>@import url("./insight-lens.css?v=20261020-1");</style>
 <link rel="stylesheet" href="./living-interface.css?v=20261102-1">
 <link rel="stylesheet" href="./connected-data-sources.css?v=20261102-1">
+<style>@import url("./app-feel.css?v=20261112");</style>
 </head>
 <body>
 <div class="app">
@@ -143,6 +150,7 @@
 <div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Alle onderdelen van je ondernemingssturing</h3><small style="color:#7280a1">Eén zelfstandige V2-shell met native functionaliteit, Brain, Datahub en Powerhouse — zonder koppeling met een tweede portaal.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
 <script type="module" src="./app.js?bg_explain=364cac3a47d67342928da7b6aa5a20fcb59092607c923bcaa3bd04dd414d42c8"></script>
 <script type="module" src="./topbar-actions.js"></script>
+<script type="module" src="./install-app.js?v=20261112"></script>
 <dialog id="portalAskAiDialog" class="portal-ai-dialog" aria-labelledby="portalAskAiTitle">
  <form method="dialog" class="portal-ai-dialog-head"><div><span>BEDRIJFSGEHEUGEN · JOUW BEDRIJFSCONTEXT</span><h2 id="portalAskAiTitle">Wat wil je weten of beslissen?</h2></div><button value="cancel" aria-label="Sluiten">×</button></form>
  <p>Vraag direct naar je bedrijf, acties, risico’s, kennis, processen of data. Het antwoord gebruikt alleen beschikbare portaalcontext.</p>
