@@ -8,15 +8,17 @@
   "root_cause": "createPortalStateClient.write used portalAuthoringReadbackMatches only for nextState.portal, although buildPortalBusinessInput includes non-derived authored top-level keys. 2xx plus partial readback could incorrectly report saved.",
   "impact": "Potential stale non-portal authored values silently acknowledged despite original canonical write. No actual affected customer or lost data independently demonstrated.",
   "fix": "Compare the identical authored answers from existing buildPortalBusinessInput(nextState).answers to authenticated GET state, preserving strict canonical and projection ACK; exclude already defined derived read-model keys.",
-  "prevention_rule": "Every authored canonical BusinessInput root key must survive the same authenticated write→GET; absent or mismatched field remains unsaved/error, not green; no extra store, worker or auth bypass.",
+  "prevention_rule": "Every authored canonical BusinessInput root key must survive the same authenticated write→GET; absent or mismatched field remains unsaved/error, not green; no extra store, worker or auth bypass. Future new security-sensitive Brain learning must bind historical_replay/shadow/canary to an existing tests/brain-*.test.mjs path, never portal-v2/tests paths as the canonicalized entrypoint.",
   "owner": "original Portal V2 #4215; existing agent-data-quality/agent-website-ux and ONE BRAIN consumer",
   "tests": [
     "portal-v2/tests/portal-business-input-persistence.test.mjs",
-    "tests/brain-original-all-inputs-one-loop-contract-20261112.test.mjs"
+    "tests/brain-original-all-inputs-one-loop-contract-20261112.test.mjs",
+    "tests/brain-portal-authored-root-readback-20261112.test.mjs"
   ],
   "evidence": [
     "Source inspection on 2026-11-12: previous readback checked only nextState?.portal against received.state?.portal",
-    "Two new regression cases for stale root-level field and derived read-model exclusion"
+    "Two new regression cases for stale root-level field and derived read-model exclusion",
+    "Protected CI Required #43322379479 and #43322628584 exposed missing evaluation and invalid non-brain path; corrected with central historic/shadow/canary regression file."
   ],
   "status_boundary": "SOURCE_FIX_CANDIDATE_ONLY; authenticated multi-tenant runtime and original Brain/Heartbeat consumer processed ACK, provider outcome, CRO holdout and next-run learning remain EVIDENCE_DUE",
   "compiler": {
@@ -28,13 +30,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+      "tests/brain-portal-authored-root-readback-20261112.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+      "tests/brain-portal-authored-root-readback-20261112.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/portal-business-input-persistence.test.mjs"
+      "tests/brain-portal-authored-root-readback-20261112.test.mjs"
     ]
   }
 }
