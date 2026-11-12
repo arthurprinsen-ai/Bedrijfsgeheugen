@@ -26,7 +26,7 @@
       "tests/brain-original-provider-833-immutable-replay-lock-20261112.test.mjs"
     ],
     "canary": [
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-original-provider-834-native-source-lock-20261112.test.mjs"
     ]
   },
   "evidence": {
