@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "brain|migration-history|historical-milestone-exact-total-rejects-authorized-append|20261112-v1",
+  "obligation_id": "brain-historical-migration-prefix-20261112",
+  "status": "CANDIDATE",
+  "owner": "original ONE BRAIN release/migration-parity assurance under #4198",
+  "root_cause": "Four historical source-contract tests embedded absolute past total migration counts 826/831/832 and checked the then-next migration absent from the ENTIRE provider lock. A legitimate later protected append advanced Supabase source history and GitHub lock to 833 while preserving each original ordered prefix. Those tests rejected the new correct history during original BRAIN delivery, although original exact-head Required and CodeQL passed.",
+  "evidence": [
+    "Original BRAIN delivery run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43264501374; backend job 131344834664 four assertions 833 !== 826/831/832",
+    "Native Supabase list_migrations on project adhjwmvyoixzjtmiroln: 833 applied migrations; protected GitHub supabase/migration-history.lock.json: same 833, original 826/831/832 milestone prefixes unchanged",
+    "Provider lock tail includes authorized 20261112194500 original_growth_source_revision_identity_fix_v1 beyond historical 832nd milestone",
+    "Original 2026-11-12 social-learning Edge change #5672 independently active v546; unrelated failing historical tests should not be suppressed by weakening migration authority"
+  ],
+  "fix": "Replace historical exact-total assertions with original immutable prefix length/order/identity assertions; preserve unique version checks across the full lock, explicit historical future-version absence INSIDE old prefix, and matching native provider history as separate current source-of-truth control.",
+  "prevention_rule": "Never assert that full migration history count is frozen at an historical milestone. Assert past prefix immutability and current whole provider/lock parity separately. Never automatically accept a missing/misordered/duplicate/replayed provider migration or loosen protected CI.",
+  "compiler": {
+    "failure_class": "CI_ASSERTION_DRIFT",
+    "scope": "ONE_BRAIN_MIGRATION_ASSURANCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-15-loop-assurance-isolated-failure-20261111.test.mjs",
+      "tests/brain-original-all-loop-cro-handoff-continuity-20261111.test.mjs",
+      "tests/brain-original-source-831-migration-lock-20261112.test.mjs",
+      "tests/brain-native-832-original-post-migration-lock-20261112.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "outcome": "Candidate. Only exact-head protected Required/BRAIN/CodeQL, protected merge, original main BRAIN replay, source parity and recurrence checks may prove repair; no arbitrary green claim."
+}
