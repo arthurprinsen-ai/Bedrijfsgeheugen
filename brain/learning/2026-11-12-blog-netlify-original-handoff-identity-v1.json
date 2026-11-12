@@ -37,5 +37,21 @@
       "netlify_deploy_id": "6addd26df8c80a10be5828d9",
       "old_brain_stage": "OVERDUE_PUBLICATION"
     }
+  ],
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-blog-netlify-provider-proof-20261112.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders",
+    "powerhouse-social-cro-funnel"
   ]
 }
