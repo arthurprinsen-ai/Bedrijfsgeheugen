@@ -52,6 +52,91 @@
     "paid_provider_guard": "deterministic opportunity pre-gate and bounded paid canary only"
   },
   "optimization": {
+    "daily_search_and_ai_traffic_growth": {
+      "fingerprint": "seo|daily-google-chatgpt-claude-qualified-traffic|20261112-v1",
+      "objective": "increase independently verified Google organic and ChatGPT/Claude human referral visits with qualified engagement and commercial conversion; daily action not guaranteed daily positive search volume",
+      "primary_owner": "existing Powerhouse SEO Order Engine / BG169",
+      "original_automation_id": "6ad5b66790548191ad87ca89c4fd00ab",
+      "target": "sustained growth in complete-day 7d and 28d rolling qualified organic/AI landing traffic, leads and paid outcomes; no fabricated targets or daily result guarantee",
+      "baseline_observed_2026_11_12": {
+        "source": "Supabase growth_events and bg_ga4_sync, inspected 2026-11-12",
+        "window": "7 days; current-day partial; events are not unique visitors",
+        "non_robot_events": 316,
+        "non_robot_page_view_events": 125,
+        "canonical_pages_with_events": 38,
+        "pageviews_with_observed_referrer_field": 0,
+        "tagged_bing_organic_events": 5,
+        "keyword_intelligence_records": 15,
+        "latest_keyword_record_at": "2026-10-25T05:02:00.755Z",
+        "ga4_latest_sync_status": "ok",
+        "ga4_latest_sync_pages_loaded": 9,
+        "ga4_latest_sync_measurements_written": 0,
+        "google_clicks": "NOT_MEASURED",
+        "chatgpt_human_referrals": "NOT_MEASURED",
+        "claude_human_referrals": "NOT_MEASURED"
+      },
+      "measurement_invariants": [
+        "events_are_not_unique_visitors",
+        "source_and_medium_are_not_verified_platform_referrals_without_provenance",
+        "consent_correct_GA4_and_GSC_are_primary_when_available",
+        "a_zero_update_success_must_not_count_as_fresh_metric_delivery",
+        "GSC_complete_days_28_vs_prior_28_not_calendar_partial",
+        "ChatGPT_and_Claude_citations_are_not_human_visits",
+        "bot_crawls_are_not_human_visits",
+        "missing_referrer_or_GSC_or_provider_results_means_UNKNOWN_not_zero",
+        "AI_answers_only_from_actual_authorized_provider_response_with_citation_url_and_timestamp"
+      ],
+      "acquisition_channels": [
+        "google_organic",
+        "chatgpt_referral",
+        "claude_referral"
+      ],
+      "diagnostic_guardrails": {
+        "stale_keyword_data": "older than 7 complete days opens original freshness/retry obligation, never current rank claim",
+        "ga4_zero_update": "requires source completeness and independent readback; no silent green on ok+0 writes",
+        "referrer_unknown": "retain unknown attribution bucket, never automatically force google/chatgpt/claude classification",
+        "search_visibility": "use Google Search Console and bounded DataForSEO, not empty third-party responses as proof of zero ranking",
+        "prompt_panel": "20 fixed versioned nonbrand prompts, provider-separated and NOT_MEASURED without access",
+        "crawler_access": [
+          "OAI-SearchBot",
+          "Claude-SearchBot",
+          "Claude-User"
+        ],
+        "training_robots_separate": [
+          "GPTBot",
+          "ClaudeBot"
+        ],
+        "privacy": "no unconsented tracking, IP or user agent retention as personal identifiers",
+        "duplicate_content": "reuse original money intent owner before publishing a distinct blog"
+      },
+      "daily_loop": [
+        "read_original_source_freshness_and_anomaly_receipts",
+        "reconcile_GSC_GA4_growth_event_attribution_and_real_AI_referrals",
+        "rank_commercial_query_page_opportunities_using_current_source_data",
+        "verify_NL_EN_sitewide_crawl_and_ai_search_bot_access",
+        "execute_up_to_three_original_owner_safe_reversible_edits",
+        "run_Required_BRAIN_CodeQL_and_exact_Netlify_production_readback",
+        "measure_7d_14d_28d_qualified_human_visits_and_sales",
+        "persist_ONE_BRAIN_owner_ACK_Heartbeat_Portal_and_next_run_learning"
+      ],
+      "original_handoff_required_fields": [
+        "tenant_id",
+        "source_revision",
+        "original_owner",
+        "canonical_url",
+        "correlation_id",
+        "idempotency_key",
+        "provider_or_source_event_id",
+        "measuring_consumer",
+        "consumer_processed_ack",
+        "timestamp"
+      ],
+      "incomplete_state": "SOURCE_OR_ATTRIBUTION_DEGRADED",
+      "max_changes_per_day": 3,
+      "same_original_writer": true,
+      "no_parallel_scheduler": true,
+      "claim_live_only_on_exact_provider_readback": true
+    },
     "mode": "bounded",
     "allowlist_config": "config/seo-optimization-allowlist.json",
     "objective": "qualified organic demand -> message match -> engaged visit -> CTA -> qualified lead -> order -> revenue -> outcome learning",

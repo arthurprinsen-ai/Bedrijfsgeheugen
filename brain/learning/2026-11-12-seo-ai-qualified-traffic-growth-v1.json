@@ -1,0 +1,56 @@
+{
+  "fingerprint": "seo|daily-google-chatgpt-claude-qualified-traffic|20261112-v1",
+  "date": "2026-11-12",
+  "owner": "existing Powerhouse SEO Order Engine / BG169",
+  "status": "SOURCE_CANDIDATE",
+  "failure_class": "SEO_GROWTH_MEASUREMENT_ATTRIBUTION_GAP",
+  "root_cause": "Primary human traffic attribution is missing in growth_events, keyword intelligence is stale, and zero-update GA4 sync can return ok despite no measurable writeback; no provider-backed ChatGPT/Claude visits or citations observed in the checked source window.",
+  "observed_source_snapshot": {
+    "captured_date": "2026-11-12",
+    "source": "Supabase live public.growth_events, public.bg_ga4_sync, public.powerhouse_seo_keyword_intelligence_v1, and DataForSEO NL domain-rank overview",
+    "seven_day_nonrobot_events": 316,
+    "seven_day_nonrobot_pageviews": 125,
+    "seven_day_source_referrer_values": 0,
+    "seo_keyword_records": 15,
+    "latest_keyword_snapshot": "2026-10-25T05:02:00.755Z",
+    "ga4_latest_sync_state": "ok",
+    "ga4_latest_sync_measured_rows": 0,
+    "google_clicks": "NOT_MEASURED",
+    "chatgpt_referral_visits": "NOT_MEASURED",
+    "claude_referral_visits": "NOT_MEASURED"
+  },
+  "fix": [
+    "Use one existing daily Powerhouse SEO owner and original BG169 protected writer",
+    "Add separate Google organic, ChatGPT and Claude human referral/AI citation measurement truth boundaries",
+    "Open or retain original-owner freshness/attribution recovery obligations instead of zero-claim or silent success",
+    "Prioritize fresh commercial existing intent-owner optimization, max three reversible original-owner changes",
+    "Require exact producer, source revision, idempotent correlation, independently processed consumer ACK to ONE BRAIN/Heartbeat/Portal"
+  ],
+  "prevention_rule": "A green daily SEO/AI run or GA4 sync status cannot assert traffic improvement, current search-volume/ranking, or completed Brain handoff without independently verified fresh source rows and consumer processing evidence.",
+  "regression_ref": "tests/brain-seo-ai-daily-traffic-growth-20261112.test.mjs",
+  "compiler": {
+    "failure_class": "SEO_GROWTH_MEASUREMENT_ATTRIBUTION_GAP",
+    "scope": "SEO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-ai-daily-traffic-growth-20261112.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_files": [
+      "config/seo-growth-loop.json",
+      "platform/agents/agent-team.mjs",
+      ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md"
+    ],
+    "source_readback": "Supabase 2026-11-12 active state",
+    "production_readback": "NOT_PROVEN",
+    "ai_traffic_referrals": "NOT_MEASURED"
+  },
+  "production_proven": false,
+  "new_scheduler_created": false,
+  "downstream_consumer_required": "ONE BRAIN -> Powerhouse -> Heartbeat -> Portal -> original next run; exact measured application and actual results"
+}
