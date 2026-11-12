@@ -166,3 +166,11 @@ test('unmatched tagged campaigns reuse the existing CAS-guarded ONE BRAIN repair
  assert.match(code,/GA4_BATCH_READBACK_WRITE_FAILED/);
  assert.match(code,/GA4_ATTRIBUTION_RECEIPT_WRITE_FAILED/);
 });
+
+test('cached Windsor fallback is partial without imported post measurements, even with real provider page rows',()=>{
+ const cacheMatches=code.match(/status:Number\(cached\.rows_attributed\|\|0\)>0\?'ok':'partial'/g)||[];
+ assert.equal(cacheMatches.length,2);
+ assert.equal((code.match(/READBACK_REUSED_SOURCE_ONLY/g)||[]).length,2);
+ assert.equal((code.match(/Number\(cached\.rows_attributed\|\|0\)>0\?200:207/g)||[]).length,2);
+ assert.match(code,/recentWindsorReadback\(db\)/);
+});
