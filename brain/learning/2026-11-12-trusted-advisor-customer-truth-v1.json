@@ -17,12 +17,14 @@
   "regression_contract": [
     "tests/brain-trusted-advisor-assurance-v1.test.mjs",
     "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs",
-    "tests/brain-trusted-advisor-cross-channel-20261102.test.mjs"
+    "tests/brain-trusted-advisor-cross-channel-20261102.test.mjs",
+    "tests/brain-trusted-advisor-agent-one-loop-20261112.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
       "tests/brain-trusted-advisor-assurance-v1.test.mjs",
-      "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs"
+      "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs",
+      "tests/brain-trusted-advisor-agent-one-loop-20261112.test.mjs"
     ],
     "expected": "Missing healthy remains insufficient_evidence; generic ok cannot become verified; 12-question and instant-result copy consistent across four main routes",
     "source_scenarios": [
@@ -47,7 +49,8 @@
     ],
     "tests": [
       "tests/brain-trusted-advisor-assurance-v1.test.mjs",
-      "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs"
+      "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs",
+      "tests/brain-trusted-advisor-agent-one-loop-20261112.test.mjs"
     ],
     "source_notes": "Code-level source discrepancies observed; not verified with live interactive journeys or authenticated customer data.",
     "independent_live_readback": "NOT_PROVEN",
@@ -61,5 +64,16 @@
     "real mobile/desktop interaction check",
     "tenant-scoped user journey and outcome provenance check",
     "consent-safe 7/14/28-day outcomes measurement"
-  ]
+  ],
+  "agent_integration": {
+    "id": "agent-trusted-advisor",
+    "registry": "platform/agents/agent-team.mjs",
+    "editorial": "supabase/functions/_shared/editorial-council-context.mjs",
+    "scheduler_created": false,
+    "writer_created": false,
+    "publication_rights": false,
+    "original_handoff": "Portal V2 → tenant BusinessInput → ONE BRAIN → Powerhouse/Heartbeat → existing authorized reversible action → independent provider/readback → learning",
+    "consumer_processed_ack": "REQUIRES_RUNTIME_PROOF",
+    "outcome_verification": "NOT_PROVEN"
+  }
 }
