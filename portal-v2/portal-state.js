@@ -26,6 +26,22 @@ function identityUser(identity){try{return identity?.currentUser?.()||null}catch
 async function authToken(user){try{return await user?.jwt?.()||''}catch{return''}}
 const clone=value=>value==null?value:structuredClone(value);
 
+
+/** Authoritative same-principal GET must contain every authored portal value.
+ * Additional server-derived fields are allowed; missing/old submitted fields
+ * (including false, 0, null and arrays) are not successful persistence.
+ */
+export function portalAuthoringReadbackMatches(submitted,received){
+ if(submitted===undefined)return true;
+ if(submitted===null||typeof submitted!=='object')return Object.is(submitted,received);
+ if(Array.isArray(submitted))return Array.isArray(received)
+    &&submitted.length===received.length
+    &&submitted.every((value,index)=>portalAuthoringReadbackMatches(value,received[index]));
+ if(!received||typeof received!=='object'||Array.isArray(received))return false;
+ return Object.entries(submitted).every(([key,value])=>
+   value===undefined||portalAuthoringReadbackMatches(value,received[key]));
+}
+
 export function buildPortalBusinessInput(nextState={}){
  const answers=clone(nextState||{})||{};
  for(const key of DERIVED_READ_MODEL_KEYS)delete answers[key];
@@ -149,6 +165,10 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
   if(body?.stored!==true||body?.stale!==false)throw new Error(body?.error||'PORTAL_STATE_ACK_INCOMPLETE');
   const confirmed=await load();
   if(confirmed?.mode!=='authenticated')throw new Error('PORTAL_STATE_READBACK_NOT_AUTHENTICATED');
+  // Source and projection ACKs are required, but neither verifies the user's
+  // actual saved answers. Never claim "saved" when GET returns old field values.
+  if(!portalAuthoringReadbackMatches(nextState?.portal,confirmed?.state?.portal))
+    throw new Error('PORTAL_STATE_VALUE_READBACK_MISMATCH');
   return confirmed;
  }
 

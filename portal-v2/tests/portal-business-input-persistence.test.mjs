@@ -62,3 +62,25 @@ test('HTTP 200 without durable canonical and Brain acknowledgement never proceed
     assert.deepEqual(calls,['/api/portal-business-input']);
   }
 });
+
+test('even with successful strict stored/stale ACK, stale GET values do not confirm an edited field',async()=>{
+ const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,opts={})=>{
+  if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'brain',currentStateRecordId:'state',organismImpactRecordId:'impact'});
+  if(url==='/api/portal-state'&&opts.method==='POST')return response({stored:true,stale:false});
+  if(url==='/api/portal-state'&&opts.method==='GET')return response({portal:{profile:{employees:24},people:{absence:0}}});
+  throw new Error('unexpected original endpoint');
+ }});
+ await assert.rejects(()=>client.write({portal:{profile:{employees:25},people:{absence:0}}}),/PORTAL_STATE_VALUE_READBACK_MISMATCH/);
+});
+
+test('genuine zero, null, arrays and additional external projection fields preserve exact authoring readback',async()=>{
+ const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,opts={})=>{
+  if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'brain',currentStateRecordId:'state',organismImpactRecordId:'impact'});
+  if(url==='/api/portal-state'&&opts.method==='POST')return response({stored:true,stale:false});
+  if(url==='/api/portal-state'&&opts.method==='GET')return response({portal:{metrics:{revenue:0},people:{absence:null},tasks:{items:[{id:'one'}]},external:{provider:'verified'}}});
+  throw new Error('unexpected original endpoint');
+ }});
+ const result=await client.write({portal:{metrics:{revenue:0},people:{absence:null},tasks:{items:[{id:'one'}]}}});
+ assert.equal(result.mode,'authenticated');
+ assert.equal(result.state.portal.metrics.revenue,0);
+});
