@@ -1,0 +1,70 @@
+/* Bedrijfsgeheugen original Portal V2 app feel: one router, one verified tenant.
+   Phone and tablet presentation only; no additional action or source authority. */
+:root{--bg-app-ink:#123643;--bg-app-mint:#dcf4e9;--bg-app-focus:#176d70}
+html{scroll-padding-bottom:calc(90px + env(safe-area-inset-bottom))}
+body{overscroll-behavior-y:contain;-webkit-tap-highlight-color:transparent}
+:where(.portal-mobile-primary button,.eh-main-action,.eh-quick-card,.eh-goal,.portal-quick-switch-option){touch-action:manipulation}
+:where(.portal-mobile-primary button,.eh-main-action,.eh-quick-card,.eh-goal,.portal-quick-switch-option):focus-visible{outline:3px solid var(--bg-app-focus)!important;outline-offset:3px}
+:where(.eh-quick-card,.eh-goal,.eh-main-action):active{transform:scale(.985)}
+:where(.eh-quick-card,.eh-goal,.eh-main-action){transition:transform .14s ease,box-shadow .17s ease,background-color .17s ease}
+:where(.eh-next,.eh-quick-controls,.eh-advanced,.portal-overview-depth){min-width:0;max-width:100%}
+:where(.portalview,.portalview .pvpanel,.portalview .pvbody){max-width:100%}
+/* Tablet is a real touch app: remove the 260px desktop sidebar and reuse,
+   rather than duplicate, the existing four-button canonical V2 dock. */
+@media (min-width:761px) and (max-width:1024px){
+ .app{display:block!important;grid-template-columns:minmax(0,1fr)!important}
+ .app>.sidebar{display:none!important}
+ .app>.main{width:min(100%,940px);margin:0 auto;padding:clamp(19px,3vw,30px) clamp(18px,3vw,32px) 38px!important}
+ .portal-hamburger{display:none!important}
+ body:has(.portal-mobile-primary){padding-bottom:calc(92px + env(safe-area-inset-bottom))!important}
+ .portal-mobile-primary{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));position:fixed;inset:auto 0 0;z-index:90;align-items:stretch;background:rgba(255,255,255,.97);border-top:1px solid #dbe7eb;box-shadow:0 -10px 32px rgba(16,40,51,.10);padding:9px max(18px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-right));backdrop-filter:blur(18px)}
+ .portal-mobile-primary button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border:0;border-radius:13px;background:transparent;color:#526773;min-height:55px;min-width:0;font:650 12px/1.2 system-ui,sans-serif}
+ .portal-mobile-primary-icon{font-size:23px;line-height:1}
+ .portal-mobile-primary button.is-current{background:#e7f4f0;color:#176354}
+ .portal-mobile-primary button:focus-visible{outline:3px solid var(--bg-app-focus);outline-offset:1px}
+ body:has(.allpages.open) .portal-mobile-primary{visibility:hidden;pointer-events:none}
+ .mobilebar{display:none!important}
+ .allpages.open{display:grid;place-items:center;padding:20px;background:rgba(7,18,49,.44)}
+ .allpages .sheet{max-width:min(94vw,660px);width:100%;max-height:calc(100dvh - 50px);overflow:auto;border-radius:24px;padding-bottom:calc(24px + env(safe-area-inset-bottom))}
+ .eh-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .eh-quick-card{min-height:126px}
+ .topbar{max-width:100%}
+}
+@media(max-width:760px){
+ .portal-mobile-primary{background:rgba(252,254,253,.97)!important;box-shadow:0 -10px 32px rgba(15,45,54,.12)!important}
+ .portal-mobile-primary button{min-height:54px!important;border-radius:14px!important}
+ .portal-mobile-primary button.is-current{background:var(--bg-app-mint)!important}
+ .portal-mobile-primary button:active{background:#e4f6ee}
+ .portal-mobile-primary-icon{font-size:22px!important}
+ .entrepreneur-home{padding:16px!important;border-radius:22px!important}
+ .eh-lead{margin-bottom:16px}
+ .eh-next.eh-focus{border-radius:22px!important;box-shadow:0 12px 26px rgba(16,44,52,.12)!important}
+ .eh-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .eh-quick-card{min-height:130px;min-width:0;padding:13px!important;border-radius:17px!important}
+ .eh-quick-card strong{overflow-wrap:anywhere}
+ .portal-quick-switch-results{border-radius:18px;box-shadow:0 16px 42px rgba(13,49,52,.18)}
+ .app .main{padding-bottom:calc(26px + env(safe-area-inset-bottom))}
+}
+@media(max-width:390px){
+ .eh-quick-grid{grid-template-columns:1fr!important}
+ .eh-quick-card{min-height:102px}
+}
+@media(max-width:1024px) and (pointer:coarse){
+ .app :where(button,[role="button"],input[type="submit"],summary){min-height:44px}
+ .app :where(input,select,textarea){font-size:16px}
+ .app :where(.eh-quick-card,.eh-advanced,.eh-next){scroll-margin-top:18px}
+}
+@media(max-width:1024px){
+ body:has(input:focus-visible) .portal-mobile-primary,
+ body:has(textarea:focus-visible) .portal-mobile-primary{visibility:hidden;pointer-events:none}
+}
+@media(display-mode:standalone){
+ body{background:#f8fafb}
+ .app{padding-top:env(safe-area-inset-top)}
+ .portal-mobile-primary{padding-bottom:calc(11px + env(safe-area-inset-bottom))!important}
+}
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto!important}
+ :where(.eh-quick-card,.eh-goal,.eh-main-action){transition:none!important;transform:none!important}
+ .portal-mobile-primary{backdrop-filter:none!important}
+}
