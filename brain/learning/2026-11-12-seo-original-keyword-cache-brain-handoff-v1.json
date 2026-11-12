@@ -41,6 +41,12 @@
       "detail": "items=0; stored=0; evidence=0; heartbeat=1",
       "prior_health_status": "ok",
       "claim": "zero provider items cannot prove zero real organic rankings or fresh SEO keyword evidence"
+    },
+    "migration_precondition_readback": {
+      "old_source_predicate_instances": 1,
+      "old_keyword_quality_case_instances": 1,
+      "old_keyword_md5_revision_instances": 1,
+      "checked": "2026-11-12 in original Supabase production"
     }
   },
   "fix": [
@@ -48,9 +54,10 @@
     "Upsert to existing canonical keyword table with readback of exact keyword, observed_at, URL owner and estimated search volume. No new provider call, cron, table, identity or supposed GA4 traffic.",
     "Add fail-closed append-only SQL migration to correct the exact original #175 keyword source tenant filter without touching historical identity, other source queries or security grants.",
     "Update existing SEO agent/skill and original learning documents; require next real source archive/current SHA consumer ACK and measured CRO outcome before success.",
-    "Keep original direct provider producer and its heartbeat alive, but label zero-item calls as source_data_available=false, status NO_NEW_PROVIDER_KEYWORDS and partial HTTP207, never green fresh keywords."
+    "Keep original direct provider producer and its heartbeat alive, but label zero-item calls as source_data_available=false, status NO_NEW_PROVIDER_KEYWORDS and partial HTTP207, never green fresh keywords.",
+    "Archive original canonical source keyword records in the daily evidence manifest only if latest original provider/cache observed_at within seven days; label older-than-day values CACHED_PROVIDER_KEYWORDS_WITHIN_7D (not new today's provider observation). SHA source revision includes locale, market, keyword, actual timestamp, volume and original owner, so content changes invalidate earlier ACK."
   ],
-  "prevention_rule": "No Powerhouse scheduler success, DataForSEO cache availability, estimated search volume, page score or first-party event count may be treated as proven current source-to-Brain processing or extra visitors without actual tenant-accurate source timestamp, original writer readback, immutable-source-revision-guard, named consumer processed ACK and measured downstream outcome.",
+  "prevention_rule": "No Powerhouse scheduler success, DataForSEO cache availability, estimated search volume, page score or first-party event count may be treated as proven current source-to-Brain processing or extra visitors without actual tenant-accurate source timestamp, original writer readback, immutable-source-revision-guard, named consumer processed ACK and measured downstream outcome. A reusable seven-day keyword cache must be labeled as prior source observation, not as a same-day provider report, and a changed keyword volume/owner must change the source revision even if keyword names are unchanged.",
   "regression_contract": "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs + tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs",
   "future_measurement": {
     "natural_original_cron_105": "actual source projection rows and recorded cache observed_at",
