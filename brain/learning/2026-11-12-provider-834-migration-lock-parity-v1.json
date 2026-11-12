@@ -44,9 +44,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-migration-history-integrity.test.mjs",
       "tests/brain-cro-production-migration-lock-20261029.test.mjs",
       "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
     ]
-  }
+  },
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+    "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+  ]
 }
