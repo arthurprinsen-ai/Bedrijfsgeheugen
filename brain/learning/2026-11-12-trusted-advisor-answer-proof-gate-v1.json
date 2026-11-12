@@ -45,5 +45,27 @@
       "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs"
     ],
     "expected": "unproven or contradictory answer source/claim verification/reference never displays Verified"
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/c9d31fb2d2bea5b1e9f4964894ad2825556be08b/portal-v2/trusted-advisor-assurance.js",
+    "original_defect": "normalizeAnswerAssurance directly converted assurance.status into Geverifieerd with no provenance/verification proof gate",
+    "regression_tests": [
+      "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs",
+      "portal-v2/tests/trusted-advisor-assurance.test.mjs"
+    ],
+    "negative_protected_admission_runs": [
+      {
+        "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43312481773",
+        "reason": "LEARNING_FAILURE_CLASS_REQUIRED",
+        "remedy": "Added compiler and actual executable replay/canary"
+      },
+      {
+        "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43312820711",
+        "reason": "semantic_learning missing explicit top-level evidence key",
+        "remedy": "Added canonical evidence field with actual source and CI links"
+      }
+    ],
+    "current_release": "CODE_CANDIDATE; no protected merge or independent production outcome yet",
+    "consumer_processed_ack": "NOT_PROVEN"
   }
 }
