@@ -3,7 +3,15 @@
 const VERSION='bg-offline-20261112-v1';
 const OFFLINE='/offline.html';
 self.addEventListener('install',event=>{
- event.waitUntil(caches.open(VERSION).then(cache=>cache.add(OFFLINE)).then(()=>self.skipWaiting()));
+ event.waitUntil(caches.open(VERSION).then(async cache=>{
+  // The original website sets Vary:* on document responses; CacheStorage
+  // refuses those responses. Strip only *public offline-page* headers by
+  // creating a fresh static response. Never cache the source response itself.
+  const response=await fetch(OFFLINE,{cache:'no-store'});
+  if(!response.ok)throw new Error('OFFLINE_PAGE_UNAVAILABLE');
+  const html=await response.text();
+  await cache.put(OFFLINE,new Response(html,{headers:{'Content-Type':'text/html; charset=utf-8'}}));
+ }).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',event=>{
  event.waitUntil(Promise.all([
