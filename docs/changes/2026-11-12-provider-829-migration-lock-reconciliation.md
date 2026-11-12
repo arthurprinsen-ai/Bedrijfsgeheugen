@@ -1,0 +1,3 @@
+# Protect SEO release from original provider/source migration drift
+
+The source is already in production: migration `20261112144500_original_social_legacy_alias_acks_v1.sql` has version/name and 829 rows confirmed independently in production `supabase_migrations.schema_migrations`. Do not replay. Add one identity to `supabase/migration-history.lock.json`, maintain exact 829/829 provider/source match and secure provider history tests before merging. Block the SEO lane until successful protected readback. Incident: `docs/development-ledger-events/2026-11-12-provider-829-migration-lock-reconciliation.md`.
