@@ -3304,8 +3304,12 @@
     {
       "version": "20261111094222",
       "name": "original_loop_assurance_fault_isolation_v1"
+    },
+    {
+      "version": "20261112131500",
+      "name": "original_no_publish_provider_side_effect_fence_v1"
     }
   ],
-  "captured_at": "2026-11-11T10:04:49.12366Z",
+  "captured_at": "2026-11-12T13:18:08.784Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
