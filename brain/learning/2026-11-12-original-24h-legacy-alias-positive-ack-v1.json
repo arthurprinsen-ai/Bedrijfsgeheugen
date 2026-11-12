@@ -33,5 +33,22 @@
     "experiment_winner"
   ],
   "same_owner": true,
-  "proof_link": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  "proof_link": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Two original legacy aliases were OPEN while the canonical original 24h obligation already MEASUREMENT_VERIFIED with exact source event and stored evaluation; original ONE BRAIN mirrored the duplicates OPEN indefinitely.",
+  "impact": "Historical duplicate OPEN source and BRAIN obligation remained in incident count despite an already independently verified and persisted original 24h post/window metric evaluation.",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "ORIGINAL_SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-social-legacy-alias-ack-20261112.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ]
 }
