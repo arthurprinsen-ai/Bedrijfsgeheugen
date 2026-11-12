@@ -39,7 +39,8 @@
     "Before showing a KPI, make explicit whether it is a live tenant fact, an illustrative demo, or an unverified calculation.",
     "Missing source health metadata cannot be counted as healthy; generic transport or processing OK is not independent outcome verification.",
     "The free scan, paid service, pricing, privacy and delivery promises must agree across all public pages and the actual customer journey.",
-    "Explain assumptions, alternatives including no-change, scope, human support and the actual next step; never imply guaranteed ROI or deadlines without proof."
+    "Explain assumptions, alternatives including no-change, scope, human support and the actual next step; never imply guaranteed ROI or deadlines without proof.",
+    "Do not mark source-to-consumer handoff complete without identical tenant, source revision, obligation id, idempotency key, original owner, processed ACK and independent result evidence."
   ],
   "portal_surfaces": {
     "all_pages": [
@@ -114,5 +115,40 @@
       "visible legal identity and contact",
       "no blocking overlays or dead buttons"
     ]
+  },
+  "agent": {
+    "id": "agent-trusted-advisor",
+    "runtime": "existing platform/agents/agent-team.mjs + original editorial council",
+    "owner": "original Portal V2 / CMS editorial owner",
+    "authority": "advisory-quality-specialist-only",
+    "new_scheduler": false,
+    "new_writer": false,
+    "may_publish": false,
+    "may_claim_verified_outcome_without_receipt": false
+  },
+  "original_handoff_contract": {
+    "chain": [
+      "Portal V2 or public consented customer signal",
+      "existing tenant BusinessInput",
+      "ONE BRAIN original obligation",
+      "Powerhouse and Heartbeat original consumers",
+      "eligible reversible CRO/editorial decision",
+      "original authorized execution owner",
+      "independent effect/provider readback",
+      "same fingerprint learning"
+    ],
+    "required_consumer_proof": [
+      "tenant_id",
+      "source_revision",
+      "obligation_id",
+      "source_ref",
+      "original_owner",
+      "idempotency_key",
+      "consumer_processed_ack",
+      "outcome_evidence_ref"
+    ],
+    "acceptance": "ACK_RECEIVED is not ACK_PROCESSED; no intermediate step or source transport status may be counted as terminal fulfillment",
+    "failure_recovery": "reuse identical obligation fingerprint and idempotency key, single writer, source readback, original retry and regression learning; never invent missing evidence",
+    "independent_verification": true
   }
 }
