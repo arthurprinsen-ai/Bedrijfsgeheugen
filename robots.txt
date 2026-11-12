@@ -1,8 +1,10 @@
 User-agent: *
 Allow: /
 
-# AI-crawlers expliciet toestaan — hierdoor kun je in ChatGPT, Claude,
-# Perplexity en Google AI Overviews als bron worden gebruikt.
+# Publieke zoek- en bezoekcrawlers mogen de openbare site lezen.
+# Toegang vergroot de kans op ontdekking, maar garandeert geen indexering,
+# bronvermelding of aanbeveling door ChatGPT, Claude of andere AI-systemen.
+# GPTBot en ClaudeBot zijn afzonderlijke trainingscrawlers.
 User-agent: GPTBot
 Allow: /
 
@@ -10,6 +12,12 @@ User-agent: OAI-SearchBot
 Allow: /
 
 User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: Claude-User
 Allow: /
 
 User-agent: ClaudeBot

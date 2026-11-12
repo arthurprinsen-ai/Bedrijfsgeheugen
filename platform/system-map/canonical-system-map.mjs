@@ -1878,6 +1878,21 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       outputs:Object.freeze(['commercial SEO opportunity','experience decision','bounded reversible money-page change','experiment outcome','conversion outcome','learning pattern']),
       runtime:Object.freeze({
         skill:'.agents/skills/powerhouse-seo-conversion-orders/SKILL.md',
+        aiAnswerVisibility:Object.freeze({
+          fingerprint:'seo|public-ai-search-discovery-and-proposition-truth|20261111-v1',
+          owner:'existing Powerhouse SEO Order Engine / BG169',
+          policy:'config/seo-growth-loop.json#optimization.ai_answer_visibility',
+          skill:'.agents/skills/powerhouse-seo-conversion-orders/SKILL.md',
+          seoAgent:'agent-seo-content',
+          evidence:'real ChatGPT/Claude answer receipts only, otherwise NOT_MEASURED',
+          publicSurface:'robots.txt + llms.txt + sitemap.xml + canonical product/intent pages',
+          handoff:'original BG169 -> ONE BRAIN owner ACK -> Heartbeat -> Portal -> next daily SEO run',
+          protectedDeployAndSourceReadbackRequired:true,
+          noParallelScheduler:true,
+          aiCitationProven:false,
+          productionProven:false,
+          regression:'tests/brain-ai-discovery-20261111.test.mjs'
+        }),
         sitewideDailyAudit:Object.freeze({
           fingerprint:'seo|sitewide|daily-audit-to-conversion-learning|20261110-v1',
           owner:'original Powerhouse SEO Order Engine + BG169 protected writer',

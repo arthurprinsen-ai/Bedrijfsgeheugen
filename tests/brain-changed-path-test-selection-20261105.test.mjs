@@ -42,3 +42,11 @@ test('failures already red on the base are reported but only new failures block'
   assert.deepEqual(r.knownRedOnBase, ['tests/a.test.mjs']);
   assert.deepEqual(partitionFailures({ failed: ['tests/a.test.mjs'] }).blocking, ['tests/a.test.mjs']);
 });
+
+test('large shared delivery edits run all 126 affected checks without silent truncation', () => {
+  const many=Array.from({length:126},(_,i)=>({file:`tests/impacted-${String(i).padStart(3,'0')}.test.mjs`,text:'config/brain-delivery-system.json'}));
+  const r=selectTestsForChangedPaths({changedPaths:['config/brain-delivery-system.json'],tests:many});
+  assert.equal(r.selected.length,126);
+  assert.deepEqual(r.overflow,[]);
+  assert.ok(MAX_TESTS>=126);
+});

@@ -8,7 +8,9 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 export const IGNORED_PREFIXES = ['AGENTS.md', '.agents/', 'docs/', 'brain/learning/', '.github/', 'package.json', 'package-lock.json', 'supabase/migration-history.lock.json'];
-export const MAX_TESTS = 100;
+// Bounded, exhaustive affected-test admission: 100 was lower than the 126 genuine
+// impacted tests of shared SEO/delivery files; overflow still fails closed at 200.
+export const MAX_TESTS = 200;
 
 export function selectTestsForChangedPaths({ changedPaths = [], tests = [], max = MAX_TESTS } = {}) {
   const selected = new Set();
