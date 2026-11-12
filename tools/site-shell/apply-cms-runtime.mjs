@@ -34,8 +34,8 @@ for(const file of [...new Set(targets)]){
   if(publicPage){
     // One manifest identifies the original site+Portal V2 as the same installable
     // app. Every public landing page offers the canonical installation entry.
-    if(!html.includes('href="https://www.bedrijfsgeheugen.nl/app.webmanifest"')){
-      html=html.replace(/<\/head>/i,'<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/app.webmanifest" data-bg-app-manifest="1">\n</head>');
+    if(!html.includes('href="https://www.bedrijfsgeheugen.nl/portal-v2/app.webmanifest"')){
+      html=html.replace(/<\/head>/i,'<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/portal-v2/app.webmanifest" data-bg-app-manifest="1">\n</head>');
     }
     if(!html.includes('id="bg-sitewide-mobile-ui-20261111"')){
       html=html.replace(/<\/head>/i,mobileUiStyle+'\n</head>');
