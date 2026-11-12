@@ -32,3 +32,7 @@ Next recovery if any gate fails: inspect exact failing protected check and keep 
 
 
 - SOURCE_PROVIDER_EMPTY_GREEN_DEFECT — original `dataforseo-intelligence` producer 2026-11-12 04:21 UTC reported `ok` with `items=0;stored=0`; bounded source-quality fix included in the same original provider function, regression in `tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs`; original producer kept active.
+
+
+### Seven-day original-source snapshot with exact observation timestamp
+The original #175 source manifest can include cached DataForSEO source records up to seven days old **only** as an explicitly labelled `CACHED_PROVIDER_KEYWORDS_WITHIN_7D` snapshot; it retains actual `source_observed_at` from the historic provider/cache (for example 9 November, even in a 12 November archive). Only same-day source evidence receives `PROVIDER_KEYWORDS_OBSERVED`. A byte-identity source-revision now includes locale, market, actual keyword, observed_at, estimated volume and original canonical owner; changes invalidate old consumer ACK without changing immutable obligation identity. A cache snapshot cannot become a new provider call, new ranking or realized traffic. Original SQL preflight confirmed the three exact source fragments each occur once; old table consumers and other tenant sources remain unchanged. A later natural original provider observation, exact #175 producer manifest, #140 processed ACK, outcome and next-run learning remain necessary.
