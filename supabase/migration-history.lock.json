@@ -3312,12 +3312,8 @@
     {
       "version": "20261112140500",
       "name": "original_blog_provider_identity_handoff_v1"
-    },
-    {
-      "version": "20261112144500",
-      "name": "original_social_legacy_alias_acks_v1"
     }
   ],
-  "captured_at": "2026-11-12T14:23:23.980889Z",
+  "captured_at": "2026-11-12T13:37:15.498091Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
