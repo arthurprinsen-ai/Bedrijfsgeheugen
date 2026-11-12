@@ -1,3 +1,4 @@
+import { scoreSeoOpportunityEvidence } from './seo-opportunity-evidence-model.mjs';
 /**
  * SEO site-intelligence for the EXISTING single-owner browser/site audit.
  * Pure functions: no network, provider writes, schedulers or agent claims.
@@ -108,13 +109,20 @@ export function triageExternalSeoOpportunities(rows,{intentOwners={},asOf,exclud
     if(volume<1)reasons.push('SEARCH_DEMAND_NOT_PROVEN');
     if(/(?:dobbelsteen|fascisme|betekenis|horoscoop|vacature|weerbericht)/i.test(keyword))
       reasons.push('IRRELEVANT_OR_NONCOMMERCIAL');
-    const gscImpressions=asNumber(item.gscImpressions),gscClicks=asNumber(item.gscClicks);
-    const score=reasons.length?null:Math.round(100*(Math.log10(1+volume)/4)*fit*
-      (1+Math.min(1,gscImpressions/50))*(1-gscClicks/Math.max(1,gscImpressions))*100)/100;
+    const evidence=scoreSeoOpportunityEvidence(item,{canonicalOwner:owner,asOf:new Date(now).toISOString()});
+    // An absent GSC source is NOT a zero-click observation. Paid competition
+    // and CPC never masquerade as organic keyword difficulty or realized ROI.
+    const score=reasons.length?null:evidence.score;
     decisions.push({keyword,canonicalOwner:owner,providerId:item.providerId,
       sourceUpdatedAt:item.providerUpdatedAt||null,providerAgeDays:ageDays,
       searchVolumeEstimate:volume,aiSearchVolumeEstimate:item.aiSearchVolume??null,
-      gscImpressions,gscClicks,score,reasons,
+      gscImpressions:evidence.diagnostics.gscImpressions,
+      gscClicks:evidence.diagnostics.gscClicks,
+      score,scoreVersion:evidence.scoreVersion,components:evidence.components,
+      recommendedAction:evidence.action,evidenceConfidence:evidence.confidence,
+      sourceCompleteness:evidence.sourceCompleteness,
+      missingEvidence:evidence.missingEvidence,
+      diagnostics:evidence.diagnostics,reasons,
       state:reasons.length?'NEEDS_SOURCE_OR_OWNER_RECOVERY':'READY_FOR_ORIGINAL_OWNER_REVIEW'});
   }
   return decisions.sort((a,b)=>(b.score??-1)-(a.score??-1)||a.keyword.localeCompare(b.keyword));
