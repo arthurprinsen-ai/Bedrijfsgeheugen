@@ -84,7 +84,7 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     id:'agent-seo-content',
     domains:['Website','SEO','Content'],
     capabilities:['analyze','optimize','create','verify'],
-    tasks:['audit-search-demand','identify-content-gap','optimize-content','verify-search-outcome','route-evidence-backed-technical-seo-cro-fix-to-original-lease','verify-chatgpt-and-claude-search-crawler-access-and-public-product-truth','record-only-observed-ai-answer-citations-or-NOT_MEASURED','hand-off-ai-answer-intent-owner-and-conversion-evidence-to-original-SEO-Brain-Heartbeat-loop'],
+    tasks:['audit-search-demand','identify-content-gap','optimize-content','verify-search-outcome','route-evidence-backed-technical-seo-cro-fix-to-original-lease','verify-chatgpt-and-claude-search-crawler-access-and-public-product-truth','validate-blog-hrefs-against-final-canonical-sitemap-before-publication','record-only-observed-ai-answer-citations-or-NOT_MEASURED','hand-off-ai-answer-intent-owner-and-conversion-evidence-to-original-SEO-Brain-Heartbeat-loop'],
     playbooks:['seo-regression-recovery','content-opportunity','search-intent-optimization'],
     learningContracts:[...sharedLearning,'seo.v1','content.v1'],
   }),
