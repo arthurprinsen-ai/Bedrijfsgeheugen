@@ -141,37 +141,27 @@ async function readVisibleState(page, url) {
                   hrefs: Array.from(document.querySelectorAll('a[href]')).slice(0, 500).map(node => node.getAttribute('href')),
                   hrefCount: document.querySelectorAll('a[href]').length,
                   seo: {
-                    title:document.title,
+                    title:document.title||'',
                     description:document.querySelector('meta[name="description"]')?.content||'',
                     canonical:document.querySelector('link[rel="canonical"]')?.href||'',
+                    robots:document.querySelector('meta[name="robots"]')?.content||'',
                     metaRobots:document.querySelector('meta[name="robots"]')?.content||'',
-                    htmlLang:document.documentElement.lang,
+                    lang:document.documentElement.lang||'',
+                    htmlLang:document.documentElement.lang||'',
                     hasViewport:!!document.querySelector('meta[name="viewport"]'),
                     h1Count:document.querySelectorAll('main h1').length,
                     imageCount:document.images.length,
+                    images:document.images.length,
                     imagesMissingAlt:Array.from(document.images).filter(i=>!i.hasAttribute('alt')).length,
                     imagesMissingDimensions:Array.from(document.images).filter(i=>!i.getAttribute('width')||!i.getAttribute('height')).length,
+                    uncompressedImageCount:Array.from(document.images).filter(i=>i.naturalWidth>3200||i.naturalHeight>3200).length,
                     stylesheetCount:document.querySelectorAll('link[rel="stylesheet"]').length,
-                    invalidJsonLd:Array.from(document.querySelectorAll('script[type="application/ld+json"]')).filter(node=>{try{JSON.parse(node.textContent||'');return false;}catch{return true;}}).length,
+                    jsonLdCount:document.querySelectorAll('script[type="application/ld+json"]').length,
+                    invalidJsonLd:Array.from(document.querySelectorAll('script[type="application/ld+json"]')).filter(n=>{try{JSON.parse(n.textContent||'');return false;}catch{return true;}}).length,
                     hreflangCount:document.querySelectorAll('link[rel="alternate"][hreflang]').length,
-                    hreflang:Array.from(document.querySelectorAll('link[rel="alternate"][hreflang]')).slice(0,80).map(node=>({lang:node.hreflang,href:node.href}))
-                  },
-                  seo: {
-                    title: document.title || '',
-                    description: document.querySelector('meta[name="description"]')?.content || '',
-                    canonical: document.querySelector('link[rel="canonical"]')?.href || '',
-                    robots: document.querySelector('meta[name="robots"]')?.content || '',
-                    lang: document.documentElement.lang || '',
-                    h1Count: document.querySelectorAll('h1').length,
-                    images: document.images.length,
-                    imagesMissingAlt: Array.from(document.images).filter(img=>!img.hasAttribute('alt')).length,
-                    uncompressedImageCount: Array.from(document.images).filter(img=>img.naturalWidth > 3200 || img.naturalHeight > 3200).length,
-                    jsonLdCount: document.querySelectorAll('script[type="application/ld+json"]').length,
-                    invalidJsonLd: Array.from(document.querySelectorAll('script[type="application/ld+json"]')).filter(node=>{
-                      try { JSON.parse(node.textContent || ''); return false; } catch { return true; }
-                    }).length,
-                    ogTitle: document.querySelector('meta[property="og:title"]')?.content || '',
-                    ogDescription: document.querySelector('meta[property="og:description"]')?.content || ''
+                    hreflang:Array.from(document.querySelectorAll('link[rel="alternate"][hreflang]')).slice(0,80).map(n=>({lang:n.hreflang,href:n.href})),
+                    ogTitle:document.querySelector('meta[property="og:title"]')?.content||'',
+                    ogDescription:document.querySelector('meta[property="og:description"]')?.content||''
                   },
                   cls: Number(window.__bgCls || 0),
                   clsSources: Array.isArray(window.__bgClsSources) ? window.__bgClsSources.slice(-8) : [],
@@ -204,7 +194,7 @@ const failures = [];
 let hrefsChecked = 0;
 let hrefRoutesChecked = 0;
 const seoPages = [];
-const seoPages = [];
+const seoIntelligencePages = [];
 try {
   const runViewport = async viewport => {
     const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
@@ -322,7 +312,7 @@ try {
                 hrefRoutesChecked += 1;
                 hrefsChecked += hrefAudit.hrefsChecked;
                 seoPages.push(auditSeoPage({route,snapshot:state.seo,sitemapRoutes:routes}));
-                seoPages.push(inspectRenderedSeoPage({route,meta:state.seo}));
+                seoIntelligencePages.push(inspectRenderedSeoPage({route,meta:state.seo}));
                 for (const finding of hrefAudit.failures) failures.push(`${route} desktop href: ${finding}`);
               }
               if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; layout-shift sources=${JSON.stringify(state.clsSources || []).slice(0, 1800)}; attribution=${formatClsFailure(route, viewport.name, state.cls, state.layoutShifts) || 'UNAVAILABLE'}`);
@@ -348,7 +338,7 @@ try {
 }
 
 const seoSiteReadout=summarizeRenderedSeoAudit({
-  reports:seoPages,expectedRoutes:routes.length,hrefsChecked,
+  reports:seoIntelligencePages,expectedRoutes:routes.length,hrefsChecked,
   sourceSha:process.env.GITHUB_SHA||process.env.COMMIT_REF||'UNVERIFIED'
 });
 console.log('SEO_SITE_AUDIT_V1 '+JSON.stringify(seoSiteReadout));
@@ -357,6 +347,7 @@ const seoReport=summarizeSeoAudit({
   pages:seoPages,sitemapRoutes:routes,releaseSha:process.env.GITHUB_SHA||'UNKNOWN',
   source:baseUrl
 });
+seoReport.supporting_intelligence=seoSiteReadout;
 mkdirSync('.artifacts',{recursive:true});
 writeFileSync('.artifacts/sitewide-seo-health-report.json',JSON.stringify(seoReport,null,2)+'\n');
 console.log('SITEWIDE_SEO_HEALTH_REPORT '+JSON.stringify({
