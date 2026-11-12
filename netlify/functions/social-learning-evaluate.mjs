@@ -90,11 +90,24 @@ export async function runEvaluation({store,now=new Date(),config=defaultConfig()
         dueAt:new Date(new Date(post.publishedAt).getTime()+windowHours*36e5).toISOString()});
       continue;
     }
+    // Defense in depth: even if a source label slips through upstream,
+    // a missing numerical observation is not an evaluated post window.
+    const observedVector=metricVector(snapshot.metrics||{});
+    const observedKeys=['impressions','reach','likes','reactions','comments','shares','saves','clicks','views'];
+    if(!observedKeys.some(key=>Number.isFinite(observedVector[key])&&observedVector[key]>=0)){
+      missedObligations++;
+      if(store.recordObligation) await store.recordObligation({tenantId,
+        id:`social-snapshot:${post.postId}:${windowHours}`,
+        type:'UNVERIFIED_OR_PARTIAL_WINDOW',owner:'POWERHOUSE_SOCIAL_LEARNING',
+        postId:post.postId,windowHours,
+        dueAt:new Date(new Date(post.publishedAt).getTime()+windowHours*36e5).toISOString()});
+      continue;
+    }
     const evaluationId=`evaluation:${post.postId}:${windowHours}`;
     const cohortRaw=store.getCohort?await store.getCohort({post,windowHours,toleranceHours:Number(config.windowToleranceHours??6)}):[];
     const cohort=buildCohort(cohortRaw,post);
     const evidence=deriveEvidence(snapshot,cohort,config);
-    const evaluation={evaluationId,postId:post.postId,tenantId,windowHours,observedAt:snapshot.observedAt,metricVector:metricVector(snapshot.metrics||{}),cohortSize:cohort.length,evidence};
+    const evaluation={evaluationId,postId:post.postId,tenantId,windowHours,observedAt:snapshot.observedAt,metricVector:observedVector,cohortSize:cohort.length,evidence};
     await store.putEvaluation(evaluation);
     evaluated++;
     if(evidence&&store.upsertLearning){

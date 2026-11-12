@@ -11,10 +11,10 @@ const posts=[
  {postId:'unverified',tenantId:'bedrijfsgeheugen',publishedAt:'2026-09-22T08:00:00Z',dueWindow:24}
 ];
 const snapshots=[
- {post_id:'observed-new',observed_at:'2026-10-05T10:00:00Z',data_quality:'OBSERVED'},
- {post_id:'observed-old',observed_at:'2026-09-23T06:00:00Z',data_quality:'OBSERVED'},
+ {post_id:'observed-new',observed_at:'2026-10-05T10:00:00Z',data_quality:'OBSERVED',metrics:{reach:18}},
+ {post_id:'observed-old',observed_at:'2026-09-23T06:00:00Z',data_quality:'OBSERVED',metrics:{Reach:0}},
  {post_id:'unverified',observed_at:'2026-09-23T08:00:00Z',data_quality:'OBSERVED_PARTIAL_SCOPE'},
- {post_id:'missing-old',observed_at:'2026-10-24T13:00:00Z',data_quality:'OBSERVED'}
+ {post_id:'missing-old',observed_at:'2026-10-24T13:00:00Z',data_quality:'OBSERVED',metrics:{}}
 ];
 test('only actual observations in the exact 24/48/72h interval earn provider evidence hints',()=>{
  const p=tagDuePostsWithObservedWindows(posts,snapshots);
@@ -61,4 +61,14 @@ test('verified Windsor company post windows are prioritized only with matching i
  assert.equal(tagDuePostsWithObservedWindows(due,[linked])[0].hasWindowSnapshot,true);
  assert.equal(tagDuePostsWithObservedWindows(due,[{...linked,metrics:{...linked.metrics,provider_post_urn:'wrong'}}])[0].hasWindowSnapshot,false);
  assert.equal(tagDuePostsWithObservedWindows(due,[{...linked,data_quality:'OBSERVED_PARTIAL_SCOPE'}])[0].hasWindowSnapshot,false);
+});
+
+test('metadata-only OBSERVED within a matching time window is not a valid evidence hint',()=>{
+ const empty={post_id:'observed-new',observed_at:'2026-10-05T10:00:00Z',data_quality:'OBSERVED',metrics:{}};
+ const invalid=tagDuePostsWithObservedWindows(posts,[empty]);
+ assert.equal(invalid[0].hasWindowSnapshot,false);
+ const nullValue=tagDuePostsWithObservedWindows(posts,[{...empty,metrics:{reach:null}}]);
+ assert.equal(nullValue[0].hasWindowSnapshot,false);
+ const zero=tagDuePostsWithObservedWindows(posts,[{...empty,metrics:{reach:0}}]);
+ assert.equal(zero[0].hasWindowSnapshot,true);
 });
