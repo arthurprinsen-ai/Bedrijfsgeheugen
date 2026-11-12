@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|provider-829-lock-parity|20261112-v1",
+  "obligation_id": "supabase|migration-history|provider-829-lock-parity|20261112-v1",
+  "title": "Restore original provider-backed migration source parity after 829th native migration",
+  "date": "2026-11-12",
+  "owner": "Original Supabase migration history writer / ONE BRAIN protected release owner",
+  "status": "CANDIDATE",
+  "production_proven": false,
+  "incident": "GitHub Required preflight for SEO PR #5643 fails because main contains SQL for applied 829th migration while original source lock remains at 828 identities.",
+  "root_cause": "Protected Supabase source-lock finalizer did not atomically receive provider-applied version 20261112144500 after original main SQL merge; subsequent unrelated releases are correctly fail-closed.",
+  "fix": [
+    "Read exact immutable production supabase_migrations.schema_migrations version/name once before writing source lock",
+    "Append only provider-confirmed 829th identity preserving all prior 828 rows",
+    "No database DDL replay, no modified provider history, no second executor; let original PR #5643 rebase after protected release"
+  ],
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "provenance": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "actual_provider_applied_count": 829,
+    "actual_version": "20261112144500",
+    "actual_name": "original_social_legacy_alias_acks_v1",
+    "original_source_count": 828,
+    "observed_at_utc": "2026-11-12T14:29:36.591Z",
+    "source": [
+      "supabase/migrations/20261112144500_original_social_legacy_alias_acks_v1.sql",
+      "supabase/migration-history.lock.json",
+      "supabase_migrations.schema_migrations canonical production SQL readback (829 rows)"
+    ]
+  },
+  "consumer_processed_ack": "NOT_YET_PROVEN",
+  "netlify_production_sha": "NOT_YET_PROVEN",
+  "prevention": [
+    "Original Supabase DB migration owner must reconcile exact provider event version/name before original website SEO/cro lane can merge",
+    "Never use test-only preview, fake counted identities or duplicate DDL apply as release pass",
+    "An accepted producer event is not an actual consumer processed ACK",
+    "On provider preview startup failure, repair the preview in its original owner without bypassing branch controls"
+  ],
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-provider-829-migration-lock-reconciliation.md",
+    "original_owner": "ONE BRAIN protected Supabase history writer",
+    "new_parallel_executor": false
+  }
+}
