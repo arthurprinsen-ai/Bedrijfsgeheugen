@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "portal|field-write|http-success-without-readback-or-sparse-external-project-reset|20261112-v1",
+  "obligation_id": "portal|field-write|http-success-without-readback-or-sparse-external-project-reset|20261112-v1",
+  "title": "Portal input only saved after exact tenant/source readback; absent external collection never clears user data",
+  "status": "FIX_CANDIDATE",
+  "root_cause": "Original portal-state client used if(!response.ok||body?.stored===false), accepting 200 with missing stored or stale true; returned load without comparing authored fields. Source project-state merge unconditionally overlaid generated [] and fallback records from incomplete project API, erasing customer portal tasks/docs/roadmap when external response omitted them.",
+  "impact": "Customer field can display saved even when original portal projection was rejected; sparse project response may hide previously committed customer-entered fields. Full production customer exposure not independently measured.",
+  "fix": "Require explicit original projection stored=true/stale!==true, authenticated readback of every authored nested portal value; sparse provider merges project only declared collections and leave unprovided customer fields untouched; explicit 0 and explicit [] remain distinct from missing.",
+  "prevention_rule": "Every portal input and external source handoff must carry tenant, source revision, provider source ID/time, immutable authoring readback and named Brain consumer ACK. Success is not HTTP status nor source presence. Guard 404/error/stale independently and retain original dirty retry.",
+  "owner": "original Portal V2 UX/data and ONE BRAIN field-to-output P0 #4215",
+  "tests": [
+    "tests/brain-portal-input-write-readback-source-20261112.test.mjs",
+    "portal-v2/tests/portal-business-input-persistence.test.mjs",
+    "tests/portal-v2-customer-project-state.test.mjs"
+  ],
+  "regression_contract": "tests/brain-portal-input-write-readback-source-20261112.test.mjs and original portal/project tests",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-input-write-readback-source-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-input-write-readback-source-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-input-write-readback-source-20261112.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Exact original main e3802eb074c9d6fcd502574ef715f46223930470 client write guard only rejects stored===false, not missing/stale",
+    "Exact original main project merge creates default empty arrays for absent external source payload",
+    "Source-code defect identified; genuine logged-in customer end-to-end impact and 100% cross-page coverage pending"
+  ],
+  "outcome": "FIX_CANDIDATE; Required/CodeQL, exact Netlify production and original tenant-authorized form save + readback still required. Does not claim all portal modules, external providers, effect measurements or CRO done.",
+  "no_new_writer": true,
+  "compiler": {
+    "failure_class": "PORTAL_INPUT_DURABLE_READBACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

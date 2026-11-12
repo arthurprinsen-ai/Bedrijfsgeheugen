@@ -38,7 +38,9 @@ test('portal state remains fail-closed and backend writes go through canonical A
   assert.match(state,/const API_URL='\/api\/portal-state'/);
   assert.match(state,/if\(!user\)throw new Error\('AUTH_REQUIRED'\)/);
   assert.match(state,/savePortalBusinessInput\(buildPortalBusinessInput/);
-  assert.match(state,/body\?\.stored===false/);
+  assert.match(state,/body\?\.stored!==true/,'POST must prove the portal projection was actually persisted');
+  assert.match(state,/body\?\.stale===true/,'stale server acknowledgement can never be saved');
+  assert.match(state,/portalAuthoringReadbackMatches\(nextState\?\.portal,confirmed\?\.state\?\.portal\)/,'tenant-authenticated GET must confirm customer field values');
 });
 
 test('visual assurance covers six routes across four first-class viewports',()=>{

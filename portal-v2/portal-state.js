@@ -26,6 +26,21 @@ function identityUser(identity){try{return identity?.currentUser?.()||null}catch
 async function authToken(user){try{return await user?.jwt?.()||''}catch{return''}}
 const clone=value=>value==null?value:structuredClone(value);
 
+
+// Compare *submitted authored* portal fields, not server-derived metrics or
+// unrelated additional read-model keys. Extra source data is never overwritten.
+// Equality is recursive because input spans nested objects, arrays and nulls.
+export function portalAuthoringReadbackMatches(submitted,received){
+ if(submitted===undefined)return true;
+ if(submitted===null||typeof submitted!=='object')return Object.is(submitted,received);
+ if(Array.isArray(submitted))
+  return Array.isArray(received)&&submitted.length===received.length
+    &&submitted.every((value,index)=>portalAuthoringReadbackMatches(value,received[index]));
+ if(!received||typeof received!=='object'||Array.isArray(received))return false;
+ return Object.entries(submitted).every(([key,value])=>
+   value===undefined||portalAuthoringReadbackMatches(value,received[key]));
+}
+
 export function buildPortalBusinessInput(nextState={}){
  const answers=clone(nextState||{})||{};
  for(const key of DERIVED_READ_MODEL_KEYS)delete answers[key];
@@ -142,8 +157,16 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
   await savePortalBusinessInput(buildPortalBusinessInput(nextState),{fetchFn:fetchImpl,authorization:headers.authorization});
   const response=await fetchImpl(API_URL,{method:'POST',headers:{...headers,'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(nextState||{})});
   const body=await response.json().catch(()=>({}));
-  if(!response.ok||body?.stored===false)throw new Error(body?.error||`PORTAL_STATE_WRITE_${response.status}`);
-  return load();
+  if(!response.ok)throw new Error(body?.error||`PORTAL_STATE_WRITE_${response.status}`);
+  // A 200 is not proof that the original tenant projection was stored.
+  // The server can refuse a stale version without returning an HTTP error.
+  if(body?.stored!==true||body?.stale===true)throw new Error(body?.error||'PORTAL_STATE_WRITE_ACK_INCOMPLETE');
+  const confirmed=await load();
+  // A successful POST followed by an old, empty or different tenant readback
+  // must remain unsaved in the original domain state. No parallel browser store.
+  if(confirmed?.mode!=='authenticated'||!portalAuthoringReadbackMatches(nextState?.portal,confirmed?.state?.portal))
+    throw new Error('PORTAL_STATE_READBACK_MISMATCH');
+  return confirmed;
  }
 
  return Object.freeze({apiUrl:API_URL,isDemo:()=>demo,isCustomer:()=>customer,getSnapshot:()=>current,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)},load,write,currentUser:()=>demo?DEMO_USER:identityUser(identityProvider()),authHeaders:async()=>demo?{accept:'application/json'}:headersFor(identityUser(identityProvider()))});

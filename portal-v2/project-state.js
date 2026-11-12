@@ -87,11 +87,44 @@ export function projectRecordToPortalState(record={}){
   };
 }
 
+// Project API responses can omit collections. Omission is NOT permission to
+// clear user-authored portal tasks, notes, documents, roadmap or integration data.
+// Explicit [] is a genuine source-owned empty collection; preserve that intent.
+const hasArray=(source,...keys)=>keys.some(key=>Array.isArray(source?.[key]));
+const hasValue=(source,...keys)=>keys.some(key=>source?.[key]!==undefined&&source?.[key]!==null&&source?.[key]!=='');
+
 export function mergeProjectState(base={},projectRecord={}){
-  const overlay=projectRecordToPortalState(projectRecord);
-  return {
-    ...clone(base),
-    company:{...object(base.company),...overlay.company},
-    portal:{...object(base.portal),...overlay.portal}
-  };
+ const record=object(projectRecord),customer=object(record.customer),quote=object(record.quote);
+ const inhoud=object(quote.inhoud);
+ const hasCustomerName=hasValue(customer,'name','naam');
+ const hasQuote=Object.keys(quote).length>0;
+ if(!hasCustomerName&&!hasQuote)return clone(base);
+ const overlay=projectRecordToPortalState(record);
+ const next=clone(base),portal={...object(next.portal)};
+ if(hasQuote){
+  const projected={...overlay.portal};
+  const taskData=hasArray(inhoud,'tasks','taken');
+  const componentData=hasArray(inhoud,'components','onderdelen','modules');
+  const roadmapData=hasArray(inhoud,'roadmap','planning','timeline','milestones');
+  if(!taskData)delete projected.tasks;
+  if(!roadmapData)delete projected.roadmap;
+  if(!hasArray(inhoud,'documents','documenten'))delete projected.documents;
+  if(!hasArray(inhoud,'integrations','koppelingen'))delete projected.integrations;
+  if(!hasArray(inhoud,'notes','notities'))delete projected.notes;
+  if(!hasArray(inhoud,'activity','activiteit'))delete projected.activity;
+  const delivery={};
+  if(taskData){delivery.tasks=overlay.portal.delivery.tasks;delivery.openTasks=overlay.portal.delivery.openTasks;}
+  if(componentData)delivery.sprints=overlay.portal.delivery.sprints;
+  if(hasValue(inhoud,'nextAction','volgende_actie'))delivery.nextAction=overlay.portal.delivery.nextAction;
+  if(Object.keys(delivery).length)projected.delivery={...object(portal.delivery),...delivery};
+  else delete projected.delivery;
+  if(!componentData&&!hasValue(inhoud,'deliveryPlan','delivery','features','stories'))
+   delete projected.deliveryPlan;
+  Object.assign(portal,projected);
+ }
+ return {
+  ...next,
+  company:hasCustomerName?{...object(next.company),...overlay.company}:object(next.company),
+  portal
+ };
 }

@@ -62,3 +62,40 @@ test('HTTP 200 without durable canonical and Brain acknowledgement never proceed
     assert.deepEqual(calls,['/api/portal-business-input']);
   }
 });
+
+test('portal projection HTTP 200 must include explicit stored true and non-stale ACK',async()=>{
+ for(const ack of [{},{stale:false},{stored:false,stale:false},{stored:true,stale:true}]){
+  const calls=[];
+  const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,options={})=>{
+   calls.push(url);
+   if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'source-1',brainRecordId:'brain-1',currentStateRecordId:'state-1',organismImpactRecordId:'impact-1'});
+   if(url==='/api/portal-state'&&options.method==='POST')return response(ack);
+   throw new Error('GET must not run after projection ACK failure');
+  }});
+  await assert.rejects(()=>client.write({portal:{profile:{employees:25}}}),/PORTAL_STATE_WRITE_ACK_INCOMPLETE/);
+  assert.deepEqual(calls,['/api/portal-business-input','/api/portal-state']);
+ }
+});
+
+test('portal projection server ACK is not accepted unless the same nested input is read back',async()=>{
+ const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,options={})=>{
+  if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'brain',currentStateRecordId:'state',organismImpactRecordId:'impact'});
+  if(url==='/api/portal-state'&&options.method==='POST')return response({stored:true,stale:false});
+  if(url==='/api/portal-state'&&options.method==='GET')return response({portal:{profile:{employees:24},people:{absence:null}}});
+  throw new Error('unexpected endpoint');
+ }});
+ await assert.rejects(()=>client.write({portal:{profile:{employees:25},people:{absence:0}}}),/PORTAL_STATE_READBACK_MISMATCH/);
+});
+
+test('matching nested tenant data and explicit zero remain a verified save',async()=>{
+ const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,options={})=>{
+  if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'brain',currentStateRecordId:'state',organismImpactRecordId:'impact'});
+  if(url==='/api/portal-state'&&options.method==='POST')return response({stored:true,stale:false});
+  if(url==='/api/portal-state'&&options.method==='GET')return response({portal:{profile:{employees:25,sector:'tech'},people:{absence:0},external:{fresh:true}}});
+  throw new Error('unexpected endpoint');
+ }});
+ const result=await client.write({portal:{profile:{employees:25},people:{absence:0}}});
+ assert.equal(result.mode,'authenticated');
+ assert.equal(result.state.portal.profile.employees,25);
+ assert.equal(result.state.portal.people.absence,0);
+});
