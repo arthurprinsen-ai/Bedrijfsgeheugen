@@ -8,3 +8,5 @@
 - Regression evidence: `tests/brain-sitewide-href-integrity-20261112.test.mjs`, `tools/site-shell/sitewide-href-integrity.mjs`, `tools/site-shell/standalone-visibility-check.mjs`.
 - Required terminal authority: exact new PR head Required/BRAIN/CodeQL, protected merge, exact Netlify production SHA and complete live URL/href readback; runtime/learning/traffic outcome status remains OPEN without independent original consumer receipts.
 - Failure resolution: original same-lineage bounded replay, no bypass and no second scheduler, mark source not measured not zero; record true cause, owner, next retry and regression.
+
+- False-positive preventie: `PUBLIC_UTILITY_ROUTES` blijft bron voor juridische/niet-geïndexeerde routes; checkout `/afsluiten` heeft bron-robots `noindex,nofollow`; `/pakketadvies` is een bestaande functionele prijsadviesbestemming. Validator en test delen deze uitzonderingen, maar echte HTTP/UX/provider-readback blijft verplicht. Gewone ontbrekende nieuwe geldpagina's zijn geen utility-exempties.
