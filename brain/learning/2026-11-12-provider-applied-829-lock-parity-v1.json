@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|supabase|applied-provider-migration-829-missing-from-main-lock|20261112-v1",
+  "parent_issue": 4198,
+  "obligation_id": "provider-applied-829-lock-authority-20261112",
+  "owner": "original Supabase migration history provider truth / protected GitHub CI",
+  "failure_class": "PROVIDER_APPLIED_MIGRATION_HISTORY_DRIFT",
+  "root_cause": "Native Supabase already applied migration 20261112144500_original_social_legacy_alias_acks_v1 after protected PR #5651, but original main migration-history.lock.json still held 828 provider entries. Next PR #5652 correctly failed the required preflight; ordinary PR candidates cannot edit applied-history lock and propose a new SQL migration in the same release.",
+  "impact": "Subsequent original protected migration releases blocked; live source remains correct but changes cannot be admitted without provider-true 829th history record.",
+  "prevention": "History lock synchronization must run as a separate provider-attested, protected, no-new-migration operation. Compare exact native applied version/name/count and original deployed SQL to immutable Git SQL, append only already applied version, never mark next candidate applied, no change to SQL or service roles, then rebase original candidate and rerun all Required/CodeQL/preview.",
+  "evidence": {
+    "native_provider_count": 829,
+    "source_lock_count": 828,
+    "target": {
+      "version": "20261112144500",
+      "name": "original_social_legacy_alias_acks_v1"
+    },
+    "native_sql_matches_repository_exact_ignoring_format_whitespace": true,
+    "provider_captured_at": "2026-11-12 14:28:29.1671+00",
+    "original_apply_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5651",
+    "blocked_follow_up": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5652"
+  },
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "SUPABASE_PROVIDER_MIGRATION_LOCK",
+    "repeat_count": 1,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-applied-829-lock-parity-20261112.test.mjs"
+    ]
+  },
+  "regression": "tests/brain-provider-applied-829-lock-parity-20261112.test.mjs",
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ],
+  "governance": {
+    "no_new_migration_in_this_release": true,
+    "protected_required": true,
+    "codeql": true,
+    "unverified_migration_never_predeclared": true,
+    "one_original_authority": true
+  }
+}
