@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Bedrijfsgeheugen app">
+ <rect width="512" height="512" rx="116" fill="#102f3a"/>
+ <path d="M132 290L237 182L325 258L388 145" fill="none" stroke="#c3f4db" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+ <circle cx="132" cy="290" r="28" fill="#f6d37f"/><circle cx="237" cy="182" r="28" fill="#c3f4db"/>
+ <circle cx="325" cy="258" r="28" fill="#f6d37f"/><circle cx="388" cy="145" r="28" fill="#c3f4db"/>
+ <path d="M132 366h248" stroke="#c3f4db" stroke-width="20" stroke-linecap="round" opacity=".68"/>
+</svg>

@@ -14,6 +14,13 @@ for(const dirName of ['blog','en','pages','portal','portal-next','kennis','behoe
 const mobileUiStyle='<style id="bg-sitewide-mobile-ui-20261111">\n'+fs.readFileSync(path.join(root,'assets/sitewide-mobile-ui-20261111.css'),'utf8')+'\n</style>';
 const mobileUiScript='<script src="/assets/sitewide-mobile-ui-20261111.js?v=20261111b" defer data-bg-sitewide-mobile-ui="1"></script>';
 
+const appManifest='<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/portal-v2/app.webmanifest" data-bg-app-manifest="1">';
+const appStyle='<style id="bg-app-experience-20261112">@import url("/assets/bg-app-experience.css?v=20261112");</style>';
+const appScript='<script src="/assets/bg-app-experience.js?v=20261112" defer data-bg-app-experience="1"></script>';
+const appIphone='<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Bedrijfsgeheugen">';
+const appIcon='<link rel="apple-touch-icon" href="https://www.bedrijfsgeheugen.nl/apple-touch-icon.png">';
+
+
 let changed=0,covered=0;
 for(const file of [...new Set(targets)]){
   if(path.basename(file)==='cms.html')continue;
@@ -38,6 +45,13 @@ for(const file of [...new Set(targets)]){
     if(!html.includes('data-bg-sitewide-mobile-ui=')){
       html=html.replace(/<\/head>/i,mobileUiScript+'\n</head>');
     }
+    // One installable app identity for every public page, without duplicating
+    // the original public header or the authenticated portal nav.
+    if(!html.includes('data-bg-app-manifest='))html=html.replace(/<\/head>/i,appManifest+'\n</head>');
+    if(!html.includes('id="bg-app-experience-20261112"'))html=html.replace(/<\/head>/i,appStyle+'\n</head>');
+    if(!html.includes('data-bg-app-experience='))html=html.replace(/<\/head>/i,appScript+'\n</head>');
+    if(!html.includes('name="apple-mobile-web-app-capable"'))html=html.replace(/<\/head>/i,appIphone+'\n</head>');
+    if(!html.includes('rel="apple-touch-icon"'))html=html.replace(/<\/head>/i,appIcon+'\n</head>');
   }
   if(html!==before){fs.writeFileSync(file,html);changed++;}
 }

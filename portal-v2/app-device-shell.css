@@ -1,0 +1,62 @@
+/* Portal V2 device shell: original four-route native dock and safe viewport.
+   Adds no new route, fake "live" indicator, data authority or animation engine. */
+@media(min-width:761px) and (max-width:1180px){
+ body:has(.portal-mobile-primary){padding-bottom:calc(88px + env(safe-area-inset-bottom,0px))!important}
+ .portal-mobile-primary{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));
+  align-items:stretch;position:fixed;inset:auto 0 0;z-index:90;
+  padding:9px max(14px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-right));
+  gap:9px;background:rgba(255,255,255,.97);border-top:1px solid #d8e6e7;
+  box-shadow:0 -12px 30px rgba(15,41,49,.1);backdrop-filter:blur(14px)
+ }
+ .portal-mobile-primary button{
+  display:flex;flex-direction:column;gap:3px;align-items:center;justify-content:center;
+  min-width:0;min-height:54px;border:0;border-radius:15px;background:transparent;
+  font:700 12px/1.24 system-ui,sans-serif;color:#4a6471;cursor:pointer
+ }
+ .portal-mobile-primary button.is-current{color:#165b4d;background:#e8f5ef}
+ .portal-mobile-primary button:focus-visible{outline:3px solid #197e76;outline-offset:2px}
+ .portal-mobile-primary-icon{font-size:24px;line-height:1}
+ body:has(.allpages.open) .portal-mobile-primary{visibility:hidden;pointer-events:none}
+ body:has(.portal-mobile-primary) .portal-hamburger{display:none!important}
+ .topbar{position:sticky;top:0;z-index:75;padding:13px 16px;
+  background:rgba(249,251,252,.98);border-bottom:1px solid #e2e8eb;
+  border-radius:0 0 18px 18px;backdrop-filter:blur(12px)}
+ .main{max-width:100%;padding:18px clamp(18px,3vw,38px)}
+ .eh-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .eh-quick-card{min-height:125px}
+}
+@media(max-width:760px){
+ /* Avoid keyboard auto-zoom in iOS forms without disabling pinch-to-zoom. */
+ .topbar input,.topbar select,.topbar textarea,
+ #portalView input,#portalView select,#portalView textarea,
+ .entrepreneur-home input,.entrepreneur-home select,.entrepreneur-home textarea{font-size:16px!important}
+ .portal-mobile-primary button{min-height:52px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+ .eh-quick-card{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+ .main{padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+ .allpages .sheet{overscroll-behavior-y:contain}
+}
+@media(max-width:1180px){
+ .portal-mobile-primary button:active{transform:scale(.96)}
+ .portal-mobile-primary button{transition:background .16s,transform .16s}
+ .eh-quick-card:active{transform:scale(.985)}
+}
+@media(prefers-reduced-motion:reduce){
+ .portal-mobile-primary button{transition:none}
+ .portal-mobile-primary button:active,.eh-quick-card:active{transform:none}
+}
+@media(display-mode:standalone){
+ html,body{min-height:100dvh}
+ body{padding-top:env(safe-area-inset-top,0px)}
+ .portal-mobile-primary{padding-bottom:max(10px,env(safe-area-inset-bottom,0px))}
+}
+
+/* iPad 1024px single-navigation override: portal-polish's later
+   desktop-only !important sidebar (901–1180px) must never coexist with
+   the original four-tab app dock. Higher specificity wins without touching
+   original tenant routing, menu state or desktop >=1181px. */
+@media(min-width:901px) and (max-width:1180px){
+ html body .app{display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+ html body .app .sidebar{display:none!important}
+ html body .portalview{left:0!important}
+}
