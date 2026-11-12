@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../supabase/functions/powerhouse-seo-opportunity-resolver/index.ts',import.meta.url),'utf8');
-const sql=readFileSync(new URL('../supabase/migrations/20261112203500_original_seo_opportunity_source_registry_v1.sql',import.meta.url),'utf8');
+const sql=readFileSync(new URL('../supabase/migrations/20261112211600_original_seo_opportunity_source_registry_v1.sql',import.meta.url),'utf8');
 
 test('original SEO opportunity writer has one exact pre-registered DERIVED source authority',()=>{
  assert.match(sql,/INSERT INTO public\.powerhouse_evidence_sources/);

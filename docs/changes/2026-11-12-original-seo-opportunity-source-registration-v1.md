@@ -17,7 +17,7 @@ De oorspronkelijke bronarchivering #175 schreef daarna 20 bronklassen in revisie
 - Behoud afzonderlijke `dataforseo-intelligence` als echte externe providerbron. Een derived opportunity is geen nieuwe provider-kans, Google-ranking, menselijke sessie of betaalde order.
 - De originele resolver controleert vóór enig schrijven of de source key, eigenaar en writer-contract exact geregistreerd zijn; een mismatch faalt vóór cache/upserts/forecast/gezondheids- of Brain-write.
 - Verplaats de positieve resolver-health-write achter de gecontroleerde originele `powerhouse_record_source_observation_v1`-ontvangst. Registreer bij fouten oorzaak en correctie, nooit vals groen.
-- Geen nieuwe planner, cron, bronregister, partnerprovider, URL, publicatie, OAuth-route of bypass. Beschermde migratie `20261112203500_original_seo_opportunity_source_registry_v1.sql`, bestaande GitHub–Supabase-productieintegratie, exacte code/providervisie en volgende bestaande consumer-ACK.
+- Geen nieuwe planner, cron, bronregister, partnerprovider, URL, publicatie, OAuth-route of bypass. Beschermde migratie `20261112211600_original_seo_opportunity_source_registry_v1.sql`, bestaande GitHub–Supabase-productieintegratie, exacte code/providervisie en volgende bestaande consumer-ACK.
 
 Regressie: `tests/brain-original-seo-evidence-source-registry-20261112.test.mjs`. ONE BRAIN-learning: `brain/learning/2026-11-12-original-seo-opportunity-source-registration-v1.json`.
 

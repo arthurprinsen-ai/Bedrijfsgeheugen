@@ -73,7 +73,7 @@
   "no_experiment_or_traffic_claim": true,
   "activity_ledger": "docs/development-ledger-events/2026-11-12-original-seo-opportunity-source-registration-v1.md",
   "delivery": {
-    "migration": "supabase/migrations/20261112203500_original_seo_opportunity_source_registry_v1.sql",
+    "migration": "supabase/migrations/20261112211600_original_seo_opportunity_source_registry_v1.sql",
     "source": "supabase/functions/powerhouse-seo-opportunity-resolver/index.ts",
     "protected_ci": true,
     "main_merge_required": true,
