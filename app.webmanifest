@@ -1,0 +1,45 @@
+{
+  "name": "Bedrijfsgeheugen — grip op je bedrijf",
+  "short_name": "Bedrijfsgeheugen",
+  "id": "/bedrijfsgeheugen-app",
+  "description": "Eén plek om je bedrijf te besturen. Gegevens, acties, inzichten en bewezen resultaten onder controle.",
+  "lang": "nl-NL",
+  "dir": "ltr",
+  "start_url": "/portal-v2/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#f8fafb",
+  "theme_color": "#112f3b",
+  "icons": [
+    {
+      "src": "/assets/merk/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mijn bedrijf",
+      "short_name": "Grip",
+      "url": "/portal-v2/",
+      "description": "Open je bedrijfsomgeving"
+    },
+    {
+      "name": "Frisse Blik scan",
+      "short_name": "Scan",
+      "url": "/zelfscan",
+      "description": "Start de scan zonder voorbeeldcijfers"
+    },
+    {
+      "name": "Ontdek Bedrijfsgeheugen",
+      "short_name": "Ontdek",
+      "url": "/",
+      "description": "Bekijk de aanpak"
+    }
+  ]
+}
