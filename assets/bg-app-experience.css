@@ -1,0 +1,46 @@
+/* Own visual language: calm surfaces, confident touch feedback, one business app.
+   Public website uses the original menu; Portal V2 keeps its own canonical dock. */
+html{scroll-padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+@media(max-width:1100px){
+ body.bg-app-public-has-dock{padding-bottom:calc(94px + env(safe-area-inset-bottom,0px))!important}
+ .bg-app-public-dock{
+  box-sizing:border-box;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  position:fixed;inset:auto 0 0;z-index:1400;
+  gap:5px;align-items:stretch;
+  padding:9px max(9px,env(safe-area-inset-left)) calc(9px + env(safe-area-inset-bottom)) max(9px,env(safe-area-inset-right));
+  background:rgba(255,255,255,.97);border-top:1px solid #dce6e9;
+  box-shadow:0 -12px 34px rgba(11,34,47,.1);backdrop-filter:blur(16px);
+ }
+ .bg-app-public-dock-link{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-width:0;min-height:52px;gap:3px;border-radius:14px;text-align:center;
+  color:#37505e;text-decoration:none;font:700 11px/1.25 system-ui,sans-serif;
+  -webkit-tap-highlight-color:transparent;transition:background .16s,transform .16s;
+ }
+ .bg-app-public-dock-link.is-current{background:#e5f4ef;color:#165a4e}
+ .bg-app-public-dock-icon{font-size:23px;line-height:1}
+ .bg-app-public-dock-link:active{transform:scale(.96);background:#e5f4ef}
+ .bg-app-public-dock-link:focus-visible{outline:3px solid #1b7774;outline-offset:1px}
+ body.bg-site-mobile-menu-open .bg-app-public-dock,
+ body:has(#bgMobileNav.open) .bg-app-public-dock,
+ body:has(#bgSharedMobileNav.open) .bg-app-public-dock,
+ body:has(input:focus,textarea:focus,[contenteditable="true"]:focus) .bg-app-public-dock{
+  visibility:hidden;pointer-events:none
+ }
+}
+@media(min-width:1101px){.bg-app-public-dock{display:none!important}}
+.bg-app-install-action{
+ position:fixed;z-index:1390;right:18px;bottom:calc(94px + env(safe-area-inset-bottom,0px));
+ min-height:44px;border:1px solid #c5e7d6;border-radius:999px;background:#102f3a;
+ color:#fff;padding:11px 17px;box-shadow:0 12px 30px rgba(15,40,52,.2);
+ font:700 13px/1.2 system-ui,sans-serif;cursor:pointer
+}
+.bg-app-install-action[hidden]{display:none!important}
+.bg-app-install-action:focus-visible{outline:3px solid #117b7a;outline-offset:3px}
+.bg-app-install-action:disabled{opacity:.7;cursor:wait}
+@media(min-width:1101px){.bg-app-install-action{bottom:22px}}
+@media(prefers-reduced-motion:reduce){
+ .bg-app-public-dock-link{transition:none}
+ .bg-app-public-dock-link:active{transform:none}
+ .bg-app-public-dock{backdrop-filter:none}
+}

@@ -1,0 +1,54 @@
+{
+  "id": "/bedrijfsgeheugen-app",
+  "name": "Bedrijfsgeheugen | Mijn bedrijf",
+  "short_name": "Bedrijfsgeheugen",
+  "description": "Grip op jouw onderneming: doelen, gegevens, acties en onderbouwde resultaten in één app.",
+  "lang": "nl-NL",
+  "dir": "ltr",
+  "start_url": "/portal-v2/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F7F9FC",
+  "theme_color": "#102F3A",
+  "icons": [
+    {
+      "src": "/assets/bg-app-icon-192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/merk/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/bg-app-icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mijn overzicht",
+      "short_name": "Overzicht",
+      "url": "/portal-v2/",
+      "description": "Open jouw bedrijfsbesturing."
+    },
+    {
+      "name": "Frisse Blik",
+      "short_name": "Scan",
+      "url": "/frisse-blik",
+      "description": "Maak een bedrijfsnulmeting."
+    },
+    {
+      "name": "Prijzen",
+      "short_name": "Prijzen",
+      "url": "/prijzen",
+      "description": "Bekijk de abonnementen."
+    }
+  ]
+}
