@@ -1,0 +1,56 @@
+{
+  "fingerprint": "growth|ga4|observed-website-source-vs-social-post-attribution|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "existing bg-analytics-sync-composio / original ONE BRAIN Data Spine + SEO Order Engine",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN",
+  "source_fact": {
+    "observed_at": "2026-11-12T12:05:05.702Z",
+    "source": "public.bg_ga4_sync",
+    "provider_page_rows": 9,
+    "post_measurements_imported": 0,
+    "reported_sync_status": "ok",
+    "independent_windsor_period": "2026-10-13/2026-11-11",
+    "widsor_ga4_source_split_sessions": 37,
+    "note": "GA4 sessions can exist without any tagged social_posts.source_campaign_id match; zero imported social metrics does not mean zero website sessions."
+  },
+  "root_cause": "Existing GA4 collector imported only campaign-key matched social-post measurements. Nonempty GA4 provider page rows with no matching campaigns were labeled IMPORTED/ok with zero imported measurements. Duplicate source readbacks repeated ok without proving an attributed prior batch. Channel source and downstream post attribution were conflated.",
+  "fix": [
+    "Separate raw provider page row evidence from tagged social campaign row evidence and imported post measurements.",
+    "Mark nonempty source-only or ambiguous campaign batches PARTIAL rather than successful post import; attach transparent attribution diagnostics and distinct source proof.",
+    "Repeat/duplicate readback inherits prior actual attribution state, never asserts a new imported metric.",
+    "Unmatched tagged campaigns use the original CAS-guarded ONE BRAIN measurement repair, without new scheduler or unauthorized consent workaround."
+  ],
+  "prevention_rule": "A provider source report with 9 rows and 0 social attribution is not zero website visitors, not full social-post measurement success, and not a valid zero-traffic growth baseline. No LIVE, measurable uplift or downstream processed ACK without protected CI, production readback and genuine source/consumer receipts.",
+  "regressions": [
+    "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+  ],
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-ga4-source-attribution-truth-v1.md",
+    "original_owner": "bg-analytics-sync-composio",
+    "new_parallel_executor": false
+  },
+  "compiler": {
+    "failure_class": "SOURCE_ATTRIBUTION_CONFLATION",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ],
+    "expected": "9 provider rows / 0 social campaign matches => source observed, partial attribution; duplicate readback must not become imported"
+  },
+  "evidence_due": [
+    "Required+BRAIN+CodeQL exact-head green",
+    "protected merge",
+    "deployed function SHA readback",
+    "subsequent natural original scheduler trace",
+    "original ONE BRAIN obligation and named consumer processed ACK",
+    "independent 7d/28d visitor and conversion measurement"
+  ]
+}
