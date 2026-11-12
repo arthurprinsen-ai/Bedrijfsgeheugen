@@ -38,7 +38,8 @@
     "live_baseline": "PR #5678 main 6f0497afb07051cf06f62f38efdea59cf7507bf2 / Netlify deploy 6af6201a2077ebe5d94f7d20 READY / public contact and frisse-blik showed old universal promise",
     "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5284#issuecomment-6835147531",
     "independent_new_production_readback": "NOT_YET_PROVEN",
-    "measured_customer_trust_outcome": "UNKNOWN"
+    "measured_customer_trust_outcome": "UNKNOWN",
+    "exact_cache_fix": "config/bg-static-i18n-en.d/2026-11-12-trusted-advisor-site-shell-checkmark.json"
   },
   "activity_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-site-shell-claim-drift-v2.md",
   "no_second_writer": true,
@@ -49,5 +50,16 @@
     "Netlify exact production SHA",
     "Independent live contact, frisse-blik, zelfscan, homepage and blog readbacks",
     "Original ONE BRAIN processed consumer ACK separately when customer tenant advice actually flows"
-  ]
+  ],
+  "canonical_i18n_repair": {
+    "historical_failed_required": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43302093725",
+    "exact_error": "STATIC_I18N_PREPARE_NETWORK_REQUIRED: 2 missing translation(s)",
+    "observed_missing_fragments": [
+      "✓ Duidelijke afspraken vooraf",
+      "✓ Klein beginnen, resultaat toetsen"
+    ],
+    "recovery": "Add two explicit entries to existing static English patch cache, no provider-network translation in production",
+    "new_regression": "tests/brain-trusted-advisor-site-shell-claims-20261112.test.mjs",
+    "status": "SOURCE_CANDIDATE_NOT_PRODUCTION_VERIFIED"
+  }
 }
