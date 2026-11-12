@@ -1,0 +1,88 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import { auditRenderedHrefs, normalizedSeoRoute } from '../tools/site-shell/sitewide-href-integrity.mjs';
+
+const sitemapRoutes=['/','/prijzen','/afas-koppeling','/blog/bronartikel/','/en/prijzen','/en/blog/bronartikel/'];
+const check=(hrefs,route='/prijzen')=>auditRenderedHrefs({route,hrefs,sitemapRoutes,expectedCount:hrefs.length});
+
+test('published NL and generated EN canonical page hrefs share full sitemap coverage',()=>{
+  const hrefs=['https://www.bedrijfsgeheugen.nl/','/afas-koppeling',
+    'https://www.bedrijfsgeheugen.nl/blog/bronartikel/',
+    'https://www.bedrijfsgeheugen.nl/en/prijzen?test=1','#prijzen','mailto:info@example.com',
+    'tel:+31000000000','https://example.org/source'];
+  const r=check(hrefs);
+  assert.deepEqual(r.failures,[]);
+  assert.equal(r.hrefsChecked,8);
+  assert.equal(r.internal,4);
+  assert.equal(r.external,1);
+  assert.deepEqual(check(['/en/prijzen'],'/en/blog/bronartikel/').failures,[]);
+  assert.equal(normalizedSeoRoute('/en/prijzen/'),'/en/prijzen');
+});
+
+test('rejects unsafe, incomplete and noncanonical rendered hrefs without discarding any source route',()=>{
+  for(const href of ['', '#', 'javascript:void(0)', 'data:text/html,test',
+    'http://example.org', '//example.org/path','relatieve-link',
+    'https://bedrijfsgeheugen.nl/prijzen','https://www.bedrijfsgeheugen.nl/niet-gepubliceerd']) {
+    const report=check([href]);
+    assert.ok(report.failures.length>0,'must reject '+JSON.stringify(href));
+  }
+  assert.ok(check(['https://www.bedrijfsgeheugen.nl/prijzen'],'/unknown').failures.includes('SOURCE_ROUTE_NOT_IN_FINAL_SITEMAP'));
+  const truncated=auditRenderedHrefs({route:'/prijzen',hrefs:['/prijzen'],sitemapRoutes,expectedCount:2});
+  assert.ok(truncated.failures.includes('HREF_INVENTORY_INCOMPLETE'));
+});
+
+test('functional portal and static asset links do not masquerade as missing SEO canonicals',()=>{
+  const r=check(['https://www.bedrijfsgeheugen.nl/portal-v2/',
+    '/assets/logo.svg','/api/growth-event','/klantportaal','/offerte',
+    '/gebruiksvoorwaarden','/cookiebeleid','/systeemstatus',
+    '/afsluiten?plan=starter&trial=1','/en/afsluiten?plan=starter&trial=1','/pakketadvies']);
+  assert.deepEqual(r.failures,[]);
+});
+
+test('existing sitewide browser gate must audit ALL rendered routes, NL and EN, with exact href counts',()=>{
+  const browser=readFileSync('tools/site-shell/standalone-visibility-check.mjs','utf8');
+  assert.match(browser,/auditRenderedHrefs/);
+  assert.match(browser,/hrefsChecked/);
+  assert.match(browser,/expectedCount:state\.hrefCount/);
+  assert.match(browser,/sitemapRoutes:routes/);
+  assert.match(browser,/viewport\.name==='desktop'/);
+  assert.match(browser,/hrefs: Array\.from\(document\.querySelectorAll\('a\[href\]'\)\)/);
+});
+
+test('original locale runtime only avoids unpublished English model routes, preserving existing English checkout',()=>{
+  const source=readFileSync('assets/js/i18n.js','utf8');
+  for(const slug of ['/openai-ai-modellen','/claude-ai-modellen','/gemini-ai-modellen','/mistral-ai-modellen','/amazon-ai-modellen','/chatgpt-vs-claude','/chatgpt-vs-gemini','/claude-vs-gemini']) {
+    assert.ok(source.includes("'"+slug+"'"),'NL-only locale fallback not registered: '+slug);
+  }
+  assert.match(source,/NL_ONLY_AI_MODEL_ROUTES\.has\(key\)/);
+  assert.match(source,/NL_ONLY_AI_MODEL_ROUTES\.has\(strippedKey\)/);
+  assert.match(source,/\/en\/ai-modelwijzer/);
+  assert.doesNotMatch(source,/SHARED_FUNCTIONAL_ROUTES/);
+  const checkoutBrowser=readFileSync('tools/site-shell/checkout-browser-check.mjs','utf8');
+  assert.match(checkoutBrowser,/\/en\/afsluiten/);
+  assert.match(source,/normalizeRouteKey/);
+});
+
+test('privacy and connector fallback anchors have a real destination rather than a no-op href',()=>{
+  const privacy=readFileSync('privacy.html','utf8');
+  const connect=readFileSync('connect.html','utf8');
+  assert.match(privacy,/<h2 id="cookies">Cookies<\/h2>/);
+  assert.match(privacy,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/privacy#cookies"/);
+  assert.match(connect,/id="wMailto"/);
+  assert.doesNotMatch(connect,/<a href="#" id="wMailto">/);
+  assert.match(connect,/href="mailto:arthur@bedrijfsgeheugen\.nl\?subject=/);
+  assert.doesNotMatch(privacy,/<a href="#" onclick="if\(window\.bgOpenCookies\)/);
+});
+
+test('installed app dock never emits HTTP preview anchors into the public HTML href graph',()=>{
+  const app=readFileSync('assets/bg-app-experience.js','utf8');
+  assert.match(app,/var origin=location\.protocol==='https:' \? location\.origin : 'https:\/\/www\.bedrijfsgeheugen\.nl'/);
+  assert.match(app,/link\.href=origin\+item\[0\]/);
+  assert.doesNotMatch(app,/var origin=location\.origin;/);
+  const r=auditRenderedHrefs({route:'/prijzen',
+    hrefs:['https://www.bedrijfsgeheugen.nl/prijzen','https://www.bedrijfsgeheugen.nl/'],
+    sitemapRoutes,expectedCount:2});
+  assert.deepEqual(r.failures,[]);
+  assert.ok(check(['http://127.0.0.1:4173/prijzen']).failures.some(x=>x.startsWith('UNSAFE_OR_HTTP_HREF')));
+});

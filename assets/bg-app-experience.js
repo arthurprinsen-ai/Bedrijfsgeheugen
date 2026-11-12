@@ -3,7 +3,9 @@
    store, customer sender, tracking provider, executor or offline data cache. */
 (function(){
  'use strict';
- var origin=location.origin; // Rendered anchors always receive full HTTPS URLs for this environment.
+ // Production and HTTPS previews retain their own origin; local HTTP test/build
+ // origins must never leak into public a[href] and fail canonical href integrity.
+ var origin=location.protocol==='https:' ? location.origin : 'https://www.bedrijfsgeheugen.nl';
  var isPortal=location.pathname.indexOf('/portal-v2')===0||location.pathname.indexOf('/klantportaal')===0;
  var installEvent=null;
  var installButton=null;

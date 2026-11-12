@@ -26,11 +26,21 @@
     const marker = normalizeLocale(document.documentElement.dataset.bgStaticLocale || document.querySelector('meta[name="bg-static-locale"]')?.content);
     return SUPPORTED.has(marker) ? marker : null;
   };
+  // These eight standalone NL-only AI model/comparison canonicals have no /en/
+  // counterpart in the actual production sitemap. English navigation resolves to
+  // the existing English AI model guide, never a fabricated /en/<model> 404.
+  const NL_ONLY_AI_MODEL_ROUTES = new Set([
+    '/openai-ai-modellen','/claude-ai-modellen','/gemini-ai-modellen','/mistral-ai-modellen',
+    '/amazon-ai-modellen','/chatgpt-vs-claude','/chatgpt-vs-gemini','/claude-vs-gemini'
+  ]);
+  const normalizeRouteKey = route => route.replace(/\/+$/,'') || '/';
   const localizedHref = target => {
     const normalized = normalizeLocale(target);
     const stripped = location.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
+    const key = normalizeRouteKey(stripped);
     const pathname = normalized === 'en'
-      ? '/en' + (stripped === '/' ? '/' : stripped)
+      ? NL_ONLY_AI_MODEL_ROUTES.has(key) ? '/en/ai-modelwijzer'
+        : '/en' + (stripped === '/' ? '/' : stripped)
       : (stripped === '/' ? '/' : stripped);
     return pathname.replace(/\/+/g,'/') + location.search + location.hash;
   };
@@ -49,6 +59,13 @@
     if (NON_PAGE_PREFIXES.some(prefix => lowerPath.startsWith(prefix))) return raw;
     const stripped = url.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
     if (stripped.startsWith('/portal') || stripped.startsWith('/klantportaal')) return raw;
+    // These eight standalone model pages have no EN counterpart; keep their
+    // original Dutch canonical target in internal content links.
+    const strippedKey = normalizeRouteKey(stripped);
+    if (normalizeLocale(target) === 'en' && NL_ONLY_AI_MODEL_ROUTES.has(strippedKey)) {
+      url.pathname = strippedKey;
+      return url.pathname + url.search + url.hash;
+    }
     url.pathname = (normalizeLocale(target) === 'en'
       ? '/en' + (stripped === '/' ? '/' : stripped)
       : (stripped === '/' ? '/' : stripped)).replace(/\/+/g,'/');
