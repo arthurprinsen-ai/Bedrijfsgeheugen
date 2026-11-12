@@ -103,3 +103,14 @@ test('original Mira low-recall rotating query variants keep 6 business + 2 perso
  assert.match(originalSql,/prior\.source_url=x\.source_url or prior\.source_hash=x\.source_hash/);
  assert.doesNotMatch(radar,/cron\.schedule|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
 });
+
+test('Mira agent and skill preserve original single producer, publisher and consumer ACK',()=>{
+ const registry=readFileSync('platform/agents/agent-team.mjs','utf8');
+ const guide=readFileSync('AGENTS.md','utf8');
+ const skill=readFileSync('.agents/skills/instagram-composio-publisher/SKILL.md','utf8');
+ for(const value of ['reconcile-mira-unique-source-to-original-exclusive-producer-claim','verify-canonical-instagram-bedrijfsgeheugen-account-before-provider-write','require-mira-provider-readback-to-brain-heartbeat-portal-consumer-ack'])assert.ok(registry.includes(value));
+ for(const value of ['cron #120','powerhouse-content-loop','powerhouse-instagram-media-router','powerhouse-social-publisher','content_publication_obligations','social-learning-store','bedrijfsgeheugen.nl','consumer receipt'])assert.ok(skill.includes(value),value);
+ assert.match(guide,/MIRA_UNIQUE_SOURCE_WINNER_REQUIRED/);
+ assert.match(guide,/MIRA_PRODUCER_CLAIM_REQUIRED/);
+ assert.match(guide,/geen LIVE_PROVEN zonder echte Meta-provider ID/i);
+});
