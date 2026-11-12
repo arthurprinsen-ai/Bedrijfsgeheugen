@@ -78,7 +78,7 @@ test('private source, tenant route and provider data are never stored by the ser
  const offlineResponse={offline:true};
  const cache={
   put:async url=>{stored.push(url);},
-  match:async url=>url==='/offline.html'?offlineResponse:null
+  match:async url=>url==='/assets/offline.html'?offlineResponse:null
  };
  let failed=false;
  const context={
@@ -89,7 +89,7 @@ test('private source, tenant route and provider data are never stored by the ser
    clients:{claim:()=>Promise.resolve()}
   },
   caches:{open:async()=>cache,keys:async()=>['bg-offline-20261001-v1','other-app-cache'],delete:async()=>true},
-  fetch:async req=>{if(failed)throw Error('NETWORK_UNAVAILABLE');if(req==='/offline.html')return {ok:true,text:async()=>'<html>Offline notice</html>'};return {network:true,url:req.url};},
+  fetch:async req=>{if(failed)throw Error('NETWORK_UNAVAILABLE');if(req==='/assets/offline.html')return {ok:true,text:async()=>'<html>Offline notice</html>'};return {network:true,url:req.url};},
   Response:class {constructor(body,options){this.body=body;this.options=options;}static error(){return {error:true};}},
   URL,
   Promise
@@ -98,7 +98,7 @@ test('private source, tenant route and provider data are never stored by the ser
  let install;
  listeners.install({waitUntil:promise=>install=promise});
  await install;
- assert.deepEqual(stored,['/offline.html']);
+ assert.deepEqual(stored,['/assets/offline.html']);
  let navigation;
  failed=true;
  listeners.fetch({request:{mode:'navigate',method:'GET',url:'https://www.bedrijfsgeheugen.nl/portal-v2/'},respondWith:promise=>navigation=promise});
@@ -107,8 +107,8 @@ test('private source, tenant route and provider data are never stored by the ser
  listeners.fetch({request:{mode:'cors',method:'GET',url:'https://www.bedrijfsgeheugen.nl/api/portal-state'},respondWith:()=>{intercepted=true;}});
  listeners.fetch({request:{mode:'navigate',method:'POST',url:'https://www.bedrijfsgeheugen.nl/portal-v2/'},respondWith:()=>{intercepted=true;}});
  assert.equal(intercepted,false);
- assert.deepEqual(stored,['/offline.html']);
- assert.match(read('offline.html'),/niet offline gekopieerd/);
+ assert.deepEqual(stored,['/assets/offline.html']);
+ assert.match(read('assets/offline.html'),/niet offline gekopieerd/);
 });
 
 test('governance remains the original website and Portal V2, not a new executor or order source',()=>{
