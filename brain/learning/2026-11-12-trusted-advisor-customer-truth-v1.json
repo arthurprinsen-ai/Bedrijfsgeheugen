@@ -1,0 +1,61 @@
+{
+  "fingerprint": "powerhouse|trust|unsupported-claims-and-outcome-status|20261112-v1",
+  "date": "2026-11-12",
+  "owner": "Original Portal V2 Trusted Advisor assurance + website/CMS editorial owner",
+  "obligation_id": "portal|trusted-advisor-evidence-integrity|20261112-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "production_proven": false,
+  "customer_trust_uplift_verified": false,
+  "root_cause": "Diverging sitewide navigation copy preserved stale selfscan question counts, an unsupported blanket two-week delivery promise and automatic email-report wording while the live scan provided a twelve-question anonymous instant result. Portal assurance incorrectly treated missing healthy metadata as positive and generic processing ok as independently verified outcome.",
+  "prevention_rule": "Every publicly visible customer promise must be validated against the actual product flow; unknown source health is not green and generic ok cannot produce independently verified outcome. Claims require explicit provenance, evidence reference, review, protected release and production readback.",
+  "code_correction": [
+    "Portal assurance now requires healthy===true; verifies all displayed outcomes only with explicit verification state AND proof reference.",
+    "Four primary landing pages and shared mobile navigation align free scan question count and avoid unqualified delivery promises.",
+    "Contact and scan no longer promise automatic mailed reports without requested email.",
+    "Original trust policy and original CMS editorial skill carry the rule."
+  ],
+  "regression_contract": [
+    "tests/brain-trusted-advisor-assurance-v1.test.mjs",
+    "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs",
+    "tests/brain-trusted-advisor-cross-channel-20261102.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "legacy portal source with missing healthy metadata and processing status ok",
+      "legacy 7-versus-12 question and automatic email contradictory website copy"
+    ],
+    "expected": "Missing healthy remains insufficient_evidence; generic ok cannot become verified; 12-question and instant-result copy consistent across four main routes"
+  },
+  "compiler": {
+    "failure_class": "UNVERIFIED_TRUST_STATUS_AND_PUBLIC_COPY_CONTRADICTION",
+    "scope": "protected CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "original_sources": [
+      "portal-v2/trusted-advisor-assurance.js",
+      "index.html",
+      "contact.html",
+      "zelfscan.html",
+      "frisse-blik.html",
+      "assets/js/menu.js"
+    ],
+    "tests": [
+      "tests/brain-trusted-advisor-assurance-v1.test.mjs",
+      "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs"
+    ],
+    "source_notes": "Code-level source discrepancies observed; not verified with live interactive journeys or authenticated customer data.",
+    "independent_live_readback": "NOT_PROVEN",
+    "customer_outcome": "UNKNOWN"
+  },
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-customer-truth-v1.md",
+  "evidence_due": [
+    "Required/BRAIN/CodeQL exact-head green",
+    "protected main merge",
+    "Netlify exact-SHA readback",
+    "real mobile/desktop interaction check",
+    "tenant-scoped user journey and outcome provenance check",
+    "consent-safe 7/14/28-day outcomes measurement"
+  ]
+}
