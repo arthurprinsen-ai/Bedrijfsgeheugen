@@ -47,7 +47,7 @@ export function normalizeAnswerAssurance(assurance={}){
   const limitations=arr(assurance?.limitations).map(String);
   let status=declaredStatus;
   // A model/backend status string alone cannot establish independent verification.
-  if(status==='verified'&&(claimVerification!=='independently_verified'||!evidenceRef)){
+  if(status==='verified'&&(!source||claimVerification!=='independently_verified'||!evidenceRef)){
     status='unverified';
     limitations.unshift('Geen onafhankelijk controleerbare bewijsreferentie bij deze verificatieclaim.');
   }
