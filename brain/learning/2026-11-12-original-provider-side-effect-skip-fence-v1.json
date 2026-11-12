@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|original-publisher|provider-created-post-falsely-skipped|20261112-v1",
+  "obligation_id": "original-provider-created-post-falsely-skipped-20261112",
+  "title": "Never allow a NO_PUBLISH decision after an original provider publication side effect",
+  "status": "CANDIDATE",
+  "root_cause": "Original record_content_publication_skip checked state but not an external provider ID, recorded publication time or provider-created side-effect receipt. Production included an Instagram post previously SKIPPED yet independently read back as a live business account media ID.",
+  "impact": "Real provider publications may be marked SKIPPED, creating false OVERDUE_PUBLICATION handoffs and risk of duplicate social write; historical analytics remain independently due.",
+  "fix": "Modify only original publication skip recorder to reject NO_PUBLISH if the original source row or incoming evidence includes an external ID, published_at, live_proven_at or terminal provider side-effect flags. Same service role access, no new sender, scheduler or replay. Preserve exact original provider and tenant lineage.",
+  "prevention_rule": "SKIPPED is a control decision, not proof of no provider write. If any provider post identity or side effect is present, fail closed to original provider reconciliation, not republish; do not convert skipped items to LIVE_PROVEN without independent provider readback.",
+  "regression_contract": "tests/brain-original-no-publish-provider-side-effect-20261112.test.mjs",
+  "tests": [
+    "tests/brain-original-no-publish-provider-side-effect-20261112.test.mjs"
+  ],
+  "evidence": [
+    "2026-11-12 independently read back original Instagram business media 17883673467686532, owner 28537384955950341, posted 2026-09-23T10:33:52Z while original source status was SKIPPED",
+    "2026-11-12 independently read back original Instagram business media 18060985460558066, owner 28537384955950341, posted 2026-10-02T10:25:23Z while original status was only PUBLISHED",
+    "Five original Instagram source rows were repaired with exact provider IDs, permalinks, time and author proof; original 24/48/72h social metric obligations were not falsely closed"
+  ],
+  "outcome": "Prevention candidate requiring protected Required/CodeQL and exact source and production readback; past content/social measurement debt remains until verified.",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-no-publish-provider-side-effect-20261112.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ]
+}
