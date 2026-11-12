@@ -1,0 +1,7 @@
+# Original Supabase migration history 834/834 parity — 12 November 2026
+
+Original SEO release #5677 introduced executable `20261112203000_original_seo_keyword_tenant_alignment_v1.sql`. The original production Supabase provider (project adhjwmvyoixzjtmiroln) independently returned **834 applied migration rows** and the exact final identity `20261112203000 / original_seo_keyword_tenant_alignment_v1` at 2026-11-12T19:05:30.734Z. GitHub's existing source history lock held 833; the original Portal PR #5674 correctly failed protected preflight (six migration history assertions).
+
+This recovery **only appends the provider-confirmed identity** in the existing `supabase/migration-history.lock.json`, preserving the exact first 833 entries and the original executable SQL. No migration is replayed; no DDL, auth change, scheduler, source writer, publishing system, fabricated customer/CRO output or proxy confirmation is added.
+
+Original regression tests validate local executable SQL versus locked native provider identities, historic prefixes and uniqueness. Protected Required + CodeQL, merge to exact current main and readback against original Supabase `supabase_migrations.schema_migrations` must pass before calling the source lock reconciled. Portal #5674, DataForSEO provider/consumer results and all #4198/#4215 obligations remain independently open until their exact acceptance evidence exists.
