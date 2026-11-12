@@ -1,0 +1,41 @@
+{
+  "fingerprint": "seo|original-sitewide-health-and-ahrefs-source-proof|20261112-v1",
+  "date": "2026-11-12",
+  "state": "SOURCE_CANDIDATE",
+  "release_proven": false,
+  "owner": "Original Powerhouse SEO Order Engine / BG169",
+  "incident": "Sitewide browser gate lacked auditable multi-rule page health metrics and Ahrefs module-gap reporting; provider source errors must not turn into zero or green claims.",
+  "root_cause": "Only href/visibility/CLS checks were aggregated and missing provider data had no independently evidenced capability status.",
+  "fix": [
+    "Introduce 17 deterministic SEO issue types with exact per-route ERROR/WARNING/NOTICE",
+    "Score actual ERROR-free sitemap routes with null on incomplete coverage",
+    "Record full audit in original browser job and upload immutable run artifact even on failure",
+    "Preserve original writer/agent/skill and explicit provider capability matrix"
+  ],
+  "tests": [
+    "tests/brain-sitewide-seo-health-score-20261112.test.mjs",
+    "tests/brain-sitewide-href-integrity-20261112.test.mjs"
+  ],
+  "producer_evidence": [
+    "tools/site-shell/seo-health-score.mjs",
+    "tools/site-shell/standalone-visibility-check.mjs",
+    ".github/workflows/lane-website.yml",
+    "config/ahrefs-functional-benchmark.json"
+  ],
+  "provider_observations": {
+    "backlinks_summary": "SUCCESS_EMPTY_ITEMS_NOT_ZERO",
+    "competitors_domain": "SUCCESS_EMPTY_ITEMS_NOT_ZERO",
+    "ai_mentions": "FAILED_INVALID_LOCATION_NAME_40501"
+  },
+  "consumer_processed_ack": "NOT_YET_PROVEN",
+  "production_http_readback": "NOT_YET_PROVEN",
+  "followup": "Original BG169 owner must repair provider source mismatches and attribute actual click/referral outcomes; independent consumer ACK required; no fake Ahrefs index parity.",
+  "prevention": [
+    "No 100% health without full URL denominator",
+    "No Ahrefs 170+ function equivalence claim",
+    "No treating missing provider observations as zero",
+    "No second SEO executor or duplicate publication/provider action",
+    "Failures and lessons stay with original owner and are tested at next run"
+  ],
+  "regression_reference": "tests/brain-sitewide-seo-health-score-20261112.test.mjs"
+}
