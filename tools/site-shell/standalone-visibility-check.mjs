@@ -1,6 +1,7 @@
 import { chromium } from 'playwright';
 import { routesFromSitemap } from './public-route-inventory.mjs';
 import { auditRenderedHrefs } from './sitewide-href-integrity.mjs';
+import { inspectRenderedSeoPage, summarizeRenderedSeoAudit } from './seo-site-audit-intelligence.mjs';
 import { visibilityRetryPolicy } from './visibility-retry-policy.mjs';
 import { formatClsFailure } from './layout-shift-evidence.mjs';
 
@@ -137,6 +138,23 @@ async function readVisibleState(page, url) {
                   textLength: (document.querySelector('main')?.innerText || '').trim().length,
                   hrefs: Array.from(document.querySelectorAll('a[href]')).slice(0, 500).map(node => node.getAttribute('href')),
                   hrefCount: document.querySelectorAll('a[href]').length,
+                  seo: {
+                    title: document.title || '',
+                    description: document.querySelector('meta[name="description"]')?.content || '',
+                    canonical: document.querySelector('link[rel="canonical"]')?.href || '',
+                    robots: document.querySelector('meta[name="robots"]')?.content || '',
+                    lang: document.documentElement.lang || '',
+                    h1Count: document.querySelectorAll('h1').length,
+                    images: document.images.length,
+                    imagesMissingAlt: Array.from(document.images).filter(img=>!img.hasAttribute('alt')).length,
+                    uncompressedImageCount: Array.from(document.images).filter(img=>img.naturalWidth > 3200 || img.naturalHeight > 3200).length,
+                    jsonLdCount: document.querySelectorAll('script[type="application/ld+json"]').length,
+                    invalidJsonLd: Array.from(document.querySelectorAll('script[type="application/ld+json"]')).filter(node=>{
+                      try { JSON.parse(node.textContent || ''); return false; } catch { return true; }
+                    }).length,
+                    ogTitle: document.querySelector('meta[property="og:title"]')?.content || '',
+                    ogDescription: document.querySelector('meta[property="og:description"]')?.content || ''
+                  },
                   cls: Number(window.__bgCls || 0),
                   clsSources: Array.isArray(window.__bgClsSources) ? window.__bgClsSources.slice(-8) : [],
                   layoutShifts: Array.isArray(window.__bgLayoutShifts) ? window.__bgLayoutShifts.slice(0, 12) : [],
@@ -167,6 +185,7 @@ const browser = await chromium.launch({ headless: true });
 const failures = [];
 let hrefsChecked = 0;
 let hrefRoutesChecked = 0;
+const seoPages = [];
 try {
   const runViewport = async viewport => {
     const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
@@ -283,6 +302,7 @@ try {
                 });
                 hrefRoutesChecked += 1;
                 hrefsChecked += hrefAudit.hrefsChecked;
+                seoPages.push(inspectRenderedSeoPage({route,meta:state.seo}));
                 for (const finding of hrefAudit.failures) failures.push(`${route} desktop href: ${finding}`);
               }
               if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; layout-shift sources=${JSON.stringify(state.clsSources || []).slice(0, 1800)}; attribution=${formatClsFailure(route, viewport.name, state.cls, state.layoutShifts) || 'UNAVAILABLE'}`);
@@ -307,6 +327,12 @@ try {
   await closeBounded('browser', () => browser.close());
 }
 
+const seoSiteReadout=summarizeRenderedSeoAudit({
+  reports:seoPages,expectedRoutes:routes.length,hrefsChecked,
+  sourceSha:process.env.GITHUB_SHA||process.env.COMMIT_REF||'UNVERIFIED'
+});
+console.log('SEO_SITE_AUDIT_V1 '+JSON.stringify(seoSiteReadout));
+if (!seoSiteReadout.coverageComplete) failures.push('SEO_SITE_AUDIT_COVERAGE_INCOMPLETE');
 if (hrefRoutesChecked !== routes.length) failures.push(`HREF_AUDIT_ROUTE_COVERAGE_INCOMPLETE: ${hrefRoutesChecked}/${routes.length}`);
 if (failures.length) {
   const message = `Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`;
