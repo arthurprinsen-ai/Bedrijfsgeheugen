@@ -645,6 +645,50 @@
       ],
       "sample_disclaimer": "Market-size estimates NOT actual organic clicks, visits, ranks, paid revenue or provider AI citation share; never automatically publish from samples",
       "provider_budget": "bounded, cost-aware; freshness check before paid call; no unbounded 1000-keyword/LLM crawl"
+    },
+    "evidence_priority_v2": {
+      "fingerprint": "seo|google-ai-external-evidence-revenue-priority|20261112-v2",
+      "original_owner": "Powerhouse SEO Order Engine BG169",
+      "new_scheduler": false,
+      "scorer": "tools/site-shell/seo-opportunity-evidence-model.mjs#scoreSeoOpportunityEvidence",
+      "dispatch": "existing tools/site-shell/seo-site-audit-intelligence.mjs#triageExternalSeoOpportunities",
+      "weights_percent": {
+        "commercialFit": 30,
+        "organicFeasibility": 20,
+        "demand": 15,
+        "ownSearchGap": 15,
+        "verifiedMarketMovement": 10,
+        "technicalAndExternal": 10
+      },
+      "hard_gates": [
+        "Original provider ID, source timestamp, Netherlands/nl scope, source freshness <=30d",
+        "Verifiable businessFit >=0.75 linked to true service proposition and source rationale",
+        "Existing canonical search-intent owner or explicitly independently proven new intent gap; no autonomous publication from unknown owner",
+        "Suppress dictionary/entertainment/nonbuyer keyword-ideas and duplicate keyword clusters",
+        "Never convert AI estimated search demand or crawler bot events into verified ChatGPT/Claude visitors"
+      ],
+      "sources": {
+        "primary": [
+          "site/seo-order-map.json canonical owner",
+          "DataForSEO Google Keyword Overview search_volume/keyword_difficulty/search_intent/paid_cpc, all source-dated",
+          "Google Search Console actual query/page impressions/clicks/average position; last complete 28d vs previous complete 28d",
+          "Site Audit actual 279/279 full route errors/warnings and page dependencies",
+          "First-party consent-compatible qualified source/referral/lead/order events"
+        ],
+        "independent_market": [
+          "First-party official regulator/product changelogs and standards with article URL/date",
+          "Independently dated industry association, trade-publications and official partner API integrations",
+          "DataForSEO organic SERP top-10 competitor pages, intent and weak content; backlink opportunities only when provider returns data",
+          "DataForSEO AI mentions and verified source citations only if successful and identifiable provider observation"
+        ],
+        "source_tiers": "Provider/official original facts > independent dated corroborated sources > community discussions as hypotheses only; no unsourced trend or social sentiment allowed to trigger publication",
+        "datum_semantics": "Paid competition and CPC are Google Ads concepts, NOT organic keyword difficulty, conversions or revenue; GSC zero clicks only when the actual query/page record exists; missing is NOT_MEASURED",
+        "monitoring": "Daily inexpensive first-party audit/GSC, bounded weekly source freshening and monthly seasonality/history; official urgent event may trigger bounded same-executor review but never a new cron"
+      },
+      "scoring_action": "Score ranks candidate owner review, does not authorize publish; prioritize page relevance if GSC rank >30, technical remediation when verified, CTR review only if source position supports it, research before net-new content",
+      "confidence": "Every score has weighted components, missingEvidence, real organicDifficulty vs paidCompetition, evidenceConfidence, original URL and no fabricated incremental revenue",
+      "value_model": "Only calculate attributable incremental lead/order value where consented historical conversion rate, order value and verified attribution exist; otherwise scenario NOT_MEASURED, no invented ROI",
+      "score_success_contract": "Protected original CI/CD -> Netlify exact live SHA -> ONE BRAIN original producer + processed consumer ACK -> Powerhouse/Heartbeat/Portal -> 7/28-day source/lead/sales readback -> next run learning; original incident remains OPEN until complete"
     }
   }
 }
