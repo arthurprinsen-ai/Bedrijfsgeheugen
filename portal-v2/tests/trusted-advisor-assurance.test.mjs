@@ -28,3 +28,8 @@ test('source-bound answer requires a named source',()=>{
   assert.equal(result.status,'unverified');
   assert.equal(result.source,'Geen bron opgegeven');
 });
+
+test('verified answer fails closed without identifiable source',()=>{
+  const result=normalizeAnswerAssurance({status:'verified',claimVerification:'independently_verified',evidenceRef:'provider:123'});
+  assert.equal(result.status,'unverified');
+});
