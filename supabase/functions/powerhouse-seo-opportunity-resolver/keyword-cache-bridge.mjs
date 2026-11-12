@@ -25,7 +25,7 @@ export function planOriginalSeoKeywordCacheProjection(cachedRows,{
     if(now-timestamp>maxAgeDays*86400000){rejected.old++;continue;}
     const owner=resolveOwner(keyword),canonical=validHttpsSite(owner?.route);
     const destination=validHttpsSite(owner?.primary_cta?.url);
-    if(!canonical||owner?.match_score<0.72||!destination){rejected.owner++;continue;}
+    if(!canonical||!Number.isFinite(Number(owner?.match_score))||Number(owner?.match_score)<0.72||!destination){rejected.owner++;continue;}
     const volume=numberOrNull(row.zoekvolume);
     if(volume===null||volume<0||!Number.isInteger(volume)){rejected.volume++;continue;}
     const current=prior.get(key);
