@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "social-learning|empty-observed-provider-snapshots|numeric-evidence-required|20261112",
+  "obligation_id": "social-learning-empty-metrics-20261112",
+  "title": "Reject empty source observations before original social evaluation and ACK",
+  "status": "CANDIDATE",
+  "root_cause": "Original source qualification returned true for OBSERVED and PROVIDER_OBSERVED labels without reading the numerical metric payload. Actual historical OBSERVED Buffer social snapshots contained metrics={}; the original hourly evaluator therefore wrote all-null deterministic evaluations, counted their processing as evaluated and selected the same due post/window again on later ticks because no numerical evaluation had been stored. Production original hourly logs 2026-11-11 to 2026-11-12 showed 1–2 evaluated each hour while backlog remained 596–602 and social_learning_evaluations only 41 total. This wasted bounded capacity and delayed proof-backed learning ACKs.",
+  "impact": "183 original overdue social learning obligations and unfulfilled original content handoffs cannot be resolved by successful scheduler status alone. Duplicate empty observations consume bounded original owner capacity and block meaningful provider readback.",
+  "fix": "Gate native source qualification on one nonnegative finite numeric provider measurement, including legacy Buffer keys and measured zero; add an evaluator defense-in-depth null-vector check that preserves the original UNVERIFIED_OR_PARTIAL_WINDOW obligation and does not report evaluated. Preserve exact tenant, post ID, 24/48/72-hour window, independent event, original ACK and one hourly scheduler.",
+  "prevention_rule": "A source quality label never substitutes for an actual numerical observed metric. No empty, all-null, or partial-scope provider snapshot can count as evaluated or learned. Do not promote a 24/48/72h obligation to MEASUREMENT_VERIFIED without exact source post/time/field and deterministic original evaluation. If provider evidence does not exist, keep same original owner and obligation OPEN, do not synthesize metrics, repost, increase sending, or invent orders/revenue. Check if production total distinct verified evaluations increases after protected deploy; monitoring process success without end-to-end post/evaluation/Brain ACK is insufficient.",
+  "regression_contract": "tests/brain-social-obligation-evidence-ack-20261110.test.mjs",
+  "tests": [
+    "tests/brain-social-obligation-evidence-ack-20261110.test.mjs"
+  ],
+  "evidence": [
+    "Supabase 2026-11-12: 183 OPEN overdue learning of 196 total, 441 OPEN CONTENT_HANDOFF and 12 FULFILLED",
+    "Netlify 2026-11-12 11:00 UTC hourly social-learning-evaluate HTTP 204: evaluated=2 missed=2 dueBacklog=602",
+    "Supabase historical Buffer OBSERVED social_metric_snapshots metrics={} on 2026-09-23 to 2026-09-25",
+    "GitHub PR #5642 source guard and evaluator defense; pending Required/CodeQL/production readback"
+  ],
+  "outcome": "Code repair is a protected deployment candidate. Historical social obligations remain OPEN until original provider measurement, evaluation and independently acknowledged consumer effect are demonstrated; no improvement/causal lift or revenue inferred.",
+  "compiler": {
+    "failure_class": "DATA_QUALITY",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Test: empty OBSERVED snapshot rejected and no all-null evaluation written",
+      "Test: observed numerical zero and exact Buffer aliases remain valid",
+      "Test: partial scope source cannot become verified post window"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ]
+}
