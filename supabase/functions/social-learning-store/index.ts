@@ -1,6 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { tagDuePostsWithObservedWindows } from '../_shared/social-learning-due-evidence.mjs';
-import { verifiedSocialWindowAck } from '../_shared/social-learning-window-ack.mjs';
+import { verifiedSocialWindowAck, selectQualifiedSocialCohortSnapshot } from '../_shared/social-learning-window-ack.mjs';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -65,7 +65,15 @@ Deno.serve(async(req:Request)=>{
       if(target.platform)pq=pq.eq('platform',target.platform);if(target.channelKind)pq=pq.eq('channel_kind',target.channelKind);if(target.format)pq=pq.eq('format',target.format);if(target.funnelStage)pq=pq.eq('funnel_stage',target.funnelStage);if(target.contentPillar)pq=pq.eq('content_pillar',target.contentPillar);
       const {data:posts,error}=await pq.order('published_at',{ascending:false}).limit(30);if(error)throw error;const ids=(posts||[]).map((p:any)=>p.post_id);if(!ids.length)return json({posts:[]});
       const {data:snaps,error:sErr}=await db.from('social_metric_snapshots').select('*').eq('tenant_id',tenantId).in('post_id',ids);if(sErr)throw sErr;const byPost=new Map<string,any[]>();for(const s of snaps||[]){const a=byPost.get(s.post_id)||[];a.push(s);byPost.set(s.post_id,a);}
-      const out:any[]=[];for(const p of posts||[]){let best:any=null,delta=Infinity;for(const s of byPost.get(p.post_id)||[]){const age=Number.isFinite(s.age_hours)?Number(s.age_hours):(new Date(s.observed_at).getTime()-new Date(p.published_at).getTime())/36e5;const d=Math.abs(age-windowHours);if(d<=tolerance&&d<delta){best=s;delta=d;}}if(best)out.push({...camelPost(p),observedAt:best.observed_at,ageHours:best.age_hours,metrics:best.metrics});}
+      const out:any[]=[];
+      for(const p of posts||[]){
+        const best=selectQualifiedSocialCohortSnapshot({
+          post:p,snapshots:byPost.get(p.post_id)||[],windowHours,toleranceHours:tolerance
+        });
+        if(best)out.push({...camelPost(p),observedAt:best.observed_at,
+          ageHours:(Date.parse(best.observed_at)-Date.parse(p.published_at))/36e5,
+          metrics:best.metrics});
+      }
       return json({posts:out});
     }
     if(action==='put_evaluation'){const e=body.evaluation||{};const row={tenant_id:tenantId,evaluation_id:e.evaluationId,post_id:e.postId,window_hours:e.windowHours,observed_at:e.observedAt,metric_vector:e.metricVector||{},cohort_size:e.cohortSize||0,evidence:e.evidence||null};const {error}=await db.from('social_learning_evaluations').upsert(row,{onConflict:'tenant_id,evaluation_id'});if(error)throw error;return json({stored:true});}
