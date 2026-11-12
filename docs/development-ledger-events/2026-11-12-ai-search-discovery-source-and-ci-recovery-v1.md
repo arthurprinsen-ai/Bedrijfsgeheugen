@@ -1,0 +1,17 @@
+# 2026-11-12 — ChatGPT/Claude discoverability, original SEO one-loop delivery and CI recovery
+
+- **Fingerprint:** `seo|public-ai-search-discovery-and-proposition-truth|20261111-v1`
+- **Original owner:** Powerhouse SEO Order Engine / BG169; ONE BRAIN -> Heartbeat -> Portal.
+- **Original PR:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5631
+- **User mandate:** production release after Required/CodeQL, guard all agents and SEO skills, preserve one canonical loop without dropped handoffs.
+- **Source root cause:** the public `llms.txt` contradicted the actual portal product proposition by calling the business advice-only with no product. Explicit `Claude-SearchBot` and `Claude-User` declarations were absent, although the wildcard `Allow: /` already permitted them. This was not proof of actual crawler blockage or missing AI citations.
+- **CI root cause 1:** GitHub Actions initially queued Required/CodeQL with zero jobs; later native runs executed. Required run 43172573294 failed at canonical hygiene with `unclassified delivery path: llms.txt, robots.txt`. Both root paths are now registered in the ORIGINAL protected `website` lane in `config/brain-delivery-system.json`; no bypass or alternative writer.
+- **CI root cause 2:** Required run 43173003149 admitted the PR but rejected learning canonicalization because the new regression expected a single `evaluation.historical_replay` reference while the original learning correctly included another existing SEO delivery test. The regression was fixed to assert inclusion, not exact equality.
+- **CI root cause 3:** Required run 43173190601 admitted the PR and passed native learning tests but rejected bundle closure with `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: activity_ledger`. This immutable original ledger event is the missing durable human activity proof.
+- **Implemented changes:** explicit OpenAI/Claude search-user crawler allowances, truthful `llms.txt`, SEO agent team duties, `powerhouse-seo-conversion-orders` and `seo-revenue-growth` skill contracts, `config/seo-growth-loop.json` answer visibility evidence policy, canonical system map, capability registry, ONE BRAIN learning, protected delivery classification and regression tests.
+- **No extra authority:** no second cron, content publisher, business-event store, provider dispatch, blog duplication, tracking without consent or ad-hoc bypass of GitHub protected branch.
+- **Measurement truth:** 20 versioned unbranded Dutch business-problem prompts for ChatGPT and Claude; only real provider answer citation evidence can become OBSERVED; otherwise `NOT_MEASURED`; technical crawler eligibility is not a guarantee of ranking or referral.
+- **Regression:** `tests/brain-ai-discovery-20261111.test.mjs` and `tests/brain-delivery-seo-order.test.mjs`.
+- **Required release evidence:** latest exact-head Required/admission, website and CodeQL checks green, protected merge to main, READY Netlify production on that merged current-main commit, independent HTTPS readback of `https://www.bedrijfsgeheugen.nl/robots.txt` and `https://www.bedrijfsgeheugen.nl/llms.txt`.
+- **Original downstream delivery:** persist source revision, owner, tenant where applicable, correlation and idempotency; original ONE BRAIN consumer ACK -> Heartbeat -> portal -> next daily SEO cycle, with real citations/scan/lead/order outcomes separately.
+- **Current status at write:** `CANDIDATE_NOT_YET_PRODUCTION_PROVEN`; no live or 20-prompt citation success claimed. Auto-merge of original PR enabled only after genuine protected CI success.
