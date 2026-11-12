@@ -60,3 +60,12 @@ test('AI-answer GEO belongs to the existing SEO agent, skill, system map and lea
   assert.equal(lesson.ai_citation_proven,false);
   assert.deepEqual(lesson.evaluation.historical_replay,['tests/brain-ai-discovery-20261111.test.mjs']);
 });
+
+test('canonical protected delivery recognizes public AI crawler and profile documents in website lane',()=>{
+  const delivery=JSON.parse(readFileSync(new URL('../config/brain-delivery-system.json',import.meta.url),'utf8'));
+  const website=delivery.lanes.find(l => l.id === 'website');
+  assert.ok(website);
+  for (const path of ['robots.txt','llms.txt']) {
+    assert.ok(website.paths.includes(path), path + ' should be classified in protected website lane');
+  }
+});
