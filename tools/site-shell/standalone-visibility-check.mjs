@@ -1,5 +1,6 @@
 import { chromium } from 'playwright';
 import { routesFromSitemap } from './public-route-inventory.mjs';
+import { auditRenderedHrefs } from './sitewide-href-integrity.mjs';
 import { visibilityRetryPolicy } from './visibility-retry-policy.mjs';
 import { formatClsFailure } from './layout-shift-evidence.mjs';
 
@@ -134,6 +135,8 @@ async function readVisibleState(page, url) {
                   h1: inspect('main h1'),
                   main: inspect('main'),
                   textLength: (document.querySelector('main')?.innerText || '').trim().length,
+                  hrefs: Array.from(document.querySelectorAll('a[href]')).slice(0, 500).map(node => node.getAttribute('href')),
+                  hrefCount: document.querySelectorAll('a[href]').length,
                   cls: Number(window.__bgCls || 0),
                   clsSources: Array.isArray(window.__bgClsSources) ? window.__bgClsSources.slice(-8) : [],
                   layoutShifts: Array.isArray(window.__bgLayoutShifts) ? window.__bgLayoutShifts.slice(0, 12) : [],
@@ -272,6 +275,12 @@ try {
                 }
               }
               if (state.textLength < 120) failures.push(`${route} ${viewport.name}: main content is effectively empty (${state.textLength} chars)`);
+              if (viewport.name==='desktop') {
+                const hrefAudit=auditRenderedHrefs({
+                  route, hrefs:state.hrefs, sitemapRoutes:routes, expectedCount:state.hrefCount
+                });
+                for (const finding of hrefAudit.failures) failures.push(`${route} desktop href: ${finding}`);
+              }
               if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; layout-shift sources=${JSON.stringify(state.clsSources || []).slice(0, 1800)}; attribution=${formatClsFailure(route, viewport.name, state.cls, state.layoutShifts) || 'UNAVAILABLE'}`);
             } catch (error) {
               failures.push(`${route} ${viewport.name}: ${error.message || error}`);
