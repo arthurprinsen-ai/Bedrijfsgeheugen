@@ -66,7 +66,7 @@
     "consent-safe 7/14/28-day outcomes measurement"
   ],
   "agent_integration": {
-    "id": "agent-trusted-advisor",
+    "id": "agent-governance-ai-act",
     "registry": "platform/agents/agent-team.mjs",
     "editorial": "supabase/functions/_shared/editorial-council-context.mjs",
     "scheduler_created": false,
@@ -74,6 +74,9 @@
     "publication_rights": false,
     "original_handoff": "Portal V2 → tenant BusinessInput → ONE BRAIN → Powerhouse/Heartbeat → existing authorized reversible action → independent provider/readback → learning",
     "consumer_processed_ack": "REQUIRES_RUNTIME_PROOF",
-    "outcome_verification": "NOT_PROVEN"
+    "outcome_verification": "NOT_PROVEN",
+    "specialist_role": "trusted-advisor-specialist",
+    "original_agent_count": 14,
+    "new_registered_agent": false
   }
 }
