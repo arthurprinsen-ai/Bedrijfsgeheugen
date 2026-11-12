@@ -40,8 +40,23 @@ export function buildPageAssurance({pageId,state={}}={}){
 }
 
 export function normalizeAnswerAssurance(assurance={}){
-  const status=TRUST_STATES[assurance?.status]?assurance.status:'unverified';
-  return {status,statusLabel:TRUST_STATES[status].label,description:TRUST_STATES[status].description,source:String(assurance?.source||'Bedrijfsgeheugen'),sourceUpdatedAt:String(assurance?.sourceUpdatedAt||''),evidencePolicy:String(assurance?.evidencePolicy||''),claimVerification:String(assurance?.claimVerification||'not_independently_verified'),limitations:arr(assurance?.limitations).map(String)};
+  const declaredStatus=Object.hasOwn(TRUST_STATES,assurance?.status)?assurance.status:'unverified';
+  const source=typeof assurance?.source==='string'?assurance.source.trim():'';
+  const evidenceRef=typeof assurance?.evidenceRef==='string'?assurance.evidenceRef.trim():'';
+  const claimVerification=typeof assurance?.claimVerification==='string'?assurance.claimVerification.trim():'';
+  const limitations=arr(assurance?.limitations).map(String);
+  let status=declaredStatus;
+  // A model/backend status string alone cannot establish independent verification.
+  if(status==='verified'&&(claimVerification!=='independently_verified'||!evidenceRef)){
+    status='unverified';
+    limitations.unshift('Geen onafhankelijk controleerbare bewijsreferentie bij deze verificatieclaim.');
+  }
+  // "Brongebonden" needs an actual identified source, not the product's own brand as fallback.
+  if(status==='grounded'&&!source){
+    status='unverified';
+    limitations.unshift('Een herleidbare bron ontbreekt bij de brongebonden claim.');
+  }
+  return {status,statusLabel:TRUST_STATES[status].label,description:TRUST_STATES[status].description,source:source||'Geen bron opgegeven',sourceUpdatedAt:String(assurance?.sourceUpdatedAt||''),evidenceRef, evidencePolicy:String(assurance?.evidencePolicy||''),claimVerification:claimVerification||'not_independently_verified',limitations};
 }
 
 export function renderAnswerAssurance(assurance={}){
