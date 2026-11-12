@@ -8,7 +8,11 @@
     "analysis",
     "summaries",
     "recommendations",
-    "autonomous-actions"
+    "autonomous-actions",
+    "website",
+    "cms",
+    "pricing",
+    "selfscan"
   ],
   "principle": "No AI claim is trusted by presentation alone; trust must be earned through provenance, evidence, uncertainty, verification and outcome readback.",
   "truth_states": [
@@ -30,7 +34,12 @@
     "Outcome readback must update future advice and advisor track record.",
     "Conflicting source evidence must be surfaced, not silently averaged away.",
     "Customer corrections become canonical tenant knowledge and invalidate stale derived claims.",
-    "The same trust contract applies to every present and future chat and agent."
+    "The same trust contract applies to every present and future chat and agent.",
+    "User-facing trust must come from clear advice and verifiable delivery, never from calling ourselves a Trusted Advisor.",
+    "Before showing a KPI, make explicit whether it is a live tenant fact, an illustrative demo, or an unverified calculation.",
+    "Missing source health metadata cannot be counted as healthy; generic transport or processing OK is not independent outcome verification.",
+    "The free scan, paid service, pricing, privacy and delivery promises must agree across all public pages and the actual customer journey.",
+    "Explain assumptions, alternatives including no-change, scope, human support and the actual next step; never imply guaranteed ROI or deadlines without proof."
   ],
   "portal_surfaces": {
     "all_pages": [
@@ -38,7 +47,8 @@
       "why trust this",
       "source health",
       "freshness",
-      "uncertainty"
+      "uncertainty",
+      "visible live/demo distinction before example metrics"
     ],
     "analysis_and_summary": [
       "fact/derived/hypothesis/prediction label",
@@ -51,7 +61,8 @@
       "assumptions",
       "expected impact range",
       "decision owner",
-      "verification plan"
+      "verification plan",
+      "option to defer or do nothing when justified"
     ],
     "chat": [
       "tenant-bound context",
@@ -76,5 +87,32 @@
       "outcome"
     ]
   },
-  "fail_closed": true
+  "fail_closed": true,
+  "website_surfaces": {
+    "homepage": [
+      "customer situation before solution",
+      "source-backed value example",
+      "plain language",
+      "clear free versus paid journey"
+    ],
+    "contact_and_scan": [
+      "three-minute free scan without mandatory email",
+      "immediate on-screen result",
+      "consistent conditions and CTA"
+    ],
+    "case_studies": [
+      "prototype versus delivered customer case prominently labelled",
+      "no fictitious customer endorsement"
+    ],
+    "pricing_and_service": [
+      "scope and limits before purchase",
+      "delivery conditions and unverified results clearly explained"
+    ],
+    "global": [
+      "one shared navigation design",
+      "mobile and keyboard usability",
+      "visible legal identity and contact",
+      "no blocking overlays or dead buttons"
+    ]
+  }
 }
