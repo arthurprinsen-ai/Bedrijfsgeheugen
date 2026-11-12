@@ -50,5 +50,29 @@
   },
   "skill_targets": [
     "powerhouse-social-cro-funnel"
-  ]
+  ],
+  "evidence": {
+    "production_repaired_source_acks": 2,
+    "production_repaired_original_brain_acks": 2,
+    "original_verified_measurement_aliases": [
+      "dispatch-readback-6aa90f62fc3e50043d7adcc2",
+      "measure-6aa9147bbc24766c896877ea"
+    ],
+    "original_24h_evaluation_ids": [
+      "evaluation:6aa90f62fc3e50043d7adcc2:24",
+      "evaluation:6aa9147bbc24766c896877ea:24"
+    ],
+    "source_event_ids": [
+      "buffer:6aa90f62fc3e50043d7adcc2:2026-09-16T13:09:40.482Z",
+      "buffer:6aa9147bbc24766c896877ea:2026-09-16T13:08:44.650Z"
+    ],
+    "independent_record": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "historical_replay": "tests/brain-original-social-legacy-alias-ack-20261112.test.mjs",
+    "limitations": [
+      "historical provider Buffer observation only",
+      "no fresh native LinkedIn readback",
+      "48/72h remain open",
+      "no causal lift or commercial outcomes inferred"
+    ]
+  }
 }
