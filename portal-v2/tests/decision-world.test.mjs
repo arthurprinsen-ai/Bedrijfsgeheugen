@@ -33,14 +33,16 @@ test('missing or malformed proof fails closed rather than showing success',()=>{
  assert.equal(nodes[2].confirmed,false);
 });
 
-test('the map uses the canonical original hero and has safe, responsive interaction',async()=>{
+test('the map remains canonical inside optional deeper insight, with safe responsive interaction',async()=>{
  const [ui,entry,css,html]=await Promise.all([
   readFile(new URL('../decision-world.js',import.meta.url),'utf8'),
   readFile(new URL('../entrepreneur-home.js',import.meta.url),'utf8'),
   readFile(new URL('../decision-world.css',import.meta.url),'utf8'),
   readFile(new URL('../index.html',import.meta.url),'utf8')
  ]);
- assert.match(entry,/renderDecisionWorld\(next,\{home:model,journey,selectedStage:worldStage/);
+ assert.match(entry,/renderDecisionWorld\(deeperWorld,\{home:model,journey,selectedStage:worldStage/);
+ assert.match(entry,/deeperWorld=add\(advanced,'div','eh-deep-world'\)/);
+ assert.doesNotMatch(entry,/renderDecisionWorld\(next,/);
  assert.match(entry,/worldStage='decision'/);
  assert.match(ui,/aria-pressed/);
  assert.match(ui,/ArrowRight/);
