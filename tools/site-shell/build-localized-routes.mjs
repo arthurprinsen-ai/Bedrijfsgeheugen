@@ -302,6 +302,12 @@ function rewriteLinks(doc,sourceFile,locale,aliases) {
         const sameOrigin = resolveSameOriginAbsolute(a.value);
         const resolved = sameOrigin || resolveInternal(a.value,sourceFile);
         if (!resolved) continue;
+        // `/behoeftecheck` is a real NL-only noindex utility, not an indexable EN page.
+        // Preserve its existing canonical HTTPS destination in BOTH locale builds.
+        if (normalizedRoute(resolved.path) === '/behoeftecheck') {
+          a.value = SITE + '/behoeftecheck' + resolved.suffix;
+          continue;
+        }
         const targetFile = aliases.get(resolved.path) || aliases.get(resolved.path + '.html') || aliases.get(resolved.path + '/');
         if (targetFile) {
           const targetRoute = routeFor(targetFile);
