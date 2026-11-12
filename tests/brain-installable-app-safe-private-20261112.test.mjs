@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync,existsSync} from 'node:fs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
-const pub=JSON.parse(read('app.webmanifest'));
+const pub=JSON.parse(read('assets/app.webmanifest'));
 const portal=JSON.parse(read('portal-v2/app.webmanifest'));
 const guard='website|portal|one-installable-app-feel-safe-offline-and-tablet-dock|20261112-v1';
 
@@ -31,14 +31,14 @@ test('manifest historical acceptance: two installs share real branding, stay in 
 });
 
 test('private-data safety: only public static offline document cached; network only for all customer navigations',()=>{
- const worker=read('app-sw.js');
+ const worker=read('assets/app-sw.js');
  assert.match(worker,/const OFFLINE_URL='\/app-offline.html'/);
  assert.match(worker,/cache\.add\(OFFLINE_URL\)/);
  assert.match(worker,/request\.mode!=='navigate'/);
  assert.match(worker,/url\.origin!==self\.location\.origin/);
  assert.match(worker,/event\.respondWith\(fetch\(request\)\.catch/);
  assert.doesNotMatch(worker,/caches\.put\(|cache\.put\(|POST|sync\.register|BackgroundFetch|idb|indexedDB|localStorage|sessionStorage/);
- const offline=read('app-offline.html');
+ const offline=read('assets/app-offline.html');
  assert.match(offline,/geen oude bedrijfsinformatie als actueel/);
  assert.match(offline,/voeren we geen acties uit/);
  assert.match(offline,/https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//);
@@ -46,13 +46,16 @@ test('private-data safety: only public static offline document cached; network o
  assert.doesNotMatch(offline,/onclick=|onload=/);
  const delivery=JSON.parse(read('config/brain-delivery-system.json'));
  const website=delivery.lanes.find(lane=>lane.id==='website');
- for(const name of ['app-offline.html','app-sw.js','app.webmanifest'])assert.ok(website.paths.includes(name),'unclassified public app asset '+name);
+ assert.ok(website.paths.includes('assets/'),'original classified public assets lane must exist');
+ const deployment=read('netlify.toml');
+ assert.match(deployment,/for = "\\/assets\\/app-sw\\.js"/);
+ assert.match(deployment,/Service-Worker-Allowed = "\\/"/);
 });
 
 test('public website and private portal opt into their own manifest with real full HTTPS hrefs',()=>{
  const home=read('index.html'),entry=read('portal-v2/index.html');
- assert.match(home,/rel="manifest" href="https:\/\/www\.bedrijfsgeheugen\.nl\/app\.webmanifest"/);
- assert.match(entry,/rel="manifest" href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/app\.webmanifest"/);
+ assert.match(home,/rel="manifest" href="https:\/\/www\.bedrijfsgeheugen\.nl\/assets\/app\.webmanifest"/);
+ assert.match(entry,/rel="manifest" href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/assets\/app\.webmanifest"/);
  for(const [name,html] of [['home',home],['portal',entry]]){
   assert.match(html,/viewport-fit=cover/,name);
   assert.match(html,/apple-mobile-web-app-capable/,name);
@@ -95,14 +98,14 @@ test('native install affordance only on real browser eligibility, does not regis
  const script=read('assets/app-standalone.js');
  assert.match(script,/beforeinstallprompt/);
  assert.match(script,/appinstalled/);
- assert.match(script,/navigator\.serviceWorker\.register\('\/app-sw\.js'/);
+ assert.match(script,/navigator\.serviceWorker\.register\('\/assets\/app-sw\.js'/);
  assert.match(script,/portalAccountPanel \.portal-popover-links/);
  assert.match(script,/navigator\.standalone===true/);
  assert.match(script,/Zet op beginscherm/);
  assert.match(script,/original\.prompt\(\)/);
  assert.doesNotMatch(script,/fetch\(|localStorage|sessionStorage|new Worker\(|setInterval\(|navigator\.serviceWorker\.controller\.postMessage/);
  assert.doesNotThrow(()=>new Function(script));
- assert.doesNotThrow(()=>new Function(read('app-sw.js')));
+ assert.doesNotThrow(()=>new Function(read('assets/app-sw.js')));
 });
 
 test('learning and original agents/skills cover one design system and fail-closed consent',()=>{
