@@ -121,8 +121,8 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     id:'agent-governance-ai-act',
     domains:['Governance','AI Act','Trust'],
     capabilities:['analyze','audit','govern','verify'],
-    tasks:['classify-governance-requirement','audit-ai-control','maintain-evidence-lineage','verify-policy-compliance'],
-    playbooks:['ai-governance-gate','evidence-provenance-audit','hard-boundary-escalation'],
+    tasks:['classify-governance-requirement','audit-ai-control','maintain-evidence-lineage','verify-policy-compliance','act-as-trusted-advisor-specialist-within-original-fabric','audit-customer-first-advice-and-no-change-alternative','reject-unverified-public-trust-claims-and-automatic-trust-scores','require-tenant-source-revision-obligation-owner-idempotency-and-consumer-processed-ack','require-provider-outcome-proof-and-learn-with-original-brain-fingerprint','coordinate-original-cms-editorial-portal-and-website-owners-without-second-writer'],
+    playbooks:['ai-governance-gate','evidence-provenance-audit','hard-boundary-escalation','trusted-advisor-original-one-loop-consumer-proof','customer-interest-and-credible-advice-before-sales','same-owner-no-parallel-executor-recovery'],
     learningContracts:[...sharedLearning,'governance.v1'],
   }),
   Object.freeze({
