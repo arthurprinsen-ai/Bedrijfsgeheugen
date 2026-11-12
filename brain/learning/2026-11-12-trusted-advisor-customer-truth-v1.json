@@ -86,5 +86,27 @@
       "prevention_rule": "Never increase original agent registry count or add a scheduler to deliver Trusted Advisor; embed specialist responsibilities in a currently approved owner. Preserve 14-agent acceptance gate.",
       "independent_production_proof": "NOT_YET_PROVEN"
     }
+  },
+  "protected_release_dependency": {
+    "fingerprint": "delivery|migration-lock|provider-applied-reference-handoff-unrecorded|20261112-v1",
+    "observed": "Protected CI preflight detected one executable migration absent from checked-in provider lock after new main integration.",
+    "root_cause": "Canonical migration-history.lock.json had 834 applied entries while independent Supabase production list reported 835; the new append-only migration on main was already provider-applied but original provider-sourced lock had not been read back and committed.",
+    "fix": "Read full production Supabase migration history; compared every existing 834 version/name exactly; verified the 835th record and live function definition; appended only that verified provider identity to original lock.",
+    "evidence": {
+      "project_ref": "adhjwmvyoixzjtmiroln",
+      "provider_count": 835,
+      "lock_count_before": 834,
+      "version": "20261112211000",
+      "name": "original_skipped_provider_reference_readback_handoff_v1",
+      "function_definition_contains_stage": "OVERDUE_PROVIDER_READBACK",
+      "prior_entries_match": true
+    },
+    "prevention_rule": "After original migration deploy, reconcile provider migration list and generated lock before any dependent protected PR; never insert local-only versions as applied or skip migration safeguards.",
+    "regression_contract": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "independent_production_approval": "LOCK_SOURCE_RECONCILED_BUT_TRUSTED_ADVISOR_RELEASE_NOT_YET_LIVE"
   }
 }
