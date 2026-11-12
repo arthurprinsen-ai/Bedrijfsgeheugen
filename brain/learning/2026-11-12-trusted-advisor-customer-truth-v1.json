@@ -77,6 +77,14 @@
     "outcome_verification": "NOT_PROVEN",
     "specialist_role": "trusted-advisor-specialist",
     "original_agent_count": 14,
-    "new_registered_agent": false
+    "new_registered_agent": false,
+    "prevented_architecture_error": {
+      "observed": "Adding a fifteenth agent to DEFAULT_AGENT_TEAM violated existing required fourteen-agent original fabric contracts.",
+      "root_cause": "The first specialist design added an independent agent identity although the existing authoritative contract explicitly fixes fourteen agent registrations.",
+      "fixed_by": "Embed named trusted-advisor-specialist role in original agent-governance-ai-act; add original editorial council role; keep registry at fourteen.",
+      "regression": "tests/brain-trusted-advisor-agent-one-loop-20261112.test.mjs",
+      "prevention_rule": "Never increase original agent registry count or add a scheduler to deliver Trusted Advisor; embed specialist responsibilities in a currently approved owner. Preserve 14-agent acceptance gate.",
+      "independent_production_proof": "NOT_YET_PROVEN"
+    }
   }
 }
