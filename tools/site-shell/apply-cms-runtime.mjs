@@ -23,7 +23,7 @@ const appApple='<meta name="apple-mobile-web-app-capable" content="yes" data-bg-
 
 let changed=0,covered=0;
 for(const file of [...new Set(targets)]){
-  if(path.basename(file)==='cms.html')continue;
+  if(['cms.html','offline.html'].includes(path.basename(file)))continue;
   let html=fs.readFileSync(file,'utf8');
   if(!/<\/head>/i.test(html))continue;
   covered++;
@@ -67,7 +67,7 @@ const inventory={
   version:1,
   generatedAt:new Date().toISOString(),
   contract:'canonical-cms-runtime-coverage-v1',
-  pages:[...new Set(targets)].filter(f=>path.basename(f)!=='cms.html').map(file=>{
+  pages:[...new Set(targets)].filter(f=>!['cms.html','offline.html'].includes(path.basename(f))).map(file=>{
     const rel=path.relative(root,file).replaceAll(path.sep,'/');
     const html=fs.readFileSync(file,'utf8');
     return {
