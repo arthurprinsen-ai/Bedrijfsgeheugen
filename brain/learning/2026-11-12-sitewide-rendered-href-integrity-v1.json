@@ -1,0 +1,54 @@
+{
+  "fingerprint": "seo|rendered-nl-en-href-full-inventory-and-consumer-ack|20261112-v1",
+  "date": "2026-11-12",
+  "owner": "Powerhouse SEO Order Engine / BG169 and original website release lane",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "original_scheduler_only": true,
+  "incident": "Whole-site browser sweep checked NL/EN sitemap routes for visibility/CLS but not all rendered anchor href targets",
+  "root_cause": "Original technical SEO HTML scan covers root/blog source, not localized rendered EN DOM; sitewide browser pass lacked href parity",
+  "fix": [
+    "Run pure canonical href verifier within original full sitemap Playwright desktop sweep",
+    "Reject unsafe links, missing canonical targets and truncated link inventories instead of marking route green",
+    "Keep existing original ONE BRAIN/Powerhouse/Heartbeat source-to-consumer processed ACK"
+  ],
+  "regression": [
+    "tests/brain-sitewide-href-integrity-20261112.test.mjs",
+    "tools/site-shell/sitewide-href-integrity.mjs",
+    "tools/site-shell/standalone-visibility-check.mjs"
+  ],
+  "compiler": {
+    "failure_class": "BROKEN_INTERNAL_LINK",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-href-integrity-20261112.test.mjs"
+    ]
+  },
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-sitewide-rendered-href-integrity-v1.md",
+    "original_owner": "Powerhouse SEO Order Engine / BG169",
+    "new_parallel_executor": false
+  },
+  "prevention": [
+    "Every public sitemap route, including /en/, must enumerate rendered a[href] with no truncation",
+    "Same-origin page destinations not in final canonical sitemap fail closed except explicit nonindex functional routes",
+    "Producer accepted is not a consumer processed acknowledgment; keep original obligation OPEN until proven"
+  ],
+  "evidence": {
+    "source_files": [
+      "tools/controleer-technische-seo.mjs",
+      "tools/site-shell/standalone-visibility-check.mjs"
+    ],
+    "source_audit": "Existing root/blog source-only SEO gate vs full-site browser inventory without href validation",
+    "production_http_readback": "NOT_YET_PROVEN",
+    "original_consumer_processed_ack": "NOT_YET_PROVEN",
+    "observed_open_content_batch": 84,
+    "observed_overdue_content_batch": 69,
+    "observed_overdue_social_learning": 183
+  }
+}
