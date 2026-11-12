@@ -7,7 +7,7 @@ test('one ORIGINAL #175 archives every daily growth intelligence class in the ex
   for(const cls of [
     'dataforseo_provider_activity','seo_keyword_provider','external_intelligence',
     'website_page_cro','blog_publication','ai_content_recommendations','technical_seo_audit'
-  ]) assert.ok(sql.includes("'"+cls+"'"),'missing "+cls);
+  ]) assert.ok(sql.includes("'"+cls+"'"),'missing '+cls);
   assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_daily_source_archive_v1\(p_day date\)/);
   assert.match(sql,/INSERT INTO public\.powerhouse_growth_source_daily_v1/);
   assert.match(sql,/ON CONFLICT\(tenant_id,metric_date,source_key\) DO UPDATE/);
