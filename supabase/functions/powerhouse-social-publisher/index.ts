@@ -6,6 +6,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem} from '../_shared/mira-entrepreneur-caption.mjs';
 import {validateResolvedMiraCaptionForDelivery} from '../_shared/mira-frozen-winner-contract.mjs';
+import {ORIGINAL_HISTORICAL_READBACK_BATCH,originalHistoricalProviderReference,originalProviderReadbackResult,originalProviderReadbackErrorCode} from '../_shared/original-skipped-provider-readback-selection.mjs';
 
 // Protected-main promotion bootstrap: social provider-truth contract v1.
 
@@ -1264,6 +1265,85 @@ async function recoverExpiredLinkedInPublicationAuthority(db:any,runDate:string,
     channels:results};
 }
 
+
+// The original social publisher owns historical provider readback as part of
+// its EXISTING authenticated run/audit. At most 3 idempotent GETs per tick.
+// A failed provider read is neither deletion nor permission to post again.
+async function reconcileHistoricalSkippedProviderReferences(db:any){
+ const {data:rows,error}=await db.from('content_publication_obligations')
+  .select('tenant_id,channel,publication_date,status,external_id,evidence,updated_at')
+  .eq('tenant_id','canonical').eq('status','SKIPPED')
+  .not('external_id','is',null).order('publication_date',{ascending:true}).limit(80);
+ if(error)throw new Error('ORIGINAL_HISTORICAL_PROVIDER_READ_SOURCE_UNAVAILABLE:'+error.message);
+ const report:any[]=[];
+ for(const row of rows||[]){
+  if(report.length>=ORIGINAL_HISTORICAL_READBACK_BATCH)break;
+  const target=originalHistoricalProviderReference(row);
+  if(target.eligible!==true)continue;
+  const checkedAt=new Date().toISOString();
+  const claimEvidence={...(row.evidence||{}),
+   republish_forbidden:true,reconciliation_required:true,
+   reconciliation_provider_probe:{status:'CLAIMED_READ_ONLY',checked_at:checkedAt,kind:target.kind}};
+  // Source-row CAS makes two concurrent publisher audits one attempted read.
+  const {data:claimed,error:claimError}=await db.from('content_publication_obligations')
+   .update({evidence:claimEvidence,updated_at:checkedAt})
+   .eq('tenant_id','canonical').eq('channel',row.channel)
+   .eq('publication_date',row.publication_date).eq('status','SKIPPED')
+   .eq('external_id',target.ref).eq('updated_at',row.updated_at)
+   .select('channel,publication_date').maybeSingle();
+  if(claimError)throw new Error('ORIGINAL_PROVIDER_READ_CAS_CLAIM_FAILED:'+claimError.message);
+  if(!claimed)continue;
+  let result:any={verified:false,reason:'PROVIDER_READBACK_UNVERIFIED'};
+  try{
+   if(target.kind==='internal_reference'){
+    result={verified:false,reason:'INTERNAL_SOURCE_ID_REQUIRES_ORIGINAL_PROVIDER_LINKAGE'};
+   }else if(target.kind==='instagram'){
+    const ctx=await canonicalInstagramComposioContext(db);
+    const response=await composioExecuteArgsNoUser(ctx.apiKey,ctx.accountId,
+     'INSTAGRAM_GET_IG_MEDIA',{ig_media_id:target.ref,
+      fields:'id,username,permalink,timestamp,media_type,media_product_type'});
+    result=originalProviderReadbackResult(row,response?.data||response,
+      {expectedUsername:INSTAGRAM_CANONICAL_USERNAME});
+   }else{
+    const ctx=target.kind==='linkedin_personal'
+      ?await composioLinkedInContext(db)
+      :await composioLinkedInCompanyContext(db);
+    const response=await composioExecuteArgs(ctx.apiKey,ctx.accountId,ctx.userId,
+      'LINKEDIN_GET_POST_CONTENT',{post_id:target.ref});
+    const expectedAuthor=target.kind==='linkedin_personal'
+      ?'urn:li:person:'+ctx.personId:ctx.targetOrg;
+    result=originalProviderReadbackResult(row,response?.data||response,{expectedAuthor});
+   }
+  }catch(error){
+   result={verified:false,reason:originalProviderReadbackErrorCode(error)};
+  }
+  const finalEvidence={...claimEvidence,
+   reconciliation_provider_probe:{
+    status:result.verified===true?'EXACT_READBACK_PROVEN':'READBACK_UNVERIFIED',
+    checked_at:checkedAt,kind:target.kind,reason:result.reason,
+    exact_source_reference:target.ref,
+    provider_published_at:result.verified===true?result.provider_published_at:null,
+    exact_provider_readback_verified:result.verified===true,
+    source_state_updated:false,
+    original_consumer_fulfilled:false,
+    republish_forbidden:true}};
+  const completedAt=new Date().toISOString();
+  const {data:saved,error:saveError}=await db.from('content_publication_obligations')
+   .update({evidence:finalEvidence,updated_at:completedAt})
+   .eq('tenant_id','canonical').eq('channel',row.channel)
+   .eq('publication_date',row.publication_date).eq('status','SKIPPED')
+   .eq('external_id',target.ref).eq('updated_at',checkedAt)
+   .select('channel,publication_date').maybeSingle();
+  if(saveError)throw new Error('ORIGINAL_PROVIDER_READ_CAS_RESULT_FAILED:'+saveError.message);
+  report.push({channel:row.channel,publication_date:row.publication_date,
+    kind:target.kind,verification:result.reason,stored:!!saved,
+    provider_readback_verified:result.verified===true&&!!saved,
+    publication_created:false,source_status_changed:false});
+ }
+ return {contract:'original-historical-provider-readback-within-one-publisher-v1',
+  selected:report.length,results:report,no_new_scheduler:true,no_provider_create:true};
+}
+
 Deno.serve(async (req) => {
   try {
   if (req.method !== 'POST') return json({ ok: false, error: 'POST_ONLY' }, 405);
@@ -1292,6 +1372,7 @@ Deno.serve(async (req) => {
   let bufferCircuit = await readBufferCircuit(db);
   let containment_sweep:any = publishOnly ? { skipped:true, reason:'PUBLISH_ONLY' } : { skipped:false };
   let provider_reconciliation:any[] = [];
+  let historical_provider_readback:any={selected:0,reason:'PUBLISH_ONLY_NO_HISTORICAL_PROVIDER_READ'};
 
   if (!publishOnly) {
     // LinkedIn/Composio reconciliation is independent from Buffer health.
@@ -1301,6 +1382,7 @@ Deno.serve(async (req) => {
       !bufferCircuit.active && bufferToken ? bufferToken : null,
       runDate
     );
+    historical_provider_readback = await reconcileHistoricalSkippedProviderReferences(db);
 
     if (!bufferCircuit.active && bufferToken) {
       try {
@@ -1315,7 +1397,7 @@ Deno.serve(async (req) => {
       containment_sweep = { skipped:true, reason:bufferToken?'BUFFER_RATE_LIMIT_CIRCUIT_OPEN':'BUFFER_TOKEN_UNAVAILABLE_NON_BLOCKING', retry_at:bufferCircuit.retry_at };
     }
   }
-  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
+  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, historical_provider_readback, buffer_circuit:bufferCircuit });
 
   // A preventive preview can never revoke/issue/consume a publication capability.
   const authority_recovery=prepareOnly
@@ -1830,7 +1912,7 @@ Deno.serve(async (req) => {
     await recordObligation(db, runDate, row.channel, providerStatus === 'sent' ? 'PUBLISHED' : 'DISPATCHED', readback.id, evidence, providerStatus === 'sent' ? 'Verify public/outcome proof, then measure and learn.' : 'Await provider send, then reconcile.', null);
     results.push({ channel: row.channel, status: providerStatus, post_id: readback.id, provider_truth_verified: true });
   }
-  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, cockpit_autopilot, authority_recovery, results, buffer_circuit:bufferCircuit,
+  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, historical_provider_readback, cockpit_autopilot, authority_recovery, results, buffer_circuit:bufferCircuit,
     // Preparation is not an external side effect and never constitutes provider proof.
     preparation_only:prepareOnly, provider_create:prepareOnly?false:null,
     provider_truth_verified:prepareOnly?false:true, publication_authority: PUBLICATION_AUTHORITY });
