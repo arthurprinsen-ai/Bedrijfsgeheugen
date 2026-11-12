@@ -41,12 +41,12 @@
     "canary": "Original Portal V2 browser and production DOM/readback"
   },
   "prevention": [
-    "ONE_PRIMARY_ACTION_AND_FOUR_SECONDARY_CONTROLS",
-    "PROTECTED_CANONICAL_SEARCH",
-    "NO_CROSS_TENANT_STATUS",
-    "UNVERIFIED_REMAINS_UNVERIFIED",
-    "BRIAN_ACK_NOT_PROVIDER_OUTCOME",
-    "BROWSER_REAL_READBACK_BEFORE_LIVE"
+    "ONE_PRIMARY_ACTION_AND_FOUR_ORIGINAL_EVIDENCE_CONTROLS",
+    "SEARCH_ONLY_CANONICAL_PAGE_REGISTRY_AND_AUTHORIZED_TRUST_ROUTES",
+    "NO_TENANT_LEAK_OR_FAKE_GREEN",
+    "MOVE_HEAVY_VISUALIZATION_TO_EXPLICIT_DISCLOSURE",
+    "KEYBOARD_AND_MOBILE_REGRESSION",
+    "NO_NEW_EXTERNAL_WRITER_OR_SCHEDULER"
   ],
   "acceptance": {
     "governance_status": "PROTECTED_CANDIDATE",
@@ -72,5 +72,40 @@
       "actual customer mobile time-to-action comparison",
       "real authenticated multi-tenant usability acceptance"
     ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-ease-quick-control-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-ease-quick-control-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-ease-quick-control-20261112.test.mjs"
+    ]
+  },
+  "fix": {
+    "original_files": [
+      "portal-v2/entrepreneur-home.js",
+      "portal-v2/app.js",
+      "portal-v2/index.html",
+      "platform/agents/agent-team.mjs",
+      "AGENTS.md",
+      ".agents/skills/portal-living-interface/SKILL.md"
+    ],
+    "new_presentational_files": [
+      "portal-v2/daily-controls.js",
+      "portal-v2/daily-controls.css",
+      "portal-v2/quick-switcher.js"
+    ],
+    "source_authority": "Original authenticated Portal State → original EntrepreneurHomeModel/EntrepreneurJourneyModel & pendingHandoffs; original findPage and navigatePortal + page-shell protected trust check",
+    "no_new_state_persistence": true,
+    "no_new_provider_or_scheduler": true,
+    "no_fake_conversion": true,
+    "existing_heartbeat_integrity": true
+  },
+  "evidence": {
+    "required": "Protected original Required/CodeQL, exact main Netlify ready and independent Portal V2 DOM/readback plus original skill projection",
+    "limitations": "Not independently measured usability uplift, two-real-tenant user acceptance or real Powerhouse/Heartbeat commercial outcomes"
   }
 }
