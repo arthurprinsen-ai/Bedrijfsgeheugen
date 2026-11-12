@@ -58,5 +58,19 @@
       "Original Portal V2 DOM Readback",
       "Powerhouse Skill Projection"
     ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_HOME_NAVIGATION_FRICTION_AND_UNVERIFIED_CONTROL_STATUS",
+    "scope": "PORTAL_UX",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": {
+    "observed": "The full graphical journey dominated the single next action, while topbar search did not open canonical pages; users had to navigate many grouped pages",
+    "unknowns": [
+      "actual customer mobile time-to-action comparison",
+      "real authenticated multi-tenant usability acceptance"
+    ]
   }
 }
