@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "date": "2026-11-12",
+  "type": "ORIGINAL_WEBSITE_PORTAL_INSTALLABLE_APP_NATIVE_TASK_UX",
+  "fingerprint": "site-portal|ux-pwa|gripdock-single-app-responsive-original-loop|20261112-v1",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Original Website UX agent and Portal V2 authorized routing/ONE BRAIN; #4215 and #4198",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "root_cause": {
+    "observed": "The public website had a canonical mobile menu, but no cross-site instant-tasks app affordance or installable identity. Portal four-tab native task dock only appeared on phones at <=760px and disappeared on tablets between 761 and 1180px. Online-only functions lacked a safe non-confusing offline screen.",
+    "unknowns": [
+      "Observed real customer phone/tablet task time",
+      "iOS Safari and Android home-screen installation success per browser device",
+      "Commercial result and applied Heartbeat next-natural-run learning"
+    ]
+  },
+  "fix": {
+    "scope": "Single PWA manifest and two authentic app icons, strict public offline-only cache, original public sitewide Netlify CMS builder idempotent GripDock; original Portal V2 same four task routes responsive to tablet; original Website UX agent, Portal Living Interface skill, website-portal coherence skill and AGENTS.md; original source regression",
+    "no_new_business_runtime": true,
+    "no_new_data_or_api_writer": true,
+    "no_new_scheduler": true,
+    "no_fake_customer_proof": true,
+    "same_original_portal_route_authority": true,
+    "privacy_contract": "Service worker caches only public /offline.html, all authenticated/data/asset/provider requests network only"
+  },
+  "compiler": {
+    "failure_class": "SITE_PORTAL_MOBILE_TABLET_APP_UX_AND_PRIVATE_OFFLINE_CACHE_GAP",
+    "scope": "SITE_PORTAL_UX",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-grip-app-pwa-20261112.test.mjs",
+      "tests/site-shell-mobile-sitewide-recovery-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-grip-app-pwa-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-grip-app-pwa-20261112.test.mjs",
+      "portal-v2/tests/entrepreneur-focus-mobile.test.mjs"
+    ]
+  },
+  "prevention": [
+    "SINGLE_PUBLIC_GRIPDOCK_NOT_SECOND_MENU",
+    "REUSE_EXISTING_PORTAL_V2_NAV_AND_ALL_TENANT_GATES",
+    "PWA_MANIFEST_192_AND_512_REAL_ICONS",
+    "NON_PERSONAL_OFFLINE_ONLY_CACHE",
+    "NO_FAKE_CUSTOMER_KPI_OFFLINE_OR_ACTION_QUEUE",
+    "BUILD_INJECT_ONCE_FOR_PUBLIC_AND_EXCLUDE_PORTAL",
+    "EXACT_CURRENT_MAIN_NETLIFY_AND_INDEPENDENT_MOBILE_BROWSER_READBACK"
+  ],
+  "evidence": {
+    "required": "Original protected Required and CodeQL, exact current main Netlify Ready, original public website browser assurance, Portal V2 DOM production readback, agent/skill projection",
+    "limitations": "PWA build and DOM/installation metadata do not demonstrate device install uptake, real user task speed, revenue, Red Dot Award, or full Powerhouse/Heartbeat effects."
+  }
+}
