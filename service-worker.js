@@ -1,7 +1,7 @@
 /* Bedrijfsgeheugen PWA — connectivity fallback ONLY, no private/business cache. */
 'use strict';
 const VERSION='bg-offline-20261112-v1';
-const OFFLINE='/offline.html';
+const OFFLINE='/assets/offline.html';
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(VERSION).then(async cache=>{
   // The original website sets Vary:* on document responses; CacheStorage
