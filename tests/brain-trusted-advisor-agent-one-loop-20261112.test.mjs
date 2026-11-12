@@ -9,13 +9,17 @@ const policy=JSON.parse(read('brain/policies/trusted-advisor-assurance-v1.json')
 
 test('trusted advisor is a real registered existing-fabric specialist, not a second writer',()=>{
  const registry=createDefaultAgentRegistry();
- const advisor=registry.get('agent-trusted-advisor');
+ const advisor=registry.get('agent-governance-ai-act');
  assert.ok(advisor);
- assert.ok(advisor.capabilities.includes('advise'));
- assert.ok(advisor.tasks.includes('require-same-tenant-source-revision-obligation-id-idempotency-key-owner-and-consumer-processed-ack'));
- assert.ok(advisor.playbooks.includes('one-brain-same-owner-handoff-cas-retry-and-evidence-readback'));
+ assert.equal(registry.all().length,14,'No fifteenth standalone agent or second executor');
+ assert.equal(registry.get('agent-trusted-advisor'),null);
+ assert.ok(advisor.tasks.includes('act-as-trusted-advisor-specialist-within-original-fabric'));
+ assert.ok(advisor.tasks.includes('require-tenant-source-revision-obligation-owner-idempotency-and-consumer-processed-ack'));
+ assert.ok(advisor.playbooks.includes('trusted-advisor-original-one-loop-consumer-proof'));
  assert.ok(advisor.learningContracts.includes('outcome.v1'));
- assert.equal(registry.route({domains:['Trust','Content','UX'],capabilities:['advise']}).primaryAgentId,'agent-trusted-advisor');
+ assert.equal(registry.route({domains:['Trust','Governance'],capabilities:['govern']}).primaryAgentId,'agent-governance-ai-act');
+ assert.equal(policy.agent.id,'agent-governance-ai-act');
+ assert.equal(policy.agent.role,'trusted-advisor-specialist');
  assert.equal(policy.agent.new_scheduler,false);
  assert.equal(policy.agent.new_writer,false);
  assert.equal(policy.agent.may_publish,false);
