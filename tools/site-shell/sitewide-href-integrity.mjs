@@ -3,8 +3,12 @@
  * This is not a crawler, publisher or new scheduler. Missing routes/unsafe anchors
  * fail the existing protected gate; HTTP/redirect truth remains a separate live check.
  */
+import { PUBLIC_UTILITY_ROUTES } from './contracts.mjs';
+
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
-const NON_INDEXED_ROUTE = new Set(['/portal-v2','/klantportaal','/inloggen','/aanmelden','/offerte','/bedankt']);
+const NON_INDEXED_ROUTE = new Set([...PUBLIC_UTILITY_ROUTES,'/portal-v2','/klantportaal','/aanmelden','/offerte','/bedankt',
+  // Verified existing checkout is noindex and package adviser is a functional conversion journey.
+  '/afsluiten','/pakketadvies']);
 const NON_INDEXED_PREFIX = ['/api/','/.netlify/','/assets/','/fonts/','/images/','/img/','/portal-v2/'];
 const PUBLIC_ASSET = /\.(?:pdf|png|jpe?g|webp|gif|avif|svg|css|m?js|json|xml|txt|zip|ico|woff2?|ttf|eot|mp4|webm)$/i;
 
