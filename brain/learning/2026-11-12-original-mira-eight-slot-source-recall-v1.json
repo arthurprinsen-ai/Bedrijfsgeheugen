@@ -39,5 +39,13 @@
       "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
       "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
     ]
-  }
+  },
+  "root_cause": "The original authorized Mira radar ran at 20:02 UTC and returned a source-shortage state despite transport HTTP200. Seven source-backed entrepreneur-scene candidates exist, but all seven URL/hash identities were already used in the canonical prior 90-day lineage, leaving zero original unique daily winners. Source search recall and repeated provider results, not missing cron or the production BRAIN flight, block the owner.",
+  "prevention_rule": "Vary only the lexical source queries on alternate dates within the original approved twelve business problems and original six business/two personal slots; reject pre-used 90d source URLs/hashes and 3d reused topics. Recheck actual next source publication time/URL and original winner; do not create provider side effects or mark live from this code test.",
+  "evidence": [
+    "Supabase source 2026-11-12 original powerhouse_mira_problem_signals_v1: 373 rows, 125 eligible, 34 recently eligible, 7 approved PH-P-scenes and 0 surviving original 90-day hash/URL dedupe.",
+    "Original cron.job #120 is active, schedule 2 20 * * * and the 2026-11-11T20:02:33Z POST reached original Mira Edge (HTTP 200); original materializer answered NO_FRESH_PUBLIC_PROBLEM_SIGNAL for 2026-11-12.",
+    "Original BRAIN fingerprint powerhouse|mira|no-new-unique-source-backed-daily-winner|20261112-v1 VALIDATED v2; source/provider publication still unverified.",
+    "Tests: tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs and tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs; no ninth query or new scheduled publisher."
+  ]
 }
