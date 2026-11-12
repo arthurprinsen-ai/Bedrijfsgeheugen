@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|social-learning|unverified-snapshot-allowed-in-comparison-cohort|20261112-v1",
+  "obligation_id": "social-cohort-source-proof-20261112",
+  "status": "CANDIDATE",
+  "owner": "original social-learning-store / existing social-learning-evaluate; issue #4198",
+  "root_cause": "Existing original social-learning-store.get_cohort chose the nearest timestamp for a comparison post without data_quality, immutable provider-source event, external post identity, numeric measured field or tenant-scoped source revalidation. The target snapshot was validated, but a partial-only or empty cohort could inflate sample size, selected effect and confidence. Code-confirmed structural gap; no real causal uplift inferred.",
+  "evidence": [
+    "Original main source supabase/functions/social-learning-store/index.ts get_cohort prior nearest-snapshot selection",
+    "Original main source supabase/functions/_shared/social-learning-window-ack.mjs existing provider qualification",
+    "Production 2026-11-12: 181 OPEN social_learning_obligations, 14 MEASUREMENT_VERIFIED; 439 OPEN BRAIN CONTENT_HANDOFF; source audit found 0 exact event candidates among 178 open 24/48/72h windows with the inspected date/identity/metric constraints",
+    "LinkedIn personal Composio source 2026-11-12 OBSERVED_PARTIAL_SCOPE reaction-only snapshots; company Windsor exact-source aged 31.12h and 55.13h outside 24/48h +/-6h windows"
+  ],
+  "impact": "A comparison cohort can be contaminated by partial-source or unrelated observed metrics and generate misleading descriptive effect estimates; does not explain every historical missing window.",
+  "fix": "Reuse isSourceQualifiedSocialSnapshot to select cohort only when exact tenant/post, provider external ID in immutable source event, actual observed_at in original 24/48/72h +/-6h interval and finite nonnegative metric are present. No source backfill, synthetic metric, extra collector or modified threshold.",
+  "prevention_rule": "Before any cohort-based social learning, prove source quality, tenant/post/provider event identity and exact actual 24/48/72h measurement interval on every member, not just the target; fail closed and keep unknown measurements uncounted.",
+  "outcome": "Original-owner protected code candidate only. Not yet production-proven, no closures, provider results, causality or revenue claimed.",
+  "compiler": {
+    "failure_class": "DATA_QUALITY",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-obligation-evidence-ack-20261110.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ]
+}
