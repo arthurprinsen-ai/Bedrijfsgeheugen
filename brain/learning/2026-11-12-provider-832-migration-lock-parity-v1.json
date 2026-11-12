@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-12",
+  "status": "CANDIDATE_PROTECTED_DELIVERY_READBACK_REQUIRED",
+  "parent_issue": 4198,
+  "fingerprint": "supabase|migration-history|applied-provider-832-revision-omitted-from-main-lock|20261112-v1",
+  "obligation_id": "supabase|migration-history|provider-832-lock-parity|20261112-v1",
+  "owner": "original Supabase migration-history writer / protected GitHub source owner",
+  "root_cause": "Original live migration 20261112184500 was already applied by Supabase production and its SQL was merged to main, but immutable git source lock still listed 831 while provider ledger had 832. This blocks protected Required for concurrent SEO original PR #5659 even though candidate changes contain no SQL.",
+  "impact": "Protected candidate fails when main contains native applied SQL absent from original source lock. Do not bypass CI or incorrectly treat provider-applied SQL as unapplied.",
+  "fix": "Read exact provider-applied version/name and original Git source SQL; append precisely the 832nd version/name to source migration lock and preserve original 831 identities, with no DDL execution or duplicate scheduler.",
+  "prevention": "Original migration-authoring and deploy must have exact protected release → applied provider identity → committed source lock parity → dependent PR admission; on mismatch enqueue original owner source-lock repair and do not weaken security checks.",
+  "evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 832,
+    "provider_latest_version": "20261112184500",
+    "provider_latest_name": "original_daily_post_publication_metric_ack_v1",
+    "provider_readback_date": "2026-11-12",
+    "source_lock_before": 831,
+    "source_lock_after": 832,
+    "source_sql": "supabase/migrations/20261112184500_original_daily_post_publication_metric_ack_v1.sql",
+    "source_sql_blob_sha": "65d17b46f20448d1c41add348df8d5b723861994",
+    "blocked_pr": 5659,
+    "production_sql_replayed": false,
+    "source_only": true,
+    "source_observed_at": "2026-11-12T16:05:18.488Z"
+  },
+  "no_new_executor": true,
+  "no_sql_write": true,
+  "no_provider_spoof": true,
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "repeat_count": 2,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ]
+  },
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-provider-832-migration-lock.md",
+    "original_owner": "Supabase migration-history writer",
+    "new_parallel_executor": false
+  }
+}
