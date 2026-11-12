@@ -16,7 +16,7 @@ export function mountPortalAppInstall({documentRef=globalThis.document,windowRef
  button.setAttribute('aria-describedby',status.id);
  links.append(button);links.after(status);
  let installEvent=null;
- const isStandalone=()=>Boolean(windowRef.matchMedia?.('(display-mode: standalone)').matches||windowRef.navigator?.standalone===true);
+ const isStandalone=()=>Boolean(windowRef.matchMedia?.('(display-mode: standalone)')?.matches||windowRef.navigator?.standalone===true);
  const sync=()=>{button.hidden=isStandalone();if(button.hidden)status.hidden=true;};
  const before=event=>{event.preventDefault();installEvent=event;sync();};
  const installed=()=>{installEvent=null;button.hidden=true;status.hidden=true;};
