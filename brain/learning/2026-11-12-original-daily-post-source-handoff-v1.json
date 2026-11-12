@@ -1,0 +1,70 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "parent_issue": 4198,
+  "fingerprint": "original-powerhouse|daily-post-publication-and-metric-not-joined-to-brain-source-manifest|20261112-v1",
+  "obligation_id": "original-daily-post-source-to-brain-heartbeat-v1-20261112",
+  "owner": "original #175 growth-source producer / #140 ONE BRAIN-Heartbeat consumer",
+  "failure_class": "DATA_INTEGRITY",
+  "root_cause": "Original daily source manifest covered SEO, website, DataForSEO, external intelligence, blogs and AI, but omitted independently verifiable social post publication/readback and source-linked provider analytics as a separate day-partitioned source. Personal original posts are tenant canonical whereas company original posts are tenant bedrijfsgeheugen. Filtering to one tenant silently drops half the posts.",
+  "impact": "Original BRAIN could accept a daily source SHA and produce CRO advice while missing personal post publication state, Instagram missing/failed proof, or post metric coverage, and silently treating successful publisher/connector activity as proof of complete engagement data.",
+  "prevention": "Extend existing original #175 daily source archive to eight classes including original posts; restrict to exact first-party original canonical/bedrijfsgeheugen owners and verified post/provider receipt. Preserve original live post and provider metric separate; numeric provider evidence accepted only when independently linked post_id, source_event_id, observed_at, provider-linked quality. Missing reach is missing, not zero. Include exact source revision in BRAIN SHA; existing original #140 independently reads same source, records post coverage and safe experiment candidate while leaving real experiment/outcome OPEN. Heartbeat already reads original #140 consumer event. No parallel publisher, schedule, OAuth bypass or backdating.",
+  "evidence": {
+    "original_provider_period": "2026-11-11 to 2026-11-12",
+    "daily_social_original_identity": {
+      "canonical": "linkedin_personal",
+      "bedrijfsgeheugen": "linkedin_company"
+    },
+    "posts_2026_11_12": {
+      "registered_personal": 1,
+      "registered_company": 1,
+      "original_published_live_proven": 2,
+      "instagram_status": "PLANNED",
+      "numeric_provider_linked_measured_posts": 0
+    },
+    "posts_2026_11_11": {
+      "registered_personal": 1,
+      "registered_company": 1,
+      "original_published_live_proven": 2,
+      "instagram_status": "FAILED",
+      "posts_with_numeric_provider_metrics": 1
+    },
+    "original_website_2026_11_12": {
+      "pageviews": 17,
+      "cta_clicks": 0,
+      "leads": 0
+    },
+    "producer_original": 175,
+    "consumer_original": 140,
+    "provider_metrics_do_not_imply_historical_window": true
+  },
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "ORIGINAL_SOCIAL_SOURCE_TO_BRAIN",
+    "repeat_count": 2,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-daily-post-source-handoff-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-daily-post-source-handoff-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-daily-post-source-handoff-20261112.test.mjs"
+    ]
+  },
+  "regression": "tests/brain-original-daily-post-source-handoff-20261112.test.mjs",
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders"
+  ],
+  "policy": {
+    "original_executor_only": true,
+    "full_production_readback_required": true,
+    "source_quality_not_fabricated": true,
+    "never_close_missing_experiments": true
+  }
+}
