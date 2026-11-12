@@ -33,3 +33,6 @@ Deze wijziging gebruikt dezelfde bestaande site/portal/CMS-code, geen nieuwe exe
 - Effectmeting per consent-geschikt 7/14/28-daags cohort: contact- en scanvoltooiing, klachten over misleidende beloften, kwalitatieve reacties, conversie. Geen vertrouwenstoename claimen zonder echte uitkomsten.
 
 Status bij het aanmaken van dit document: CODE-CANDIDATE. Geen claim dat CI, live deploy, ontdubbelde klantstate of klantvertrouwen is bewezen. Originele eigenaar en gedeelde incidentlineage moeten open blijven tot onafhankelijk bewijs.
+
+## Delivery-hygiene incident: eerste toelating
+Eerste PR #5678 Required-run `43282763517` sloot terecht af met `PR_MACHINE_METADATA_INVALID` doordat bij het openen de verplichte `Obligation-ID`, `Delivery-Lane`, `Candidate-Type` en immutable `Base-SHA` nog niet in de PR-body stonden. Oorzaak: onvolledig broncontract bij PR-opening. Herstel: dezelfde PR-body volgens de originele canonieke metadata aangevuld; een nieuwe exact-head run moet dat opnieuw onafhankelijk controleren. Leerregel: alle verplichte machinevelden en exact `Change-Scope` vóór PR-opening vastleggen. Een oude rode run wordt niet hernoemd naar groen.
