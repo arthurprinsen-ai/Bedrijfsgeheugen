@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 192 192" role="img" aria-labelledby="title desc">
+<title id="title">Bedrijfsgeheugen app</title><desc id="desc">Drie verbonden lichtpunten als bedrijfsgeheugen-symbool</desc>
+<rect width="192" height="192" rx="42" fill="#112e39"/>
+<path d="M57 56L105 96L57 138" fill="none" stroke="#71d2bf" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="57" cy="56" r="17" fill="#c2f5df"/>
+<circle cx="105" cy="96" r="17" fill="#ffe88a"/>
+<circle cx="57" cy="138" r="17" fill="#c2f5df"/>
+<circle cx="142" cy="96" r="6" fill="#8db6af"/>
+</svg>
