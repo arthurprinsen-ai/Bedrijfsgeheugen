@@ -32,7 +32,7 @@ test('manifest historical acceptance: two installs share real branding, stay in 
 
 test('private-data safety: only public static offline document cached; network only for all customer navigations',()=>{
  const worker=read('assets/app-sw.js');
- assert.match(worker,/const OFFLINE_URL='\/app-offline.html'/);
+ assert.ok(worker.includes("const OFFLINE_URL='/assets/app-offline.html'"));
  assert.match(worker,/cache\.add\(OFFLINE_URL\)/);
  assert.match(worker,/request\.mode!=='navigate'/);
  assert.match(worker,/url\.origin!==self\.location\.origin/);
@@ -48,14 +48,14 @@ test('private-data safety: only public static offline document cached; network o
  const website=delivery.lanes.find(lane=>lane.id==='website');
  assert.ok(website.paths.includes('assets/'),'original classified public assets lane must exist');
  const deployment=read('netlify.toml');
- assert.match(deployment,/for = "\\/assets\\/app-sw\\.js"/);
- assert.match(deployment,/Service-Worker-Allowed = "\\/"/);
+ assert.ok(deployment.includes('for = "/assets/app-sw.js"'));
+ assert.ok(deployment.includes('Service-Worker-Allowed = "/"'));
 });
 
 test('public website and private portal opt into their own manifest with real full HTTPS hrefs',()=>{
  const home=read('index.html'),entry=read('portal-v2/index.html');
  assert.match(home,/rel="manifest" href="https:\/\/www\.bedrijfsgeheugen\.nl\/assets\/app\.webmanifest"/);
- assert.match(entry,/rel="manifest" href="https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\/assets\/app\.webmanifest"/);
+ assert.ok(entry.includes('rel="manifest" href="https://www.bedrijfsgeheugen.nl/portal-v2/app.webmanifest"'));
  for(const [name,html] of [['home',home],['portal',entry]]){
   assert.match(html,/viewport-fit=cover/,name);
   assert.match(html,/apple-mobile-web-app-capable/,name);
