@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|trust|global-site-shell-unsupported-sla|20261112-v2",
+  "date": "2026-11-12",
+  "owner": "original website/site-shell/CMS owner",
+  "obligation_id": "website|trusted-advisor-canonical-shell-customer-truth|20261112-v2",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "production_proven": false,
+  "customer_trust_uplift_verified": false,
+  "root_cause": "The canonical global website shell reprojected stale universal In twee weken draaiend and Vaste prijs, geen uurtje-factuurtje from over-ons.html and tools/site-shell/components.mjs, while tools/controleer-site-ui.mjs required these exact unproven promises. Editing four page sources could not survive the original Netlify site-shell build.",
+  "prevention_rule": "Canonical global header must be customer-first and proof-bound, not a blanket timeframe or pricing guarantee. Original canonical source, fallback generator, sitewide verifier and locale translation must use the same evidence-safe phrases; release only with full original site-shell browser and protected CI proof.",
+  "code_correction": [
+    "Change canonical over-ons.html banner to Duidelijke afspraken vooraf and Klein beginnen, resultaat toetsen.",
+    "Change original TRUST_BAR_HTML fallback and original controleer-site-ui TRUST verifier to identical phrases.",
+    "Update existing English navigation translations, and extend existing trustbar regression suite."
+  ],
+  "regression_contract": [
+    "tests/site-shell-trustbar-css-only-repair.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/site-shell-trustbar-css-only-repair.test.mjs"
+    ],
+    "expected": "Original canonical header, generator trustbar, gate and English translations agree; no universal two-week or fixed-pricing claim; browser readback required separately."
+  },
+  "compiler": {
+    "failure_class": "TRUSTED_ADVISOR_CANONICAL_SHELL_CLAIM_DRIFT",
+    "scope": "protected_ci",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "original_sources": [
+      "over-ons.html",
+      "tools/site-shell/components.mjs",
+      "tools/controleer-site-ui.mjs",
+      "assets/js/i18n.js"
+    ],
+    "live_baseline": "PR #5678 main 6f0497afb07051cf06f62f38efdea59cf7507bf2 / Netlify deploy 6af6201a2077ebe5d94f7d20 READY / public contact and frisse-blik showed old universal promise",
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5284#issuecomment-6835147531",
+    "independent_new_production_readback": "NOT_YET_PROVEN",
+    "measured_customer_trust_outcome": "UNKNOWN"
+  },
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-site-shell-claim-drift-v2.md",
+  "no_second_writer": true,
+  "no_second_scheduler": true,
+  "evidence_due": [
+    "Original canonical finalizer and 100% public NL/EN/blog route audit",
+    "Protected Required, BRAIN and CodeQL exact-head checks",
+    "Netlify exact production SHA",
+    "Independent live contact, frisse-blik, zelfscan, homepage and blog readbacks",
+    "Original ONE BRAIN processed consumer ACK separately when customer tenant advice actually flows"
+  ]
+}
