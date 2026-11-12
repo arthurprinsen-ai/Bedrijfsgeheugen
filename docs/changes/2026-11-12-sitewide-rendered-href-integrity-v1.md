@@ -19,3 +19,6 @@ Regressie `tests/brain-sitewide-href-integrity-20261112.test.mjs` eist syntactis
 Gegevensstand 12 november: Supabase originele batch had 84 open contentoverdrachten, 69 te laat en 183 social-learning te laat. Dit zijn overlappende categorieën en geen nieuw gesloten uitkomsten. Groei uit Google/ChatGPT/Claude moet met echte niet-bot-referrals, Google Search Console en bewezen provider-citaties/bronmetingen worden bepaald, nooit uit code en bothits afgeleid.
 
 **Status:** CANDIDATE, geen productieclaim voor deze nieuwe href-uitbreiding of alle downstream handoffs.
+
+## Correctie op geobserveerde functionele routes
+Tijdens bronreplay bleken de juridische routes `/gebruiksvoorwaarden`, `/cookiebeleid`, `/systeemstatus` al onderdeel van de bestaande `PUBLIC_UTILITY_ROUTES`; daarnaast is `/afsluiten` aantoonbaar `noindex,nofollow` en wordt `/pakketadvies` gebruikt als functionele conversiebestemming. De href-gate hergebruikt de bestaande utility-inventaris en maakt alleen voor beide gecontroleerde conversieroutes een expliciete uitzondering. Dit voorkomt onterechte `INTERNAL_TARGET_NOT_IN_FINAL_SITEMAP` zonder onbekende bestemmingen stilzwijgend goed te keuren. Live HTTP 200, redirects, mobiele interactie en conversietracking moeten alsnog afzonderlijk worden bewezen. Test bevat beide functies en de juridische routevoorbeelden.
