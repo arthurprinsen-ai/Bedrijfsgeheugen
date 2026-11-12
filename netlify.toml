@@ -267,6 +267,27 @@
   [headers.values]
     Cache-Control = "public, max-age=3600, must-revalidate"
 
+# Exact static app resources: one browser-only worker with explicit original
+# whole-origin scope. Navigation/customer/API responses are NEVER cached.
+[[headers]]
+  for = "/assets/app-sw.js"
+  [headers.values]
+    Content-Type = "text/javascript; charset=utf-8"
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"
+
+[[headers]]
+  for = "/assets/app.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"
+    Cache-Control = "public, max-age=300, must-revalidate"
+
+[[headers]]
+  for = "/portal-v2/app.webmanifest"
+  [headers.values]
+    Content-Type = "application/manifest+json; charset=utf-8"
+    Cache-Control = "public, max-age=300, must-revalidate"
+
 [[headers]]
   for = "/intern/powerhouse-kosten/*"
   [headers.values]
