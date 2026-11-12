@@ -26,5 +26,18 @@
     "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
   ],
   "acceptance": "Protected Required/BRAIN/CodeQL; original merge; active exact Edge dependency and next natural original cron; newly dated independent source then immutable winner->video gate >=0.940->Meta provider ID/GET->metrics/learning; no false green.",
-  "proven_fix": null
+  "proven_fix": null,
+  "compiler": {
+    "failure_class": "SOURCE_SUPPLY",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
+    ]
+  }
 }
