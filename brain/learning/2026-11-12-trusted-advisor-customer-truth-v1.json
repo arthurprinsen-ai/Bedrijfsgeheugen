@@ -24,7 +24,11 @@
       "tests/brain-trusted-advisor-assurance-v1.test.mjs",
       "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs"
     ],
-    "expected": "Missing healthy remains insufficient_evidence; generic ok cannot become verified; 12-question and instant-result copy consistent across four main routes"
+    "expected": "Missing healthy remains insufficient_evidence; generic ok cannot become verified; 12-question and instant-result copy consistent across four main routes",
+    "source_scenarios": [
+      "legacy portal source with missing healthy metadata and processing status ok",
+      "legacy 7-versus-12 question and automatic email contradictory website copy"
+    ]
   },
   "compiler": {
     "failure_class": "UNVERIFIED_TRUST_STATUS_AND_PUBLIC_COPY_CONTRADICTION",
