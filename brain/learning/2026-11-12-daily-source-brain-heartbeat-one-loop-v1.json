@@ -61,8 +61,7 @@
   },
   "test": "tests/brain-original-daily-source-brain-heartbeat-one-loop-20261112.test.mjs",
   "skill_targets": [
-    "powerhouse-seo-conversion-orders",
-    "powerhouse-daily-data-one-loop"
+    "powerhouse-seo-conversion-orders"
   ],
   "governance": {
     "protected_required": true,
