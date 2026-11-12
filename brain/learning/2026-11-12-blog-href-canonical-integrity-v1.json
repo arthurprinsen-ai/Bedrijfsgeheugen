@@ -22,5 +22,24 @@
     "public blog HTML and sitemap plus live HTTP internal links",
     "original ONE BRAIN/Heartbeat/Portal consumer ACK"
   ],
-  "no_parallel_scheduler": true
+  "no_parallel_scheduler": true,
+  "compiler": {
+    "failure_class": "BROKEN_INTERNAL_LINK",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-href-integrity-20261112.test.mjs"
+    ]
+  },
+  "ci_incident": {
+    "run_id": 43206343814,
+    "reason": "LEARNING_FAILURE_CLASS_REQUIRED",
+    "root_cause": "New learning record initially lacked mandatory canonicalization compiler/evaluation fields",
+    "recovery": "Added machine-enforceable CI classifier and required behavioral historical replay; exact-head Required retest pending",
+    "state": "SOURCE_FIXED_RETEST_PENDING"
+  }
 }
