@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|provider-827-lock-parity|20261112-v1",
+  "obligation_id": "supabase|migration-history|provider-827-lock-parity|20261112-v1",
+  "title": "Applied production migration must have an exact source-and-provider-backed lock entry before dependent protected releases",
+  "status": "CANDIDATE",
+  "root_cause": "Original #5646 migration 20261112131500 was applied in Supabase and source file was merged, but supabase/migration-history.lock.json still reflected 826 instead of 827 applied identities. Original protected preflight rejected unrelated app PR #5644 on provider/source count mismatch.",
+  "impact": "Protected downstream releases were blocked; no evidence that production database migration was missing.",
+  "fix": "Append only the exact provider-applied version/name read from Supabase production to existing original migration-history.lock.json; preserve all previous 826 identities and history; do not replay DDL, create a new executor, change SQL, bypass guards or assert commercial outcomes.",
+  "prevention_rule": "When an original Supabase migration is provider-applied and source-merges, update and independently verify the exact original provider-backed migration lock before dependent PR tests; report and recover drift by original migration owner.",
+  "regression_contract": "tests/brain-supabase-migration-lock-provider-20261029.test.mjs; tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs; tests/supabase-migration-history-integrity.test.mjs",
+  "tests": [
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+    "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "evidence": [
+    "Provider-readback at 2026-11-12T13:18:08.784Z: public supabase_migrations.schema_migrations has 827 records, exact version/name 20261112131500/original_no_publish_provider_side_effect_fence_v1 exists once",
+    "Protected app PR #5644 Required workflow #43225233943 failed on expected 827 but locked 826",
+    "Existing source supabase/migrations/20261112131500_original_no_publish_provider_side_effect_fence_v1.sql present and independently reviewed."
+  ],
+  "outcome": "Source lock repair candidate pending protected Required/CodeQL and exact provider parity readback; independent app UX production release and original commercial consumer ACK remain separately due.",
+  "compiler": {
+    "failure_class": "PROVIDER_SOURCE_PARITY",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"
+    ]
+  }
+}
