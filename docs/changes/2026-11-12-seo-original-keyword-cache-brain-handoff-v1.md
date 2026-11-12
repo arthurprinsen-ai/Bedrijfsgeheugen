@@ -21,3 +21,7 @@ Fingerprint: `seo|original-cache-canonical-owner-and-brain-tenant-handshake|2026
 Protected Required, BRAIN, CodeQL, migration authority/lock parity, original Supabase GitHub provider deployment, independent Edge and native DB function readback, original scheduler receipt, original consumer processed ACK, actual 7/14/28-day acquisition/CTA/lead attribution. A PR or cache projection does not meet the finished condition. Historical data cannot create today's new source events, new orders, or rankings.
 
 Regression `tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs`. Original learning `brain/learning/2026-11-12-seo-original-keyword-cache-brain-handoff-v1.json`.
+
+
+## Originele live DataForSEO-provider: geen schijngroen
+De bestaande producer `powerhouse-dataforseo-intelligence` leverde op 10, 11 en 12 november geen nieuwe `ranked_keywords`-items op. Het originele gezondheidssignaal was desondanks `ok`. De aangepaste code behoudt de producer-run, sluit de cron niet af en behoudt de originele providerwaarneming, maar levert `source_data_available=false`, `NO_NEW_PROVIDER_KEYWORDS`, HTTP207 en `onvolledig` wanneer `stored=0`. Dit claimt niet dat Bedrijfsgeheugen geen organische rankings heeft, alleen dat deze ingangsbron niets nieuws heeft bewezen. Regressie `tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs`.
