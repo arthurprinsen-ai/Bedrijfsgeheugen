@@ -35,13 +35,19 @@
     "historical_replay": [
       "tests/brain-trusted-advisor-netlify-heartbeat-20261112.test.mjs"
     ],
-    "expected": "Original selective ignore remains intact; only explicit netlify.toml config change requires production, and verifier/source claims agree"
+    "expected": "Original selective ignore remains intact; only explicit netlify.toml config change requires production, and verifier/source claims agree",
+    "canary": [
+      "tests/brain-trusted-advisor-netlify-heartbeat-20261112.test.mjs"
+    ]
   },
   "evidence": {
     "prior_source_only_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5701",
     "provider_readback": "Netlify production deploy 6af64350b459c7cc43e89005 confirmed skip",
     "source_policy": "tools/ci/netlify-ignore-build.mjs",
-    "required_outcome": "protected exact-head CI + Netlify ready exact SHA + original canonical brand shell and production release readback PASS, with customer effects separately pending"
+    "required_outcome": "protected exact-head CI + Netlify ready exact SHA + original canonical brand shell and production release readback PASS, with customer effects separately pending",
+    "first_failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43324862050",
+    "first_failed_reason": "LEARNING_EVALUATION_TESTS_REQUIRED:canary",
+    "repair": "Original BRAIN test required for both historical_replay and canary; no gate relaxation"
   },
   "activity_ledger": "docs/development-ledger-events/2026-11-12-trust-verifier-netlify-promotion-heartbeat-v1.md"
 }
