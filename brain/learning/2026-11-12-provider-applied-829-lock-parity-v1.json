@@ -20,7 +20,8 @@
     "native_sql_matches_repository_exact_ignoring_format_whitespace": true,
     "provider_captured_at": "2026-11-12 14:28:29.1671+00",
     "original_apply_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5651",
-    "blocked_follow_up": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5652"
+    "blocked_follow_up": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5652",
+    "protected_learning_validation": "Security-sensitive learning requires real executable historical replay, shadow and canary regression paths under original trusted CI; no change to failure class or security sensitivity."
   },
   "compiler": {
     "failure_class": "DATA_INTEGRITY",
@@ -31,6 +32,12 @@
   },
   "evaluation": {
     "historical_replay": [
+      "tests/brain-provider-applied-829-lock-parity-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-provider-applied-829-lock-parity-20261112.test.mjs"
+    ],
+    "canary": [
       "tests/brain-provider-applied-829-lock-parity-20261112.test.mjs"
     ]
   },
