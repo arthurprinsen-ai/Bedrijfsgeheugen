@@ -165,6 +165,8 @@ async function loadPublicRoutes() {
 const routes = await loadPublicRoutes();
 const browser = await chromium.launch({ headless: true });
 const failures = [];
+let hrefsChecked = 0;
+let hrefRoutesChecked = 0;
 try {
   const runViewport = async viewport => {
     const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
@@ -279,6 +281,8 @@ try {
                 const hrefAudit=auditRenderedHrefs({
                   route, hrefs:state.hrefs, sitemapRoutes:routes, expectedCount:state.hrefCount
                 });
+                hrefRoutesChecked += 1;
+                hrefsChecked += hrefAudit.hrefsChecked;
                 for (const finding of hrefAudit.failures) failures.push(`${route} desktop href: ${finding}`);
               }
               if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; layout-shift sources=${JSON.stringify(state.clsSources || []).slice(0, 1800)}; attribution=${formatClsFailure(route, viewport.name, state.cls, state.layoutShifts) || 'UNAVAILABLE'}`);
@@ -303,6 +307,7 @@ try {
   await closeBounded('browser', () => browser.close());
 }
 
+if (hrefRoutesChecked !== routes.length) failures.push(`HREF_AUDIT_ROUTE_COVERAGE_INCOMPLETE: ${hrefRoutesChecked}/${routes.length}`);
 if (failures.length) {
   const message = `Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`;
   if (cleanupTimedOut) {
@@ -312,4 +317,5 @@ if (failures.length) {
   throw new Error(message);
 }
 console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks with route concurrency ${routeConcurrency} and viewport concurrency ${viewportConcurrency} within bounded budget ${totalBudgetMs}ms`);
+console.log(`Sitewide canonical href audit: hrefsChecked=${hrefsChecked} routeCoverage=${hrefRoutesChecked}/${routes.length}, including generated NL/EN DOM; independent live external HTTP/redirect and consumer ACK remain separate`);
 if (cleanupTimedOut) process.exit(0);
