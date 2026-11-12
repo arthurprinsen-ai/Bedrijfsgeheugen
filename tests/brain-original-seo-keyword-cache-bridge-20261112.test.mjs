@@ -104,3 +104,16 @@ test('original direct DataForSEO producer logs an empty response without falsely
  assert.ok(source.includes("p_source_key:'dataforseo-intelligence'"));
  assert.ok(source.includes('no_data_returned:items.length===0'));
 });
+
+test('daily Brain archives recent source truth, never claims an older provider cache was retrieved today',()=>{
+ const source=readFileSync(new URL('../supabase/migrations/20261112203000_original_seo_keyword_tenant_alignment_v1.sql',import.meta.url),'utf8');
+ assert.ok(source.includes("v_end-interval ''7 days''"));
+ assert.ok(source.includes("CACHED_PROVIDER_KEYWORDS_WITHIN_7D"));
+ assert.ok(source.includes("max(k.observed_at)>=v_start"));
+ assert.ok(source.includes("k.observed_at::text"));
+ assert.ok(source.includes("k.search_volume::text"));
+ assert.ok(source.includes("k.canonical_owner"));
+ assert.ok(source.includes("k.locale||'':''||k.market"));
+ assert.ok(source.includes("KEYWORD_TENANT_SOURCE_READBACK_FAILED"));
+ assert.doesNotMatch(source,/cron\.schedule|CREATE TABLE|DROP TABLE|DISABLE TRIGGER/);
+});
