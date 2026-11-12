@@ -3328,8 +3328,12 @@
     {
       "version": "20261112184500",
       "name": "original_daily_post_publication_metric_ack_v1"
+    },
+    {
+      "version": "20261112194500",
+      "name": "original_growth_source_revision_identity_fix_v1"
     }
   ],
-  "captured_at": "2026-11-12 16:04:04.56141+00",
+  "captured_at": "2026-11-12T16:22:09.982Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

@@ -1,0 +1,5 @@
+# Original native Supabase provider-applied source history — 833/833
+
+At 2026-11-12T16:22:09.982905Z, original production `supabase_migrations.schema_migrations` independently confirms 833 actually applied migrations and exact one `20261112194500/original_growth_source_revision_identity_fix_v1` from merged original protected #5667. GitHub `supabase/migration-history.lock.json` still had 832. Same original migration writer appends **only** this exact provider version/name to source lock while preserving historical 832 entries; no native history modifications, DDL replay, second worker, scheduler or false customer/marketing action.
+
+This is original provider→source lock PROCESSED handoff remediation and recurring-prevention rule in original Powerhouse Continuity skill. Acceptance: protected Required, CodeQL and actual Supabase Preview, current main, independent exact 833/833 readback, original Source→ONE BRAIN→Heartbeat current same revision, next naturally scheduled execution. The actual original #5667 source archive/consumer/Heartbeat code is unchanged. All missing GA4/GSC/keyword/audit, user CRO experiment and revenue proof remain separately OPEN.
