@@ -1,0 +1,42 @@
+{
+  "id": "portal-tenant-refresh-fence-20261112-v1",
+  "failure_fingerprints": [
+    "portal|domain-state|same-member-tenant-switch-refreshes-old-hydration|20261112-v1",
+    "portal|domain-state|unmapped-root-edit-orphan-causal-impact|20261112-v1"
+  ],
+  "owner_issue": 4215,
+  "owner": "existing Portal V2 createPortalDomainState plus agent-reliability and agent-data-quality",
+  "state_authority": "existing authenticated Portal State + canonical BusinessInput + ONE BRAIN",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_YET_PROVEN",
+  "observed_root_causes": [
+    "refresh previously checked a user ID/email without the hydrated tenant issued in app_metadata",
+    "public portal root, derived runtime and private journal mutations could avoid a mapped section BusinessInput handoff"
+  ],
+  "correction": [
+    "require currentPrincipal and hydratedPrincipal equality throughout periodic refresh, including after asynchronous GET",
+    "reject unmapped or internal direct public state mutations before any partial state or impact write"
+  ],
+  "guarantees": [
+    "no new agent, scheduler, queue, database, token, provider or writer",
+    "preserve existing field-level customer BusinessInput lineage, sourceRevision, pending journal and consumer receipt",
+    "same authorized member may reinitialize explicitly when switching tenant",
+    "fail closed; no simulated customer outcome or CRO uplift"
+  ],
+  "regressions": [
+    "portal-v2/tests/portal-handoff-recovery.test.mjs",
+    "tests/brain-portal-tenant-refresh-fence-20261112.test.mjs"
+  ],
+  "source_release_acceptance": [
+    "exact-head protected Required and CodeQL green",
+    "canonical protected merge",
+    "Netlify production CURRENT READY exact merged SHA",
+    "original Portal V2 authenticated browser readback for two isolated real tenants",
+    "original ONE BRAIN consumer_processed_ack and Heartbeat/Powerhouse outcome proof remain independent"
+  ],
+  "no_new_executor": true,
+  "no_new_scheduler": true,
+  "outcome_measurement": "NOT_MEASURED",
+  "runtime_two_tenant_readback": "NOT_MEASURED"
+}
