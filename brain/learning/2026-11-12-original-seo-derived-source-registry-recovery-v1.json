@@ -1,0 +1,75 @@
+{
+  "fingerprint": "seo|original-derived-opportunity-source-registry|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "owner": "existing powerhouse-seo-opportunity-resolver / original 105→175→140→Heartbeat",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN_FOR_NEW_SOURCE_REVISION",
+  "root_cause": "Original provider-faithful SEO resolver v530 successfully projected 18 recent actual DataForSEO cached observations to canonical source table (15→33 records, source times preserved), but its final unified Brain evidence write failed 503 due to SOURCE_NOT_REGISTERED:seo-opportunity-intelligence. Original powerhouse_record_source_observation_v1 checks source registration before recording; original provider source dataforseo-intelligence was registered, but distinct derived SEO opportunity source was not. Healthy intermediate writes must never be mistaken for terminal producer/consumer ACK.",
+  "evidence": {
+    "original_request_id": 29209,
+    "original_provider_http_status": 503,
+    "original_provider_error": "SEO_SOURCE_OBSERVATION_WRITE:SOURCE_NOT_REGISTERED:seo-opportunity-intelligence",
+    "original_provider_day": "2026-11-12",
+    "original_successful_canonical_keyword_projection": {
+      "original_count": 15,
+      "verified_new_total": 33,
+      "verified_recent_source_records": 18,
+      "newest_observed_at": "2026-11-09T06:00:08.939Z"
+    },
+    "existing_producer_source": "dataforseo-intelligence",
+    "newly_required_derived_source": "seo-opportunity-intelligence",
+    "registry_not_registered_confirmed": true,
+    "source_provider_claim": "NOT_NEW_PROVIDER_CALL",
+    "actual_visitors_lift": "NOT_MEASURED",
+    "related_original_repairs": [
+      "PR #5677",
+      "PR #5680"
+    ],
+    "tests": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ]
+  },
+  "fix": [
+    "In original schema register one optional derived_intelligence source for existing resolver with existing powerhouse_record_source_observation_v1 writer; preserve the distinct original dataforseo-intelligence true provider source.",
+    "Use fail-closed ON CONFLICT DO NOTHING then independently assert exact source, owner, writer contract and 30h max_age to prevent hijacking or drift.",
+    "Do not create scheduler, provider connection, artificial GA4 visitors, prospect or blog; same resolver #105 and original Heartbeat chain.",
+    "Re-run the same original secure bg_roep_functie invocation once after protected migration deployment and independently prove HTTP success, actual source observation ID and original Brain revision ACK."
+  ],
+  "prevention_rule": "Every original Edge writer invoking powerhouse_record_source_observation_v1 must have exactly one first-party registered evidence source with matching owner and semantic type before announcing healthy completion. Derived SEO opportunity decisions must never masquerade as new DataForSEO, GSC or GA4 provider measurements. Intermediate keyword or forecast table writes are not terminal source observation success.",
+  "compiler": {
+    "failure_class": "SOURCE_REGISTRY_ACK_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-keyword-cache-bridge-20261112.test.mjs"
+    ],
+    "expected": "Original secured SEO resolver source key exists as optional derived_intelligence under exact original owner, no duplicate scheduler; observer successfully emits receipt only when new migration applied, natural data remains real."
+  },
+  "delivery": {
+    "migration": "supabase/migrations/20261112203100_original_seo_opportunity_source_registration_v1.sql",
+    "original_edge": "supabase/functions/powerhouse-seo-opportunity-resolver/index.ts",
+    "ledger": "docs/development-ledger-events/2026-11-12-original-seo-derived-source-registry-recovery.md",
+    "skill": ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md"
+  },
+  "security": {
+    "changes_grants": false,
+    "changes_rls": false,
+    "changes_jwt": false,
+    "changes_service_role": false,
+    "changes_schedule": false,
+    "verified_derived_source_separation": true
+  },
+  "reopen_if": "Original source writer produces 503 or original consumer revised SHA does not match after native migration applied."
+}
