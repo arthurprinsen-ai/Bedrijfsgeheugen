@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {verifiedSocialWindowAck} from '../supabase/functions/_shared/social-learning-window-ack.mjs';
-import {runScheduledTenants} from '../netlify/functions/social-learning-evaluate.mjs';
+import {verifiedSocialWindowAck,isSourceQualifiedSocialSnapshot} from '../supabase/functions/_shared/social-learning-window-ack.mjs';
+import {runScheduledTenants,runEvaluation} from '../netlify/functions/social-learning-evaluate.mjs';
 
 const postId='6aaa57852bae7e96e951773d';
 const tenantId='canonical';
@@ -114,4 +114,32 @@ test('verified LinkedIn company Windsor provider-linked observation is consumed 
   assert.equal(verify({snapshots:[{...linked,data_quality:'OBSERVED_PARTIAL_SCOPE'}]}),null);
   assert.equal(verify({snapshots:[{...linked,observed_at:'2026-09-30T10:58:21.308Z'}]}),null);
   assert.equal(verify({snapshots:[{...linked,metrics:{...linked.metrics,impressions:123}}]}),null);
+});
+
+test('observed metadata with an empty, null or textual-only metric payload cannot be counted as a post measurement',()=>{
+  const baseline={...snap,metrics:{}};
+  assert.equal(isSourceQualifiedSocialSnapshot(baseline,postId),false);
+  assert.equal(isSourceQualifiedSocialSnapshot({...baseline,metrics:{likes:null}},postId),false);
+  assert.equal(isSourceQualifiedSocialSnapshot({...baseline,metrics:{reach:'unknown'}},postId),false);
+  assert.equal(isSourceQualifiedSocialSnapshot({...baseline,metrics:{Reach:0}},postId),true);
+  assert.equal(isSourceQualifiedSocialSnapshot({...baseline,metrics:{Impressions:1963}},postId),true);
+  assert.equal(isSourceQualifiedSocialSnapshot({...baseline,data_quality:'OBSERVED_PARTIAL_SCOPE',metrics:{Impressions:1963}},postId),false);
+  assert.equal(verifiedSocialWindowAck({obligation,post,evaluation,snapshots:[baseline]}),null);
+});
+
+test('original hourly evaluator does not report an empty snapshot as completed or create a null-only evaluation',async()=>{
+  const calls=[];
+  const due={tenantId,postId,publishedAt:published,externalPostId:postId,dueWindow:48,hasWindowSnapshot:true};
+  const store={
+    listDuePosts:async()=>[due],
+    getSnapshots:async()=>[{...snap,metrics:{},dataQuality:'OBSERVED'}],
+    recordObligation:async o=>calls.push(o),
+    putEvaluation:async()=>{throw Error('EMPTY_EVALUATION_MUST_NOT_BE_WRITTEN');}
+  };
+  const result=await runEvaluation({store,now:new Date('2026-11-12T12:00:00Z'),maxDuePosts:1});
+  assert.equal(result.attempted,1);
+  assert.equal(result.evaluated,0);
+  assert.equal(result.missedObligations,1);
+  assert.equal(calls.length,1);
+  assert.equal(calls[0].type,'UNVERIFIED_OR_PARTIAL_WINDOW');
 });
