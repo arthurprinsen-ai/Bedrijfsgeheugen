@@ -44,7 +44,7 @@ test('original Brain repair uses atomic compare-and-swap and preserves the runni
 test('the original scheduler and normal nonempty provider route are preserved, with no side-effect replay',()=>{
  assert.match(code,/const BRON='bg-analytics-sync-composio'/);
  assert.match(code,/const headers=\['date','pagePath','sessionCampaignName','sessions','activeUsers','eventCount'\]/);
- assert.match(code,/const status=unmatched>0\?'PARTIAL':'IMPORTED'/);
+ assert.match(code,/const status=campaignAttributionGap\|\|noPostMeasurements\?'PARTIAL':'IMPORTED'/);
  assert.match(code,/const existing=|data:existing/);
  assert.match(code,/GA4_CONSENT_LIMITED_NO_SOURCE_ROWS/);
  assert.doesNotMatch(testSection,/\bbg-post-import\b/);
@@ -131,4 +131,38 @@ test('canonical GA4 Edge production declaration and original cron token guard ar
  assert.ok(start>=0&&auth>start&&vault>start&&compare>auth);
  assert.ok(compare<sourceCall&&compare<provider);
  assert.match(code.slice(start,provider),/return json\(\{ok:false,error:'UNAUTHORIZED'\},401\)/);
+});
+
+test('provider-observed website visits are not misreported as zero visitors when social campaign attribution is absent',()=>{
+ assert.match(code,/const campaignRows=rows\.filter/);
+ assert.match(code,/const sourceOnlyRows=Math\.max\(0,rows\.length-campaignRows\.length\)/);
+ assert.match(code,/const noPostMeasurements=imports\.length===0/);
+ assert.match(code,/GA4_SOURCE_OBSERVED_NO_SOCIAL_POST_ATTRIBUTION/);
+ assert.match(code,/no_social_campaign_is_not_zero_website_traffic:true/);
+ assert.match(code,/website_visitors:'NOT_INFERRED_FROM_SOCIAL_POST_IMPORT'/);
+ assert.match(code,/status:status==='IMPORTED'\?'ok':'partial'/);
+ assert.match(code,/await bewijs\(status==='IMPORTED',out,status==='IMPORTED'\?null:'ATTRIBUTION_INCOMPLETE'\)/);
+});
+
+test('a duplicate source-only GA4 readback does not become a fresh successful social measurement',()=>{
+ const start=code.indexOf('if(existing?.length){');
+ const end=code.indexOf("const batch=await db.from('bg_ga4_csv_batches')",start);
+ const duplicate=code.slice(start,end);
+ assert.ok(start>=0&&end>start);
+ assert.match(code,/\.select\('run_id,status,completed_at,rows_total,rows_attributed'\)/);
+ assert.match(duplicate,/prev\.status==='IMPORTED'&&Number\(prev\.rows_attributed\|\|0\)>0/);
+ assert.match(duplicate,/status:attributionProven\?'ok':'partial'/);
+ assert.match(duplicate,/DUPLICATE_SOURCE_ONLY_READBACK/);
+ assert.match(duplicate,/website_visitors:'NOT_INFERRED_FROM_SOCIAL_POST_IMPORT'/);
+ assert.match(duplicate,/return json\(out,attributionProven\?200:207\)/);
+});
+
+test('unmatched tagged campaigns reuse the existing CAS-guarded ONE BRAIN repair, not a new scheduler',()=>{
+ assert.match(code,/const campaignAttributionGap=unmatched>0/);
+ assert.match(code,/campaignAttributionGap\?await originalGa4EmptyRepair\(db,day,sourceRoute,/);
+ assert.match(code,/GA4_CAMPAIGN_ATTRIBUTION_REPAIR_REQUIRED/);
+ assert.match(code,/tagged_campaign_rows:campaignRows\.length/);
+ assert.match(code,/unlinked_campaign_rows:unmatched/);
+ assert.match(code,/GA4_BATCH_READBACK_WRITE_FAILED/);
+ assert.match(code,/GA4_ATTRIBUTION_RECEIPT_WRITE_FAILED/);
 });
