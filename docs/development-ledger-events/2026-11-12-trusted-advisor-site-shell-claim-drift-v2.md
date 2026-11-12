@@ -12,3 +12,6 @@
 - **Customer / tenant handshake**: this is a static website copy fix, not an accepted original `consumer_processed_ack`. Real Portal V2 → tenant BusinessInput → ONE BRAIN → Powerhouse/Heartbeat outcome still requires independent runtime evidence before a completed-customer-loop claim
 
 **Status: SOURCE_CANDIDATE_NOT_LIVE_VERIFIED**. Do not assert measured trust, qualified lead, conversion lift or all-site consistency before real readback.
+
+## Fail-closed static English cache regression — 12 November 2026
+Protected Required run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43302093725 rejected the original corrected banner because two checkmark-bearing translation fragments were absent: `✓ Duidelijke afspraken vooraf`, `✓ Klein beginnen, resultaat toetsen`. Root cause: the original site-shell generator introduces visible ✓ prefix, but only the text without prefix had been added to the existing i18n cache. Existing offline build correctly refused uncontrolled network translation. Corrected within the same PR and translation source via `config/bg-static-i18n-en.d/2026-11-12-trusted-advisor-site-shell-checkmark.json`; regressions assert both precise keys. Keep the original failure receipt. No second translator or build path; candidate still requires fresh exact-head protected checks and independent postdeploy public readback.
