@@ -33,7 +33,7 @@ export function mountPortalAppInstall({documentRef=globalThis.document,windowRef
    }catch{
     show('Open het browsermenu en kies Installeer app of Toevoegen aan beginscherm.');
    }
-  }else if(/iPad|iPhone|iPod/.test(windowRef.navigator?.userAgent||'')){
+  }else if(/iPad|iPhone|iPod/.test(windowRef.navigator?.userAgent||'')||(windowRef.navigator?.platform==='MacIntel'&&windowRef.navigator?.maxTouchPoints>1)){
    show('Open deze pagina in Safari. Kies Deel en daarna Zet op beginscherm.');
   }else{
    show('Open het browsermenu en kies Installeer app of Toevoegen aan beginscherm, wanneer beschikbaar.');
