@@ -131,3 +131,17 @@ test('original DataForSEO Edge function is explicitly registered for protected-m
  assert.match(edge,/powerhouse_daily_scheduler_token/);
  assert.match(edge,/NO_NEW_PROVIDER_KEYWORDS/);
 });
+
+test('original derived SEO opportunity evidence key is registered without pretending provider-data freshness',()=>{
+ const sql=readFileSync(new URL('../supabase/migrations/20261112203100_original_seo_opportunity_source_registration_v1.sql',import.meta.url),'utf8');
+ const source=readFileSync(new URL('../supabase/functions/powerhouse-seo-opportunity-resolver/index.ts',import.meta.url),'utf8');
+ assert.match(source,/p_source_key:'seo-opportunity-intelligence'/);
+ assert.match(source,/SEO_SOURCE_OBSERVATION_WRITE/);
+ assert.match(sql,/INSERT INTO public\.powerhouse_evidence_sources/);
+ assert.match(sql,/'seo-opportunity-intelligence','derived_intelligence',false,interval '30 hours'/);
+ assert.match(sql,/'powerhouse_record_source_observation_v1','powerhouse-seo-opportunity-resolver'/);
+ assert.match(sql,/ON CONFLICT \(source_key\) DO NOTHING/);
+ assert.match(sql,/SEO_ORIGINAL_DERIVED_EVIDENCE_SOURCE_REGISTRY_CONFLICT/);
+ assert.match(sql,/not independent provider traffic/i);
+ assert.doesNotMatch(sql,/cron\.schedule|CREATE TABLE|ALTER TABLE|GRANT\s|DISABLE TRIGGER/i);
+});
