@@ -67,6 +67,19 @@ Deno.serve(async(req:Request)=>{
   const runDate=localDate();
   const observedAt=new Date().toISOString();
   try{
+    // First prove the ORIGINAL registered derived-source identity. Before this
+    // guard, an unregistered source could write keywords and forecasts and
+    // even an 'ok' health record, then fail only at its final Brain handoff.
+    // Fail closed BEFORE any durable candidate, forecast or health write.
+    const {data:originalSource,error:sourceLookupError}=await db.from('powerhouse_evidence_sources')
+      .select('source_key,source_class,required,writer_contract,owner_component')
+      .eq('source_key','seo-opportunity-intelligence').maybeSingle();
+    if(sourceLookupError)throw new Error('SEO_SOURCE_REGISTRY_READ:'+sourceLookupError.message);
+    if(!originalSource||originalSource.source_class!=='projection'||originalSource.required!==false||
+       originalSource.writer_contract!==CONTRACT||
+       originalSource.owner_component!=='powerhouse-seo-opportunity-resolver'){
+      throw new Error('SEO_ORIGINAL_SOURCE_OWNER_NOT_REGISTERED');
+    }
     const [kwResult,gscResult,forecastResult,blogResult,externalResult,dailyBlogResult]=await Promise.all([
       db.from('bg_zoekwoordkansen')
         .select('zoekwoord,zoekvolume,concurrentie,cpc,kansscore,positie,rankende_url,bron,opgehaald_op')
@@ -265,12 +278,6 @@ Deno.serve(async(req:Request)=>{
       ownerHandoffsWritten++;
     }
 
-    const {error:hError}=await db.from('bg_gezondheid').insert({
-      gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:projectionFresh?'ok':'onvolledig',
-      detail:'keywords='+latestByKeyword.size+'; gsc_queries='+gscByQuery.size+'; top='+top.length+'; blog_recommendations='+recommendations+'; money_owner_handoffs='+ownerHandoffsWritten+'; execution_readback=EVIDENCE_DUE',
-      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,source_projection:sourceProjectionReceipt,execution_readback:'EVIDENCE_DUE'}
-    });
-    if(hError) throw new Error('HEALTH_WRITE:'+hError.message);
     const {error:sourceObservationError}=await db.rpc('powerhouse_record_source_observation_v1',{
       p_source_key:'seo-opportunity-intelligence',
       p_dedupe_key:'seo-opportunity-resolver:'+runDate,
@@ -279,6 +286,12 @@ Deno.serve(async(req:Request)=>{
       p_evidence:{contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action}))}
     });
     if(sourceObservationError)throw new Error('SEO_SOURCE_OBSERVATION_WRITE:'+sourceObservationError.message);
+    const {error:hError}=await db.from('bg_gezondheid').insert({
+      gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:projectionFresh?'ok':'onvolledig',
+      detail:'keywords='+latestByKeyword.size+'; gsc_queries='+gscByQuery.size+'; top='+top.length+'; blog_recommendations='+recommendations+'; money_owner_handoffs='+ownerHandoffsWritten+'; execution_readback=EVIDENCE_DUE',
+      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,source_projection:sourceProjectionReceipt,execution_readback:'EVIDENCE_DUE'}
+    });
+    if(hError) throw new Error('HEALTH_WRITE:'+hError.message);
     return json({ok:projectionFresh,contract:CONTRACT,source_projection:sourceProjectionReceipt,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))},projectionFresh?200:207);
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
