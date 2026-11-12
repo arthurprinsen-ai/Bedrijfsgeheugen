@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|native-provider-836-source-ack|20261112-v1",
+  "obligation_id": "supabase|migration-history|native-provider-836-source-ack|20261112-v1",
+  "title": "Original native 836th applied migration must reach canonical Git source-lock consumer before release",
+  "status": "CANDIDATE",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "root_cause": "Protected #5685 merged and real production Supabase applied 20261112211600/original_seo_opportunity_source_registry_v1, bringing native provider migration history to 836 while original main Git source lock remained 835. Recurring non-atomic native-provider-to-source-lock PROCESSED acknowledgment gap, previously 833-835.",
+  "impact": "Dependent protected Portal/Trust/SEO approvals fail-closed on exact source migration parity; new provider SQL is real but source lock is one record stale.",
+  "fix": "Append exactly the independently applied native migration identity as row 836 under original single protected source-lock owner, preserving all previous 835 identities and executable SQL, with historical prefix regression, existing agent skill and human evidence. No SQL replay, new scheduler, duplicate publisher or credential changes.",
+  "prevention_rule": "Original Supabase native migration authority must emit exact applied version/name/source SHA/observed timestamp with same owner and immutable lineage into original Git source-lock ACK, verify PROCESSED under original BRAIN before dependent PR protected gate. Missing ACK stays RED and is retried with identical fingerprint, never hidden by green UI.",
+  "owner": "Original Supabase native migration-history writer / ONE BRAIN protected source-lock consumer",
+  "tests": [
+    "tests/brain-original-provider-836-native-source-lock-20261112.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "regression_contract": "tests/brain-original-provider-836-native-source-lock-20261112.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-836-native-source-lock-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-836-native-source-lock-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-836-native-source-lock-20261112.test.mjs"
+    ]
+  },
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "native_applied_count": 836,
+    "native_version": "20261112211600",
+    "native_name": "original_seo_opportunity_source_registry_v1",
+    "source_lock_before": 835,
+    "source_lock_candidate": 836,
+    "source_sql": "supabase/migrations/20261112211600_original_seo_opportunity_source_registry_v1.sql",
+    "original_protected_pr": 5685,
+    "provider_readback": "supabase_migrations.schema_migrations",
+    "protected_downstream_pr": 5678
+  },
+  "outcome": "CANDIDATE pending exact-head protected Required/BRAIN/CodeQL and independent main/native 836/836 post-merge readback; not visitor growth or provider process effect proof.",
+  "compiler": {
+    "failure_class": "PROVIDER_SOURCE_PARITY",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  }
+}
