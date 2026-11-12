@@ -231,3 +231,13 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
  main :is(a[href],button,summary){transition:none!important}
  html{scroll-behavior:auto!important}
 }
+
+footer .bg-app-install-slot:empty{display:none}
+footer .bg-app-install-slot{margin-top:13px;max-width:350px}
+footer .bg-app-install-slot button{
+ min-height:44px;max-width:100%;padding:11px 15px;border-radius:12px;
+ background:#fff;color:#163746;border:1px solid #b7ccc8;cursor:pointer;
+ font:700 14px/1.3 system-ui,sans-serif;text-align:left;
+}
+footer .bg-app-install-slot button:focus-visible{outline:3px solid #71d2bf;outline-offset:3px}
+footer .bg-app-install-slot .bg-app-install-hint{font-size:13px;line-height:1.5;margin-top:10px;color:#f6f8fa}
