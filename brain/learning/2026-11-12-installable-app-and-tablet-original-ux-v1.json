@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "date": "2026-11-12",
+  "type": "WEBSITE_PORTAL_APP_SHELL_SAFE_INSTALL_AND_TABLET_NAVIGATION",
+  "fingerprint": "website|portal|one-installable-app-feel-safe-offline-and-tablet-dock|20261112-v1",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_PROVIDER_VERIFIED",
+  "original_owner": "Original Website UX and Portal V2 source; original #4215 and commercial #4198 owners preserved",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "technical": "Root website and Portal V2 were responsive websites without linked PWA manifests or a registered original-origin service worker; tablet portrait from 761 through 900px lost sidebar but body-mounted four-tab portal dock only displayed through 760px.",
+    "other": "Original customer state, ONE BRAIN, Powerhouse/Heartbeat, original website menu, slider, CRO owner remain separate from browser installation UX."
+  },
+  "root_cause": {
+    "observed": "The mobile navigation breakpoint was narrower than the point where the original desktop sidebar became hidden, so tablets could not reach one-tap canonical app destinations; missing install manifests and offline fallback meant browser chrome remained the only app container.",
+    "unknowns": [
+      "Actual cross-device install acceptance through browsers",
+      "Authenticated two-tenant tablet experience",
+      "Measured return visits and time-to-task",
+      "Real commercial/Heartbeat outcome uplift"
+    ]
+  },
+  "fix": {
+    "scope": "Original website shell plus Portal V2 scoped PWA manifests, one real app-owned browser SW, responsive original dock, app-surface CSS, original agent/skill source contract and tested non-caching offline proof.",
+    "user_visible": [
+      "Phone and tablet dock through the original four routes",
+      "Branded installable standalone web app surfaces",
+      "Optional eligible account-menu install guidance",
+      "Public-only offline fallback with no fictitious customer data"
+    ],
+    "no_second_business_executor": true,
+    "no_customer_response_caching": true,
+    "no_duplicate_mobile_menu": true,
+    "no_new_data_writer": true,
+    "no_fake_revenue": true
+  },
+  "compiler": {
+    "failure_class": "WEBSITE_PORTAL_APP_INSTALLABILITY_TABLET_NAV_AND_PRIVATE_OFFLINE_EVIDENCE_GAP",
+    "scope": "WEBSITE_PORTAL_UX",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-installable-app-safe-private-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-installable-app-safe-private-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-installable-app-safe-private-20261112.test.mjs"
+    ]
+  },
+  "prevention": [
+    "INSTALL_MANIFEST_PUBLIC_AND_PORTAL_CORRECT_SCOPE_AND_ICONS",
+    "SERVICE_WORKER_NETWORK_ONLY_FOR_PRIVATE_DATA",
+    "OFFLINE_ONLY_PUBLIC_NO_CUSTOMER_SNAPSHOT",
+    "TABLET_761_900_SAME_CANONICAL_PORTAL_DOCK",
+    "SINGLE_EXISTING_SITEWIDE_MENU_AND_CRO_OWNER",
+    "ORIGINAL_ENTERPRISE_CONSENT_TENANT_SOURCE_READBACK_UNCHANGED",
+    "REAL_BROWSER_APP_INSTALL_PROVIDER_AND_CURRENT_MAIN_DEPLOY_READBACK"
+  ],
+  "evidence": {
+    "required": "Protected Required/CodeQL, original deterministic System Map, exact-current main Netlify READY, Portal V2 mobile production DOM readback, original Skill Projection and sitewide real browser proof",
+    "limitations": "Source manifest, service worker and responsive tests are not proof of successful installation on every OS, improved conversion, two real tenant outcomes or next-run applied Heartbeat learning."
+  }
+}
