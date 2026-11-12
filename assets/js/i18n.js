@@ -93,8 +93,8 @@
     ['Start','Start'],['Gratis zelfscan','Free self-scan'],['Frisse Blik Scan','Fresh Perspective Scan'],
     ['Inloggen','Log in'],['Aanmelden','Sign up'],['Home','Home'],['Taal','Language'],
     ['Nederlands','Dutch'],['English','English'],['Voor het Nederlandse mkb','For Dutch SMEs'],
-    ['Vaste prijs, geen uurtje-factuurtje','Fixed price, no hourly billing'],
-    ['In twee weken draaiend','Up and running in two weeks']
+    ['Duidelijke afspraken vooraf','Clear agreements upfront'],
+    ['Klein beginnen, resultaat toetsen','Start small, validate the results']
   ]);
 
   function localTranslation(target, source) {

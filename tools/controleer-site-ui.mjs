@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFile, glob } from 'node:fs/promises';
 import { PUBLIC_PAGE_EXCLUDES, verifyGlobalComponentHashes, verifyPageShell } from './site-shell/contracts.mjs';
 
-const TRUST = ['Vaste prijs, geen uurtje-factuurtje', 'In twee weken draaiend', 'Voor het Nederlandse mkb'];
+const TRUST = ['Duidelijke afspraken vooraf', 'Klein beginnen, resultaat toetsen', 'Voor het Nederlandse mkb'];
 const heeftElement = (html, klasse) => new RegExp(`<div\\b[^>]*class="[^"]*\\b${klasse.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b[^"]*"`, 'i').test(html);
 
 export async function controleerSiteUi() {
