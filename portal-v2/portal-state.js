@@ -165,9 +165,12 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
   if(body?.stored!==true||body?.stale!==false)throw new Error(body?.error||'PORTAL_STATE_ACK_INCOMPLETE');
   const confirmed=await load();
   if(confirmed?.mode!=='authenticated')throw new Error('PORTAL_STATE_READBACK_NOT_AUTHENTICATED');
-  // Source and projection ACKs are required, but neither verifies the user's
-  // actual saved answers. Never claim "saved" when GET returns old field values.
-  if(!portalAuthoringReadbackMatches(nextState?.portal,confirmed?.state?.portal))
+  // Source and projection ACKs must also match every authored root-level
+  // field, not only portal.*. Derived/read-only models are deliberately
+  // excluded by the original canonical BusinessInput projection. A stale
+  // non-portal authored value must never be reported as saved.
+  const authoredAnswers=buildPortalBusinessInput(nextState).answers;
+  if(!portalAuthoringReadbackMatches(authoredAnswers,confirmed?.state))
     throw new Error('PORTAL_STATE_VALUE_READBACK_MISMATCH');
   return confirmed;
  }
