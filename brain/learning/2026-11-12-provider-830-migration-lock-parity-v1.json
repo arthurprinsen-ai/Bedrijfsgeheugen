@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|provider-830-lock-parity|20261112-v1",
+  "obligation_id": "supabase|migration-history|provider-830-lock-parity|20261112-v1",
+  "title": "Preserve original 830th applied provider migration and synchronize original source lock before downstream release",
+  "status": "CANDIDATE",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "root_cause": "Original protected #5652 Supabase migration 20261112162500_original_metric_source_temporal_handoff_v1 was applied to production, while original checked-in migration-history.lock.json remained at provider-backed 829 rather than 830, repeating drift immediately after protected SQL merges.",
+  "impact": "Other protected website/Portal/Powerhouse releases can fail source/provider migration parity even though the backend migration was actually applied. Do not reapply executed SQL or conceal drift.",
+  "fix": "Source-only append of exact provider-confirmed version and name to original immutable migration-history.lock.json, preserving the earlier 829 records. Update original Continuity skill with source→consumer processed-ACK prevention; protected CI, independent provider readback, no new worker or DDL.",
+  "prevention_rule": "The original Supabase migration writer must hand off the exact applied provider version/name/readback to the original checked-in lock writer before declaring a dependent protected release ready; retain idempotent same-provider lineage and fail closed if the consumer has not acknowledged lock parity.",
+  "regression_contract": "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs; tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+  "tests": [
+    "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 830,
+    "provider_observed_at": "2026-11-12T15:15:55.802Z",
+    "provider_version": "20261112162500",
+    "provider_name": "original_metric_source_temporal_handoff_v1",
+    "source_lock_before": 829,
+    "source_lock_after": 830,
+    "source_sql": "supabase/migrations/20261112162500_original_metric_source_temporal_handoff_v1.sql",
+    "protected_merged_pr": 5652,
+    "protected_merged_main_sha": "6c67120161a891c3434032a5418afdc8d9cbc8d5",
+    "production_replay": false,
+    "original_consumer_processed_ack": "PENDING_VERIFICATION"
+  },
+  "owner": "Original Supabase migration history writer / ONE BRAIN backend owner",
+  "no_new_writer": true,
+  "no_ddl": true,
+  "no_synthetic_business_outcomes": true,
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
