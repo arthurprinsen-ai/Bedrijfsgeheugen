@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-11-12",
+  "fingerprint": "supabase|migration-history|native-835-skipped-provider-handoff-lock-gap|20261112-v1",
+  "obligation_id": "original-native-provider-835-immutable-source-lock-20261112",
+  "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original Supabase native migration-history source lock / ONE BRAIN protected delivery",
+  "title": "Append only official 835th production migration and preserve verified 834-version prefix",
+  "impact": "Postmerge BRAIN delivery #5681 run 43290248396 job 131434719446 failed 14 historical complete-inventory checks because official native production applied migration 835 while the source lock on protected main still contained 834, even though 16 historical original consumer handoffs were independently read back correct.",
+  "root_cause": "Original Supabase GitHub integration applies the native migration during protected merge, but the existing immutable source migration-history.lock.json stays at the previous epoch until the original source-lock writer commits the actual provider-verified version/name. This is a source bookkeeping gap, not a failure of the live 16/16 original consumer repairs.",
+  "fix": "Append precisely official 20261112211000/original_skipped_provider_reference_readback_handoff_v1 as entry 835, keeping exact 834-entry provider-attested prefix and original 835 SQL unchanged; update same protected source, Brain regression, owner skill, machine learning and ledger. No new migration, DDL replay, provider edits, send, scheduler or parallel deployment authority.",
+  "prevention_rule": "For every protected main native migration applied, the same original migration-lock owner must record the actual provider-confirmed immutable version/name/observation time via protected CI, never predeclare pending migrations, never rewrite applied versions, and trigger an exact-source BRAIN verification-only reconciliation only after full source equality and consumer readback.",
+  "provider_evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "provider_applied_migrations": 835,
+    "locked_applied_prefix": 834,
+    "native_version": "20261112211000",
+    "native_name": "original_skipped_provider_reference_readback_handoff_v1",
+    "observed_at": "2026-11-12 19:33:40.399247+00",
+    "prior_prefix_exact": true,
+    "merged_original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5681",
+    "main_at_observation": "6f5300cb52f64057e26d025ad52a39cf43301cdf",
+    "real_original_consumer_reconciled": 16,
+    "all_16_open_and_unverified": true,
+    "failed_brain_run": 43290248396,
+    "failed_brain_job": 131434719446,
+    "no_false_green": true
+  },
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-835-immutable-lock-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-835-immutable-lock-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-835-immutable-lock-20261112.test.mjs"
+    ],
+    "expected": "Exact original provider 835th immutable migration registered; 834 prior entries identical; full source inventory parity required, source provider posts remain original-ID and OPEN until provider GET verified."
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "no_new_executor": true,
+  "production_proven": false
+}
