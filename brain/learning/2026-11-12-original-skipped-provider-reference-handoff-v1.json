@@ -1,0 +1,33 @@
+{
+  "fingerprint": "powerhouse|publication|skipped-conflicts-with-original-side-effect|20261112-v1",
+  "obligation_id": "original-skipped-provider-reference-handoff-20261112",
+  "status": "CANDIDATE",
+  "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "powerhouse-content-handoff-receipts-v1 / original #171 mux / original provider publisher",
+  "source": {
+    "table": "public.content_publication_obligations",
+    "tenant": "canonical",
+    "historical_conflicts": 16,
+    "channel_counts": {
+      "instagram": 5,
+      "linkedin_company": 4,
+      "linkedin_personal": 7
+    },
+    "no_republish_and_reconcile_flagged": 16,
+    "provider_readback_verified": 0,
+    "independent_provider_errors": [
+      "Instagram exact-ID GET 400 inaccessible/unsupported",
+      "LinkedIn exact-URN GET 403 forbidden"
+    ]
+  },
+  "root_cause": "Original #171 handoff classified SKIPPED source with historical immutable provider reference as OVERDUE_PUBLICATION regardless of source conflict, risking a new create rather than same-ID reconciliation.",
+  "repair": "Same existing original handoff function selects OVERDUE_PROVIDER_READBACK for explicit SKIPPED+fenced+reconciliation_due+source reference; owner original provider; consumer evidence shows source reference and provider_readback_verified=false. Keep v_pub strict; never mark FULFILLED or send.",
+  "prevention_rule": "A contradictory source status plus original provider side-effect reference always routes to same-ID provider readback and forbids a second provider create, regardless of one account GET 400/403.",
+  "regression_tests": [
+    "tests/brain-original-skipped-provider-reference-readback-handoff-20261112.test.mjs"
+  ],
+  "migration": "supabase/migrations/20261112211000_original_skipped_provider_reference_readback_handoff_v1.sql",
+  "evidence_state": "PENDING_EXACT_HEAD_PROTECTED_CI_MERGE_NATIVE_PROVIDER_MIGRATION_AND_ORIGINAL_CONSUMER_READBACK",
+  "no_new_executor": true,
+  "no_false_green": true
+}
