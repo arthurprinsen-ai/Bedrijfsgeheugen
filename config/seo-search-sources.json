@@ -42,10 +42,10 @@
     ],
     "freshness_hours": {
       "google-search-console": 72,
-      "dataforseo-cache": 336,
+      "dataforseo-cache": 168,
       "powerhouse-market-forecasts": 720
     },
-    "empty_live_result_policy": "do not erase valid cached evidence; retain heartbeat truth separately from data availability",
+    "empty_live_result_policy": "0 new provider keyword items means source unobserved today; preserve existing real cache up to 168 hours and original timestamps, never claim new rank, clicks, money or provider freshness",
     "first_mover_rule": "only CREATE_INTENT_GAP_CONTENT when no canonical owner matches and commercial+forecast evidence clears threshold; otherwise UPDATE_MONEY_PAGE or fail closed",
     "publication_path": "powerhouse_content_recommendations -> powerhouse-content-orchestrator -> existing canonical protected blog publisher",
     "max_daily_opportunities": 5
