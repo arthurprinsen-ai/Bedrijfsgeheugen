@@ -73,3 +73,30 @@ export function verifiedSocialWindowAck({obligation,post,evaluation,snapshots=[]
     no_causal_uplift_claim:true,no_social_republish:true,no_unverified_metrics:true
   });
 }
+
+/** A comparison observation is evidence only if it is the same authorized
+ * tenant/post/provider identity, observed at the actual source time inside
+ * the unchanged +/-6h measurement window. Invalid/partial observations
+ * must never inflate a cohort, effect size or confidence. */
+export function selectQualifiedSocialCohortSnapshot({post,snapshots=[],windowHours,toleranceHours=6}={}){
+  const tenant=String(post?.tenant_id||''),postId=String(post?.post_id||'');
+  const externalId=String(post?.external_post_id||'');
+  const published=millis(post?.published_at);
+  const window=Number(windowHours),tolerance=Number(toleranceHours);
+  if(!['canonical','bedrijfsgeheugen'].includes(tenant)||!postId||!externalId||
+    published===null||![24,48,72].includes(window)||!Number.isFinite(tolerance)||
+    tolerance<0||tolerance>6||!Array.isArray(snapshots))return null;
+  let best=null,bestDelta=Infinity;
+  for(const s of snapshots){
+    if(s?.tenant_id!==tenant||s?.post_id!==postId||
+      !isSourceQualifiedSocialSnapshot(s,externalId)||
+      typeof s.source!=='string'||!s.source.trim()||
+      typeof s.source_event_id!=='string'||
+      !s.source_event_id.includes(':'+externalId+':'))continue;
+    const observed=millis(s.observed_at);
+    if(observed===null||observed<published)continue;
+    const delta=Math.abs((observed-published)/3600000-window);
+    if(delta<=tolerance&&delta<bestDelta){best=s;bestDelta=delta;}
+  }
+  return best;
+}
