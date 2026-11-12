@@ -36,7 +36,7 @@ test('functional portal and static asset links do not masquerade as missing SEO 
   const r=check(['https://www.bedrijfsgeheugen.nl/portal-v2/',
     '/assets/logo.svg','/api/growth-event','/klantportaal','/offerte',
     '/gebruiksvoorwaarden','/cookiebeleid','/systeemstatus',
-    '/afsluiten?plan=starter&trial=1','/pakketadvies']);
+    '/afsluiten?plan=starter&trial=1','/en/afsluiten?plan=starter&trial=1','/pakketadvies']);
   assert.deepEqual(r.failures,[]);
 });
 
@@ -50,7 +50,7 @@ test('existing sitewide browser gate must audit ALL rendered routes, NL and EN, 
   assert.match(browser,/hrefs: Array\.from\(document\.querySelectorAll\('a\[href\]'\)\)/);
 });
 
-test('the original locale runtime does not invent English URLs for NL-only model pages or checkout',()=>{
+test('original locale runtime only avoids unpublished English model routes, preserving existing English checkout',()=>{
   const source=readFileSync('assets/js/i18n.js','utf8');
   for(const slug of ['/openai-ai-modellen','/claude-ai-modellen','/gemini-ai-modellen','/mistral-ai-modellen','/amazon-ai-modellen','/chatgpt-vs-claude','/chatgpt-vs-gemini','/claude-vs-gemini']) {
     assert.ok(source.includes("'"+slug+"'"),'NL-only locale fallback not registered: '+slug);
@@ -58,7 +58,9 @@ test('the original locale runtime does not invent English URLs for NL-only model
   assert.match(source,/NL_ONLY_AI_MODEL_ROUTES\.has\(key\)/);
   assert.match(source,/NL_ONLY_AI_MODEL_ROUTES\.has\(strippedKey\)/);
   assert.match(source,/\/en\/ai-modelwijzer/);
-  assert.match(source,/SHARED_FUNCTIONAL_ROUTES\.has\(strippedKey\)/);
+  assert.doesNotMatch(source,/SHARED_FUNCTIONAL_ROUTES/);
+  const checkoutBrowser=readFileSync('tools/site-shell/checkout-browser-check.mjs','utf8');
+  assert.match(checkoutBrowser,/\/en\/afsluiten/);
   assert.match(source,/normalizeRouteKey/);
 });
 
