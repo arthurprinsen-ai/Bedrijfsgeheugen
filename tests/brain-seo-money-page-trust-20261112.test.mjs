@@ -47,3 +47,44 @@ test('commercial price comes from central existing guide with static EN translat
  assert.ok(guide.includes('€ 3.500 tot € 6.000'));
  assert.ok(guide.includes('€ 12.000'));
 });
+
+
+import {prerenderMoney,PRERENDER_MARKER} from '../tools/site-shell/money-prerender.mjs';
+
+test('original money-page producer and post-build decision card cannot contradict the canonical price',async()=>{
+  const stijl=await read('assets/stijl.js');
+  const expected='€ 3.500–€ 6.000 voor één richting; complexer tot circa € 12.000';
+  const priceOwner=await read('systemen-koppelen.html');
+  assert.ok(priceOwner.includes('€ 3.500 tot € 6.000')&&priceOwner.includes('€ 12.000'));
+  assert.doesNotMatch(stijl,/Meestal € 1\.500–€ 5\.000 voor een eenvoudige koppeling/);
+
+  for (const [route,canonical] of [
+    ['/exact-online-koppeling',origin+'/exact-online-koppeling'],
+    ['/twinfield-koppeling',origin+'/twinfield-koppeling']
+  ]) {
+    const source=await read(route.slice(1)+'.html');
+    const built=prerenderMoney(source,route,stijl);
+    assert.ok(built.includes(PRERENDER_MARKER),route+' must use the original build prerender');
+    assert.match(built,/class="bg-money-decision"/);
+    assert.ok(built.includes(expected),route+' decision card must contain central scoped price');
+    assert.ok(built.includes(price),route+' visible FAQ and FAQPage must retain same central scoped range');
+    assert.doesNotMatch(built,/€ 1\.500|vijftien honderd en vijfduizend/i);
+    assert.ok(built.includes('<link rel="canonical" href="'+canonical+'">'));
+    assert.ok(built.includes('href="/frisse-blik"'));
+    assert.equal(prerenderMoney(built,route,stijl),built,'idempotent original build');
+  }
+  const en=JSON.parse(await read('config/bg-static-i18n-en.d/2026-11-12-seo-money-page-trust-v1.json'));
+  assert.ok(en[expected]?.includes('€12,000'),'English cache follows same source price');
+});
+
+test('one original SEO-to-money-page-to-Brain consumer-ACK contract is present in the existing agent and skill',async()=>{
+ const agent=await read('platform/agents/agent-team.mjs');
+ const skill=await read('.agents/skills/powerhouse-seo-conversion-orders/SKILL.md');
+ const learning=JSON.parse(await read('brain/learning/2026-11-12-seo-money-page-trust-v1.json'));
+ assert.match(agent,/verify-original-money-page-source-recommendation-to-final-netlify-sha-to-brain-heartbeat-outcome-ack/);
+ assert.match(skill,/SEO_ORIGINAL_MONEY_OWNER_HANDOFF_V1/);
+ assert.match(skill,/ORIGINAL_BRAIN_INPUT_ACCEPTED_WAIT_CRO_OUTCOME/);
+ assert.match(skill,/seo_money_page_update/);
+ assert.equal(learning.delivery.cro_effect,'OPEN');
+ assert.equal(learning.evidence.commercial_outcome_proven,false);
+});
