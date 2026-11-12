@@ -36,7 +36,7 @@ test('app install and branded public GripDock are real tasks, not a second menu 
  assert.match(js,/beforeinstallprompt/);
  assert.match(js,/navigator\.serviceWorker\.register/);
  assert.match(js,/new URL\(route,SITE_ROOT\)\.href/);
- assert.match(js,/data\.bgGripdock='v1'/);
+ assert.match(js,/dock\.dataset\.bgGripdock='v1'/);
  assert.match(js,/\{route:'\/portal-v2\/',label:'Mijn grip'/);
  assert.match(js,/\{route:'\/zelfscan',label:'Scan'/);
  assert.match(js,/install\.addEventListener\('click',tryInstall\)/);
