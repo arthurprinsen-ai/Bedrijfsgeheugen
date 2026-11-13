@@ -3372,8 +3372,12 @@
     {
       "version": "20261113083000",
       "name": "original_one_chain_content_terminal_proof_guard_v1"
+    },
+    {
+      "version": "20261113121500",
+      "name": "original_ga4_handoff_json_operator_precedence_v1"
     }
   ],
-  "captured_at": "2026-11-13T08:58:32.883023Z",
+  "captured_at": "2026-11-13T12:33:20.358846Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
