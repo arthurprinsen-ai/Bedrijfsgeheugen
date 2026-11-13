@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|publication|historical-skipped-readback-owner-not-consuming|20261112-v1",
+  "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE",
+  "owner": "powerhouse-social-publisher / original #171 source→consumer",
+  "root_cause": "Original #171 BRAIN now routes all 16 historical SKIPPED/external-reference rows to OVERDUE_PROVIDER_READBACK but original publisher reconcileExistingProviderTruth reads only current runDate and never consumes historical source references.",
+  "scope": {
+    "source": "content_publication_obligations",
+    "source_rows": 16,
+    "code": "supabase/functions/powerhouse-social-publisher/index.ts",
+    "batch": 3,
+    "original_scheduler_only": true,
+    "read_only_provider": true,
+    "source_state_not_changed": true,
+    "original_BRAIN_obligations_open_until_proven": true
+  },
+  "fix": "Add bounded CAS-claimed read-only historical provider GET within original publisher existing audit/run; verify exact owner/date/ref; write sanitized attempt evidence to same source record; never call any provider create or alter SKIPPED status.",
+  "regression": "tests/brain-original-skipped-provider-readback-executor-20261112.test.mjs",
+  "required_verification": [
+    "protected exact-head Required/CodeQL/BRAIN",
+    "protected main merge",
+    "active Supabase Edge bundle with original helper",
+    "original audit run source CAS probe receipts",
+    "exact provider owner readback and BRAIN independent ACK before closure"
+  ],
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "title": "Historical SKIPPED provider references must be consumed by same original publisher audit",
+  "impact": "Sixteen original #171 OPEN provider-readback tasks had no historical executor because the social publisher only queried runDate; actual historical external create must never be replayed on unknown 400/403.",
+  "compiler": {
+    "failure_class": "CONSUMER_HANDOFF_MISSING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-skipped-provider-readback-executor-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-skipped-provider-readback-executor-20261112.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ],
+  "outcome": "CANDIDATE: source and original #171 handoff are proven, while native publisher's bounded provider readback implementation, live edge deployment, exact source CAS, and external post identity remain unverified until independently observed."
+}

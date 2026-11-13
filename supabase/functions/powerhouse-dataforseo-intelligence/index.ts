@@ -100,10 +100,10 @@ Deno.serve(async(req:Request)=>{
 
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'dataforseo-intelligence',soort:'external-search-intelligence',
-      status:'ok',detail:`items=${items.length}; stored=${stored}; evidence=${evidence}; heartbeat=1`,
-      gegevens:{contract:CONTRACT,target:'bedrijfsgeheugen.nl',items:items.length,stored,evidence,producer_heartbeat:true}
+      status:stored>0?'ok':'onvolledig',detail:`items=${items.length}; stored=${stored}; evidence=${evidence}; heartbeat=1`,
+      gegevens:{contract:CONTRACT,target:'bedrijfsgeheugen.nl',items:items.length,stored,evidence,producer_heartbeat:true,source_data_available:stored>0,provider_response_empty:items.length===0}
     });
-    return json({ok:true,contract:CONTRACT,items:items.length,stored,evidence,observed_at:observedAt});
+    return json({ok:stored>0,contract:CONTRACT,source_data_available:stored>0,status:stored>0?'KEYWORD_SOURCE_OBSERVED':'NO_NEW_PROVIDER_KEYWORDS',items:items.length,stored,evidence,observed_at:observedAt},stored>0?200:207);
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     await db.from('bg_gezondheid').insert({

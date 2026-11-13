@@ -8,7 +8,11 @@
     "analysis",
     "summaries",
     "recommendations",
-    "autonomous-actions"
+    "autonomous-actions",
+    "website",
+    "cms",
+    "pricing",
+    "selfscan"
   ],
   "principle": "No AI claim is trusted by presentation alone; trust must be earned through provenance, evidence, uncertainty, verification and outcome readback.",
   "truth_states": [
@@ -30,7 +34,15 @@
     "Outcome readback must update future advice and advisor track record.",
     "Conflicting source evidence must be surfaced, not silently averaged away.",
     "Customer corrections become canonical tenant knowledge and invalidate stale derived claims.",
-    "The same trust contract applies to every present and future chat and agent."
+    "The same trust contract applies to every present and future chat and agent.",
+    "User-facing trust must come from clear advice and verifiable delivery, never from calling ourselves a Trusted Advisor.",
+    "Before showing a KPI, make explicit whether it is a live tenant fact, an illustrative demo, or an unverified calculation.",
+    "Missing source health metadata cannot be counted as healthy; generic transport or processing OK is not independent outcome verification.",
+    "The free scan, paid service, pricing, privacy and delivery promises must agree across all public pages and the actual customer journey.",
+    "Explain assumptions, alternatives including no-change, scope, human support and the actual next step; never imply guaranteed ROI or deadlines without proof.",
+    "Do not mark source-to-consumer handoff complete without identical tenant, source revision, obligation id, idempotency key, original owner, processed ACK and independent result evidence.",
+    "A portal AI answer cannot be labelled independently verified from a declared status alone: require an identified source, explicit independent verification state and a concrete evidence reference; unknown or contradictory fields must fail closed.",
+    "A protected merge, ready Netlify deployment, or terminal code obligation proves only the released software version; do not claim a complete tenant/customer loop until current source, exact tenant/revision consumer processed ACK, provider/action readback, measured effect, and original learning are independently observed."
   ],
   "portal_surfaces": {
     "all_pages": [
@@ -38,7 +50,8 @@
       "why trust this",
       "source health",
       "freshness",
-      "uncertainty"
+      "uncertainty",
+      "visible live/demo distinction before example metrics"
     ],
     "analysis_and_summary": [
       "fact/derived/hypothesis/prediction label",
@@ -51,7 +64,8 @@
       "assumptions",
       "expected impact range",
       "decision owner",
-      "verification plan"
+      "verification plan",
+      "option to defer or do nothing when justified"
     ],
     "chat": [
       "tenant-bound context",
@@ -76,5 +90,77 @@
       "outcome"
     ]
   },
-  "fail_closed": true
+  "fail_closed": true,
+  "website_surfaces": {
+    "homepage": [
+      "customer situation before solution",
+      "source-backed value example",
+      "plain language",
+      "clear free versus paid journey"
+    ],
+    "contact_and_scan": [
+      "three-minute free scan without mandatory email",
+      "immediate on-screen result",
+      "consistent conditions and CTA"
+    ],
+    "case_studies": [
+      "prototype versus delivered customer case prominently labelled",
+      "no fictitious customer endorsement"
+    ],
+    "pricing_and_service": [
+      "scope and limits before purchase",
+      "delivery conditions and unverified results clearly explained"
+    ],
+    "global": [
+      "one shared navigation design",
+      "mobile and keyboard usability",
+      "visible legal identity and contact",
+      "no blocking overlays or dead buttons"
+    ]
+  },
+  "agent": {
+    "id": "agent-governance-ai-act",
+    "runtime": "existing agent-governance-ai-act in original platform/agents/agent-team.mjs + original editorial council",
+    "owner": "original Portal V2 / CMS editorial owner",
+    "authority": "advisory-quality-specialist-role-within-approved-14-agents",
+    "new_scheduler": false,
+    "new_writer": false,
+    "may_publish": false,
+    "may_claim_verified_outcome_without_receipt": false,
+    "role": "trusted-advisor-specialist"
+  },
+  "original_handoff_contract": {
+    "chain": [
+      "Portal V2 or public consented customer signal",
+      "existing tenant BusinessInput",
+      "ONE BRAIN original obligation",
+      "Powerhouse and Heartbeat original consumers",
+      "eligible reversible CRO/editorial decision",
+      "original authorized execution owner",
+      "independent effect/provider readback",
+      "same fingerprint learning"
+    ],
+    "required_consumer_proof": [
+      "tenant_id",
+      "source_revision",
+      "obligation_id",
+      "source_ref",
+      "original_owner",
+      "idempotency_key",
+      "consumer_processed_ack",
+      "outcome_evidence_ref"
+    ],
+    "acceptance": "ACK_RECEIVED is not ACK_PROCESSED; no intermediate step or source transport status may be counted as terminal fulfillment",
+    "failure_recovery": "reuse identical obligation fingerprint and idempotency key, single writer, source readback, original retry and regression learning; never invent missing evidence",
+    "independent_verification": true,
+    "terminal_proof_gates": {
+      "release": "protected exact-SHA GitHub main and matching canonical Netlify READY public readback; release alone is not tenant completion",
+      "source": "authenticated same-tenant BusinessInput source id and revision with observed source freshness; missing or stale is EVIDENCE_DUE",
+      "consumer": "ONE BRAIN and Powerhouse/Heartbeat acknowledge exact tenant, source revision, obligation and idempotency with actual ACK_PROCESSED; ACK_RECEIVED and HTTP 200 are not proof",
+      "execution": "only originally authorized reversible action with immutable provider/runtime execution/readback; none or blocked remains explicit",
+      "effect": "source-qualified observations in 7/14/28-day cohorts, unknown remains unknown; no invented conversions or revenue",
+      "learning": "same original fingerprint and source revision drive verified ONE BRAIN learning actually applied on next natural run",
+      "truth_status": "Do not label ALL_GREEN while an obligated stage lacks independent evidence; keep original owner/retry without creating another scheduler or write store"
+    }
+  }
 }

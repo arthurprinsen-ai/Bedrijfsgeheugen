@@ -62,3 +62,53 @@ test('HTTP 200 without durable canonical and Brain acknowledgement never proceed
     assert.deepEqual(calls,['/api/portal-business-input']);
   }
 });
+
+test('even with successful strict stored/stale ACK, stale GET values do not confirm an edited field',async()=>{
+ const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,opts={})=>{
+  if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'brain',currentStateRecordId:'state',organismImpactRecordId:'impact'});
+  if(url==='/api/portal-state'&&opts.method==='POST')return response({stored:true,stale:false});
+  if(url==='/api/portal-state'&&opts.method==='GET')return response({portal:{profile:{employees:24},people:{absence:0}}});
+  throw new Error('unexpected original endpoint');
+ }});
+ await assert.rejects(()=>client.write({portal:{profile:{employees:25},people:{absence:0}}}),/PORTAL_STATE_VALUE_READBACK_MISMATCH/);
+});
+
+test('genuine zero, null, arrays and additional external projection fields preserve exact authoring readback',async()=>{
+ const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,opts={})=>{
+  if(url==='/api/portal-business-input')return response({stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev',brainRecordId:'brain',currentStateRecordId:'state',organismImpactRecordId:'impact'});
+  if(url==='/api/portal-state'&&opts.method==='POST')return response({stored:true,stale:false});
+  if(url==='/api/portal-state'&&opts.method==='GET')return response({portal:{metrics:{revenue:0},people:{absence:null},tasks:{items:[{id:'one'}]},external:{provider:'verified'}}});
+  throw new Error('unexpected original endpoint');
+ }});
+ const result=await client.write({portal:{metrics:{revenue:0},people:{absence:null},tasks:{items:[{id:'one'}]}}});
+ assert.equal(result.mode,'authenticated');
+ assert.equal(result.state.portal.metrics.revenue,0);
+});
+
+test('authored root-level data outside portal must match authenticated readback too',async()=>{
+ const authAck={stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev-root',brainRecordId:'brain-root',currentStateRecordId:'state-root',organismImpactRecordId:'impact-root'};
+ const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,opts={})=>{
+  if(url==='/api/portal-business-input')return response(authAck);
+  if(url==='/api/portal-state'&&opts.method==='POST')return response({stored:true,stale:false});
+  if(url==='/api/portal-state'&&opts.method==='GET')return response({portal:{profile:{employees:25}},companySettings:{fiscalYear:2025}});
+  throw new Error('unexpected original endpoint');
+ }});
+ await assert.rejects(()=>client.write({portal:{profile:{employees:25}},companySettings:{fiscalYear:2026}}),/PORTAL_STATE_VALUE_READBACK_MISMATCH/);
+});
+
+test('all genuinely authored root fields are preserved; derived read models do not become write/readback requirements',async()=>{
+ const authAck={stored:true,stale:false,authorityStored:true,powerhouseFeedStored:true,organismImpactStored:true,sourceRevision:'rev-root',brainRecordId:'brain-root',currentStateRecordId:'state-root',organismImpactRecordId:'impact-root'};
+ let captured;
+ const client=createPortalStateClient({identityProvider:identity,fetchImpl:async(url,opts={})=>{
+  if(url==='/api/portal-business-input'){captured=JSON.parse(opts.body);return response(authAck);}
+  if(url==='/api/portal-state'&&opts.method==='POST')return response({stored:true,stale:false});
+  if(url==='/api/portal-state'&&opts.method==='GET')return response({portal:{profile:{employees:0}},companySettings:{fiscalYear:null},sourceMeta:{external:true}});
+  throw new Error('unexpected original endpoint');
+ }});
+ const result=await client.write({
+  portal:{profile:{employees:0}},companySettings:{fiscalYear:null},
+  signals:[{id:'derived-only'}],sourceMeta:{external:false}
+ });
+ assert.equal(result.mode,'authenticated');
+ assert.deepEqual(captured.answers,{portal:{profile:{employees:0}},companySettings:{fiscalYear:null}});
+});

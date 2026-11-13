@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|original-native-provider-835-source-lock|20261112-v1",
+  "obligation_id": "supabase|migration-history|original-native-provider-835-source-lock|20261112-v1",
+  "title": "Applied original production migration 835 must reach immutable Git source lock before further releases",
+  "status": "CANDIDATE",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "root_cause": "Original PR #5681 merged and applied 20261112211000/original_skipped_provider_reference_readback_handoff_v1 to production (835 native migrations) while original GitHub migration-history.lock.json remained at 834. Repeated failure of provider→original source-lock consumer ACK after native migration.",
+  "impact": "Original protected Portal #5674 exact-head Required 43290454501 rejected six provider/source parity assertions. Main and tenant source diverged; no permission to replay migration, overwrite historical rows, or claim terminal consumer success.",
+  "fix": "Append exactly the independently applied provider 835 identity to the original migration lock, preserving first 834, SQL and original Supabase producer. Add dynamic historical 835-prefix regression and source-linked agent skill/ledger, no new migration or scheduler.",
+  "prevention_rule": "On native applied migration commit: original provider writer must send version, name, observed_at, SQL source hash into existing original Git source-lock consumer and obtain immutable processed ACK before downstream protected PR admission; exact compare against native provider; retry existing original owner under same correlation.",
+  "owner": "original Supabase native migration-history provider writer and ONE BRAIN source-lock consumer",
+  "tests": [
+    "tests/brain-original-provider-835-native-source-lock-20261112.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "regression_contract": "tests/brain-original-provider-835-native-source-lock-20261112.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-835-native-source-lock-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-835-native-source-lock-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-835-native-source-lock-20261112.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "native_provider_count": 835,
+    "native_latest_version": "20261112211000",
+    "native_latest_name": "original_skipped_provider_reference_readback_handoff_v1",
+    "source_lock_before": 834,
+    "source_lock_candidate": 835,
+    "source_sql": "supabase/migrations/20261112211000_original_skipped_provider_reference_readback_handoff_v1.sql",
+    "protected_upstream_pr": 5681,
+    "blocked_downstream_pr": 5674,
+    "blocked_run": 43290454501
+  },
+  "outcome": "Protected candidate; exact-head CI and protected merge plus independent provider and downstream consumer proof due. Never mark traffic, publications or CRO realized from source lock alone.",
+  "compiler": {
+    "failure_class": "PROVIDER_SOURCE_PARITY",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  }
+}

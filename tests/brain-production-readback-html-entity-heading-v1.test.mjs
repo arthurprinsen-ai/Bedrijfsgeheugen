@@ -7,7 +7,7 @@ const COMMIT='0123456789abcdef0123456789abcdef01234567';
 
 function shell(pricing=''){
   return ensureReleaseMarker(`<!doctype html><html><head></head><body>
-<div class="bg-uniform-trust" data-bg-component="trustbar">Vaste prijs, geen uurtje-factuurtje · In twee weken draaiend · Voor het Nederlandse mkb</div>
+<div class="bg-uniform-trust" data-bg-component="trustbar">Duidelijke afspraken vooraf · Klein beginnen, resultaat toetsen · Voor het Nederlandse mkb</div>
 <header class="v17-header" data-bg-component="header"><nav>Oplossingen Platform Prijzen Kennis Over ons Meer</nav></header>
 <aside class="v18-mobile-drawer" data-bg-component="mobile-menu">Oplossingen Platform Prijzen Kennis Over ons Meer</aside>
 <main data-bg-component="main">${pricing}</main>

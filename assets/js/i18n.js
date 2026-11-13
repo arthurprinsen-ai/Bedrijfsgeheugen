@@ -33,11 +33,14 @@
     '/openai-ai-modellen','/claude-ai-modellen','/gemini-ai-modellen','/mistral-ai-modellen',
     '/amazon-ai-modellen','/chatgpt-vs-claude','/chatgpt-vs-gemini','/claude-vs-gemini'
   ]);
+  // Exact original public utility is intentionally not translated into a missing /en route.
+  const NL_ONLY_UTILITY_ROUTES = new Set(['/behoeftecheck']);
   const normalizeRouteKey = route => route.replace(/\/+$/,'') || '/';
   const localizedHref = target => {
     const normalized = normalizeLocale(target);
     const stripped = location.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
     const key = normalizeRouteKey(stripped);
+    if (NL_ONLY_UTILITY_ROUTES.has(key)) return 'https://www.bedrijfsgeheugen.nl/behoeftecheck' + location.search + location.hash;
     const pathname = normalized === 'en'
       ? NL_ONLY_AI_MODEL_ROUTES.has(key) ? '/en/ai-modelwijzer'
         : '/en' + (stripped === '/' ? '/' : stripped)
@@ -62,6 +65,7 @@
     // These eight standalone model pages have no EN counterpart; keep their
     // original Dutch canonical target in internal content links.
     const strippedKey = normalizeRouteKey(stripped);
+    if (NL_ONLY_UTILITY_ROUTES.has(strippedKey)) return 'https://www.bedrijfsgeheugen.nl/behoeftecheck' + url.search + url.hash;
     if (normalizeLocale(target) === 'en' && NL_ONLY_AI_MODEL_ROUTES.has(strippedKey)) {
       url.pathname = strippedKey;
       return url.pathname + url.search + url.hash;
@@ -89,8 +93,8 @@
     ['Start','Start'],['Gratis zelfscan','Free self-scan'],['Frisse Blik Scan','Fresh Perspective Scan'],
     ['Inloggen','Log in'],['Aanmelden','Sign up'],['Home','Home'],['Taal','Language'],
     ['Nederlands','Dutch'],['English','English'],['Voor het Nederlandse mkb','For Dutch SMEs'],
-    ['Vaste prijs, geen uurtje-factuurtje','Fixed price, no hourly billing'],
-    ['In twee weken draaiend','Up and running in two weeks']
+    ['Duidelijke afspraken vooraf','Clear agreements upfront'],
+    ['Klein beginnen, resultaat toetsen','Start small, validate the results']
   ]);
 
   function localTranslation(target, source) {

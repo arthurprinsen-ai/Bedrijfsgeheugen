@@ -184,7 +184,7 @@
 
     var meta = document.createElement('div');
     meta.className = 'bg-shared-mobile-meta';
-    meta.textContent = 'Vaste prijs · In twee weken draaiend · Voor het Nederlandse mkb';
+    meta.textContent = 'Duidelijke afspraken · Klein beginnen · Resultaat toetsen';
     root.appendChild(meta);
     return root;
   }
