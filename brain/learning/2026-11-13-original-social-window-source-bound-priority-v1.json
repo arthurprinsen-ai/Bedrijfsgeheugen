@@ -25,24 +25,6 @@
     "tests/brain-social-learning-observed-window-priority-v1.test.mjs",
     ".agents/skills/powerhouse-social-cro-funnel/SKILL.md"
   ],
-  "testing": {
-    "historical_replay": [
-      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
-    ],
-    "negative": [
-      "wrong tenant",
-      "wrong post",
-      "different provider event ID",
-      "empty source/ID",
-      "wrong quality",
-      "7h snapshot despite caller trying 12h"
-    ],
-    "positive": [
-      "exact identity",
-      "numeric zero",
-      "6h boundary"
-    ]
-  },
   "safety": {
     "new_scheduler": false,
     "new_queue": false,
@@ -54,5 +36,37 @@
   },
   "source_recovery": "Original provider source owner #177 and hourly original social-learning-evaluate must obtain authentically time-aligned provider data. No historical 24/48/72 outcome is invented when source unavailable; social obligations stay OPEN.",
   "production_outcome_proven": false,
-  "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "SOCIAL_HOURLY_PRIORITY_MISSING_ORIGINAL_PROVIDER_EVENT_BINDING",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ],
+    "invariants": [
+      "same original tenant, post, external provider source-event",
+      "observed-at original time ±6h",
+      "numeric provider-authorized source",
+      "no unknown learning promoted",
+      "no new publisher or scheduler"
+    ]
+  },
+  "evidence": [
+    "Production-original 184 OPEN social-learning of 365 all CONTENT_HANDOFF OPEN at 2026-11-13, 143 partial/36 missed/5 other.",
+    "143 partial had posts and any raw snapshots; 81 had numeric impressions at SOME timestamp, 0 valid numeric original ±6h actual 24/48/72h measurements, seven temporally close records were reactions-only partial.",
+    "Source original job #177 active at schedule 18 */6 * * *, original hourly social-learning-evaluate unchanged.",
+    "Existing original social-learning-store observed index lacked tenant_id field and provider-source-event identity priority check, and accepted requested tolerance up to 12h.",
+    "Regression negative cases for wrong identity, time and scope in original existing tests; future production requires protected CI and native Edge source/readback."
+  ]
 }
