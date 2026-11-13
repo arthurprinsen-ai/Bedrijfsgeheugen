@@ -1,0 +1,52 @@
+{
+  "fingerprint": "website|trusted-advisor-live-contract-oracle-drift|20261112-v1",
+  "date": "2026-11-12",
+  "owner": "original website site-shell live readback verifier / ONE BRAIN",
+  "obligation_id": "website|trusted-advisor-live-contract-oracle-drift|20261112-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "root_cause": "Original production brand-shell verifier still required two unsupported legacy trustbar claims after the canonical site-shell generator and public site correctly replaced them, causing a false-negative release gate.",
+  "observed_evidence": [
+    {
+      "workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43320591686",
+      "job_id": 131540026216,
+      "defect": "index.html: trustbalk mist Vaste prijs, geen uurtje-factuurtje",
+      "real_public_readback": "https://www.bedrijfsgeheugen.nl/",
+      "production_commit": "839086756f2559b9abeb8decc8d945e2f0a3d919"
+    }
+  ],
+  "correction": "Update only the existing tools/site-shell/live-contract.mjs TRUST expectation and its existing fixture to new evidence-safe source claims. Keep exact release marker, shell component parity, price/CTA and growth endpoint checks unchanged. Third original HTML-entity pricing fixture aligned with the same source and included in regression replay, without relaxing pricing assertions.",
+  "prevention_rule": "Whenever canonical sitewide copy changes, original build source, static English cache, source test, live contract oracle and production fixture must share the same literal claim fingerprint before protected merge.",
+  "regressions": [
+    "tests/brain-trusted-advisor-production-shell-oracle-20261112.test.mjs",
+    "tools/site-shell/test-live-contract.mjs",
+    "tests/brain-production-readback-html-entity-heading-v1.test.mjs"
+  ],
+  "original_handoff": "protected GitHub PR -> Netlify exact main SHA -> original brand-shell production readback -> ONE BRAIN original owner feedback; no parallel executor",
+  "consumer_processed_ack": "NOT_PROVEN_FOR_CUSTOMER_TENANT",
+  "no_parallel_scheduler": true,
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-advisor-production-shell-oracle-20261112.test.mjs"
+    ],
+    "expected": "Correct current phrases must be expected by live oracle and fixture, while release marker, shell parity and price controls remain enforced"
+  },
+  "evidence": {
+    "historical_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43320591686",
+    "production_public_header_verified": "9 public URLs with corrected trustbar, exact 8390867 release marker independently observed",
+    "live_oracle_current_status": "FAILED_OLD_EXPECTATION",
+    "expected_growth_endpoint_method_contract": "GET /api/growth-event returns 405 as intentionally expected by original workflow",
+    "next_proof": "exact-head Required/CodeQL, protected merge, canonical Netlify SHA, new independent brand shell live readback",
+    "candidate_failed_preflight": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43322075250",
+    "candidate_failed_reason": "Existing HTML-entity pricing fixture used old trustbar, causing both its positive and negative checks to fail before meaningful pricing assertion",
+    "correction": "Synchronized original entity-heading fixture and extended Brain replay to run its two tests"
+  },
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-production-shell-oracle-drift-v1.md"
+}
