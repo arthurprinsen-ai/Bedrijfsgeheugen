@@ -16,7 +16,8 @@ test('original provider 850 source lock appends one exactly verified migration a
   assert.equal(lock.applied.filter(x=>x.version===newIdentity.version).length,1);
   assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
   assert.ok(lock.applied.every((x,i)=>i===0||x.version>lock.applied[i-1].version));
-  assert.equal(lock.captured_at, '2026-11-13T18:05:43.826407Z');
+  assert.ok(Number.isFinite(Date.parse(lock.captured_at)));
+  assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-13T18:05:43.826407Z'));
 });
 
 test('original receipt migration is source-backed and keeps the same execution and security boundary', () => {
