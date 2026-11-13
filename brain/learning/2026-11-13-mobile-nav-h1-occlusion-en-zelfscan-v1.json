@@ -1,0 +1,60 @@
+{
+  "fingerprint": "website|mobile-nav-hidden-state|en-zelfscan-phone-h1-occlusion|20261113-v1",
+  "date": "2026-11-13",
+  "owner": "original public website shared mobile navigation / original site-shell visibility verifier",
+  "obligation_id": "website|mobile-nav-hidden-state|en-zelfscan-phone-h1-occlusion|20261113-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5284",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "observed_evidence": {
+    "original_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43378918503",
+    "original_job_id": 131731943209,
+    "production_sha": "7d27a6bbc17887d7982ae23491007087d6d9e443",
+    "routes_discovered": 279,
+    "routes_scanned": 279,
+    "exact_failure": "/en/zelfscan phone: h1 is visually occluded by div.bg-shared-mobile-view",
+    "seo_scoped_rules": {
+      "health_score": 100,
+      "errors": 0,
+      "metadata_warnings": 69,
+      "notices": 2
+    }
+  },
+  "root_cause": "SOURCE_RISK_CONFIRMED_BROWSER_CAUSALITY_PENDING: dynamic #bgSharedMobileNav appended with aria-hidden=true but no native hidden; its CSS is loaded asynchronously. Shared fixed-position mobile styling can precede closed-state visibility styling, letting the closed root overlay a phone H1. Original sitewide close handler also set aria-hidden without native hidden.",
+  "correction": "Native hidden before DOM append and on original close paths, remove only on original user-initiated open; fail-closed static CSS for aria-hidden=true; keep exact original menu catalog, click, Escape, resize, i18n, SEO, URLs and all original visibility/CLS assertions.",
+  "prevention_rule": "Dynamically inserted mobile overlays may never rely only on aria-hidden or late-loaded CSS for visual closure. Every initial/close owner must set native hidden and CSS must fail closed on aria-hidden=true before load. Accept only after exact-head protected CI, actual 390px /en/zelfscan browser readback and all public route visibility sweep.",
+  "regressions": [
+    "tests/brain-website-mobile-nav-hidden-overlay-20261113.test.mjs",
+    "tools/site-shell/standalone-visibility-check.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-mobile-nav-hidden-overlay-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-website-mobile-nav-hidden-overlay-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-website-mobile-nav-hidden-overlay-20261113.test.mjs"
+    ],
+    "expected": "Existing native mobile menu closed state cannot visually occlude a phone heading, while H1 hit-testing and CLS<=0.100 continue to fail closed."
+  },
+  "compiler": {
+    "failure_class": "WEBSITE_MOBILE_VISIBILITY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "original_handoff": "same website/mobile owner -> original protected GitHub Required/CodeQL -> canonical Netlify production -> original brand-shell public-route browser readback -> original ONE BRAIN incident; no separate system",
+  "consumer_processed_ack": "NOT_APPLICABLE_STATIC_UI",
+  "customer_cro_impact": "NOT_MEASURED",
+  "evidence": {
+    "previous_closed_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4702",
+    "existing_sitewide_mobile_runtime": "assets/sitewide-mobile-ui-20261111.js",
+    "original_browser_source": "tools/site-shell/standalone-visibility-check.mjs",
+    "next_proof": "protected merge, exact provider ready and original production phone route + full browser sweep"
+  },
+  "activity_ledger": "docs/development-ledger-events/2026-11-13-mobile-nav-h1-occlusion-en-zelfscan.md"
+}
