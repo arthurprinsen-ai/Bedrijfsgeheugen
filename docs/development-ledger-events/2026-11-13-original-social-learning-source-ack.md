@@ -12,3 +12,12 @@
 - **Preview-incident & preventieregel:** nieuw PR #5752-preview gaf `MIGRATIONS_FAILED`: de snapshot uit `pg_get_functiondef` heeft geen eindpuntkomma, waardoor de daaropvolgende `REVOKE` binnen dezelfde SQL-instructie belandde (`syntax error at or near REVOKE`). Hersteld met expliciete `$function$;` en regressietest die de DDL-grens afdwingt; geen onbewezen preview als groen tellen.
 
 - **Tweede preview-herstel:** de syntaxis slaagde, maar postflight vergeleek `SOURCE_RECEIVED` (alleen migratiecommentaar) met de functiebody. De echte semantische marker is `RECEIVED_SOURCE_ONLY_NOT_PROVIDER_MEASUREMENT_OR_LEARNING`; assertion gecorrigeerd en regressietest toegevoegd. Provider-preview blijft verplicht, nooit negeren.
+
+
+## Release en readback — productie
+- **Protected merge:** PR #5752, `2feb1186bc48e5b9fea0ff4dc076b697f238147e`, exact-head Required/CodeQL/preview passed.
+- **Provider:** Supabase `adhjwmvyoixzjtmiroln` native `schema_migrations` 850/850; nieuwe entry `20261113174500/original_social_learning_source_ack_v1`, gecontroleerd 2026-11-13T18:05:43.826407Z; eerdere 849 identiteiten vergeleken met bestaande source-lock: 0 verschillen.
+- **ACL/contract:** Postgres `pg_get_functiondef` bevat SHA256-bronversie en `RECEIVED_SOURCE_ONLY_NOT_PROVIDER_MEASUREMENT_OR_LEARNING`; geen `anon`/`authenticated` uitvoerrecht; uitsluitend bestaande serverrol.
+- **Oorspronkelijke replay:** vier opeenvolgende begrensde oproepen van dezelfde originele `powerhouse_content_handoff_receipts_v1` zonder nieuwe planning/provider-send; exact 185/185 bronsnapshots en consumer-ACKs, 0 inconsistenties, 0 onterecht bewezen downstream-resultaten.
+- **Huidige grens:** BRAIN-records en sociale leerverplichtingen blijven OPEN tot werkelijk gemeten en hergebruikt; natuurlijke bestaande scheduler-run na de release en provider/experiment/revenue outcomes afzonderlijk te bewijzen. Geen all-green.
+- **Borging:** source lock update naar verifieerbare entry #850, regressie `tests/brain-original-provider-850-migration-lock-20261113.test.mjs`; preview-incident preventies voor statement-einde en semantische postflight-marker blijven testbaar.
