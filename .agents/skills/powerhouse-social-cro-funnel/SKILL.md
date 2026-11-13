@@ -5,6 +5,14 @@ description: Operate the existing Bedrijfsgeheugen social post → engagement �
 
 # Powerhouse social CRO — één bewijsgestuurde lus (30 oktober 2026)
 
+## 2026-11-13 — blog merge → original publisher live-proof zonder uurvertraging
+
+Fingerprint: `BLOG_MERGE_PUSH_ORIGINAL_OWNER_RECEIPT_20261113`. De originele `.github/workflows/powerhouse-daily-blog.yml` blijft de enige eigenaar van publicatie en sluiting. Een beschermde `main`-merge van `blog/**` triggert die **zelfde** bestaande `push`-workflow onmiddellijk naast het **ongewijzigde** originele `11 * * * *` uurrooster; bestaande concurrency `powerhouse-daily-blog` en de dag/tenant-schrijverspoort voorkomen dubbele auteurs en posts. Geen extra job, workflow, scheduler, publisher, Netlify-deploy of publicatiecircuit.
+
+Vóór `LIVE_PROVEN` blijft `tools/content-growth/reconcile-merged-blog-live.mjs` verplicht: precies één originele gemergede PR per lokale publicatiedag; Netlify `release.json` productieautoriteit en exacte SHA-afstamming; de exacte publieke HTTPS artikelpagina als **HTML 200 met canonical en immutable content-id**, daarna de bestaande geautoriseerde `record_content_publication_state`-RPC, originele terminal-reconciliatie en onafhankelijke Supabase-readback met hetzelfde deploy-ID. `Netlify READY` zonder deze GET/ACK is alleen `DEPLOYED_WAITING_HTTP_CONSUMER_ACK`, nooit LIVE_PROVEN of geleerd. Een mislukte GET houdt de originele verplichting open en laat de bestaande hourly retry actief; nooit een fictieve HTTP-status, fallback-homepage of nieuwe blog-PR invoeren.
+
+De bestaande `agent-social-delivery-recovery` coördineert `verify-merged-blog-release-triggers-original-immediate-public-html-consumer-ack` met het originele blogworkflow-eigenaarschap. Na echte bron-ACK moet exact dezelfde tenant, datum, sourceRevision en correlatie naar ONE BRAIN/Heartbeat/Portal worden geconsumeerd; meting/experiment/omzet blijven afzonderlijke garanties. Regressie: `tests/brain-blog-merge-immediate-original-handoff-20261113.test.mjs`; P0 #4198.
+
 ## 10 november 2026 — autonoom herstellen, geen statusrapport als vervanging voor uitvoering
 
 **Verplichte agentinstructie voor iedere sociale leer- en publicatieagent:** bij een onvoltooide content-, meet-, analyse- of experimenteerstap in dezelfde sessie eerst de originele bron, eigenaar en provider-ACK inspecteren, herstel binnen de bestaande bevoegdheid uitvoeren, regressie toevoegen, beschermde release voltooien en provider-readback toetsen. Een lijst met open blockers of "volgende natuurlijke run afwachten" is géén geleverde herstelactie wanneer de oorspronkelijke actie veilig uitvoerbaar is. Meld uitsluitend concreet uitgevoerd werk en aantoonbare resultaten; noem echte onoplosbare externe toestemmings- of bronbeperkingen zonder er succes van te maken.
@@ -287,7 +295,6 @@ De bestaande originele `public.powerhouse_content_handoff_receipts_v1` onder cro
 Oorspronkelijke read-only productiemeting: 436 bronrecords, geen ontbrekende `updated_at`; van de eerste 28 bewezen `CANCELLED/NO_PUBLISH_POLICY_ACK` ontbraken 28/28 expliciete tenant/revisie/correlatie/consumenten-ACK. Onder de oorspronkelijke historische fair replay krijgen terminale `CANCELLED` records eenmalig een refresh als deze bronvelden nog ontbreken of afwijken; daarna geen eindeloos muteren. Reeds waarachtig `FULFILLED` historische publicaties worden nooit om deze metadatacorrectie opengezet; eventuele ontbrekende backfill blijft bewijsverplichting bij oorspronkelijke eigenaar. Bewaar streng `OVERDUE_PROVIDER_READBACK` voor eerdere mogelijke provider-side-effecten, nooit dubbele publicatie en nooit vals succes.
 
 Verplichte preventie-/regressieregel `NO_SOURCE_HANDOFF_WITHOUT_TENANT_REVISION_CORRELATION_CONSUMER_ACK`. Eén `agent-reliability` en `agent-data-quality` binnen de **bestaande** keten. Geen nieuwe publisher, queue, scheduled task, replica of service-role grants. Machine-BRAIN: `brain/learning/2026-11-13-original-content-source-revision-consumer-ack-v1.json`; oorspronkelijke beschermd vrij te geven migratie `supabase/migrations/20261113071500_original_content_handoff_source_revision_receipt_v1.sql`, test `tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs`; oorspronkelijke #4198/#4215. Nooit live/groen vóór required gates, productie-DB readback en natuurlijke #171 consumer-ACK.
-
 
 ## 13 november 2026 — originele geannuleerde social-learningbron niet laten verdwijnen
 

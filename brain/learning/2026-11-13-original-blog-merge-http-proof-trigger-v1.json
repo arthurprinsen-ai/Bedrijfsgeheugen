@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "content|2026-11-13|blog|original-merge-to-http-liveproof-trigger-gap",
+  "obligation_id": "content|2026-11-13|blog|original-merge-to-http-liveproof-trigger-gap",
+  "title": "Protected blog merge did not trigger original immediate proof reconciliation",
+  "status": "FIX_CANDIDATE",
+  "root_cause": "Canonical Powerhouse daily blog workflow's on.push.paths did not include blog/** output. Original protected blog PR #5718 could merge and deploy Netlify READY while the only original reconcile step remained scheduled hourly, leaving canonical Supabase obligation APPROVED without HTTP/consumer ACK during the delay.",
+  "impact": "Nov 13 original blog PR #5718 merged de138afbd5caa5738b1d4b881e18bdc29ed2bdc7 and Netlify production deploy 6af6c751e4198b40cb648397 READY at 2026-11-13T08:18:01.816Z, yet at last DB read blog status APPROVED, live_proven_at and public_http_status NULL. This is handoff latency; no evidence the public page failed or conversion outcomes changed.",
+  "fix": "Add blog/** to on.push.paths of ONE existing hourly blog workflow, preserve original 11 * * * * schedule and same concurrency, existing signed proof reconciler, source PR merge and no-duplicate gates; update original agent/skill, regression, machine/human logs.",
+  "prevention_rule": "For same-day protected blog merge, the original owner should wake on blog output changes and separately prove actual rendered canonical article HTTP200, exact production deploy SHA and original DB consumer receipt; never equate CI/Netlify READY with a published and learned article.",
+  "owner": "Existing Powerhouse daily blog from Supabase workflow / agent-social-delivery-recovery, original P0 #4198",
+  "tests": [
+    "tests/brain-blog-merge-immediate-original-handoff-20261113.test.mjs",
+    "tests/brain-daily-blog-production-closure-v1.test.mjs",
+    "tests/brain-original-blog-netlify-provider-proof-20261112.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-merge-immediate-original-handoff-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-merge-immediate-original-handoff-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-merge-immediate-original-handoff-20261113.test.mjs"
+    ]
+  },
+  "evidence": [
+    "GitHub #5718 protected merged main de138afbd5caa5738b1d4b881e18bdc29ed2bdc7; exact-head Required 43391048764 and CodeQL 43391048836 succeeded.",
+    "Native Netlify production deploy 6af6c751e4198b40cb648397 READY published at 2026-11-13T08:18:01.816Z exact SHA.",
+    "Original content_publication_obligations blog 2026-11-13 was still APPROVED, evidence.public_http_status null, evidence.netlify_deploy_id null on observed readback.",
+    "Existing on.push.paths matched workflow and Supabase source paths only, no blog/**; original hourly 11 * * * * job still runs original script."
+  ],
+  "status_boundary": "Candidate until protected Required/CodeQL merge, independent postmerge workflow activation and public HTML+terminal Supabase readback; do not claim LIVE_PROVEN or LEARNED from just the new trigger.",
+  "compiler": {
+    "failure_class": "MISSING_HANDOFF_TRIGGER",
+    "scope": "ONE_EXISTING_WORKFLOW",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
