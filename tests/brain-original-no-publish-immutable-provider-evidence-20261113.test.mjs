@@ -57,11 +57,11 @@ test('exact same original RPC, RLS grants, fixed search path and one original st
   'FROM PUBLIC,anon,authenticated;',
   'GRANT EXECUTE ON FUNCTION public.record_content_publication_skip(text,date,text,text,jsonb)',
   'TO service_role;',
-  'FOR UPDATE',
+  'for update;',
   'PUBLICATION_OBLIGATION_NOT_FOUND',
   'NO_PUBLISH_DECISION_TOO_LATE'
  ]) assert.ok(current.includes(clause),'original scope changed unexpectedly: '+clause);
- assert.equal(fn(current).split('UPDATE public.content_publication_obligations').length-1,1);
+ assert.equal(fn(current).split('update public.content_publication_obligations').length-1,1);
  const guard=readFileSync(new URL('../supabase/migrations/20261113083000_original_one_chain_content_terminal_proof_guard_v1.sql',import.meta.url),'utf8');
  for(const p of ['CONTENT_HANDOFF_TERMINAL_EXACT_ACK_REQUIRED','CONTENT_HANDOFF_TERMINAL_VETO_PROOF_REQUIRED','CONTENT_HANDOFF_TERMINAL_OUTCOME_PROOF_REQUIRED'])assert.ok(guard.includes(p));
  assert.doesNotMatch(current,/drop trigger|disable trigger|grant execute.*to authenticated|grant execute.*to anon/i);
