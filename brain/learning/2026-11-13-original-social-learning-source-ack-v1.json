@@ -27,7 +27,9 @@
     "protected_merge": "PENDING",
     "provider_migration": "PENDING",
     "independent_original_consumer_readback": "PENDING",
-    "public_post_or_revenue_proven": false
+    "public_post_or_revenue_proven": false,
+    "preview_initial_failure": "Supabase Preview MIGRATIONS_FAILED 2026-11-13: generated pg_get_functiondef CREATE FUNCTION statement lacked terminating semicolon before REVOKE; isolated in branch Postgres logs.",
+    "preview_fix": "Reinsert standalone DDL semicolon before REVOKE; requires fresh protected preview check."
   },
   "compiler": {
     "failure_class": "MISSING_CONSUMER_ACK",
@@ -45,7 +47,8 @@
       "consumer ACK only acknowledges source receipt",
       "identical source preserves accepted_at",
       "revision drift creates fresh ACK not duplicate provider publication",
-      "provider readback, metrics and subsequent application remain OPEN until real independent evidence"
+      "provider readback, metrics and subsequent application remain OPEN until real independent evidence",
+      "pg_get_functiondef copied into a migration must terminate with semicolon before following SQL DDL/DCL"
     ]
   },
   "production_success": false,
