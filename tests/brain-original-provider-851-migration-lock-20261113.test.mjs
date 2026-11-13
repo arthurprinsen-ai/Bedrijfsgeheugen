@@ -24,6 +24,8 @@ test('source lock 851 includes exact already-merged SQL and introduces no new ex
  assert.match(sql,/powerhouse|heartbeat|brain/i);
  const note=JSON.parse(readFileSync(new URL('../brain/learning/2026-11-13-original-provider-851-migration-lock-v1.json',import.meta.url),'utf8'));
  assert.equal(note.source_lock.applied_count,851);
+ assert.deepEqual(note.evaluation.shadow,['tests/brain-original-provider-851-migration-lock-20261113.test.mjs']);
+ assert.deepEqual(note.evaluation.canary,['tests/brain-original-provider-851-migration-lock-20261113.test.mjs']);
  assert.equal(note.source_lock.mismatched_prior_850,0);
  assert.equal(note.remedy.no_new_sql,true);
  assert.equal(note.remedy.no_second_scheduler,true);
