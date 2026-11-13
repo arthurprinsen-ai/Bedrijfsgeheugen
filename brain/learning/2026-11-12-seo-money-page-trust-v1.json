@@ -34,7 +34,18 @@
     "original_customer_cro_effect": "NOT_PROVEN",
     "original_heartbeat_ack_proven": true,
     "original_owner_execution_proven": false,
-    "website_production_release_readback": "PENDING"
+    "website_production_release_readback": "PENDING",
+    "migration_parity_dependency": {
+      "project": "adhjwmvyoixzjtmiroln",
+      "provider_count": 840,
+      "previous_source_count": 839,
+      "observed_at": "2026-11-13T06:54:48.298966Z",
+      "native_version": "20261113062500",
+      "native_name": "original_no_publish_terminal_handoff_ack_v1",
+      "resolved_in_candidate_source": true,
+      "protected_preflight_pending": true,
+      "production_live_unproven": true
+    }
   },
   "fix": "Remove wrong duplicate breadcrumb, point canonical Koppelingen parent to /systemen-koppelen, align indicative one-way vs complex pricing consistently in FAQ and schema, preserve same-origin absolute JSON-LD URLs and add offline translation. Also align the original assets/stijl.js price authority (Exact + Twinfield), deterministic money-prerender final HTML and static English pricing; retain one protected original website PR/owner.",
   "prevention": [
@@ -42,7 +53,8 @@
     "Always match published price ranges between visible FAQ, JSON-LD and the central service guide.",
     "Verify original Netlify production readback before PROVEN; never infer visits or revenue.",
     "Check exact final-built HTML after the original assets/stijl.js money-prerender layer, not only the raw page HTML; ensure the decision card, FAQPage and visible FAQ have non-contradictory prices, CTA and English translation.",
-    "Never advance an original seo_money_page_update recommendation from suggested to fulfilled on mere forecast, merged code, or healthy Heartbeat; require exact current Netlify production SHA, public route readback, original #140/Heartbeat same-SHA ACK, and separate CRO/7-14-28d effect proof."
+    "Never advance an original seo_money_page_update recommendation from suggested to fulfilled on mere forecast, merged code, or healthy Heartbeat; require exact current Netlify production SHA, public route readback, original #140/Heartbeat same-SHA ACK, and separate CRO/7-14-28d effect proof.",
+    "Native Supabase provider-applied migration identities and Git executable migration-source lock must be exact peers before protected website/SEO production merge; never bypass native migration preflight or replay an already-applied version."
   ],
   "compiler": {
     "failure_class": "SEO_MONEY_PAGE_TRUST_PRICE_AND_BREADCRUMB_DRIFT",
