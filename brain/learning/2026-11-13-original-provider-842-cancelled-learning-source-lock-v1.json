@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-13",
+  "fingerprint": "supabase|migration-history|original-cancelled-learning-provider-842-source-lock|20261113-v1",
+  "status": "PROVIDER_APPLIED_SOURCE_LOCK_CANDIDATE",
+  "owner": "existing original Supabase protected GitOps provider-applied migration source lock owner",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Original protected #5721 applied native migration 20261113082500 to production and independently fixed the one historical CANCELLED social source missing BRAIN receipt, but original main GitOps migration-history.lock.json remained one immutable version behind (841 vs actual 842) and original postmerge BRAIN delivery run #43394778475 backend showed 15 parity failures. No source-loss in cancel ACK; deficiency is the post-native-provider-to-original-source-lock handoff.",
+  "prevention": "ORIGINAL_NATIVE_APPLIED_MIGRATION_REQUIRES_NEXT_ORIGINAL_GITOPS_LOCK_CONSUMER_ACK_BEFORE_WHOLE_BRAIN_GREEN: compare entire applied provider version/name history with current original source manifest and Git lock; only independently applied versions enter immutable lock. Keep original exclusivity, protected CI and next original BRAIN delivery; never infer provider posting, experiment or revenue from database source parity.",
+  "evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-13T08:43:00.785Z",
+    "applied_versions": 842,
+    "distinct_provider_versions": 842,
+    "latest_applied_version": "20261113082500",
+    "latest_applied_name": "original_cancelled_social_learning_source_ack_v1",
+    "original_pre_fix_source_lock_entries": 841,
+    "original_postmerge_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43394778475",
+    "original_postmerge_failure_assertions": 15,
+    "original_cancelled_source_original_brain_ACK": "CANCELLED / SOURCE_CANCELLED_INVALID_LEARNING_ACK; tenant/source revision/correlation+consumer ACK verified, no external send",
+    "next_original_gitops_lock_protected_merge": "PENDING",
+    "original_handoff_already_idempotent": true,
+    "remaining_social_learning_open": 184,
+    "remaining_commercial_broken_or_unproven": 7
+  },
+  "fix": "Only append exact provider-readback 842nd version/name to original GitOps lock and capture actual provider observation; never reexecute migration. Add one full-inventory parity regression, ONE BRAIN semantic lesson, human ledger and reaffirm existing original agent/skill postmerge handoff contract.",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-842-cancelled-learning-source-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-842-cancelled-learning-source-lock-20261113.test.mjs"
+    ],
+    "expected": "842 applied provider entries are mirrored 1:1 in existing original immutable lock and executable SQL, with subsequent provider/Brain delivery readback. Future native migrations remain allowed only with their own proof."
+  },
+  "provider_applied_verified": true,
+  "all_loops_green": false,
+  "proven_customer_revenue_eur": 0,
+  "new_provider_send_count": 0,
+  "same_original_gitops_owner": true
+}
