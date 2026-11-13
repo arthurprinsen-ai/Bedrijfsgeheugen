@@ -5,6 +5,7 @@ import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
 import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource } from '../_shared/personal-observational-source-routing.mjs';
 import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-result.mjs';
+import { classifyMiraRadarHttpStatus } from '../_shared/mira-radar-http-status.mjs';
 import { isSpreadsheetBusinessContext } from '../_shared/mira-business-spreadsheet-context.mjs';
 import { classifyMiraSourceUrl } from '../_shared/mira-source-url-quality.mjs';
 
@@ -178,5 +179,5 @@ Deno.serve(async(req:Request)=>{
    },
    runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
    materialized:mat.data,personalSourceRotation:personalRotation.data||null,errors
- });
+ }, classifyMiraRadarHttpStatus({sourceReady:supply.ok,errors}));
 });
