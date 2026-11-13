@@ -2,7 +2,7 @@
   "fingerprint": "seo|one-chain|original-handoff-assurance|20261113-v1",
   "obligation_id": "seo|one-chain|original-handoff-assurance|20261113-v1",
   "parent_issue": 4198,
-  "status": "SOURCE_CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "status": "PRODUCTION_GUARD_VERIFIED_RED_COMMERCIAL_OUTCOMES_STILL_OPEN",
   "owner": "powerhouse-seo-opportunity-resolver",
   "original_source": "public.brain_obligations.GROWTH_SOURCE_DAILY_HANDOFF",
   "original_consumer": "original powerhouse-content-orchestrator-140",
@@ -10,13 +10,14 @@
   "problem": "False-green SEO assurance when recommendations or forecasts exist but execution, independent measurement, realized outcome and next-run learning are not proven",
   "source_evidence": {
     "audit_day": "2026-11-13",
-    "seo_assurance_status": "GREEN_BUT_OUTCOME_UNPROVEN",
+    "seo_assurance_status": "RED_FAIL_CLOSED_IN_LIVE_ONE_BRAIN_AND_LOOP_ASSURANCE",
     "open_growth_handoffs": 3,
     "ack_revision_match": true,
     "actual_cro_experiment_executed": false,
     "causal_lift_or_revenue_proven": false,
     "keyword_rows_canonical": 33,
-    "broken_or_unproven_handoffs_7d": 7
+    "broken_or_unproven_handoffs_7d": 7,
+    "previous_seo_assurance_status": "GREEN_BUT_OUTCOME_UNPROVEN"
   },
   "remedy": {
     "migration": "supabase/migrations/20261113164000_original_seo_one_chain_outcome_assurance_v2.sql",
@@ -28,12 +29,12 @@
     "retain_original_obligations": true
   },
   "verification": {
-    "required": "PENDING",
-    "codeql": "PENDING",
-    "supabase_preview": "PENDING",
-    "protected_merge": "PENDING",
-    "production_function_readback": "PENDING",
-    "next_original_run_heartbeat": "PENDING",
+    "required": "SUCCESS_RUN_43467928347_EXACT_HEAD",
+    "codeql": "SUCCESS_RUN_43467927648_EXACT_HEAD",
+    "supabase_preview": "SUCCESS_IN_REQUIRED_RUN_43467928347",
+    "protected_merge": "MERGED_6e435bdcffc343b1fd834d3d5a65abfeedb67e31",
+    "production_function_readback": "PROVIDER_MIGRATION_20261113164000_APPLIED_EXACT_FUNCTION_SOURCE_VERIFIED",
+    "next_original_run_heartbeat": "PENDING_NEXT_NATURAL_RUN",
     "outcome_proven": false
   },
   "learning": "Source receipt and consumer ACK are not proof of production delivery, experiment, paid order or next-run learning; deny terminal green until linked independent receipts",
@@ -75,6 +76,37 @@
     ],
     "false_green": "seo-opportunity-resolver guard.pass=true on recommendations/forecasts while original daily commercial chain not proven",
     "test_replay": "tests/brain-seo-original-handoff-assurance-20261113.test.mjs",
-    "release_status": "PR_SOURCE_ONLY_NOT_LIVE"
+    "release_status": "PRODUCTION_FAIL_CLOSED_ASSURANCE_LIVE_20261113_1703_UTC_OUTCOME_OPEN",
+    "independent_runtime_readback": {
+      "observed_at_utc": "2026-11-13T17:03:14Z",
+      "original_obligation_id": "40b62d82-dcd3-4a44-98d0-3f94071008a9",
+      "original_period": "2026-11-13",
+      "original_obligation_state": "OPEN",
+      "original_source_revision": "937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb",
+      "consumer_consumed_revision": "937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb",
+      "source_received": true,
+      "consumer_ack_exact": true,
+      "original_optimization_status": "NOT_EXECUTED",
+      "original_guard_result": "WAIT_PRODUCTION_ACTION",
+      "original_guard_pass": false,
+      "action_readback_measurement_outcome_learning_guard_receipts": "ALL_6_PASS_FALSE",
+      "original_operations_assurance_state": "OPEN",
+      "original_loop_assurance_status": "RED",
+      "loop_count_readback": {
+        "green": 7,
+        "red": 8
+      },
+      "independent_provider_migration_version": "20261113164000",
+      "original_executor_changed": false,
+      "original_scheduler_created": false,
+      "outcome_proven": false,
+      "next_original_run_proven": false
+    },
+    "release_links": {
+      "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5748",
+      "required": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43467928347",
+      "codeql": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43467927648",
+      "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+    }
   }
 }
