@@ -1,0 +1,56 @@
+{
+  "fingerprint": "powerhouse|supabase|native-provider-851-exact-source-lock|20261113-v1",
+  "obligation_id": "powerhouse|supabase|native-provider-851-exact-source-lock|20261113-v1",
+  "parent_issue": 4198,
+  "owner": "original Supabase Migration Authority + protected GitHub BRAIN",
+  "status": "PROVIDER_851_IN_SOURCE_CANDIDATE_PROTECTED_CHECKS_PENDING",
+  "root_cause": "Protected SEO/Heartbeat original consumer release #5756 applied a new real production SQL migration 851 while main Git immutable original source lock remained at 850; this deterministically causes original backend BRAIN full-provider parity checks to fail and hides otherwise valid handoff provenance.",
+  "prevention_rule": "At every real provider migration, compare the entire native original provider schema_migrations ledger to exact version/name in the single Git migration-history.lock.json; append only independently observed new native identity after zero prefix mismatches; release through original protected Required/CodeQL and verify main. Never fabricate provider migrations, replay SQL, or introduce another cron.",
+  "source_lock": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "applied_count": 851,
+    "mismatched_prior_850": 0,
+    "prior_source_count": 850,
+    "provider_851_version": "20261113190000",
+    "provider_851_name": "original_seo_heartbeat_cro_consumer_receipt_v1",
+    "native_observed_at": "2026-11-13T18:21:42.215773Z",
+    "primary_source": "supabase_migrations.schema_migrations / independent read-only provider version/name parity",
+    "main_source_after_candidate": "supabase/migration-history.lock.json",
+    "original_sql_file": "supabase/migrations/20261113190000_original_seo_heartbeat_cro_consumer_receipt_v1.sql"
+  },
+  "remedy": {
+    "no_new_sql": true,
+    "no_second_scheduler": true,
+    "no_provider_publication": true,
+    "source_lock_only": true,
+    "regression": "tests/brain-original-provider-851-migration-lock-20261113.test.mjs",
+    "existing_original_executor": "#140/#171 + original Supabase migration deployment authority"
+  },
+  "verification": {
+    "original_provider_readback": "PASS: 851 native applied; exact 850 prefix 0 mismatch",
+    "protected_required": "PENDING",
+    "protected_codeql": "PENDING",
+    "merge_to_main": "PENDING",
+    "provider_actual_end_to_end_heartbeat_cro_outcome": "OPEN_NOT_CLAIMED"
+  },
+  "compiler": {
+    "failure_class": "PROVIDER_SOURCE_LOCK_DRIFT",
+    "scope": "IMMUTABLE_SQL_SOURCE_HISTORY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-851-migration-lock-20261113.test.mjs"
+    ],
+    "invariants": [
+      "exact native provider 851 version/name only once",
+      "prior 850 unchanged and match provider",
+      "no new migration SQL or second scheduler",
+      "SOURCE_TO_BRAIN_ACK is not downstream CRO/paid revenue outcome"
+    ]
+  },
+  "production_success": false,
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}
