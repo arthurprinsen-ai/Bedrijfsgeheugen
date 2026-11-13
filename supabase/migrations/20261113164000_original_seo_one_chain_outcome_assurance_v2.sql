@@ -121,6 +121,15 @@ BEGIN
       AND nullif(v_original.evidence#>>'{learning,next_original_run_id}','') IS NOT NULL;
   END IF;
 
+  -- NULL from missing optional JSON evidence must fail CLOSED, not leak into
+  -- a nullable guard/pass or an ambiguous UI status.
+  v_source_received := coalesce(v_source_received,false);
+  v_ack_exact := coalesce(v_ack_exact,false);
+  v_execution_proven := coalesce(v_execution_proven,false);
+  v_measurement_proven := coalesce(v_measurement_proven,false);
+  v_outcome_proven := coalesce(v_outcome_proven,false);
+  v_learning_proven := coalesce(v_learning_proven,false);
+
   v_guard := (v_recs>0 OR v_forecasts>0)
     AND v_keyword_count>0
     AND v_source_rows>=6
@@ -128,6 +137,8 @@ BEGIN
     AND v_ack_exact AND v_execution_proven
     AND v_measurement_proven AND v_outcome_proven AND v_learning_proven
     AND v_original_found AND v_original.state='FULFILLED';
+
+  v_guard := coalesce(v_guard,false);
 
   v_proof := jsonb_build_object(
     'contract','powerhouse-seo-opportunity-resolver-v2-exact-original-handoff',
