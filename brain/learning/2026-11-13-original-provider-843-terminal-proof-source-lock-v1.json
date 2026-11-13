@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-13",
+  "fingerprint": "supabase|gitops|original-terminal-proof-provider-843-source-lock|20261113-v1",
+  "status": "PROVIDER_843_APPLIED_SOURCE_LOCK_RECOVERY_CANDIDATE",
+  "owner": "original Supabase protected GitOps provider-applied migration-history source-lock writer",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Protected PR #5724 merged the separate original terminal CONTENT_HANDOFF proof guard and native provider applied migration 20261113083000. Original GitHub migration-history.lock.json was still 842 while real provider registered 843. Postmerge BRAIN exact source-history parity needs the one original provider-to-GitOps source ACK before declaring full release closure; function/trigger is actually applied, but lock drifts one identity until reconciliation.",
+  "fix": "Append exactly one independently provider-applied version/name #843 to original immutable source lock, preserving first 842 unchanged, update existing self-improvement skill and a monotone source-manifest regression; ONE BRAIN machine/human ledger. No SQL execution, new migration, new schedulers, publisher or tenant grants.",
+  "prevention": "After every original protected SQL merge verify actual Supabase provider applied identity, trigger/ACL when applicable, then original immutable source lock through one protected GitOps reconciliation. Postmerge exact-main BRAIN delivery must PASS; missing provider truth remains blocked, never fabricated or re-applied.",
+  "evidence": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-13T08:58:32.883023Z",
+    "applied": 843,
+    "unique_count": 843,
+    "latest_version": "20261113083000",
+    "latest_name": "original_one_chain_content_terminal_proof_guard_v1",
+    "original_base_sha": "5aea7dceae2be6f760e7abc885b328e01e5a4067",
+    "lock_before": 842,
+    "sql_merge_pr": 5724,
+    "sql_merge_sha": "5aea7dceae2be6f760e7abc885b328e01e5a4067",
+    "provider_trigger": "brain_content_handoff_terminal_proof_guard_v1",
+    "provider_trigger_enabled": "O"
+  },
+  "tests": [
+    "tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-original-one-chain-terminal-proof-20261113.test.mjs"
+  ],
+  "status_boundary": "Source lock is candidate until protected Required/CodeQL native merge and independent postmerge original provider/ONE BRAIN readback; no actual Meta post, social learning, customer data or CRO outcomes inferred.",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "DATABASE_SOURCE_LOCK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs"
+    ],
+    "expected": "Original native applied 843rd exact version/name in immutable GitOps source lock, entire executable SQL manifest parity and original content terminal-proof guard. Re-run original protected BRAIN on merged main and independently verify production provider identity before closure."
+  }
+}
