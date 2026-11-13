@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "portal|businessinput|brain-record-type-kind-schema-rejected-original-four-stage-source-writes|20261113-v1",
+  "obligation_id": "portal|businessinput|brain-record-type-kind-schema-rejected-original-four-stage-source-writes|20261113-v1",
+  "title": "Original Portal BusinessInput authority schema rejected three of four canonical portal record contracts",
+  "status": "PROVIDER_SCHEMA_APPLIED_SOURCE_GUARD_PROVEN",
+  "root_cause": "Authenticated original portal-business-input-handler appends SourceObservation/raw_source, BusinessInput/SourceTruth, CurrentState/current_state and ImpactAssessment/organism_impact via brain-operating-authority and public.brain_append_record. Actual production public.brain_records CHECKs admit only canonical record_type and record_kind lists: these excluded three original Portal record pairs. RPC passes type/kind through unchanged. Existing mocked tests never validated live PostgreSQL CHECK lists.",
+  "impact": "Potential RAW_SOURCE_WRITE_FAILED on every real authenticated portal data edit through this authority path; source and consumer cannot both be ACK_PROCESSED if first immutable source row is rejected. Actual affected end user sessions not independently counted. No claim of proven data loss.",
+  "fix": "Preserve the originally authored semantic types and extend existing canonical type/kind CHECKs only for SourceObservation/raw_source, BusinessInput/SourceTruth and ImpactAssessment/organism_impact, transactionally validate existing rows; leave CurrentState/current_state and all original type/kinds unchanged. Same original protected Supabase GitOps/Brain authority, no second store, RLS grant or tenant bypass.",
+  "prevention_rule": "Compare every actual original Portal→Brain typed record to live provider pg_get_constraintdef and original source schema under protected CI. Refuse saved/full-green when any required pair cannot be stored. Tenant-scoped provider schema readback and processed consumer ACK are separate; never infer outcomes from source migration.",
+  "owner": "Original Portal V2 P0 #4215; existing agent-data-quality / existing Supabase protected migration + ONE BRAIN source consumer",
+  "tests": [
+    "tests/brain-portal-brain-record-constraint-parity-20261113.test.mjs",
+    "tests/portal-business-input.test.mjs",
+    "tests/portal-business-input-powerhouse-feed.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-brain-record-constraint-parity-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-brain-record-constraint-parity-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-brain-record-constraint-parity-20261113.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Read-only production pg_get_constraintdef on 2026-11-13: brain_records_type_check excludes SourceObservation, BusinessInput, ImpactAssessment; brain_records_kind_check excludes raw_source, SourceTruth, organism_impact",
+    "Read-only production public.brain_append_record body passes p_record_type/p_record_kind straight to public.brain_records without conversion",
+    "Original server source platform/api/portal-business-input-handler.mjs and platform/organism/change-propagation.mjs emit exact four pairs; original mocked tests only assert in-memory append calls",
+    "Production project adhjwmvyoixzjtmiroln independent read-only pg_get_constraintdef 2026-11-13 06:37 UTC shows all three Portal type/kind pairs plus all canonical old pairs; RLS still enabled.",
+    "Actual provider supabase_migrations.schema_migrations: 839 distinct versions; terminal 20261113060000/portal_brain_record_contract_parity_v1; observed 2026-11-13T06:37:59.338503Z.",
+    "Protected PR #5707 merged main 7dc802b83577ac55a3399ce5a6967e9ac2dfc0a1; Required and CodeQL SUCCESS; provider preview recovered using one official rebase branch, then Required rerun SUCCESS."
+  ],
+  "status_boundary": "SOURCE_SCHEMA_PROVIDER_APPLIED_AND_READBACK_PROVEN; actual authenticated customer source→ONE BRAIN processed consumer ACK→Powerhouse/Heartbeat matching revision→CRO treatment/holdout→measured outcome→next natural-run learning remain EVIDENCE_DUE; original P0 #4215 must stay OPEN.",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

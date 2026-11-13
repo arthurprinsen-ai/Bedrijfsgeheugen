@@ -3352,8 +3352,12 @@
     {
       "version": "20261112230000",
       "name": "original_seo_daily_archive_cardinality_guard_v1"
+    },
+    {
+      "version": "20261113060000",
+      "name": "portal_brain_record_contract_parity_v1"
     }
   ],
-  "captured_at": "2026-11-12T21:47:11.470031Z",
+  "captured_at": "2026-11-13T06:37:59.338503Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
