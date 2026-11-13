@@ -1,0 +1,16 @@
+{
+  "id": "MIRA_RADAR_HTTP_200_WITH_SOURCE_RECOVERY_DUE_20261113",
+  "date": "2026-11-13",
+  "incident": "Cron #120 successful pg_net enqueue and HTTP 200 masked original JSON SOURCE_RECOVERY_DUE while no fresh unique Mira source existed.",
+  "root_cause": "The original Edge response defaulted to HTTP 200 even when the original materializer produced supply.ok=false; delivery HTTP status did not communicate the original consumer verdict.",
+  "original_owner": "powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1",
+  "consumer": "ONE BRAIN / powerhouse-content-loop / original no-publish governance",
+  "prevention": "HTTP 200 exclusively for sourceReady and no errors; 502 for provider/writeback errors, 503 for no independently eligible dated source. No gate bypass.",
+  "regression": "tests/mira-radar-http-contract-20261113.test.mjs",
+  "source_proof": "2026-11-12 20:02 UTC Edge HTTP 200; max original observed_at 2026-11-08; 2026-11-13 Instagram PLANNED due to MIRA_UNIQUE_SOURCE_WINNER_REQUIRED.",
+  "production_status": "PR_PENDING_CI_MERGE_DEPLOY_READBACK",
+  "do_not_close_content_or_provider_obligation": true,
+  "one_original_executor": true,
+  "source_revision_required": true,
+  "consumer_ack_required": true
+}
