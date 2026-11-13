@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse|original-content-handoff|skipped-with-incomplete-veto-routed-to-publisher|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_SKIPPED_NO_PUBLISH_INCOMPLETE_PROOF_UNSAFE_PUBLICATION_OWNER",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original production public.powerhouse_content_handoff_receipts_v1 preserved a strict terminal NO_PUBLISH cancellation veto requiring original SKIPPED + decision=NO_PUBLISH + veto.active=true + decision_code + decided_at + no_publish_reason + no possible provider side effect. When SKIPPED lacked one field, it fell through to ELSIF NOT v_pub stage OVERDUE_PUBLICATION with owner blog-queue, Mira media router or original social publisher and reused r.next_action, although original decision explicitly forbids publication. For some SKIPPED social records a possible provider side effect or historical provider external_id exists, requiring independent provider readback rather than another send. Source ACK was not lost; routing of the missing original decision/provider evidence was wrong.",
+  "evidence": [
+    "2026-11-13 production read-only original brain→content_publication_obligations join: content:blog SKIPPED with exact NO_PUBLISH and veto.active=true had 19 OPEN source rows all missing original evidence.decision_code, while independent decided_at and no_publish_reason exist, no provider external ID, published or live timestamps, no ambiguous side effects. One additional SKIPPED blog NO_PUBLISH row lacked veto.active as well as decision_code.",
+    "Same original read-only join: SKIPPED linkedin_personal NO_PUBLISH/veto active 8 OPEN, 7 with provider references and all 8 with possible_provider_side_effect; instagram 5 with provider references/possible side effects; linkedin_company 4 with provider references/possible side effects. These must never be dispatched again.",
+    "Original function full source is protected main last applied migration 20261113121500_original_ga4_handoff_json_operator_precedence_v1.sql; matching original pg_get_functiondef previously verified via production migration 844 and existing 22P02 remediation.",
+    "Existing terminal trigger brain_content_handoff_terminal_proof_guard_v1 requires an actual source decision_code, decided_at, veto.active and independent absence of provider side effects for state CANCELLED. Reclassification is not terminal evidence and must keep state OPEN."
+  ],
+  "prevention_rule": "Before the original fallback WAIT/OVERDUE_PUBLICATION, route EVERY non-live SKIPPED source with unresolved decision or provider evidence to an original existing owner. If any source external_id, published/live timestamp, possible_provider_side_effect, reconciliation_required, source_state_conflict exists, require exact original provider/account readback with NO RESEND. Otherwise if original terminal NO_PUBLISH ACK lacks mandatory source decision proof, keep OPEN as OVERDUE_NO_PUBLISH_SOURCE_DECISION_PROOF owned by existing powerhouse-content-loop governance; next_action must explicitly say original decision_code/veto/date/reason required, NO_RESEND. Never derive an authoritative historical decision_code from free-text reasons, never relax original terminal veto/quality/measurement gate or invent publication/learning outcome. The original sender and daily scheduler must not receive a SKIPPED record as OVERDUE_PUBLICATION.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-skipped-no-publish-decision-routing-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-skipped-no-publish-decision-routing-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-skipped-no-publish-decision-routing-20261113.test.mjs"
+    ],
+    "invariants": [
+      "SKIPPED is never publicer request",
+      "original decision-proven veto still CANCELLED only after original trigger",
+      "possible provider side effect goes to readback owner",
+      "original source revision & ACK preserved",
+      "no parallel scheduler or provider send"
+    ]
+  },
+  "production_success": false,
+  "requires": [
+    "protected Required + CodeQL + native Supabase preview and applied version/name",
+    "live original function definition readback & terminal guard/role ACL",
+    "next natural original #171 source ACK reclassification for SKIPPED",
+    "do not close OPEN without exact original veto proof"
+  ],
+  "owner": "original powerhouse-content-loop / powerhouse-runtime-scheduler-mux-v1 / original provider account",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "safe_no_bypass": {
+    "duplicate_sender": false,
+    "manual_database_update": false,
+    "backfill_missing_decision_code": false,
+    "relax_terminal_guard": false,
+    "auto_close_historical": false
+  }
+}
