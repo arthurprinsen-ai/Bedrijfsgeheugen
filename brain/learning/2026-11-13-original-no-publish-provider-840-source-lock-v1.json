@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-13",
+  "fingerprint": "supabase|migration-history|original-no-publish-provider-840-source-lock|20261113-v1",
+  "status": "PROVIDER_APPLIED_SOURCE_LOCK_CANDIDATE",
+  "owner": "original Supabase protected GitOps provider-applied migration source lock owner, source-to-consumer #171",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_prs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5709",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5710",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5708"
+  ],
+  "observed_provider": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "captured_at": "2026-11-13T06:53:13.095563Z",
+    "source_table": "supabase_migrations.schema_migrations",
+    "applied_migration_count": 840,
+    "distinct_migration_count": 840,
+    "latest_version": "20261113062500",
+    "latest_name": "original_no_publish_terminal_handoff_ack_v1",
+    "existing_git_source": "supabase/migrations/20261113062500_original_no_publish_terminal_handoff_ack_v1.sql",
+    "previous_source_lock_count": 839
+  },
+  "root_cause": "Protected original no-publish terminal handoff PR #5709 merged source and native execution of migration 20261113062500; existing source-lock snapshot remained at 839 while the original provider holds 840 applied. Subsequent unrelated source PR correctly fails protected 1:1 migration parity check until the original lock is reconciled.",
+  "fix": "Within the original Supabase GitOps source lock, append exactly one independently observed provider-applied version/name, preserve all prior 839 identities and schema authority; add original Brain/ledger/human documentation for the same P0 and no SQL re-execution.",
+  "prevention_rule": "Release of any protected migration must include exact provider's applied version/name in the canonical source lock before unrelated PRs can pass their migration parity; never fabricate a migration applied or alter old identities, never bypass protected check.",
+  "evidence": [
+    "Original production read-only SELECT 2026-11-13T06:53:13Z: 840 provider-applied distinct versions, latest 20261113062500/original_no_publish_terminal_handoff_ack_v1.",
+    "Git main 17782cfe... source contains true executable migration 20261113062500_original_no_publish_terminal_handoff_ack_v1.sql, source lock 839 prior applied identities.",
+    "Unrelated PR #5708 exact-head Required #43379977561 blocked by original migration lock 839/840 mismatch, not by its Mira policy.",
+    "No claims of actual NO_PUBLISH consumer ACK, Meta post, Heartbeat/Portal learning, A/B effects or tenant business outcome from migration application alone."
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "acceptance": [
+    "Protected exact-head Required/CodeQL & 1:1 migration lock tests",
+    "No extra SQL migration execution or side effects",
+    "Protected merge then compare original main lock 840 entries against original provider 840/840",
+    "Enable original BRAIN PR #5708 to resync and finish without policy bypass"
+  ],
+  "independent_verification": "PENDING_PROTECTED_MERGE_AND_READBACK"
+}
