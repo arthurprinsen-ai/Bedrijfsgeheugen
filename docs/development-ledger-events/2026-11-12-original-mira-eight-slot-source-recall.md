@@ -1,0 +1,12 @@
+# 2026-11-12 original Mira radar source-recall ledger
+- Original owner: powerHouse-mira-problem-radar-v1, cron #120 (unchanged).
+- Observed source: 373 signals, 34 recent eligible; 7 complete Mira PH-P sources all rejected under immutable 90-day source dedupe; original 2026-11-11 20:02 UTC HTTP200, no original Nov 12 winner.
+- Only the existing original query-rotation lexical wording changes on alternate days. The existing six business plus two personal daily paid-source slots, authorization, score>=0.72, source dates, 90-day URL/hash dedupe, 3-day topic dedupe, producer/face 0.940/Meta readback remain untouched.
+- Original ONE BRAIN source-scarcity fingerprint CAS VALIDATED v2, proven_fix NULL. Historical SKIPPED source-identity contradictions independently VALIDATED v2, no forced state cleanup or re-sends.
+- Regressions: tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs and tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs.
+- This is an unproven code candidate until protected CI, original GitOps Edge source readback and natural cron+provider consumer proof. Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+## Additional provider-grounded single-chain handoff observation (12 Nov 2026)
+- Direct authenticated Composio Meta GET proved BUSINESS `bedrijfsgeheugen.nl`, latest Reel 2026-10-03T07:01:51Z, id `17992107825115789`, permalink https://www.instagram.com/reel/DeBeb6oAMY8/. The historical ACTIVE aliases for `arthurprinsen` are not Mira target accounts.
+- Original `content_publication_obligations` 10/11/12 November: FAILED, SILENT_PUBLICATION_FAILURE, external_id null; typed original source recovery `MIRA_UNIQUE_SOURCE_WINNER_REQUIRED`. Original cron #120 reports a successful invocation, not a new winner. 6–9 November original mediajobs remained WAITING_ASSET.
+- Existing AGENTS.md, `agent-social-delivery-recovery` registry tasks and original instagram-composio-publisher skill now require tenant/day/source revision/owner/claim/idempotency and independent Meta→Brain→Heartbeat→Portal consumer ACK. Regression wired into existing selected-path test, not new execution machinery. Protected CI/merge/Edge production readback and first new original source/winner/video/publication/consumer success are separately required; do not mislabel CODE_CANDIDATE as LIVE_PROVEN. Parent https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439.
