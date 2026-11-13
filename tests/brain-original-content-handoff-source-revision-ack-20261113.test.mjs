@@ -47,7 +47,7 @@ test('already provider-fulfilled historical outcomes are not reopened to artific
   assert.ok(sql.includes("AND c.publication_date<v_day-8"));
   assert.ok(sql.includes("LIMIT 48"));
   assert.ok(sql.includes("ORDER BY coalesce(b.updated_at,'epoch'::timestamptz)"));
-  assert.ok(sql.includes("AND public.brain_obligations.evidence IS DISTINCT FROM excluded.evidence"));
+  assert.ok(sql.includes("OR public.brain_obligations.evidence IS DISTINCT FROM excluded.evidence"));
 });
 
 test('original privilege and provider gates remain unchanged, no second scheduler or outbound side effects', () => {
