@@ -3396,8 +3396,12 @@
     {
       "version": "20261113164000",
       "name": "original_seo_one_chain_outcome_assurance_v2"
+    },
+    {
+      "version": "20261113174500",
+      "name": "original_social_learning_source_ack_v1"
     }
   ],
-  "captured_at": "2026-11-13T17:07:59.213504Z",
+  "captured_at": "2026-11-13T18:05:43.826407Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
