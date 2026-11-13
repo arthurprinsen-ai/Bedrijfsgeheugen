@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import { selectMiraSourceQueries, MIRA_SOURCE_TOPIC_QUERIES } from '../supabase/functions/_shared/mira-source-query-rotation.mjs';
+import { selectMiraSourceQueries, MIRA_SOURCE_TOPIC_QUERIES, MIRA_SOURCE_ALTERNATE_QUERIES } from '../supabase/functions/_shared/mira-source-query-rotation.mjs';
 import {MIRA_CASES} from '../supabase/functions/_shared/mira-entrepreneur-caption.mjs';
 import {resolveMiraFrozenWinner} from '../supabase/functions/_shared/mira-frozen-winner-contract.mjs';
 import {evaluateMiraPublicationFreshness} from '../supabase/functions/_shared/mira-publication-freshness.mjs';
@@ -86,7 +86,12 @@ test('radar uses a fixed eight-call budget but rotates multiple approved entrepr
  const searches=days.map(selectMiraSourceQueries);
  assert.ok(searches.every(v=>v.length===8&&new Set(v).size===8),'never increase daily provider requests or duplicate queries');
  assert.notDeepEqual(searches[0],searches[1],'next business date changes topic portfolio');
- assert.equal(new Set(searches.flat()).size,12,'rotation covers all canonical problem families');
+ const topics=new Set(searches.flat().map(query=>{
+  const family=MIRA_SOURCE_TOPIC_QUERIES.find(f=>f.query===query||MIRA_SOURCE_ALTERNATE_QUERIES[f.topic]===query);
+  assert.ok(family,'every provider query must belong to a canonical PH-P family');
+  return family.topic;
+ }));
+ assert.equal(topics.size,12,'rotation covers all 12 canonical problem families across both wording variants');
  assert.throws(()=>selectMiraSourceQueries('2026-02-30'),/MIRA_RUN_DATE_INVALID/);
  assert.throws(()=>selectMiraSourceQueries(''),/MIRA_RUN_DATE_INVALID/);
  assert.match(radar,/oninbare vorder/);
