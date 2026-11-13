@@ -50,7 +50,7 @@ Deno.serve(async(req:Request)=>{
       // synthetic timestamps are introduced.
       const since=new Date(now.getTime()-100*86400000).toISOString();
       const {data:observations,error:snapshotError}=await db.from('social_metric_snapshots')
-        .select('post_id,observed_at,data_quality,source,source_event_id,metrics').eq('tenant_id',tenantId)
+        .select('tenant_id,post_id,observed_at,data_quality,source,source_event_id,metrics').eq('tenant_id',tenantId)
         .gte('observed_at',since).order('observed_at',{ascending:false}).limit(900);
       if(snapshotError)throw snapshotError;
       // Fail closed on read truncation. The evaluator falls back to existing
