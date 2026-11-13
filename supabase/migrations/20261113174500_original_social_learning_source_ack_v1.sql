@@ -826,7 +826,7 @@ BEGIN
     'cancelled_learning_source_acks',v_cancelled_learning_source_acks,
     'single_original_executor',true);
 END;
-$function$
+$function$;
 
 
 REVOKE ALL ON FUNCTION public.powerhouse_content_handoff_receipts_v1(timestamptz)
