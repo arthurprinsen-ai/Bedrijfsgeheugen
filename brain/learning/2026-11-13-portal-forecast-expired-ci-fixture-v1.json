@@ -12,17 +12,18 @@
   "evidence": [
     "Exact-head Required test PR #5730 preflight failed 2026-11-13T10:14:31Z in tests/portal-forecast-auth.test.mjs:27 and :135, both Expected 1 / actual 0.",
     "Read-only source platform/api/portal-forecast-handler.mjs confirms fresh(updatedAt): age>=0 and age<=30*86400000; authenticated handler calls verifiedForecasts(projection,tenantId) using current time.",
-    "Only original tests/portal-forecast-auth.test.mjs and portal-living-interface skill + machine learning and ledger modified, not production handler, tenant auth, user financial data or deployment settings."
+    "Only original tests/portal-forecast-auth.test.mjs and portal-living-interface skill + machine learning and ledger modified, not production handler, tenant auth, user financial data or deployment settings.",
+    "Original portal-forecast-auth.test.mjs is also exercised by Required CI; machine canonicalization specifically requires dedicated tests/brain-* regression for historical/shadow/canary."
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/portal-forecast-auth.test.mjs"
+      "tests/brain-portal-forecast-freshness-fixture-20261113.test.mjs"
     ],
     "shadow": [
-      "tests/portal-forecast-auth.test.mjs"
+      "tests/brain-portal-forecast-freshness-fixture-20261113.test.mjs"
     ],
     "canary": [
-      "tests/portal-forecast-auth.test.mjs"
+      "tests/brain-portal-forecast-freshness-fixture-20261113.test.mjs"
     ]
   },
   "owner": "original portal forecasting domain / P0 #4215",
