@@ -205,7 +205,7 @@ REVOKE ALL ON FUNCTION public.powerhouse_refresh_seo_assurance_v1(timestamptz)
 -- Preserve production's existing restricted service role execution. Production
 -- ACL readback: postgres=X, service_role=X, anon=false, authenticated=false.
 -- Revoke any inherited/default PUBLIC and browser rights on replacement.
-REVOKE EXECUTE ON FUNCTION public.powerhouse_refresh_seo_assurance_v1(timestamptz)
+REVOKE ALL ON FUNCTION public.powerhouse_refresh_seo_assurance_v1(timestamptz)
   FROM PUBLIC, anon, authenticated;
 
 -- Migration-time contract check. This only inspects the function definition,
