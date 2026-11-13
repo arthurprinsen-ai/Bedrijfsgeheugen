@@ -2,7 +2,7 @@
 
 ## Productiebevinding en oorzakelijk bewijs
 
-Bestaande Supabase cron #177 `bg-social-metrics-source-6h-v1` draait elke zes uur: op **12 november 2026 00:18, 06:18, 12:18 en 18:18 UTC** waren alle vier `cron.job_run_details.status=succeeded`. Het originele `bg-social-metrics-sync/index.ts` schreef onder dezelfde `powerhouse_runtime_events.dedupe_key=provider-social-metrics:2026-11-12` met `upsert`. Database-readback bevatte één dagrecord, `occurred_at=2026-11-12 18:18:25.4 UTC`. De eerdere polluitkomsten waren overschreven. Een scheduler-/HTTP-succes of dagstatus `healthy` is geen historisch pollbewijs en bewijst zeker niet de individuele ontbrekende 24/48/72h-metrics.
+Bestaande Supabase cron #177 `bg-social-metrics-source-6h-v1` draait elke zes uur: op **12 november 2026 00:18, 06:18, 12:18 en 18:18 UTC** waren alle vier `cron.job_run_details.status=succeeded`. Het originele `bg-social-metrics-sync/index.ts` schreef onder dezelfde `powerhouse_runtime_events.dedupe_key=provider-social-metrics:2026-11-12` met `upsert`. Database-readback bevatte één dagrecord, `occurred_at=2026-11-12 18:18:25.4 UTC`. De eerdere polluitkomsten waren overschreven. **Ook de oorspronkelijke `social_metric_snapshots` waren per providerpost en kalenderdag door dezelfde `snapshot_id/source_event_id=composio:<platform>:<provider-id>:<dag>`-upsert overschreven**: 12 Instagram-posts hadden op 12 november elk precies één echte snapshot, alle twaalf rond 18:18 UTC. De verdwenen 00/06/12-uurobservaties zijn niet zonder onafhankelijk provider-tijdsbewijs te reconstrueren. Een scheduler-/HTTP-succes of dagstatus `healthy` is geen historisch pollbewijs en bewijst zeker niet de individuele ontbrekende 24/48/72h-metrics.
 
 ## Eén oorspronkelijke keten en blijvende correctie
 
