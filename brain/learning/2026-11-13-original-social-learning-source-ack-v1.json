@@ -17,7 +17,9 @@
     "original_source_open_count_at_proof": 185,
     "unchanged_original_source_count": 185,
     "production_status": "PROVIDER_850_APPLIED_AND_SOURCE_TO_BRAIN_ACK_PROVEN",
-    "consumer_evidence_scope": "SOURCE_RECEIVED_ONLY_PROVIDER_METRICS_LEARNING_OPEN"
+    "consumer_evidence_scope": "SOURCE_RECEIVED_ONLY_PROVIDER_METRICS_LEARNING_OPEN",
+    "natural_run_independently_verified_at": "2026-11-13T18:14:01.127033Z",
+    "original_active_executor_id": 171
   },
   "remedy": {
     "migration": "supabase/migrations/20261113174500_original_social_learning_source_ack_v1.sql",
@@ -34,7 +36,8 @@
     "independent_original_consumer_readback": "SUCCESS: 185/185 original social-learning source SHA256/payload SHA256/correlation/ACK identity exact; 0 missing/drift; original #171 receipt function sequential 48-row bounded rounds",
     "public_post_or_revenue_proven": false,
     "preview_initial_failure": "Supabase Preview MIGRATIONS_FAILED 2026-11-13: generated pg_get_functiondef CREATE FUNCTION statement lacked terminating semicolon before REVOKE; isolated in branch Postgres logs.",
-    "preview_fix": "Reinsert standalone DDL semicolon before REVOKE; requires fresh protected preview check."
+    "preview_fix": "Reinsert standalone DDL semicolon before REVOKE; requires fresh protected preview check.",
+    "natural_original_scheduler_and_consumer_readback": "SUCCESS native 18:14 UTC original #171 tasks and idempotent 185/185 ACK readback"
   },
   "compiler": {
     "failure_class": "MISSING_CONSUMER_ACK",
@@ -75,9 +78,37 @@
     "source_revision_missing_or_drift": 0,
     "unsupported_provider_metric_learning_truth_claims": 0,
     "provenance": "Independent read-only SQL after original content receipt function on production; initial 0/185, then 48/185 and after four original sequential bounded replay rounds 185/185.",
-    "natural_original_next_tick_readback": "NOT_YET_INDEPENDENTLY_CONFIRMED_AFTER_DEPLOYMENT",
+    "natural_original_next_tick_readback": "PROVEN: native #171 scheduler 2026-11-13T18:14:00.027554Z succeeded; independent same-slot runtime evidence COMPLETED healthy=true; content-closed-loop ok=true/224ms; loop-assurance ok=true/853ms; original source ACK 185/185 and receipt digest/versions unchanged",
     "independent_provider_publication_metric_or_revenue": "NOT_PROVEN_AND_STILL_OPEN",
     "original_scheduler_only": true,
-    "no_second_scheduler_or_provider_sender": true
+    "no_second_scheduler_or_provider_sender": true,
+    "natural_original_tick": {
+      "run_slot": "2026-11-13T18:14:00Z",
+      "canonical_scheduler_job_id": 171,
+      "original_scheduler": "powerhouse-runtime-scheduler-mux-v1",
+      "pg_cron_status": "succeeded",
+      "pg_cron_return": "DO",
+      "original_runtime_state": "COMPLETED",
+      "original_runtime_healthy": true,
+      "tasks": [
+        {
+          "name": "content-closed-loop",
+          "ok": true,
+          "elapsed_ms": 224
+        },
+        {
+          "name": "loop-assurance",
+          "ok": true,
+          "elapsed_ms": 853
+        }
+      ],
+      "actual_consumer": "powerhouse_content_handoff_receipts_v1",
+      "source_ack_count_after_natural_tick": 185,
+      "accepted_at_digest_before_and_after": "a65f8d67c6a7f494cbff26d836bc22bc",
+      "original_brain_source_record_versions_before_and_after": "2696",
+      "duplicate_source_revision_acks": 0,
+      "downstream_business_outcomes_proven": false,
+      "original_loop_assurance_status": "RED"
+    }
   }
 }
