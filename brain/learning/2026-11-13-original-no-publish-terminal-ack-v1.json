@@ -14,7 +14,10 @@
     "source_sample": "2026-11-03 instagram status SKIPPED, evidence.decision NO_PUBLISH, veto.active true, decided_at 2026-11-08 and no external_id/published_at/live_proven_at",
     "consumer_sample": "same historical source appears as OPEN OVERDUE_PUBLICATION in original BRAIN, next_action says no publication required",
     "separate_provider_reference_conflicts": "Existing SKIPPED + provider reference must retain OVERDUE_PROVIDER_READBACK, not be cancelled.",
-    "original_six_red_loop_controls": 6
+    "original_six_red_loop_controls": 6,
+    "strictly_eligible_original_veto_rows": 82,
+    "strictly_eligible_currently_false_overdue": 82,
+    "excluded_due_to_additional_source_conflict": 1
   },
   "correction": "Only valid canonical SKIPPED with explicit original dated NO_PUBLISH, active veto, nonempty reason/code, no provider reference/timestamps/side effect flags or conflicts becomes original BRAIN state CANCELLED, stage NO_PUBLISH_POLICY_ACK. Reopen automatically on genuine source revocation or provider side effect. No publisher or consumer/experiment success asserted.",
   "prevention": "Never interpret an original explicit no-publish veto as missing publication, and never interpret absence of new publication as a provider or learning success. Precedence for historical provider side effects and same-owner no-resend must remain.",
@@ -28,7 +31,7 @@
     "canary": [
       "tests/brain-original-no-publish-terminal-ack-20261113.test.mjs"
     ],
-    "expected": "83 eligible historical no-publish records may be CANCELLED under the existing scheduler after exact-SHA protected migration and independent source/consumer readback; no false new provider delivery or 6-loop all-green claim"
+    "expected": "Only the 82 independently strict-matched historical NO_PUBLISH source rows may be CANCELLED after protected migration and original scheduled consumer readback; the 83rd source-contradictory row is excluded. Do not infer provider success, measured learning or all-green."
   },
   "compiler": {
     "failure_class": "FALSE_RED",
