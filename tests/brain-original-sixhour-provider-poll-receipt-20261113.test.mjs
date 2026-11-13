@@ -81,13 +81,14 @@ test('each original source failure is persisted as an error receipt, not a learn
 
 test('same original #177 Edge function: durable per-attempt readback BEFORE legacy daily summary',()=>{
   const source=readFileSync(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
+  const helper=readFileSync(new URL('../supabase/functions/_shared/original-provider-poll-receipt.mjs',import.meta.url),'utf8');
   const first=source.indexOf(".insert(audit).select('dedupe_key,event_type,state,evidence').single()");
   const last=source.indexOf("dedupe_key:'provider-social-metrics:'+day");
   assert.ok(first>0&&last>first,'per-invocation source receipt must be written before existing daily projection');
   assert.match(source,/assertOriginalProviderPollReceipt\(acceptedReceipt,audit\)/);
   assert.match(source,/original_poll_receipt_verified:true/);
   assert.match(source,/event_type:'provider_social_metric_ingest'/);
-  assert.match(source,/event_type:'provider_social_metric_ingest_receipt'/);
+  assert.match(helper,/event_type:'provider_social_metric_ingest_receipt'/);
   assert.match(source,/\.upsert\(\{\s*dedupe_key:'provider-social-metrics:'\+day/);
   assert.match(source,/crypto\.randomUUID\(\)/);
   assert.match(source,/healthy\?'observed':'error'/);
