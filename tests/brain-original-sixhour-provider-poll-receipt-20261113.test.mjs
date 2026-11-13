@@ -83,9 +83,12 @@ test('same original #177 Edge function: durable per-attempt readback BEFORE lega
   const source=readFileSync(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
   const helper=readFileSync(new URL('../supabase/functions/_shared/original-provider-poll-receipt.mjs',import.meta.url),'utf8');
   const first=source.indexOf(".insert(audit).select('dedupe_key,event_type,state,evidence').single()");
+  const independent=source.indexOf(".eq('dedupe_key',pollIdentity.dedupeKey).maybeSingle()");
   const last=source.indexOf("dedupe_key:'provider-social-metrics:'+day");
-  assert.ok(first>0&&last>first,'per-invocation source receipt must be written before existing daily projection');
+  assert.ok(first>0&&independent>first&&last>independent,
+    'original INSERT must be followed by a separate source SELECT before the daily projection');
   assert.match(source,/assertOriginalProviderPollReceipt\(acceptedReceipt,audit\)/);
+  assert.match(source,/assertOriginalProviderPollReceipt\(independentReceipt,audit\)/);
   assert.match(source,/original_poll_receipt_verified:true/);
   assert.match(source,/event_type:'provider_social_metric_ingest'/);
   assert.match(helper,/event_type:'provider_social_metric_ingest_receipt'/);
