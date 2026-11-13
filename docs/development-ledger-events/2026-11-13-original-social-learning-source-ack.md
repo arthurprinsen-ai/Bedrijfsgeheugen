@@ -8,3 +8,5 @@
 - **Regression:** `tests/brain-original-social-learning-source-ack-20261113.test.mjs`. Protected CI, provider-applied migration and real next #171 readback separately required before claimed LIVE.
 - **Unresolved:** actual original provider metrics, social learning evaluation and following experiment proof; all remain OPEN until independently demonstrated.
 - **Issue:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232
+
+- **Preview-incident & preventieregel:** nieuw PR #5752-preview gaf `MIGRATIONS_FAILED`: de snapshot uit `pg_get_functiondef` heeft geen eindpuntkomma, waardoor de daaropvolgende `REVOKE` binnen dezelfde SQL-instructie belandde (`syntax error at or near REVOKE`). Hersteld met expliciete `$function$;` en regressietest die de DDL-grens afdwingt; geen onbewezen preview als groen tellen.
