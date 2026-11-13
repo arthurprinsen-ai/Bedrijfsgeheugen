@@ -20,14 +20,15 @@
       "tests/brain-original-one-chain-terminal-proof-20261113.test.mjs"
     ]
   },
-  "evidence": {
-    "tests": [
+  "evidence": [
+    [
       "tests/brain-original-one-chain-terminal-proof-20261113.test.mjs"
     ],
-    "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
-    "production_source_audit": "2026-11-13 read-only: 82 current CANCELLED content:* rows; 0 missing source/revision/correlation/owner, 0 invalid no-publish source records",
-    "runtime_status": "Source PR candidate; NOT deployed, terminal enforcement NOT proven until native migration + protected merge + production trigger readback + original #171 natural run."
-  },
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "2026-11-13 read-only: 82 current CANCELLED content:* rows; 0 missing source/revision/correlation/owner, 0 invalid no-publish source records",
+    "Source PR candidate; NOT deployed, terminal enforcement NOT proven until native migration + protected merge + production trigger readback + original #171 natural run.",
+    "13 Nov 2026: original concurrent PR #5721 already owns migration version 20261113082500 for independent cancelled social-learning source ACK; this guarded terminal transition migration is intentionally versioned 20261113083000. Do not merge until exact-head native provider preview and sequential migration/source-lock readback."
+  ],
   "limitations": [
     "This is a terminal proof invariant, not automatic completion of 365 still-open original content obligations.",
     "The original #171 reconciliation/owners must resolve backlog safely; trigger never sends or retries.",

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const migration=readFileSync(new URL(
-  '../supabase/migrations/20261113082500_original_one_chain_content_terminal_proof_guard_v1.sql',
+  '../supabase/migrations/20261113083000_original_one_chain_content_terminal_proof_guard_v1.sql',
   import.meta.url),'utf8');
 
 test('a terminal BRAIN content handoff must use the original source and exact consumer revision',()=>{

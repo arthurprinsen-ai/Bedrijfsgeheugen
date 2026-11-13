@@ -26,3 +26,7 @@ One new migration adds an INVOKER-only BEFORE INSERT/UPDATE trigger to the **exi
 `tests/brain-original-one-chain-terminal-proof-20261113.test.mjs` enforces source-level regression. `brain/learning/2026-11-13-original-one-chain-terminal-proof.json` retains cause, prevention and tests.
 
 **State at commit:** source implemented as PR candidate only; production enforcement is NOT VERIFIED until step 2–3. One trigger does not prove that all 15 loops are green or that every historical obligation has finished.
+
+## Preventie — unieke Supabase-migratieversie
+
+De bronrelease voor de originele terminal-state guard gebruikt `20261113083000`, niet `20261113082500`: dat eerdere versienummer is al geclaimd door de afzonderlijke, oorspronkelijke geannuleerde social-learning bron-ACK in #5721. Alleen de bestaande originele GitOps-owner mag na exact-head Required, CodeQL, native Supabase-preview en beschermde merge de migraties **opeenvolgend** toepassen. Een tijdstempelbotsing is een `MIGRATION_VERSION_COLLISION`, nooit een reden om één SQL-bestand als een ander te registreren of tests over te slaan. Eerst controle van de provider-toegepaste versies; pas daarna de bestaande bron-lock bijwerken en de oorspronkelijke BRAIN-consumer-ACK controleren.
