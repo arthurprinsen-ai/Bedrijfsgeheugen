@@ -30,3 +30,10 @@ One breadcrumb authority per money page; visible and structured pricing must mat
 - Durable source handoffs: existing recommendation dedupe keys for Exact/Twinfield → original website owner → protected release/Netlify readback → original #175→#140→Heartbeat exact revision SHA, then existing CRO treatment/holdout and independent outcomes.
 - Prevent recurrence: require final built markup pricing and schema consistency + downstream source receipt; incomplete GA4/GSC or unexecuted CRO remains EVIDENCE_DUE, no declared traffic/revenue.
 - Verification pending: updated candidate Required/CodeQL + final browser/EN/CTA checks, protected merge, exact Netlify main READY + real public page readback, original recommendation consumer ACK and later causal effect/learning.
+
+## 13 november 2026 — native migration-history parity dependency (exact provider proof)
+
+- The original protected Required preflight on SEO PR #5700, head `66d99e848e46da1cd8c9dd6c50777d2eaaeb5b09`, stopped at Supabase migration lock parity: Git contained 840 executable migrations, while `supabase/migration-history.lock.json` had 839 applied identities. It was not a money-page or agent regression.
+- Independently verified live Supabase project `adhjwmvyoixzjtmiroln` via `supabase_migrations.schema_migrations`: provider count **840**, latest version `20261113062500`, exact name `original_no_publish_terminal_handoff_ack_v1`, observed `2026-11-13T06:54:48.298966Z`.
+- Preserve all 839 historical rows and native migration SQL unchanged. Append only the independently observed 840th version/name and advance `captured_at` to observed provider time. No SQL execution or migration rerun, no invented execution proof.
+- This is a bounded release dependency in the same protected PR and original GitHub source-history workflow, not a second migration executor. The migration parity/preflight and all previous SEO/portal/browser/security gates must re-run and pass on the final exact head. Before production-green also require protected merge, exact Netlify CURRENT READY and independent live page/CTA/schema readback. Actual SEO traffic and CRO business effects remain OPEN.
