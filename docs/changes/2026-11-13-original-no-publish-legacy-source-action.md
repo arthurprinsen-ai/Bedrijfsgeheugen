@@ -1,0 +1,12 @@
+# 13 november 2026 — originele no-publish bronschuld: historische vervolgactie herstellen
+
+## Reproduceerbare oorzaak
+De huidige originele RPC (#846) behandelt nieuwe onvolledige no-publish-besluiten fail-closed. Oude bronrecords zijn daarmee niet retrospectief aangepast. Productie-read-only telling: **20 blog + 1 linkedin_company** `SKIPPED` zonder vereiste originele `decision_code` en/of `veto.active=true`. Geen van die 21 rijen heeft `external_id`/`published_at`/`live_proven_at` of de gecontroleerde provider-side-effect-vlaggen. Alle 20 blogs tonen ten onrechte de bronzin “Geen publicatie vereist: expliciete no-publish-beslissing vastgelegd.”; hun `last_error` is leeg. De originele ONE BRAIN #171 heeft de echte proof debt al als OPEN gerouteerd.
+
+## Veilig herstel binnen dezelfde keten
+De aanvullende *oorspronkelijke* Supabase-migratie `20261113153000_original_no_publish_legacy_source_action_reconcile_v1.sql` wijzigt maximaal 64 bronrijen, uitsluitend bij ontbrekend veto/besluitbewijs, bestaande originele reden, ontbrekende provider-referenties en géén van zes side-effect-signalen. Alleen `next_action`, `last_error` en bron-`updated_at` wijzigen; de voor de oorspronkelijke #171 bedoelde nieuwe bronrevisie wordt zichtbaar. Geen wijziging van bewijs, veto, status, tenant, kanaal, datum, publicatie of provider. Geen secundair register of cron. Een echte broneigenaar moet het historische besluitbewijs nog leveren; dit herstel maakt de ontbrekende verplichting juist expliciet, niet groen.
+
+## Verplichte release
+Eerst beschermde Required/CodeQL/native Supabase preview op exacte head; beschermde merge naar main; onafhankelijke productie `schema_migrations` versie+naam en werkelijk gewijzigde `next_action/last_error` controleren, zonder updates van provider/status/evidence; daarna originele #171 natuurlijke ontvangst door ONE BRAIN; pas **daarna** originele immutable source lock aanvullen op werkelijk providerbewijs. Verifieer 21 broncases of maak onderscheid als sommige rijen intussen door de oorspronkelijke eigenaar zijn behandeld. Niet blind opnieuw uitvoeren bij 23514/race; eerst diagnose. Niet claimen dat 366 open contenthandovers, 185 overdue social-learning, CRO of omzet zijn opgelost.
+
+Regressie: `tests/brain-original-no-publish-legacy-source-action-20261113.test.mjs`; ONE BRAIN-leerregel `brain/learning/2026-11-13-original-no-publish-legacy-source-action-v1.json`. Incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
