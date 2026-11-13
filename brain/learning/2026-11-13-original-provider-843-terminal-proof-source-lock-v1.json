@@ -36,5 +36,17 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs"
+    ],
+    "expected": "Original native applied 843rd exact version/name in immutable GitOps source lock, entire executable SQL manifest parity and original content terminal-proof guard. Re-run original protected BRAIN on merged main and independently verify production provider identity before closure."
   }
 }
