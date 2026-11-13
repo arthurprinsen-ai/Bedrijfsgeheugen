@@ -4,13 +4,18 @@ import {existsSync,readFileSync} from 'node:fs';
 
 const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
 
-test('actual native 838 is appended to canonical source lock without rewriting earlier rows',()=>{
+test('original native 838 prefix remains exact after independently applied 839 and any later provider migration',()=>{
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,838);
+ // 838 is an immutable historical prefix, never an eternal final length.
+ assert.ok(lock.applied.length>=840,'source lock cannot roll back independently applied provider 840');
  assert.deepEqual(lock.applied[835],{version:'20261112211600',name:'original_seo_opportunity_source_registry_v1'});
  assert.deepEqual(lock.applied[836],{version:'20261112214500',name:'original_seo_derived_brain_manifest_handoff_v1'});
  assert.deepEqual(lock.applied[837],{version:'20261112230000',name:'original_seo_daily_archive_cardinality_guard_v1'});
+ assert.deepEqual(lock.applied[838],{version:'20261113060000',name:'portal_brain_record_contract_parity_v1'});
+ assert.deepEqual(lock.applied[839],{version:'20261113062500',name:'original_no_publish_terminal_handoff_ack_v1'});
+ assert.ok(existsSync(new URL('../supabase/migrations/20261113062500_original_no_publish_terminal_handoff_ack_v1.sql',import.meta.url)));
+ assert.ok(existsSync(new URL('../supabase/migrations/20261113060000_portal_brain_record_contract_parity_v1.sql',import.meta.url)));
  assert.equal(new Set(lock.applied.map(z=>z.version)).size,lock.applied.length);
  assert.ok(existsSync(new URL('../supabase/migrations/20261112230000_original_seo_daily_archive_cardinality_guard_v1.sql',import.meta.url)));
 });
