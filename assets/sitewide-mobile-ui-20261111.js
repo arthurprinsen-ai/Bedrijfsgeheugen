@@ -19,6 +19,8 @@
   function closeMenu(state) {
     if (!state) return;
     var nav=state.nav,toggle=state.toggle;
+    // The cross-page close owner must preserve the native hidden invariant too.
+    if (nav.id==='bgSharedMobileNav') nav.setAttribute('hidden','');
     nav.setAttribute('aria-hidden','true');
     nav.classList.remove('open');
     if (toggle) {
