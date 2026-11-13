@@ -1,0 +1,56 @@
+{
+  "fingerprint": "powerhouse|one-chain|social-learning-source-revision-consumer-ack|20261113-v1",
+  "obligation_id": "powerhouse|one-chain|social-learning-source-revision-consumer-ack|20261113-v1",
+  "parent_issue": 5232,
+  "status": "PROTECTED_CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "owner": "original powerhouse-runtime-scheduler-mux-v1 / #171",
+  "root_cause": "The original #171 social-learning reconciliation wrote OPEN BRAIN obligations with original source identifiers but without cryptographic source_revision, payload digest, stable correlation and same-version consumer ACK. Thus 183 open continuous learning obligations could not demonstrate independent source-to-BRAIN version parity.",
+  "prevention_rule": "For every original OPEN social_learning_obligations source, the SAME original #171 BRAIN consumer records a SHA256 over source identity, status, due_at, updated_at and full payload, exact payload SHA, stable correlation and source-only consumer ACK; replay preserves accepted_at for an unchanged source, revision drift re-ACKs without sending or marking provider/outcome green. No second worker or synthetic proof.",
+  "evidence": {
+    "observed_date": "2026-11-13",
+    "original_source_status_open": 185,
+    "original_brain_learning_open": 183,
+    "source_revision_present_in_prior_brain_learning_open": 0,
+    "auth_boundary": "service_role allowed, anon/authenticated forbidden",
+    "delivery_status": "PR candidate until protected merge, applied SQL readback, and natural original #171 source/consumer parity"
+  },
+  "remedy": {
+    "migration": "supabase/migrations/20261113174500_original_social_learning_source_ack_v1.sql",
+    "regression": "tests/brain-original-social-learning-source-ack-20261113.test.mjs",
+    "skill": ".agents/skills/powerhouse-social-cro-funnel/SKILL.md",
+    "single_original_executor": true,
+    "no_provider_resend": true
+  },
+  "verification": {
+    "required": "PENDING",
+    "codeql": "PENDING",
+    "protected_merge": "PENDING",
+    "provider_migration": "PENDING",
+    "independent_original_consumer_readback": "PENDING",
+    "public_post_or_revenue_proven": false,
+    "preview_initial_failure": "Supabase Preview MIGRATIONS_FAILED 2026-11-13: generated pg_get_functiondef CREATE FUNCTION statement lacked terminating semicolon before REVOKE; isolated in branch Postgres logs.",
+    "preview_fix": "Reinsert standalone DDL semicolon before REVOKE; requires fresh protected preview check."
+  },
+  "compiler": {
+    "failure_class": "MISSING_CONSUMER_ACK",
+    "scope": "SOURCE_TO_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 183,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-social-learning-source-ack-20261113.test.mjs"
+    ],
+    "invariants": [
+      "same tenant+original obligation+post+window and SHA256 source",
+      "consumer ACK only acknowledges source receipt",
+      "identical source preserves accepted_at",
+      "revision drift creates fresh ACK not duplicate provider publication",
+      "provider readback, metrics and subsequent application remain OPEN until real independent evidence",
+      "pg_get_functiondef copied into a migration must terminate with semicolon before following SQL DDL/DCL"
+    ]
+  },
+  "production_success": false,
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232"
+}
