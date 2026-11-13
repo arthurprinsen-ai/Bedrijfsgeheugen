@@ -1,0 +1,9 @@
+# 13 november 2026 — Provider-migratie 848 exact in oorspronkelijk Supabase-bronregister
+
+Originele protected PR #5744, merge `1422e08ef48c89f3305e2effc0ba5d8e55ef91fb`, heeft na Required/CodeQL/native preview de bestaande originele `public.powerhouse_content_handoff_receipts_v1` aangepast, alleen in de historische ORDER BY. Werkelijk productieproviderbewijs op `2026-11-13T16:05:16.124635Z` toont **848** toegepaste migraties, laatste exacte `version=20261113155800`, `name=original_historic_handoff_source_revision_priority_v1`. Onafhankelijke `pg_get_functiondef` bevestigt revision-first, oorspronkelijke `LIMIT 48` en service-role-only EXECUTE.
+
+Het bestaande oorspronkelijke Git-register bevatte op dat moment 847 identiteiten. Alle **847** Git-versie/naam-paren zijn onafhankelijk met de eerste 847 echte productiemigraties vergeleken: **0 verschillen**. Daarom nu **uitsluitend** het echt door de provider toegepaste 848e record toevoegen, capturetijd bijwerken naar echte readback, eerdere identiteiten intact laten en regressie `tests/brain-original-provider-848-migration-lock-20261113.test.mjs` toevoegen. Dit is geen nieuwe SQL, geen extra cron, geen provider-write of replay, geen nieuwe publisher, geen klantwijziging.
+
+**Afzonderlijke acceptatie:** beschermde Required/BRAIN/CodeQL, protected main merge, exact provider-vs-source-lock replay, daarna bestaande `Obligation Terminal Closure`. Het oorspronkelijke #171 inhoudelijke handoffbewijs blijft zelfstandig: 21 incomplete no-publish-besluiten zijn SKIPPED/NO SEND en houden OPEN BRAIN-bewijsschuld totdat echte besluitcodes bestaan. Oorspronkelijk 13/21 source/consumer revisions waren bevestigd vóór de nieuwe migratie; claim pas 21/21 na onafhankelijk natuurlijke #171 ACK. Zeven rode assurancelussen / omzet niet groen verklaren door deze release.
+
+Incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
