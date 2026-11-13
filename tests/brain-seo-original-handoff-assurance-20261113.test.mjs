@@ -42,6 +42,8 @@ test('missing sources are UNKNOWN and stale SEO never passes full handoff assura
 });
 
 test('existing SEO scheduler and canonical receipts stay exclusive',()=>{
+  assert.match(migration,/REVOKE ALL ON FUNCTION public\\.powerhouse_refresh_seo_assurance_v1\\(timestamptz\\)/);
+  assert.match(migration,/FROM PUBLIC, anon, authenticated/);
   assert.match(migration,/powerhouse_record_loop_stage_v1/);
   assert.match(migration,/seo-opportunity-resolver/);
   assert.doesNotMatch(migration,/\bcron\.(?:schedule|alter_job|unschedule)\s*\(/i);
