@@ -12,7 +12,8 @@
   "evidence": [
     "2026-11-13 source GROWTH_SOURCE_DAILY_HANDOFF obligation 40b62d82-dcd3-4a44-98d0-3f94071008a9, source revision and exact 140 ACK 937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb.",
     "Original 2026-11-13 recommendation statuses done and original_delivery_crosslink site action proven for Exact Online and Twinfield, both with original site merge 66b67ac366e073ca068e5f1e23938a9792ae7dce and provider canonical readback.",
-    "Existing commercial-intelligence-heartbeat:2026-11-13 event observed original source ACK current SHA and 16 rows but no source-bound site delivery CRO consumer receipt. Existing website experiment policy count 0; 1 historical closed e-mail assignment, no website live assignment."
+    "Existing commercial-intelligence-heartbeat:2026-11-13 event observed original source ACK current SHA and 16 rows but no source-bound site delivery CRO consumer receipt. Existing website experiment policy count 0; 1 historical closed e-mail assignment, no website live assignment.",
+    "2026-11-13 actual Supabase migration history contains exact 20261113190000, native production function body contains original CRO handoff contract and security ACL anon=false/authenticated=false/service_role=true. Controlled existing commercial-intelligence-heartbeat-v1(2026-11-13) returned site_receipt_count=2 with canonical original source SHA, obligation UUID and both page/provider receipts. Independent original daily event readback count=1, nested verified_site_receipts=2; repeat same function returns same exactly two page IDs without new event. CRO experiment and order flags remain false."
   ],
   "evaluation": {
     "historical_replay": [
@@ -36,7 +37,40 @@
     "original_commercial_obligation_remains_open": true
   },
   "production_success": false,
-  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "status": "ORIGINAL_HEARTBEAT_RECEIVER_VERIFIED_CRO_PROSPECTIVE_EXPERIMENT_OPEN",
   "owner": "original #140 Heartbeat / original CRO consumer",
-  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "production_cro_receiver_receipt_verified": true,
+  "production_site_handoff_verified": true,
+  "production_readback": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "protected_main_merge_sha": "3588638975030bb58f73d4b5b14629c84e8123da",
+    "applied_migration": {
+      "version": "20261113190000",
+      "name": "original_seo_heartbeat_cro_consumer_receipt_v1",
+      "provider_applied": true
+    },
+    "live_function": "public.powerhouse_commercial_intelligence_heartbeat_v1(date)",
+    "function_contract": "ORIGINAL_SEO_TO_HEARTBEAT_CRO_RECEIPT_V1",
+    "live_function_body_and_service_only_acl_verified": true,
+    "original_heartbeat_run_at_utc": "2026-11-13T18:19:16.005934+00:00",
+    "original_source_ack_verified": true,
+    "original_source_obligation_id": "40b62d82-dcd3-4a44-98d0-3f94071008a9",
+    "original_source_revision": "937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb",
+    "original_site_merge_sha": "66b67ac366e073ca068e5f1e23938a9792ae7dce",
+    "original_heartbeat_daily_event": "commercial-intelligence-heartbeat:2026-11-13",
+    "original_event_rows": 1,
+    "first_receiver_proven_count": 2,
+    "repeat_receiver_proven_count": 2,
+    "original_website_recommendations": [
+      "seo-owner-update:2026-11-13:exact-online-koppeling",
+      "seo-owner-update:2026-11-13:twinfield-koppeling"
+    ],
+    "real_site_and_original_consumer_handoff_complete": true,
+    "cro_treatment_executed": false,
+    "causal_lift_verified": false,
+    "paid_order_verified": false,
+    "next_run_learning_verified": false,
+    "original_source_obligation_still_open": true
+  }
 }
