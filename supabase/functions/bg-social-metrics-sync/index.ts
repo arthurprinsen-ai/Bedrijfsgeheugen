@@ -409,6 +409,13 @@ Deno.serve(async(req:Request)=>{
       .insert(audit).select('dedupe_key,event_type,state,evidence').single();
     if(receiptError)throw new Error('ORIGINAL_PROVIDER_POLL_AUDIT_WRITE:'+receiptError.message);
     assertOriginalProviderPollReceipt(acceptedReceipt,audit);
+    // INSERT RETURNING is still a write acknowledgment, not an independent
+    // source readback. Perform a SECOND SELECT on the stored unique key.
+    const {data:independentReceipt,error:pollReadbackError}=await db.from('powerhouse_runtime_events')
+      .select('dedupe_key,event_type,state,evidence')
+      .eq('dedupe_key',pollIdentity.dedupeKey).maybeSingle();
+    if(pollReadbackError)throw new Error('ORIGINAL_PROVIDER_POLL_AUDIT_READBACK:'+pollReadbackError.message);
+    assertOriginalProviderPollReceipt(independentReceipt,audit);
     // Preserve the ORIGINAL daily key and type for existing consumers.
     // Only this projection may be replaced by later source attempts.
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
