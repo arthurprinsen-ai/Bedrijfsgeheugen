@@ -6,7 +6,7 @@
   "original_owner": "powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1",
   "consumer": "ONE BRAIN / powerhouse-content-loop / original no-publish governance",
   "prevention": "HTTP 200 exclusively for sourceReady and no errors; 502 for provider/writeback errors, 503 for no independently eligible dated source. No gate bypass.",
-  "regression": "tests/mira-radar-http-contract-20261113.test.mjs",
+  "regression": "tests/brain-mira-radar-http-contract-20261113.test.mjs",
   "source_proof": "2026-11-12 20:02 UTC Edge HTTP 200; max original observed_at 2026-11-08; 2026-11-13 Instagram PLANNED due to MIRA_UNIQUE_SOURCE_WINNER_REQUIRED.",
   "production_status": "PR_PENDING_CI_MERGE_DEPLOY_READBACK",
   "do_not_close_content_or_provider_obligation": true,
