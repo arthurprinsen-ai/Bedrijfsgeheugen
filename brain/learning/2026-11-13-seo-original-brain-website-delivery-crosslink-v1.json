@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|seo|original-brain-website-delivery-crosslink|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_SOURCE_TO_SITE_EXECUTION_CROSS_REFERENCE_MISSING",
+    "scope": "ORIGINAL_SEO_HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "root_cause": "The original SEO #105 writer had source-observed and independently provider-verified money page actions, original daily #175 source archive and #140 accepted matching source revision, but no exact common source obligation ID/revision/readback receipt on the canonical done recommendation itself. Reporting could not prove this was one chain rather than two adjacent records.",
+  "prevention_rule": "Every original SEO done money-page recommendation may be marked linked to original BRAIN only when same original tenant+local date+capability+source SHA256 equals original #140 accepted consumer ACK, the source manifest contains the exact published Git commit and URL, and independent provider/readback of canonical+CTA+Netlify is verified. CAS prevents concurrent owner overwrite, exact row readback is required, changed source revision requires new proof, unknown remains OPEN. Never fabricate experiment exposure, measured uplift, paid orders or learning.",
+  "evidence": [
+    "2026-11-13 original Supabase production GROWTH_SOURCE_DAILY_HANDOFF obligation 40b62d82-dcd3-4a44-98d0-3f94071008a9 had exact matching original #175 source revision and original #140 accepted consumer ACK 937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb.",
+    "2026-11-13 existing original SEO recommendations for Exact Online and Twinfield marked done with SITE_CHANGE_LIVE_PROVEN_METRICS_DUE; original PR #5700 netlify deployed; DataForSEO independent canonical+CTA HTTP 200 and request IDs; original #175 source archive includes same exact merge SHA and canonical routes.",
+    "2026-11-13 original CRO learning remains unproven: original website experiment treatment/holdout assignments zero, no source-linked verified lift or orders; stay RED and OPEN."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-original-delivery-crosslink-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-original-delivery-crosslink-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-original-delivery-crosslink-20261113.test.mjs"
+    ],
+    "invariants": [
+      "no write to original Brain source observation",
+      "same original owner SEO Edge and same canonical recommendation",
+      "optimistic CAS+readback not status-only",
+      "no duplicate scheduler/site deployment or conversion claim"
+    ]
+  },
+  "production_success": false,
+  "status": "SOURCE_CANDIDATE_RELEASE_NOT_PROVEN",
+  "owner": "existing powerhouse-seo-opportunity-resolver #105",
+  "original_producer": "powerhouse-growth-source-health #175",
+  "original_consumer": "powerhouse-content-orchestrator #140",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}
