@@ -76,7 +76,10 @@ begin
   -- JSONB || replaces entire nested objects. Do not allow a partial incoming
   -- veto to erase an already active original veto or weaken its status.
   if v_original_evidence#>>'{veto,active}'='true'
-     and v_incoming_evidence#>>'{veto,active}'='false' then
+     and v_incoming_evidence ? 'veto'
+     and (jsonb_typeof(v_incoming_evidence->'veto') <> 'object'
+       or ((v_incoming_evidence->'veto') ? 'active'
+         and v_incoming_evidence#>>'{veto,active}' is distinct from 'true')) then
     raise exception 'NO_PUBLISH_EXISTING_VETO_CANNOT_BE_DOWNGRADED'
       using errcode='23514';
   end if;
