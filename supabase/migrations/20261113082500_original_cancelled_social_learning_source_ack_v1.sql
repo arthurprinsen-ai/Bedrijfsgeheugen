@@ -696,6 +696,7 @@ BEGIN
        'no_provider_readback_claimed',true),
     p_now,p_now,1
   FROM original_cancelled x
+  WHERE true -- disambiguate original INSERT...SELECT from the UPSERT conflict clause
   ON CONFLICT(obligation_type,capability_id,business_entity,business_period,business_timezone)
   DO UPDATE SET owner=excluded.owner,state=excluded.state,evidence=excluded.evidence,
       updated_at=excluded.updated_at,version=public.brain_obligations.version+1
