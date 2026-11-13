@@ -1,0 +1,43 @@
+{
+  "fingerprint": "supabase|gitops|applied-migration-842-source-lock-drift|20261113-v1",
+  "compiler": {
+    "failure_class": "APPLIED_PROVIDER_MIGRATION_LEDGER_SOURCE_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original native GitHub->Supabase migration job for merged PR #5721 applied migration 20261113082500 to production; original source-lock still attested only 841 earlier migrations while provider had 842. Protected next PR #5724 failed preflight exact source/provider parity, and its Supabase preview was rebuilt with old migration version before #5721 merge.",
+  "prevention_rule": "After native protected merge and independent provider applied-history readback, original GitOps source-lock owner serially appends only observed version/name pairs to the existing provider lock. Never falsely mark future candidate migration 20261113083000 applied. Run exact migration source lock parity before admitting next backend migration, respect preview reset and exact-head checks. No second migration/cron/publisher.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-842-source-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-842-source-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-842-source-lock-20261113.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_ref": "adhjwmvyoixzjtmiroln",
+    "provider_readback_at": "2026-11-13T08:46:04.242Z",
+    "previous_count": 841,
+    "applied_count": 842,
+    "observed_tail": {
+      "version": "20261113082500",
+      "name": "original_cancelled_social_learning_source_ack_v1"
+    },
+    "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "affected_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5724",
+    "tests": [
+      "tests/brain-original-provider-842-source-lock-20261113.test.mjs"
+    ],
+    "status": "SOURCE_CANDIDATE_NOT_PRODUCTION_VERIFIED"
+  },
+  "limitations": [
+    "Source-only lock correction; does not execute SQL or repair unrelated content publisher/consumer outcomes.",
+    "Must be merged under protected Required/CodeQL and exact-source post-merge proof; main lock alone is not provider outcome proof."
+  ]
+}
