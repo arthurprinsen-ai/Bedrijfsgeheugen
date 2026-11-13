@@ -1,0 +1,52 @@
+{
+  "id": "MIRA_RADAR_HTTP_200_WITH_SOURCE_RECOVERY_DUE_20261113",
+  "date": "2026-11-13",
+  "incident": "Cron #120 successful pg_net enqueue and HTTP 200 masked original JSON SOURCE_RECOVERY_DUE while no fresh unique Mira source existed.",
+  "root_cause": "The original Edge response defaulted to HTTP 200 even when the original materializer produced supply.ok=false; delivery HTTP status did not communicate the original consumer verdict.",
+  "original_owner": "powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1",
+  "consumer": "ONE BRAIN / powerhouse-content-loop / original no-publish governance",
+  "prevention": "HTTP 200 exclusively for sourceReady and no errors; 502 for provider/writeback errors, 503 for no independently eligible dated source. No gate bypass.",
+  "regression": "tests/brain-mira-radar-http-contract-20261113.test.mjs",
+  "source_proof": "2026-11-12 20:02 UTC Edge HTTP 200; max original observed_at 2026-11-08; 2026-11-13 Instagram PLANNED due to MIRA_UNIQUE_SOURCE_WINNER_REQUIRED.",
+  "production_status": "PR_PENDING_CI_MERGE_DEPLOY_READBACK",
+  "do_not_close_content_or_provider_obligation": true,
+  "one_original_executor": true,
+  "source_revision_required": true,
+  "consumer_ack_required": true,
+  "fingerprint": "powerhouse|mira|source-http-semantic-ack|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_MIRA_RADAR_HTTP_200_WITH_SOURCE_RECOVERY_DUE",
+    "scope": "CANONICAL_MIRA_SOURCE_CONTRACT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "Original daily Mira source radar HTTP 200 only for supply.ok and error-free source; HTTP 503 on real independently verified no-source shortage; HTTP 502 on recorded provider/database/ONE BRAIN errors. Keep existing scheduler, source URL/hash and topic duplicate gates, original single writer, same ONE BRAIN failure receipt, no fabricated sources or publishing.",
+  "evidence": [
+    "2026-11-12 20:02 UTC original pg_net cron #120 succeeded and original Edge HTTP 200, while original handler returned default HTTP 200 regardless of JSON source verdict.",
+    "2026-11-13 original Mira source latest observed_at 2026-11-08, 373 original signals, 125 eligible, 24 eligible last 10 days; Instagram 2026-11-13 PLANNED MIRA_UNIQUE_SOURCE_WINNER_REQUIRED.",
+    "Existing original Edge records source-supply failure to ONE BRAIN brain_observe_failure; keep it operational and independently inspect provider HTTP + source records."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-radar-http-contract-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-radar-http-contract-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-radar-http-contract-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "no_new_cron": true,
+    "no_new_scheduler": true,
+    "no_new_publisher": true,
+    "no_unverified_source": true,
+    "no_provider_side_effects": true,
+    "protected_exact_head_required": true,
+    "independent_edge_readback_required": true
+  },
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE"
+}
