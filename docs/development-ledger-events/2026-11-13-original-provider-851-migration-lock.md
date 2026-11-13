@@ -8,3 +8,5 @@
 - **Regression:** `tests/brain-original-provider-851-migration-lock-20261113.test.mjs`; protected Required/CodeQL/postmerge source-readback.
 - **Learning:** `brain/learning/2026-11-13-original-provider-851-migration-lock-v1.json`, oorspronkelijk incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
 - **Open boundary:** echte SEO-site/CRO/Heartbeat causale of betaalde outcome, social provider en 8 rode assurancelussen niet door migratie-lockgereedstelling gesloten.
+
+- **Additional protected-admission finding:** first #5757 preflight rejected new BRAIN learning record with `LEARNING_EVALUATION_TESTS_REQUIRED:shadow`. Mandatory explicit `evaluation.shadow` and `evaluation.canary` replay now point to the same source/lock regression. This was a valid fail-closed guard; corrected without bypassing branch protection.
