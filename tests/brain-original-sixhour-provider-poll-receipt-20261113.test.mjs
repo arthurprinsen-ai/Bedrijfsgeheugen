@@ -141,7 +141,7 @@ test('the ONE existing original #177 metric reader persists source-time slots, w
  assert.match(source,/await instagram\(db,apiKey,pollIdentity\.slotStart\)/);
  assert.match(source,/await linkedin\(db,apiKey,pollIdentity\.slotStart\)/);
  assert.match(source,/\.upsert\(\{[\s\S]*?snapshot_id:snapshotId/);
- assert.match(source,/onConflict:'tenant_id,source_event_id'/);
+ assert.match(source,/onConflict:'tenant_id,source_event_id',ignoreDuplicates:true/);
  assert.doesNotMatch(source,/const snapshotId='composio:'\+platform\+':'\+providerId\+':'\+day/);
  assert.doesNotMatch(source,/cron\.schedule|INSTAGRAM_CREATE_MEDIA|LINKEDIN_CREATE_LINKED_IN_POST/);
 });
