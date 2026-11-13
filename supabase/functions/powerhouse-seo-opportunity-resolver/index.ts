@@ -3,6 +3,7 @@ import owners from './intent-owners.json' with { type: 'json' };
 import {planOriginalSeoKeywordCacheProjection} from './keyword-cache-bridge.mjs';
 import { decideSeoBlogCandidate } from './blog-decision.mjs';
 import { selectOriginalSeoMoneyHandoffs,reconcileOriginalSeoMoneyHandoffs,SEO_MONEY_OWNER_HANDOFF } from './money-page-handoff.mjs';
+import {verifyOriginalSeoDeliveryLink,sameOriginalSeoDeliveryLink,SEO_ORIGINAL_DELIVERY_CRO_LINK} from './original-delivery-crosslink.mjs';
 
 const CONTRACT='powerhouse-seo-opportunity-resolver-v1';
 const clean=(v:unknown)=>String(v??'').replace(/\s+/g,' ').trim();
@@ -299,13 +300,75 @@ Deno.serve(async(req:Request)=>{
       p_evidence:{contract:CONTRACT,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoffs_suppressed:suppressedOriginalMoneyHandoffs.length,original_pending_handoff_refs:suppressedOriginalMoneyHandoffs.map(x=>x.prior_dedupe_key),owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action}))}
     });
     if(sourceObservationError)throw new Error('SEO_SOURCE_OBSERVATION_WRITE:'+sourceObservationError.message);
+    // SAME original #105 resolver: bind already-deployed website changes back
+    // to the original #175 source revision and #140 ACK; no second executor.
+    // Old/day source records may only be available after the original 6h
+    // producer; bounded historical readback reconciles them on the next tick.
+    const originalSince=new Date(Date.parse(runDate+'T12:00:00Z')-3*86400000)
+      .toISOString().slice(0,10);
+    const [sourceHandoffs,deliveredPages]=await Promise.all([
+      db.from('brain_obligations')
+        .select('id,obligation_type,capability_id,business_entity,business_timezone,business_period,state,evidence')
+        .eq('obligation_type','GROWTH_SOURCE_DAILY_HANDOFF')
+        .eq('capability_id','website-seo-dataforseo-ai-cro')
+        .eq('business_entity','bedrijfsgeheugen.nl:bedrijfsgeheugen')
+        .gte('business_period',originalSince).lte('business_period',runDate)
+        .order('business_period',{ascending:false}).limit(5),
+      db.from('powerhouse_content_recommendations')
+        .select('dedupe_key,run_date,target_channel,recommendation_type,status,evidence,updated_at')
+        .eq('recommendation_type','seo_money_page_update')
+        .eq('target_channel','website').eq('status','done')
+        .gte('run_date',originalSince).lte('run_date',runDate)
+        .order('run_date',{ascending:false}).limit(30)
+    ]);
+    if(sourceHandoffs.error)throw new Error('SEO_ORIGINAL_BRAIN_RECEIPT_READ:'+sourceHandoffs.error.message);
+    if(deliveredPages.error)throw new Error('SEO_ORIGINAL_SITE_READBACK_READ:'+deliveredPages.error.message);
+    const sourceByDay=new Map((sourceHandoffs.data||[]).map((o:any)=>[o.business_period,o]));
+    const deliveryCrosslink={contract:SEO_ORIGINAL_DELIVERY_CRO_LINK,
+      source_rows:(sourceHandoffs.data||[]).length,site_done_rows:(deliveredPages.data||[]).length,
+      proven:0,already_proven:0,still_missing:[],no_new_scheduler:true,
+      cro_outcome_not_inferred:true};
+    for(const rec of deliveredPages.data||[]){
+      const original=sourceByDay.get(rec.run_date);
+      const proof=verifyOriginalSeoDeliveryLink(original,rec);
+      if(!proof.ok){
+        deliveryCrosslink.still_missing.push({
+          recommendation_key:rec.dedupe_key,original_date:rec.run_date,
+          original_obligation_id:proof.original_obligation_id,
+          missing:proof.issues,owner:'original SEO/CRO/ONE BRAIN chain'});
+        continue;
+      }
+      const prior=rec.evidence?.original_delivery_crosslink;
+      if(sameOriginalSeoDeliveryLink(prior,proof)){
+        deliveryCrosslink.already_proven++;
+        continue;
+      }
+      // Optimistic revision fence. A concurrent original website writer update
+      // must NOT be overwritten by this secondary source/ACK reconciliation.
+      const {data:written,error:writeError}=await db.from('powerhouse_content_recommendations')
+        .update({evidence:{...rec.evidence,original_delivery_crosslink:proof},
+                 updated_at:observedAt})
+        .eq('dedupe_key',rec.dedupe_key).eq('status','done')
+        .eq('updated_at',rec.updated_at)
+        .select('dedupe_key,evidence').maybeSingle();
+      if(writeError)throw new Error('SEO_ORIGINAL_DELIVERY_CAS_WRITE:'+writeError.message);
+      if(!written)throw new Error('SEO_ORIGINAL_DELIVERY_CAS_CONFLICT:'+rec.dedupe_key);
+      const {data:verified,error:readError}=await db.from('powerhouse_content_recommendations')
+        .select('evidence').eq('dedupe_key',rec.dedupe_key).maybeSingle();
+      if(readError||!sameOriginalSeoDeliveryLink(
+          verified?.evidence?.original_delivery_crosslink,proof)){
+        throw new Error('SEO_ORIGINAL_DELIVERY_READBACK_MISMATCH:'+rec.dedupe_key);
+      }
+      deliveryCrosslink.proven++;
+    }
+
     const {error:hError}=await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:projectionFresh?'ok':'onvolledig',
       detail:'keywords='+latestByKeyword.size+'; gsc_queries='+gscByQuery.size+'; top='+top.length+'; blog_recommendations='+recommendations+'; money_owner_handoffs='+ownerHandoffsWritten+'; money_owner_suppressed='+suppressedOriginalMoneyHandoffs.length+'; execution_readback=EVIDENCE_DUE',
-      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoffs_suppressed:suppressedOriginalMoneyHandoffs.length,original_pending_handoff_refs:suppressedOriginalMoneyHandoffs.map(x=>x.prior_dedupe_key),owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,source_projection:sourceProjectionReceipt,execution_readback:'EVIDENCE_DUE'}
+      gegevens:{contract:CONTRACT,run_date:runDate,keywords:latestByKeyword.size,gsc_queries:gscByQuery.size,market_forecasts:(forecastResult.data||[]).length,top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null})),recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,owner_handoffs_suppressed:suppressedOriginalMoneyHandoffs.length,original_pending_handoff_refs:suppressedOriginalMoneyHandoffs.map(x=>x.prior_dedupe_key),owner_handoff_contract:SEO_MONEY_OWNER_HANDOFF,source_projection:sourceProjectionReceipt,original_delivery_crosslink:deliveryCrosslink,execution_readback:'EVIDENCE_DUE'}
     });
     if(hError) throw new Error('HEALTH_WRITE:'+hError.message);
-    return json({ok:projectionFresh,contract:CONTRACT,source_projection:sourceProjectionReceipt,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))},projectionFresh?200:207);
+    return json({ok:projectionFresh,contract:CONTRACT,source_projection:sourceProjectionReceipt,run_date:runDate,recommendations,forecasts_written:forecastsWritten,owner_handoffs_written:ownerHandoffsWritten,original_delivery_crosslink:deliveryCrosslink,execution_readback:'EVIDENCE_DUE',top:top.map(x=>({keyword:x.keyword,score:x.score,action:x.action,owner:x.owner?.route||null}))},projectionFresh?200:207);
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'seo-opportunity-resolver',soort:'search-opportunity-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT,run_date:runDate}}).then(()=>{},()=>{});
