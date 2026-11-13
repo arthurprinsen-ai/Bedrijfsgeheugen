@@ -3380,8 +3380,12 @@
     {
       "version": "20261113132000",
       "name": "original_skipped_no_publish_evidence_routing_v1"
+    },
+    {
+      "version": "20261113140500",
+      "name": "original_no_publish_immutable_provider_receipt_v1"
     }
   ],
-  "captured_at": "2026-11-13T13:12:15.617685Z",
+  "captured_at": "2026-11-13T14:39:23.852565Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
