@@ -837,7 +837,7 @@ DECLARE v_def text;
 BEGIN
   SELECT pg_get_functiondef('public.powerhouse_content_handoff_receipts_v1(timestamptz)'::regprocedure) INTO v_def;
   IF position('v_social_source_rev' in v_def)=0
-     OR position('SOURCE_RECEIVED' in v_def)=0
+     OR position('RECEIVED_SOURCE_ONLY_NOT_PROVIDER_MEASUREMENT_OR_LEARNING' in v_def)=0
      OR position('prior_brain_evidence' in v_def)=0
      OR position('original-content-handoff-no-aging-gap-v2' in v_def)=0
      OR has_function_privilege('anon','public.powerhouse_content_handoff_receipts_v1(timestamptz)','EXECUTE')
