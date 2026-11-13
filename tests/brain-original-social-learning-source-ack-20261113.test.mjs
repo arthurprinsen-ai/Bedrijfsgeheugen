@@ -26,6 +26,9 @@ test('ACK is idempotent for same immutable source and renewed only on actual rev
  assert.match(sql,/ELSE to_char\(p_now AT TIME ZONE 'UTC'/);
  assert.match(sql,/WHERE public\.brain_obligations\.owner IS DISTINCT FROM excluded\.owner/);
 });
+test('pg_get_functiondef snapshot must be terminated as a standalone SQL statement',()=>{
+ assert.match(sql,/\$function\$;\s*REVOKE ALL ON FUNCTION public\.powerhouse_content_handoff_receipts_v1/);
+});
 test('source receipt is not provider, learning, or revenue evidence; preserve original anti-duplicate and ACL',()=>{
  assert.match(sql,/RECEIVED_SOURCE_ONLY_NOT_PROVIDER_MEASUREMENT_OR_LEARNING/);
  assert.match(sql,/'provider_proven',false,'measurement_proven',false,'learning_proven',false/);
