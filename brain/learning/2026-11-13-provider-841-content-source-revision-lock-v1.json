@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|provider-841-original-content-handoff-revision-receipt|20261113-v1",
+  "obligation_id": "supabase|migration-history|provider-841-original-content-handoff-revision-receipt|20261113-v1",
+  "title": "Original source revision consumer handoff migration applied, source lock lagged provider at 840/841",
+  "status": "SOURCE_LOCK_CANDIDATE",
+  "root_cause": "Original protected #5714 applied the native Supabase source-revision/tenant content handoff migration 20261113071500, advancing product provider history to 841. The original source lock on main remained at 840, so postmerge BRAIN read-only migration-triple-source regressions failed 14 checks despite the provider's genuine applied SQL and official PR workflow.",
+  "owner": "Original protected Supabase migration-history source owner coordinated with original P0 #4198 content loop and original P0 #4215 ONE BRAIN; no new runtime producer, worker or executor",
+  "resolution": "Append exactly the real provider-applied 841st version and name to the original immutable supabase/migration-history.lock.json. Preserve all existing 840 rows. No migration SQL replay, new table, ACL or runtime code. Existing agent and skill updates from #5714 remain unchanged.",
+  "prevention": "After protected native Supabase migration, independently compare actual production provider versions, source SQL files and the original source lock. Append only true provider identities in the existing guarded GitHub release route before declaring postmerge BRAIN green; never modify the live migration history manually or double-run producer.",
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-original-native-838-source-ack-20261112.test.mjs",
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": "preserve exact original first 840 source lock values",
+    "shadow": "verify original provider 841th identity",
+    "canary": "protected Required/BRAIN/CodeQL + independent postmerge exact main readback"
+  },
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_observed_at": "2026-11-13T07:48:39.110128Z",
+    "provider_applied_count": 841,
+    "provider_distinct_versions": 841,
+    "provider_latest_version": "20261113071500",
+    "provider_latest_name": "original_content_handoff_source_revision_receipt_v1",
+    "provider_source_file": "supabase/migrations/20261113071500_original_content_handoff_source_revision_receipt_v1.sql",
+    "protected_prior_pr": 5714,
+    "protected_prior_main_sha": "462eca7c5a36565a449f1a28a1a344245ad4dd60",
+    "postmerge_brain_run_id": 43386229725,
+    "postmerge_schema_tests_failed": 14
+  },
+  "status_boundary": "TRUE_PROVIDER_HISTORY_841_READBACK; original source lock requires protected PR merge. This does NOT prove real content consumer processed ACK, actual authorized provider publication, independent source/outcome match or 7/14/28-day applied learning. Keep existing six red loops OPEN; no fake data or green.",
+  "compiler": {
+    "failure_class": "MIGRATION_SOURCE_HISTORY_LAG",
+    "scope": "SUPABASE_ORIGINAL_GITOPS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
