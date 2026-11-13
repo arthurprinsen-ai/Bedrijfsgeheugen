@@ -5,6 +5,10 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## AUTO_SHIP_AFTER_GREEN — alle agents/chats/skills (10 november 2026)
+
+**Standaardbevoegdheid:** nooit aan Arthur vragen of een normale, omkeerbare en volledig door verplichte checks, reviews en security/kwaliteit/consent goedgekeurde wijziging live mag. De originele aangewezen delivery-owner promoveert deze automatisch via de bestaande beschermde PR → merge → canonieke productie-keten en sluit uitsluitend bij onafhankelijke exact-SHA/providereffect/functionele readback en ontvangende ONE BRAIN/Heartbeat/Portaal-ACK. Checks groen ≠ live; merge ≠ live; READY ≠ functionele uitkomst. Fouten blijven open met automatische herstelactie via dezelfde lineage. Respecteer expliciete menselijke autorisatie, kostengoedkeuring en onomkeerbare risico's, zonder bypass of tweede uitvoerder. Zonder rechten geen schijn-livegang. Regressie `tests/brain-groen-draaiboek-20261108.test.mjs`.
+
 ## P0 2026-11-10 — actie vóór status: herstel ontbrekende leer-ontvangst direct
 
 Verplicht voor ALLE agents/skills die de ONE BRAIN/Powerhouse/Heartbeat-leerlus raken: begin bij de originele operationele record en bewaak elke producent→afnemer-overdracht met immutable providerbewijs, deterministische ontvangende ID en idempotente ACK. Bij falende overdracht geen passieve lijst of een te vervangen "volgende run" als eindresultaat: voer de toegestane bronreparatie meteen uit, activeer uitsluitend de bestaande oorspronkelijke uitvoerder, verifieer bron én consumer in productie en borg hetzelfde incident met regressie, agentskill, BRAIN-leerrecord en beschermde release.
