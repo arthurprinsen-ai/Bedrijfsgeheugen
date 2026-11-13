@@ -21,3 +21,11 @@
 - **Oorspronkelijke replay:** vier opeenvolgende begrensde oproepen van dezelfde originele `powerhouse_content_handoff_receipts_v1` zonder nieuwe planning/provider-send; exact 185/185 bronsnapshots en consumer-ACKs, 0 inconsistenties, 0 onterecht bewezen downstream-resultaten.
 - **Huidige grens:** BRAIN-records en sociale leerverplichtingen blijven OPEN tot werkelijk gemeten en hergebruikt; natuurlijke bestaande scheduler-run na de release en provider/experiment/revenue outcomes afzonderlijk te bewijzen. Geen all-green.
 - **Borging:** source lock update naar verifieerbare entry #850, regressie `tests/brain-original-provider-850-migration-lock-20261113.test.mjs`; preview-incident preventies voor statement-einde en semantische postflight-marker blijven testbaar.
+
+
+## Natuurlijke oorspronkelijke #171-uitvoerder — bewijs na release
+- **Scheduler zelfstandig:** `cron.job_run_details(jobid=171)`, 2026-11-13 18:14:00.027554–18:14:01.127033 UTC, `succeeded / DO`.
+- **Geen cron-only claim:** `powerhouse_ops.runtime_scheduler_run_evidence_v1` exacte 18:14 UTC slot, `COMPLETED,healthy=true`; `content-closed-loop: ok=true/224ms`, `loop-assurance: ok=true/853ms`; bestaande `powerhouse_refresh_loop_assurance_v1` levert originele `powerhouse_content_handoff_receipts_v1`-ACK.
+- **Readback:** 185/185 bestaande oorspronkelijke OPEN sociale leerbronrecords consumer-ACK exact, geen nieuwe bronrij; acceptatietijd-digest `a65f8d67c6a7f494cbff26d836bc22bc`, versieoptelsom `2696` voor en na originele herhaling en natuurlijke run onveranderd; 0 onterechte providerclaims.
+- **Geen false green:** originele `content-closed-loop` en `one-brain-reconcile` blijven RED na 18:14; content-/publicatie-/metric-/volgende-run leeruitkomst blijft apart open, geen tweede executor.
+- **Preventieregel:** na protected merge altijd native producerbron, consumer-ACK, oorspronkelijke pg_cron, daadwerkelijke mux-task-uitslag én behoud van bronidentiteit na natuurlijke replay controleren; record vervolgens in hetzelfde ONE BRAIN-leerrecord en incidentdossier.
