@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|original-provider-lock-tests|historical-844-845-tests-assume-permanent-tail|20261113-v1",
+  "compiler": {
+    "failure_class": "HISTORICAL_PROVIDER_MIGRATION_TEST_FROZEN_AT_EXACT_TAIL_AFTER_VALID_APPEND",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "Original protected migration provider 844 historical regression and subsequent 845 regression asserted exact lock.applied.length 844/845 and at(-1)/at(-2) / captured_at literal equality instead of immutable historical index. After actual provider correctly applied 845, source lock itself was accurately updated to 845 via protected PR #5737. The original postmerge BRAIN backend run 43432825805 still failed 1 historical 844 test even while Required/CodeQL/new 845 test/provider+source exact versions were all correct. The same issue would recur when real provider applies 846, breaking the 845 regression. Replaying history should prove immutable prefix, not freeze all future provider-appended identities.",
+  "evidence": [
+    "Original postmerge Obligation Terminal Closure for protected PR #5737 run 43432785095 FAILED at exact BRAIN backend run 43432825805. Backend lane 131910653971 had one failing test among thousands, title 'original provider-readback 844 source lock has exactly one applied version and correct canonical source identity'. The actual fault was equality lock.applied.length===844 and at(-1), while genuine provider+Git had 845.",
+    "Original protected prior PR #5736 applied 845th real migration 20261113132000 original_skipped_no_publish_evidence_routing_v1; provider readback actual 845 and source lock 845 after protected PR #5737, no fake migration.",
+    "tests/brain-original-skipped-provider-845-migration-lock-20261113.test.mjs itself then required length exactly 845, last identity via at(-1), and captured_at equal exact observation; would fail on legitimate future 846.",
+    "Existing original tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs correctly uses length>=843 and indexed lock.applied[842], with nondecreasing provider observation time, demonstrating established valid pattern."
+  ],
+  "prevention_rule": "ALL historical applied migration tests must require lock.applied.length>=N and exact immutable lock.applied[N-1] identity, optional predecessor fixed at N-2, global uniqueness/order and historical minimum provider readback time. NEVER require lock.applied.length===N, applied.at(-1), applied.at(-2), or equality to an old captured_at where future real provider migrations are allowed; exact total+source parity belongs solely to current canonical provider-lock tests. Include in-memory future append regression proving historical prefix survives. Do not relax exact provider version+name verification, terminal guard, protected release, RLS, writer lease or assume new migrations applied.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-ga4-provider-844-migration-lock-20261113.test.mjs",
+      "tests/brain-original-skipped-provider-845-migration-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-ga4-provider-844-migration-lock-20261113.test.mjs",
+      "tests/brain-original-skipped-provider-845-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-ga4-provider-844-migration-lock-20261113.test.mjs",
+      "tests/brain-original-skipped-provider-845-migration-lock-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "no_new_migration": true,
+    "no_provider_write": true,
+    "no_sender": true,
+    "no_scheduler": true,
+    "no_terminal_bypass": true,
+    "exact_current_source_lock": true,
+    "immutable_history_proven": true
+  },
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_owner": "original ONE BRAIN BRAIN backend lane / immutable provider source-lock",
+  "status": "CANDIDATE_PROTECTED_CI_REQUIRED"
+}
