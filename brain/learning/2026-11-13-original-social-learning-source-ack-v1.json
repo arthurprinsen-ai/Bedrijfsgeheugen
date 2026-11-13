@@ -2,7 +2,7 @@
   "fingerprint": "powerhouse|one-chain|social-learning-source-revision-consumer-ack|20261113-v1",
   "obligation_id": "powerhouse|one-chain|social-learning-source-revision-consumer-ack|20261113-v1",
   "parent_issue": 5232,
-  "status": "PROTECTED_CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "status": "PROVIDER_DEPLOYED_ORIGINAL_SOURCE_TO_BRAIN_185_OF_185_VERIFIED_OUTCOME_OPEN",
   "owner": "original powerhouse-runtime-scheduler-mux-v1 / #171",
   "root_cause": "The original #171 social-learning reconciliation wrote OPEN BRAIN obligations with original source identifiers but without cryptographic source_revision, payload digest, stable correlation and same-version consumer ACK. Thus 183 open continuous learning obligations could not demonstrate independent source-to-BRAIN version parity.",
   "prevention_rule": "For every original OPEN social_learning_obligations source, the SAME original #171 BRAIN consumer records a SHA256 over source identity, status, due_at, updated_at and full payload, exact payload SHA, stable correlation and source-only consumer ACK; replay preserves accepted_at for an unchanged source, revision drift re-ACKs without sending or marking provider/outcome green. No second worker or synthetic proof.",
@@ -12,7 +12,12 @@
     "original_brain_learning_open": 183,
     "source_revision_present_in_prior_brain_learning_open": 0,
     "auth_boundary": "service_role allowed, anon/authenticated forbidden",
-    "delivery_status": "PR candidate until protected merge, applied SQL readback, and natural original #171 source/consumer parity"
+    "delivery_status": "PR candidate until protected merge, applied SQL readback, and natural original #171 source/consumer parity",
+    "original_brain_learning_source_exact_ack_after_replay": 185,
+    "original_source_open_count_at_proof": 185,
+    "unchanged_original_source_count": 185,
+    "production_status": "PROVIDER_850_APPLIED_AND_SOURCE_TO_BRAIN_ACK_PROVEN",
+    "consumer_evidence_scope": "SOURCE_RECEIVED_ONLY_PROVIDER_METRICS_LEARNING_OPEN"
   },
   "remedy": {
     "migration": "supabase/migrations/20261113174500_original_social_learning_source_ack_v1.sql",
@@ -22,11 +27,11 @@
     "no_provider_resend": true
   },
   "verification": {
-    "required": "PENDING",
-    "codeql": "PENDING",
-    "protected_merge": "PENDING",
-    "provider_migration": "PENDING",
-    "independent_original_consumer_readback": "PENDING",
+    "required": "SUCCESS (exact head 4e9f9d4187db778a74370ef2719c101c0adcd992)",
+    "codeql": "SUCCESS (python and javascript-typescript, exact head)",
+    "protected_merge": "SUCCESS: PR #5752 merge 2feb1186bc48e5b9fea0ff4dc076b697f238147e",
+    "provider_migration": "CONFIRMED: 20261113174500/original_social_learning_source_ack_v1, native production 850/850",
+    "independent_original_consumer_readback": "SUCCESS: 185/185 original social-learning source SHA256/payload SHA256/correlation/ACK identity exact; 0 missing/drift; original #171 receipt function sequential 48-row bounded rounds",
     "public_post_or_revenue_proven": false,
     "preview_initial_failure": "Supabase Preview MIGRATIONS_FAILED 2026-11-13: generated pg_get_functiondef CREATE FUNCTION statement lacked terminating semicolon before REVOKE; isolated in branch Postgres logs.",
     "preview_fix": "Reinsert standalone DDL semicolon before REVOKE; requires fresh protected preview check."
@@ -52,5 +57,27 @@
     ]
   },
   "production_success": false,
-  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232"
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "production_proof": {
+    "original_repository": "arthurprinsen-ai/Bedrijfsgeheugen",
+    "original_merge_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5752",
+    "exact_merge_commit": "2feb1186bc48e5b9fea0ff4dc076b697f238147e",
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_migration_version": "20261113174500",
+    "provider_migration_name": "original_social_learning_source_ack_v1",
+    "provider_applied_migration_count": 850,
+    "provider_readback_at": "2026-11-13T18:05:43.826407Z",
+    "prior_849_provider_identities_exact_source_matches": 849,
+    "prior_849_mismatches": 0,
+    "original_source_records_open": 185,
+    "existing_brain_rows_linked": 185,
+    "source_revision_payload_correlation_and_consumer_ack_exact": 185,
+    "source_revision_missing_or_drift": 0,
+    "unsupported_provider_metric_learning_truth_claims": 0,
+    "provenance": "Independent read-only SQL after original content receipt function on production; initial 0/185, then 48/185 and after four original sequential bounded replay rounds 185/185.",
+    "natural_original_next_tick_readback": "NOT_YET_INDEPENDENTLY_CONFIRMED_AFTER_DEPLOYMENT",
+    "independent_provider_publication_metric_or_revenue": "NOT_PROVEN_AND_STILL_OPEN",
+    "original_scheduler_only": true,
+    "no_second_scheduler_or_provider_sender": true
+  }
 }
