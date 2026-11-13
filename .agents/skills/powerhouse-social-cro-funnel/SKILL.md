@@ -5,6 +5,14 @@ description: Operate the existing Bedrijfsgeheugen social post → engagement �
 
 # Powerhouse social CRO — één bewijsgestuurde lus (30 oktober 2026)
 
+## 2026-11-13 — blog merge → original publisher live-proof zonder uurvertraging
+
+Fingerprint: `BLOG_MERGE_PUSH_ORIGINAL_OWNER_RECEIPT_20261113`. De originele `.github/workflows/powerhouse-daily-blog.yml` blijft de enige eigenaar van publicatie en sluiting. Een beschermde `main`-merge van `blog/**` triggert die **zelfde** bestaande `push`-workflow onmiddellijk naast het **ongewijzigde** originele `11 * * * *` uurrooster; bestaande concurrency `powerhouse-daily-blog` en de dag/tenant-schrijverspoort voorkomen dubbele auteurs en posts. Geen extra job, workflow, scheduler, publisher, Netlify-deploy of publicatiecircuit.
+
+Vóór `LIVE_PROVEN` blijft `tools/content-growth/reconcile-merged-blog-live.mjs` verplicht: precies één originele gemergede PR per lokale publicatiedag; Netlify `release.json` productieautoriteit en exacte SHA-afstamming; de exacte publieke HTTPS artikelpagina als **HTML 200 met canonical en immutable content-id**, daarna de bestaande geautoriseerde `record_content_publication_state`-RPC, originele terminal-reconciliatie en onafhankelijke Supabase-readback met hetzelfde deploy-ID. `Netlify READY` zonder deze GET/ACK is alleen `DEPLOYED_WAITING_HTTP_CONSUMER_ACK`, nooit LIVE_PROVEN of geleerd. Een mislukte GET houdt de originele verplichting open en laat de bestaande hourly retry actief; nooit een fictieve HTTP-status, fallback-homepage of nieuwe blog-PR invoeren.
+
+De bestaande `agent-social-delivery-recovery` coördineert `verify-merged-blog-release-triggers-original-immediate-public-html-consumer-ack` met het originele blogworkflow-eigenaarschap. Na echte bron-ACK moet exact dezelfde tenant, datum, sourceRevision en correlatie naar ONE BRAIN/Heartbeat/Portal worden geconsumeerd; meting/experiment/omzet blijven afzonderlijke garanties. Regressie: `tests/brain-blog-merge-immediate-original-handoff-20261113.test.mjs`; P0 #4198.
+
 ## 10 november 2026 — autonoom herstellen, geen statusrapport als vervanging voor uitvoering
 
 **Verplichte agentinstructie voor iedere sociale leer- en publicatieagent:** bij een onvoltooide content-, meet-, analyse- of experimenteerstap in dezelfde sessie eerst de originele bron, eigenaar en provider-ACK inspecteren, herstel binnen de bestaande bevoegdheid uitvoeren, regressie toevoegen, beschermde release voltooien en provider-readback toetsen. Een lijst met open blockers of "volgende natuurlijke run afwachten" is géén geleverde herstelactie wanneer de oorspronkelijke actie veilig uitvoerbaar is. Meld uitsluitend concreet uitgevoerd werk en aantoonbare resultaten; noem echte onoplosbare externe toestemmings- of bronbeperkingen zonder er succes van te maken.
