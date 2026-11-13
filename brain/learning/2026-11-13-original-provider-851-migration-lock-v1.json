@@ -58,5 +58,29 @@
     ]
   },
   "production_success": false,
-  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "evidence": {
+    "provider_readback": {
+      "project_ref": "adhjwmvyoixzjtmiroln",
+      "observed_at": "2026-11-13T18:21:42.215773Z",
+      "applied_count": 851,
+      "latest_exact_version": "20261113190000",
+      "latest_exact_name": "original_seo_heartbeat_cro_consumer_receipt_v1",
+      "source_lock_previous_count": 850,
+      "source_lock_provider_prefix_mismatches": 0,
+      "authority": "native supabase_migrations.schema_migrations via independent read-only production SQL"
+    },
+    "test_evidence": {
+      "source_contract": "supabase/migration-history.lock.json",
+      "native_source_sql": "supabase/migrations/20261113190000_original_seo_heartbeat_cro_consumer_receipt_v1.sql",
+      "replay_test": "tests/brain-original-provider-851-migration-lock-20261113.test.mjs",
+      "original_prevention": "no new SQL/migration, preserve canonical original provider source register, protected Required and CodeQL"
+    },
+    "original_outcome_boundary": {
+      "technical_source_history_exact": true,
+      "heartbeat_cro_outcome_proven": false,
+      "actual_paid_order_proven": false,
+      "missing_outcomes_remain_open": true
+    }
+  }
 }
