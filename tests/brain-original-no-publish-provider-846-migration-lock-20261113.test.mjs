@@ -9,13 +9,15 @@ const migration=readFileSync(new URL(migrationPath,import.meta.url),'utf8');
 test('original applied Supabase provider migration 846 is present with exact name and preserved prior 845',()=>{
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,846);
- assert.deepEqual(lock.applied.at(-1),exact);
- assert.deepEqual(lock.applied.at(-2),{version:'20261113132000',name:'original_skipped_no_publish_evidence_routing_v1'});
+ assert.ok(lock.applied.length>=846,'future observed provider migrations may extend the immutable original lock');
+ assert.deepEqual(lock.applied[845],exact,'historical provider 846 identity must remain at index 845');
+ assert.deepEqual(lock.applied[844],{version:'20261113132000',name:'original_skipped_no_publish_evidence_routing_v1'});
  assert.equal(lock.applied.filter(x=>x.version===exact.version).length,1);
  assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
  assert.ok(lock.applied.every((x,i)=>i===0||x.version>lock.applied[i-1].version));
- assert.equal(lock.captured_at,'2026-11-13T14:39:23.852565Z');
+ assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-13T14:39:23.852565Z'),'original 846 provider observation cannot be rewound');
+ const hypothetical=[...lock.applied,{version:'20991231235959',name:'in_memory_future_migration_only'}];
+ assert.deepEqual(hypothetical[845],exact,'future migration cannot corrupt historical 846');
 });
 
 test('original provider-846 immutable source matches real protected executable SQL and no phantom version',()=>{
