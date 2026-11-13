@@ -50,5 +50,23 @@
       "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs"
     ],
     "expected": "For every source in original #171, exact tenant/source revision/idempotent correlation/consumer ACK match one and only one stored Brain evidence; historical CANCELLED backfills once, never claims provider or learning success."
+  },
+  "evidence": {
+    "source": "Independent production read-only public.content_publication_obligations join to original public.brain_obligations on tenant/channel/day, 2026-11-13",
+    "source_total": 436,
+    "missing_source_updated_at": 0,
+    "original_cancelled_consumer_rows_audited": 28,
+    "missing_tenant": 28,
+    "missing_revision": 28,
+    "missing_correlation": 28,
+    "missing_consumer_ack": 28,
+    "original_7_commercial_handoffs_unproven": true,
+    "original_6_red_loop_controls_unresolved": true,
+    "historical_native_function_source": "supabase/migrations/20261113062500_original_no_publish_terminal_handoff_ack_v1.sql",
+    "regression": "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs",
+    "first_red_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43383977616",
+    "second_red_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43384170436",
+    "production_migration_applied": false,
+    "postmerge_natural_171_consumer_ack": "NOT_YET_VERIFIED"
   }
 }
