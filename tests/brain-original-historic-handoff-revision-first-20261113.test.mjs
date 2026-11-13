@@ -16,7 +16,7 @@ test('historical original consumer prioritizes changed source revision and missi
  assert.match(newOrder,/b\.evidence#>>'\{consumer_ack,source_revision\}' IS DISTINCT FROM/);
  assert.match(newOrder,/to_char\(c\.updated_at AT TIME ZONE 'UTC'/);
  assert.match(newOrder,/THEN 0 ELSE 1 END/);
- assert.match(newOrder,/LIMIT 48/);
+ assert.match(newFn,/LIMIT 48/);
  assert.ok(newFn.indexOf(newOrder)<newFn.indexOf('LIMIT 48'));
  assert.match(newOrder,/coalesce\(b\.updated_at,'epoch'::timestamptz\)/);
 });
