@@ -3364,8 +3364,12 @@
     {
       "version": "20261113071500",
       "name": "original_content_handoff_source_revision_receipt_v1"
+    },
+    {
+      "version": "20261113082500",
+      "name": "original_cancelled_social_learning_source_ack_v1"
     }
   ],
-  "captured_at": "2026-11-13T07:48:12.734Z",
+  "captured_at": "2026-11-13T08:43:00.785Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
