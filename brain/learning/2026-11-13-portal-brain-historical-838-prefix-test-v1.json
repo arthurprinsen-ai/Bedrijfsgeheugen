@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "portal|brain|historical-native-838-test-hard-coded-terminal-after-provider-839|20261113-v1",
+  "obligation_id": "portal|brain|historical-native-838-test-hard-coded-terminal-after-provider-839|20261113-v1",
+  "title": "Original BRAIN historical migration-838 regression incorrectly assumed provider total could never exceed 838",
+  "status": "FIX_CANDIDATE",
+  "root_cause": "Postmerge BRAIN delivery for protected #5710 failed historical test tests/brain-original-native-838-source-ack-20261112.test.mjs on strict length 838, while actual production 839/839 applied migration identities and main provider-backed lock 839; 838 was a historical immutable prefix, not a future maximum.",
+  "impact": "Original postmerge BRAIN/terminal failed despite independently proven native migration 839 and original source-lock 839; false red source test can block unrelated protected releases. No customer runtime defect is inferred from this assertion.",
+  "fix": "Retain exact historical 836/837/838 indexed migration identity checks, ensure entire lock contains >=839 rows, additionally require exact applied 839th record/version/name and its SQL file, and preserve full lock uniqueness. Do not skip, delete or mock any BRAIN test and do not modify applied migrations.",
+  "prevention_rule": "Historical immutable migration count tests must verify a prefix and independently proven appended provider identities, never freeze the total count after a later provider migration. Migration source lock must remain a monotonic append-only exact matching provider ledger with real observed timestamps.",
+  "owner": "Original P0 #4215 / ONE BRAIN postmerge test-contract owner and original Supabase migration source-lock coordinator; do not duplicate original Mira #5708 playbook correction",
+  "tests": [
+    "tests/brain-original-native-838-source-ack-20261112.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Original BRAIN delivery #43380911816 backend 2 failures after #5710; one was actual native 838 hardcoded count 839 !== 838 in this original test, another was AGENTS playbook pointer which is separately owned by open original PR #5708.",
+    "Supabase production project adhjwmvyoixzjtmiroln independently showed 839 applied distinct with version 20261113060000 and original GitHub main lock 839; later independent provider reached 840 after a different protected PR without the original 838 prefix changing."
+  ],
+  "status_boundary": "SOURCE_REGRESSION_CANDIDATE_ONLY; protected Required/BRAIN/CodeQL, merge and rerun original postmerge backend/terminal checks needed. Real customer Portal → ONE BRAIN ACK_PROCESSED → Heartbeat/Powerhouse → CRO outcome/next-learning remains EVIDENCE_DUE.",
+  "compiler": {
+    "failure_class": "CI_TEST_CONTRACT_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
