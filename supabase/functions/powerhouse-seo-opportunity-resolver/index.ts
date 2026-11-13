@@ -326,7 +326,7 @@ Deno.serve(async(req:Request)=>{
     const sourceByDay=new Map((sourceHandoffs.data||[]).map((o:any)=>[o.business_period,o]));
     const deliveryCrosslink={contract:SEO_ORIGINAL_DELIVERY_CRO_LINK,
       source_rows:(sourceHandoffs.data||[]).length,site_done_rows:(deliveredPages.data||[]).length,
-      proven:0,already_proven:0,still_missing:[],no_new_scheduler:true,
+      proven:0,already_proven:0,still_missing:[] as any[],no_new_scheduler:true,
       cro_outcome_not_inferred:true};
     for(const rec of deliveredPages.data||[]){
       const original=sourceByDay.get(rec.run_date);
