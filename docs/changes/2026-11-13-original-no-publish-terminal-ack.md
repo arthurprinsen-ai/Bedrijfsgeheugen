@@ -16,3 +16,6 @@ Het historisch venster van de originele #171 executor stopt met dezelfde ongewij
 
 ## Acceptatie
 Historische, shadow- en canarytests en native migratiepreview verplicht, daarna Protected Required/CodeQL, main, Supabase migratielock/readback en een natuurlijke #171 runtimecontrole. Een statusverbetering in no-publish mag de 6 andere rode loops, de 7 commerciële overdrachten, oude Instagram-provider-onzekerheid, de 181 leerverplichtingen of echte omzet **niet** op groen zetten. De broncorrectie is `SOURCE_CANDIDATE` tot onafhankelijke exacte productie-evidence.
+
+### Nauwkeurige bijstelling voor source-ACK
+Aanvullende read-only join op EXACT `content:'||channel + datum + tenant` in originele BRAIN: 82 strikt toegestane no-publish-bronnen zijn daadwerkelijk `OPEN/OVERDUE_PUBLICATION`; één van de 83 records met aanvankelijk passende veto-basiseigenschappen voldoet niet aan de strengere conflictvoorwaarden en wordt **niet** automatisch geannuleerd. Alleen voor de 82 mag de originele #171 na protected release een `CANCELLED`-ACK opnemen.
