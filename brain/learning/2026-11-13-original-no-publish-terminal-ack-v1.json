@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|content-handoff|historical-original-no-publish-reported-overdue|20261113-v1",
+  "date": "2026-11-13",
+  "owner": "existing #171 powerhouse-runtime-scheduler-mux-v1 / powerhouse-content-loop and original ONE BRAIN",
+  "owner_issue": 4198,
+  "related_issue": 4215,
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_YET_PROVEN",
+  "root_cause": "Original powerhouse_content_handoff_receipts_v1 considers all non-LIVE_PROVEN SKIPPED sources OVERDUE_PUBLICATION even when an explicit original NO_PUBLISH veto was recorded and there is no external provider ID, published timestamp or live_proven_at. This misroutes historical retired days toward the publisher indefinitely.",
+  "observed_evidence": {
+    "source": "live public.content_publication_obligations plus public.brain_obligations read-only, 2026-11-13",
+    "original_skip_without_provider_reference_and_complete_veto": 83,
+    "source_sample": "2026-11-03 instagram status SKIPPED, evidence.decision NO_PUBLISH, veto.active true, decided_at 2026-11-08 and no external_id/published_at/live_proven_at",
+    "consumer_sample": "same historical source appears as OPEN OVERDUE_PUBLICATION in original BRAIN, next_action says no publication required",
+    "separate_provider_reference_conflicts": "Existing SKIPPED + provider reference must retain OVERDUE_PROVIDER_READBACK, not be cancelled.",
+    "original_six_red_loop_controls": 6
+  },
+  "correction": "Only valid canonical SKIPPED with explicit original dated NO_PUBLISH, active veto, nonempty reason/code, no provider reference/timestamps/side effect flags or conflicts becomes original BRAIN state CANCELLED, stage NO_PUBLISH_POLICY_ACK. Reopen automatically on genuine source revocation or provider side effect. No publisher or consumer/experiment success asserted.",
+  "prevention": "Never interpret an original explicit no-publish veto as missing publication, and never interpret absence of new publication as a provider or learning success. Precedence for historical provider side effects and same-owner no-resend must remain.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-no-publish-terminal-ack-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-no-publish-terminal-ack-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-no-publish-terminal-ack-20261113.test.mjs"
+    ],
+    "expected": "83 eligible historical no-publish records may be CANCELLED under the existing scheduler after exact-SHA protected migration and independent source/consumer readback; no false new provider delivery or 6-loop all-green claim"
+  },
+  "compiler": {
+    "failure_class": "FALSE_RED",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/e6c5b99f5c9d907c70a2621d84ded13167af1c9d/supabase/migrations/20261112211000_original_skipped_provider_reference_readback_handoff_v1.sql",
+    "regression_tests": [
+      "tests/brain-original-no-publish-terminal-ack-20261113.test.mjs"
+    ],
+    "production": "NOT_VERIFIED",
+    "post_migration_readback": "NOT_VERIFIED",
+    "provider_delivery_count_inferred": 0,
+    "outcome_measurement": "NOT_MEASURED"
+  },
+  "parallel_executor_created": false,
+  "no_new_scheduler": true,
+  "no_new_provider": true
+}
