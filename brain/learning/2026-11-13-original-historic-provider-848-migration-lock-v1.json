@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|supabase|original-provider-848-applied-source-lock-parity|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_PROVIDER_848_APPLIED_BUT_IMMUTABLE_GIT_LOCK_847",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Protected PR #5744 merged original #171 historical consumer source-revision priority; real production Supabase applied exact migration 848 while Git immutable applied source lock still contained 847. The existing original BRAIN provider/source parity and full migration-history tests must not be misrepresented as green until same Git lock reflects the real authoritative provider applied identity.",
+  "prevention_rule": "Read original real Supabase production schema_migrations ordered entire history, compare exactly prior 847 with Git source lock, append ONLY observed actual 848 version+name after validating installed original function and service-role privileges, set captured_at to real provider clock. Do not edit existing 847 identities or apply provider SQL again. Enforce historical test forward compatibility and existing original terminal/Brain consumer readback; never imply 21/21 source ACK without natural #171.",
+  "evidence": [
+    "Real provider read-only 2026-11-13T16:06:25.688069Z latest=20261113155800/original_historic_handoff_source_revision_priority_v1; total 848; independent full provider[0..846] identity exactly matched original Git 847 entries, no mismatch.",
+    "Real original production installed revision-first ORDER BY CASE WHEN source_revision or consumer_ack.source_revision differs, LIMIT 48 unchanged, anon/authenticated denied and service_role allowed.",
+    "Real original #171 BRAIN source revision before first postdeployment natural readback 13/21, all 21 OPEN. Must await true original consumer ACK, no synthetic terminal or outcome.",
+    "Protected PR #5744 Required/backend/automation/native Supabase preview/CodeQL success; merged main 1422e08ef48c89f3305e2effc0ba5d8e55ef91fb."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-historic-provider-848-migration-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-historic-provider-848-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-historic-provider-848-migration-lock-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "source_only": true,
+    "provider_applied_before_lock": true,
+    "new_sql_migration": false,
+    "existing_847_prefix_unchanged": true,
+    "original_171_executor_unchanged": true,
+    "no_provider_resend": true,
+    "no_terminal_claim_without_ack": true
+  },
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_PENDING_PROTECTED_TERMINAL"
+}
