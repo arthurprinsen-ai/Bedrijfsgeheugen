@@ -1,0 +1,72 @@
+{
+  "fingerprint": "powerhouse|social-learning|hourly-window-priority-not-original-provider-bound|20261113-v1",
+  "date": "2026-11-13",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "root_cause": "The ORIGINAL social-learning-store tagged due windows using tenant-filtered snapshots' post_id, observed_at, data_quality and numeric metrics but without a source-event exact provider identity or explicit tenant_id row in its 900-record scanner. A wrong-provider, source-event-free or tenant-ambiguous numerically observed snapshot could win original hourly priority while downstream original verifiedSocialWindowAck necessarily refused it. The priority helper also allowed a caller to widen tolerance up to 12h despite the original strict ±6h measurement requirement.",
+  "observations": {
+    "original_open_content_handoff": 365,
+    "original_open_social_learning": 184,
+    "source_partial_window": 143,
+    "missed_obligation": 36,
+    "other_source_debts": 5,
+    "partial_with_original_post_and_snapshot": 143,
+    "partial_numeric_impressions_any_time": 81,
+    "exact_numerical_authorized_24_48_72h_window_available": 0,
+    "raw_temporally_close_but_partial_only": 7,
+    "provider_job_id": 177,
+    "provider_job_schedule": "18 */6 * * *",
+    "existing_hourly_evaluator": "netlify/functions/social-learning-evaluate.mjs"
+  },
+  "prevention_rule": "Only prioritize the same original tenant_id, post_id, immutable external provider post ID, source_event_id bounded as :provider-id:, qualified numeric provider source and source_observed_at within nominal ±6h window; NEVER promote an unbound or partial-only snapshot into priority. Do not loosen original ACK and never close 184 historical obligations from any-time numeric metrics.",
+  "change_scope": [
+    "supabase/functions/_shared/social-learning-due-evidence.mjs",
+    "supabase/functions/social-learning-store/index.ts",
+    "tests/brain-social-learning-observed-window-priority-v1.test.mjs",
+    ".agents/skills/powerhouse-social-cro-funnel/SKILL.md"
+  ],
+  "safety": {
+    "new_scheduler": false,
+    "new_queue": false,
+    "provider_send": false,
+    "production_sql_mutation": false,
+    "relax_quality_gate": false,
+    "relax_time_window": false,
+    "backfill_fabricated": false
+  },
+  "source_recovery": "Original provider source owner #177 and hourly original social-learning-evaluate must obtain authentically time-aligned provider data. No historical 24/48/72 outcome is invented when source unavailable; social obligations stay OPEN.",
+  "production_outcome_proven": false,
+  "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "SOCIAL_HOURLY_PRIORITY_MISSING_ORIGINAL_PROVIDER_EVENT_BINDING",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-learning-observed-window-priority-v1.test.mjs"
+    ],
+    "invariants": [
+      "same original tenant, post, external provider source-event",
+      "observed-at original time ±6h",
+      "numeric provider-authorized source",
+      "no unknown learning promoted",
+      "no new publisher or scheduler"
+    ]
+  },
+  "evidence": [
+    "Production-original 184 OPEN social-learning of 365 all CONTENT_HANDOFF OPEN at 2026-11-13, 143 partial/36 missed/5 other.",
+    "143 partial had posts and any raw snapshots; 81 had numeric impressions at SOME timestamp, 0 valid numeric original ±6h actual 24/48/72h measurements, seven temporally close records were reactions-only partial.",
+    "Source original job #177 active at schedule 18 */6 * * *, original hourly social-learning-evaluate unchanged.",
+    "Existing original social-learning-store observed index lacked tenant_id field and provider-source-event identity priority check, and accepted requested tolerance up to 12h.",
+    "Regression negative cases for wrong identity, time and scope in original existing tests; future production requires protected CI and native Edge source/readback."
+  ]
+}
