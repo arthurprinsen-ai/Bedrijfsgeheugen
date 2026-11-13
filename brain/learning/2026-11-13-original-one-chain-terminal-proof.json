@@ -8,7 +8,7 @@
     "security_sensitive": true
   },
   "root_cause": "Existing #171 BRAIN handoff producer and consumer receipts were observable but terminal database transitions had no independent row-level fence; a future write could mark a content handoff FULFILLED/CANCELLED with stale, mismatched or absent original source/ACK proof.",
-  "prevention_rule": "The original brain_obligations terminal content transitions are rejected in the database unless the canonical source exists at the exact tenant/date/channel/revision/correlation, matching consumer_ack and original provider/outcome or no-publish veto evidence. Preserve existing #171, writer leases, all social identity/budget/permission gates; no added scheduler or replay. Historical finished social-learning aliases stay unchanged.",
+  "prevention_rule": "The original brain_obligations terminal content transitions are rejected in the database unless the canonical source exists at the exact tenant/date/channel/revision/correlation, matching consumer_ack and original provider/outcome or no-publish veto evidence. Preserve existing #171, writer leases, all social identity/budget/permission gates; no added scheduler or replay. Historical finished social-learning aliases stay unchanged. Concurrent original Supabase migrations must reserve distinct versions, preserve verified applied ledger and reconcile source lock 842 before original guarded 083000 release; postmerge 083000 must be separately provider-verified before source lock advancement.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-original-one-chain-terminal-proof-20261113.test.mjs"
@@ -27,7 +27,8 @@
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
     "2026-11-13 read-only: 82 current CANCELLED content:* rows; 0 missing source/revision/correlation/owner, 0 invalid no-publish source records",
     "Source PR candidate; NOT deployed, terminal enforcement NOT proven until native migration + protected merge + production trigger readback + original #171 natural run.",
-    "13 Nov 2026: original concurrent PR #5721 already owns migration version 20261113082500 for independent cancelled social-learning source ACK; this guarded terminal transition migration is intentionally versioned 20261113083000. Do not merge until exact-head native provider preview and sequential migration/source-lock readback."
+    "13 Nov 2026: original concurrent PR #5721 already owns migration version 20261113082500 for independent cancelled social-learning source ACK; this guarded terminal transition migration is intentionally versioned 20261113083000. Do not merge until exact-head native provider preview and sequential migration/source-lock readback.",
+    "Provider read-only production readback on 2026-11-13T08:42:03.264335Z: exactly 842/842 unique migrations, newest applied 20261113082500/original_cancelled_social_learning_source_ack_v1 from already protected merged #5721 SHA af0095e26a09e90548f236528a6769fc5f94df0f. Original source lock on this candidate prior to correction 841; 842nd row is provider-backed, pending terminal guard 083000 not marked applied."
   ],
   "limitations": [
     "This is a terminal proof invariant, not automatic completion of 365 still-open original content obligations.",
