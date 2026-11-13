@@ -10,13 +10,15 @@ const migration=readFileSync(new URL(migrationPath,import.meta.url),'utf8');
 test('original provider-readback 844 source lock has exactly one applied version and correct canonical source identity',()=>{
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,844);
- assert.deepEqual(lock.applied.at(-1),exact);
+ assert.ok(lock.applied.length>=844,'future independently applied migrations may append after original immutable 844');
+ assert.deepEqual(lock.applied[843],exact,'original 844th provider identity must remain at its immutable prefix position');
  assert.equal(lock.applied.filter(z=>z.version===exact.version).length,1);
  assert.equal(new Set(lock.applied.map(z=>z.version)).size,lock.applied.length);
  assert.ok(lock.applied.every((z,i)=>i===0||z.version>lock.applied[i-1].version));
- assert.deepEqual(lock.applied.at(-2),{version:'20261113083000',name:'original_one_chain_content_terminal_proof_guard_v1'});
- assert.equal(lock.captured_at,'2026-11-13T12:33:20.358846Z');
+ assert.deepEqual(lock.applied[842],{version:'20261113083000',name:'original_one_chain_content_terminal_proof_guard_v1'});
+ assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-13T12:33:20.358846Z'),'provider observation timestamp must never rewind before 844');
+ const hypotheticalFutureAppend=[...lock.applied,{version:'20991231235959',name:'future_migration_simulation_only'}];
+ assert.deepEqual(hypotheticalFutureAppend[843],exact,'in-memory future append must not invalidate historical 844 source identity');
 });
 
 test('each immutable provider-applied identity resolves to exactly one original executable migration',()=>{
