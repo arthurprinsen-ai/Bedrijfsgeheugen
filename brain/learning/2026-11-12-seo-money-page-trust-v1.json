@@ -43,8 +43,12 @@
       "native_version": "20261113062500",
       "native_name": "original_no_publish_terminal_handoff_ack_v1",
       "resolved_in_candidate_source": true,
-      "protected_preflight_pending": true,
-      "production_live_unproven": true
+      "protected_preflight_pending": false,
+      "production_live_unproven": true,
+      "resolved_by_original_owner_pr": "#5713",
+      "original_owner_merge_sha": "ff61a4806571091edb6eebd08aecfa604340df45",
+      "source_lock_identical_to_main": true,
+      "provider_preview_ownership": "original Supabase owner PR #5713"
     }
   },
   "fix": "Remove wrong duplicate breadcrumb, point canonical Koppelingen parent to /systemen-koppelen, align indicative one-way vs complex pricing consistently in FAQ and schema, preserve same-origin absolute JSON-LD URLs and add offline translation. Also align the original assets/stijl.js price authority (Exact + Twinfield), deterministic money-prerender final HTML and static English pricing; retain one protected original website PR/owner.",
@@ -82,6 +86,9 @@
     "original_recommendations": "SUGGESTED_UNTIL_PROVIDER_PROVEN_RELEASE_AND_ORIGINAL_CONSUMER",
     "site_builder": "assets/stijl.js -> tools/site-shell/money-prerender.mjs",
     "owner_execution": "NOT_PROVEN",
-    "commercial_outcome": "OPEN"
+    "commercial_outcome": "OPEN",
+    "migration_dependency": "CLOSED_BY_ORIGINAL_OWNER_PR_5713",
+    "money_page_production": "AWAITING_PROTECTED_PR5700_MERGE_AND_NETLIFY_READBACK",
+    "causal_cro": "EVIDENCE_DUE"
   }
 }
