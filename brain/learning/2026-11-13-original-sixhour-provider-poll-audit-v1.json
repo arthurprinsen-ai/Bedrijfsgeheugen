@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|social-metrics|sixhour-original-provider-poll-status-overwritten-by-daily-upsert|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_SOCIAL_PROVIDER_POLL_RECEIPT_HISTORY_OVERWRITTEN",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original verified Supabase cron job #177 runs at 00:18/06:18/12:18/18:18 UTC, but original bg-social-metrics-sync upserted only one provider-social-metrics:<Amsterdam-day> record into powerhouse_runtime_events each execution. Example 2026-11-12 has four succeeded cron job runs and only one last daily event at 18:18. This destroyed independent readback of earlier per-run statuses/evidence; a day summary is not an append-only event or original downstream metric/learning consumer ACK.",
+  "prevention_rule": "Within the same original authorized Edge job #177 and existing powerhouse_runtime_events, record a distinct audited source execution under provider-social-metrics:run:<UUID> as event_type provider_social_metric_ingest_receipt, preserving true observed/error state, UTC six-hour slot and exact source outcome. Require an independently returned exact ID/status/evidence readback BEFORE updating existing provider-social-metrics:<Amsterdam-day> daily summary under its unchanged event_type. Distinct attempts have distinct receipts; never create a second cron, table, provider request, publication, metric, learning or fake consumer ACK. Do not treat healthy=true or HTTP 200 as evidence of 24/48/72h source-bound learning or revenue.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Read-only cron.job run details 2026-11-12T00:18,06:18,12:18,18:18 UTC, all succeeded; original provider event 'provider-social-metrics:2026-11-12' has only latest occurred_at 2026-11-12T18:18:25.4Z, no separate six-hour results.",
+    "Original bg-social-metrics-sync/index.ts used upsert({dedupe_key:'provider-social-metrics:'+day,...}) and event_type provider_social_metric_ingest; source event table has UNIQUE(dedupe_key), no separate original run ID.",
+    "Original social_learning_obligations 184 OPEN and 365 BRAIN CONTENT_HANDOFF OPEN; original Heartbeat 9 GREEN/6 RED. The source audit does not establish any extra provider metric/learning outcomes.",
+    "Original #171 and #177 are active; no second scheduler allowed. The new receipts are in the existing table and event type distinct to avoid double-counting daily consumer summaries."
+  ],
+  "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original bg-social-metrics-source-6h-v1 / bg-social-metrics-sync",
+  "status": "CANDIDATE_PENDING_PROTECTED_CI_EDGE_PROVIDER_READBACK",
+  "risks": [
+    "Adding audit events without original provider readback cannot prove actual missing historical results.",
+    "A successful source poll does not prove authentic time-bound post measurement, CRM conversion or applied learning.",
+    "Service-token and Vault access must remain unchanged; event receipts are accessible only to the original authorized writer."
+  ]
+}
