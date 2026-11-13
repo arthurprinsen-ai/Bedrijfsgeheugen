@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|blog|merged-daily-article-awaits-next-hour-proof|20261113-v1",
+  "obligation_id": "content-publication:2026-11-13:blog",
+  "title": "Protected daily blog merge does not immediately trigger original public release proof",
+  "status": "CANDIDATE_PENDING_POSTMERGE_PROVIDER_READBACK",
+  "root_cause": "The original daily blog workflow was scheduled hourly and triggered on publisher/script changes only; merged blog/<slug>/index.html did not trigger it. Its successful 2026-11-13 07:50 UTC run preceded PR #5718's protected merge and Netlify 08:18 READY deploy. At 08:19 the canonical original blog obligation remained APPROVED, no provider ID, live_proven_at or public HTTP evidence. A successful earlier scheduled run is insufficient receipt for later source.",
+  "fix": "In the SAME original GitHub workflow, add a narrow protected-main push path for blog/*/index.html so the SAME guarded one-day original renderer/reconciler executes public proof on publication; keep original hourly fallback and concurrency. Update existing agent and recovery skill with exact proof requirements and a deterministic regression. No added publisher/scheduler/provider, no blind state update.",
+  "prevention_rule": "Any protected merged daily blog must cause a same-owner immediate consumer proof attempt; no publication LIVE_PROVEN until exact GH ancestry, production deploy ID/SHA, public 200 HTML with matching canonical/content-ID and original Supabase receipt. Externally observable status remains open until independently verified.",
+  "owner": "existing Powerhouse daily blog GitHub publisher and agent-social-delivery-recovery; P0 #4198",
+  "tests": [
+    "tests/brain-daily-blog-production-closure-v1.test.mjs",
+    "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+  ],
+  "provider_proof": {
+    "netlify_deploy_id": "6af6c751e4198b40cb648397",
+    "production_commit_sha": "de138afbd5caa5738b1d4b881e18bdc29ed2bdc7",
+    "state": "READY",
+    "published_at": "2026-11-13T08:18:01.816Z",
+    "original_pr": 5718,
+    "original_run_before_merge": 43388692795,
+    "blog_canonical": "https://www.bedrijfsgeheugen.nl/blog/voorbereid-op-twinfield-integratie-praktisch-stappenplan-voor-mkb-dat/",
+    "original_supabase_status_at": "2026-11-13T08:19:39.422526Z",
+    "original_supabase_status": "APPROVED",
+    "external_id": null,
+    "live_proven_at": null
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-production-closure-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-production-closure-v1.test.mjs"
+    ],
+    "canary": [
+      "postmerge original workflow and public Netlify/Supabase proof for 2026-11-13"
+    ]
+  },
+  "status_boundary": "Code and original publisher trigger candidate only until Required/CodeQL protected merge and original push workflow + independent public HTTP and canonical ONE BRAIN update are actually confirmed. Does not prove Instagram Meta, 24/48/72-hour metrics, Heartbeat CRO effect or revenue.",
+  "compiler": {
+    "failure_class": "HANDOFF_TRIGGER_GAP",
+    "scope": "ORIGINAL_DAILY_BLOG_PUBLISHER",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

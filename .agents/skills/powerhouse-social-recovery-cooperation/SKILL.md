@@ -5,6 +5,13 @@ description: Use for every stalled Powerhouse social/blog publication, provider 
 
 # Existing Powerhouse agents: delivery recovery cooperation
 
+## 13 November 2026 — same original blog writer: merged page triggers immediate proof
+
+Incident fingerprint `powerhouse|blog|merged-daily-article-awaits-next-hour-proof|20261113-v1` under P0 #4198. The protected daily blog PR #5718 was MERGED at `de138afbd5caa5738b1d4b881e18bdc29ed2bdc7`; native Netlify production deploy `6af6c751e4198b40cb648397` independently reports READY, branch main, exact source SHA and published_at 2026-11-13T08:18:01.816Z, while original canonical 2026-11-13 blog was still APPROVED without a readback at 08:19 UTC. The original hourly GitHub publisher run #43388692795 started 07:50, BEFORE the protected blog merge. A green pre-merge scheduled run does not prove the later production article and creates a gap until the next hourly cycle.
+
+Use the **existing** `.github/workflows/powerhouse-daily-blog.yml` only: retain the original hourly schedule and serialized concurrency; add a narrow existing-workflow `on.push.paths: blog/*/index.html` after actual protected merges so the SAME owner `tools/content-growth/reconcile-merged-blog-live.mjs` performs earliest possible exact GitHub merged-PR ancestry, Netlify production release identity, public 200 HTML/canonical/content-ID and same-date original Supabase state RPC/readback. Original same-date merged-PR guard `SAME_DATE_BLOG_PROTECTED_MERGE_PRESENT` MUST stop any second render/PR/post. A PR merge or a READY deploy is not enough for LIVE_PROVEN; only the independent public readback plus canonical state receipt is. Source ACK is not an outcome, and original #171 ONE BRAIN/Heartbeat/CRO learning still must measure separately. Fail closed for public 403, mismatched SHA, wrong canonical HTML, consent or source revision. No second scheduler/publisher, no bypass of GitHub checks, no Make/Buffer. Existing `agent-social-delivery-recovery` task `reconcile-original-merged-blog-push-to-netlify-http-and-brain-consumer-ack` owns this exact-chain source-to-consumer incident. Regression: `tests/brain-daily-blog-production-closure-v1.test.mjs`. A postmerge real workflow run and verified canonical Supabase state are needed before claiming this improvement works in production.
+
+
 ## BRAIN backend regression: NEVER disable blog export JWT to match stale test (2 November 2026)
 
 - Original full BRAIN exact-head run 41409216287 failed 32 tests, including `tests/brain-daily-blog-edge-config-registration-v1.test.mjs`. Its outdated combined test expected both blog functions to have `verify_jwt=false`.

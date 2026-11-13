@@ -1,0 +1,14 @@
+# P0 #4198 — merged daily blog must wake the original provider-proof handoff
+
+Date: 13 November 2026. Fingerprint: `powerhouse|blog|merged-daily-article-awaits-next-hour-proof|20261113-v1`.
+
+## Independently observed contract gap
+The original single scheduled writer [Powerhouse daily blog workflow](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/de138afbd5caa5738b1d4b881e18bdc29ed2bdc7/.github/workflows/powerhouse-daily-blog.yml) ran at [07:50 UTC](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43388692795), **before** protected [daily blog PR #5718](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5718) merged to exact `main` `de138afbd5caa5738b1d4b881e18bdc29ed2bdc7` at 08:16. Native Netlify authenticated site/deploy readback confirms [deploy 6af6c751e4198b40cb648397](https://app.netlify.com/projects/bedrijfsgeheugen/deploys/6af6c751e4198b40cb648397) READY/production/main, exact commit `de138afbd5caa5738b1d4b881e18bdc29ed2bdc7`, published at 08:18:01.816 UTC. The original provider database still reported canonical 13 Nov blog APPROVED, `live_proven_at=NULL`, `external_id=NULL`, no public HTTP readback at 08:19:39 UTC. This establishes an observable postmerge evidence gap, NOT proof of the live HTTP page.
+
+## Same original workflow repair
+Add only `blog/*/index.html` to original `on.push.paths` so the existing hourly workflow immediately wakes when a protected daily article merge occurs, while retaining its one serial concurrency group and hourly missed-run fallback. The existing `SAME_DATE_BLOG_PROTECTED_MERGE_PRESENT` gate avoids duplicate blog PRs, and the existing original `reconcile-merged-blog-live.mjs` checks actual GitHub PR ancestry, exact live Netlify release SHA/deploy, public canonical HTML with right content identity, writes canonical Supabase LIVE_PROVEN only after all checks and reads it back. In a race the original fallback catches later production readiness. Keep approved editorial and security gates; no override, fabricated HTTP 200, new cron, queue, second producer or provider action.
+
+Add original `agent-social-delivery-recovery` task and update existing recovery skill + original regression. Original agent/skill/Brain machine lesson/human append-only ledger share ONE incident and responsibility.
+
+## Acceptance boundary
+Protected Required/CodeQL and merge; proof of the same existing workflow launched after that merge; authenticated Netlify release + independent public HTTP canonical article and canonical 13 Nov Supabase LIVE_PROVEN receipt. Then original #171 ONE BRAIN exact source revision consumer ACK, Heartbeat and subsequent actual provider metrics/CRO effects and learning remain distinct, not green by association. Security-protected Netlify preview SSO 401 must not be bypassed to simulate an article readback.

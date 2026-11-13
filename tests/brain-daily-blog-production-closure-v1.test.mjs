@@ -88,3 +88,20 @@ test('the one hourly blog writer does not recreate a same-date candidate after p
  assert.ok(workflow.includes("secrets.SUPABASE_SERVICE_ROLE_KEY"));
  assert.ok(!workflow.includes('supabase database password'));
 });
+
+
+test('an exact protected merged daily blog page wakes the SAME original hourly writer and strict publication evidence gate',()=> {
+ const wf=fs.readFileSync(new URL('../.github/workflows/powerhouse-daily-blog.yml',import.meta.url),'utf8');
+ const agent=fs.readFileSync(new URL('../platform/agents/agent-team.mjs',import.meta.url),'utf8');
+ const skill=fs.readFileSync(new URL('../.agents/skills/powerhouse-social-recovery-cooperation/SKILL.md',import.meta.url),'utf8');
+ const push=wf.slice(wf.indexOf('  push:'),wf.indexOf('  workflow_dispatch:'));
+ assert.ok(push.includes("    branches: [main]"),'only protected main may wake original owner');
+ assert.ok(push.includes("      - 'blog/*/index.html'"),'same original workflow must reconcile the merged canonical page before the next hourly tick');
+ assert.ok(wf.includes("cron: '11 * * * *'"),'original hourly fallback retained');
+ assert.ok(wf.includes('group: powerhouse-daily-blog'),'the same original serialized executor owns pushes and hourly runs');
+ assert.ok(wf.includes('SAME_DATE_BLOG_PROTECTED_MERGE_PRESENT'),'existing merged writer never makes a second candidate');
+ assert.ok(wf.includes("steps.writer.outputs.available == 'true'"),'merged original candidate does not render again');
+ assert.ok(wf.includes('node tools/content-growth/reconcile-merged-blog-live.mjs "$BUSINESS_DATE"'),'real public receipt stays authoritative');
+ assert.equal(agent.split('reconcile-original-merged-blog-push-to-netlify-http-and-brain-consumer-ack').length-1,1);
+ assert.ok(skill.includes('blog/*/index.html')&&skill.includes('Netlify production release identity'));
+});
