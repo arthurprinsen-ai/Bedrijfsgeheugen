@@ -1,0 +1,72 @@
+{
+  "fingerprint": "powerhouse|original-content-handoff|source-revision-and-consumer-ack-missing|20261113-v1",
+  "date": "2026-11-13",
+  "owner": "existing #171 powerhouse-runtime-scheduler-mux-v1 → powerhouse_refresh_loop_assurance_v1 → powerhouse_content_handoff_receipts_v1",
+  "owner_issue": 4198,
+  "related_issue": 4215,
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_YET_PROVEN",
+  "root_cause": "The original canonical content publication source has a per-row tenant/channel/publication_date and updated_at revision, but the original ONE BRAIN evidence stored only channel/date/stage and no explicit source tenant, source revision, idempotent correlation or matching source-only consumer ACK. The exact 28 post-release CANCELLED/NO_PUBLISH_POLICY_ACK Brain records independently examined lacked all four fields.",
+  "observed_evidence": {
+    "checked_date": "2026-11-13",
+    "source_table": "public.content_publication_obligations",
+    "source_records": 436,
+    "source_rows_missing_updated_at": 0,
+    "consumer_table": "public.brain_obligations",
+    "cancelled_no_publish_records_inspected": 28,
+    "missing_tenant_field": 28,
+    "missing_source_revision": 28,
+    "missing_correlation": 28,
+    "missing_consumer_ack": 28,
+    "same_canonical_source_routing": true,
+    "related_reconciliation": "82 strict source no-publish records; 28 independently CANCELLED as of 07:00 UTC and the original single owner still processes remaining rows"
+  },
+  "fix": "Only original #171 content handoff function: store source tenant, stable tenant/channel/day source record key, UTC microsecond source updated_at revision and the EXACT existing BRAIN payload_sha256 idempotent correlation. Add an explicit source-state-only consumer ACK with matching revision and original stage owner, without asserting provider send, measurement or next experiment success. Historical terminal CANCELLED source cases are eligible for one source-provenance backfill, then suppressed until source revision changes. Existing historical FULFILLED records are not reopened blindly.",
+  "prevention": "NO_SOURCE_HANDOFF_WITHOUT_TENANT_REVISION_CORRELATION_CONSUMER_ACK; original state ingestion must be auditable separately from provider outcome/learning, and must rotate fairly under the existing service-role-only #171 executor with no new cron or writer.",
+  "regression_test": "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs",
+  "candidate_migration": "supabase/migrations/20261113071500_original_content_handoff_source_revision_receipt_v1.sql",
+  "security": "Existing SECURITY DEFINER search_path pg_catalog/public, no PUBLIC/anon/authenticated execute, service_role only. No new tables/columns or broad RLS.",
+  "source_lineage": "existing original content and public.brain_obligations keys unchanged",
+  "expected_verification": "Native preview, exact-head Required/CodeQL, protected merge, production Supabase migration ledger/readback, natural original #171 consumer ACK with exact tenant/revision/correlation; no false green on existing six RED loops, 7 commercial handoff gaps or 181 overdue social-learning obligations.",
+  "no_parallel_executor": true,
+  "provider_outcome_evidence": false,
+  "revenue_claimed": false,
+  "compiler": {
+    "failure_class": "MISSING_SOURCE_REVISION_ACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs"
+    ],
+    "expected": "For every source in original #171, exact tenant/source revision/idempotent correlation/consumer ACK match one and only one stored Brain evidence; historical CANCELLED backfills once, never claims provider or learning success."
+  },
+  "evidence": {
+    "source": "Independent production read-only public.content_publication_obligations join to original public.brain_obligations on tenant/channel/day, 2026-11-13",
+    "source_total": 436,
+    "missing_source_updated_at": 0,
+    "original_cancelled_consumer_rows_audited": 28,
+    "missing_tenant": 28,
+    "missing_revision": 28,
+    "missing_correlation": 28,
+    "missing_consumer_ack": 28,
+    "original_7_commercial_handoffs_unproven": true,
+    "original_6_red_loop_controls_unresolved": true,
+    "historical_native_function_source": "supabase/migrations/20261113062500_original_no_publish_terminal_handoff_ack_v1.sql",
+    "regression": "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs",
+    "first_red_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43383977616",
+    "second_red_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43384170436",
+    "production_migration_applied": false,
+    "postmerge_natural_171_consumer_ack": "NOT_YET_VERIFIED"
+  }
+}
