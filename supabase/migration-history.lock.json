@@ -3356,8 +3356,12 @@
     {
       "version": "20261113060000",
       "name": "portal_brain_record_contract_parity_v1"
+    },
+    {
+      "version": "20261113062500",
+      "name": "original_no_publish_terminal_handoff_ack_v1"
     }
   ],
-  "captured_at": "2026-11-13T06:37:59.338503Z",
+  "captured_at": "2026-11-13T06:53:13.095563Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
