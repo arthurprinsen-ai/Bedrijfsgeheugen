@@ -15,9 +15,18 @@
     "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
   ],
   "evaluation": {
-    "historical_replay": "preserve exact original first 840 source lock values",
-    "shadow": "verify original provider 841th identity",
-    "canary": "protected Required/BRAIN/CodeQL + independent postmerge exact main readback"
+    "historical_replay": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-838-source-ack-20261112.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
   },
   "evidence": {
     "provider_project": "adhjwmvyoixzjtmiroln",
