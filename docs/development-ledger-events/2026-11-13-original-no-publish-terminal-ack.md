@@ -9,3 +9,6 @@
 - Bron: `supabase/migrations/20261113062500_original_no_publish_terminal_handoff_ack_v1.sql`; regressies `tests/brain-original-no-publish-terminal-ack-20261113.test.mjs`; machine-BRAIN `brain/learning/2026-11-13-original-no-publish-terminal-ack-v1.json`.
 - Exact-head native Required/CodeQL, Supabase preview, merge, migratie-readback en originele natuurlijke #171 consumer-ACK: **NOT_YET_PROVEN**; ga niet direct naar provider of DB-write vanuit deze kandidaat.
 - Nog open: 6 red originele loops, 7 commerciële onbewezen overdrachten, 181 social learning overdue. Geen nep-KPI of valse closed-loop claim.
+
+## Stricte productiecohortreadback — 2026-11-13
+Een tweede bron-join eiste naast veto/code/reason en afwezig provider-ID ook expliciet geen `source_state_conflict`, `possible_provider_side_effect`, `reconciliation_required` of `provider_truth_verified`. Uitkomst: 82 strikt eligible, 82 origineel `OPEN/OVERDUE_PUBLICATION`, 0 al CANCELLED, 0 ontbrekende BRAIN-rijen. Een 83e bron met alleen het basisveto wordt bewust uitgesloten; geen onterechte administratieve annulering. Dit zijn inputbewijzen, **geen** getoonde productiecorrectie.
