@@ -31,5 +31,24 @@
   "expected_verification": "Native preview, exact-head Required/CodeQL, protected merge, production Supabase migration ledger/readback, natural original #171 consumer ACK with exact tenant/revision/correlation; no false green on existing six RED loops, 7 commercial handoff gaps or 181 overdue social-learning obligations.",
   "no_parallel_executor": true,
   "provider_outcome_evidence": false,
-  "revenue_claimed": false
+  "revenue_claimed": false,
+  "compiler": {
+    "failure_class": "MISSING_SOURCE_REVISION_ACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs"
+    ],
+    "expected": "For every source in original #171, exact tenant/source revision/idempotent correlation/consumer ACK match one and only one stored Brain evidence; historical CANCELLED backfills once, never claims provider or learning success."
+  }
 }
