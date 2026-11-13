@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|original-skipped-routing|provider-applied-845-lock-drift-after-protected-merge|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_SKIPPED_ROUTING_PROVIDER_845_SOURCE_LOCK_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original protected SKIPPED/no-publish stage routing migration 20261113132000 was independently applied to production as 845th canonical migration only AFTER protected PR #5736 merged. The original immutable provider source lock still listed 844 earlier legitimately applied migrations. The protected BRAIN postmerge terminal closure therefore could fail/hold on exact source/provider parity despite actual production being correct. The canonical lock cannot be prematurely marked applied before provider attests the true version/name; append only after actual provider readback.",
+  "prevention_rule": "After independent actual Supabase production schema_migrations confirms version+name 845 and protected source function/terminal guard, append only that provider-real identity to existing supabase/migration-history.lock.json under the same protected CI/CodeQL/ONE BRAIN delivery chain. Preserve all previous 844 identities byte-identically, no new schema SQL, scheduler, provider send, account grants, terminal close or synthetic no-publish decision. Require exact postmerge original BRAIN terminal provider version/name and child tests, never mark another PR's failed terminal evidence as successful.",
+  "evidence": [
+    "Original Supabase project adhjwmvyoixzjtmiroln read-only SELECT on 2026-11-13T13:12:15.617685+00: applied_count=845, latest version 20261113132000 and name original_skipped_no_publish_evidence_routing_v1, original SKIPPED governance router actual production function active.",
+    "Actual protected PR #5736 merged to main 32c550f963dae8ddba21f39edf14a4a8b358190d with exact-head Required and CodeQL green and successful Supabase native migration preview.",
+    "Previous canonical Git lock had exactly 844 applied identities, ending 20261113121500 original_ga4_handoff_json_operator_precedence_v1. The appended identity is real provider-observed, not a guessed pending migration.",
+    "Prior production historical 19 blog SKIPPED/NO_PUBLISH/veto true lacked decision_code; 1 also lacked veto; 17 SKIPPED social possible side effects require account readback not re-sends. This lock change is release metadata, NOT historical decision proof or social learning resolution."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-skipped-provider-845-migration-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-skipped-provider-845-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-skipped-provider-845-migration-lock-20261113.test.mjs"
+    ]
+  },
+  "original_owner": "protected Supabase source-migration-lock / ONE BRAIN terminal closure",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_EXACT_PROTECTED_PROVIDER_LOCK_RECONCILE"
+}
