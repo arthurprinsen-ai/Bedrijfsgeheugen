@@ -257,7 +257,8 @@ export function kruimelpad(schakels) {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
     itemListElement: schakels.map((s, n) => ({
       '@type': 'ListItem', position: n + 1, name: s.naam,
-      ...(s.url ? { item: 'https://www.bedrijfsgeheugen.nl' + s.url } : {})
+      ...(s.url ? { item: /^https:\/\/www\.bedrijfsgeheugen\.nl(?:\/|$)/.test(s.url)
+        ? s.url : 'https://www.bedrijfsgeheugen.nl' + s.url } : {})
     }))
   };
   return `<section class="inhoud-kruim"><div class="wrap"><nav aria-label="Kruimelpad">${delen}</nav></div></section>`
