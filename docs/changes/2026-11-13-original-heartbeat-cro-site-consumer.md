@@ -23,3 +23,14 @@ Geen nieuwe cron, parallelle agent, queue, tabel, publieksendpoint of social pub
 6. Eventuele migratiehistorie-append alleen nadat werkelijk toegepaste nieuwe productie-migratie onafhankelijk is bevestigd en alle voorgaande records gelijk zijn.
 
 Productieproblemen preview/snapshot-bron blijven in origineel incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198; source-only merge niet als productielive presenteren.
+
+## 13 november 2026 — Eindbewijs uit bestaande productie, zonder valse CRO-orderstatus
+Protected PR #5756 werd na Required + CodeQL, database replay en Supabase Preview gemerged naar `main` als `3588638975030bb58f73d4b5b14629c84e8123da`. Onafhankelijke Supabase-readback op project `adhjwmvyoixzjtmiroln` bevestigt native werkelijk toegepaste migratie `20261113190000/original_seo_heartbeat_cro_consumer_receipt_v1`, exacte `pg_get_functiondef` met `ORIGINAL_SEO_TO_HEARTBEAT_CRO_RECEIPT_V1` en service-only EXECUTE (`anon=false, authenticated=false, service_role=true`).
+
+Een veilig afgebakende, echte uitvoering van de bestaande `public.powerhouse_commercial_intelligence_heartbeat_v1(date '2026-11-13')` gaf `healthy=true`, exact oorspronkelijke #175→#140 bron-ACK SHA `937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb` en `original_site_to_cro_handoff.accepted=true`, `site_receipt_count=2`. Het bewijst originele CRO-ontvangst voor Exact Online en Twinfield met originele BRAIN obligation `40b62d82-dcd3-4a44-98d0-3f94071008a9`, publieke URL, onafhankelijke DataForSEO-provider-request-ID en website-merge `66b67ac366e073ca068e5f1e23938a9792ae7dce`.
+
+**Onafhankelijke originele event-readback:** precies 1 `powerhouse_runtime_events` met dedupe-key `commercial-intelligence-heartbeat:2026-11-13`, met 2 afzonderlijke ontvangersbewijzen. Een tweede gecontroleerde aanroep geeft opnieuw precies deze 2 bewijzen en geen dubbele daggebeurtenis. Originele job #140 bleef actief, geen nieuwe cron, publicatie, klantcontact, queue of experiment.
+
+**Correct niet-groen:** CRO treatment uitgevoerd = false, onafhankelijk A/B-effect = false, betaalde order = false, volgende natuurlijke leertoepassing = false. Alle oorspronkelijke `GROWTH_SOURCE_DAILY_HANDOFF` blijven `OPEN`; een bestaand bron/site/Heartbeat ontvangstbewijs sluit commerciële omzet niet af.
+
+De originele Git migratiehistorie bevatte nog 850 werkelijk toegepaste provideridentiteiten tegenover provider 851. Vóór bronreconciliatie zijn alle eerste 850 paarwaarden (versie én naam) onafhankelijk één voor één vergeleken: 0 verschillen. Alleen de daadwerkelijk toegepaste 851e `20261113190000/original_seo_heartbeat_cro_consumer_receipt_v1` en provider-capture-timestamp toevoegen; nooit SQL opnieuw uitvoeren of APPLIED verzinnen. Follow-up parent incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
