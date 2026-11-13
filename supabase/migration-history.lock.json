@@ -3368,8 +3368,12 @@
     {
       "version": "20261113082500",
       "name": "original_cancelled_social_learning_source_ack_v1"
+    },
+    {
+      "version": "20261113083000",
+      "name": "original_one_chain_content_terminal_proof_guard_v1"
     }
   ],
-  "captured_at": "2026-11-13T08:43:00.785Z",
+  "captured_at": "2026-11-13T08:58:22.562780Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

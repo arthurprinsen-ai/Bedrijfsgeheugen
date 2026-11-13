@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|gitops|original-brain-terminal-proof-provider-843-source-lock|20261113-v1",
+  "obligation_id": "supabase|gitops|original-brain-terminal-proof-provider-843-source-lock|20261113-v1",
+  "title": "Native original content terminal proof migration 843 applied but original GitOps source lock remained 842",
+  "status": "SOURCE_ONLY_PROVIDER_VERIFIED_PROTECTED_CANDIDATE",
+  "root_cause": "The existing native GitOps path applied merged original #5724 SQL 20261113083000 to provider before reconciling original immutable supabase/migration-history.lock.json. Source-lock remained 842. This is a postmerge provider↔Git source handoff gap, not an Instagram provider side-effect or an authenticated customer outcome.",
+  "impact": "Until same original source lock catches up to 843, the original BRAIN postmerge migration/source parity and future candidate preflight cannot claim exact historical integrity. No real published or measured result is inferred from the migration.",
+  "fix": "One provider-backed exact append of 20261113083000/original_one_chain_content_terminal_proof_guard_v1 to canonical Git source lock, preserving 842 historical entries, under original protected source-only GitOps owner, one regression, machine learning and human change/ledger. No SQL replay, provider write, new cron, new execution route or security weakening.",
+  "prevention_rule": "Original native provider-applied version/name must be independently read back after protected DDL, then reconciled only by original SOURCE-ONLY GitOps candidate, without bundling unapplied SQL. Original full BRAIN postmerge must succeed on exact merged main. A future terminal CONTENT_HANDOFF requires original source + exact consumer ACK + real provider/learning or true no-publish veto; an active trigger alone proves no customer outcome.",
+  "owner": "Original Supabase protected GitOps migration-history source-lock / agent-data-quality; P0 #4198 and #4215",
+  "provider": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-13T08:58:22.562780Z",
+    "applied": 843,
+    "unique_applied": 843,
+    "version": "20261113083000",
+    "name": "original_one_chain_content_terminal_proof_guard_v1",
+    "trigger": "brain_content_handoff_terminal_proof_guard_v1",
+    "security_definer": false,
+    "enabled": "O"
+  },
+  "tests": [
+    "tests/brain-original-provider-843-terminal-proof-lock-20261113.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+  ],
+  "evidence": [
+    "Protected #5724 MERGED main 5aea7dceae2be6f760e7abc885b328e01e5a4067, Required+CodeQL SUCCESS.",
+    "Native production Supabase 843/843 distinct provider-applied versions, latest exact 20261113083000/original_one_chain_content_terminal_proof_guard_v1 at 2026-11-13T08:58:22.562780Z.",
+    "Independent production pg_trigger lists active original brain_content_handoff_terminal_proof_guard_v1 BEFORE INSERT OR UPDATE public.brain_obligations; pg_proc.prosecdef=false SECURITY INVOKER.",
+    "Original source lock on main remained 842 and last 20261113082500; no append for unapplied SQL."
+  ],
+  "status_boundary": "SOURCE_ONLY_CANDIDATE until Required/CodeQL/protected merge/exact-main postmerge BRAIN and 843 provider/source parity. Real Meta/LinkedIn/blog metric learning and actual Portal/Heartbeat downstream customer CRO outcomes remain OPEN.",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE_SOURCE_LOCK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
