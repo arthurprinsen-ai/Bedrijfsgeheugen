@@ -74,3 +74,26 @@ export function assertOriginalProviderPollReceipt(saved,expected){
   }
   return true;
 }
+
+/** One immutable provider snapshot per actual ORIGINAL six-hour observation.
+ * Legacy YYYY-MM-DD snapshots remain untouched: re-polling must never
+ * rewrite their historical timestamp or pretend old 24/48/72h evidence exists.
+ * Repeating the same scheduled UTC slot uses the same source-event identity,
+ * so the existing snapshot upsert stays provider-side-effect idempotent.
+ */
+export function originalProviderMetricSnapshotIdentity({platform,providerId,slotStart}={}){
+  const source=String(platform||'').trim();
+  const external=String(providerId||'').trim();
+  if(source==='instagram'){
+    if(!/^\d{10,25}$/.test(external))
+      throw new Error('ORIGINAL_PROVIDER_SNAPSHOT_INSTAGRAM_ID_INVALID');
+  }else if(source==='linkedin'){
+    if(!/^urn:li:(share|ugcPost):\d+$/.test(external))
+      throw new Error('ORIGINAL_PROVIDER_SNAPSHOT_LINKEDIN_ID_INVALID');
+  }else throw new Error('ORIGINAL_PROVIDER_SNAPSHOT_PLATFORM_INVALID');
+  const time=Date.parse(String(slotStart||''));
+  if(!Number.isFinite(time)||new Date(Math.floor(time/(6*60*60*1000))*6*60*60*1000).toISOString()!==slotStart){
+    throw new Error('ORIGINAL_PROVIDER_SNAPSHOT_UTC_6H_SLOT_INVALID');
+  }
+  return 'composio:'+source+':'+external+':'+slotStart;
+}
