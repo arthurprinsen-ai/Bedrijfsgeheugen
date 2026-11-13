@@ -196,6 +196,12 @@ BEGIN
 END;
 $function$;
 
+-- Production currently grants only postgres and service_role. Reassert the
+-- same non-browser boundary on this SECURITY DEFINER replacement; never expose
+-- the assurance function to PUBLIC, anon or authenticated.
+REVOKE ALL ON FUNCTION public.powerhouse_refresh_seo_assurance_v1(timestamptz)
+  FROM PUBLIC, anon, authenticated;
+
 -- Migration-time contract check. This only inspects the function definition,
 -- never manufactures a production receipt or closes an original obligation.
 DO $assert$
