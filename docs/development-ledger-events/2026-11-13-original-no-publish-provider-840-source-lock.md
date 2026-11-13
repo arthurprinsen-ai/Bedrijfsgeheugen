@@ -1,0 +1,9 @@
+# 2026-11-13 — Original provider migration 840 source-lock reconciliation
+
+- **Original owner/lease**: same Supabase protected GitOps migration source-lock writer; sequential after protected merged #5710 (839 lock repair) and original no-publish #5709 (migration itself). No concurrent source-lock writer found before creating this candidate.
+- **Observed real provider** at 2026-11-13T06:53:13.095563Z: `adhjwmvyoixzjtmiroln`, `supabase_migrations.schema_migrations` 840 applied, 840 distinct, latest `20261113062500/original_no_publish_terminal_handoff_ack_v1`. This is read-only production evidence, not a claim that NO_PUBLISH has been processed.
+- **Observed committed source**: main `17782cfe86b105d6ef0f1a3933442d521278450c` has executable `supabase/migrations/20261113062500_original_no_publish_terminal_handoff_ack_v1.sql` and canonical existing `supabase/migration-history.lock.json` only 839 rows.
+- **Failure**: existing protected #5708 preflight #43379977561 reported 839 executable migrations / 838 source lock on previous main; new main adds the NO_PUBLISH migration and actual provider is already 840 while current original source lock has 839.
+- **Correction**: append one exact provider version/name to existing source lock with all previous identities intact; update only original Brain lesson, human change log, append-only delivery ledger. No SQL re-execution, manual database write, fake provider readback, no alternative executor.
+- **Prevention + regression**: protected original Supabase migration lock tests, per-version exact pairing, protected Required/CodeQL, native source-lock readback and original provider 840/840 after merge. Original BRAIN/Mira #5708 resync only after this source authority is proven.
+- **Still open**: real no-publish tenant-consumer source-to-ACK and Instagram's dated Mira winner/media/Meta GET/learning remain separate outcomes.
