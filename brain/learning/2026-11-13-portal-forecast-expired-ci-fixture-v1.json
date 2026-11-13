@@ -1,0 +1,39 @@
+{
+  "fingerprint": "portal|financial-forecast|authentication-positive-ci-fixture-stales-after-30-days|20261113-v1",
+  "compiler": {
+    "failure_class": "PORTAL_AUTH_FORECAST_TEST_EXPECTED_EXPIRED_VALIDATION",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original platform/api/portal-forecast-handler.mjs enforces independent source updatedAt and verifiedAt both <=30 days old at actual request time, which is correct. Two positive handler tests used fixed 2026-10-14T10:00Z source/2026-10-14T12:00Z independent review and expected one result on 2026-11-13T10:14Z (over 30 days); the real handler correctly returned no forecast (0 !== 1). The failures prevented unrelated original provider poll release #5730; they are calendar-dependent test fixtures, not a production policy failure.",
+  "prevention_rule": "Keep 30-day production finance freshness and identity tenant gates unchanged. Positive authenticated handler tests must inject actually recent source and later attestation timestamps; negative tests use explicit deterministic old/future or scoped reference time, and an explicit live-handler expired review test rejects old assertions. Never extend expires windows, fake finance evidence, or bypass protected CI. Keep the original portal skill and source domain owner distinct from the social provider writer.",
+  "evidence": [
+    "Exact-head Required test PR #5730 preflight failed 2026-11-13T10:14:31Z in tests/portal-forecast-auth.test.mjs:27 and :135, both Expected 1 / actual 0.",
+    "Read-only source platform/api/portal-forecast-handler.mjs confirms fresh(updatedAt): age>=0 and age<=30*86400000; authenticated handler calls verifiedForecasts(projection,tenantId) using current time.",
+    "Only original tests/portal-forecast-auth.test.mjs and portal-living-interface skill + machine learning and ledger modified, not production handler, tenant auth, user financial data or deployment settings."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-forecast-auth.test.mjs"
+    ],
+    "shadow": [
+      "tests/portal-forecast-auth.test.mjs"
+    ],
+    "canary": [
+      "tests/portal-forecast-auth.test.mjs"
+    ]
+  },
+  "owner": "original portal forecasting domain / P0 #4215",
+  "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "related_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5730",
+  "status": "TEST_FIX_PENDING_PROTECTED_REQUIRED_CODEQL",
+  "never_relax": [
+    "30-day financial source freshness",
+    "30-day independent review freshness",
+    "source updatedAt <= review verifiedAt",
+    "tenant identity",
+    "no finance forecast without original reviewed source"
+  ]
+}
