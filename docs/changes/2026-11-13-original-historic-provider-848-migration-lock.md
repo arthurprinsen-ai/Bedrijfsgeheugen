@@ -1,0 +1,9 @@
+# 13 november 2026 — provider migratie 848 exact bronregister
+
+Originele eigenaar: een Supabase production migration-history lock, originele ONE BRAIN terminalizer en bestaande #171. Protected PR #5744 heeft uitsluitend de originele historische source-revision-first functie gecorrigeerd. Echt Supabase productieproject `adhjwmvyoixzjtmiroln` registreert nu 848 toegepaste migraties. Het real-provider SQL bewijs op **2026-11-13T16:06:25.688069Z** toont exact laatste versie **20261113155800**, naam **original_historic_handoff_source_revision_priority_v1**. Een onafhankelijke, volledige provider-vs-Git historiecontrole vond **847/847 exacte oude identities gelijk**. De live functie heeft de gewijzigde historische batch-prioriteit en `LIMIT 48`, service_role-only en geen publieke EXECUTE.
+
+De oorspronkelijke `supabase/migration-history.lock.json` kende bij start nog 847 toegepaste identiteiten. Deze *source-only* protected PR voegt uitsluitend de daadwerkelijk bij provider waargenomen 848e entry toe, met echt observatietijdstip. Alle eerdere identiteiten en migratie-SQL blijven onveranderd. Geen nieuwe SQL, migratie-uitvoering, scheduler, providerverbinding of verzonnen bron-/consumer-ACK.
+
+Regressie `tests/brain-original-historic-provider-848-migration-lock-20261113.test.mjs`, machine-leerrecord `brain/learning/2026-11-13-original-historic-provider-848-migration-lock-v1.json`, deze documentatie en oorspronkelijke ledger. Required, CodeQL, BRAIN, terminal source lock-proef en de natuurlijke originele #171 bronrevisie-ontvangst blijven onafhankelijke vereisten. De 21 oude incomplete NO_PUBLISH blijven OPEN totdat echte oorspronkelijke veto+decision_code aanwezig is; een actueel source/consumer ACK betekent geen publicatie, meting, omzet of geleerde optimalisatie.
+
+Incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
