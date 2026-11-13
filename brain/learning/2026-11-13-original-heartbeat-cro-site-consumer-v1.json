@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|seo|original-heartbeat-cro-site-consumer|20261113-v1",
+  "compiler": {
+    "failure_class": "SITE_PROVEN_RECEIPT_NOT_CONSUMED_IN_ORIGINAL_CRO_HEARTBEAT",
+    "scope": "ORIGINAL_SEO_CRO_HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "SEO cron #105 linked independently verified real Exact Online and Twinfield money-page releases with original #175 source obligation and #140 accepted exact source revision; however the original #140 commercial Heartbeat runtime event consumed only the source archive, not the specific site implementation receipts. Downstream CRO could not independently prove it had received the exact site action and source lineage. No website experiment policy or live treatment/holdout existed.",
+  "prevention_rule": "The SAME original commercial-intelligence-heartbeat-v1 invoked inside existing #140 independently reads real original GROWTH_SOURCE_DAILY_HANDOFF + exact accepted source revision/manifest and original done SEO canonical recommendation crosslinks, requires matching actual published SHA, site URL, independent provider request ID, CTA/public readback. It emits an idempotent receipt ONLY on the existing commercial-intelligence-heartbeat:<day> event; CRO experiments, paid orders, learning remain false. Never introduce a second scheduler/worker or erase unanswered legacy records.",
+  "evidence": [
+    "2026-11-13 source GROWTH_SOURCE_DAILY_HANDOFF obligation 40b62d82-dcd3-4a44-98d0-3f94071008a9, source revision and exact 140 ACK 937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb.",
+    "Original 2026-11-13 recommendation statuses done and original_delivery_crosslink site action proven for Exact Online and Twinfield, both with original site merge 66b67ac366e073ca068e5f1e23938a9792ae7dce and provider canonical readback.",
+    "Existing commercial-intelligence-heartbeat:2026-11-13 event observed original source ACK current SHA and 16 rows but no source-bound site delivery CRO consumer receipt. Existing website experiment policy count 0; 1 historical closed e-mail assignment, no website live assignment."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-heartbeat-cro-consumer-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-seo-heartbeat-cro-consumer-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-heartbeat-cro-consumer-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "same_original_job_140": true,
+    "original_source_175_unchanged": true,
+    "one_runtime_event_dedupe_per_day": true,
+    "site_outcome_not_inferred": true,
+    "no_new_scheduler": true,
+    "no_new_table": true,
+    "internal_service_role_only": true,
+    "original_commercial_obligation_remains_open": true
+  },
+  "production_success": false,
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "owner": "original #140 Heartbeat / original CRO consumer",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}
