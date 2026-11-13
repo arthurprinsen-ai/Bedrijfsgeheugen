@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|gitops|native-applied-841-original-content-source-revision-receipt-lock-drift|20261113-v1",
+  "obligation_id": "supabase|gitops|native-applied-841-original-content-source-revision-receipt-lock-drift|20261113-v1",
+  "title": "Original provider 841 applied, source-lock remained 840 after content handoff consumer ACK migration",
+  "status": "SOURCE_LOCK_RECOVERY_CANDIDATE",
+  "root_cause": "Protected PR #5714 merged original SQL migration 20261113071500, and production provider independently registered it as applied #841; original immutable Git source history was still #840. Its merge-time Required passed but later original BRAIN delivery ran the exact SQL↔lock parity suite and failed 14 assertions on that one missing identity.",
+  "impact": "Original BRAIN delivery run 43386229725 failed 14 source parity assertions (not provider auth, real customer event, or an actual content post failure). The original ONE BRAIN source-revision consumer receipt code remains applied; source lock is stale and postmerge verification cannot be green.",
+  "fix": "Append exact independently verified applied version/name to ONE existing supabase/migration-history.lock.json (preserve prior 840), update original agent-data-quality and release-deployment-readback skill to require provider-backed postmerge lock reconciliation; add dedicated guard and documented root-cause learning/ledger. No SQL, cron, owner, worker or provider write.",
+  "prevention_rule": "Original migration owner checks provider-applied identities after native protected deploy; source-only reconciliation must precede successful postmerge full BRAIN and durable release declaration. No synthetic provider or consumer evidence. Fail closed when exact lock, migration sources, tenant/source revision or consumer acknowledgement diverge.",
+  "owner": "Original Supabase GitOps migration-history-lock owner / agent-data-quality P0 #4215, same original P0 #4198 content handoff",
+  "provider": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-13T07:50:33.081642Z",
+    "count": 841,
+    "unique_count": 841,
+    "version": "20261113071500",
+    "name": "original_content_handoff_source_revision_receipt_v1"
+  },
+  "tests": [
+    "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+    "tests/brain-original-content-handoff-source-revision-ack-20261113.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Independent read-only production Supabase count 841/841 distinct and last version 20261113071500 / original_content_handoff_source_revision_receipt_v1 at 2026-11-13T07:50:33.081642Z.",
+    "Original main 462eca7c5a36565a449f1a28a1a344245ad4dd60 original lock length 840; last 20261113062500.",
+    "GitHub BRAIN run #43386229725, backend job #131755581247, 14 parity failures all on missing 841st SQL identity; artifact https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43386229725/artifacts/14018723271."
+  ],
+  "status_boundary": "SOURCE_LOCK_RECONCILIATION_CANDIDATE until original protected Required/CodeQL + merge + postmerge full BRAIN + provider parity readback. Actual customer source→ONE BRAIN→Heartbeat/Portal, Meta proof, source recall, CRO next-run learning remain EVIDENCE_DUE; do not call whole loop green.",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE_SOURCE_LOCK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

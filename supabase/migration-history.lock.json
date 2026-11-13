@@ -3360,8 +3360,12 @@
     {
       "version": "20261113062500",
       "name": "original_no_publish_terminal_handoff_ack_v1"
+    },
+    {
+      "version": "20261113071500",
+      "name": "original_content_handoff_source_revision_receipt_v1"
     }
   ],
-  "captured_at": "2026-11-13T06:53:13.095563Z",
+  "captured_at": "2026-11-13T07:50:33.081642Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

@@ -1,0 +1,14 @@
+# P0 #4215 / #4198 — original provider migration 841 source-lock drift after content ACK
+
+2026-11-13. Fingerprint: `supabase|gitops|native-applied-841-original-content-source-revision-receipt-lock-drift|20261113-v1`.
+
+## Independent original provider and source proof
+- Original protected [PR #5714](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5714) merged main `462eca7c5a36565a449f1a28a1a344245ad4dd60` with the original #171 service-role-only `powerhouse_content_handoff_receipts_v1` source-revision, tenant and consumer receipt migration `20261113071500_original_content_handoff_source_revision_receipt_v1.sql`. No duplicate scheduler was introduced.
+- Actual original Supabase project `adhjwmvyoixzjtmiroln` reports **841 applied, 841 unique** migrations and latest `20261113071500 / original_content_handoff_source_revision_receipt_v1` at `2026-11-13T07:50:33.081642Z`.
+- Original GitHub `supabase/migration-history.lock.json` on the same main SHA contains 840 entries ending `20261113062500`, missing exactly the already applied 841st identity. Postmerge [BRAIN delivery #43386229725](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43386229725) failed 14 migration-source parity tests (artifact [full failure evidence](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43386229725/artifacts/14018723271)). Failures do not imply provider migration failure or customer post success.
+
+## Bounded same original owner correction
+Append only independently applied 841st version/name, preserve original 840 identities byte for byte at the array-value level; update `captured_at` with exact observation. Do NOT replay SQL, modify auth/RLS/tenant, create another migration, executor, scheduler, publisher, model, tenant store or BRAIN instance. Existing `agent-data-quality` and existing `release-deployment-readback` skill now require postmerge provider readback, one original source lock and completed BRAIN parity before reporting full release green. Regression: `tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs` plus the already failing original source-lock tests.
+
+## Independent acceptance; do not fake green
+Original protected Required, CodeQL and native merge of this exact source-only candidate. Then postmerge full original BRAIN delivery must PASS on exact merged main SHA, independent native Supabase 841/841 provider record compared to the original lock, and the original ONE BRAIN receipt must reflect identical tenant, date, source revision, owner and idempotency. Source accepted is not an Instagram Meta ID; real Mira winner/media and provider publication still missing. LinkedIn posts with IDs are not measured or learned by themselves, and Portal/Heartbeat consumer/effect receipt must be checked separately. Original P0 #4215 and #4198 stay open until true end-to-end proof.

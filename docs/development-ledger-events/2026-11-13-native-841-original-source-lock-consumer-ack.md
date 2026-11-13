@@ -1,0 +1,7 @@
+# 2026-11-13 — original provider 841 BRAIN postmerge source lock regression
+
+- One owner/obligation: original Supabase GitOps migration ledger, P0 #4215, linked original content consumer P0 #4198; fingerprint `supabase|gitops|native-applied-841-original-content-source-revision-receipt-lock-drift|20261113-v1`.
+- Source: exact main `462eca7c5a36565a449f1a28a1a344245ad4dd60` and native read-only Supabase 841/841 (2026-11-13T07:50:33.081642Z). Last applied `20261113071500_original_content_handoff_source_revision_receipt_v1`. Git original lock 840, 840th `20261113062500_original_no_publish_terminal_handoff_ack_v1`.
+- Failure: BRAIN delivery https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43386229725 failed 14 exact migration-lock assertions. Root cause: merged original SQL/provider applied before provider history source lock reconciled; no evidence of a new database/auth/runtime error from these assertions.
+- Bounded fix: original one provider source lock 840→841, exact newest version/name, original agent and skill acceptance changes, new preventive regression, machine learning and human change log. NO SQL provider execution, new cron/queue, cross-tenant bypass, weakened required check or fake provider ack.
+- Closure boundary: PR protection and full BRAIN after merge and real provider readback required. Source→consumer and actual post, metrics, Heartbeat, CRO outcome/learning are distinct obligations; no false green. Owner still active until proof, original executor remains enabled.
