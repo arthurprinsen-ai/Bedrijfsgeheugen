@@ -75,7 +75,9 @@ async function snapshot(db:any,tenantId:string,postId:string,platform:string,pro
     tenant_id:tenantId,post_id:postId,snapshot_id:snapshotId,
     source_event_id:snapshotId,source:'composio-'+platform,observed_at:now,
     data_quality:quality,metrics
-  },{onConflict:'tenant_id,source_event_id'});
+  },{onConflict:'tenant_id,source_event_id',ignoreDuplicates:true});
+  // A duplicate retry of the SAME original six-hour poll never overwrites
+  // its first source observation or re-stamps its factual observed_at.
   if(error)throw new Error('SOCIAL_METRIC_STORE:'+error.message);
 }
 async function resolveInstagram(db:any,media:any){
