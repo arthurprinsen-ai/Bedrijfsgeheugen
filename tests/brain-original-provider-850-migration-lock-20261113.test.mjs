@@ -37,3 +37,23 @@ test('brain release proof is precise about source acknowledgement vs provider re
   assert.equal(brain.verification.public_post_or_revenue_proven,false);
   assert.equal(brain.production_success,false);
 });
+
+test('natural original scheduler proof is bound to the same source ACK without false commercial green',()=>{
+  const brain=JSON.parse(readFileSync(new URL('../brain/learning/2026-11-13-original-social-learning-source-ack-v1.json',import.meta.url),'utf8'));
+  const p=brain.production_proof, tick=p.natural_original_tick;
+  assert.equal(tick.canonical_scheduler_job_id,171);
+  assert.equal(tick.original_runtime_state,'COMPLETED');
+  assert.equal(tick.original_runtime_healthy,true);
+  assert.equal(tick.pg_cron_status,'succeeded');
+  assert.deepEqual(tick.tasks.map(x=>x.name).sort(),['content-closed-loop','loop-assurance']);
+  assert.ok(tick.tasks.every(x=>x.ok===true));
+  assert.equal(tick.actual_consumer,'powerhouse_content_handoff_receipts_v1');
+  assert.equal(tick.source_ack_count_after_natural_tick,185);
+  assert.equal(tick.accepted_at_digest_before_and_after,'a65f8d67c6a7f494cbff26d836bc22bc');
+  assert.equal(tick.original_brain_source_record_versions_before_and_after,'2696');
+  assert.equal(tick.duplicate_source_revision_acks,0);
+  assert.equal(tick.downstream_business_outcomes_proven,false);
+  assert.equal(tick.original_loop_assurance_status,'RED');
+  assert.equal(brain.verification.public_post_or_revenue_proven,false);
+  assert.equal(brain.production_success,false);
+});
