@@ -10,3 +10,11 @@
 - **Onopgelost:** echte CRO-actie, valid A/B-experiment, gemeten incrementality, lead/order/paid-receipt en volgende-run leren. De wijziging maakt ze zichtbaar en afdwingbaar in assurance; zij produceert die resultaten niet zelf.
 - **Preventie:** statuspaspoort per stage met originele `obligation_id`, bronrev, ACK, onafhankelijke productie, meetevents, outcome en next-run-verificatie.
 - **Bron:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+## 2026-11-13 17:03 UTC — productiebeleid daadwerkelijk afgedwongen
+
+- Beveiligde hoofdmerge: `6e435bdcffc343b1fd834d3d5a65abfeedb67e31` (#5748), Required #43467928347 SUCCESS inclusief `supabase_preview`, CodeQL #43467927648 SUCCESS.
+- Supabase eigen productie: migratie `20261113164000` aanwezig; originele functiebody gelezen en dezelfde functie opnieuw aangeroepen, resultaat `WAIT_PRODUCTION_ACTION`, `guard.pass=false`.
+- Exacte oorspronkelijke bron- en consumer-SHA zijn gelijk (`937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb`); bronverplichting `40b62d82-dcd3-4a44-98d0-3f94071008a9` is terecht OPEN.
+- Zes bestaande stage receipts action/readback/measurement/outcome/learning/guard `pass=false`, met originele obligation-ID; bestaande BRAIN OPERATIONS_ASSURANCE = OPEN en `seo-opportunity-resolver = RED` (7 GREEN/8 RED totaal), na originele assurance-refresh om 17:03 UTC.
+- Nog niet bewezen: oorspronkelijke productieactie, causale CRO-experimentmeting, order/betaalbewijs en aantoonbare next-run-leertoepassing. Geen nieuwe scheduler, verzender of bronduplicatie.
