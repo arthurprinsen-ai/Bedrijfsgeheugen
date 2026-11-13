@@ -18,4 +18,4 @@ The structured JSON, recovery owner, source lineage, explicit `sendsAuthorized:f
 3. On 502/503, the **same** original radar owns repair/retry within existing canonical execution; preserve 90-day URL/hash dedupe, 3-day topic dedupe, source publication freshness, PH-P-approved Mira scene and original unique winner. Continue the original executor. Do not override the gate.
 4. A PR merge is not Edge production proof. Require protected CI, independent Supabase deployed Edge version/content confirmation, then a subsequent real original radar POST and real source/ONE BRAIN consumer readback before marking the entire chain GREEN.
 
-Regression: `node --test tests/mira-radar-http-contract-20261113.test.mjs`. Closed-loop effect is **not proven** until a fresh eligible source, unique winner, media asset, independent Meta provider GET, and learning ACK are observed.
+Regression: `node --test tests/brain-mira-radar-http-contract-20261113.test.mjs`. Closed-loop effect is **not proven** until a fresh eligible source, unique winner, media asset, independent Meta provider GET, and learning ACK are observed.
