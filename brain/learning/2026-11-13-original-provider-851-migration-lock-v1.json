@@ -4,7 +4,7 @@
   "parent_issue": 4198,
   "owner": "original Supabase Migration Authority + protected GitHub BRAIN",
   "status": "PROVIDER_851_IN_SOURCE_CANDIDATE_PROTECTED_CHECKS_PENDING",
-  "root_cause": "Protected SEO/Heartbeat original consumer release #5756 applied a new real production SQL migration 851 while main Git immutable original source lock remained at 850; this deterministically causes original backend BRAIN full-provider parity checks to fail and hides otherwise valid handoff provenance.",
+  "root_cause": "Protected SEO/Heartbeat original consumer release #5756 applied a new real production SQL migration 851 while main Git immutable original source lock remained at 850; this deterministically causes original backend BRAIN full-provider parity checks to fail and hides otherwise valid handoff provenance. The first protected PR admission correctly rejected the initial source learning candidate because it had no explicit shadow/canary replay fields; this is now repaired in the same learning record and guarded by the regression.",
   "prevention_rule": "At every real provider migration, compare the entire native original provider schema_migrations ledger to exact version/name in the single Git migration-history.lock.json; append only independently observed new native identity after zero prefix mismatches; release through original protected Required/CodeQL and verify main. Never fabricate provider migrations, replay SQL, or introduce another cron.",
   "source_lock": {
     "project_ref": "adhjwmvyoixzjtmiroln",
@@ -49,6 +49,12 @@
       "prior 850 unchanged and match provider",
       "no new migration SQL or second scheduler",
       "SOURCE_TO_BRAIN_ACK is not downstream CRO/paid revenue outcome"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-851-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-851-migration-lock-20261113.test.mjs"
     ]
   },
   "production_success": false,
