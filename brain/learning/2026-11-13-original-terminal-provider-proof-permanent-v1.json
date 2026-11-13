@@ -1,0 +1,36 @@
+{
+  "fingerprint": "supabase|delivery|terminal-migration-version-only-readback-missing-live-trigger|20261113-v1",
+  "compiler": {
+    "failure_class": "TERMINAL_PROVIDER_MIGRATION_VERSION_ONLY_FALSE_GREEN",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The existing protected migration-only terminal verifier checked only version values in Supabase migration history. It could therefore accept a misnamed migration record and did not prove the expected original ONE BRAIN trigger still existed and was enabled. Merged PR #5724 was not sufficient because production still had 842 applied migrations and the 083000 runtime trigger was absent in a read-only query.",
+  "prevention_rule": "Use the SAME existing terminal postmerge verifier and authenticated Supabase provider query, compare the exact protected migration version plus name and reject duplicate or missing IDs. For original terminal-guard migration 083000 and all later migration-only releases, independently read back its enabled invoker-only trigger, restricted permissions and exact ACK/veto/outcome error classes. Never fake provider history, close a BRAIN obligation from mere CI, add a second scheduler or replay ambiguous provider sends. Original GitOps source-lock owner repairs and re-verifies under protected main.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "2026-11-13: PR #5724 was merged by GitHub; native Supabase production read-only schema_migrations had 842 applied (latest 082500), not new 083000, and pg_trigger had no original terminal-proof trigger.",
+    "Original cron #171 remained active; last observed run succeeded at 2026-11-13T08:56 UTC; 9 GREEN and 6 RED loops, 365 OPEN content handoffs. Cron succeeded is not downstream success.",
+    "Original migration-only terminal path is .github/workflows/obligation-terminal-closure.yml -> tools/delivery/supabase-migration-production-readback.mjs. Existing workflow preserved; no new writer or scheduler.",
+    "Regression tests cover same-version wrong-name, duplicate, absent/disabled trigger, expected true runtime, and subsequent migration after 083000. Production enforcement still requires protected merge and independent readback."
+  ],
+  "status": "SOURCE_CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "limitations": [
+    "The verifier detects and blocks false-green; it is not a provider migration deployment or repair engine.",
+    "It runs when the existing protected terminal workflow verifies a migration-only release; 24/7 cron health remains under original #171/ONE BRAIN.",
+    "A green SQL guard is not the same as customer input, Instagram provider post, website conversion, paid revenue or learning outcome."
+  ]
+}
