@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|original-content|legacy-no-publish-incomplete-source-next-action|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_NO_PUBLISH_LEGACY_SOURCE_ACTION_FALSE_COMPLETE",
+    "scope": "SOURCE_HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original historic SKIPPED source rows were written before the hardened no-publish RPC. As of 2026-11-13, 20 blog rows and 1 linkedin_company row lacked veto.active=true and/or decision_code yet retained a stale source next_action falsely asserting an explicit completed no-publish decision. The original ONE BRAIN #171 correctly retained proof debt; the source-to-consumer message was inconsistent.",
+  "prevention_rule": "Use the same protected original Supabase source and ONE BRAIN #171 owner. On approved migration, bound to at most 64 existing incomplete SKIPPED source rows with nonempty original reason, no provider references, and no provider possible-side-effect flags; update ONLY next_action, last_error and updated_at. Never invent decision_code/veto, alter SKIPPED status/evidence, publish/resend, create a second scheduler, or close terminal proof. Future writes remain controlled by the existing #846 hardened RPC. Verify independently after migration and after natural #171 consumer run.",
+  "evidence": [
+    "Read-only original Supabase production: 846 applied migrations (last 20261113140500); SKIPPED incomplete original no-publish source rows: 20 blog, 1 linkedin_company; all lack provider references and the checked possible side-effect flags; 20 blog falsely claimed explicit complete decision in next_action with last_error null.",
+    "Original brain_obligations.CONTENT_HANDOFF 366 OPEN; 21 routed to original no-publish owner for actual missing proof. This repair must not falsely terminalize them.",
+    "Original cron #171 active with latest checked successful runs, original terminal proof trigger enabled, original RPC anon/authenticated EXECUTE denied; service_role allowed."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-no-publish-legacy-source-action-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-no-publish-legacy-source-action-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-no-publish-legacy-source-action-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "new_scheduler": false,
+    "new_publisher": false,
+    "new_table": false,
+    "changes_original_decision_evidence": false,
+    "changes_publication_status": false,
+    "creates_historical_decision_code": false,
+    "requires_protected_release": true
+  },
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_PENDING_PROTECTED_CI_PROVIDER_AND_CONSUMER_READBACK"
+}
