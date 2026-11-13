@@ -88,3 +88,22 @@ test('one original SEO-to-money-page-to-Brain consumer-ACK contract is present i
  assert.equal(learning.delivery.cro_effect,'OPEN');
  assert.equal(learning.evidence.commercial_outcome_proven,false);
 });
+
+test('post-release original Netlify source to ONE BRAIN and Heartbeat remains proven without fictitious CRO',async()=>{
+ const learning=JSON.parse(await read('brain/learning/2026-11-12-seo-money-page-trust-v1.json'));
+ const agentInstructions=await read('AGENTS.md');
+ const seoSkill=await read('.agents/skills/powerhouse-seo-conversion-orders/SKILL.md');
+ const revenueSkill=await read('.agents/skills/seo-revenue-growth/SKILL.md');
+ assert.equal(learning.status,'LIVE_SOURCE_BRAIN_HEARTBEAT_PROVEN_CRO_OPEN');
+ assert.equal(learning.delivery.cro_effect,'OPEN');
+ assert.equal(learning.evidence.commercial_outcome_proven,false);
+ assert.equal(learning.evidence.release_to_brain_heartbeat_20261113.source_count,16);
+ assert.equal(learning.evidence.release_to_brain_heartbeat_20261113.brain_ack_verified,true);
+ assert.equal(learning.evidence.release_to_brain_heartbeat_20261113.heartbeat_ack_verified,true);
+ assert.equal(learning.evidence.release_to_brain_heartbeat_20261113.cro_experiment_executed,false);
+ for(const source of [agentInstructions,seoSkill,revenueSkill]){
+  assert.match(source,/SEO_NETLIFY_PRODUCTION_SOURCE_HANDOFF_20261113/);
+  assert.match(source,/a451cb2714fb1363053622ef644cf605ea4e8ea261d6c74c4956ee2962135d4e/);
+  assert.match(source,/NOT_EXECUTED/);
+ }
+});

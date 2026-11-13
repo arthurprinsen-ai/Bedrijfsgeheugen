@@ -4,7 +4,7 @@
   "parent_p0": "#4198",
   "tenant_id": "bedrijfsgeheugen",
   "owner": "original commercial SEO money-page delivery owner",
-  "status": "CANDIDATE_NOT_LIVE",
+  "status": "LIVE_SOURCE_BRAIN_HEARTBEAT_PROVEN_CRO_OPEN",
   "root_cause": "Three integration money pages show an incorrect AI breadcrumb first. V18 build selects first nav. Their visible and FAQ-schema price range of 1500–5000 contradicts existing central systems guide with 3500–12000 scoped estimate. Additional live/build source drift: assets/stijl.js retained €1,500–€5,000 for Exact Online and money-prerender generated a second visible Price & scope card after FAQ. The initial candidate regression checked only raw source FAQ, not the final-built money decision card.",
   "evidence": {
     "affected_routes": [
@@ -33,8 +33,8 @@
     "source_sha_ack_2026_11_12": "8072d22b4f2039af96cb84d1ded840169b35659ff6f5b8f78c4f19272bbbc22b",
     "original_customer_cro_effect": "NOT_PROVEN",
     "original_heartbeat_ack_proven": true,
-    "original_owner_execution_proven": false,
-    "website_production_release_readback": "PENDING",
+    "original_owner_execution_proven": true,
+    "website_production_release_readback": "PROVEN: Netlify READY deployment 6af6bb27b1fccdc5adc91cd1, exact GitHub merge 66b67ac366e073ca068e5f1e23938a9792ae7dce, 3 live canonical money pages",
     "migration_parity_dependency": {
       "project": "adhjwmvyoixzjtmiroln",
       "provider_count": 840,
@@ -49,6 +49,23 @@
       "original_owner_merge_sha": "ff61a4806571091edb6eebd08aecfa604340df45",
       "source_lock_identical_to_main": true,
       "provider_preview_ownership": "original Supabase owner PR #5713"
+    },
+    "release_to_brain_heartbeat_20261113": {
+      "source": "netlify-production",
+      "source_observation_id": "c418e0cd-70a0-466d-97b0-5113c9242b75",
+      "deploy_id": "6af6bb27b1fccdc5adc91cd1",
+      "commit": "66b67ac366e073ca068e5f1e23938a9792ae7dce",
+      "tenant_id": "bedrijfsgeheugen",
+      "source_day": "2026-11-13",
+      "source_key": "website_release_readback",
+      "source_count": 16,
+      "source_manifest_sha256": "a451cb2714fb1363053622ef644cf605ea4e8ea261d6c74c4956ee2962135d4e",
+      "brain_ack_verified": true,
+      "heartbeat_ack_verified": true,
+      "heartbeat_observed_at": "2026-11-13T07:54:08.209427Z",
+      "cro_experiment_executed": false,
+      "causal_lift_proven": false,
+      "future_auto_collector_proven": false
     }
   },
   "fix": "Remove wrong duplicate breadcrumb, point canonical Koppelingen parent to /systemen-koppelen, align indicative one-way vs complex pricing consistently in FAQ and schema, preserve same-origin absolute JSON-LD URLs and add offline translation. Also align the original assets/stijl.js price authority (Exact + Twinfield), deterministic money-prerender final HTML and static English pricing; retain one protected original website PR/owner.",
@@ -58,7 +75,8 @@
     "Verify original Netlify production readback before PROVEN; never infer visits or revenue.",
     "Check exact final-built HTML after the original assets/stijl.js money-prerender layer, not only the raw page HTML; ensure the decision card, FAQPage and visible FAQ have non-contradictory prices, CTA and English translation.",
     "Never advance an original seo_money_page_update recommendation from suggested to fulfilled on mere forecast, merged code, or healthy Heartbeat; require exact current Netlify production SHA, public route readback, original #140/Heartbeat same-SHA ACK, and separate CRO/7-14-28d effect proof.",
-    "Native Supabase provider-applied migration identities and Git executable migration-source lock must be exact peers before protected website/SEO production merge; never bypass native migration preflight or replay an already-applied version."
+    "Native Supabase provider-applied migration identities and Git executable migration-source lock must be exact peers before protected website/SEO production merge; never bypass native migration preflight or replay an already-applied version.",
+    "Each future protected Netlify release must flow from existing registered netlify-production observation into one original tenant/day/source manifest, then independent #140 and Heartbeat same-SHA readback; this one-time source projection is not proof the future automatic collector has been implemented."
   ],
   "compiler": {
     "failure_class": "SEO_MONEY_PAGE_TRUST_PRICE_AND_BREADCRUMB_DRIFT",
@@ -80,15 +98,16 @@
     "expected": "One correct source breadcrumb, central price alignment in visible/structured data, V18 route safety and offline translation; Netlify live readback separately. Price must also match original post-build money decision card and EN cache; owner/source/Brain/Heartbeat ACKs distinguish delivered website from unproven CRO effect."
   },
   "delivery": {
-    "status": "AWAITING_REBUILT_EXACT_HEAD_CHECKS_AND_PRODUCTION_READBACK",
+    "status": "LIVE_RELEASE_SOURCE_BRAIN_HEARTBEAT_PROVEN_CRO_OPEN",
     "seo_handoff": "original #105 -> #175 -> ONE BRAIN #140 -> Heartbeat",
     "cro_effect": "OPEN",
     "original_recommendations": "SUGGESTED_UNTIL_PROVIDER_PROVEN_RELEASE_AND_ORIGINAL_CONSUMER",
     "site_builder": "assets/stijl.js -> tools/site-shell/money-prerender.mjs",
-    "owner_execution": "NOT_PROVEN",
+    "owner_execution": "WEBSITE_AND_SOURCE_PROVEN_CRO_NOT_EXECUTED",
     "commercial_outcome": "OPEN",
     "migration_dependency": "CLOSED_BY_ORIGINAL_OWNER_PR_5713",
-    "money_page_production": "AWAITING_PROTECTED_PR5700_MERGE_AND_NETLIFY_READBACK",
-    "causal_cro": "EVIDENCE_DUE"
+    "money_page_production": "NETLIFY_LIVE_VERIFIED_EXACT_RELEASE_5700",
+    "causal_cro": "EVIDENCE_DUE",
+    "source_brain_heartbeat": "PROVEN_SAME_16_SOURCE_SHA"
   }
 }
