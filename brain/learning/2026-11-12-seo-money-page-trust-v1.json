@@ -4,7 +4,7 @@
   "parent_p0": "#4198",
   "tenant_id": "bedrijfsgeheugen",
   "owner": "original commercial SEO money-page delivery owner",
-  "status": "CANDIDATE_NOT_LIVE",
+  "status": "WEBSITE_DELIVERED_PROVEN_CRO_OUTCOME_OPEN",
   "root_cause": "Three integration money pages show an incorrect AI breadcrumb first. V18 build selects first nav. Their visible and FAQ-schema price range of 1500–5000 contradicts existing central systems guide with 3500–12000 scoped estimate. Additional live/build source drift: assets/stijl.js retained €1,500–€5,000 for Exact Online and money-prerender generated a second visible Price & scope card after FAQ. The initial candidate regression checked only raw source FAQ, not the final-built money decision card.",
   "evidence": {
     "affected_routes": [
@@ -33,8 +33,8 @@
     "source_sha_ack_2026_11_12": "8072d22b4f2039af96cb84d1ded840169b35659ff6f5b8f78c4f19272bbbc22b",
     "original_customer_cro_effect": "NOT_PROVEN",
     "original_heartbeat_ack_proven": true,
-    "original_owner_execution_proven": false,
-    "website_production_release_readback": "PENDING",
+    "original_owner_execution_proven": true,
+    "website_production_release_readback": "PROVEN_INDEPENDENT_GITHUB_NETLIFY_DATAFORSEO_2026_11_13",
     "migration_parity_dependency": {
       "project": "adhjwmvyoixzjtmiroln",
       "provider_count": 840,
@@ -49,7 +49,56 @@
       "original_owner_merge_sha": "ff61a4806571091edb6eebd08aecfa604340df45",
       "source_lock_identical_to_main": true,
       "provider_preview_ownership": "original Supabase owner PR #5713"
-    }
+    },
+    "original_2026_11_13_producer_consumer_heartbeat_sha": "8ff9f1a1084dff5973b69e0cf1877592a5d02b5345932659ac094af91a8f9b34",
+    "current_date_recommendations": [
+      {
+        "dedupe_key": "seo-owner-update:2026-11-13:exact-online-koppeling",
+        "status": "done",
+        "stage": "WEBSITE_CHANGE_LIVE_PROVEN_METRICS_DUE",
+        "public_http_status": 200,
+        "request_id": "11130748-2222-0275-0000-8f3e3066b534"
+      },
+      {
+        "dedupe_key": "seo-owner-update:2026-11-13:twinfield-koppeling",
+        "status": "done",
+        "stage": "WEBSITE_CHANGE_LIVE_PROVEN_METRICS_DUE",
+        "public_http_status": 200,
+        "request_id": "11130748-2222-0275-0000-c0801c79b04f"
+      }
+    ],
+    "historical_duplicate_reconciliation": {
+      "run_dates": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "owners": [
+        "exact-online-koppeling",
+        "twinfield-koppeling"
+      ],
+      "count": 4,
+      "status": "skipped",
+      "stage": "SUPERSEDED_BY_VERIFIED_CANONICAL_OWNER_EXECUTION",
+      "preserved_original_keyword_source_at": "2026-11-09T06:00:08.939+00:00",
+      "measurement_state": "EVIDENCE_DUE",
+      "causal_uplift_proven": false
+    },
+    "netlify_provider": {
+      "deploy_id": "6af6bc7fec4d7742badc7154",
+      "state": "READY",
+      "published_at": "2026-11-13T07:31:55.818Z",
+      "current_main_sha": "462eca7c5a36565a449f1a28a1a344245ad4dd60",
+      "owner_pr": "#5700",
+      "owner_merged_sha": "66b67ac366e073ca068e5f1e23938a9792ae7dce",
+      "verified_public_price_scope": "€ 3.500–€ 6.000 voor één richting; complexer tot circa € 12.000",
+      "old_price_absent": true,
+      "original_cta": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "canonical_pages_verified": 2,
+      "provider": "DataForSEO OnPage Instant + Content Parsing"
+    },
+    "original_revenue_order_conversion_attribution_proven": false,
+    "actual_holdout_treatment_experiment_proven": false,
+    "proven_readiness_at": "2026-11-13T07:53:09.496251+00:00"
   },
   "fix": "Remove wrong duplicate breadcrumb, point canonical Koppelingen parent to /systemen-koppelen, align indicative one-way vs complex pricing consistently in FAQ and schema, preserve same-origin absolute JSON-LD URLs and add offline translation. Also align the original assets/stijl.js price authority (Exact + Twinfield), deterministic money-prerender final HTML and static English pricing; retain one protected original website PR/owner.",
   "prevention": [
@@ -58,7 +107,8 @@
     "Verify original Netlify production readback before PROVEN; never infer visits or revenue.",
     "Check exact final-built HTML after the original assets/stijl.js money-prerender layer, not only the raw page HTML; ensure the decision card, FAQPage and visible FAQ have non-contradictory prices, CTA and English translation.",
     "Never advance an original seo_money_page_update recommendation from suggested to fulfilled on mere forecast, merged code, or healthy Heartbeat; require exact current Netlify production SHA, public route readback, original #140/Heartbeat same-SHA ACK, and separate CRO/7-14-28d effect proof.",
-    "Native Supabase provider-applied migration identities and Git executable migration-source lock must be exact peers before protected website/SEO production merge; never bypass native migration preflight or replay an already-applied version."
+    "Native Supabase provider-applied migration identities and Git executable migration-source lock must be exact peers before protected website/SEO production merge; never bypass native migration preflight or replay an already-applied version.",
+    "When a source-observed canonical money-page improvement is independently live-proven, ACK its current original recommendation ID with GitHub merge SHA, exact current Netlify READY deploy and public canonical/CTA provider request ID; supersede only truly identical older day-scoped recommendations while preserving their evidence. Then rearchive original #175, independently ACK #140/Heartbeat with the resulting new SHA. Website done remains EVIDENCE_DUE for observed CTA→lead attribution and measured A/B causal lift."
   ],
   "compiler": {
     "failure_class": "SEO_MONEY_PAGE_TRUST_PRICE_AND_BREADCRUMB_DRIFT",
@@ -77,18 +127,21 @@
     "canary": [
       "tests/brain-seo-money-page-trust-20261112.test.mjs"
     ],
-    "expected": "One correct source breadcrumb, central price alignment in visible/structured data, V18 route safety and offline translation; Netlify live readback separately. Price must also match original post-build money decision card and EN cache; owner/source/Brain/Heartbeat ACKs distinguish delivered website from unproven CRO effect."
+    "expected": "One correct source breadcrumb, central price alignment in visible/structured data, V18 route safety and offline translation; Netlify live readback separately. Price must also match original post-build money decision card and EN cache; owner/source/Brain/Heartbeat ACKs distinguish delivered website from unproven CRO effect.",
+    "proven_website_readback": "2026-11-13: two public pages HTTP 200 + exact canonical + final decision-card price; source copy and Netlify READY exact main matched",
+    "current_day_source_and_consumer_sha": "8ff9f1a1084dff5973b69e0cf1877592a5d02b5345932659ac094af91a8f9b34",
+    "causal_outcome_verified": false
   },
   "delivery": {
-    "status": "AWAITING_REBUILT_EXACT_HEAD_CHECKS_AND_PRODUCTION_READBACK",
+    "status": "ORIGINAL_MONEY_OWNER_PRODUCTION_VERIFIED_CRO_OUTCOME_DUE",
     "seo_handoff": "original #105 -> #175 -> ONE BRAIN #140 -> Heartbeat",
     "cro_effect": "OPEN",
-    "original_recommendations": "SUGGESTED_UNTIL_PROVIDER_PROVEN_RELEASE_AND_ORIGINAL_CONSUMER",
+    "original_recommendations": "TWO_2026_11_13_WEBSITE_DONE_FOUR_PREVIOUS_DUPLICATES_SUPERSEDED",
     "site_builder": "assets/stijl.js -> tools/site-shell/money-prerender.mjs",
-    "owner_execution": "NOT_PROVEN",
+    "owner_execution": "PROVEN_EXACT_TWINFIELD_CANONICAL_PROVIDER_READBACK",
     "commercial_outcome": "OPEN",
     "migration_dependency": "CLOSED_BY_ORIGINAL_OWNER_PR_5713",
-    "money_page_production": "AWAITING_PROTECTED_PR5700_MERGE_AND_NETLIFY_READBACK",
+    "money_page_production": "PR5700_MERGED_NETLIFY_CURRENT_READY_PUBLIC_ONPAGE_PROVEN",
     "causal_cro": "EVIDENCE_DUE"
   }
 }
