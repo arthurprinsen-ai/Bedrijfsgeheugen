@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-13",
+  "fingerprint": "supabase|migration-history|original-content-ack-provider-841-source-lock|20261113-v1",
+  "status": "PROVIDER_APPLIED_SOURCE_LOCK_CANDIDATE",
+  "owner": "original Supabase protected GitOps provider-applied migration source lock owner",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "The original protected #5714 content tenant/source-revision consumer ACK release applied native provider migration 20261113071500 to the original live Supabase project. The separate original Git source lock remained 840 while provider history was 841/841 unique applied versions. Backend parity and unrelated future PRs cannot be verified until the original lock is brought up to the true provider record.",
+  "observed_provider": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-13T07:48:12.734Z",
+    "applied_migrations": 841,
+    "distinct_version_count": 841,
+    "latest_version": "20261113071500",
+    "latest_name": "original_content_handoff_source_revision_receipt_v1",
+    "prior_source_lock_entries": 840,
+    "previous_latest_version": "20261113062500",
+    "parent_source_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5714"
+  },
+  "fix": "Append only the independently provider-readback 841st applied version and its exact name to existing source lock, preserving previous 840. Keep the existing source SQL and immutable protected history without executing any additional DDL or provider send.",
+  "prevention_rule": "The original single GitOps migration owner must compare exact all (version,name) identities of production supabase_migrations.schema_migrations with executable local SQL and source lock after every native migration. A historical provider-applied migration is NOT proven simply by source merge, and green code is not a true provider readback.",
+  "evidence": {
+    "live_production_readonly_query": "2026-11-13T07:48:12.734Z: 841 applied rows, 841 distinct versions, latest exact 20261113071500 / original_content_handoff_source_revision_receipt_v1.",
+    "previous_source_lock": "main 462eca7c5a36565a449f1a28a1a344245ad4dd60: 840 applied entries, latest 20261113062500.",
+    "file_in_protected_main": "supabase/migrations/20261113071500_original_content_handoff_source_revision_receipt_v1.sql",
+    "run_in_original_consumer": "82/82 historical NO_PUBLISH original source → Brain exact tenant/source revision/correlation/ACK; never imply commercial conversion proof",
+    "separate_unresolved": "6 original RED loops, 7 commercial broken/unproven handoffs, 181 overdue social learning, zero provider-linked revenue",
+    "release_status": "CANDIDATE_PENDING_PROTECTED_EXACT_HEAD_REQUIRED_CODEQL_AND_READBACK"
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-841-source-lock-20261113.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ],
+    "expected": "841 exact provider applied identities in original source lock and executable source, previous historical prefix preserved; no additional migration execution or provider side effect."
+  },
+  "provider_applied_verified": true,
+  "all_loops_green": false,
+  "proven_customer_revenue_eur": 0,
+  "provider_publication_inferred": false,
+  "second_migration_executor_created": false
+}
