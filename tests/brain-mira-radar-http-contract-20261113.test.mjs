@@ -24,3 +24,18 @@ test('original endpoint maps its real content verdict to HTTP and keeps recovery
   assert.match(file, /SOURCE_RECOVERY_DUE/);
   assert.doesNotMatch(file, /cron\.schedule\s*\(/);
 });
+
+test('source verdict is applied after the original provider, BRAIN and rotation checks', () => {
+  const edge = readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/index.ts', import.meta.url), 'utf8');
+  const authIndex = edge.indexOf('authorizePowerhouseScheduler(req)');
+  const materializeIndex = edge.indexOf("db.rpc('powerhouse_materialize_mira_problem_recommendation_v1'");
+  const brainIndex = edge.indexOf("db.rpc('brain_observe_failure'");
+  const rotateIndex = edge.indexOf("db.rpc('powerhouse_ensure_personal_source_rotation_v2'");
+  const responseIndex = edge.lastIndexOf('classifyMiraRadarHttpStatus({sourceReady:supply.ok,errors})');
+  assert.ok(authIndex >= 0 && materializeIndex > authIndex);
+  assert.ok(brainIndex > materializeIndex);
+  assert.ok(rotateIndex > brainIndex && responseIndex > rotateIndex);
+  assert.match(edge, /if\(!auth\.ok\) return json\(\{error:auth\.error\},auth\.status\)/);
+  assert.match(edge, /sendsAuthorized:false/);
+  assert.match(edge, /MIRA_UNIQUE_SOURCE_WINNER_REQUIRED/);
+});
