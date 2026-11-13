@@ -1,0 +1,65 @@
+{
+  "fingerprint": "seo|original-money-owner-cross-day-idempotency|20261113-v1",
+  "date": "2026-11-13",
+  "parent_p0": "#4198",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "original powerhouse-seo-opportunity-resolver -> original website SEO Order Engine -> ONE BRAIN/Heartbeat",
+  "status": "CANDIDATE_NOT_MERGED",
+  "production_proven": false,
+  "root_cause": "Original SEO resolver deduped a candidate only within the same calendar day and per canonical owner. A deterministic dedupe_key included runDate, so unchanged DataForSEO cached 2026-11-09 demand caused new Exact Online and Twinfield suggestions on 2026-11-11, 12 and 13 although previous suggested work remained EVIDENCE_DUE. Original code counted attempted upserts as written even when an onConflict ignoreDuplicates no-op occurred.",
+  "evidence": {
+    "source": "existing public.powerhouse_content_recommendations read-only production",
+    "canonical_routes": [
+      "https://www.bedrijfsgeheugen.nl/exact-online-koppeling",
+      "https://www.bedrijfsgeheugen.nl/twinfield-koppeling"
+    ],
+    "created_on": [
+      "2026-11-11",
+      "2026-11-12",
+      "2026-11-13"
+    ],
+    "observed_source_at": "2026-11-09T06:00:08.939Z",
+    "observed_old_pending_state": "ORIGINAL_SEO_EXECUTION_HANDOFF_PENDING",
+    "observed_terminal_state": "EVIDENCE_DUE",
+    "reference_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5700",
+    "original_2026_11_13_brain_source_ack_sha": "e4fd6bf6dc6d8222b956283859d1d47368e0757d576fb5868da0d3d0b3dd2084",
+    "original_2026_11_13_optimization_status": "NOT_EXECUTED",
+    "no_new_qualified_leads_or_causal_growth_proven": true
+  },
+  "fix": [
+    "Within same original resolver, read existing canonical recommendation rows for 45 days and fail closed on read errors.",
+    "Suppress same canonical-page proposal while status suggested/accepted is unconsumed, regardless of new runDate.",
+    "Suppress previously done/skipped identical source observation; permit a new provider-observed source to reopen a terminal decision, never an unacknowledged task.",
+    "Retain existing original recommendation rows and immutable source timestamps, reuse original observation and health outputs, record suppressed count and prior dedupe keys.",
+    "Count actually inserted rows from original upsert RETURNING rather than number attempted; no new scheduler, table, producer, consumer or social publisher."
+  ],
+  "prevention_rule": "Deduplicate original commercial SEO tasks against both current-day ID and cross-day canonical owner + consumer status + upstream source identity. Source refresh alone must never create a second unconsumed owner obligation. A stable owner remains assigned to exactly one pending action, with independent provider-readback before any terminal commercial claim.",
+  "compiler": {
+    "failure_class": "ORIGINAL_SEO_MONEY_OWNER_CROSS_DAY_REHANDOFF",
+    "scope": "SEO_TO_ORIGINAL_SITE_OWNER",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-original-money-owner-cross-day-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-original-money-owner-cross-day-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-original-money-owner-cross-day-20261113.test.mjs"
+    ],
+    "expected": "2026-11-11/12 existing pending Exact/Twinfield → 2026-11-13 no duplicate new obligations; unchanged terminal source no reissue; new source after terminal allowed; original 13-day #175→#140→Heartbeat current SHA ACK and original CRO proof remain separately required."
+  },
+  "delivery": {
+    "source": "supabase/functions/powerhouse-seo-opportunity-resolver/money-page-handoff.mjs",
+    "writer": "supabase/functions/powerhouse-seo-opportunity-resolver/index.ts",
+    "status": "AWAITING_PROTECTED_EDGE_DEPLOY_AND_PRODUCTION_READBACK",
+    "recommendation_handoff_owner": "SEO_ORIGINAL_MONEY_OWNER_HANDOFF_V1",
+    "requires_original_edge_function_deploy": true,
+    "no_second_cron": true,
+    "no_website_release_bypass": true
+  }
+}
