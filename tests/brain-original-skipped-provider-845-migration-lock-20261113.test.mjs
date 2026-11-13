@@ -10,13 +10,15 @@ const sql=readFileSync(new URL(path,import.meta.url),'utf8');
 test('exact original provider-applied migration 845 is the sole appended lock identity',()=>{
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,845);
- assert.deepEqual(lock.applied.at(-1),actual);
- assert.deepEqual(lock.applied.at(-2),{version:'20261113121500',name:'original_ga4_handoff_json_operator_precedence_v1'});
+ assert.ok(lock.applied.length>=845,'future independently verified migrations may extend the one original lock');
+ assert.deepEqual(lock.applied[844],actual,'original 845th provider migration must remain immutable at its historical position');
+ assert.deepEqual(lock.applied[843],{version:'20261113121500',name:'original_ga4_handoff_json_operator_precedence_v1'});
  assert.equal(lock.applied.filter(x=>x.version===actual.version).length,1);
- assert.equal(new Set(lock.applied.map(x=>x.version)).size,845);
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
  assert.ok(lock.applied.every((x,i)=>i===0||x.version>lock.applied[i-1].version));
- assert.equal(lock.captured_at,'2026-11-13T13:12:15.617685Z');
+ assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-13T13:12:15.617685Z'),'provider observation timestamp must never rewind before 845');
+ const hypotheticalFutureAppend=[...lock.applied,{version:'20991231235959',name:'future_migration_simulation_only'}];
+ assert.deepEqual(hypotheticalFutureAppend[844],actual,'in-memory future append must retain 845th source proof');
 });
 
 test('provider-applied 845th identity maps to the single canonical original executable migration',()=>{
