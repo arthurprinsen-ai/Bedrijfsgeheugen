@@ -10,3 +10,5 @@
 - **Open boundary:** echte SEO-site/CRO/Heartbeat causale of betaalde outcome, social provider en 8 rode assurancelussen niet door migratie-lockgereedstelling gesloten.
 
 - **Additional protected-admission finding:** first #5757 preflight rejected new BRAIN learning record with `LEARNING_EVALUATION_TESTS_REQUIRED:shadow`. Mandatory explicit `evaluation.shadow` and `evaluation.canary` replay now point to the same source/lock regression. This was a valid fail-closed guard; corrected without bypassing branch protection.
+
+- **Second canonical closure contract:** original protected admission reported `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning`. The #851 ONE BRAIN record contained `source_lock` and `verification` but omitted a literal `evidence`/`production_readback` object required by `evaluateLearningSemantics`. Added exact provider-readback evidence (851, 850 prefix zero diffs), test-evidence pointers and explicit outcome boundary; `tests/brain-original-provider-851-migration-lock-20261113.test.mjs` now fails on regression. No bypass.
