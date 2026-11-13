@@ -3,6 +3,7 @@ import { verifiedCompanyPostBatch } from '../_shared/verified-company-publicatio
 import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
+import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity} from '../_shared/original-provider-poll-receipt.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -65,15 +66,18 @@ async function verifiedBoundAccount(db:any,apiKey:string,toolkit:'instagram'|'li
   if(matched.length!==1)throw new Error(toolkit.toUpperCase()+'_VERIFIED_ACCOUNT_NOT_ACTIVE');
   return matched[0];
 }
-async function snapshot(db:any,tenantId:string,postId:string,platform:string,providerId:string,day:string,metrics:any,quality:string){
+async function snapshot(db:any,tenantId:string,postId:string,platform:string,providerId:string,slotStart:string,metrics:any,quality:string){
   const now=new Date().toISOString();
   if(!Object.keys(metrics).length)throw new Error('EMPTY_PROVIDER_METRICS');
-  const snapshotId='composio:'+platform+':'+providerId+':'+day;
+  // Store exact scheduled source-time observations, not one mutable daily row.
+  const snapshotId=originalProviderMetricSnapshotIdentity({platform,providerId,slotStart});
   const {error}=await db.from('social_metric_snapshots').upsert({
     tenant_id:tenantId,post_id:postId,snapshot_id:snapshotId,
     source_event_id:snapshotId,source:'composio-'+platform,observed_at:now,
     data_quality:quality,metrics
-  },{onConflict:'tenant_id,source_event_id'});
+  },{onConflict:'tenant_id,source_event_id',ignoreDuplicates:true});
+  // A duplicate retry of the SAME original six-hour poll never overwrites
+  // its first source observation or re-stamps its factual observed_at.
   if(error)throw new Error('SOCIAL_METRIC_STORE:'+error.message);
 }
 async function resolveInstagram(db:any,media:any){
@@ -282,7 +286,7 @@ async function companyAnalyticsState(db:any){
   return {state:age<=48*3600000?'WINDSOR_FRESH':'WINDSOR_STALE',metric_date:row.metric_date,
     source_observed_at:row.source_observed_at,source:'windsor.ai',composio_org_scope:'403_EXPECTED_WITHOUT_ADMIN_ROLE'};
 }
-async function instagram(db:any,apiKey:string,day:string){
+async function instagram(db:any,apiKey:string,slotStart:string){
   const chosen=await verifiedBoundAccount(db,apiKey,'instagram');
   const response=await execute(apiKey,chosen,'INSTAGRAM_GET_IG_USER_MEDIA',{
     ig_user_id:'me',limit:12,fields:'id,timestamp,permalink,media_type,media_product_type,like_count,comments_count,view_count'
@@ -307,13 +311,13 @@ async function instagram(db:any,apiKey:string,day:string){
       if(metrics.comments===undefined&&numeric(media.comments_count)!==null)metrics.comments=numeric(media.comments_count)!;
       if(!Object.keys(metrics).length)throw new Error('IG_INSIGHTS_UNAVAILABLE');
       const post=await resolveInstagram(db,media);
-      await snapshot(db,post.tenant_id,post.post_id,'instagram',id,day,metrics,'OBSERVED');
+      await snapshot(db,post.tenant_id,post.post_id,'instagram',id,slotStart,metrics,'OBSERVED');
       observed++;
     }catch(e){failures.push(clean((e as Error).message).slice(0,120));}
   }
   return {status:observed>0?'OBSERVED':'UNAVAILABLE',media_examined:posts.length,snapshots:observed,failures:failures.slice(0,12)};
 }
-async function linkedin(db:any,apiKey:string,day:string){
+async function linkedin(db:any,apiKey:string,slotStart:string){
   const chosen=await verifiedBoundAccount(db,apiKey,'linkedin');
   const {data:posts,error}=await db.from('social_posts')
     .select('tenant_id,post_id,external_post_id,published_at')
@@ -328,7 +332,7 @@ async function linkedin(db:any,apiKey:string,day:string){
       const result=await execute(apiKey,chosen,'LINKEDIN_LIST_REACTIONS',{entity:urn,count:100,start:0});
       const total=numeric(result?.paging?.total);
       if(total===null)throw new Error('LINKEDIN_REACTION_TOTAL_UNAVAILABLE');
-      await snapshot(db,post.tenant_id,post.post_id,'linkedin',urn,day,
+      await snapshot(db,post.tenant_id,post.post_id,'linkedin',urn,slotStart,
         {reactions:total,metric_scope:'reactions_only',views_unavailable:true},'OBSERVED_PARTIAL_SCOPE');
       observed++;
     }catch(e){failures.push(clean((e as Error).message).slice(0,130));}
@@ -346,6 +350,13 @@ Deno.serve(async(req:Request)=>{
     if(!scheduler||clean(req.headers.get('x-powerhouse-token'))!==scheduler)return json({ok:false,error:'UNAUTHORIZED'},401);
     const apiKey=await secret(db,'COMPOSIO_API_KEY');
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
+    // One exact run identity for this ORIGINAL #177 invocation only. A retry
+    // is a new factual attempt, never a new post or new scheduler.
+    const pollStartedAt=new Date().toISOString();
+    const pollRunId=crypto.randomUUID();
+    const pollIdentity=originalProviderPollReceiptIdentity({
+      startedAt:pollStartedAt,runId:pollRunId
+    });
     const day=localDay();
     let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any,companyExperimentHandoff:any;
      let originalMetricHandoff:any;
@@ -364,8 +375,8 @@ Deno.serve(async(req:Request)=>{
         recovery_owner:'existing bg-social-metrics-sync',
         recovery_action:'RECONCILE_ORIGINAL_EXPERIMENT_STAGE_READ'};
     }
-    try{ig=await instagram(db,apiKey,day);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
-    try{li=await linkedin(db,apiKey,day);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
+    try{ig=await instagram(db,apiKey,pollIdentity.slotStart);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
+    try{li=await linkedin(db,apiKey,pollIdentity.slotStart);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
     try{originalMetricHandoff=await reconcileOriginalPublicationMetricHandoffs(db);}catch(e){
       originalMetricHandoff={state:'ORIGINAL_PUBLICATION_HANDOFF_ERROR',
         error:clean((e as Error).message).slice(0,125),learning_proven:false};
@@ -392,15 +403,39 @@ Deno.serve(async(req:Request)=>{
       personal_post_registry:personalRegistry,
       original_publication_metric_handoff:originalMetricHandoff,
       social_sentiment_or_revenue_not_inferred:true};
+    // This ORIGINAL provider process runs four times per UTC day. The daily
+    // summary below is a projection and MUST NOT erase the previous poll
+    // results or intermediate errors. Record every actual source attempt in
+    // the SAME existing runtime table, under a distinct event type.
+    const audit=originalProviderPollAuditEvent({identity:pollIdentity,outcome});
+    const {data:acceptedReceipt,error:receiptError}=await db.from('powerhouse_runtime_events')
+      .insert(audit).select('dedupe_key,event_type,state,evidence').single();
+    if(receiptError)throw new Error('ORIGINAL_PROVIDER_POLL_AUDIT_WRITE:'+receiptError.message);
+    assertOriginalProviderPollReceipt(acceptedReceipt,audit);
+    // INSERT RETURNING is still a write acknowledgment, not an independent
+    // source readback. Perform a SECOND SELECT on the stored unique key.
+    const {data:independentReceipt,error:pollReadbackError}=await db.from('powerhouse_runtime_events')
+      .select('dedupe_key,event_type,state,evidence')
+      .eq('dedupe_key',pollIdentity.dedupeKey).maybeSingle();
+    if(pollReadbackError)throw new Error('ORIGINAL_PROVIDER_POLL_AUDIT_READBACK:'+pollReadbackError.message);
+    assertOriginalProviderPollReceipt(independentReceipt,audit);
+    // Preserve the ORIGINAL daily key and type for existing consumers.
+    // Only this projection may be replaced by later source attempts.
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
       source:'bg-social-metrics-sync',subject_key:'social-learning',channel:'system',
       occurred_at:new Date().toISOString(),evidence:outcome,
-      context:{provider:'composio',learning_authority:'social_metric_snapshots'},
+      context:{provider:'composio',learning_authority:'social_metric_snapshots',
+        original_poll_receipt_key:pollIdentity.dedupeKey,
+        original_poll_slot_utc:pollIdentity.slotStart},
       state:healthy?'observed':'error',data_quality:healthy?'OBSERVED':'PARTIAL',
       confidence:1,updated_at:new Date().toISOString()
     },{onConflict:'dedupe_key'});
     if(saveError)throw new Error('PROVIDER_METRIC_READBACK:'+saveError.message);
-    return json({ok:total>0,...outcome},total>0?200:503);
+    return json({ok:total>0,...outcome,
+      original_poll_receipt_key:pollIdentity.dedupeKey,
+      original_poll_receipt_verified:true,
+      original_source_only_not_learning_ack:true
+    },total>0?200:503);
   }catch(e){return json({ok:false,error:clean((e as Error).message).slice(0,190)},503);}
 });
