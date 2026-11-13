@@ -56,3 +56,41 @@ export function selectOriginalSeoMoneyHandoffs(opportunities,{runDate,observedAt
  }
  return selected;
 }
+
+
+/** One ORIGINAL website owner, one unresolved or source-identical obligation.
+ * The daily SEO observer may run every day without creating a new money-page
+ * task for the same page and still-identical evidence. Historical state is
+ * read from the existing canonical recommendation table, never a new queue.
+ * Returns skipped evidence for visibility; does not rewrite old decisions. */
+export function reconcileOriginalSeoMoneyHandoffs(candidates,priorRows=[]){
+ const history=[...(priorRows||[])].filter(x=>
+  x&&x.evidence?.contract===SEO_MONEY_OWNER_HANDOFF&&
+  x.recommendation_type==='seo_money_page_update'&&
+  x.target_channel==='website'&&
+  ['suggested','accepted','done','skipped'].includes(x.status)&&
+  typeof x.evidence?.canonical_owner==='string'
+ );
+ const selected=[],suppressed=[];
+ for(const item of candidates||[]){
+  const owner=item.evidence?.canonical_owner;
+  const observed=Date.parse(item.evidence?.source_observed_at||'');
+  const prior=history.find(x=>{
+   if(x.evidence.canonical_owner!==owner) return false;
+   // Open (not consumed) work holds its canonical page, even if upstream data
+   // changes. Completed/rejected work may re-open only for NEW source evidence.
+   if(x.status==='suggested'||x.status==='accepted')return true;
+   const earlier=Date.parse(x.evidence?.source_observed_at||'');
+   return Number.isFinite(observed)&&Number.isFinite(earlier)&&observed===earlier;
+  });
+  if(prior) suppressed.push({
+   dedupe_key:item.dedupe_key,canonical_owner:owner,
+   prior_dedupe_key:prior.dedupe_key,prior_status:prior.status,
+   reason:prior.status==='suggested'||prior.status==='accepted'?
+      'ORIGINAL_OWNER_HANDOFF_STILL_UNCONSUMED':'ORIGINAL_OWNER_SOURCE_UNCHANGED',
+   source_observed_at:item.evidence?.source_observed_at||null
+  });
+  else selected.push(item);
+ }
+ return {selected,suppressed};
+}
