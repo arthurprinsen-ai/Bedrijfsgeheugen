@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-13",
+  "fingerprint": "powerhouse|original-social-learning|authoritative-cancelled-invalid-post-missing-brain-ack|20261113-v1",
+  "status": "SOURCE_CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "owner": "existing original #171 powerhouse_content_handoff_receipts_v1 / POWERHOUSE_SOCIAL_LEARNING",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Original service-role-only #171 content/learning handoff scanned only social_learning_obligations status OPEN. One original authorized source was already CANCELLED because user_deleted_invalid_identity_post and invalid_for_performance_learning=true; its exact original BRAIN consumer obligation was completely absent. This creates an untraceable source cancellation despite 184/184 OPEN and 14/14 MEASUREMENT_VERIFIED correctly having separate existing source-to-BRAIN receipts.",
+  "prevention": "ORIGINAL_TERMINAL_SOURCE_CANCELLED_IS_NOT_SILENTLY_DROPPED: only explicit immutable tenant+source obligation+reason+invalid-for-learning may get exact source-status-only CANCELLED consumer ACK; never infer provider publication, metrics, learning or revenue; no direct second writer or new cron. Stage is terminal source accounting, not social performance learning.",
+  "evidence": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "observed_date": "2026-11-13",
+    "source_table": "public.social_learning_obligations",
+    "original_source_cancelled_count": 1,
+    "source_cancel_reason": "user_deleted_invalid_identity_post",
+    "source_invalid_for_performance_learning": true,
+    "original_cancelled_source_missing_brain_receipt": 1,
+    "original_open_sources": 184,
+    "original_open_brain_registered_exact": 184,
+    "original_measurement_verified_sources": 14,
+    "original_measurement_verified_brain_registered_exact": 14,
+    "original_cancelled_source_obligation_id": "measure-6aa9114323da08363ccb3702",
+    "existing_scheduler_id": 171,
+    "unrelated_commercial_broken_or_unproven": 7,
+    "unrelated_red_control_count": 6,
+    "social_learning_open_overdue": 184,
+    "new_migration_production_applied": false,
+    "original_provider_posts_created": 0,
+    "original_experiment_treatments_proven": 0
+  },
+  "fix": "Extend ONLY the existing original service_role-only public.powerhouse_content_handoff_receipts_v1, preserving all original methods, by bounded fair one-time source CANCELLED ingestion with exact original tenant, original obligation ID, UTC microsecond source updated_at revision, identical original BRAIN idempotent correlation and explicit source-cancellation-only consumer ACK. Count legitimate ACKs in original function runtime output; never create a provider post, metric, experiment, second scheduler, or a new table.",
+  "compiler": {
+    "failure_class": "MISSING_SOURCE_REVISION_ACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-cancelled-social-learning-source-ack-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-cancelled-social-learning-source-ack-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-cancelled-social-learning-source-ack-20261113.test.mjs"
+    ],
+    "expected": "One exact authoritative cancelled learning source gains original source-status-only CANCELLED/consumer ACK with matching tenant/revision/correlation after native protected release; second execution writes zero unchanged acknowledgments; 184 OPEN and 14 measured historical source agreements remain untouched. Provider and experimental outcomes stay unproven."
+  },
+  "expected_release": "Exact-head Required, CodeQL, native Supabase preview, protected squash merge, exact production migration/ACL, natural #171 independent consumer readback; no all-green claim.",
+  "provider_publication_proven": false,
+  "experiment_or_revenue_proven": false
+}
