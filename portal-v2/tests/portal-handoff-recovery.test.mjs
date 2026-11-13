@@ -209,3 +209,69 @@ test('new unsaved typing during Brain ACK still requires an explicit second save
  assert.deepEqual(inputs.map(x=>x.answers.employees),[20,21]);
  assert.equal(domain.status(),'saved');
 });
+
+test('same signed-in user changing company cannot refresh an earlier tenant snapshot without rehydration',async()=>{
+ let tenant='tenant-a',reads=0;
+ const records={
+  'tenant-a':{portal:{profile:{employees:17}}},
+  'tenant-b':{portal:{profile:{employees:91}}}
+ };
+ const client={
+  load:async()=>{reads++;return {mode:'authenticated',state:clone(records[tenant])};},
+  write:async next=>({mode:'authenticated',state:clone(next)}),
+  currentUser:()=>({id:'same-member',app_metadata:{tenantId:tenant}}),
+  isDemo:()=>false,authHeaders:async()=>({authorization:'Bearer member'})
+ };
+ const domain=createPortalDomainState(client,{legacyStorage:null,businessInputSaver:async()=>({stored:true})});
+ await domain.init();
+ assert.equal(domain.get('portal.profile.employees'),17);
+ assert.equal((await domain.refresh()).applied,true);
+ const readsBeforeSwitch=reads;
+ tenant='tenant-b';
+ assert.deepEqual(await domain.refresh(),{applied:false,reason:'UNVERIFIED_OR_UNSAVED_TENANT'});
+ assert.equal(reads,readsBeforeSwitch,'no cross-tenant read under a stale hydrated principal');
+ assert.equal(domain.get('portal.profile.employees'),17,'an earlier customer state cannot become new tenant source truth');
+ assert.throws(()=>domain.set('portal.profile.employees',92),/PORTAL_HYDRATED_PRINCIPAL_MISMATCH/);
+ await domain.init();
+ assert.equal(domain.get('portal.profile.employees'),91,'new tenant must explicitly rehydrate');
+ assert.equal((await domain.refresh()).applied,true,'same freshly hydrated tenant may revalidate normally');
+});
+
+test('in-flight refresh refuses a same-user tenant switch before applying source state',async()=>{
+ let tenant='tenant-a',reads=0,unblock,notify;
+ const blocked=new Promise(resolve=>{unblock=resolve;});
+ const started=new Promise(resolve=>{notify=resolve;});
+ const client={
+  load:async()=>{
+   reads++;
+   const selected=tenant;
+   if(reads===2){notify();await blocked;}
+   return {mode:'authenticated',state:{portal:{profile:{employees:selected==='tenant-a'?13:80}}}};
+  },
+  write:async next=>({mode:'authenticated',state:clone(next)}),
+  currentUser:()=>({id:'same-member',app_metadata:{tenantId:tenant}}),
+  isDemo:()=>false,authHeaders:async()=>({authorization:'Bearer member'})
+ };
+ const domain=createPortalDomainState(client,{legacyStorage:null,businessInputSaver:async()=>({stored:true})});
+ await domain.init();
+ const pending=domain.refresh();
+ await started;
+ tenant='tenant-b';
+ unblock();
+ assert.deepEqual(await pending,{applied:false,reason:'CHANGED_DURING_READBACK'});
+ assert.equal(domain.get('portal.profile.employees'),13);
+});
+
+test('unmapped portal-root and internal derived/journal mutations fail before writing any customer state',async()=>{
+ const {domain,inputs}=harness(async()=>({stored:true}));
+ await domain.init();
+ const before=domain.get();
+ for(const path of ['portal','portal.runtime','portal.runtime.status','portal.__brainHandoffJournalV1','portal.__brainHandoffJournalV1.byPrincipal']){
+  assert.throws(()=>domain.set(path,{changed:true}),/PORTAL_DIRECT_WRITE_PATH_HAS_NO_CANONICAL_HANDOFF/,path);
+  assert.throws(()=>domain.patch(path,{changed:true}),/PORTAL_DIRECT_WRITE_PATH_HAS_NO_CANONICAL_HANDOFF/,path);
+ }
+ assert.deepEqual(domain.get(),before);
+ assert.deepEqual(domain.pendingHandoffs(),{pending:false,inputs:0,impacts:0,retryable:false});
+ await domain.flush();
+ assert.equal(inputs.length,0,'no orphan input or duplicate Brain write');
+});

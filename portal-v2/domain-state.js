@@ -375,9 +375,19 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   }
   return enriched;
  }
- function set(path,value){guardHandoffPrincipal();const before=domain.get();const result=domain.set(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
+ // Public customer mutations must name a mapped portal section. Whole-root edits
+ // produce a causal impact but NO businessInputBinding, leaving a pending impact
+ // without a consumer. Runtime and journal fields are internal/view-only.
+ // Reject before editing either state or handoff journal; don't silently go green.
+ function guardCustomerWritePath(path){
+  const p=String(path??'').trim();
+  if(p==='portal'||p==='portal.runtime'||p.startsWith('portal.runtime.')
+    ||p==='portal.__brainHandoffJournalV1'||p.startsWith('portal.__brainHandoffJournalV1.'))
+   throw new Error('PORTAL_DIRECT_WRITE_PATH_HAS_NO_CANONICAL_HANDOFF');
+ }
+ function set(path,value){guardHandoffPrincipal();guardCustomerWritePath(path);const before=domain.get();const result=domain.set(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  function setDerived(path,value){return domain.setDerived(path,value);}
- function patch(path,value){guardHandoffPrincipal();const before=domain.get();const result=domain.patch(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
+ function patch(path,value){guardHandoffPrincipal();guardCustomerWritePath(path);const before=domain.get();const result=domain.patch(path,value);const impact=publishImpact(path,before,domain.get());if(impact.changed)track(path);return result;}
  async function performPortalFlush(){
   guardHandoffPrincipal();
   const submittedPrincipal=currentPrincipal();
@@ -477,14 +487,13 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  let activeRefresh=null;
  function refresh(){
   if(activeRefresh)return activeRefresh;
-  const principal=stateClient.currentUser?.();
-  const principalKey=String(principal?.id||principal?.email||'').trim();
-  const samePrincipal=()=>{
-   const current=stateClient.currentUser?.();
-   return Boolean(principalKey)&&String(current?.id||current?.email||'').trim()===principalKey
+  // Revalidation is bound to the hydrated ID + server-issued tenant, not only
+  // user ID: one member may have access to multiple companies in the same tab.
+  const principalKey=currentPrincipal();
+  const samePrincipal=()=>Boolean(principalKey)
+     &&hydratedPrincipal===principalKey&&currentPrincipal()===principalKey
      &&!stateClient.isDemo?.()&&!activeInit&&!activePortalFlush
      &&pendingBusinessInputs.size===0&&pendingImpacts.length===0&&!browserLegacyLiftPending;
-  };
   // Reuse the existing focus/visibility/15-minute revalidation, never a new scheduler.
   // Only replay an already-attempted, same-principal handoff; never auto-save typing.
   if(!samePrincipal()&&!pendingHandoffs().retryable)
