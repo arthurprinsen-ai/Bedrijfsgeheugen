@@ -29,6 +29,10 @@ test('ACK is idempotent for same immutable source and renewed only on actual rev
 test('pg_get_functiondef snapshot must be terminated as a standalone SQL statement',()=>{
  assert.match(sql,/\$function\$;\s*REVOKE ALL ON FUNCTION public\.powerhouse_content_handoff_receipts_v1/);
 });
+test('migration postflight checks actual stored consumer ACK constant, never a header-only marker',()=>{
+ assert.match(sql,/position\('RECEIVED_SOURCE_ONLY_NOT_PROVIDER_MEASUREMENT_OR_LEARNING' in v_def\)=0/);
+ assert.doesNotMatch(sql,/position\('SOURCE_RECEIVED' in v_def\)=0/);
+});
 test('source receipt is not provider, learning, or revenue evidence; preserve original anti-duplicate and ACL',()=>{
  assert.match(sql,/RECEIVED_SOURCE_ONLY_NOT_PROVIDER_MEASUREMENT_OR_LEARNING/);
  assert.match(sql,/'provider_proven',false,'measurement_proven',false,'learning_proven',false/);
