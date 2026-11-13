@@ -57,7 +57,7 @@ begin
     'provider_create_success','provider_publication_ack_verified',
     'provider_truth_verified','terminal_provider_side_effect',
     'possible_provider_side_effect','reconciliation_required'
-  ]) as k;
+  ]) as provider_flags(k);
 
   -- A protected existing provider-side effect or unresolved source conflict
   -- means the original account/source owner must reconcile: no re-publish
