@@ -8,7 +8,7 @@
   "prevention": "HTTP 200 exclusively for sourceReady and no errors; 502 for provider/writeback errors, 503 for no independently eligible dated source. No gate bypass.",
   "regression": "tests/brain-mira-radar-http-contract-20261113.test.mjs",
   "source_proof": "2026-11-12 20:02 UTC Edge HTTP 200; max original observed_at 2026-11-08; 2026-11-13 Instagram PLANNED due to MIRA_UNIQUE_SOURCE_WINNER_REQUIRED.",
-  "production_status": "PR_PENDING_CI_MERGE_DEPLOY_READBACK",
+  "production_status": "SUPABASE_EDGE_V955_EXACT_SOURCE_READBACK_CONFIRMED",
   "do_not_close_content_or_provider_obligation": true,
   "one_original_executor": true,
   "source_revision_required": true,
@@ -48,5 +48,28 @@
     "independent_edge_readback_required": true
   },
   "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
-  "status": "PROTECTED_CANDIDATE_NOT_LIVE"
+  "status": "PROVIDER_DEPLOYED_TRANSPORT_FIX_SOURCE_AND_PUBLICATION_STILL_OPEN",
+  "release_evidence": {
+    "verified_at": "2026-11-13T16:45:37.062Z",
+    "merged_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5747",
+    "merge_sha": "21a7793cb623960471bf8c51d19e6ff93df39246",
+    "required_ci": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43465279018",
+    "codeql_ci": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43465278985",
+    "supabase_provider_authority": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43465759485",
+    "supabase_project": "adhjwmvyoixzjtmiroln",
+    "edge_slug": "powerhouse-mira-problem-radar",
+    "edge_version": 955,
+    "exact_runtime_source_readback": true,
+    "has_http_classifier": true,
+    "skill_projection": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43465763059",
+    "error_learning_contract": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43465759425",
+    "brain_handoff": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43465805525",
+    "original_schedulers_active": true,
+    "next_original_radar_http_outcome_proven": false,
+    "new_unique_source_proven": false,
+    "instagram_provider_publication_proven": false,
+    "outstanding_content_handoffs": 366,
+    "red_assurance_loops": 7,
+    "evidence_comment": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232#issuecomment-6859256876"
+  }
 }
