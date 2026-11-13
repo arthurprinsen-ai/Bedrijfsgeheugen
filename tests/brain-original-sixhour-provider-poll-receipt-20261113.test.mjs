@@ -4,7 +4,8 @@ import {readFileSync} from 'node:fs';
 import {
   originalProviderPollReceiptIdentity,
   originalProviderPollAuditEvent,
-  assertOriginalProviderPollReceipt
+  assertOriginalProviderPollReceipt,
+  originalProviderMetricSnapshotIdentity
 } from '../supabase/functions/_shared/original-provider-poll-receipt.mjs';
 
 const idA='eb6acdb5-0462-4d4b-b9d0-675cf090a501';
@@ -98,4 +99,49 @@ test('same original #177 Edge function: durable per-attempt readback BEFORE lega
   assert.match(source,/INSTAGRAM_GET_IG_MEDIA_INSIGHTS/);
   assert.match(source,/LINKEDIN_LIST_REACTIONS/);
   assert.doesNotMatch(source,/cron\.schedule|LINKEDIN_CREATE_LINKED_IN_POST|INSTAGRAM_CREATE_MEDIA/);
+});
+
+test('original per-post provider metrics keep four distinct real source-time observations every UTC day',()=>{
+ const provider='17929031778142284';
+ const slots=['2026-11-13T00:00:00.000Z','2026-11-13T06:00:00.000Z',
+  '2026-11-13T12:00:00.000Z','2026-11-13T18:00:00.000Z'];
+ const events=slots.map(slotStart=>originalProviderMetricSnapshotIdentity({
+  platform:'instagram',providerId:provider,slotStart
+ }));
+ assert.equal(new Set(events).size,4);
+ assert.ok(events.every(z=>z.includes(':'+provider+':')));
+ assert.equal(originalProviderMetricSnapshotIdentity({
+  platform:'instagram',providerId:provider,slotStart:slots[2]
+ }),events[2],'same source UTC slot must be idempotent');
+ assert.notEqual(events[0],'composio:instagram:'+provider+':2026-11-13',
+  'legacy daily source event must remain preserved and never overwritten');
+ const urn='urn:li:share:7526178124292718592';
+ const li=originalProviderMetricSnapshotIdentity({
+  platform:'linkedin',providerId:urn,slotStart:slots[1]
+ });
+ assert.ok(li.includes(':'+urn+':'));
+});
+
+test('source event identity rejects unverified accounts, bad IDs and invented time buckets',()=>{
+ const valid='2026-11-13T06:00:00.000Z';
+ for(const c of [
+  {platform:'instagram',providerId:'not-an-id',slotStart:valid},
+  {platform:'linkedin',providerId:'linkedin:alias',slotStart:valid},
+  {platform:'linkedin',providerId:'urn:li:organization:18234216',slotStart:valid},
+  {platform:'other',providerId:'12345678901',slotStart:valid},
+  {platform:'instagram',providerId:'17929031778142284',slotStart:'2026-11-13T06:18:00Z'},
+  {platform:'instagram',providerId:'17929031778142284',slotStart:'invalid'}
+ ])assert.throws(()=>originalProviderMetricSnapshotIdentity(c),/ORIGINAL_PROVIDER_SNAPSHOT_/);
+});
+
+test('the ONE existing original #177 metric reader persists source-time slots, without overwriting same-day earlier measurements',()=>{
+ const source=readFileSync(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
+ assert.match(source,/const snapshotId=originalProviderMetricSnapshotIdentity\(\{platform,providerId,slotStart\}\)/);
+ assert.match(source,/const pollIdentity=originalProviderPollReceiptIdentity\(\{/);
+ assert.match(source,/await instagram\(db,apiKey,pollIdentity\.slotStart\)/);
+ assert.match(source,/await linkedin\(db,apiKey,pollIdentity\.slotStart\)/);
+ assert.match(source,/\.upsert\(\{[\s\S]*?snapshot_id:snapshotId/);
+ assert.match(source,/onConflict:'tenant_id,source_event_id'/);
+ assert.doesNotMatch(source,/const snapshotId='composio:'\+platform\+':'\+providerId\+':'\+day/);
+ assert.doesNotMatch(source,/cron\.schedule|INSTAGRAM_CREATE_MEDIA|LINKEDIN_CREATE_LINKED_IN_POST/);
 });
