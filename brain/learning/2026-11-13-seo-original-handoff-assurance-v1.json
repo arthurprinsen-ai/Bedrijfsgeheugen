@@ -43,17 +43,19 @@
     "failure_class": "FALSE_GREEN",
     "scope": "RUNTIME",
     "machine_enforceable": true,
-    "repeat_count": 3,
+    "repeat_count": 4,
     "security_sensitive": false
   },
   "root_cause": "Original SEO assurance guard accepted recommendation/forecast output as end-to-end commercial delivery while source-to-BRAIN ACK was proven but executed CRO, independent revenue outcome and next-run learning were absent.",
   "prevention_rule": "Original SEO resolver guard is true only with exact original daily Brain obligation and revision-matched consumer ACK, independently read-back protected production execution, a source-linked measurement receipt, a verified causal or paid outcome and confirmed learning applied in a later original run; missing evidence is false and remains OPEN.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-seo-original-handoff-assurance-20261113.test.mjs"
+      "tests/brain-seo-original-handoff-assurance-20261113.test.mjs",
+      "tests/brain-original-provider-849-migration-lock-20261113.test.mjs"
     ],
     "canary": [
-      "tests/brain-seo-original-handoff-assurance-20261113.test.mjs"
+      "tests/brain-seo-original-handoff-assurance-20261113.test.mjs",
+      "tests/brain-original-provider-849-migration-lock-20261113.test.mjs"
     ],
     "invariants": [
       "one original daily Powerhouse source obligation and owner",
@@ -100,13 +102,24 @@
       "original_executor_changed": false,
       "original_scheduler_created": false,
       "outcome_proven": false,
-      "next_original_run_proven": false
+      "next_original_run_proven": false,
+      "provider_migration_inventory": {
+        "provider_count": 849,
+        "prior_original_lock_count": 848,
+        "unchanged_prefix_mismatch_count": 0,
+        "appended_provider_version": "20261113164000",
+        "appended_provider_name": "original_seo_one_chain_outcome_assurance_v2",
+        "original_source_lock": "supabase/migration-history.lock.json",
+        "captured_at_utc": "2026-11-13T17:08:05.767534Z",
+        "new_regression": "tests/brain-original-provider-849-migration-lock-20261113.test.mjs"
+      }
     },
     "release_links": {
       "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5748",
       "required": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43467928347",
       "codeql": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43467927648",
       "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
-    }
+    },
+    "protected_ci_drift_root_cause": "Exact provider-applied migration #849 was present in production and original executable Git SQL but absent from original immutable Git source lock #848; protected preflight rightly failed 6 regression assertions. Append exact verified provider version/name and prove 848-entry unchanged prefix; no fabricated migration or manual provider replay."
   }
 }
