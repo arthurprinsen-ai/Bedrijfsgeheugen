@@ -3,6 +3,7 @@ import { verifiedCompanyPostBatch } from '../_shared/verified-company-publicatio
 import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
+import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt} from '../_shared/original-provider-poll-receipt.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -346,6 +347,10 @@ Deno.serve(async(req:Request)=>{
     if(!scheduler||clean(req.headers.get('x-powerhouse-token'))!==scheduler)return json({ok:false,error:'UNAUTHORIZED'},401);
     const apiKey=await secret(db,'COMPOSIO_API_KEY');
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
+    // One exact run identity for this ORIGINAL #177 invocation only. A retry
+    // is a new factual attempt, never a new post or new scheduler.
+    const pollStartedAt=new Date().toISOString();
+    const pollRunId=crypto.randomUUID();
     const day=localDay();
     let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any,companyExperimentHandoff:any;
      let originalMetricHandoff:any;
@@ -392,15 +397,35 @@ Deno.serve(async(req:Request)=>{
       personal_post_registry:personalRegistry,
       original_publication_metric_handoff:originalMetricHandoff,
       social_sentiment_or_revenue_not_inferred:true};
+    // This ORIGINAL provider process runs four times per UTC day. The daily
+    // summary below is a projection and MUST NOT erase the previous poll
+    // results or intermediate errors. Record every actual source attempt in
+    // the SAME existing runtime table, under a distinct event type.
+    const pollIdentity=originalProviderPollReceiptIdentity({
+      startedAt:pollStartedAt,runId:pollRunId
+    });
+    const audit=originalProviderPollAuditEvent({identity:pollIdentity,outcome});
+    const {data:acceptedReceipt,error:receiptError}=await db.from('powerhouse_runtime_events')
+      .insert(audit).select('dedupe_key,event_type,state,evidence').single();
+    if(receiptError)throw new Error('ORIGINAL_PROVIDER_POLL_AUDIT_WRITE:'+receiptError.message);
+    assertOriginalProviderPollReceipt(acceptedReceipt,audit);
+    // Preserve the ORIGINAL daily key and type for existing consumers.
+    // Only this projection may be replaced by later source attempts.
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
       source:'bg-social-metrics-sync',subject_key:'social-learning',channel:'system',
       occurred_at:new Date().toISOString(),evidence:outcome,
-      context:{provider:'composio',learning_authority:'social_metric_snapshots'},
+      context:{provider:'composio',learning_authority:'social_metric_snapshots',
+        original_poll_receipt_key:pollIdentity.dedupeKey,
+        original_poll_slot_utc:pollIdentity.slotStart},
       state:healthy?'observed':'error',data_quality:healthy?'OBSERVED':'PARTIAL',
       confidence:1,updated_at:new Date().toISOString()
     },{onConflict:'dedupe_key'});
     if(saveError)throw new Error('PROVIDER_METRIC_READBACK:'+saveError.message);
-    return json({ok:total>0,...outcome},total>0?200:503);
+    return json({ok:total>0,...outcome,
+      original_poll_receipt_key:pollIdentity.dedupeKey,
+      original_poll_receipt_verified:true,
+      original_source_only_not_learning_ack:true
+    },total>0?200:503);
   }catch(e){return json({ok:false,error:clean((e as Error).message).slice(0,190)},503);}
 });
