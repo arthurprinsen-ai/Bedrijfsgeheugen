@@ -18,3 +18,9 @@
 - Exacte oorspronkelijke bron- en consumer-SHA zijn gelijk (`937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb`); bronverplichting `40b62d82-dcd3-4a44-98d0-3f94071008a9` is terecht OPEN.
 - Zes bestaande stage receipts action/readback/measurement/outcome/learning/guard `pass=false`, met originele obligation-ID; bestaande BRAIN OPERATIONS_ASSURANCE = OPEN en `seo-opportunity-resolver = RED` (7 GREEN/8 RED totaal), na originele assurance-refresh om 17:03 UTC.
 - Nog niet bewezen: oorspronkelijke productieactie, causale CRO-experimentmeting, order/betaalbewijs en aantoonbare next-run-leertoepassing. Geen nieuwe scheduler, verzender of bronduplicatie.
+
+## 2026-11-13 17:08 UTC — onverwachte CI-gate, zelfde oorspronkelijke provider-lock
+
+- Eerste PR #5750 Required faalde in preflight op zes bestaande migratie-integriteitsasserties: Git executable manifest 849 vs originele onveranderlijke source lock 848. Geen test- of securitybypass.
+- Direct native Supabase production list_migrations: exact 849 daadwerkelijk toegepaste version/name-identiteiten. Alle 848 bestaande locked entries gecontroleerd tegen de eerste 848 provider-records: **0 verschillen**. Provider #849 exact `20261113164000/original_seo_one_chain_outcome_assurance_v2`, checked 17:08:05.767534Z.
+- Append alleen die 849e native provideridentiteit aan bestaande `supabase/migration-history.lock.json` en voeg regressie `tests/brain-original-provider-849-migration-lock-20261113.test.mjs` toe; alle 848 originele identiteiten ongemoeid. Beveiligde protected CI en merge blijven verplicht; inhoudelijke websiteactie/effect/omzet/leren blijven OPEN.
