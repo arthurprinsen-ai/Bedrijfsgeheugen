@@ -1,0 +1,12 @@
+# Original Supabase provider 843 → one immutable GitOps lock — 13 November 2026
+
+P0 #4198 / #4215. Fingerprint `supabase|gitops|original-terminal-proof-provider-843-source-lock|20261113-v1`.
+
+## Independent source/provider evidence
+Original protected [PR #5724](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5724) MERGED exactly `5aea7dceae2be6f760e7abc885b328e01e5a4067` with native source `supabase/migrations/20261113083000_original_one_chain_content_terminal_proof_guard_v1.sql`, and original Required [#43396833870](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43396833870) and original CodeQL [#43396833774](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43396833774) passed. Independent real Supabase read-only at `2026-11-13T08:58:32.883023Z`: 843 applied, 843 distinct; newest exact `20261113083000/original_one_chain_content_terminal_proof_guard_v1`. On existing `public.brain_obligations`, native `brain_content_handoff_terminal_proof_guard_v1` is enabled (`tgenabled='O'`) and invokes the original `brain_guard_content_terminal_proof_v1()`. Original `supabase/migration-history.lock.json` on `main` retained only 842, latest 082500. No evidence that actual SQL should be reapplied.
+
+## One original source-lock writer correction
+Append exactly the genuine provider 843rd `version,name` pair to `supabase/migration-history.lock.json`, preserve first 842 historical pairs unmodified and record exact provider observation timestamp. Keep original future-compatible whole-inventory guard `tests/brain-original-provider-843-terminal-proof-source-lock-20261113.test.mjs`, existing source/learning agent and `powerhouse-self-improvement-layer` skill, ONE BRAIN machine lesson and append-only human ledger. No new migration, provider call, trigger, grant, new agent, scheduler or publication system.
+
+## Strict terminal criteria
+One protected source-only Required/BRAIN/CodeQL + merge, verify merged-main source 843 matches original provider 843 exactly and postmerge full original BRAIN/Production Source Snapshot. Native trigger existence is proof of policy deployment, **not** of Instagram Meta publication, LinkedIn 24/48/72h metric, Portal/Heartbeat actual processing, controlled CRO experiment, next natural-run learning or revenue. Original open 184 social-learning obligations/other causal outcome debts remain with real owners; do not fake green.
