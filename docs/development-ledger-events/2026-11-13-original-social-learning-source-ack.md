@@ -10,3 +10,5 @@
 - **Issue:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232
 
 - **Preview-incident & preventieregel:** nieuw PR #5752-preview gaf `MIGRATIONS_FAILED`: de snapshot uit `pg_get_functiondef` heeft geen eindpuntkomma, waardoor de daaropvolgende `REVOKE` binnen dezelfde SQL-instructie belandde (`syntax error at or near REVOKE`). Hersteld met expliciete `$function$;` en regressietest die de DDL-grens afdwingt; geen onbewezen preview als groen tellen.
+
+- **Tweede preview-herstel:** de syntaxis slaagde, maar postflight vergeleek `SOURCE_RECEIVED` (alleen migratiecommentaar) met de functiebody. De echte semantische marker is `RECEIVED_SOURCE_ONLY_NOT_PROVIDER_MEASUREMENT_OR_LEARNING`; assertion gecorrigeerd en regressietest toegevoegd. Provider-preview blijft verplicht, nooit negeren.
