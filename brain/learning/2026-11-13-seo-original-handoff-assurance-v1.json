@@ -1,0 +1,80 @@
+{
+  "fingerprint": "seo|one-chain|original-handoff-assurance|20261113-v1",
+  "obligation_id": "seo|one-chain|original-handoff-assurance|20261113-v1",
+  "parent_issue": 4198,
+  "status": "SOURCE_CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "owner": "powerhouse-seo-opportunity-resolver",
+  "original_source": "public.brain_obligations.GROWTH_SOURCE_DAILY_HANDOFF",
+  "original_consumer": "original powerhouse-content-orchestrator-140",
+  "source_revision_contract": "consumer_ack.consumed_revision = evidence.source_revision = analysis.source_revision",
+  "problem": "False-green SEO assurance when recommendations or forecasts exist but execution, independent measurement, realized outcome and next-run learning are not proven",
+  "source_evidence": {
+    "audit_day": "2026-11-13",
+    "seo_assurance_status": "GREEN_BUT_OUTCOME_UNPROVEN",
+    "open_growth_handoffs": 3,
+    "ack_revision_match": true,
+    "actual_cro_experiment_executed": false,
+    "causal_lift_or_revenue_proven": false,
+    "keyword_rows_canonical": 33,
+    "broken_or_unproven_handoffs_7d": 7
+  },
+  "remedy": {
+    "migration": "supabase/migrations/20261113164000_original_seo_one_chain_outcome_assurance_v2.sql",
+    "test": "tests/brain-seo-original-handoff-assurance-20261113.test.mjs",
+    "skill": ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    "single_scheduler": true,
+    "disable_security_checks": false,
+    "never_synthesize_revenue": true,
+    "retain_original_obligations": true
+  },
+  "verification": {
+    "required": "PENDING",
+    "codeql": "PENDING",
+    "supabase_preview": "PENDING",
+    "protected_merge": "PENDING",
+    "production_function_readback": "PENDING",
+    "next_original_run_heartbeat": "PENDING",
+    "outcome_proven": false
+  },
+  "learning": "Source receipt and consumer ACK are not proof of production delivery, experiment, paid order or next-run learning; deny terminal green until linked independent receipts",
+  "rollback": "Protected revision of existing SEO assurance function only; preserve original scheduler and source obligations",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "root_cause": "Original SEO assurance guard accepted recommendation/forecast output as end-to-end commercial delivery while source-to-BRAIN ACK was proven but executed CRO, independent revenue outcome and next-run learning were absent.",
+  "prevention_rule": "Original SEO resolver guard is true only with exact original daily Brain obligation and revision-matched consumer ACK, independently read-back protected production execution, a source-linked measurement receipt, a verified causal or paid outcome and confirmed learning applied in a later original run; missing evidence is false and remains OPEN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-original-handoff-assurance-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-original-handoff-assurance-20261113.test.mjs"
+    ],
+    "invariants": [
+      "one original daily Powerhouse source obligation and owner",
+      "ACK_RECEIVED is not EXECUTED or revenue",
+      "missing production or measurement proof fails closed",
+      "canonical keyword tenant maps to business daily tenant",
+      "no duplicate writer/scheduler or public send",
+      "guard non-null false until exact outcome and learning"
+    ]
+  },
+  "production_success": false,
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "evidence": {
+    "observed_at": "2026-11-13",
+    "source": "Supabase production read-only original brain_obligations + powerhouse_loop_assurance_state_v1 + powerhouse_growth_source_daily_v1",
+    "original_handoffs": [
+      "2026-11-11 OPEN ACK true execution false outcome false",
+      "2026-11-12 OPEN ACK true execution false outcome false",
+      "2026-11-13 OPEN ACK true execution false outcome false"
+    ],
+    "false_green": "seo-opportunity-resolver guard.pass=true on recommendations/forecasts while original daily commercial chain not proven",
+    "test_replay": "tests/brain-seo-original-handoff-assurance-20261113.test.mjs",
+    "release_status": "PR_SOURCE_ONLY_NOT_LIVE"
+  }
+}
