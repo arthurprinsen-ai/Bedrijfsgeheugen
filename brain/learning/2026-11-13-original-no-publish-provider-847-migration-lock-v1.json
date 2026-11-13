@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|supabase|original-no-publish-provider-847-immutable-source-lock|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_NO_PUBLISH_PROVIDER_847_APPLIED_SOURCE_LOCK_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original protected PR #5742 merged a new historical no-publish source-next-action repair and real production Supabase automatically applied migration 847, while the immutable GitHub provider-source lock still stopped at 846. Existing original test for historical 846 used obsolete strict count/last-element/exact timestamp assertions and would fail when appending the legitimate real 847.",
+  "prevention_rule": "Only after independent actual provider applied version+name, 846-row prefix equality and verified original source correction, append the exact one actual provider-847 identity to the single canonical lock. Historical 846 test must use immutable index 845 with >=846, immutable prior index, unique ordered version list and captured_at lower-bound (plus simulated future append only in memory). Current provider/source-lock parity must still be exact in original terminal verifier; do not weaken it. No duplicate SQL, new scheduler, public EXECUTE, invented proof or publication.",
+  "evidence": [
+    "Actual Supabase production provider query at 2026-11-13T15:38:43.911949Z: 847 applied versions, last 20261113153000/original_no_publish_legacy_source_action_reconcile_v1; exact Git 846-prefix compared against all 847 real provider version+name values, no mismatch.",
+    "After provider application, 20 original blog and 1 original linkedin_company incomplete SKIPPED source rows have correct NO_RESEND source action/error and unchanged incomplete decision state. Original 21 ONE BRAIN no-publish proof obligations remain OPEN by original owner, not falsely terminalized.",
+    "Protected PR #5742 merged b729e84c0d3548708c5d5f6178482eb37a247c52 after Required/CodeQL/native Supabase preview. No direct production SQL outside original CI/CD release."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-no-publish-provider-847-migration-lock-20261113.test.mjs",
+      "tests/brain-original-no-publish-provider-846-migration-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-no-publish-provider-847-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-no-publish-provider-847-migration-lock-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "new_scheduler": false,
+    "new_sql_migration": false,
+    "new_sender": false,
+    "old_846_prefix_unchanged": true,
+    "provider_readback_first": true,
+    "bypass_terminal_guard": false
+  },
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PROVIDER_APPLIED_SOURCE_ONLY_CANDIDATE_PENDING_TERMINAL"
+}
