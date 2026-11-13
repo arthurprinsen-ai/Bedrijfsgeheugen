@@ -6,7 +6,7 @@ import {verifyOriginalSeoDeliveryLink,sameOriginalSeoDeliveryLink,SEO_ORIGINAL_D
 
 const SHA='937fd65725813cf0320465b5a92231d86f0faf5327bdd128057e2b6c16baacfb';
 const RELEASE='66b67ac366e073ca068e5f1e23938a9792ae7dce';
-const URL='https://www.bedrijfsgeheugen.nl/exact-online-koppeling';
+const MONEY_URL='https://www.bedrijfsgeheugen.nl/exact-online-koppeling';
 function source(){return {
   id:'40b62d82-dcd3-4a44-98d0-3f94071008a9',
   obligation_type:'GROWTH_SOURCE_DAILY_HANDOFF',
@@ -20,7 +20,7 @@ function source(){return {
       consumer:'original powerhouse-content-orchestrator-140'},
     source_manifest:[{source_key:'website_release_readback',quality:'VERIFIED_PRODUCTION_RELEASE',
       observed_at:'2026-11-13T07:26:14Z',
-      metrics:{routes:[URL,'https://www.bedrijfsgeheugen.nl/twinfield-koppeling'],
+      metrics:{routes:[MONEY_URL,'https://www.bedrijfsgeheugen.nl/twinfield-koppeling'],
       http_status:200,source_release_proven:true,published_commit_ref:RELEASE,
       deploy_id:'6af6bb27b1fccdc5adc91cd1'}}]}
 };}
@@ -29,11 +29,11 @@ function recommendation(){return {
   run_date:'2026-11-13',target_channel:'website',
   recommendation_type:'seo_money_page_update',status:'done',
   evidence:{contract:'SEO_ORIGINAL_MONEY_OWNER_HANDOFF_V1',
-    action:'UPDATE_MONEY_PAGE',canonical_owner:URL,
+    action:'UPDATE_MONEY_PAGE',canonical_owner:MONEY_URL,
     state:'WEBSITE_CHANGE_LIVE_PROVEN_METRICS_DUE',
     owner_change_merge_sha:RELEASE,
     owner_change_pr:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5700',
-    public_page_http_status:200,public_canonical_readback:URL,
+    public_page_http_status:200,public_canonical_readback:MONEY_URL,
     public_frisse_blik_cta_readback:true,
     netlify_deploy_state:'READY',netlify_deploy_id:'6af6bc7fec4d7742badc7154',
     public_provider_request_id:'11130748-2222-0275-0000-8f3e3066b534'}
@@ -46,7 +46,7 @@ test('original #175 source and exact #140 ACK match real original BG169 site dep
   assert.equal(result.source_revision,SHA);
   assert.equal(result.original_ack_revision,SHA);
   assert.equal(result.owner_change_merge_sha,RELEASE);
-  assert.equal(result.canonical_owner,URL);
+  assert.equal(result.canonical_owner,MONEY_URL);
   assert.equal(result.site_action_proven,true);
   assert.equal(result.stage,'SITE_ACTION_PROVEN_CRO_EXPERIMENT_AND_OUTCOME_DUE');
   assert.equal(result.cro_experiment_not_claimed,true);
