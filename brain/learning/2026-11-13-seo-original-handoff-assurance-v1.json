@@ -64,5 +64,17 @@
     ]
   },
   "production_success": false,
-  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "evidence": {
+    "observed_at": "2026-11-13",
+    "source": "Supabase production read-only original brain_obligations + powerhouse_loop_assurance_state_v1 + powerhouse_growth_source_daily_v1",
+    "original_handoffs": [
+      "2026-11-11 OPEN ACK true execution false outcome false",
+      "2026-11-12 OPEN ACK true execution false outcome false",
+      "2026-11-13 OPEN ACK true execution false outcome false"
+    ],
+    "false_green": "seo-opportunity-resolver guard.pass=true on recommendations/forecasts while original daily commercial chain not proven",
+    "test_replay": "tests/brain-seo-original-handoff-assurance-20261113.test.mjs",
+    "release_status": "PR_SOURCE_ONLY_NOT_LIVE"
+  }
 }
