@@ -73,3 +73,9 @@ test('observed/error are existing event state schema values; waiting lives only 
  assert.doesNotMatch(sql,/then 'waiting'|else 'waiting' end/);
  assert.match(sql,/e\.evidence->>'handoff_status' in/);
 });
+
+test('every reconstructed original PostgreSQL function has an explicit statement terminator',()=>{
+ const endings=sql.match(/\$function\$;/g)||[];
+ assert.equal(endings.length,2);
+ assert.ok(sql.trimEnd().endsWith('end $function$;'));
+});
