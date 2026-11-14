@@ -73,3 +73,25 @@ test('zero source is never independently verified or silent-green in original ru
   assert.match(followup,/revoke execute[\s\S]*from public, anon, authenticated/i);
   assert.match(followup,/grant execute[\s\S]*to service_role/i);
 });
+
+test('unstarted original innovation intake stays PLANNED; old RESULT_UNKNOWN recovers without fake success',()=>{
+  const source=fs.readFileSync('supabase/migrations/20261114211500_original_innovation_intake_watchdog_recovery_v1.sql','utf8');
+  assert.match(source,/create or replace function public\.powerhouse_execution_resilience_watchdog_v1/i);
+  assert.match(source,/create or replace function public\.powerhouse_reconciliation_worker_v1/i);
+  assert.equal((source.match(/o\.operation_type='INNOVATION_INTAKE'/g)||[]).length>=2,true);
+  assert.match(source,/o\.status='PLANNED'[\s\S]{0,180}o\.remote_ref is null/);
+  assert.match(source,/o\.evidence->'execution_resilience'->>'side_effect_state'='NOT_STARTED'/);
+  assert.match(source,/v_job\.reason='EXECUTION_RESILIENCE_RECOVERY'/);
+  assert.match(source,/v_operation\.status='RESULT_UNKNOWN'/);
+  assert.match(source,/v_operation\.remote_ref is null/);
+  assert.match(source,/join public\.brain_control_plane_bindings cp/);
+  assert.match(source,/v_operation\.payload_sha256=b\.payload_sha256/);
+  assert.match(source,/WAITING_ORIGINAL_AGENT_INTAKE/);
+  assert.match(source,/brain_transition_operation\([\s\S]*'PLANNED'/);
+  assert.match(source,/consumer_ack_proven',false/);
+  assert.match(source,/independent_effect_proven',false/);
+  assert.match(source,/NO_SIDE_EFFECT_STARTED/);
+  assert.match(source,/ORIGINAL_AGENT_INTAKE_READY_NOT_EXECUTED/);
+  assert.match(source,/NO_SAFE_CANONICAL_RECOVERY_HANDLER/); // default fail-closed for all other types
+  assert.doesNotMatch(source,/cron\.schedule|create\s+table|create\s+trigger/i);
+});
