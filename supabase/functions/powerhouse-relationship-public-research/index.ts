@@ -1,4 +1,4 @@
-import {researchSourceCandidate,researchRetryAt} from '../_shared/relationship-research-feedback.mjs';
+import {researchSourceCandidate,researchRetryAt,researchNoSourceFeedback} from '../_shared/relationship-research-feedback.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-relationship-public-research-v1';
@@ -44,7 +44,7 @@ Deno.serve(async(req:Request)=>{
       .like('dedupe_key','relationship-research:%').or('due_at.is.null,due_at.lte.'+observedAt).order('priority',{ascending:false}).limit(10);
     if(aErr) throw new Error('ACTIONS:'+aErr.message);
 
-    let researched=0,matched=0,events=0,noEvidence=0,sourceCandidatesReadback=0;
+    let researched=0,matched=0,events=0,noEvidence=0,sourceCandidatesReadback=0,noSourceFeedbackReadback=0,deferredOwnerAcks=0;
     const auth='Basic '+btoa(user+':'+pass);
 
     for(const action of actions||[]){
@@ -80,16 +80,17 @@ Deno.serve(async(req:Request)=>{
           const {data:origin,error:originErr}=await db.from('powerhouse_sales_actions')
             .select('action_id,person_key,company_key,status,evidence,updated_at')
             .eq('action_id',originId).eq('person_key',action.person_key)
-            .eq('company_key',action.company_key).eq('status','prepared').maybeSingle();
+            .eq('company_key',action.company_key).in('status',['prepared','waiting']).maybeSingle();
           if(originErr)throw new Error('ORIGINAL_OUTREACH_LOOKUP:'+originErr.message);
           if(origin?.evidence?.execution_gate?.reason==='SOURCE_SPECIFIC_EVIDENCE_REQUIRED'){
             const {data:saved,error:saveErr}=await db.from('powerhouse_sales_actions').update({
               evidence:{...origin.evidence,relationship_source_candidate:candidate},
               updated_at:observedAt
-            }).eq('action_id',originId).eq('status','prepared')
+            }).eq('action_id',originId).eq('status',origin.status)
               .eq('updated_at',origin.updated_at).select('action_id').maybeSingle();
             if(saveErr)throw new Error('ORIGINAL_OUTREACH_SOURCE_CANDIDATE:'+saveErr.message);
             if(saved)sourceCandidatesReadback++;
+            else deferredOwnerAcks++;
           }
         }
         const confidence=clamp(0.62+Math.max(0,10-Math.min(10,best.rank))*0.02);
@@ -123,6 +124,27 @@ Deno.serve(async(req:Request)=>{
             external_outreach_executed:false}}
         }).eq('action_id',action.action_id);
         if(uErr) throw new Error('ACTION_WAIT:'+uErr.message);
+        // Exact original owner receives the NO_SOURCE disposition, even when
+        // original recipient action is WAITING; preserve the no-outbound gate.
+        const originId=clean(action?.evidence?.original_outreach_action_id);
+        if(originId){
+          const {data:origin,error:originErr}=await db.from('powerhouse_sales_actions')
+            .select('action_id,person_key,company_key,status,evidence,updated_at')
+            .eq('action_id',originId).eq('person_key',action.person_key)
+            .eq('company_key',action.company_key)
+            .in('status',['prepared','waiting']).maybeSingle();
+          if(originErr)throw new Error('ORIGINAL_NO_SOURCE_OWNER_LOOKUP:'+originErr.message);
+          const feedback=researchNoSourceFeedback(action,origin,observedAt,nextResearchAt);
+          if(feedback){
+            const {data:saved,error:saveErr}=await db.from('powerhouse_sales_actions')
+              .update({evidence:{...origin.evidence,relationship_research_feedback:feedback},updated_at:observedAt})
+              .eq('action_id',originId).eq('status',origin.status)
+              .eq('updated_at',origin.updated_at).select('action_id').maybeSingle();
+            if(saveErr)throw new Error('ORIGINAL_NO_SOURCE_OWNER_WRITEBACK:'+saveErr.message);
+            if(saved)noSourceFeedbackReadback++;
+            else deferredOwnerAcks++; // Original #116 reconciler will safely replay ACK.
+          }
+        }
       }
     }
 
@@ -133,9 +155,9 @@ Deno.serve(async(req:Request)=>{
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',
       status:'ok',detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}`,
-      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,vendor_enrichment:false,external_outreach_executed:false}
+      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,vendor_enrichment:false,external_outreach_executed:false}
     });
-    return json({ok:true,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
+    return json({ok:true,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     try { await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT}}); } catch { /* best-effort failure telemetry */ }

@@ -40,3 +40,36 @@ export function researchRetryAt(observedAt,delayHours=24){
  if(!Number.isFinite(ts)||!Number.isInteger(delayHours)||delayHours<12||delayHours>72)return null;
  return new Date(ts+delayHours*3600_000).toISOString();
 }
+
+/** Provider found no verified current company source. ACK the finding back
+ * to the same original held email; do not change its send state. */
+export function researchNoSourceFeedback(research,origin,observedAt,nextResearchAt){
+ const ref=String(research?.evidence?.original_outreach_action_id||'');
+ const now=Date.parse(observedAt),due=Date.parse(nextResearchAt);
+ const originalEvidence=origin?.evidence||{};
+ if(!UUID.test(ref)||ref!==String(origin?.action_id||'')||
+   !UUID.test(String(research?.action_id||''))||
+   String(origin?.person_key||'')!==String(research?.person_key||'')||
+   String(origin?.company_key||'')!==String(research?.company_key||'')||
+   !['prepared','waiting'].includes(origin?.status)||
+   originalEvidence?.execution_gate?.reason!=='SOURCE_SPECIFIC_EVIDENCE_REQUIRED'||
+   !Number.isFinite(now)||!Number.isFinite(due)||due<now+12*3600000||
+   due>now+72*3600000)return null;
+ const outbound=originalEvidence?.autonomous_outbound||{};
+ if(outbound?.provider_message_id||outbound?.needs_readback===true||
+   outbound?.republish_forbidden===true||
+   originalEvidence?.native_gmail_executor?.provider_message_id||
+   originalEvidence?.provider_message_id||
+   originalEvidence?.provider_ambiguity_quarantine?.external_resend_forbidden===true)
+   return null;
+ return Object.freeze({
+   contract:'ORIGINAL_RELATIONSHIP_RESEARCH_RESULT_ACK_V2',
+   research_action_id:research.action_id,original_outreach_action_id:ref,
+   source_status:'NO_VERIFIED_SOURCE_RETRY',provider:'dataforseo-serp',
+   provider_researched_at:new Date(now).toISOString(),
+   next_research_at:new Date(due).toISOString(),
+   correlation_id:research.action_id,
+   recipient_send_authority_inferred:false,
+   external_send_executed:false
+ });
+}
