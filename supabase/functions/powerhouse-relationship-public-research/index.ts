@@ -162,7 +162,6 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
     .like('dedupe_key','relationship-research:public-domain:'+day+':%');
   if(countErr)throw new Error('FIRST_PARTY_DAILY_CAP_READ:'+countErr.message);
   const remaining=Math.max(0,8-Number(already||0));
-  if(!remaining)return {companies:0,sites:0,candidates:0,ingest_acks:0,reason:'DAILY_CAP_REACHED',new_provider_queries:0};
   let companies=0,eligibleSlots=0,sites=0,candidates=0,ingestAcks=0;
   // Bounded deterministic first eight ELIGIBLE company/contact slots each day.
   // Concurrent original calls select the same idempotent keys, not next eight.
@@ -180,9 +179,12 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
     eligibleSlots++;
     const key='relationship-research:public-domain:'+day+':'+clean(c.sleutel);
     const {data:prior,error:priorErr}=await db.from('powerhouse_sales_actions')
-      .select('action_id').eq('dedupe_key',key).maybeSingle();
+      .select('action_id,evidence,person_key,person_name,company_name,company_key').eq('dedupe_key',key).maybeSingle();
     if(priorErr)throw new Error('FIRST_PARTY_RESEARCH_DEDUPE:'+priorErr.message);
-    if(prior)continue;
+    if(prior?.evidence?.public_email_source_checked===true)continue;
+    if(prior?.evidence?.public_email_next_attempt_at&&
+       Date.parse(prior.evidence.public_email_next_attempt_at)>Date.parse(observedAt))continue;
+    if(!prior&&companies>=remaining)continue;
     const record={
       dedupe_key:key,subject_key:'relationship:'+c.sleutel,person_key:c.sleutel,
       company_key:company.toLowerCase(),action_type:'research_enrichment',
@@ -194,17 +196,35 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
       message_draft:'',status:'done',executed_at:observedAt,
       person_name:c.naam,company_name:c.bedrijf,role:c.rol
     };
-    const {data:created,error:aErr}=await db.from('powerhouse_sales_actions')
-      .insert(record).select('action_id,person_key,person_name,company_name,company_key').maybeSingle();
-    if(aErr){
-      if(aErr.code==='23505')continue;
-      throw new Error('FIRST_PARTY_ORIGINAL_ACTION_CREATE:'+aErr.message);
+    let selected=prior;
+    if(!selected){
+      const {data:created,error:aErr}=await db.from('powerhouse_sales_actions')
+        .insert(record).select('action_id,person_key,person_name,company_name,company_key,evidence').maybeSingle();
+      if(aErr){
+        if(aErr.code==='23505')continue;
+        throw new Error('FIRST_PARTY_ORIGINAL_ACTION_CREATE:'+aErr.message);
+      }
+      if(!created)continue;
+      selected=created;
     }
-    if(!created)continue;
     companies++;
-    const result=await ingestPublicWorkEmail(db,created,
+    const result=await ingestPublicWorkEmail(db,selected,
       [{type:'first_party_company_domain',url:'https://'+domain+'/team'},
        {type:'first_party_company_domain',url:'https://'+domain+'/contact'}],observedAt);
+    // This original action is terminal only after a real source disposition AND
+    // its original evidence receipt. An HTTP/DB error leaves it retriable.
+    const checked=result.sites>0||result.status==='SUPPRESSED'||
+      result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION';
+    const nextAttemptAt=checked?null:new Date(Date.parse(observedAt)+4*3600000).toISOString();
+    const evidence={...(selected.evidence||record.evidence),
+      public_email_source_checked:checked,public_email_source_status:result.status,
+      public_email_source_checked_at:observedAt,public_email_next_attempt_at:nextAttemptAt,
+      public_email_ingest_ack:result.receipts>0,
+      recipient_send_authority_inferred:false,external_send_executed:false};
+    const {data:updated,error:uErr}=await db.from('powerhouse_sales_actions')
+      .update({evidence}).eq('action_id',selected.action_id).eq('dedupe_key',key)
+      .select('action_id').maybeSingle();
+    if(uErr||!updated)throw new Error('FIRST_PARTY_RESEARCH_DISPOSITION_ACK:'+(uErr?.message||'NOT_PERSISTED'));
     sites+=result.sites;candidates+=result.stored;ingestAcks+=result.receipts;
   }
   return {companies,sites,candidates,ingest_acks:ingestAcks,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
