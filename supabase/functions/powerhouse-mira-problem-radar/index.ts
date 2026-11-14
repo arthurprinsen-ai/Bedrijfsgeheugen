@@ -3,6 +3,7 @@ import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-au
 import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
 import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
 import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource } from '../_shared/personal-observational-source-routing.mjs';
+import { rotateDistinctMiraQueries } from './distinct-source-queries.mjs';
 import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-result.mjs';
 import { classifyMiraRadarHttpStatus } from '../_shared/mira-radar-http-status.mjs';
@@ -100,7 +101,7 @@ Deno.serve(async(req:Request)=>{
  };
  const body=await req.json().catch(()=>({}));
  const runDate=String(body?.runDate||new Date(Date.now()+86400000).toISOString().slice(0,10));
- const queries=selectCanonicalRadarSourceQueries(runDate);
+ const queries=rotateDistinctMiraQueries(runDate,selectCanonicalRadarSourceQueries(runDate));
  let stored=0, eligible=0, personalStored=0, personalEligible=0; const seen=new Set<string>(); const errors:string[]=[];
  // Independent evidence about why a provider result was NOT accepted by the existing
  // single source consumer. Do not treat provider results as approved sources or posts.
