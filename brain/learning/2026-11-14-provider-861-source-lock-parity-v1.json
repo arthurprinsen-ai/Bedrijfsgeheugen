@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-861-lock-860-source-parity|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "Protected original commercial source PR #5792 merged the 20261114210000 work-email source-priming migration, and original Supabase production independently applied it. GitHub protected main source-lock remained at 860, hence another correctly fail-closed provider/source identity handoff gap.",
+  "prevention": "Original protected Supabase migration owner must reconcile immutable native provider version/name receipt into repository source-lock before releasing any unrelated new migration; serialize through original release lease and exact protected Required/CodeQL/Preview, never add a second scheduler or fake provider status.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 861,
+    "source_lock_count_before": 860,
+    "matched_provider_prefix_count": 860,
+    "matched_prefix_conflicts": 0,
+    "provider_applied_extra": {
+      "version": "20261114210000",
+      "name": "original_public_work_email_source_priming_v1"
+    },
+    "existing_source_sql": "supabase/migrations/20261114210000_original_public_work_email_source_priming_v1.sql",
+    "readback_at": "2026-11-14T18:49:17.25548Z",
+    "security": "NO_PRODUCTION_SQL_CALL, original source lock only; no cron, provider send, permissions or scheduled job."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "Exact native provider 861/861 source-lock histories; original PR #5797 separate and not yet applied",
+    "business_effect": "NO_PROVEN_CONVERSION_OR_LEARNING"
+  },
+  "no_parallel_executor": true
+}
