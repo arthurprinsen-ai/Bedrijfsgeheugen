@@ -127,6 +127,11 @@ export function publishedBusinessMailto({html,sourceUrl,personName,companyName,o
   const host=u.hostname.replace(/^www\./,'');
   if(FREE_MAIL.has(domain)||GENERIC.test(local+'@')||
     !(host===domain||host.endsWith('.'+domain)))continue;
+  // Multiple named colleagues often share a public team page. The explicit
+  // listed email must ALSO carry the named colleague's first/last name in its
+  // literal local part, preventing adjacent colleague cross-attribution.
+  const personParts=ascii(personName).split(' ').filter(t=>t.length>=3);
+  if(!personParts.some(token=>ascii(local).replace(/ /g,'').includes(token)))continue;
   return Object.freeze({
    contract:'POWERHOUSE_PUBLIC_BUSINESS_EMAIL_EVIDENCE_V1',
    classification:'EXPLICIT_VISIBLE_PERSON_WORK_EMAIL',
