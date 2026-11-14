@@ -1,0 +1,68 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v2",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|original-approved-source-cooldown-false-exclusion|20261114-v2",
+  "failure_class": "RESEARCH_PLACEHOLDER_MISCLASSIFIED_AS_PROVIDER_ATTEMPT",
+  "root_cause": "The original research-source priming v1 migration, protected merged in PR #5759 and applied to production, used a thirty-day cooldown over ALL research_enrichment actions. All 123 human-approved contacts already have legacy relationship-research MKB-trigger tasks, many with no public source_ref/headline/summary. These bookkeeping/internal suggestions were falsely counted as independent source research. Consequently zero source priming candidates were inserted although 99 eligible candidates at 98 distinct companies survive the corrected source-specific predicate; cron success concealed a silent no-output.",
+  "evidence": {
+    "date": "2026-11-14",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "original_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5759",
+    "original_migration": "20261114083500",
+    "already_approved_count": 123,
+    "after_policy_gates": 114,
+    "after_corrected_research_cooldown": 99,
+    "distinct_companies": 98,
+    "production_readback": "Original powerhouse_prime_approved_connection_research_v1 exists, its original stage #116 calls it, but prior to correction no approved-source tasks created; underlying data shows 123/123 approved had some research_enrichment in prior 30 days, vs 18 independent actual public research receipts and 4 direct outreach research actions.",
+    "already_sent_today": 0,
+    "source_only": true,
+    "provider_send_proven": false
+  },
+  "repair": "Update ONLY existing powerhouse_prime_approved_connection_research_v1 using a native migration: 30-day research cooldown requires same person or company AND a genuinely attempted public source record (researched_at) OR an existing dedicated approved-source/outreach-source research action. Preserve max five per local day, stable dedupe/lock, prior suppression/contact fatigue/authority gates and existing #116 stage 2. Do not introduce another scheduler, sender, public grant, or new contact authorization.",
+  "prevention": [
+    "An internal task with type research_enrichment is not evidence of actual public company research; use typed provider-attempt timestamps and dedicated work identities.",
+    "Measure not only legacy task counts but eligible approved population after every major exclusion predicate; fail false-green if eligible>0 but primed=0 because of a flawed filter.",
+    "Preserve policy safety: original approved recipient, suppression, negative outcomes, 90-day send cooldown; nobody is authorized to send merely because a source job exists.",
+    "Two-level dedupe: Amsterdam-day global max and same-company/provider 30-day budget.",
+    "Production proof requires native SQL migration/readback and next natural stage 2. Provider-mail proof requires Gmail message ID and exact readback, which source priming can never assert."
+  ],
+  "owner": "Original commercial #116 stage 2 research and original single Gmail sender; ONE BRAIN, Heartbeat",
+  "status": "PR_CANDIDATE_PENDING_PROTECTED_CI_AND_NATIVE_PROVIDER_PROOF",
+  "compiler": {
+    "failure_class": "RESEARCH_PLACEHOLDER_MISCLASSIFIED_AS_PROVIDER_ATTEMPT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-outreach-research-cooldown-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migrations/20261114091500_original_outreach_source_research_cooldown_scope_v2.sql",
+    "tests/brain-original-outreach-research-cooldown-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-outreach-source-cooldown-scope-v2.json",
+    "docs/development-ledger-events/2026-11-14-original-outreach-source-cooldown-scope-v2.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required, backend, Source, Supabase Preview and CodeQL green; no bypass.",
+    "Protected PR merge; main source exact match and native Supabase migration new version; actual pg_get_functiondef and ACL readback.",
+    "Next original natural #116 stage-2 run creates up to 5 genuinely new source-only research tasks without any outbound send; next original source provider attempts and result readback monitored.",
+    "True daily outbound remains separate: only messages with independently read Gmail message ID, provider ACK and readback count as delivered. If source evidence inadequate, NO_ELIGIBLE_ACTION, not fake volume."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}
