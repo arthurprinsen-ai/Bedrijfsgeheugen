@@ -31,6 +31,23 @@ export const MIRA_SOURCE_ALTERNATE_QUERIES = Object.freeze({
  'klantafhankelijkheid':'ondernemer afhankelijk grote klant',
  'klantverlies':'bedrijf klantverlies'
 });
+// Third bounded set of short, high-recall searches covers original approved
+// PH-P topics without repeatedly returning the exact same earlier news links.
+// This does not change the existing six Mira + two personal source requests.
+export const MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES = Object.freeze({
+ 'offertes-zonder-opvolging':'offerte opvolging bedrijven',
+ 'directie-bottleneck':'directeur besluitvorming vertraging',
+ 'kennisoverdracht':'kennisverlies personeel bedrijven',
+ 'excel-chaos':'Excel fouten administraties',
+ 'dubbele-invoer':'dubbele invoer software',
+ 'projectmarge':'meerwerk bouwproject marge',
+ 'groei-zonder-winst':'groei omzet winst ondernemers',
+ 'capaciteitsplanning':'planning personeelstekort ondernemers',
+ 'debiteuren':'betaalachterstand debiteuren ondernemers',
+ 'late-facturering':'late facturering ondernemers',
+ 'klantafhankelijkheid':'grote klant afhankelijkheid',
+ 'klantverlies':'klantverlies bedrijven'
+});
 const SEARCH_BUDGET=8;
 
 export function selectMiraSourceQueries(runDate) {
@@ -43,6 +60,12 @@ export function selectMiraSourceQueries(runDate) {
   // Keep eight slots, unchanged source/quality/dedupe guards and no extra calls.
   return Array.from({length:SEARCH_BUDGET},(_,i)=>{
     const family=MIRA_SOURCE_TOPIC_QUERIES[(start+i)%MIRA_SOURCE_TOPIC_QUERIES.length];
-    return day%2===0?family.query:MIRA_SOURCE_ALTERNATE_QUERIES[family.topic];
+    // Change only QUERY wording in the existing eight-call budget. A query is
+    // never evidence; provider result, publication date, independent link,
+    // original daily source/topic dedupe and >=0.72 gate still decide eligibility.
+    const rotation=(day%6+6)%6;
+    return rotation<2?family.query:
+      rotation<4?MIRA_SOURCE_ALTERNATE_QUERIES[family.topic]:
+      MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES[family.topic];
   });
 }
