@@ -130,7 +130,7 @@ begin
       'SOURCE_CANDIDATE_NOT_MESSAGE_AUTHORITY',
       'ORIGINAL_TERMINAL_NO_RESEND'
     ) then 'observed'
-    else 'waiting' end,
+    else 'observed' end,
     case when c.candidate_received then 'UNVERIFIED_SOURCE_CANDIDATE_ONLY'
       when c.provider_attempt_proven then 'PROVIDER_ATTEMPT_RECEIPT_ONLY'
       else 'OWNER_HANDOFF_PENDING' end,
@@ -151,7 +151,7 @@ begin
     count(*)filter(where e.state='error')::int,
     count(*)filter(where e.evidence->>'provider_attempt_received'='true')::int,
     count(*)filter(where e.evidence->>'original_consumer_receipt'='true')::int,
-    count(*)filter(where e.state='waiting')::int
+    count(*)filter(where e.evidence->>'handoff_status' in ('PROVIDER_ATTEMPT_NO_VERIFIED_SOURCE_RETRY','RESEARCH_ENQUEUED_AWAITING_PROVIDER','SOURCE_CANDIDATE_NOT_MESSAGE_AUTHORITY'))::int
   into v_tracked,v_overdue,v_provider_attempts,v_consumer_receipts,v_waiting
   from public.powerhouse_runtime_events e
   where e.event_type='relationship_research_owner_handoff'
@@ -234,7 +234,7 @@ begin
  end if;
  v_state := case when v_bad then 'error'
    when p_stage in (2,3) and coalesce((v_handoff->>'tracked')::int,0)>
-        coalesce((v_handoff->>'consumer_receipts')::int,0) then 'waiting'
+        coalesce((v_handoff->>'consumer_receipts')::int,0) then 'observed'
    else 'actioned' end;
  -- INTERNAL stage receipt, never external provider delivery or realized revenue.
  insert into public.powerhouse_runtime_events(
