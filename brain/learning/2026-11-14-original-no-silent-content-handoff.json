@@ -21,7 +21,7 @@
   },
   "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
   "owner": "existing powerhouse-content-loop, BRAIN #171, Heartbeat #140; no additional writer",
-  "root_cause": "The existing original source-to-obligation recovery planner silently skipped overdue channels if their original row was absent/ambiguous, advanced, duplicated or malformed; the existing PostgREST CAS used eq(field,null), which cannot be relied on for SQL NULL filtering. CAS zero-row outcomes were counted as conflicts without independent original-row receiver readback. Thus some recoverable original handoffs could appear to fall out of the owner action path without a durable typed diagnostic.",
+  "root_cause": "The existing original due recovery planner silently skipped missing, duplicate, advanced or malformed original recipient rows without typed owner receipts. A zero-row compare-and-swap conflict was not independently read back. The custom direct-SQL adapter ALREADY translated eq(column,null) correctly into SQL IS NULL, so an incorrect null predicate was NOT a confirmed cause; explicit is(column,null) now expresses this contract and is implemented in that same adapter.",
   "production_readback": {
     "date": "2026-11-14",
     "original_cron_120_active": true,
@@ -34,7 +34,7 @@
     "original_heartbeat_brain_exact_ack": true,
     "provider_post_proven": false
   },
-  "prevention": "Use original nullable PostgREST .is() predicate, original CAS status/tenant/date/account gates, exact read-only receiver check for zero-row updates, original-owner routes for all due items, existing ONE BRAIN failure/brain_records and Heartbeat evidence; no scheduler stop, external retry without independent side-effect readback, new worker, direct Meta send, unauthorized email, or false-green.",
+  "prevention": "Original strict receiver inventory with typed unresolved/owner routes; use the existing custom DirectQuery.is(column,null) which compiles SQL IS NULL (equivalent to the pre-existing eq(column,null)), original tenant/date/status CAS, independent 0-row receiver readback and original BRAIN/Portal incident evidence. Never disable execution because a safe side-effect cannot proceed.",
   "evidence": {
     "source_path": "supabase/functions/_shared/publication-recovery-obligation-writeback.mjs",
     "writer_path": "supabase/functions/powerhouse-content-loop/index.ts",
