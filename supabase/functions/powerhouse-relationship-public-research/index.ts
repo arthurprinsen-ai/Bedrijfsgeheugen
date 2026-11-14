@@ -125,7 +125,7 @@ Deno.serve(async(req:Request)=>{
         }).eq('action_id',action.action_id);
         if(uErr) throw new Error('ACTION_WAIT:'+uErr.message);
         // Exact original owner receives the NO_SOURCE disposition, even when
-        // its email was already WAITING; preserve the existing no-send gate.
+        // original recipient action is WAITING; preserve the no-outbound gate.
         const originId=clean(action?.evidence?.original_outreach_action_id);
         if(originId){
           const {data:origin,error:originErr}=await db.from('powerhouse_sales_actions')
