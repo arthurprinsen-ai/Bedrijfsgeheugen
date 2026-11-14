@@ -5,6 +5,14 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## P0 2026-11-14 — onveranderlijke agent-/herstelopdrachten zichtbaar, niet automatisch afgerond
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. De originele `public.brain_outcome_obligation_dispatch` bevat twee zelfstandige historische bewijsachterstanden: `record_type=AgentWork,state=PENDING` en `record_type=RecoveryWork,state=RECOVERING`. De originele admin-only `/api/powerhouse-control-plane` toont uitsluitend exacte PostgREST `Content-Range`-tellingen (geen identificerende rijwaarden), in het bestaande `portal-v2/control-plane-cockpit.js`. Ontbreekt een header of bron, dan is de telling ONBEKEND en de keten nooit groen. Ook 0/0 is geen bewijs van een werkelijk uitgevoerde agentactie.
+
+De originele `agent-integration-engineer`, `agent-reliability` en `agent-data-quality` beoordelen ieder open item uitsluitend via de bestaande onveranderlijke bronidentiteit, eigenaar, correlatie en bronrevisie. De oorspronkelijke uitvoerder moet zelfstandig zijn werkelijke consumentontvangst, eventueel externe side-effect, next-owner/resultaat en independent readback aantonen. Geen bulkafsluiting, state-update in deze read-only projectie, duplicaat-agent, nieuwe queue, scheduler, idempotency reset of ongeautoriseerde verzending. Historierecords niet verwijderen; de originele #171 en bestaande uitvoeringsroute blijven eigenaar. De gateway kent geen uitvoeren/repareren op basis van een telling.
+
+Bron 2026-11-14 21:31 UTC: 3312 `AgentWork/PENDING`, 1055 `RecoveryWork/RECOVERING`, 14 `INNOVATION_INTAKE/PLANNED`, geen onafhankelijk bewezen totale uitvoeringssluiting. Bestaand incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Regressie: `tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs`. Eerst protected Required+CodeQL, Netlify exacte productie-SHA en geauthenticeerde admin-panel-readback; geen omzet of afgeleverde provideractie afleiden uit bronzichtbaarheid.
+
 ## P0 2026-11-14 — PLANNED innovatie-intake zonder worker is niet WORKER_LOST
 
 De oorspronkelijke ONE BRAIN-watchdog mag een `brain_operations.INNOVATION_INTAKE` die `PLANNED`, `remote_ref IS NULL` en `execution_resilience.side_effect_state=NOT_STARTED` heeft **niet** als `WORKER_LOST` classificeren enkel vanwege een heartbeat ouder dan 120 seconden: er is immers nog geen worker begonnen. De bestaande daily Self-Improvement toont deze opdracht wel als `RECOVERY_DUE` na 24 uur; de intake blijft fysiek in het originele Brain zichtbaar, zonder valse automatische voltooiing.
