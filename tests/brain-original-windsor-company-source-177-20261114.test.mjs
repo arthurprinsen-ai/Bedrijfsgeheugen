@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {stageOriginalWindsorCompanySources} from '../supabase/functions/_shared/original-windsor-company-stage.mjs';
+import {stageOriginalWindsorCompanySources,originalCompanySourceProviderHealth} from '../supabase/functions/_shared/original-windsor-company-stage.mjs';
 
 const id='urn:li:share:7526904394580238336';
 const org='urn:li:organization:18234216';
@@ -76,4 +76,25 @@ test('canonical original source poll must run before original linking and never 
  assert.match(code,/original_company_provider_source_refresh/);
  assert.match(code,/company_source_refresh:companySourceRefresh/);
  assert.doesNotMatch(code,/supabase\.cron\.schedule|cron\.schedule\(/);
+});
+
+test('one-time connected-app recovery links valid snapshots but MUST remain RED while original #177 Vault provider is denied',()=>{
+ const base={
+  sourceRefresh:{state:'PROVIDER_ACCOUNT_SOURCE_REFRESHED_AND_STAGED',original_cron:177,provider:'windsor.ai',authorized_account:'18234216',posts_staged:4,account_source_staged:true,verified_daily_readback:5},
+  companyState:{state:'WINDSOR_FRESH'},companyMetricLink:{state:'VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED',linked:4},companyRegistry:{eligible:12}
+ };
+ assert.equal(originalCompanySourceProviderHealth(base),true);
+ assert.equal(originalCompanySourceProviderHealth({...base,sourceRefresh:{state:'ORIGINAL_COMPANY_SOURCE_REFRESH_UNAVAILABLE',failure_class:'WINDSOR_PROVIDER_HTTP_403'}}),false);
+ assert.equal(originalCompanySourceProviderHealth({...base,sourceRefresh:{...base.sourceRefresh,authorized_account:'wrong-account'}}),false);
+ assert.equal(originalCompanySourceProviderHealth({...base,sourceRefresh:{...base.sourceRefresh,original_cron:999}}),false);
+ assert.equal(originalCompanySourceProviderHealth({...base,companyMetricLink:{state:'VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED',linked:0}}),false);
+ assert.equal(originalCompanySourceProviderHealth({...base,companyRegistry:{eligible:0}}),false);
+ assert.equal(originalCompanySourceProviderHealth({...base,sourceRefresh:{...base.sourceRefresh,verified_daily_readback:0}}),false);
+});
+
+test('original metrics production health uses actual provider #177 receipt, not connected-app snapshot fallback',async()=>{
+ const code=await readFile('supabase/functions/bg-social-metrics-sync/index.ts','utf8');
+ assert.match(code,/originalCompanySourceProviderHealth\(\{[\s\S]*sourceRefresh:companySourceRefresh/);
+ assert.doesNotMatch(code,/companyHandoffOk=companyRegistry\?\.eligible===0/);
+ assert.match(code,/company_source_refresh:companySourceRefresh/);
 });
