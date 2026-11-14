@@ -1,0 +1,72 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|approved-outreach-source-scarcity|20261114-v1",
+  "failure_class": "DAILY_OUTREACH_APPROVED_AUDIENCE_SOURCE_SCARCITY",
+  "root_cause": "Daily original cron jobs and Gmail account preflight succeed but the current approved-candidate query produces only one eligible connectie, and most emails fail on missing independent company-specific recent trigger context. The original researcher is invoked primarily after the composer rejects a candidate, so other approved connections lack proactive source research. Cron success and an internal research task are not outbound delivery.",
+  "evidence": {
+    "source": "Native Supabase project adhjwmvyoixzjtmiroln and authenticated Gmail Sent readback on 2026-11-14",
+    "connections": 23295,
+    "with_email": 605,
+    "explicitly_human_approved": 123,
+    "commercial_trigger_eligible_before_repair": 1,
+    "recent_source_specific_email_gate_failures": 21,
+    "recent_source_specific_email_gate_expired": 20,
+    "recent_source_specific_email_gate_prepared": 1,
+    "last_confirmed_outbound_date": "2026-11-10",
+    "current_action_id": "27572918-c809-44c1-8f23-88b8cd24990c",
+    "current_research_id": "e479eb50-4de9-432c-94ca-f6a514ecd5f3",
+    "current_research_reason": "NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH",
+    "last_original_crons": "112, 113, 114 succeeded each of 7 prior days; provider ID unproven today",
+    "newsletter_boundary": "NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR is an independent authorization problem; this patch does not authorize newsletters"
+  },
+  "repair": "Inside the ORIGINAL stage 2 of existing cron #116, prime up to five internally scoped company-source research obligations per Amsterdam calendar day from already human-approved, unsuppressed, eligible business contacts. Reuse original research source, action store, downstream composer, provider and Brain. No new cron, sender or auto-approval. Exclude withdrawn approvals, negative replies, duplicate companies, past 30-day research and past 90-day sends. A research hit creates only source evidence, not automatic mail approval.",
+  "prevention": [
+    "On each original daily run measure approved+email contacts, trigger eligible, research attempted, independently verified source, composer approved, actual provider sent/readback, replies/meetings/orders/revenue; keep status degraded if zero valid sends.",
+    "An internal research action, a provider preflight, and a cron success must never be promoted as a sent email.",
+    "Maintain hard recipient authority, suppression, fatigue, source provenance, human-quality and exact provider-ID/readback gates.",
+    "Cap new research at five per local day; keep original orchestration and deduplicate by original keys.",
+    "Never replay prior terminal action or bypass explicit newsletter authorization just to meet target."
+  ],
+  "owner": "Original Powerhouse commercial #116 stage 2 source research -> original composer -> original Gmail sender -> ONE BRAIN/Heartbeat",
+  "status": "SOURCE_CANDIDATE_PR_OPEN_NOT_PRODUCTION_VERIFIED",
+  "compiler": {
+    "failure_class": "DAILY_OUTREACH_APPROVED_AUDIENCE_SOURCE_SCARCITY",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 21
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-approved-connection-source-priming-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-approved-connection-source-priming-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-approved-connection-source-priming-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-approved-connection-source-priming-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migrations/20261114083500_original_approved_connection_source_priming_v1.sql",
+    "tests/brain-approved-connection-source-priming-20261114.test.mjs",
+    "brain/learning/2026-11-14-approved-outreach-source-scarcity-v1.json",
+    "docs/changes/2026-11-14-original-approved-relationship-research-priming.md",
+    "docs/development-ledger-events/2026-11-14-approved-outreach-source-priming.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md"
+  ],
+  "production_proof_to_complete": [
+    "Pass GitHub protected Required/BRAIN/CodeQL and Supabase Preview without bypassing admission.",
+    "Protected PR #5759 merges exactly; native schema migration applied by canonical controlled workflow.",
+    "Inspect pg_get_functiondef of original powerhouse_execute_relationship_research_v1 and prime helper, with unchanged #116 schedule and original standalone sender jobs.",
+    "After next natural stage 2, verify <=5 new bounded internal research actions, no send from priming; only real verified company sources can inform original composer.",
+    "Reconcile exact provider-message ID and Gmail content for any lawful delivery and measure reply-to-meeting-to-realized-revenue; zero eligible remains explicit blocked."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}
