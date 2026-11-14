@@ -54,10 +54,10 @@ enabled = true
 verify_jwt = true
 entrypoint = "./functions/social-recovery-runner/index.ts"
 
-# Original #116 source-only relationship research (never an email sender).
-# Production Edge authority: same protected-main Supabase GitHub Integration.
-# JWT verification is controlled by the existing x-powerhouse-token service gate.
 [functions.powerhouse-relationship-public-research]
+# Original #116 source-only relationship research, never an email sender.
+# Protected-main Supabase GitHub Integration is the only production Edge writer.
+# Public JWT bypass remains guarded by original x-powerhouse-token service auth.
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-relationship-public-research/index.ts"
