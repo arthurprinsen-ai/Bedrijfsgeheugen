@@ -6,7 +6,7 @@ import {
   MIRA_SOURCE_ALTERNATE_QUERIES,
   selectMiraSourceQueries
 } from '../supabase/functions/_shared/mira-source-query-rotation.mjs';
-import {MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES,rotateDistinctMiraQueries}
+import {MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES,MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES,rotateDistinctMiraQueries}
  from '../supabase/functions/powerhouse-mira-problem-radar/distinct-source-queries.mjs';
 import {selectCanonicalRadarSourceQueries} from '../supabase/functions/_shared/personal-observational-source-routing.mjs';
 
@@ -19,7 +19,7 @@ test('twelve existing approved family searches diversify to three independent, s
  assert.deepEqual(Object.keys(MIRA_SOURCE_ALTERNATE_QUERIES).sort(),[...families].sort());
  assert.deepEqual(Object.keys(MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES).sort(),[...families].sort());
  for(const f of MIRA_SOURCE_TOPIC_QUERIES){
-  const words=[f.query,MIRA_SOURCE_ALTERNATE_QUERIES[f.topic],MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES[f.topic]];
+  const words=[f.query,MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES[f.topic]||MIRA_SOURCE_ALTERNATE_QUERIES[f.topic],MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES[f.topic]];
   assert.equal(new Set(words).size,3,f.topic+' must expand query diversity');
   assert.ok(words.every(x=>x.length>4 && x.split(/\s+/).length<=5),f.topic);
  }
@@ -39,8 +39,8 @@ test('original same eight daily slots always six Mira + two personal and never d
   assert.deepEqual(q.filter(x=>x.channel==='linkedin_personal'),canonical.filter(x=>x.channel==='linkedin_personal'));
   for(const item of q.filter(x=>x.channel==='instagram_company')){
    for(const f of MIRA_SOURCE_TOPIC_QUERIES){
-    if([f.query,MIRA_SOURCE_ALTERNATE_QUERIES[f.topic],MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES[f.topic]].includes(item.query)){
-      observed.add(f.topic+':'+(item.query===f.query?'primary':item.query===MIRA_SOURCE_ALTERNATE_QUERIES[f.topic]?'alternate':'distinct'));
+    if([f.query,MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES[f.topic]||MIRA_SOURCE_ALTERNATE_QUERIES[f.topic],MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES[f.topic]].includes(item.query)){
+      observed.add(f.topic+':'+(item.query===f.query?'primary':item.query===(MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES[f.topic]||MIRA_SOURCE_ALTERNATE_QUERIES[f.topic])?'alternate':'distinct'));
     }
    }
   }
@@ -65,4 +65,35 @@ test('a different query is never itself accepted as a fresh source or publishing
  assert.match(localized,/MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES/);
  assert.doesNotMatch(localized,/fetch\(|supabase\.rpc|GMAIL_SEND_EMAIL|cron\.schedule/i);
 
+});
+
+test('original company concentration query does not fetch broad finance/stock news as an MKB problem',()=>{
+ assert.equal(MIRA_SOURCE_ALTERNATE_QUERIES['klantafhankelijkheid'],'ondernemer afhankelijk grote klant',
+   'the globally shared canonical queries are never altered here');
+ assert.equal(MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES['klantafhankelijkheid'],
+   'mkb klantconcentratie omzet');
+ assert.equal(MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES['klantafhankelijkheid'],
+   'mkb afhankelijkheid omzetconcentratie');
+ let seenAlternate=0,seenDistinct=0;
+ for(let n=0;n<160;n++){
+   const date=new Date(Date.UTC(2026,10,1+n)).toISOString().slice(0,10);
+   const original=selectCanonicalRadarSourceQueries(date);
+   const next=rotateDistinctMiraQueries(date,original);
+   assert.equal(next.length,8);
+   assert.equal(next.filter(x=>x.channel==='instagram_company').length,6);
+   assert.equal(next.filter(x=>x.channel==='linkedin_personal').length,2);
+   assert.equal(next.some(x=>x.query==='ondernemer afhankelijk grote klant'),false,
+     'the off-topic, original broad company query is never used by Mira owner');
+   if(next.some(x=>x.query==='mkb klantconcentratie omzet'))seenAlternate++;
+   if(next.some(x=>x.query==='mkb afhankelijkheid omzetconcentratie'))seenDistinct++;
+ }
+ assert.ok(seenAlternate>0&&seenDistinct>0,'both original owner query routes must actually be exercised');
+ const source=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/distinct-source-queries.mjs',import.meta.url),'utf8');
+ assert.match(source,/MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES/);
+ assert.doesNotMatch(source,/cron\.schedule|fetch\(|net\.http_post|MEDIA_PUBLISH/);
+ const worker=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/index.ts',import.meta.url),'utf8');
+ assert.match(worker,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(worker,/MAX_AGE_DAYS=45/);
+ assert.match(worker,/sourceIntake/);
+ assert.match(worker,/powerhouse_materialize_mira_problem_recommendation_v1/);
 });
