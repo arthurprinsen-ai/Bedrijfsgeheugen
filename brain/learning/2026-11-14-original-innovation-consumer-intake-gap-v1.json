@@ -1,0 +1,51 @@
+{
+  "version": "v1",
+  "date": "2026-11-14",
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "powerhouse|innovation|producer-to-original-consumer-intake-gap|20261114-v1",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "maturity": "OBSERVED",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "prior_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5790",
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-consumer-intake-20261114.test.mjs"
+    ]
+  },
+  "root_cause": "Original source candidate -> ONE BRAIN obligation producer path was fixed, but lacked original registered engineering/CRO agent intake through existing brain_operations; daily cron success was not actual consumer acceptance.",
+  "observed": {
+    "source_candidates": 14,
+    "original_producer_obligations": 14,
+    "verified_consumer_acks": 0,
+    "verified_improvement_effects": 0
+  },
+  "prevention": {
+    "existing_daily_only": true,
+    "original_brain_operations": true,
+    "exact_source_revision_intake": true,
+    "original_agent_mapping": true,
+    "fail_on_unmapped_or_missing_intake": true,
+    "independent_consumer_ack_required": true,
+    "overdue_warning_hours": 24,
+    "zero_new_schedulers": true,
+    "zero_new_stores": true
+  },
+  "evidence": {
+    "production_observed_at": "2026-11-14",
+    "source": "public.powerhouse_optimization_candidate_v1",
+    "producer": "public.brain_obligations",
+    "consumer": "public.brain_operations",
+    "closure": "public.powerhouse_optimization_closure_truth_v1",
+    "verified_implemented_outcome": false,
+    "regression": "tests/brain-innovation-original-consumer-intake-20261114.test.mjs"
+  },
+  "terminal_proof_status": "PENDING_EXACT_HEAD_REQUIRED_CODEQL_PROTECTED_MERGE_SUPABASE_READBACK_NATURAL_AGENT_ACK_AND_EFFECT",
+  "attribution": "No revenue, improvement, or real agent execution claimed from PLANNED intents."
+}
