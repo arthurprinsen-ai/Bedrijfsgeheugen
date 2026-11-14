@@ -510,12 +510,22 @@ Deno.serve(async(req:Request)=>{
       const {error:rErr}=await db.rpc('powerhouse_refresh_trigger_based_mkb_acquisition_v1',{p_run_date:observedAt.slice(0,10)});
       if(rErr) throw new Error('TRIGGER_REFRESH:'+rErr.message);
     }
+    // A waiting original source retry remains OPEN even on a run with no new
+    // work; green HTTP/cron success cannot hide pending unreadable HTML debt.
+    const {count:unresolvedPublicSource,error:backlogErr}=await db.from('powerhouse_sales_actions')
+      .select('action_id',{count:'exact',head:true})
+      .eq('action_type','research_enrichment').eq('channel','internal').eq('status','done')
+      .like('dedupe_key','relationship-research:public-domain:%')
+      .eq('evidence->>public_email_source_checked','false')
+      .not('evidence->>public_email_next_attempt_at','is',null);
+    if(backlogErr)throw new Error('ORIGINAL_PUBLIC_SOURCE_BACKLOG_READ:'+backlogErr.message);
+    const pendingPublicSource=Number(unresolvedPublicSource||0);
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',
-      status:freeDomainFailure?'fout':(freeDomain.html_unavailable>0?'waarschuwing':'ok'),detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}; public_email_html_unavailable=${freeDomain.html_unavailable||0}`,
-      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,free_domain_research:freeDomain,free_domain_error:freeDomainFailure,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false}
+      status:freeDomainFailure?'fout':(freeDomain.html_unavailable>0||pendingPublicSource>0?'waarschuwing':'ok'),detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}; public_email_html_unavailable=${freeDomain.html_unavailable||0}`,
+      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,free_domain_research:freeDomain,original_public_email_source_retry_backlog:pendingPublicSource,free_domain_error:freeDomainFailure,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false}
     });
-    return json({ok:!freeDomainFailure,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
+    return json({ok:!freeDomainFailure,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,original_public_email_source_retry_backlog:pendingPublicSource,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     try { await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT}}); } catch { /* best-effort failure telemetry */ }
