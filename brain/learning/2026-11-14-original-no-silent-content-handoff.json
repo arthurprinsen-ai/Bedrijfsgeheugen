@@ -1,0 +1,55 @@
+{
+  "version": "original-content-obligation-no-silent-drop-v1",
+  "fingerprint": "powerhouse|content|original-handoff-null-cas-receiver-silent-skip|20261114-v1",
+  "compiler": {
+    "failure_class": "SOURCE_CONTRACT_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-no-silent-obligation-handoff-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-no-silent-obligation-handoff-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-no-silent-obligation-handoff-20261114.test.mjs"
+    ]
+  },
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "owner": "existing powerhouse-content-loop, BRAIN #171, Heartbeat #140; no additional writer",
+  "root_cause": "The existing original source-to-obligation recovery planner silently skipped overdue channels if their original row was absent/ambiguous, advanced, duplicated or malformed; the existing PostgREST CAS used eq(field,null), which cannot be relied on for SQL NULL filtering. CAS zero-row outcomes were counted as conflicts without independent original-row receiver readback. Thus some recoverable original handoffs could appear to fall out of the owner action path without a durable typed diagnostic.",
+  "production_readback": {
+    "date": "2026-11-14",
+    "original_cron_120_active": true,
+    "original_cron_140_active": true,
+    "original_cron_171_active": true,
+    "assurance_loops_total": 15,
+    "assurance_red_or_amber": 8,
+    "instagram_obligation": "OPEN / OVERDUE_PUBLICATION",
+    "instagram_external_media_id": null,
+    "original_heartbeat_brain_exact_ack": true,
+    "provider_post_proven": false
+  },
+  "prevention": "Use original nullable PostgREST .is() predicate, original CAS status/tenant/date/account gates, exact read-only receiver check for zero-row updates, original-owner routes for all due items, existing ONE BRAIN failure/brain_records and Heartbeat evidence; no scheduler stop, external retry without independent side-effect readback, new worker, direct Meta send, unauthorized email, or false-green.",
+  "evidence": {
+    "source_path": "supabase/functions/_shared/publication-recovery-obligation-writeback.mjs",
+    "writer_path": "supabase/functions/powerhouse-content-loop/index.ts",
+    "source": "actual original Supabase production query and existing GitHub main contract",
+    "regression": "tests/brain-original-no-silent-obligation-handoff-20261114.test.mjs"
+  },
+  "regression": "tests/brain-original-no-silent-obligation-handoff-20261114.test.mjs",
+  "status": "PROTECTED_RELEASE_CANDIDATE",
+  "not_proven": [
+    "protected main merge",
+    "production Edge source parity",
+    "original next natural run",
+    "all 15 loops green",
+    "daily Meta posts",
+    "all historic due obligations terminal readback",
+    "next-run error recurrence prevented"
+  ]
+}
