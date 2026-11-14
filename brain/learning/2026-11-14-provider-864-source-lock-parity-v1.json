@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-864-lock-863-source-parity|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Protected innovation PR #5800 merged on original main and native Supabase provider applied migration 20261114235900; source migration-history.lock.json still held 863 identities. The dependent original business-contact source PR #5802 failed protected parity even though its own code had passed Required and CodeQL on its then-current head. This is original provider-to-source archival handoff drift, not permission to bypass preflight.",
+  "prevention": "Single original Supabase release owner must read back exact native provider-applied version/name after every protected source migration merge and append ONLY the real applied identity under a protected source-only lock PR, retaining all prior applied identities and original provider authority. No fabricated provider history, SQL re-execution, second lock writer, cron or worker. Original #5802 must rebase on current protected main only after parity and prove exact-head Required, CodeQL, native Edge production source readback.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 864,
+    "source_lock_count_before": 863,
+    "matched_provider_prefix_count": 863,
+    "matched_prefix_conflicts": 0,
+    "provider_applied_extra": {
+      "version": "20261114235900",
+      "name": "innovation_original_agent_intake_recovery_v1"
+    },
+    "existing_source_sql": "supabase/migrations/20261114235900_innovation_original_agent_intake_recovery_v1.sql",
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5800",
+    "original_merged_sha": "cdb73c78705df28c98a2fc56a98421dff4cabe32",
+    "native_history_observed_at": "2026-11-14T19:56:48.702423Z",
+    "downstream_source_candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5802",
+    "contact_source_live": "NOT_YET_PROVEN_FOR_PR_5802",
+    "new_public_email_candidates": 0,
+    "original_consumer_processed": 0,
+    "no_parallel_executor": true,
+    "provider_delivery_claim": "NOT_ASSESSED",
+    "commercial_outcome_claim": "NOT_ASSESSED"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "Native provider 864 exact applied version/name identities and protected original source lock 864 with immutable 863-prefix; do not write unverified provider history.",
+    "business_effect": "SOURCE_HISTORY_PARITY_ONLY; unrelated original contact-source outcomes still OPEN."
+  },
+  "owner": "Original Supabase migration-history and ONE BRAIN protected release owner",
+  "no_parallel_executor": true
+}
