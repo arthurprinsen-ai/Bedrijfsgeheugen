@@ -49,13 +49,14 @@
   "supersedes_pr": 5794,
   "provider_baseline_attestation": {
     "project": "adhjwmvyoixzjtmiroln",
-    "native_applied_count": 860,
-    "latest_applied_version": "20261114193000",
-    "github_main_lock_count": 860,
-    "verified_at": "2026-11-14T18:43:07Z"
+    "native_applied_count": 861,
+    "latest_applied_version": "20261114210000",
+    "github_main_lock_count": 861,
+    "verified_at": "2026-11-14T18:49:17.25548Z",
+    "readback": "Native provider and protected source lock 861 exact entries"
   },
-  "recovery_reason": "Same original seven-file candidate #5786→#5794→current successor, no side-effect yet. PR #5794 exact provider preview cancelled by maximum concurrent branches, then original innovation-agent PR #5793 updated same agent-team file. Protected GitHub update-branch rejected a true merge conflict, so rebuild candidate from latest main to preserve new innovation agents AND original source-to-stage tasks; no force-push or second executor. Original migration 20261114194000 is still after native 20261114193000.",
-  "proposed_sql_source": "supabase/migrations/20261114194000_original_source_consumption_stage_receipt_parity_v1.sql",
+  "recovery_reason": "Original #4198 one source-consumption PR #5797 updated in-place after native production provider 861 and protected source history PR #5798. Proposed SQL version now 20261114230000, no second publisher/scheduler/queue. The original innovation-agent tasks and source-to-stage reliability/data-quality tasks are both retained; provider delivery, consumer ACK, outcomes and next-run learning separately required.",
+  "proposed_sql_source": "supabase/migrations/20261114230000_original_source_consumption_stage_receipt_parity_v1.sql",
   "previous_superseded_prs": [
     5786,
     5794
