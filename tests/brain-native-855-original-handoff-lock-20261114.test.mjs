@@ -7,10 +7,10 @@ const sql=read('supabase/migrations/20261114101000_original_research_consumer_ha
 test('the immutable original provider history preserves first 854 and appends independently applied 855',()=>{
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,855);
- assert.deepEqual(lock.applied.at(-2),{version:'20261114091500',name:'original_outreach_source_research_cooldown_scope_v2'});
- assert.deepEqual(lock.applied.at(-1),{version:'20261114101000',name:'original_research_consumer_handoff_receipts_v1'});
- assert.equal(new Set(lock.applied.map(x=>x.version)).size,855);
+ assert.ok(lock.applied.length>=855,'historical applied migration must survive future native migrations');
+ assert.deepEqual(lock.applied[853],{version:'20261114091500',name:'original_outreach_source_research_cooldown_scope_v2'});
+ assert.deepEqual(lock.applied[854],{version:'20261114101000',name:'original_research_consumer_handoff_receipts_v1'});
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
  assert.equal(lock.applied.every((x,i)=>i===0||x.version>lock.applied[i-1].version),true);
  assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-14T09:20:28Z'));
 });
