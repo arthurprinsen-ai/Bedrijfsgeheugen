@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {projectOriginalInnovationHandoff,projectPowerhouseIntegrationReadback}
+import {projectOriginalInnovationHandoff,projectPowerhouseIntegrationReadback,readPowerhouseIntegrationReadback}
   from '../platform/portal/powerhouse-existing-integration-read-model.mjs';
 import {powerhouseIntegrationMarkup}
   from '../portal-v2/control-plane-cockpit.js';
@@ -99,4 +99,63 @@ test('existing source projection is read only, admin-guarded, no new worker or s
  assert.match(route,/private, no-store/);
  assert.match(ui,/INNOVATIE|Innovatie/);
  assert.match(skill,/original_agent|original-agent|agent-integration-engineer/);
+});
+
+test('same original immutable AgentWork and RecoveryWork debt never means green or completed',()=>{
+  const model=projectPowerhouseIntegrationReadback({
+    datasets:{agentWorkPending:[{count:3312}],recoveryWorkActive:[{count:1055}]},
+    readStates:{agentWorkPending:'LIVE',recoveryWorkActive:'LIVE'}
+  });
+  assert.equal(model.agentDispatch.pending,3312);
+  assert.equal(model.agentDispatch.recovering,1055);
+  assert.equal(model.agentDispatch.state,'ORIGINAL_CONSUMER_RECEIPTS_DUE');
+  assert.equal(model.agentDispatch.outcomeProof,'NOT_IN_THIS_PROJECTION');
+  assert.equal(model.integrationState,'END_TO_END_UNPROVEN');
+  assert.ok(model.gapCodes.includes('ORIGINAL_AGENT_WORK_CONSUMER_ACK_DUE'));
+  assert.ok(model.gapCodes.includes('ORIGINAL_RECOVERY_WORK_RESULT_UNVERIFIED'));
+  const ui=powerhouseIntegrationMarkup(model);
+  assert.match(ui,/data-bg-original-agent-dispatch="true"/);
+  assert.match(ui,/3\.312|3312/);
+  assert.match(ui,/NIET BEWEZEN/);
+  assert.doesNotMatch(ui,/idempotency_key/);
+  const missing=projectPowerhouseIntegrationReadback({
+    datasets:{agentWorkPending:[{count:0}]},
+    readStates:{agentWorkPending:'LIVE',recoveryWorkActive:'UNAVAILABLE'}
+  });
+  assert.equal(missing.agentDispatch,null);
+  assert.ok(missing.gapCodes.includes('SOURCE_UNAVAILABLE:recoveryWorkActive'));
+  const empty=projectPowerhouseIntegrationReadback({
+    datasets:{agentWorkPending:[{count:0}],recoveryWorkActive:[{count:0}]},
+    readStates:{agentWorkPending:'LIVE',recoveryWorkActive:'LIVE'}
+  });
+  assert.equal(empty.agentDispatch.state,'NO_OPEN_DISPATCH_ROWS_OBSERVED');
+  assert.equal(empty.integrationState,'END_TO_END_UNPROVEN');
+});
+
+test('count source derives totals only from exact provider Content-Range; errors fail closed',async()=>{
+  const seen=[];
+  const probe=async (url,options)=>{
+    if(!url.includes('/brain_outcome_obligation_dispatch?'))return {ok:false};
+    seen.push({url,headers:options.headers});
+    const count=url.includes('state=eq.PENDING')?3312:1055;
+    return {ok:true,headers:{get:(name)=>name==='content-range'?'0-0/'+count:null}};
+  };
+  const live=await readPowerhouseIntegrationReadback({
+    baseUrl:'https://example.supabase.co',key:'fixture-key',fetchImpl:probe
+  });
+  assert.equal(live.agentDispatch.pending,3312);
+  assert.equal(live.agentDispatch.recovering,1055);
+  assert.equal(seen.length,2);
+  assert.ok(seen.every(x=>x.headers.prefer==='count=exact'));
+  assert.ok(seen.every(x=>x.url.includes('limit=1')));
+  assert.ok(seen.every(x=>x.url.includes('select=state')));
+  assert.ok(seen.every(x=>!x.url.includes('idempotency_key')));
+  const invalid=await readPowerhouseIntegrationReadback({
+    baseUrl:'https://example.supabase.co',key:'fixture-key',
+    fetchImpl:async(url)=>url.includes('brain_outcome_obligation_dispatch?')
+      ?{ok:true,headers:{get:()=>'*/*'}}:{ok:false}
+  });
+  assert.equal(invalid.agentDispatch,null);
+  assert.ok(invalid.gapCodes.includes('SOURCE_UNAVAILABLE:agentWorkPending'));
+  assert.equal(invalid.integrationState,'END_TO_END_UNPROVEN');
 });
