@@ -579,7 +579,7 @@ Deno.serve(async(req:Request)=>{
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
       source:'bg-social-metrics-sync',subject_key:'social-learning',channel:'system',
-      occurred_at:new Date().toISOString(),evidence:outcome,
+      occurred_at:new Date().toISOString(),evidence:trackedOutcome,
       context:{provider:'composio',learning_authority:'social_metric_snapshots',
         original_poll_receipt_key:pollIdentity.dedupeKey,
         original_poll_slot_utc:pollIdentity.slotStart},
