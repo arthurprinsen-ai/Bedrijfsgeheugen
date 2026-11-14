@@ -16,3 +16,6 @@ Historic, shadow and canary: `tests/brain-approved-connection-source-priming-202
 Original ONE BRAIN root: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Original recipient-feedback control: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4340. PR: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5759.
 
 Status at creation: SOURCE_CANDIDATE_NOT_LIVE.
+
+## Protected admission follow-up
+The first two Required attempts were rejected before tests because PR-machine metadata was not yet present in the event payload. Added the canonical obligation, lane, type, base SHA, change scope and immutable owner metadata to the SAME PR description. Trigger a fresh unchanged-intent candidate after PR body readback; never bypass or ignore Required. A successful PR check still does not imply a Supabase migration is live or any email was sent.
