@@ -50,6 +50,36 @@ function sourceURL(raw){
   return u;
  } catch{return null}
 }
+export function samePublicCompanyHost(baseRaw,targetRaw){
+ const base=sourceURL(baseRaw),target=sourceURL(targetRaw);
+ if(!base||!target)return false;
+ // Only the same public HTTPS host; canonical www and apex are equivalent.
+ const host=v=>v.hostname.replace(/^www\./,'');
+ return host(base)===host(target)&&!target.username&&!target.password&&
+   (!target.port||target.port==='443');
+}
+export function publicCompanyContactLinks(html,baseRaw,company,limit=2){
+ const base=sourceURL(baseRaw);
+ if(!base||!eligiblePublicCompanyPage(base.toString(),company))return [];
+ const links=[];
+ const rx=/\bhref\s*=\s*["']([^"'<>\s]+)["']/gi;
+ for(const match of String(html??'').slice(0,160000).matchAll(rx)){
+  let candidate;
+  try{candidate=new URL(match[1].replace(/&amp;/gi,'&'),base)}catch{continue}
+  candidate.hash='';candidate.search='';
+  if(!samePublicCompanyHost(base.toString(),candidate.toString())||
+     !eligiblePublicCompanyPage(candidate.toString(),company))continue;
+  const path=candidate.pathname.toLowerCase();
+  if(!/(team|people|medewerker|medewerkers|wie-zijn-wij|over-ons|about|contact|organisatie)/i.test(path))continue;
+  const score=/(team|people|medewerker)/.test(path)?3:
+    /(over-ons|wie-zijn-wij|about|organisatie)/.test(path)?2:1;
+  if(!links.some(x=>x.url===candidate.toString()))links.push({url:candidate.toString(),score});
+  if(links.length>=40)break;
+ }
+ return links.sort((a,b)=>b.score-a.score||a.url.localeCompare(b.url))
+   .slice(0,Math.max(1,Math.min(limit,2))).map(x=>x.url);
+}
+
 export function eligiblePublicCompanyPage(raw,company){
  const u=sourceURL(raw);
  const tokens=ascii(company).split(' ').filter(t=>t.length>=3);

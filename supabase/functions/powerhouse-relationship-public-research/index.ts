@@ -1,5 +1,5 @@
 import {researchSourceCandidate,researchRetryAt,researchNoSourceFeedback} from '../_shared/relationship-research-feedback.mjs';
-import {eligiblePublicCompanyPage,publishedBusinessMailto} from '../_shared/public-business-email-evidence.mjs';
+import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks} from '../_shared/public-business-email-evidence.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-relationship-public-research-v1';
@@ -143,7 +143,7 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
     eligiblePublicCompanyPage(item?.url,contact.bedrijf)).slice(0,3);
   let checked=0;
   for(const item of sites){
-    const page=await readBoundedPublicPage(clean(item.url));
+    const page=typeof item.html==='string'&&item.html.length<=160000?item.html:await readBoundedPublicPage(clean(item.url));
     if(!page)continue;
     checked++;
     const evidence=publishedBusinessMailto({html:page,sourceUrl:item.url,
@@ -190,6 +190,74 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
   return {status:'NO_EXPLICIT_NAMED_OFFICIAL_MAILTO',sites:checked,stored:0,receipts:0};
 }
 
+
+// One original source+disposition implementation for current-day and overdue
+// historical actions. An Amsterdam date change must not silently drop a due retry.
+async function processOriginalFirstPartyPublicSource(db:any,selected:any,
+  domain:string,company:string,key:string,observedAt:string,baseEvidence:any={}){
+  const homeUrl='https://'+domain+'/';
+  const homeHtml=await readBoundedPublicPage(homeUrl);
+  const publishedLinks=homeHtml?publicCompanyContactLinks(homeHtml,homeUrl,company,1):[];
+  const publicPages=homeHtml
+    ?[{type:'first_party_company_domain',url:homeUrl,html:homeHtml},
+    ...publishedLinks.map((url:string)=>({type:'first_party_company_domain',url})),
+    ...(publishedLinks.length?[]:[{type:'first_party_company_domain',url:'https://'+domain+'/team'}])]
+    :[{type:'first_party_company_domain',url:'https://www.'+domain+'/'},
+    {type:'first_party_company_domain',url:'https://'+domain+'/contact'},
+    {type:'first_party_company_domain',url:'https://'+domain+'/team'}];
+  const result=await ingestPublicWorkEmail(db,selected,publicPages,observedAt);
+  // This original action is terminal only after a real source disposition AND
+  // its original evidence receipt. An HTTP/DB error leaves it retriable.
+  const checked=result.sites>0||result.receipts>0||result.status==='SUPPRESSED'||
+    result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION';
+  const nextAttemptAt=checked?null:new Date(Date.parse(observedAt)+4*3600000).toISOString();
+  const evidence={...(selected.evidence||baseEvidence),
+    public_email_source_checked:checked,public_email_source_status:result.status,
+    public_email_source_checked_at:observedAt,public_email_next_attempt_at:nextAttemptAt,
+    public_email_ingest_ack:result.receipts>0,
+    public_email_source_attempts:Number(selected.evidence?.public_email_source_attempts||0)+1,
+    recipient_send_authority_inferred:false,external_send_executed:false};
+  const {data:updated,error:uErr}=await db.from('powerhouse_sales_actions')
+    .update({evidence}).eq('action_id',selected.action_id).eq('dedupe_key',key)
+    .select('action_id').maybeSingle();
+  if(uErr||!updated)throw new Error('FIRST_PARTY_RESEARCH_DISPOSITION_ACK:'+(uErr?.message||'NOT_PERSISTED'));
+
+  return result;
+}
+
+async function replayDueHistoricalFirstPartySources(db:any,observedAt:string){
+  // Query ORIGINAL completed internal research records with a persisted due time.
+  // Do not create another action/queue/cron; same key, same person and company.
+  const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',
+    year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(observedAt));
+  const {data:due,error:dErr}=await db.from('powerhouse_sales_actions')
+    .select('action_id,dedupe_key,person_key,person_name,company_key,company_name,role,evidence,updated_at')
+    .eq('action_type','research_enrichment').eq('channel','internal').eq('status','done')
+    .like('dedupe_key','relationship-research:public-domain:%')
+    .not('evidence->>public_email_next_attempt_at','is',null)
+    .lte('evidence->>public_email_next_attempt_at',observedAt)
+    .order('created_at',{ascending:true}).limit(20);
+  if(dErr)throw new Error('ORIGINAL_PUBLIC_SOURCE_RETRY_READ:'+dErr.message);
+  let retried=0,sites=0,candidates=0,ingest_acks=0;
+  for(const action of due||[]){
+    if(retried>=2)break;
+    const key=String(action.dedupe_key||'');
+    if(!/^relationship-research:public-domain:\d{4}-\d{2}-\d{2}:[^:]+$/.test(key)||
+       key.includes(':'+today+':')||
+       action.evidence?.public_email_source_checked!==false||
+       !Number.isFinite(Date.parse(action.evidence?.public_email_next_attempt_at||''))||
+       Date.parse(action.evidence.public_email_next_attempt_at)>Date.parse(observedAt))continue;
+    const domain=clean(action.evidence?.first_party_domain).toLowerCase();
+    const company=clean(action.company_name);
+    if(!eligiblePublicCompanyPage('https://'+domain+'/',company)||
+       action.evidence?.no_new_provider_query!==true||!clean(action.person_key))continue;
+    const result=await processOriginalFirstPartyPublicSource(
+      db,action,domain,company,key,observedAt,action.evidence);
+    retried++;sites+=result.sites;candidates+=result.stored;ingest_acks+=result.receipts;
+  }
+  return {retried,sites,candidates,ingest_acks,
+    original_lineage_reused:true,new_provider_queries:0,external_messages_sent:0};
+}
 
 async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
   // No new SERP/provider call. Reuse verified-format business domains in the
@@ -262,24 +330,10 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
       selected=created;
     }
     companies++;
-    const result=await ingestPublicWorkEmail(db,selected,
-      [{type:'first_party_company_domain',url:'https://'+domain+'/team'},
-       {type:'first_party_company_domain',url:'https://'+domain+'/contact'},
-       {type:'first_party_company_domain',url:'https://'+domain+'/'}],observedAt);
-    // This original action is terminal only after a real source disposition AND
-    // its original evidence receipt. An HTTP/DB error leaves it retriable.
-    const checked=result.sites>0||result.receipts>0||result.status==='SUPPRESSED'||
-      result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION';
-    const nextAttemptAt=checked?null:new Date(Date.parse(observedAt)+4*3600000).toISOString();
-    const evidence={...(selected.evidence||record.evidence),
-      public_email_source_checked:checked,public_email_source_status:result.status,
-      public_email_source_checked_at:observedAt,public_email_next_attempt_at:nextAttemptAt,
-      public_email_ingest_ack:result.receipts>0,
-      recipient_send_authority_inferred:false,external_send_executed:false};
-    const {data:updated,error:uErr}=await db.from('powerhouse_sales_actions')
-      .update({evidence}).eq('action_id',selected.action_id).eq('dedupe_key',key)
-      .select('action_id').maybeSingle();
-    if(uErr||!updated)throw new Error('FIRST_PARTY_RESEARCH_DISPOSITION_ACK:'+(uErr?.message||'NOT_PERSISTED'));
+    // Original first-party source: discover real same-host navigation, with
+    // bounded HTTPS redirects, no paid lookup and the same original action id.
+    const result=await processOriginalFirstPartyPublicSource(
+      db,selected,domain,company,key,observedAt,record.evidence);
     sites+=result.sites;candidates+=result.stored;ingestAcks+=result.receipts;
   }
   return {companies,sites,candidates,ingest_acks:ingestAcks,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
@@ -307,7 +361,12 @@ Deno.serve(async(req:Request)=>{
     let freeDomain:any={companies:0,sites:0,candidates:0,ingest_acks:0,new_provider_queries:0};
     let freeDomainFailure:string|null=null;
     try{
+      const overdue=await replayDueHistoricalFirstPartySources(db,observedAt);
       freeDomain=await originalFirstPartyDomainCandidatePass(db,observedAt);
+      freeDomain.historical_due_retries=overdue;
+      freeDomain.sites+=overdue.sites;
+      freeDomain.candidates+=overdue.candidates;
+      freeDomain.ingest_acks+=overdue.ingest_acks;
     }catch(error:any){
       freeDomainFailure=clean(error?.message||error).slice(0,350);
       await db.from('bg_gezondheid').insert({gemeten_op:observedAt,
