@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
 import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
-import { stageOriginalWindsorCompanySources } from '../_shared/original-windsor-company-stage.mjs';
+import { stageOriginalWindsorCompanySources, originalCompanySourceProviderHealth } from '../_shared/original-windsor-company-stage.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
 import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity} from '../_shared/original-provider-poll-receipt.mjs';
@@ -490,10 +490,13 @@ Deno.serve(async(req:Request)=>{
     // Social learning is not healthy when verified company posts have no
     // independently linked provider metrics. A successful HTTP cron or fresh
     // account aggregate is not proof that an experimental post was measured.
-    const companyHandoffOk=companyRegistry?.eligible===0||(
-      companyState?.state==='WINDSOR_FRESH'&&
-      companyMetricLink?.state==='VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED'&&
-      (companyMetricLink?.linked||0)>0);
+    // A connected-Windsor one-off source recovery can create *real* metrics
+    // while the ORIGINAL #177 Vault-key is denied. Never turn that into
+    // autonomous source provider health or next-run learning proof.
+    const companyHandoffOk=originalCompanySourceProviderHealth({
+      sourceRefresh:companySourceRefresh,companyState,
+      companyMetricLink,companyRegistry
+    });
     const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0
       &&!(ig?.failures||[]).length&&!(li?.failures||[]).length&&companyHandoffOk
        &&originalMetricHandoff?.state!=='ORIGINAL_PUBLICATION_HANDOFF_ERROR'
