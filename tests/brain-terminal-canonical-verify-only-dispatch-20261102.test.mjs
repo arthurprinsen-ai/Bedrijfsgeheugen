@@ -190,15 +190,15 @@ test('final terminal BRAIN gate consumes the same complete original PR-era fligh
   const consumer=critical.split('require_workflow() {')[1]?.split('require_required_or_descendant() {')[0];
   assert.ok(consumer,'the original terminal BRAIN verifier must remain the same owner');
   assert.match(consumer,/originalBrainFlightSince/);
-  assert.match(consumer,/created=\\$\\{created_filter\\}/);
-  assert.match(consumer,/gh api --paginate --slurp "\\$query"/);
-  assert.match(consumer,/brain-verification-flight-index\\.mjs --title "\\$expected_title" --since "\\$since"/);
+  assert.match(consumer,/created=\$\{created_filter\}/);
+  assert.match(consumer,/gh api --paginate --slurp "\$query"/);
+  assert.match(consumer,/brain-verification-flight-index\.mjs --title "\$expected_title" --since "\$since"/);
   assert.match(consumer,/TERMINAL_BRAIN_HISTORY_INCOMPLETE/);
   assert.match(consumer,/TERMINAL_BRAIN_FLIGHT_ID_UNVERIFIED/);
   assert.match(consumer,/TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED/);
   assert.match(consumer,/TERMINAL_CRITICAL_GATE_FAILED/);
   assert.match(consumer,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
-  assert.doesNotMatch(consumer,/runs\\?branch=main&event=workflow_dispatch&per_page=100/);
+  assert.doesNotMatch(consumer,/runs\?branch=main&event=workflow_dispatch&per_page=100/);
   assert.doesNotMatch(consumer,/TERMINAL_CRITICAL_GATE_PROVEN.*NO_FLIGHT_PROVEN_FULL_HISTORY/);
 
   const title='BRAIN delivery PR #5816 '+('a'.repeat(40));
