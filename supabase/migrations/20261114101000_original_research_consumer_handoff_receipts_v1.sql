@@ -273,7 +273,7 @@ begin
    'research_handoff_receipt',v_handoff,
    'result_contract',v_result->>'contract');
 end;
-$function$
+$function$;
 
 -- Do not dispatch a new DataForSEO call for a 24h source retry whose due_at
 -- is still in the future. The existing Edge worker already uses this due gate.
@@ -316,4 +316,4 @@ begin
 
   return jsonb_build_object('contract','powerhouse-relationship-public-research-dispatch-v1',
     'dispatched',true,'pending',v_pending,'request_id',v_request_id,'run_date',p_run_date);
-end $function$
+end $function$;
