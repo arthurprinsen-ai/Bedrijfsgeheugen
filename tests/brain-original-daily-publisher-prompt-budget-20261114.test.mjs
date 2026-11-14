@@ -24,4 +24,6 @@ test('all original source, provider, security, Brain Heartbeat and receiver gate
  }
  assert.match(skill,/A prompt update is deployment of operating instructions, NOT proof/);
  assert.match(skill,/without copying internal prompt text, tokens, private draft/);
+ assert.match(skill,/Historical outcome reports belong with their original dated incident owners/);
+ assert.match(skill,/never as competing live execution directives/);
 });
