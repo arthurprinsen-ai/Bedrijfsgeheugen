@@ -10,3 +10,5 @@
 - **Owner handoff:** Original producer -> exact source-revision/correlation -> original #138 `PROCESSED` only for actual source candidate -> #116 NBA -> Heartbeat outcome and independent result
 - **Release status:** CANDIDATE; verify protected GitHub checks, native Edge deployment and real natural-run readback before claiming LIVE
 - **Prevention:** A technically successful HTTP/cron run with no readable source cannot yield a successful content-source status; all failed source attempts have an original owner and bounded retry
+
+- **Admission metadata:** immutable Base-SHA `d785825052d6b85af6e5f11f1077f29153e1e432` retained in original PR #5812; the protected hygiene gate must independently verify this source anchor before release.
