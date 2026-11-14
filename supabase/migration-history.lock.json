@@ -3412,8 +3412,12 @@
     {
       "version": "20261114083500",
       "name": "original_approved_connection_source_priming_v1"
+    },
+    {
+      "version": "20261114091500",
+      "name": "original_outreach_source_research_cooldown_scope_v2"
     }
   ],
-  "captured_at": "2026-11-14 08:09:21.06713+00",
+  "captured_at": "2026-11-14T08:49:00.000Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
