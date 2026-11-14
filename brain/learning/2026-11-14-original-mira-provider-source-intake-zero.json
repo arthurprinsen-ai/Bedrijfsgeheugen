@@ -39,5 +39,21 @@
     "historical_replay": [
       "tests/brain-mira-original-provider-rejections-20261114.test.mjs"
     ]
+  },
+  "fingerprint": "powerhouse|mira|provider-news-21-source-stored-zero-invisible-rejection-reasons|20261114-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "source": "public.content_publication_obligations + public.powerhouse_instagram_media_jobs_v1 + original pg_net 31043 / status 503",
+    "provider_candidates": 21,
+    "stored": 0,
+    "eligible": 0,
+    "source_fingerprint": "powerhouse|mira|provider-news-21-source-stored-zero-invisible-rejection-reasons|20261114-v1",
+    "external_post_verified": false
   }
 }
