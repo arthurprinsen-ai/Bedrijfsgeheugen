@@ -9,7 +9,7 @@ test('both canonical refresh paths preserve already reviewed authority metadata'
   assert.match(sql, /powerhouse_refresh_all_connection_enrichment_v1/);
   assert.match(sql, /powerhouse_refresh_connection_enrichment_batch_v1/);
   assert.match(sql, /powerhouse_connection_enrichment_state_v1\.source_snapshot \? ''email_authority''/);
-  assert.match(sql, /'email_authority', powerhouse_connection_enrichment_state_v1\.source_snapshot->''email_authority''/);
+  assert.match(sql, /''email_authority'', powerhouse_connection_enrichment_state_v1\.source_snapshot->''email_authority''/);
   assert.match(sql, /CONTACT_AUTHORITY_SOURCE_DRIFT/);
   assert.match(sql, /v_matches<>1/);
 });
