@@ -82,6 +82,12 @@ test('malformed and missing owner recovery stays unproven without exposing injec
 test('existing content owner uses PostgREST IS NULL CAS and exact readback, no bypass writer',()=>{
   const source=readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
   assert.match(source,/\.is\('external_id',null\)/);
+  // Original client is a custom SQL adapter: it ALREADY maps eq(null) to SQL
+  // IS NULL. Verify that the explicit is(null) path has identical semantics.
+  assert.match(source,/is\(column:string,value:any\)\{if\(value!==null\)throw new Error\('DB_IS_FILTER_ONLY_NULL'\)/);
+  assert.match(source,/f\.kind==='is'&&f\.value===null\)parts\.push\(col\+' is null'\)/);
+  assert.match(source,/f\.value===null\?col\+' is null':col\+' = '/);
+
   assert.match(source,/updateQuery=handoff\.previous===null/);
   assert.match(source,/updateQuery\.is\('next_action',null\)/);
   assert.match(source,/updateQuery\.eq\('next_action',handoff\.previous\)/);
