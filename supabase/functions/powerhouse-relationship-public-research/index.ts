@@ -187,7 +187,7 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
     await writePublicBusinessSourceReceipt(db,action,evidence,observedAt);
     return {status:'SOURCE_CANDIDATE_INGESTED_CONSUMER_PENDING',sites:checked,stored:written,receipts:1};
   }
-  return {status:'NO_EXPLICIT_NAMED_OFFICIAL_MAILTO',sites:checked,stored:0,receipts:0};
+  return {status:checked>0?'NO_EXPLICIT_NAMED_OFFICIAL_MAILTO':'SOURCE_HTML_UNAVAILABLE',sites:checked,stored:0,receipts:0};
 }
 
 
@@ -238,7 +238,7 @@ async function replayDueHistoricalFirstPartySources(db:any,observedAt:string){
     .lte('evidence->>public_email_next_attempt_at',observedAt)
     .order('created_at',{ascending:true}).limit(20);
   if(dErr)throw new Error('ORIGINAL_PUBLIC_SOURCE_RETRY_READ:'+dErr.message);
-  let retried=0,sites=0,candidates=0,ingest_acks=0;
+  let retried=0,sites=0,candidates=0,ingest_acks=0,htmlUnavailable=0,noNamedMailto=0;
   for(const action of due||[]){
     if(retried>=2)break;
     const key=String(action.dedupe_key||'');
@@ -254,8 +254,10 @@ async function replayDueHistoricalFirstPartySources(db:any,observedAt:string){
     const result=await processOriginalFirstPartyPublicSource(
       db,action,domain,company,key,observedAt,action.evidence);
     retried++;sites+=result.sites;candidates+=result.stored;ingest_acks+=result.receipts;
+    if(result.status==='SOURCE_HTML_UNAVAILABLE')htmlUnavailable++;
+    if(result.status==='NO_EXPLICIT_NAMED_OFFICIAL_MAILTO')noNamedMailto++;
   }
-  return {retried,sites,candidates,ingest_acks,
+  return {retried,sites,candidates,ingest_acks,html_unavailable:htmlUnavailable,no_named_work_mailto:noNamedMailto,
     original_lineage_reused:true,new_provider_queries:0,external_messages_sent:0};
 }
 
@@ -284,7 +286,7 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
     .like('dedupe_key','relationship-research:public-domain:'+day+':%');
   if(countErr)throw new Error('FIRST_PARTY_DAILY_CAP_READ:'+countErr.message);
   const remaining=Math.max(0,8-Number(already||0));
-  let companies=0,eligibleSlots=0,sites=0,candidates=0,ingestAcks=0;
+  let companies=0,eligibleSlots=0,sites=0,candidates=0,ingestAcks=0,htmlUnavailable=0,noNamedMailto=0;
   // Bounded deterministic first eight ELIGIBLE company/contact slots each day.
   // Concurrent original calls select the same idempotent keys, not next eight.
   for(let n=0;n<Math.min(entries.length,80)&&eligibleSlots<8;n++){
@@ -335,8 +337,10 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
     const result=await processOriginalFirstPartyPublicSource(
       db,selected,domain,company,key,observedAt,record.evidence);
     sites+=result.sites;candidates+=result.stored;ingestAcks+=result.receipts;
+    if(result.status==='SOURCE_HTML_UNAVAILABLE')htmlUnavailable++;
+    if(result.status==='NO_EXPLICIT_NAMED_OFFICIAL_MAILTO')noNamedMailto++;
   }
-  return {companies,sites,candidates,ingest_acks:ingestAcks,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
+  return {companies,sites,candidates,ingest_acks:ingestAcks,html_unavailable:htmlUnavailable,no_named_work_mailto:noNamedMailto,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
 }
 
 Deno.serve(async(req:Request)=>{
@@ -364,6 +368,8 @@ Deno.serve(async(req:Request)=>{
       const overdue=await replayDueHistoricalFirstPartySources(db,observedAt);
       freeDomain=await originalFirstPartyDomainCandidatePass(db,observedAt);
       freeDomain.historical_due_retries=overdue;
+      freeDomain.html_unavailable=(freeDomain.html_unavailable||0)+(overdue.html_unavailable||0);
+      freeDomain.no_named_work_mailto=(freeDomain.no_named_work_mailto||0)+(overdue.no_named_work_mailto||0);
       freeDomain.sites+=overdue.sites;
       freeDomain.candidates+=overdue.candidates;
       freeDomain.ingest_acks+=overdue.ingest_acks;
@@ -506,7 +512,7 @@ Deno.serve(async(req:Request)=>{
     }
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',
-      status:freeDomainFailure?'fout':'ok',detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}`,
+      status:freeDomainFailure?'fout':(freeDomain.html_unavailable>0?'waarschuwing':'ok'),detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}; public_email_html_unavailable=${freeDomain.html_unavailable||0}`,
       gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,free_domain_research:freeDomain,free_domain_error:freeDomainFailure,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false}
     });
     return json({ok:!freeDomainFailure,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
