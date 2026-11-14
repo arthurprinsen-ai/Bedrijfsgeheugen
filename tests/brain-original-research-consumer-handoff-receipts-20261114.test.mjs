@@ -58,3 +58,10 @@ test('the privileged reconciler remains service-only and bounded in time',()=>{
  assert.match(sql,/limit 250/);
  assert.match(sql,/pg_try_advisory_xact_lock/);
 });
+
+test('administrative receipts cannot inflate source score or downstream contact eligibility',()=>{
+ assert.match(sql,/c\.subject_key,null,null,'internal',v_now/);
+ assert.match(sql,/'person_key',c\.person_key/);
+ assert.match(sql,/'company_key',c\.company_key/);
+ assert.doesNotMatch(sql,/c\.subject_key,c\.person_key,c\.company_key,'internal',v_now/);
+});
