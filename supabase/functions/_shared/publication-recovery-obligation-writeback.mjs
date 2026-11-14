@@ -19,7 +19,13 @@ export function planOriginalPublicationHandoffs(recovery,obligations){
     unresolved:[],alreadyIdentical:[],routedToOriginalOwner:[]};
   const unique=new Set(),updates=[],unresolved=[],alreadyIdentical=[],routedToOriginalOwner=[];
   const note=(channel,reason,owner)=>Object.freeze({
-    channel,reason,owner:clean(owner)||'original-powerhouse-content-orchestrator'
+    // Diagnostic fields are intentionally bounded and strict: a malformed
+    // upstream owner/source value must NOT be reflected in Brain/Portal logs.
+    channel:/^[a-z0-9_:-]{1,80}$/.test(clean(channel))
+      ?clean(channel):'UNDECLARED_CHANNEL',
+    reason,
+    owner:/^[a-zA-Z0-9 /._-]{5,120}$/.test(clean(owner))
+      ?clean(owner):'original-powerhouse-content-orchestrator'
   });
   for(const item of recovery.overdue){
     const channel=clean(item?.channel);
