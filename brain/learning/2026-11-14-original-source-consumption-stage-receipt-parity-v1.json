@@ -38,5 +38,12 @@
   },
   "prevention_rule": "Never check a retired scheduler identity after canonical consolidation; require current original scheduler plus successful nondegraded stage receipts, and keep source-only assurance separate from full end-to-end closure.",
   "regression_ref": "tests/brain-original-source-consumption-stage-parity-20261114.test.mjs",
-  "no_parallel_executor": true
+  "no_parallel_executor": true,
+  "root_cause": "The source-consumption assurance function continued to require retired commercial split-cron job names after the explicitly consolidated original #116 stage owner and #171 mux took over; this produced an unjustified false-negative source health verdict.",
+  "evidence": {
+    "production_readback": "2026-11-14 independently checked active cron jobs 116 and 171, legacy split jobs zero, and 23,295/23,295 connection enrichment today; exact-stage read-only SQL probe returned true for 3 non-degraded original internal receipts in 26 hours",
+    "actual_source_truth": "powerhouse_runtime_events.source=powerhouse-commercial-learning-v1; event_type=commercial_stage_execution; evidence.reported_degraded=false; context.canonical_job_id=116",
+    "regression_test": "tests/brain-original-source-consumption-stage-parity-20261114.test.mjs",
+    "limitations": "No verified provider send, consumer ACK, realized revenue, or next-run learning follows from source-to-executor stage receipts"
+  }
 }
