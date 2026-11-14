@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|contacts|first-party-website-guessed-paths-zero-readable-sources|20261114-v1",
+  "compiler": {
+    "failure_class": "PUBLIC_BUSINESS_SOURCE_PAGE_DISCOVERY_GAP",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "After exact protected production deployment of original public research Edge v28 and applied 21:15 migration, eight original idempotent business-domain tasks completed with zero successfully read public pages and zero contact email candidates. Fixed /team and /contact guesses and redirect:'error' caused 0 source coverage although domains have real homepage/contact pages.",
+  "prevention_rule": "On the SAME original public research Edge, GET a bounded HTTPS homepage under same-company domain with manually evaluated apex/www-only redirects, discover an actual public /team or /about or /contact href from that page, and inspect at most two same-host pages. No offsite redirects, no privileged/internal URLs, no additional provider/SERP fee, no automatic sending. Use Amsterdam date for original action key; keep original retry disposition when no page. Only explicit on-page person name + matching company + work mailto stages unverified non-sendable candidate; original #138 receives only independent source evidence.",
+  "original_owner": "powerhouse-commercial-learning-v1 #116; original powerhouse-relationship-public-research Edge; downstream #138 ONE BRAIN/Heartbeat",
+  "evidence": {
+    "original_contacts": 23295,
+    "sender_visible_addresses": 605,
+    "first_party_attempts_observed": 8,
+    "public_pages_read_observed": 0,
+    "public_email_candidates_observed": 0,
+    "verified_production_edge_version_before": 28,
+    "source_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5787",
+    "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "source_paths": [
+      "supabase/functions/powerhouse-relationship-public-research/index.ts",
+      "supabase/functions/_shared/public-business-email-evidence.mjs"
+    ],
+    "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+    "provider_deployment": "PENDING_EXACT_SOURCE_READBACK",
+    "independent_email_candidate_consumer_ack": "NOT_YET_PROVEN",
+    "budget_added_paid_queries": 0,
+    "new_scheduler": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ]
+  }
+}
