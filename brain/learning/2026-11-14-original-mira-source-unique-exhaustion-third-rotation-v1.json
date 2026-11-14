@@ -22,7 +22,8 @@
     "native_original_heartbeat_v857": true,
     "protected_preflight_first_attempt": "LEARNING_EVALUATION_TESTS_REQUIRED:historical_replay; corrected canonical learning record instead of weakening admission gate.",
     "first_protected_ci_rejection": "LEARNING_EVALUATION_TESTS_REQUIRED:historical_replay; fixed with exact historical/shadow/canary references, no weakening of admission gate.",
-    "scoping_preflight": "edge-runtime-scope.mjs sharedChanged => all declared functions; repaired local-only to original powerhouse-mira-problem-radar."
+    "scoping_preflight": "edge-runtime-scope.mjs sharedChanged => all declared functions; repaired local-only to original powerhouse-mira-problem-radar.",
+    "protected_integration_guard_replay": "Required 43605882910 failed semantic_learning because compiler.failure_class was omitted; adding canonical compiler metadata and preserving original protected gate."
   },
   "fix": "Scoped exact original powerhouse-mira-problem-radar Edge function only: keep existing global _shared rotation untouched, import a local side-effect-free helper that overlays a THIRD short high-recall query phrasing per twelve unchanged canonical PH-P topic families two days per six-day rotation on SAME original 6 business+2 personal provider calls. All original real-source provider, date, 0.72 score, unique source/topic and funding/face/Meta protections are unchanged. Exact original Radar-only provider deploy via protected-main Supabase GitHub Integration, not all Edge functions.",
   "prevention": [
@@ -70,5 +71,12 @@
     "canary": [
       "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "MIRA_ORIGINAL_UNIQUE_SOURCE_DISCOVERY_STARVATION",
+    "scope": "MIRA_CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
   }
 }
