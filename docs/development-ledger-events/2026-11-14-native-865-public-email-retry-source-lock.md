@@ -8,3 +8,5 @@
 - **Prevention:** source lock exact prefix and native provider admission are the truth gate; no fake applied versions; independent post-merge main/provider pairwise comparison
 - **Original commercial handoff:** source owner #116 → #138 named consumer receipt → original ONE BRAIN and Heartbeat → external effect; no source candidate or delivery claim from this source-only change
 - **Status:** CANDIDATE until protected Required/CodeQL/merge and independent native 865/865 readback; original P0 #4198 remains OPEN until legitimate commercial proof
+
+- **Admission recovery:** original Required run 43643683513 rejected non-path text in machine learning `evaluation.historical_replay` as `LEARNING_EVALUATION_TEST_PATH_INVALID`. The same owner corrected all evaluation test references and regression to existing `tests/brain-supabase-migration-lock-provider-20261029.test.mjs`; no admission bypass, source-lock identity change or SQL replay.
