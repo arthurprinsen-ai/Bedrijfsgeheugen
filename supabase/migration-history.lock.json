@@ -3452,8 +3452,12 @@
     {
       "version": "20261114230000",
       "name": "original_source_consumption_stage_receipt_parity_v1"
+    },
+    {
+      "version": "20261114235900",
+      "name": "innovation_original_agent_intake_recovery_v1"
     }
   ],
-  "captured_at": "2026-11-14T19:38:33.585619Z",
+  "captured_at": "2026-11-14T19:56:48.702423Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
