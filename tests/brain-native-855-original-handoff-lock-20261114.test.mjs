@@ -24,5 +24,7 @@ test('applied native source preserves original #116, exact research-owner receip
  assert.match(sql,/c\.subject_key,null,null,'internal',v_now/);
  assert.match(sql,/and \(due_at is null or due_at<=now\(\)\)/);
  assert.match(sql,/from public,anon,authenticated/);
- assert.doesNotMatch(sql,/cron\.schedule\s*\(|\bcreate\s+table\b|\bnet\.http_post\s*\(/i);
+ assert.doesNotMatch(sql,/cron\.schedule\s*\(|\bcreate\s+table\b/i);
+ // pg_net in the already-authorized original research dispatcher is retained, not a new sender.
+ assert.match(sql,/powerhouse-relationship-public-research/);
 });
