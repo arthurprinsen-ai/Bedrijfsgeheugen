@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|original-177-windsor-company-provider-source-not-consumed|20261114-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_PROVIDER_FAILURE_NOT_ACKED_BY_ONE_BRAIN_PER_SOURCE_POLL",
+    "scope": "SOURCE_TO_CANONICAL_BRAIN_FAILURE_HANDOFF",
+    "machine_enforceable": true
+  },
+  "status": "PROTECTED_PR_CANDIDATE_NO_PRODUCTION_CLAIM",
+  "root_cause": "Original six-hour bg-social-metrics-sync #177 records provider errors and independently reads back its own immutable per-poll runtime receipt. It does not automatically register the same failed native Windsor authorization in original brain_observe_failure and independently verify that the ONE BRAIN occurrence was received. Manual incident writes previously incremented the registry, so an autonomous future 403 could be unowned/untracked in the Brain even while the original runtime source poll reported healthy=false.",
+  "source_revision": "protected-PR-exact-head-to-be-filled-after-merge",
+  "source_identity": "originalProviderPollReceiptIdentity(runId UUID, slotStart UTC, sourceJobId 177)",
+  "original_owner": "existing bg-social-metrics-source-6h-v1/#177",
+  "consumer": "existing ONE BRAIN brain_observe_failure and independent brain_failure_occurrences readback",
+  "security_boundary": "Existing Supabase Edge service_role can execute original public.brain_observe_failure and read existing RLS-protected brain_failure_occurrences. No new grants, SECURITY DEFINER, cron, credential sharing, queues, parallel executors or provider calls.",
+  "prevention": "Every ORIGINAL provider-source failure, after existing independent immutable poll receipt, must create the exact ONE BRAIN failure occurrence keyed by original run ID and existing canonical incident fingerprint with SHA-256 of whitelisted metadata only; then independently SELECT occurrence ID, fingerprint, payload hash. The original daily summary and return must distinguish complete Brain ACK from missing/different ACK. If Brain observer unavailable, fail closed without provider/outcome-green or duplicating the runner.",
+  "evidence": {
+    "original_source_job_id": 177,
+    "original_brain_mux_job_id": 171,
+    "original_provider_account": "18234216",
+    "original_provider_error": "WINDSOR_PROVIDER_HTTP_403",
+    "original_native_edge_version_before_change": 790,
+    "prior_original_runtime_audit": "2026-11-14T20:53:11.005Z",
+    "prior_original_linked_company_snapshots": 4,
+    "prior_original_company_learning_evaluations": 3,
+    "prior_original_company_autonomous_health": false,
+    "manual_failure_registry_occurrences_before_automatic_repair": 5,
+    "correct_original_failure_writer": "public.brain_observe_failure",
+    "original_failure_registry_readback": "public.brain_failure_occurrences",
+    "original_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "support_ticket": "46876874",
+    "provider_api_key_included": false,
+    "consumer_outcome_proven": false,
+    "causal_lift_proven": false,
+    "actual_effect": null
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-windsor-177-brain-failure-handoff-20261114.test.mjs"
+    ],
+    "expected": "Original source poll can be independently audited and failure propagated into the SAME ONE BRAIN registry exactly once per factual run; original full provider access/consumer/learning evidence never inferred from source error receipt. Only privileged existing Edge path may observe and read back the original Brain failure. Negative wrong-run-id, wrong-owner, unsafe error class, missing consumer and no-provider-failure cases.",
+    "production_acceptance": "Protected main exact-head gates pass, original version 790 Edge upgraded without changing JWT guard or cron, native deployed files exact source parity, next original #177 HTTP completion has original source poll AND original brain occurrence same UUID and hash with independent native readback. Provider HTTP403 remains degraded until authorized key access is corrected."
+  }
+}
