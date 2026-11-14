@@ -587,7 +587,7 @@ Deno.serve(async(req:Request)=>{
       confidence:1,updated_at:new Date().toISOString()
     },{onConflict:'dedupe_key'});
     if(saveError)throw new Error('PROVIDER_METRIC_READBACK:'+saveError.message);
-    return json({ok:total>0,...outcome,
+    return json({ok:total>0,...trackedOutcome,
       original_poll_receipt_key:pollIdentity.dedupeKey,
       original_poll_receipt_verified:true,
       original_source_only_not_learning_ack:true
