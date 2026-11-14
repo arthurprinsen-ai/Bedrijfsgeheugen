@@ -8,6 +8,7 @@ import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-r
 import { classifyMiraRadarHttpStatus } from '../_shared/mira-radar-http-status.mjs';
 import { isSpreadsheetBusinessContext } from '../_shared/mira-business-spreadsheet-context.mjs';
 import { classifyMiraSourceUrl } from '../_shared/mira-source-url-quality.mjs';
+import { resolveMiraNewsPublisherUrl } from '../_shared/mira-dataforseo-publisher-url.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -88,7 +89,7 @@ Deno.serve(async(req:Request)=>{
      const rows:any[]=[];
      for(const x of items){
        const flat=x.type==='news_search'?[x]:Array.isArray(x.items)?x.items:[x];
-       for(const y of flat){ if(y?.url) rows.push({url:y.url,title:y.title,content:y.snippet||y.description||'',score:1/Math.max(1,Number(y.rank_absolute||10)),publishedAt:isoFromProvider(y.timestamp||y.date)}); }
+       for(const y of flat){ if(y?.url) rows.push({url:y.url,publisherDomain:String(y.domain||''),title:y.title,content:y.snippet||y.description||'',score:1/Math.max(1,Number(y.rank_absolute||10)),publishedAt:isoFromProvider(y.timestamp||y.date)}); }
      }
      return {provider:'dataforseo_news',results:rows.filter(x=>withinWindow(x.publishedAt)).slice(0,8)};
    }
@@ -102,11 +103,11 @@ Deno.serve(async(req:Request)=>{
  // single source consumer. Do not treat provider results as approved sources or posts.
  let sourceCandidates=0;
  const sourceRejectCounts:Record<string,number>={};
- const sourceRejectSamples:Array<{reason:string,query:string,source_domain:string,title:string}>=[];
- const reject=(reason:string,query:string,url:string,title:string)=>{
+ const sourceRejectSamples:Array<{reason:string,query:string,source_domain:string,title:string,source_url_shape?:unknown}>=[];
+ const reject=(reason:string,query:string,url:string,title:string,sourceUrlShape?:unknown)=>{
    sourceRejectCounts[reason]=(sourceRejectCounts[reason]||0)+1;
    if(sourceRejectSamples.length<8)sourceRejectSamples.push({
-     reason,query:query.slice(0,100),source_domain:domain(url),title:title.slice(0,140)
+     reason,query:query.slice(0,100),source_domain:domain(url),title:title.slice(0,140),source_url_shape:sourceUrlShape
    });
  };
  for(const {query:q,channel,topic:personalQueryTopic} of queries){
@@ -114,7 +115,14 @@ Deno.serve(async(req:Request)=>{
   providers[sr.provider]=(providers[sr.provider]||0)+(sr.results||[]).length;
   for(const x of (sr.results||[])){
    sourceCandidates++;
-   const sourceUrl=String(x.url||'').trim();
+   // Only DataForSEO Google /url wrappers with an explicit publisher URL and
+   // matching independent publisher domain are eligible for normalization.
+   // Opaque Google links remain rejected; NEVER HTTP-follow redirects.
+   const resolved=sr.provider==='dataforseo_news'
+     ?resolveMiraNewsPublisherUrl({url:x.url,providerDomain:x.publisherDomain})
+     :{ok:true,url:String(x.url||'').trim(),kind:'DIRECT_PROVIDER_SOURCE'};
+   const sourceUrl=String(resolved.url||x.url||'').trim();
+   if(!resolved.ok){reject('REJECTED_SOURCE_URL_QUALITY:'+resolved.code,q,sourceUrl,String(x.title||''),resolved.source_url_shape);continue}
    if(!sourceUrl){reject('MISSING_PROVIDER_URL',q,'',String(x.title||''));continue}
    if(seen.has(sourceUrl)){reject('DUPLICATE_IN_SAME_RADAR_RUN',q,sourceUrl,String(x.title||''));continue}
    seen.add(sourceUrl);
@@ -138,7 +146,7 @@ Deno.serve(async(req:Request)=>{
    const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&(Boolean(portalProblemId)||Boolean(personalTopic)),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&(Boolean(portalProblemId)||Boolean(personalTopic)),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,news_url_resolution:resolved.kind,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
    // Existing source_url is globally unique, but personal and Mira contracts MUST
    // never overwrite each other's previously collected evidence or frozen lineage.
    const prior=await db.from('powerhouse_mira_problem_signals_v1').select('metadata').eq('source_url',sourceUrl).maybeSingle();
