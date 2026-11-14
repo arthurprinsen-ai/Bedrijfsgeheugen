@@ -34,7 +34,8 @@ export function powerhouseIntegrationMarkup(snapshot){
     experiments=snapshot?.experiments||null, commercial=snapshot?.commercial||null,
     loops=snapshot?.loopAssurance||null, terminal=snapshot?.terminalControl||null,
     handoff=snapshot?.commercialHandoff||null, incidents=snapshot?.commercialIncidents||null,
-    innovation=snapshot?.innovationHandoff||null;
+    innovation=snapshot?.innovationHandoff||null,
+    agentDispatch=snapshot?.agentDispatch||null;
   const sourceState=snapshot?.sourceState||'UNAVAILABLE';
   const sourceNames=Object.keys(source);
   const liveSources=sourceNames.filter(name=>source[name]==='LIVE').length;
@@ -47,6 +48,8 @@ export function powerhouseIntegrationMarkup(snapshot){
     ['Intelligentielagen',intelligence?'GERAADPLEEGD':'GEEN BRON',intelligence?'Bekend '+knownNum(intelligence.wired)+' / '+knownNum(intelligence.registered)+' · zonder bewijs '+knownNum(intelligence.withoutEvidence):'Geen bronbewijs'],
     ['Integriteitslussen',loops?esc(loops.state||'UNKNOWN'):'GEEN BRON',loops?'Groen '+knownNum(loops.green)+' · oranje '+knownNum(loops.amber)+' · rood '+knownNum(loops.red)+' / totaal '+knownNum(loops.total):'Geen actuele lus-readback; nooit impliciet groen'],
     ['Terminale verplichtingen',terminal?(terminal.healthy===true?'CONTROLPLANE GEZOND':'HERSTEL OPEN'):'GEEN BRON',terminal?'Niet-afgerond '+knownNum(terminal.nonterminal)+' · geblokkeerd '+knownNum(terminal.blocked)+' · geëscaleerde onbekende resultaten '+knownNum(terminal.escalated):'Geen terminale bewijscontrole; nooit impliciet groen'],
+    ['Brein · agent- en herstelopdrachten',agentDispatch?esc(agentDispatch.state):'GEEN BRON',
+       agentDispatch?'AgentWork wacht '+knownNum(agentDispatch.pending)+' · RecoveryWork wacht '+knownNum(agentDispatch.recovering)+' · geen onafhankelijk uitvoeringsbewijs':'Originele onveranderlijke dispatch niet onafhankelijk uitleesbaar'],
     ['CRO / experimenten',experiments?esc(experiments.readiness||'UNKNOWN'):'GEEN BRON',experiments?'Toewijzingen '+knownNum(experiments.assignments)+' · controlegroep '+knownNum(experiments.holdoutAssignments):'Geen experimenteerbewijs'],
     ['Innovatie · oorspronkelijke agents',innovation?esc(innovation.state):'GEEN BRON',
       innovation?'Bronnen '+knownNum(innovation.sourceBound)+' / '+knownNum(innovation.candidates)+' · ACK bewezen '+knownNum(innovation.verifiedConsumerAcks)+' · nog op te pakken '+knownNum(innovation.awaitingAgentAck)+' · engineering '+knownNum(innovation.ownerEngineering)+' · CRO '+knownNum(innovation.ownerCro):'Geen live bron- en agentintake-readback; nooit impliciet groen'],
@@ -79,6 +82,10 @@ export function powerhouseIntegrationMarkup(snapshot){
     '<ul>'+messages+'</ul>'+
     '<p>Bronnen: '+Object.entries(source).map(([k,v])=>esc(k)+': '+esc(v)).join(' · ')+'</p>'+
     '<p>Alleen originele uitvoering, onafhankelijke provider-readback, uitkomst, Brain-leertoepassing en regressietest sluiten de keten. Onbekend blijft onbekend.</p></details>'+
+    '<details data-bg-original-agent-dispatch="true"><summary>Oorspronkelijk agent-/herstelwerk ('+knownNum(agentDispatch?.pending)+' / '+knownNum(agentDispatch?.recovering)+')</summary>'+
+    '<p>Bron: originele onveranderlijke ONE BRAIN AgentWork PENDING en RecoveryWork RECOVERING. Aggregaten zijn niet hetzelfde als uitvoerende agent-ACK, een opgelost incident, een provider-side-effect of gemeten resultaat. Originele eigenaar moet dezelfde bronidentiteit en onafhankelijk ontvangst- en resultaatbewijs teruglezen. Geen automatische bulkafsluiting of nieuwe uitvoerder.</p>'+
+    '<p>Status: <strong>'+esc(agentDispatch?.state||'BRON ONBEREIKBAAR')+'</strong> · AgentWork '+knownNum(agentDispatch?.pending)+' · RecoveryWork '+knownNum(agentDispatch?.recovering)+' · uitkomst <strong>NIET BEWEZEN</strong></p>'+
+    '<p><a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198" target="_blank" rel="noopener noreferrer">Bestaande P0-eigenaar #4198</a></p></details>'+
     '<details data-bg-original-innovation-intakes="true"><summary>Innovatie · oorspronkelijke agentoverdracht ('+knownNum(innovation?.awaitingAgentAck)+' nog zonder ACK)</summary>'+
     '<p>Bron: originele innovatie-kandidaten → ONE BRAIN-verplichtingen → bestaande agentintakes. Herstel naar PLANNED is géén ontvangst door een agent. Een technische overdracht zonder werkelijk consumer-ACK, beschermde toepassing en gemeten effect blijft open.</p>'+
     '<p>Status: <strong>'+esc(innovation?.state||'BRON ONBEREIKBAAR')+'</strong> · Bronnen gebonden '+knownNum(innovation?.sourceBound)+' / '+knownNum(innovation?.candidates)+' · onafhankelijke ACK '+knownNum(innovation?.verifiedConsumerAcks)+' · uitkomst <strong>NIET BEWEZEN</strong></p>'+

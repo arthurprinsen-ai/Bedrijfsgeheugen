@@ -18,6 +18,12 @@ const SOURCES=Object.freeze([
     query:'select=measured_at,original_email_actions_7d,provider_readback_proven_7d,broken_or_unproven_handoffs_7d,linked_experiment_treatments_7d,provider_linked_replies_7d,provider_linked_meetings_7d,provider_linked_realized_revenue_eur_7d,handoff_health&limit=2',max:1},
   {name:'commercialIncidents',table:'brain_blockers',
     query:'select=fingerprint,scope,severity,state,updated_at,resolved_at&scope=like.powerhouse%3Acommercial%3A*&order=updated_at.desc&limit=17',max:16},
+  // Existing immutable agent work/recovery dispatch, aggregated in PostgREST only.
+  // Never retrieve idempotency keys, tenant rows, provider secrets or work payloads.
+  {name:'agentWorkPending',table:'brain_outcome_obligation_dispatch',
+    query:'select=state&record_type=eq.AgentWork&state=eq.PENDING&limit=1',max:1,countOnly:true},
+  {name:'recoveryWorkActive',table:'brain_outcome_obligation_dispatch',
+    query:'select=state&record_type=eq.RecoveryWork&state=eq.RECOVERING&limit=1',max:1,countOnly:true},
   // Same original innovation candidate → ONE BRAIN obligation → agent intake.
   // Source-bounded admin-only projection, NOT a second registry or executor.
   {name:'innovationCandidates',table:'powerhouse_optimization_candidate_v1',
@@ -127,6 +133,16 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
   const terminalRows=usable(readStates,'terminal')?rows(datasets.terminal):[];
   const handoffRows=usable(readStates,'commercialHandoff')?rows(datasets.commercialHandoff):[];
   const incidentRows=usable(readStates,'commercialIncidents')?rows(datasets.commercialIncidents).filter(r=>String(r?.scope||'').startsWith('powerhouse:commercial:')).slice(0,16):[];
+  const dispatchAvailable=['agentWorkPending','recoveryWorkActive'].every(x=>usable(readStates,x));
+  const dispatchPending=dispatchAvailable?metric(rows(datasets.agentWorkPending)[0]?.count):null;
+  const dispatchRecovering=dispatchAvailable?metric(rows(datasets.recoveryWorkActive)[0]?.count):null;
+  const agentDispatch=dispatchAvailable && dispatchPending!==null && dispatchRecovering!==null
+    ?{state:dispatchPending+dispatchRecovering>0?'ORIGINAL_CONSUMER_RECEIPTS_DUE':'NO_OPEN_DISPATCH_ROWS_OBSERVED',
+      pending:dispatchPending,recovering:dispatchRecovering,
+      source:'ORIGINAL_IMMUTABLE_AGENT_AND_RECOVERY_DISPATCH',
+      outcomeProof:'NOT_IN_THIS_PROJECTION',
+      nextSafeAction:'ORIGINAL_OWNER_SOURCE_BOUND_EXECUTION_AND_INDEPENDENT_CONSUMER_READBACK',
+      readAt:at}:null;
   const innovationAvailable=['innovationCandidates','innovationObligations','innovationIntakes'].every(x=>usable(readStates,x));
   const innovation=innovationAvailable?projectOriginalInnovationHandoff({
     candidates:datasets.innovationCandidates,obligations:datasets.innovationObligations,
@@ -159,6 +175,8 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
   if(handoff && handoff.handoff_health!=='GREEN')gaps.push('COMMERCIAL_HANDOFF_PROOF_OPEN');
   if(handoff && metric(handoff.broken_or_unproven_handoffs_7d)>0)gaps.push('HISTORICAL_COMMERCIAL_HANDOFF_DEBT_OPEN');
   if(incidentActive>0)gaps.push('ACTIVE_COMMERCIAL_BRAIN_INCIDENT_REQUIRES_READBACK');
+  if(agentDispatch?.pending>0)gaps.push('ORIGINAL_AGENT_WORK_CONSUMER_ACK_DUE');
+  if(agentDispatch?.recovering>0)gaps.push('ORIGINAL_RECOVERY_WORK_RESULT_UNVERIFIED');
   if(innovation){
     if(innovation.state==='SOURCE_IDENTITY_CONFLICT'||innovation.state==='SOURCE_LINEAGE_GAP')gaps.push('INNOVATION_SOURCE_LINEAGE_GAP');
     if(innovation.state==='NO_SOURCE_CANDIDATES')gaps.push('INNOVATION_NO_SOURCE_CANDIDATES');
@@ -243,6 +261,7 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
       readAt:at
     }:null,
     innovationHandoff:innovation,
+    agentDispatch,
     gapCodes:gaps
   };
 }
@@ -252,11 +271,21 @@ export async function readPowerhouseIntegrationReadback({baseUrl,key,fetchImpl=g
     return projectPowerhouseIntegrationReadback({readStates:Object.fromEntries(SOURCES.map(s=>[s.name,'CONFIG_UNAVAILABLE'])),at});
   const base=String(baseUrl).replace(/\/$/,'');
   const settled=await Promise.allSettled(SOURCES.map(async(source)=>{
+    const headers={accept:'application/json',apikey:key,authorization:'Bearer '+key};
+    if(source.countOnly)headers.prefer='count=exact';
     const r=await fetchImpl(base+'/rest/v1/'+source.table+'?'+source.query,{
-      headers:{accept:'application/json',apikey:key,authorization:'Bearer '+key},
-      signal:AbortSignal.timeout(4500)
+      headers,signal:AbortSignal.timeout(4500)
     });
     if(!r.ok)throw new Error('READ_FAILED');
+    if(source.countOnly){
+      // Exact count is provider-observed Content-Range, not number of sampled rows.
+      // Missing/malformed counts are UNKNOWN, never a fabricated zero.
+      const raw=r.headers?.get?.('content-range');
+      const match=typeof raw==='string'?raw.match(/^(?:\d+-\d+|\*)\/(\d+)$/):null;
+      const count=match?Number(match[1]):null;
+      if(count===null||!Number.isSafeInteger(count)||count<0)throw new Error('COUNT_UNVERIFIED');
+      return [{count}];
+    }
     const body=await r.json();
     if(!Array.isArray(body))throw new Error('INVALID_SOURCE_SHAPE');
     return body;
