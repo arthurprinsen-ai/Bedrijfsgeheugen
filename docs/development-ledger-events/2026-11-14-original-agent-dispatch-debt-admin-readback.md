@@ -7,3 +7,8 @@
 - Existing agent roster, original improvement skill, executable replay test updated. No customer sends, source mutations, extra cron, new producer/consumer, RLS change or duplicate store.
 - Verification remains required: protected exact-head checks → merge → exact Netlify deploy SHA → authenticated admin source count readback → subsequent actual original agent consumer, source-bound independent receipt and measured outcome.
 - Machine learning: `brain/learning/2026-11-14-original-immutable-agent-dispatch-debt-v1.json`. Human change: `docs/changes/2026-11-14-original-agent-dispatch-debt-admin-readback.md`.
+
+## Protected admission recovery — no source migration re-executed
+- Required initial run #43643998210 failed generated System Map integrity following agent roster change; its native generator reported exact contentHash `77184ae17f98960f4d07b2973ee1b906357946f99fcd8237de014698043e8878`. The existing canonical System Map and Portal script stamp were updated to **that exact native output**, without weakening the integrity check.
+- The next Required run #43644161054 exposed a concurrent protected main migration #865 present as executable SQL but absent from the tracked source lock (864); independent *native production* `supabase_migrations.schema_migrations` now contains `20261115001500/original_public_email_overdue_source_replay_dispatch_v1`, total **865**, verified 2026-11-14 21:43:36.118904Z. Appended just this exact provider-applied identity to existing `supabase/migration-history.lock.json` with updated provider capture timestamp. No SQL migration or data change was executed by this repair.
+- Final Required, CodeQL, Netlify and production admin role-gated independent readback still required; prior failed tests must not be labelled green.
