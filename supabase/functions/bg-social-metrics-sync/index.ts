@@ -573,7 +573,7 @@ Deno.serve(async(req:Request)=>{
         };
       }
     }
-    outcome.original_company_source_brain_failure_ack=originalBrainFailureAck;
+    const trackedOutcome={...outcome,original_company_source_brain_failure_ack:originalBrainFailureAck};
     // Preserve the ORIGINAL daily key and type for existing consumers.
     // Only this projection may be replaced by later source attempts.
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
