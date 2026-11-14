@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-859-lock-858-source-parity|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "Protected innovation PR #5790 merged and the native provider applied the original 20261114184600 innovation handoff migration, while the repository immutable production migration lock still stopped at 20261114164500. This is only an original source-history lag, not evidence of unsuccessful application.",
+  "prevention": "The original migration owner must append ONLY version/name pairs already independently observed in the native Supabase production history; preserve exact prior prefix, never predeclare a proposed migration as applied, and require source/consumer/outcome readback separately.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 859,
+    "source_lock_count_before": 858,
+    "matched_provider_prefix_count": 858,
+    "matched_prefix_conflicts": 0,
+    "provider_applied_extra": {
+      "version": "20261114184600",
+      "name": "innovation_canonical_candidate_handoff_v1"
+    },
+    "existing_source_sql": "supabase/migrations/20261114184600_innovation_canonical_candidate_handoff_v1.sql",
+    "native_function": "public.powerhouse_run_self_improvement_layer_v1(date)",
+    "native_function_contains_original_handoff": true,
+    "readback_at": "2026-11-14T18:15:52.019662Z",
+    "security": "No SQL execution, no RLS or privilege change, no new cron/provider call, no duplicate agent"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "expected": "858 historic provider-attested lock entries gain exactly native verified #859. Protected GitHub PR migration admission excludes unrelated proposed migrations.",
+    "business_effect": "NONE; source history parity is not consumer ACK or actual customer outcome."
+  },
+  "no_new_scheduler": true
+}
