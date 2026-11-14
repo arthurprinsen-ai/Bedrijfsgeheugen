@@ -5,6 +5,10 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## 2026-11-14 — lege innovatiebron is niet groen
+
+Bij een nulresultaat in de oorspronkelijke kandidaatbron mogen Self-Improvement, ONE BRAIN, Heartbeat en het Portaal **nooit** `INDEPENDENTLY_VERIFIED`, `actioned`, `VERIFIED` of bewezen verbetering claimen op basis van de rekenkundige gelijkheid 0=0. Het werkelijke resultaat is `NO_SOURCE_CANDIDATES` en de bestaande runtime-event blijft `observed` met `data_quality=NO_SOURCE_CANDIDATES`. Onderzoek of de bron oprecht leeg is of brondata ontbreekt; geen kunstmatige kandidaten verzinnen en niets ongemerkt afsluiten. Dezelfde functie en scheduler blijven lopen. Regressie: `tests/brain-innovation-original-consumer-intake-20261114.test.mjs`. Bron `supabase/migrations/20261114204500_innovation_zero_source_false_green_prevention_v1.sql`. Incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
 ## P0 2026-11-14 — originele innovatie-afnemer: werkende intake, niet alleen producent-ACK
 
 In de bestaande dagelijkse `powerhouse_run_self_improvement_layer_v1(date)` volgt op elk `brain_obligations.INNOVATION_DELIVERY`-bronrecord nu één **bestaande universele ONE BRAIN-operatie** per exacte bronrevisie: `brain_operations.operation_type=INNOVATION_INTAKE`, met idempotente `innovation-delivery:<candidate_id>:<hash>` en de onveranderde correlatie `innovation-delivery:<candidate_id>`. `engineering` gaat naar het bestaande `agent:agent-integration-engineer`, `cro` naar `agent:agent-growth-market`; onherkenbare eigenaar mag niet stilzwijgend naar een andere agent worden doorgeschoven. `brain_create_operation` borgt binding aan de bestaande control plane en `PLANNED` betekent **uitsluitend opdrachtintake**. Het is géén geïmplementeerde oplossing, consumer ACK, autorisatie, verzending of klantwaarde. De bestaande scheduler blijft actief; er is geen tweede queue, tabel, kopie van het brein of nieuwe scheduler.
