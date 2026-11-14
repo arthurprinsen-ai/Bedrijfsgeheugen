@@ -128,12 +128,37 @@ function safePublicationHandoffWriteback(row,receipt){
  const handoff=parsed?.handoffWriteback;
  if(handoff?.contract!=='original-publication-obligation-recovery-v1')return null;
  const counts=['planned','applied','conflicts','errors'];
+ // Incident readback failures are ADDITIONAL to planned CAS writes.
+ // Rejecting errors > planned made the original Portal hide the entire
+ // handoff receipt exactly when recovery was most urgent.
  if(!counts.every(k=>Number.isSafeInteger(handoff[k])&&handoff[k]>=0&&handoff[k]<=100)
-    ||handoff.applied>handoff.planned
-    ||handoff.applied+handoff.conflicts+handoff.errors>handoff.planned)return null;
+    ||handoff.applied>handoff.planned||handoff.conflicts>handoff.planned)return null;
+ const optionalCount=(key)=>Number.isSafeInteger(handoff[key])
+   &&handoff[key]>=0&&handoff[key]<=100?handoff[key]:0;
+ const safeRoute=(item)=>{
+   const channel=typeof item?.channel==='string'&&/^[a-z0-9_:-]{1,80}$/.test(item.channel)
+     ?item.channel:'UNDECLARED_CHANNEL';
+   const owner=typeof item?.owner==='string'&&/^[a-zA-Z0-9 /._-]{5,120}$/.test(item.owner)
+     ?item.owner:'original-powerhouse-content-orchestrator';
+   const reason=typeof item?.reason==='string'&&/^[A-Z_]{6,120}$/.test(item.reason)
+     ?item.reason:'UNVERIFIED_RECEIVER_REASON';
+   return Object.freeze({channel,owner,reason});
+ };
+ const unresolved=Array.isArray(handoff.unresolved)
+   ?handoff.unresolved.slice(0,12).map(safeRoute):[];
+ const ownerRoutes=Array.isArray(handoff.original_owner_routes)
+   ?handoff.original_owner_routes.slice(0,12).map(safeRoute):[];
  return Object.freeze({contract:handoff.contract,
   planned:handoff.planned,applied:handoff.applied,
-  conflicts:handoff.conflicts,errors:handoff.errors});
+  conflicts:handoff.conflicts,errors:handoff.errors,
+  alreadyReceived:optionalCount('already_received'),
+  conflictReadbacks:optionalCount('conflict_readbacks'),
+  pendingHandoffs:unresolved.length,
+  originalOwnerRoutes:ownerRoutes.length,
+  unresolved,ownerRoutes,
+  receiverProofDue:handoff.conflicts>0||handoff.errors>0||unresolved.length>0
+    ||ownerRoutes.some(item=>item.reason!=='ORIGINAL_EMAIL_OWNER_ONLY')
+ });
 }
 const denied=reason=>Object.freeze({contract:DIAGNOSTIC_CONTRACT,status:'UNAVAILABLE',reason,
   source:RECEIPTS,observedAt:null,cases:[],allGreen:false});
