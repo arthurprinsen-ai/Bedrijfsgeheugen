@@ -4,7 +4,7 @@ import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs 
 import { stageOriginalWindsorCompanySources, originalCompanySourceProviderHealth } from '../_shared/original-windsor-company-stage.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
-import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity} from '../_shared/original-provider-poll-receipt.mjs';
+import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity,originalCompanySourceBrainFailureInput} from '../_shared/original-provider-poll-receipt.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -525,12 +525,61 @@ Deno.serve(async(req:Request)=>{
       .eq('dedupe_key',pollIdentity.dedupeKey).maybeSingle();
     if(pollReadbackError)throw new Error('ORIGINAL_PROVIDER_POLL_AUDIT_READBACK:'+pollReadbackError.message);
     assertOriginalProviderPollReceipt(independentReceipt,audit);
+    // ORIGINAL #177 -> ONE BRAIN: the independent source audit is not a Brain
+    // acknowledgement. Record one exact occurrence per factual source poll
+    // inside the EXISTING failure registry and independently SELECT its ACK.
+    // Never put API tokens, URLs including keys or provider bodies in evidence.
+    let originalBrainFailureAck:any={state:'NOT_REQUIRED_NO_ORIGINAL_SOURCE_FAILURE'};
+    const failureInput=originalCompanySourceBrainFailureInput({
+      identity:pollIdentity,sourceRefresh:companySourceRefresh
+    });
+    if(failureInput){
+      const encoded=new TextEncoder().encode(JSON.stringify(failureInput.p_evidence));
+      const shaBytes=new Uint8Array(await crypto.subtle.digest('SHA-256',encoded));
+      const payloadSha256=Array.from(shaBytes,v=>v.toString(16).padStart(2,'0')).join('');
+      const {error:brainWriteError}=await db.rpc('brain_observe_failure',{
+        ...failureInput,p_payload_sha256:payloadSha256
+      });
+      if(brainWriteError){
+        originalBrainFailureAck={
+          state:'ORIGINAL_BRAIN_FAILURE_WRITE_NOT_ACKED',
+          source_poll_receipt_key:pollIdentity.dedupeKey,
+          failure_class:companySourceRefresh.failure_class,
+          no_provider_success_claim:true
+        };
+      }else{
+        const {data:brainReadback,error:brainReadError}=await db
+          .from('brain_failure_occurrences')
+          .select('occurrence_id,fingerprint,payload_sha256')
+          .eq('occurrence_id',failureInput.p_occurrence_id).maybeSingle();
+        const exact=!brainReadError&&brainReadback
+          &&brainReadback.occurrence_id===failureInput.p_occurrence_id
+          &&brainReadback.fingerprint===failureInput.p_fingerprint
+          &&brainReadback.payload_sha256===payloadSha256;
+        originalBrainFailureAck=exact?{
+          state:'ONE_BRAIN_ORIGINAL_FAILURE_OCCURRENCE_READBACK_VERIFIED',
+          original_occurrence_id:failureInput.p_occurrence_id,
+          fingerprint:failureInput.p_fingerprint,
+          original_source_receipt_key:pollIdentity.dedupeKey,
+          original_failure_class:companySourceRefresh.failure_class,
+          independent_readback:true,
+          provider_delivery_proven:false,
+          learning_proven:false
+        }:{
+          state:'ORIGINAL_BRAIN_FAILURE_READBACK_NOT_PROVEN',
+          source_poll_receipt_key:pollIdentity.dedupeKey,
+          failure_class:companySourceRefresh.failure_class,
+          no_provider_success_claim:true
+        };
+      }
+    }
+    const trackedOutcome={...outcome,original_company_source_brain_failure_ack:originalBrainFailureAck};
     // Preserve the ORIGINAL daily key and type for existing consumers.
     // Only this projection may be replaced by later source attempts.
     const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
       dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
       source:'bg-social-metrics-sync',subject_key:'social-learning',channel:'system',
-      occurred_at:new Date().toISOString(),evidence:outcome,
+      occurred_at:new Date().toISOString(),evidence:trackedOutcome,
       context:{provider:'composio',learning_authority:'social_metric_snapshots',
         original_poll_receipt_key:pollIdentity.dedupeKey,
         original_poll_slot_utc:pollIdentity.slotStart},
@@ -538,10 +587,12 @@ Deno.serve(async(req:Request)=>{
       confidence:1,updated_at:new Date().toISOString()
     },{onConflict:'dedupe_key'});
     if(saveError)throw new Error('PROVIDER_METRIC_READBACK:'+saveError.message);
-    return json({ok:total>0,...outcome,
+    return json({ok:total>0,...trackedOutcome,
       original_poll_receipt_key:pollIdentity.dedupeKey,
       original_poll_receipt_verified:true,
       original_source_only_not_learning_ack:true
-    },total>0?200:503);
+    },(total>0&&
+      !['ORIGINAL_BRAIN_FAILURE_WRITE_NOT_ACKED','ORIGINAL_BRAIN_FAILURE_READBACK_NOT_PROVEN']
+        .includes(originalBrainFailureAck.state))?200:503);
   }catch(e){return json({ok:false,error:clean((e as Error).message).slice(0,190)},503);}
 });
