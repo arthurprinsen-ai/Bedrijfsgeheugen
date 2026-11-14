@@ -65,3 +65,11 @@ test('administrative receipts cannot inflate source score or downstream contact 
  assert.match(sql,/'company_key',c\.company_key/);
  assert.doesNotMatch(sql,/c\.subject_key,c\.person_key,c\.company_key,'internal',v_now/);
 });
+
+test('observed/error are existing event state schema values; waiting lives only in receipt evidence',()=>{
+ assert.match(sql,/when v_bad then 'error'/);
+ assert.match(sql,/consumer_receipts'\)::int,0\) then 'observed'/);
+ assert.match(sql,/else 'observed' end,/);
+ assert.doesNotMatch(sql,/then 'waiting'|else 'waiting' end/);
+ assert.match(sql,/e\.evidence->>'handoff_status' in/);
+});
