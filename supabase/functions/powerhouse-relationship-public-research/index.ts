@@ -199,7 +199,7 @@ async function processOriginalFirstPartyPublicSource(db:any,selected:any,
   const homeHtml=await readBoundedPublicPage(homeUrl);
   const publishedLinks=homeHtml?publicCompanyContactLinks(homeHtml,homeUrl,company,1):[];
   const publicPages=homeHtml
-    ?[{type:'first_party_company_domain',url:homeUrl,html:homeHtml},
+    ?[{type:'first_party_company_domain',url:'https://'+domain+'/',html:homeHtml},
     ...publishedLinks.map((url:string)=>({type:'first_party_company_domain',url})),
     ...(publishedLinks.length?[]:[{type:'first_party_company_domain',url:'https://'+domain+'/team'}])]
     :[{type:'first_party_company_domain',url:'https://www.'+domain+'/'},
