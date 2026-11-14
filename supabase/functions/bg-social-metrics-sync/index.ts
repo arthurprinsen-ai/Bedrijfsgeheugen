@@ -1,6 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
 import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
+import { stageOriginalWindsorCompanySources } from '../_shared/original-windsor-company-stage.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
 import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity} from '../_shared/original-provider-poll-receipt.mjs';
@@ -273,6 +274,99 @@ async function reconcileOriginalPublicationMetricHandoffs(db:any){
    results:stages,learning_proven:false,provider_metric_scope_preserved:true};
 }
 
+
+// The ORIGINAL six-hour #177 provider observer owns this source refresh too.
+// Windsor's authorized LinkedIn organization scope is read-only; account and
+// post IDs remain independently checked against canonical LIVE_PROVEN sources.
+// No new cron, external post, alternate source database or secondary learning
+// writer. Provider API key stays exclusively in Vault and never in logs.
+async function originalWindsorCompanyRows(apiKey:string,fields:string[],since:string,to:string,maxRows:number){
+  const endpoint=new URL('https://connectors.windsor.ai/linkedin_organic');
+  endpoint.searchParams.set('api_key',apiKey);
+  endpoint.searchParams.set('select_accounts','18234216');
+  endpoint.searchParams.set('date_from',since);
+  endpoint.searchParams.set('date_to',to);
+  endpoint.searchParams.set('fields',fields.join(','));
+  endpoint.searchParams.set('_max_rows',String(maxRows));
+  endpoint.searchParams.set('_renderer','json');
+  endpoint.searchParams.set('refresh_since','3d');
+  endpoint.searchParams.set('refresh_interval','6h');
+  let response:Response;
+  try{
+    response=await fetch(endpoint.toString(),{
+      method:'GET',signal:AbortSignal.timeout(12000),
+      headers:{accept:'application/json'}
+    });
+  }catch(_){throw new Error('WINDSOR_PROVIDER_TRANSPORT_FAILED');}
+  // NEVER log endpoint, response content or native thrown URL: api_key is a
+  // required query parameter for the Windsor connectors API.
+  if(!response.ok)throw new Error('WINDSOR_PROVIDER_HTTP_'+response.status);
+  const payload:any=await response.json().catch(()=>null);
+  if(!Array.isArray(payload?.data))throw new Error('WINDSOR_PROVIDER_DATA_ARRAY_MISSING');
+  if(payload.data.length>=maxRows)throw new Error('WINDSOR_SOURCE_TRUNCATED_RETRY_BOUNDED_QUERY');
+  return payload.data;
+}
+async function refreshOriginalCompanyWindsorSources(db:any){
+  const apiKey=await secret(db,'WINDSOR_API_KEY');
+  if(!apiKey)throw new Error('WINDSOR_VAULT_TOKEN_MISSING');
+  const day=localDay();
+  const since=new Date(Date.now()-14*86400000).toISOString().slice(0,10);
+  const accountSince=new Date(Date.now()-3*86400000).toISOString().slice(0,10);
+  const [postRows,accountRows]=await Promise.all([
+    originalWindsorCompanyRows(apiKey,[
+      'date','post_id','share_id','share_owner','share_published_time',
+      'share_url','share_impression_count','share_clicks_count',
+      'share_like_count','share_comment_count','share_count','share_video_views'
+    ],since,day,40),
+    originalWindsorCompanyRows(apiKey,[
+      'date','organization_id','account_analytics_impression_count',
+      'account_analytics_click_count','account_analytics_comment_count',
+      'account_analytics_share_count'
+    ],accountSince,day,7)
+  ]);
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,publication_date,external_id,live_proven_at,evidence')
+    .eq('tenant_id','canonical').eq('channel','linkedin_company')
+    .eq('status','LIVE_PROVEN').gte('publication_date',since).lte('publication_date',day)
+    .not('live_proven_at','is',null).limit(35);
+  if(proofError)throw new Error('WINDSOR_ORIGINAL_PUBLICATION_READ_FAILED');
+  const observedAt=new Date().toISOString();
+  const staged=stageOriginalWindsorCompanySources({
+    postRows,accountRows,publicationProofs:proofs||[],slotDay:day,
+    observedAt,organizationId:'18234216',maxRows:40
+  });
+  if((proofs||[]).length>0 && staged.source_rows_accepted===0)
+    throw new Error('WINDSOR_NO_INDEPENDENTLY_VERIFIED_COMPANY_POST_ROWS');
+  const records=[...staged.source_rows,...(staged.account_row?[staged.account_row]:[])];
+  if(!records.length)throw new Error('WINDSOR_NO_PROVIDER_SOURCE_ROWS');
+  // One immutable daily observation per account/post in the EXISTING source
+  // spine; rerunning original #177 never fabricates a newer factual timestamp.
+  const {error:writeError}=await db.from('powerhouse_growth_source_daily_v1')
+    .upsert(records,{onConflict:'tenant_id,metric_date,source_key',ignoreDuplicates:true});
+  if(writeError)throw new Error('WINDSOR_ORIGINAL_SOURCE_STAGE_WRITE_FAILED');
+  const keys=records.map((x:any)=>x.source_key);
+  const {data:readback,error:readbackError}=await db.from('powerhouse_growth_source_daily_v1')
+    .select('source_key,quality,source_observed_at,evidence')
+    .eq('tenant_id','bedrijfsgeheugen').eq('metric_date',day).in('source_key',keys).limit(41);
+  if(readbackError)throw new Error('WINDSOR_ORIGINAL_SOURCE_READBACK_FAILED');
+  const observedKeys=new Set((readback||[]).filter((x:any)=>
+      x.evidence?.origin==='original-bg-social-metrics-sync-cron-177'
+      &&Number.isFinite(Date.parse(x.source_observed_at||'')))
+    .map((x:any)=>x.source_key));
+  if(keys.some(k=>!observedKeys.has(k)))
+    throw new Error('WINDSOR_ORIGINAL_SOURCE_MISMATCH_OR_OTHER_WRITER');
+  return {state:'PROVIDER_ACCOUNT_SOURCE_REFRESHED_AND_STAGED',
+    source_receipt:'original_company_provider_source_refresh',
+    original_cron:177,provider:'windsor.ai',authorized_account:'18234216',
+    provider_rows_examined:staged.provider_rows_examined,
+    posts_staged:staged.source_rows.length,
+    account_source_staged:!!staged.account_row,
+    verified_daily_readback:observedKeys.size,
+    rejected_unverified:staged.rejected,
+    provider_delivery_proven:false,
+    independent_learning_proven:false};
+}
+
 // Company analytics come from the Windsor ingest (powerhouse_growth_source_daily_v1), not from Composio (403).
 async function companyAnalyticsState(db:any){
   const {data,error}=await db.from('powerhouse_growth_source_daily_v1')
@@ -359,12 +453,21 @@ Deno.serve(async(req:Request)=>{
     });
     const day=localDay();
     let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any,companyExperimentHandoff:any;
+    let companySourceRefresh:any;
      let originalMetricHandoff:any;
     try{personalRegistry=await registerPersonalProofs(db);}catch(e){
       personalRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
     }
     try{companyRegistry=await registerCompanyProofs(db);}catch(e){
       companyRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
+    }
+    try{companySourceRefresh=await refreshOriginalCompanyWindsorSources(db);}catch(e){
+      const error=clean((e as Error)?.message);
+      companySourceRefresh={state:'ORIGINAL_COMPANY_SOURCE_REFRESH_UNAVAILABLE',
+        failure_class:/^WINDSOR_[A-Z0-9_]+$/.test(error)?error:'WINDSOR_SOURCE_UNKNOWN_ERROR',
+        recovery_owner:'existing bg-social-metrics-source-6h-v1/#177',
+        recovery_action:'RETRY_ORIGINAL_AUTHORIZED_WINDSOR_SOURCE_ON_NEXT_EXISTING_177_SLOT',
+        provider_delivery_proven:false,learning_proven:false};
     }
     try{companyMetricLink=await reconcileCompanyMetricEvidence(db);}catch(e){
       companyMetricLink={state:'COMPANY_METRIC_LINK_SOURCE_ERROR',error:clean((e as Error).message).slice(0,120)};
@@ -398,7 +501,7 @@ Deno.serve(async(req:Request)=>{
       &&!['HANDOFF_OVERDUE','EXPERIMENT_HANDOFF_READ_ERROR'].includes(companyExperimentHandoff?.state);
     const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
       instagram:ig,linkedin_personal:li,
-      linkedin_company:companyState,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
+      linkedin_company:companyState,company_source_refresh:companySourceRefresh,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
       company_learning_handoff_ok:companyHandoffOk,company_experiment_handoff:companyExperimentHandoff,
       personal_post_registry:personalRegistry,
       original_publication_metric_handoff:originalMetricHandoff,

@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|original-windsor-linkedin-company-post-source-stale-when-cron177-succeeds|20261114-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_NOT_LIVE",
+  "compiler": {
+    "failure_class": "PROVIDER_OBSERVED_SOURCE_NOT_CONSUMED",
+    "scope": "SOCIAL_ORGANIC",
+    "machine_enforceable": true
+  },
+  "root_cause": "The ORIGINAL six-hour bg-social-metrics-source-6h-v1 (#177) successfully enqueued HTTP and read the latest *stale* Windsor account/source rows, but did not refresh the Windsor source itself. Native provider-source post observations stopped on Nov 12 and account totals stopped Nov 11. Actual connected Windsor.ai linkedin_organic account 18234216 read returned 12 November 3-14 company posts (including Nov 12,13,14) and true provider metrics. Original canonical LIVE_PROVEN publication IDs and author urn:li:organization:18234216 match, while original social_metric_snapshots for those last 3 company posts are absent. 186/187 open social learning Brain duties already have source-bound consumer ACK, NOT independent provider measurement or applied learning.",
+  "prevention": "The existing ORIGINAL #177 observer must read authorized Windsor organic company metrics from the existing Supabase Vault into the same original daily source table using immutable daily post/account identities, exact canonical author/publication evidence and bounded 14-day reads, then perform its original independent company link and BRAIN handoff. Only exact provider snapshot + original consumer evaluation + next-run outcome close obligations; never greenwash stale Windsor data or infer causal effect from impressions.",
+  "evidence": {
+    "provider_connector": "windsor.ai linked linkedin_organic",
+    "provider_account": "18234216",
+    "verified_company_author": "urn:li:organization:18234216",
+    "provider_observed_post_count_nov3_through_nov14": 12,
+    "recent_post_urns": [
+      "urn:li:share:7526540479191040000",
+      "urn:li:share:7526904394580238336",
+      "urn:li:share:7527265256679849984"
+    ],
+    "original_latest_windsor_post_source_observed_at": "2026-11-12T14:41:21Z",
+    "original_latest_windsor_account_source_observed_at": "2026-11-11T14:32:26Z",
+    "original_cron_jobid": 177,
+    "original_cron_name": "bg-social-metrics-source-6h-v1",
+    "native_cron_status": "ACTIVE_SCHEDULED_SUCCEEDED_BUT_PROVIDER_SOURCE_STALE",
+    "original_runtime_observation": "2026-11-14T18:18:26Z",
+    "original_runtime_company_state": "WINDSOR_STALE",
+    "original_runtime_company_metric_link": {
+      "state": "NO_EXACT_INDEPENDENTLY_LINKABLE_ANALYTICS",
+      "linked": 0
+    },
+    "original_snapshot_absent_for_recent_three": true,
+    "source_learning_open": 187,
+    "source_revision_bound_ack_present": 186,
+    "source_learning_unproven": 186,
+    "source_registry": "public.powerhouse_growth_source_daily_v1",
+    "consumer_registry": "public.social_metric_snapshots",
+    "original_learning_consumer": "powerhouse-runtime-scheduler-mux-v1/#171",
+    "provider_key_vault_name_exists": true,
+    "provider_key_value_disclosed": false,
+    "provider_api_docs": "https://windsor.ai/api-documentation/",
+    "scope": "READ_ONLY_PROVIDER_REFRESH_TO_EXISTING_ORIGINAL_SOURCE_ONLY",
+    "no_new_scheduler": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-windsor-company-source-177-20261114.test.mjs"
+    ],
+    "expected": "Provider rows accepted only when exact original LinkedIn company author, organization account, post URN/share-ID/share-URL, post date and canonical LIVE_PROVEN independent readback match. 0 or null count accepted as real number; negative/other actor/unknown post/truncated results fail closed. Windsor original #177 refresh executes before existing company metric join and writes only original table. Same natural six-hour original poll preserves idempotent daily source and separate provider/outcome proof.",
+    "business_effect": "NO CLAIM of actual provider side effect, linked snapshot in production, causal uplift, subscriber, lead, reply, meeting, transaction or revenue until independent native readback after actual deployment."
+  },
+  "human_documentation": "docs/changes/2026-11-14-original-windsor-177-social-source-refresh.md",
+  "activity_ledger": "docs/development-ledger-events/2026-11-14-original-windsor-177-social-source-refresh.md"
+}
