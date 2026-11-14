@@ -52,7 +52,7 @@ test('real ORIGINAL Edge must write, independently read and publish the same sou
  const reread=source.indexOf(".from('brain_failure_occurrences')");
  const summary=source.indexOf("dedupe_key:'provider-social-metrics:'+day");
  assert.ok(audit>=0&&proof>audit&&observe>proof&&reread>observe&&summary>reread);
- assert.match(source,/original_company_source_brain_failure_ack=originalBrainFailureAck/);
+ assert.match(source,/original_company_source_brain_failure_ack:originalBrainFailureAck/);
  assert.match(source,/p_payload_sha256:payloadSha256/);
  assert.match(source,/ONE_BRAIN_ORIGINAL_FAILURE_OCCURRENCE_READBACK_VERIFIED/);
  assert.match(source,/ORIGINAL_BRAIN_FAILURE_WRITE_NOT_ACKED/);
