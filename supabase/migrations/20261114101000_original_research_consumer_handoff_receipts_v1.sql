@@ -90,10 +90,13 @@ begin
     'original-research-owner-handoff:'||c.action_id::text,
     'relationship_research_owner_handoff',
     'powerhouse-commercial-learning-v1',
-    c.subject_key,c.person_key,c.company_key,'internal',v_now,
+    -- Administrative ACK is NOT a commercial signal: prevent source scoring feedback loops.
+    c.subject_key,null,null,'internal',v_now,
     jsonb_build_object(
       'contract','original-research-consumer-handoff-receipts-v1',
       'correlation_id',c.action_id::text,
+      'person_key',c.person_key,
+      'company_key',c.company_key,
       'research_action_id',c.action_id::text,
       'original_outreach_action_id',c.original_outreach_action_id,
       'research_dedupe_key',c.dedupe_key,
