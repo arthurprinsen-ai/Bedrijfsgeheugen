@@ -57,3 +57,16 @@ test('Amsterdam midnight never drops prior-day original source attempts or adds 
  assert.match(src,/original_lineage_reused:true,new_provider_queries:0/);
  assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/);
 });
+
+test('original #116 differentiates unreadable HTML from genuinely observed no named mailto, never false-green',()=>{
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
+ assert.match(src,/status:checked>0\?'NO_EXPLICIT_NAMED_OFFICIAL_MAILTO':'SOURCE_HTML_UNAVAILABLE'/);
+ assert.match(src,/if\(result\.status==='SOURCE_HTML_UNAVAILABLE'\)htmlUnavailable\+\+/);
+ assert.match(src,/if\(result\.status==='NO_EXPLICIT_NAMED_OFFICIAL_MAILTO'\)noNamedMailto\+\+/);
+ assert.match(src,/freeDomain\.html_unavailable>0\?'waarschuwing':'ok'/);
+ assert.match(src,/public_email_next_attempt_at:nextAttemptAt/);
+ assert.match(src,/public_email_source_checked:checked/);
+ assert.match(src,/replayDueHistoricalFirstPartySources\(db,observedAt\)/);
+ assert.match(src,/original_lineage_reused:true,new_provider_queries:0,external_messages_sent:0/);
+ assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/i);
+});
