@@ -15,3 +15,5 @@ Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
 State at creation: candidate, not live.
 
 Extra score-isolation rule: administrative handoff receipts carry `person_key`/`company_key` only in evidence. Top-level runtime event `person_key` and `company_key` are NULL so the original relationship-ranking engine does not misread a technical ACK as a fresh sales signal. Original genuine source event remains separately attributable.
+
+Native schema check: `powerhouse_runtime_events.state` only accepts observed/decided/actioned/closed/ignored/error. Therefore pending handoff is `state=observed` with explicit `evidence.handoff_status` and due_at; unacknowledged overdue transfers are `state=error`. Neither may be promoted to `actioned`. The migration and regressions preserve the existing state constraint, avoiding schema changes.
