@@ -97,3 +97,51 @@ export function originalProviderMetricSnapshotIdentity({platform,providerId,slot
   }
   return 'composio:'+source+':'+external+':'+slotStart;
 }
+
+
+/**
+ * ORIGINAL #177 -> existing ONE BRAIN incident receipt, not a new failure
+ * registry/cron/queue. This is only an input contract; the authorized Edge
+ * observer performs the original RPC and independently reads the occurrence.
+ * Never send tokens, fetch URLs, user identifiers or untrusted error bodies.
+ */
+export function originalCompanySourceBrainFailureInput({identity,sourceRefresh}={}){
+  if(!identity||identity.sourceJobId!==177||
+      !/^provider-social-metrics:run:[0-9a-f-]{36}$/i.test(String(identity.dedupeKey||''))||
+      !/^[0-9a-f-]{36}$/i.test(String(identity.runId||''))||
+      !Number.isFinite(Date.parse(String(identity.slotStart||'')))){
+    throw new Error('ORIGINAL_177_BRAIN_OBSERVER_IDENTITY_UNVERIFIED');
+  }
+  if(sourceRefresh?.state!=='ORIGINAL_COMPANY_SOURCE_REFRESH_UNAVAILABLE')
+    return null;
+  const failureClass=String(sourceRefresh.failure_class||'');
+  if(!/^WINDSOR_[A-Z0-9_]{3,100}$/.test(failureClass))
+    throw new Error('ORIGINAL_177_BRAIN_OBSERVER_FAILURE_CLASS_UNSAFE');
+  return {
+    p_occurrence_id:'provider-social-metrics:original-177:run:'+identity.runId,
+    p_fingerprint:'powerhouse|original-177-windsor-company-provider-source-not-consumed|20261114-v1',
+    p_evidence:{
+      contract:'ORIGINAL_177_PROVIDER_FAILURE_TO_ONE_BRAIN_V1',
+      incident_url:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198',
+      provider:'windsor.ai',
+      provider_account:'18234216',
+      connector:'linkedin_organic',
+      original_cron_id:177,
+      original_cron:'bg-social-metrics-source-6h-v1',
+      original_edge:'bg-social-metrics-sync',
+      original_consumer_cron_id:171,
+      source_poll_receipt_key:identity.dedupeKey,
+      source_poll_slot_utc:identity.slotStart,
+      source_poll_started_at:identity.startedAt,
+      failure_class:failureClass,
+      original_owner:'bg-social-metrics-source-6h-v1/#177',
+      next_owner:'powerhouse-runtime-scheduler-mux-v1/#171',
+      remediation:'VERIFY_EXISTING_AUTHORIZED_WINDSOR_VAULT_API_KEY_ACCOUNT_PERMISSION_AND_RETRY_SAME_ORIGINAL_177',
+      provider_authorization_verified:false,
+      provider_post_metric_handoff_proven:false,
+      causal_effect_proven:false,
+      no_new_scheduler:true,
+      no_secret_disclosure:true
+    }
+  };
+}
