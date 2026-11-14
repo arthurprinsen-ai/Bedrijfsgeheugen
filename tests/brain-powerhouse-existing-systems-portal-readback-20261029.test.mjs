@@ -6,7 +6,7 @@ import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback
 import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup, mountControlPlaneCockpit }
   from '../portal-v2/control-plane-cockpit.js';
 
-const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE',loops:'LIVE',terminal:'LIVE',commercialHandoff:'LIVE',commercialIncidents:'LIVE'};
+const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE',loops:'LIVE',terminal:'LIVE',commercialHandoff:'LIVE',commercialIncidents:'LIVE',innovationCandidates:'LIVE',innovationObligations:'LIVE',innovationIntakes:'LIVE'};
 const datasets={
   health:[{observed_at:'2026-10-29T16:20:00Z',architecture_state:'AMBER',
     learning_state:'EVIDENCE_DUE_GAPS',content_loop_state:'BLOCKED',
@@ -29,6 +29,10 @@ const datasets={
     broken_or_unproven_handoffs_7d:10,linked_experiment_treatments_7d:0,
     provider_linked_replies_7d:0,provider_linked_meetings_7d:0,
     provider_linked_realized_revenue_eur_7d:0,handoff_health:'DEGRADED'}],
+
+  innovationCandidates:[{candidate_id:'f838763f-8deb-4603-972f-a06d0b3a16a6',source_key:'quality-learning-v1:media-preproof',owner_agent:'engineering',status:'candidate',safety_class:'review_required'}],
+  innovationObligations:[{business_entity:'f838763f-8deb-4603-972f-a06d0b3a16a6',change_id:'quality-learning-v1:media-preproof',owner:'original-agent:engineering',state:'OPEN',payload_sha256:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',evidence:{source_revision:'v-1'}}],
+  innovationIntakes:[{operation_type:'INNOVATION_INTAKE',capability_id:'agent:agent-integration-engineer',status:'PLANNED',correlation_id:'innovation-delivery:f838763f-8deb-4603-972f-a06d0b3a16a6',idempotency_key:'innovation-delivery:f838763f-8deb-4603-972f-a06d0b3a16a6:aaaaaaaaaaaaaaaa',change_id:'quality-learning-v1:media-preproof',payload_sha256:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',remote_ref:null,evidence:{consumer_owner:null}}],
   commercialIncidents:[
     {fingerprint:'powerhouse|commercial|original-loop-handoff-and-learning-evidence-due|20261110-v1',
       scope:'powerhouse:commercial:original-end-to-end',severity:'HIGH',state:'ACTIVE',
@@ -80,7 +84,10 @@ test('read-only REST readback uses original authority views and native Brain blo
     powerhouse_loop_integrity_health_v1:datasets.loops,
     powerhouse_terminal_control_plane_health_v1:datasets.terminal,
     powerhouse_commercial_handoff_scorecard_v1:datasets.commercialHandoff,
-    brain_blockers:datasets.commercialIncidents
+    brain_blockers:datasets.commercialIncidents,
+    powerhouse_optimization_candidate_v1:datasets.innovationCandidates,
+    brain_obligations:datasets.innovationObligations,
+    brain_operations:datasets.innovationIntakes
   };
   const seen=[];
   const mock=async (url,options)=>{
@@ -92,9 +99,9 @@ test('read-only REST readback uses original authority views and native Brain blo
     return {ok:true,json:async()=>mapping[key]};
   };
   const p=await readPowerhouseIntegrationReadback({baseUrl:'https://project.supabase.co',key:'secret',fetchImpl:mock});
-  assert.equal(seen.length,9,'all nine original authority sources, including native Brain blockers, must be checked');
+  assert.equal(seen.length,12,'all twelve original authority sources, including native Brain blockers, must be checked');
   assert.deepEqual(new Set(seen),new Set(Object.keys(mapping)),
-    'provider reads must not escape the original nine-source allowlist');
+    'provider reads must not escape the original twelve-source allowlist');
   assert.equal(p.sourceState,'READABLE');
   assert.equal(p.loopAssurance.red,6);
   assert.equal(p.terminalControl.blocked,3);
@@ -120,7 +127,10 @@ test('missing original integrity or terminal provider view cannot create a false
       powerhouse_loop_integrity_health_v1:datasets.loops,
       powerhouse_terminal_control_plane_health_v1:datasets.terminal,
     powerhouse_commercial_handoff_scorecard_v1:datasets.commercialHandoff,
-    brain_blockers:datasets.commercialIncidents
+    brain_blockers:datasets.commercialIncidents,
+    powerhouse_optimization_candidate_v1:datasets.innovationCandidates,
+    brain_obligations:datasets.innovationObligations,
+    brain_operations:datasets.innovationIntakes
     };
     return {ok:true,json:async()=>map[name]||[]};
    }});
@@ -144,7 +154,7 @@ test('provider errors and oversized responses fail closed',async()=>{
 test('panel is embedded in existing cockpit and can never claim green',()=>{
   const html=controlPlaneCockpitMarkup({systemIntegration:projection()});
   assert.match(html,/powerhouse-integration-health/);
-  assert.match(html,/Bronnen LIVE: <strong>9 \/ 9<\/strong>/);
+  assert.match(html,/Bronnen LIVE: <strong>12 \/ 12<\/strong>/);
   assert.match(html,/NIET BEWEZEN/);
   assert.match(html,/Heartbeat/);
   assert.match(html,/bron-omzet/);
@@ -156,7 +166,7 @@ test('admin portal reports partial live-source coverage and never paints missing
   at:'2026-11-02T08:00:00Z'
  });
  const html=powerhouseIntegrationMarkup(incomplete);
- assert.match(html,/Bronnen LIVE: <strong>8 \/ 9<\/strong>/);
+ assert.match(html,/Bronnen LIVE: <strong>11 \/ 12<\/strong>/);
  assert.match(html,/Broncontrole: PARTIAL/);
  assert.match(html,/NIET BEWEZEN/);
  assert.match(html,/SOURCE_UNAVAILABLE:terminal/);
@@ -205,6 +215,9 @@ test('commercial dashboard does not expose incident evidence, personal contact f
   powerhouse_loop_integrity_health_v1:datasets.loops,
   powerhouse_terminal_control_plane_health_v1:datasets.terminal,
   powerhouse_commercial_handoff_scorecard_v1:datasets.commercialHandoff,
+  powerhouse_optimization_candidate_v1:datasets.innovationCandidates,
+  brain_obligations:datasets.innovationObligations,
+  brain_operations:datasets.innovationIntakes,
   brain_blockers:[...datasets.commercialIncidents,
     {fingerprint:'unrelated-secret',scope:'private-other-tenant',
       severity:'HIGH',state:'ACTIVE',last_evidence:{recipient_email:'private@example.com'}}]

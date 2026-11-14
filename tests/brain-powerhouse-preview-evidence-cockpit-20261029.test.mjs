@@ -3,11 +3,12 @@ import assert from 'node:assert/strict';
 import {projectPowerhouseIntegrationReadback} from '../platform/portal/powerhouse-existing-integration-read-model.mjs';
 import {powerhouseIntegrationMarkup} from '../portal-v2/control-plane-cockpit.js';
 
-const sources=['health','capabilities','layers','experiments','revenue','loops','terminal','commercialHandoff','commercialIncidents'];
+const sources=['health','capabilities','layers','experiments','revenue','loops','terminal','commercialHandoff','commercialIncidents','innovationCandidates','innovationObligations','innovationIntakes'];
 const fixture=()=>({
  readStates:Object.fromEntries(sources.map(x=>[x,'LIVE'])),
  datasets:{
   health:[{observed_at:'2026-10-29T21:17:00Z',total_layers:32,wired_layers:32,required_jobs:18,active_jobs:18,current_runtime_errors:2,evidence_sparse_required_layers:2,content_loop_state:'BLOCKED',architecture_state:'AMBER',learning_state:'EVIDENCE_DUE'}],
+  innovationCandidates:[],innovationObligations:[],innovationIntakes:[],
   capabilities:[],layers:[],experiments:[{readiness_state:'BLOCKED',assignments:0,holdout_assignments:0}],revenue:[{scored_prospects:858,next_best_actions:1,realized_revenue_eur:0}],
   loops:[{observed_at:'2026-10-29T21:17:00Z',total_loops:15,green_loops:8,amber_loops:3,red_loops:4,fully_evidenced_loops:12,overall_status:'RED'}],
   terminal:[{observed_at:'2026-10-29T21:17:00Z',nonterminal_obligations:29,blocked_obligations:2,escalated_reconciliation_jobs:2,control_plane_healthy:false,stale_green_truths:0}],
@@ -24,6 +25,9 @@ const fixture=()=>({
 test('real red loop and escalated terminal obligations are visible despite all layers wired',()=>{
  const projection=projectPowerhouseIntegrationReadback(fixture());
  assert.equal(projection.sourceState,'READABLE');
+ assert.equal(projection.innovationHandoff.state,'NO_SOURCE_CANDIDATES');
+ assert.equal(projection.innovationHandoff.verifiedConsumerAcks,0);
+ assert.ok(projection.gapCodes.includes('INNOVATION_NO_SOURCE_CANDIDATES'));
  assert.equal(projection.integrationState,'END_TO_END_UNPROVEN');
  assert.equal(projection.commercialHandoff.state,'DEGRADED');
  assert.equal(projection.commercialIncidents.active,1);

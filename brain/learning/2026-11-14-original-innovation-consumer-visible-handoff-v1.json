@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-14",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|innovation|original-agent-intake-owner-status-not-visible-in-admin-portal|20261114-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "OBSERVABILITY_HANDOFF_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs",
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs"
+    ]
+  },
+  "root_cause": "Existing original innovation producer and operation recovery are real, but the admin control-plane projection did not query or display original INNOVATION_INTAKE operations and their exact candidate+obligation+owner lineage. The daily GitHub 'autonomous improvement' probe is explicitly READ_ONLY; registered agent-team tasks are assignments, not a running consumer. Original 14 tasks stayed PLANNED with no source-bound consumer ACK, not visible as such in the original admin cockpit.",
+  "production_observation": {
+    "observed_date": "2026-11-14",
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "candidates": 14,
+    "original_engineering": 13,
+    "original_cro": 1,
+    "original_obligations_open": 14,
+    "original_intakes_planned": 14,
+    "independent_agent_acks": 0,
+    "operation_remote_refs": 0,
+    "original_daily_health": "RECOVERY_DUE",
+    "original_daily_quality": "OWNER_HANDOFF_PENDING"
+  },
+  "change": {
+    "same_original_admin_endpoint": "/api/powerhouse-control-plane",
+    "same_original_client": "portal-v2/control-plane-cockpit.js",
+    "original_source_tables": [
+      "powerhouse_optimization_candidate_v1",
+      "brain_obligations",
+      "brain_operations"
+    ],
+    "original_agent_roster": "platform/agents/agent-team.mjs",
+    "existing_daily_test_workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "new_scheduler": false,
+    "new_worker": false,
+    "new_queue": false,
+    "new_evidence_store": false,
+    "exposure_admin_only": true
+  },
+  "prevention": {
+    "exact_source_revision_digest_owner_correlation_idempotency_required": true,
+    "missing_or_malformed_source_fails_closed": true,
+    "verified_ack_requires_remote_ref_original_owner_source_revision_independent_readback": true,
+    "measured_outcome_never_inferred_from_ack": true,
+    "scope_capped_at_100_per_source": true,
+    "source_evidence_never_sent_to_browser": true,
+    "no_public_user_access": true
+  },
+  "remaining_evidence": "Actual original engineering/CRO agent consumption (14), independent receipt, protected applied improvement, real before/after outcomes and natural-run learning are not proven by this read-model fix.",
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evidence": {
+    "observed_source": "native production public.powerhouse_optimization_candidate_v1 → public.brain_obligations → public.brain_operations and original powerhouse_runtime_events",
+    "candidate_count": 14,
+    "original_engineering_owner_intakes_planned": 13,
+    "original_cro_owner_intakes_planned": 1,
+    "original_obligations_open": 14,
+    "original_consumer_acks_proven": 0,
+    "original_operator_remote_refs_proven": 0,
+    "original_daily_health": "RECOVERY_DUE",
+    "original_daily_quality": "OWNER_HANDOFF_PENDING",
+    "protected_admission_first_attempt": "Required #43639188555 failed INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning, explicit top-level evidence key missing. Corrected same original PR, not waived.",
+    "replay": "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs",
+    "independent_production_portal_readback": "NOT_YET_PROVEN"
+  }
+}
