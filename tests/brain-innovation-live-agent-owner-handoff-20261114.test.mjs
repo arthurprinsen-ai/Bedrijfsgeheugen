@@ -148,6 +148,8 @@ test('count source derives totals only from exact provider Content-Range; errors
   assert.equal(seen.length,2);
   assert.ok(seen.every(x=>x.headers.prefer==='count=exact'));
   assert.ok(seen.every(x=>x.url.includes('limit=1')));
+  assert.ok(seen.every(x=>x.url.includes('select=state')));
+  assert.ok(seen.every(x=>!x.url.includes('idempotency_key')));
   const invalid=await readPowerhouseIntegrationReadback({
     baseUrl:'https://example.supabase.co',key:'fixture-key',
     fetchImpl:async(url)=>url.includes('brain_outcome_obligation_dispatch?')
