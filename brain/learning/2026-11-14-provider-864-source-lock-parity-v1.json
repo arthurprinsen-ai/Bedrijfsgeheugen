@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-864-lock-863-source-parity|20261114-v1",
+  "maturity": "OBSERVED",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ]
+  },
+  "root_cause": "Original protected innovation same-owner recovery PR #5800 merged and native provider applied version 20261114235900, but immutable GitHub repository source history lock still contained first 863 applied migrations.",
+  "evidence": {
+    "production_project": "adhjwmvyoixzjtmiroln",
+    "provider_count": 864,
+    "original_lock_count": 863,
+    "provider_version": "20261114235900",
+    "provider_name": "innovation_original_agent_intake_recovery_v1",
+    "provider_observed_at": "2026-11-14T19:58:11.511607Z",
+    "historical_prefix_preserved": true,
+    "original_release_sha": "cdb73c78705df28c98a2fc56a98421dff4cabe32",
+    "recovery_operations_planned": 14,
+    "origin_jobs_resolved": 14,
+    "actual_consumer_acks": 0,
+    "measured_optimization_cycles": 0
+  },
+  "prevention": {
+    "exact_provider_version_name_only": true,
+    "original_protected_lock_owner": true,
+    "no_parallel_scheduler_worker_queue": true,
+    "no_direct_production_ddl": true,
+    "protected_required_codeql": true,
+    "independent_provider_lock_main_readback": true
+  },
+  "done_when": "actual provider 864 and protected GitHub main source lock 864 independently match; existing 14 innovation obligations remain open pending real agent action and measured effect"
+}
