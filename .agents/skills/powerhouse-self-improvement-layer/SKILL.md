@@ -5,6 +5,12 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## P0 2026-11-14 — PLANNED innovatie-intake zonder worker is niet WORKER_LOST
+
+De oorspronkelijke ONE BRAIN-watchdog mag een `brain_operations.INNOVATION_INTAKE` die `PLANNED`, `remote_ref IS NULL` en `execution_resilience.side_effect_state=NOT_STARTED` heeft **niet** als `WORKER_LOST` classificeren enkel vanwege een heartbeat ouder dan 120 seconden: er is immers nog geen worker begonnen. De bestaande daily Self-Improvement toont deze opdracht wel als `RECOVERY_DUE` na 24 uur; de intake blijft fysiek in het originele Brain zichtbaar, zonder valse automatische voltooiing.
+
+Voor de historisch al verkeerd gemarkeerde `RESULT_UNKNOWN`-operaties is de **bestaande** `powerhouse_reconciliation_worker_v1` de enige herstelautoriteit. Vereis een bestaand `EXECUTION_RESILIENCE_RECOVERY`-job, exacte kandidaat/obligation/payload/agent-control-plane-binding, `remote_ref=NULL`, `NOT_STARTED`, `readback_before_replay=true`. Dan uitsluitend veilig via `brain_transition_operation` terug naar `PLANNED` en originele job `RESOLVED` met `NO_SIDE_EFFECT_STARTED`; nooit `VERIFIED`, provider-publicatie, aanvraag of werkelijke agent-consumptie claimen. Ieder onbekend/anders geval houdt `NO_SAFE_CANONICAL_RECOVERY_HANDLER` en wordt niet geforceerd. Geen nieuwe scheduler, recovery worker, database of retry-route. Oorspronkelijk P0 #4198; regressie `tests/brain-innovation-original-consumer-intake-20261114.test.mjs`; migratie `20261114211500_original_innovation_intake_watchdog_recovery_v1.sql`.
+
 ## 2026-11-14 — lege innovatiebron is niet groen
 
 Bij een nulresultaat in de oorspronkelijke kandidaatbron mogen Self-Improvement, ONE BRAIN, Heartbeat en het Portaal **nooit** `INDEPENDENTLY_VERIFIED`, `actioned`, `VERIFIED` of bewezen verbetering claimen op basis van de rekenkundige gelijkheid 0=0. Het werkelijke resultaat is `NO_SOURCE_CANDIDATES` en de bestaande runtime-event blijft `observed` met `data_quality=NO_SOURCE_CANDIDATES`. Onderzoek of de bron oprecht leeg is of brondata ontbreekt; geen kunstmatige kandidaten verzinnen en niets ongemerkt afsluiten. Dezelfde functie en scheduler blijven lopen. Regressie: `tests/brain-innovation-original-consumer-intake-20261114.test.mjs`. Bron `supabase/migrations/20261114204500_innovation_zero_source_false_green_prevention_v1.sql`. Incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
