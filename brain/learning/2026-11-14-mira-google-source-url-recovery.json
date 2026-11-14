@@ -1,0 +1,70 @@
+{
+  "version": "original-mira-dataforseo-explicit-publisher-url-20261114-v1",
+  "fingerprint": "powerhouse|mira|google-news-redirect-only-source-candidates-exhausted|20261114-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-dataforseo-publisher-url-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-dataforseo-publisher-url-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-dataforseo-publisher-url-20261114.test.mjs"
+    ]
+  },
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "owner": "original powerhouse-mira-problem-radar #120 / exclusive original producer and original social publisher",
+  "root_cause": "The live DataForSEO Google News provider returned 14 candidate URLs on Google intermediary hosts. The original Mira source URL guard correctly rejects intermediary Google links, but the original provider mapping did not extract an explicitly encoded publisher URL when the result declares a matching real publisher domain. Consequently all 14 items were rejected and no source was stored.",
+  "production_readback": {
+    "date": "2026-11-14",
+    "original_pgnet_request_id": 31064,
+    "http_code": 503,
+    "edge_version": 974,
+    "provider_candidates": 14,
+    "blocked_redirect_or_search_hosts": 14,
+    "stored": 0,
+    "eligible": 0,
+    "source_status": "NO_FRESH_PUBLIC_PROBLEM_SIGNAL",
+    "new_provider_post_proven": false
+  },
+  "prevention": "Only extract explicit HTTPS publisher URL from narrowly allowed Google /url wrapper when original provider domain matches publisher hostname. Never follow redirects, decode opaque Google News IDs, invent source or weaken canonical date/PH-P/scoring/dedupe/identity/Meta gates. Failure stays OPEN until independently verified provider readback + named original Brain consumer ACK.",
+  "evidence": {
+    "original_http_503": 31064,
+    "source_rejection_counts": {
+      "REJECTED_SOURCE_URL_QUALITY": 14
+    },
+    "provider_source": "DataForSEO News API native original radar",
+    "test": "tests/brain-mira-dataforseo-publisher-url-20261114.test.mjs",
+    "provider_post_id": null
+  },
+  "regression": "tests/brain-mira-dataforseo-publisher-url-20261114.test.mjs",
+  "release_status": "CODE_CANDIDATE",
+  "original_closed_loop": {
+    "radar": "#120",
+    "original_media_router": "powerhouse-instagram-media-router",
+    "publisher": "powerhouse-social-publisher",
+    "brain_consumer": "#171",
+    "heartbeat": "original content-loop/Heartbeat/CRO",
+    "portal": "Portal V2",
+    "no_parallel_sender": true
+  },
+  "not_proven": [
+    "Protected merge",
+    "Supabase deployed exact new helper",
+    "actual Google result with explicit URL",
+    "eligible new source",
+    "unique frozen daily winner",
+    "OpenArt provider credit readiness",
+    "media proof",
+    "Instagram provider ID",
+    "Brain PROCESSED ACK",
+    "Heartbeat outcome"
+  ]
+}
