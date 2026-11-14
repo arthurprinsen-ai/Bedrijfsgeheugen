@@ -32,8 +32,12 @@ test('the same original insertion still establishes four genuine obligations wit
 test('existing original handoff writer keeps the same one-loop CAS and independent proof',async()=>{
  const code=await readFile(new URL('../supabase/functions/powerhouse-content-loop/index.ts',import.meta.url),'utf8');
  assert.match(code,/planOriginalPublicationHandoffs\(recovery,obligations\|\|\[\]\)/);
- assert.match(code,/\.eq\('channel',handoff\.channel\)\.eq\('next_action',handoff\.previous\)/);
- assert.match(code,/\.eq\('external_id',null\)/);
+ assert.match(code,/\.eq\('channel',handoff\.channel\)/);
+ assert.match(code,/updateQuery=handoff\.previous===null/);
+ assert.match(code,/\.is\('next_action',null\)/);
+ assert.match(code,/\.eq\('next_action',handoff\.previous\)/);
+ assert.match(code,/\.is\('external_id',null\)/);
+ assert.match(code,/\.select\('channel,next_action,status,external_id,live_proven_at'\)/);
  assert.match(code,/const TERMINAL_GREEN = new Set\(\['LIVE_PROVEN','MEASURED','LEARNED'\]\)/);
  assert.match(code,/const LOOP_LEASE_MS = 240_000/);
 });

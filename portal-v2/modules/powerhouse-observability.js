@@ -159,7 +159,10 @@ function oneLoopAssuranceView(assurance){
     ?'<p class="poc-note" data-publication-handoff-writeback="'+esc(String(publicationHandoff.applied))+'">'+
       'Herstelacties gesynchroniseerd: '+esc(publicationHandoff.applied)+' wijzigingen; '+
       esc(publicationHandoff.conflicts)+' conflicten; '+esc(publicationHandoff.errors)+
-      ' fouten. Werkelijke publicatie vereist apart providerbewijs.</p>'
+      ' fouten; '+esc(publicationHandoff.pendingHandoffs||0)+' onbevestigde overdrachten; '+
+      esc(publicationHandoff.originalOwnerRoutes||0)+' originele eigenaarroutes; '+
+      esc(publicationHandoff.alreadyReceived||0)+' reeds ontvangen acties. '+
+      'De uitvoerder blijft actief; ontbrekend bewijs blijft OPEN. Werkelijke publicatie vereist apart providerbewijs.</p>'
     :'';
   // Read-only original ONE BRAIN receipts: never infer publication from CI success.
   const anyMissedPublication=publicationRecovery.some(item=>item.phase==='MISSED_DEADLINE');

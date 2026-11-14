@@ -47,10 +47,10 @@ class DirectQuery{
  select(columns='*'){if(['update','upsert','insert'].includes(this.op))this.returning=columns;else{this.op='select';this.columns=columns;}return this;}
  insert(payload:any){this.op='insert';this.payload=payload;return this;} update(payload:any){this.op='update';this.payload=payload||{};return this;}
  upsert(payload:any,options:any={}){this.op='upsert';this.payload=payload||{};this.conflict=String(options?.onConflict||DB_DEFAULT_CONFLICT.get(this.table)||'');this.ignoreDuplicates=options?.ignoreDuplicates===true;return this;}
- eq(column:string,value:any){this.filters.push({kind:'eq',column,value});return this;} in(column:string,values:any[]){this.filters.push({kind:'in',column,values:Array.isArray(values)?values:[]});return this;}
+ eq(column:string,value:any){this.filters.push({kind:'eq',column,value});return this;} is(column:string,value:any){if(value!==null)throw new Error('DB_IS_FILTER_ONLY_NULL');this.filters.push({kind:'is',column,value});return this;} in(column:string,values:any[]){this.filters.push({kind:'in',column,values:Array.isArray(values)?values:[]});return this;}
  not(column:string,operator:string,value:any){this.filters.push({kind:'not',column,operator,value});return this;} order(column:string,options:any={}){this.orders.push({column,ascending:options?.ascending!==false});return this;}
  limit(value:number){this.limitValue=Number(value);return this;} maybeSingle(){this.singleMode='maybe';return this.execute();} single(){this.singleMode='single';return this.execute();} then(resolve:any,reject:any){return this.execute().then(resolve,reject);}
- where(values:any[]){const parts:string[]=[];for(const f of this.filters){const col=dbIdent(f.column);if(f.kind==='eq')parts.push(f.value===null?col+' is null':col+' = '+scalarParam(f.value,values));else if(f.kind==='in'){if(!f.values.length){parts.push('false');continue;}parts.push(col+' in ('+f.values.map((v:any)=>scalarParam(v,values)).join(',')+')');}else if(f.kind==='not'&&f.operator==='is'&&f.value===null)parts.push(col+' is not null');else throw new Error('DB_FILTER_REJECTED');}return parts.length?' where '+parts.join(' and '):'';}
+ where(values:any[]){const parts:string[]=[];for(const f of this.filters){const col=dbIdent(f.column);if(f.kind==='eq')parts.push(f.value===null?col+' is null':col+' = '+scalarParam(f.value,values));else if(f.kind==='is'&&f.value===null)parts.push(col+' is null');else if(f.kind==='in'){if(!f.values.length){parts.push('false');continue;}parts.push(col+' in ('+f.values.map((v:any)=>scalarParam(v,values)).join(',')+')');}else if(f.kind==='not'&&f.operator==='is'&&f.value===null)parts.push(col+' is not null');else throw new Error('DB_FILTER_REJECTED');}return parts.length?' where '+parts.join(' and '):'';}
  selectList(raw:string){if(raw.trim()==='*')return '*';return raw.split(',').map(x=>dbIdent(x.trim())).join(',');}
  async execute(){try{if(this.table==='powerhouse_instagram_media_jobs_v1'&&this.op!=='select')throw new Error('DB_READ_ONLY_TABLE_REJECTED:'+this.table);const values:any[]=[];let q='';if(this.op==='select'){q='select '+this.selectList(this.columns)+' from public.'+dbIdent(this.table)+this.where(values);if(this.orders.length)q+=' order by '+this.orders.map(o=>dbIdent(o.column)+(o.ascending?' asc':' desc')).join(',');if(Number.isFinite(this.limitValue as number))q+=' limit '+Math.max(0,Math.trunc(this.limitValue as number));}
  else if(this.op==='insert'){const items=Array.isArray(this.payload)?this.payload:[this.payload];if(!items.length||!items[0])throw new Error('DB_EMPTY_INSERT');const cols=Object.keys(items[0]);q='insert into public.'+dbIdent(this.table)+' ('+cols.map(dbIdent).join(',')+') values '+items.map((item:any)=>'('+cols.map(c=>valueExpr(this.table,c,item[c],values)).join(',')+')').join(',');if(this.returning)q+=' returning '+this.selectList(this.returning);}
@@ -599,19 +599,32 @@ Deno.serve(async (req) => {
     // concurrent publisher. This never retries or dispatches a publication.
     const handoffPlan=planOriginalPublicationHandoffs(recovery,obligations||[]);
     const handoffWriteback={contract:'original-publication-obligation-recovery-v1',
-      planned:handoffPlan.updates.length,applied:0,conflicts:0,errors:0};
+      planned:handoffPlan.updates.length,applied:0,already_received:handoffPlan.alreadyIdentical?.length||0,
+      unresolved:handoffPlan.unresolved||[],
+      original_owner_routes:handoffPlan.routedToOriginalOwner||[],
+      conflicts:0,conflict_readbacks:0,errors:0,
+      original_executor_continues:true,provider_send_authorized:false};
     if(!handoffPlan.ok) {
       handoffWriteback.errors++;
       stepResults.push({name:'publication-handoff-writeback',ok:false,degraded:true,
         error:'RECOVERY_SOURCE_UNVERIFIED'});
     } else {
       for(const handoff of handoffPlan.updates){
-        const update=await db.from('content_publication_obligations')
+        // This owner uses a custom direct-SQL adapter (NOT PostgREST).
+        // Its existing eq(column,null) already compiled to SQL IS NULL.
+        // Expose the same safe SQL predicate explicitly as is(column,null)
+        // and retain the original tenant/date/channel/status CAS guards.
+        // Missing receiver rows, invalid handoffs and zero-row CAS still
+        // require typed independent reconciliation.
+        let updateQuery=db.from('content_publication_obligations')
           .update({next_action:handoff.nextAction,updated_at:new Date().toISOString()})
           .eq('tenant_id','canonical').eq('publication_date',runDate)
-          .eq('channel',handoff.channel).eq('next_action',handoff.previous)
-          .in('status',['PLANNED','BLOCKED','FAILED']).eq('external_id',null)
-          .select('channel,next_action,status,external_id');
+          .eq('channel',handoff.channel)
+          .in('status',['PLANNED','BLOCKED','FAILED']).is('external_id',null);
+        updateQuery=handoff.previous===null
+          ?updateQuery.is('next_action',null)
+          :updateQuery.eq('next_action',handoff.previous);
+        const update=await updateQuery.select('channel,next_action,status,external_id');
         if(update.error){
           handoffWriteback.errors++;
           console.error('PUBLICATION_HANDOFF_WRITEBACK_FAILED',handoff.channel);
@@ -620,15 +633,81 @@ Deno.serve(async (req) => {
           const local=(obligations||[]).find((o:any)=>o.channel===handoff.channel);
           if(local)local.next_action=handoff.nextAction;
         }else{
-          // A newer writer may have advanced the original obligation:
-          // preserve its provider truth, never overwrite blindly.
-          handoffWriteback.conflicts++;
+          // Do not drop a 0-row CAS or assume a successful provider side effect.
+          // Perform READ-ONLY reconciliation against the same original row.
+          handoffWriteback.conflict_readbacks++;
+          const observed=await db.from('content_publication_obligations')
+            .select('channel,next_action,status,external_id,live_proven_at')
+            .eq('tenant_id','canonical').eq('publication_date',runDate)
+            .eq('channel',handoff.channel).maybeSingle();
+          if(observed.error)handoffWriteback.errors++;
+          if(observed.data?.next_action===handoff.nextAction
+            &&!observed.data?.external_id
+            &&['PLANNED','BLOCKED','FAILED'].includes(observed.data?.status)){
+            // Another original run has already delivered this SAME next action.
+            handoffWriteback.already_received++;
+          }else{
+            handoffWriteback.conflicts++;
+            handoffWriteback.unresolved.push({
+              channel:handoff.channel,
+              owner:handoff.owner,
+              reason:observed.error?'ORIGINAL_CAS_CONFLICT_READBACK_FAILED':
+                observed.data?.external_id?'POSSIBLE_EXTERNAL_SIDE_EFFECT_READBACK_REQUIRED':
+                'ORIGINAL_CAS_CONFLICT_OWNER_RECONCILIATION_REQUIRED'
+            });
+          }
         }
       }
+      const requiresRecovery=handoffWriteback.errors>0 || handoffWriteback.conflicts>0
+        || handoffWriteback.unresolved.length>0
+        || handoffWriteback.original_owner_routes.some((x:any)=>x.reason!=='ORIGINAL_EMAIL_OWNER_ONLY');
       stepResults.push({name:'publication-handoff-writeback',
-        ok:handoffWriteback.errors===0,degraded:handoffWriteback.errors>0,
-        error:handoffWriteback.errors?'ORIGINAL_OBLIGATION_HANDOFF_WRITE_FAILED':null});
+        ok:!requiresRecovery,degraded:requiresRecovery,
+        error:requiresRecovery?'ORIGINAL_HANDOFF_OWNER_OR_RECEIVER_RECHECK_REQUIRED':null});
     }
+    // Existing ONE BRAIN incident writer, not a new queue. Persist the exact
+    // original owner and safe next action for handoffs the original receiver
+    // could not yet accept. A process may continue while its receipt is RED.
+    const handoffGaps=[
+      ...handoffWriteback.unresolved,
+      ...handoffWriteback.original_owner_routes.filter((route:any)=>
+        route.reason!=='ORIGINAL_EMAIL_OWNER_ONLY')
+    ].slice(0,8);
+    if(handoffWriteback.errors>0 && handoffGaps.length===0){
+      handoffGaps.push({channel:'canonical',owner:'original-powerhouse-content-orchestrator',
+        reason:'ORIGINAL_HANDOFF_WRITE_OR_READBACK_FAILED'});
+    }
+    for(const gap of handoffGaps){
+      try {
+        const occurrenceId='original-content-handoff:'+runDate+':'+gap.channel+':'+gap.reason;
+        const payloadSha=[...new Uint8Array(await crypto.subtle.digest('SHA-256',
+          new TextEncoder().encode(occurrenceId)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+        const recorded=await db.rpc('brain_observe_failure',{
+          p_occurrence_id:occurrenceId,
+          p_fingerprint:'powerhouse|content|original-handoff-receiver-unacknowledged|'+
+            runDate.replaceAll('-','')+'-v1',
+          p_payload_sha256:payloadSha,
+          p_evidence:{
+            run_date:runDate,original_owner:gap.owner,channel:gap.channel,
+            failure_reason:gap.reason,
+            next_action:'Read original obligation and independent provider side effect, restore the SAME original receiver acknowledgement; never duplicate send or bypass permission.',
+            original_executor_continues:true,
+            provider_side_effect_proven:false,
+            no_second_scheduler:true,
+            contract:'ORIGINAL_CONTENT_HANDOFF_NO_SILENT_DROP_V1'
+          }
+        });
+        if(recorded.error||!recorded.data)handoffWriteback.errors++;
+      }catch{
+        handoffWriteback.errors++;
+      }
+    }
+    stepResults.push({name:'publication-handoff-brain-receipt',
+      ok:handoffWriteback.errors===0 && handoffGaps.length===0,
+      degraded:handoffWriteback.errors>0 || handoffGaps.length>0,
+      error:handoffGaps.length?'ORIGINAL_UNACKNOWLEDGED_HANDOFF_OPEN':
+        handoffWriteback.errors?'BRAIN_HANDOFF_OBSERVATION_FAILED':null});
+
     stepResults.push({name:'publication-proof-deadline',
       ok:recovery.status==='PROVIDER_PROOF_COMPLETE',
       degraded:recovery.status!=='PROVIDER_PROOF_COMPLETE',
