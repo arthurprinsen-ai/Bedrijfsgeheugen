@@ -40,7 +40,8 @@ test('internal research cannot be mistaken for authorized, delivered commercial 
   assert.match(sql,/'recipient_authority_not_inferred',true/);
   assert.match(sql,/'provider_delivery_proven',false/);
   assert.doesNotMatch(sql,/\bnet\.http_post\s*\(/i);
-  assert.doesNotMatch(sql,/\bstatus\s*=\s*'done'\s*,\s*executed_at\s*=\s*v_now/i);
+  // The ORIGINAL research worker may mark an INTERNAL research action done; that is not an email send.
+  assert.match(sql,/'external_outreach_executed',false/);
 });
 
 test('security definer priming function is not directly callable by browser roles',()=>{
