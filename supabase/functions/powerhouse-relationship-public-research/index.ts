@@ -25,27 +25,51 @@ const TRIGGERS=[
 
 const isTrue=(v:unknown)=>v===true||v==='true';
 async function readBoundedPublicPage(url:string):Promise<string|null>{
-  // Read only a public HTTPS company page from an existing organic or first-party sourced company domain.
-  // Never follow redirects or auth challenges; cap both time and bytes.
+  // Same public company host (optionally www): allow up to two HTTPS-only,
+  // same-domain redirects; never follow arbitrary cross-host, IP, auth or
+  // insecure redirects. 2.5s per bounded request and 160kB HTML cap.
   try{
-    const res=await fetch(url,{method:'GET',redirect:'error',signal:AbortSignal.timeout(2500),
-      headers:{accept:'text/html,application/xhtml+xml'}});
-    const len=Number(res.headers.get('content-length')||0);
-    if(!res.ok||!/^text\/html|^application\/xhtml\+xml/i.test(res.headers.get('content-type')||'')||
-      len>160000||!res.body)return null;
-    const reader=res.body.getReader(), chunks:Uint8Array[]=[];
-    let size=0;
-    for(;;){
-      const part=await reader.read();
-      if(part.done)break;
-      size+=part.value.byteLength;
-      if(size>160000){await reader.cancel();return null;}
-      chunks.push(part.value);
+    const original=new URL(url);
+    const companyHost=original.hostname.toLowerCase().replace(/^www\./,'');
+    if(original.protocol!=='https:'||!companyHost.includes('.')||
+      original.username||original.password||original.port&&original.port!=='443'||
+      /^(?:\d{1,3}\.){3}\d{1,3}$/.test(companyHost)||
+      companyHost.endsWith('.local')||companyHost.endsWith('.internal'))return null;
+    let current=original;
+    for(let redirects=0;redirects<=2;redirects++){
+      const res=await fetch(current.toString(),{
+        method:'GET',redirect:'manual',signal:AbortSignal.timeout(2500),
+        headers:{accept:'text/html,application/xhtml+xml'}
+      });
+      if([301,302,303,307,308].includes(res.status)){
+        if(redirects>=2)return null;
+        const location=res.headers.get('location');
+        if(!location)return null;
+        const next=new URL(location,current);
+        const nextHost=next.hostname.toLowerCase().replace(/^www\./,'');
+        if(next.protocol!=='https:'||nextHost!==companyHost||
+          next.username||next.password||next.port&&next.port!=='443'||
+          next.toString().length>2500)return null;
+        current=next;
+        continue;
+      }
+      const len=Number(res.headers.get('content-length')||0);
+      if(!res.ok||!/^text\/html|^application\/xhtml\+xml/i.test(res.headers.get('content-type')||'')||
+        len>160000||!res.body)return null;
+      const reader=res.body.getReader(),chunks:Uint8Array[]=[];let size=0;
+      for(;;){
+        const part=await reader.read();
+        if(part.done)break;
+        size+=part.value.byteLength;
+        if(size>160000){await reader.cancel();return null;}
+        chunks.push(part.value);
+      }
+      const buffer=new Uint8Array(size);let offset=0;
+      for(const chunk of chunks){buffer.set(chunk,offset);offset+=chunk.byteLength;}
+      return new TextDecoder().decode(buffer);
     }
-    const buffer=new Uint8Array(size);let offset=0;
-    for(const chunk of chunks){buffer.set(chunk,offset);offset+=chunk.byteLength;}
-    return new TextDecoder().decode(buffer);
-  }catch{return null;}
+    return null;
+  }catch{return null}
 }
 async function writePublicBusinessSourceReceipt(db:any,action:any,source:any,observedAt:string,recovered=false){
   // Producer INGEST receipt only. An existing named consumer PROCESSED receipt
@@ -116,7 +140,7 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
     return {status:'SOURCE_CANDIDATE_RECEIPT_REPLAY',sites:0,stored:0,receipts:1};
   }
   const sites=(organic||[]).filter((item:any)=>['organic','first_party_company_domain'].includes(item?.type)&&
-    eligiblePublicCompanyPage(item?.url,contact.bedrijf)).slice(0,2);
+    eligiblePublicCompanyPage(item?.url,contact.bedrijf)).slice(0,3);
   let checked=0;
   for(const item of sites){
     const page=await readBoundedPublicPage(clean(item.url));
@@ -171,7 +195,7 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
   // No new SERP/provider call. Reuse verified-format business domains in the
   // existing first-party connection graph to select missing-address colleagues.
   // Research is not mailing authority; original recipient gate is unchanged.
-  const day=observedAt.slice(0,10);
+  const day=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(observedAt));
   const {data:known,error:kErr}=await db.from('bg_connecties')
     .select('sleutel,bedrijf,email').not('email','is',null)
     .order('sleutel',{ascending:true}).limit(900);
@@ -240,7 +264,8 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
     companies++;
     const result=await ingestPublicWorkEmail(db,selected,
       [{type:'first_party_company_domain',url:'https://'+domain+'/team'},
-       {type:'first_party_company_domain',url:'https://'+domain+'/contact'}],observedAt);
+       {type:'first_party_company_domain',url:'https://'+domain+'/contact'},
+       {type:'first_party_company_domain',url:'https://'+domain+'/'}],observedAt);
     // This original action is terminal only after a real source disposition AND
     // its original evidence receipt. An HTTP/DB error leaves it retriable.
     const checked=result.sites>0||result.receipts>0||result.status==='SUPPRESSED'||

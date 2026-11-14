@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|contacts|first-party-web-no-html-redirect-url-coverage|20261114-v1",
+  "root_cause": "The original Powerhouse public work-email research ran eight idempotent existing first-party company research actions in production on 2026-11-14; all persisted NO_EXPLICIT_NAMED_OFFICIAL_MAILTO with public_email_source_checked=false and an original retry time. No publicly readable HTML was accepted from fixed /team and /contact pages. HTTP redirect:error and narrow URL coverage may suppress otherwise valid official pages; external causes are unconfirmed. Never claim eight contacts enriched.",
+  "scope": "EXISTING_ORIGINAL_COMMERCIAL_RESEARCH_EDGE_ONLY",
+  "regression": "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs",
+  "prevention_rule": "Use only bounded existing original company-domain HTTPS lookups, at most 2 redirect hops on the exact original company host optionally www, reject cross-site, insecure, IP and auth redirects, HTTP bodies >160kB, and try /team, /contact, homepage (max 3 pages). Derive daily source key in Europe/Amsterdam, not UTC, and keep per-action source-only NO_SOURCE dispositions, next safe retry, original ONE BRAIN owner. Never promote candidate to sender-visible email or infer consent; do not add a scheduler, vendor query, CRM or outbound send.",
+  "evidence": {
+    "original_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "deployed_original_repair": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5787",
+    "installed_original_edge_version": 28,
+    "canonical_contacts_total": 23295,
+    "sender_visible_emails": 605,
+    "first_party_actions_today": 8,
+    "first_party_source_checked_true": 0,
+    "source_dispositions_saved": 8,
+    "source_dispositions_missing": 0,
+    "retry_utc": "2026-11-14T23:12:44.234Z",
+    "new_public_mail_candidate_staged": 0,
+    "new_vendor_lookup_spend": 0,
+    "independent_consumer_processed": 0,
+    "original_brain_obligation": "43c90754-3fd0-4c97-bb14-fbf815e12f47",
+    "release_status": "CANDIDATE_UNTIL_PROTECTED_GATES_AND_PROVIDER_READBACK"
+  },
+  "owner": "Original commercial #116 research Edge; original identity #138 next consumer if candidate actually found",
+  "learning_state": "OBSERVED_NOT_CLOSED",
+  "expected_test_cases": [
+    "HTTPS redirect to www same company succeeds",
+    "cross-site redirect rejected before second fetch",
+    "downgrade from HTTPS rejected",
+    "private IP host rejected",
+    "max 2 redirect hops",
+    "Amsterdam day-boundary and 3 bounded company pages",
+    "no recipient send authority changes"
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_COMPANY_HTML_SOURCE_COVERAGE_GAP",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
+    ]
+  }
+}
