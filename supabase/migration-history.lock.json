@@ -3432,8 +3432,12 @@
     {
       "version": "20261114164500",
       "name": "preserve_contact_authority_on_connection_refresh_v1"
+    },
+    {
+      "version": "20261114184600",
+      "name": "innovation_canonical_candidate_handoff_v1"
     }
   ],
-  "captured_at": "2026-11-14T17:50:22.204Z",
+  "captured_at": "2026-11-14T18:15:52.019662Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
