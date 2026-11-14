@@ -43,5 +43,20 @@
   "regression": "Test that all true original owner/provider/account/consumer proof returns green, and original source HTTP403 or wrong account, missing day receipt, missing post/snapshot or no eligible post always returns RED.",
   "recovery_owner": "Same original authorized Windsor/Supabase account, #177 Edge source, #171 BRAIN learning consumer",
   "future_external_dependency": "Provider credential permission/access for original Supabase Vault WINDSOR_API_KEY; do not bypass, leak or invent grants",
-  "measured_impact": "Four source rows, four snapshots, three noncausal evaluations now independently native proven; not full autonomous provider recovery."
+  "measured_impact": "Four source rows, four snapshots, three noncausal evaluations now independently native proven; not full autonomous provider recovery.",
+  "compiler": {
+    "failure_class": "ORIGINAL_PROVIDER_AUTHORIZATION_403_FALSE_GREEN_AFTER_CONNECTED_READBACK_RECOVERY",
+    "scope": "SOCIAL_ORGANIC",
+    "machine_enforceable": true,
+    "exact_source_owner": "original-177",
+    "duplicate_executor_forbidden": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-windsor-company-source-177-20261114.test.mjs"
+    ],
+    "expected": "Original #177 authenticated Vault provider is required before company source health can become green. Real one-off connected Windsor post snapshots and 3 exact noncausal evaluations do not prove #177 provider rights, controlled causal lift, or actual revenue.",
+    "actual_native_proof": "Four original canonical-linked provider snapshots and 3 original BRAIN descriptor evaluations independently read back; original provider refresh remains 403.",
+    "consumer_ack_scope": "ORIGINAL_PROVIDER_RECEIPT_REQUIRED_IN_ADDITION_TO_SOURCE_METRIC_EVAL"
+  }
 }
