@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-863-lock-862-source-parity|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "Original #4198 source-consumption PR #5797 protected-merged and Supabase native production applied migration 20261114230000, while GitHub immutable production source-history lock still contained the prior 862 native migrations. The provider-to-repository attestation is a separate required stage, not a failed SQL release.",
+  "prevention": "Preserve one original Supabase release owner and automatically reconcile each actual native applied version/name into the same protected immutable source-history queue after independent provider readback; never mark an unapplied migration as applied or bypass preview/CodeQL. Keep source-only proof separate from consumer/outcome proof.",
+  "evidence": {
+    "original_production_project_ref": "adhjwmvyoixzjtmiroln",
+    "native_migration_count": 863,
+    "source_lock_count_before": 862,
+    "exact_unchanged_prefix_count": 862,
+    "prefix_conflicts": 0,
+    "provider_applied_extra": {
+      "version": "20261114230000",
+      "name": "original_source_consumption_stage_receipt_parity_v1"
+    },
+    "existing_protected_main_sql": "supabase/migrations/20261114230000_original_source_consumption_stage_receipt_parity_v1.sql",
+    "original_pull_request": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5797",
+    "native_runtime_readback": "2026-11-14T19:37:19.648044Z actual public.powerhouse_source_consumption_assurance_v1() healthy=true, scope ORIGINAL_SOURCE_TO_EXECUTOR_RECEIPT_ONLY, 23295 enriched today, 116+171 real stage receipts",
+    "operational_truth": "7 GREEN, 1 AMBER, 7 RED loops; 435 nonterminal original BRAIN obligations and 20 overdue handoffs remain open. No external provider reply/revenue/learning implied.",
+    "safety": "No new SQL applied, no cron/queue/agent executor or email side effect, no RLS or privilege mutation"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "Original provider-applicated 863 version/name pairs exactly mirrored by protected source-lock 863 without mutating first 862",
+    "business_effect": "SOURCE_HISTORY_PARITY_ONLY; NO_NEW_EXTERNAL_OUTCOME"
+  },
+  "no_parallel_executor": true
+}
