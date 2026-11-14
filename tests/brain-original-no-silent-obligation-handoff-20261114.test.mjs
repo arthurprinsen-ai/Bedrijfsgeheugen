@@ -92,3 +92,17 @@ test('existing content owner uses PostgREST IS NULL CAS and exact readback, no b
   assert.match(source,/brain_records'\)\.upsert/);
   assert.doesNotMatch(source,/GENERIC_DIRECT_INSTAGRAM_SEND|NEW_HANDOFF_CRON|MAKE_WEBHOOK/);
 });
+
+test('existing Portal and Brain guard keep incident readback visible when failures outnumber planned CAS writes',()=>{
+  const guard=readFileSync('brain/observability/one-loop-guard-diagnostics.mjs','utf8');
+  const portal=readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
+  assert.match(guard,/const counts=\['planned','applied','conflicts','errors'\]/);
+  assert.doesNotMatch(guard,/handoff\.applied\+handoff\.conflicts\+handoff\.errors>handoff\.planned/);
+  assert.match(guard,/pendingHandoffs:unresolved\.length/);
+  assert.match(guard,/originalOwnerRoutes:ownerRoutes\.length/);
+  assert.match(guard,/receiverProofDue:/);
+  assert.match(guard,/safeRoute=\(item\)=>/);
+  assert.match(portal,/onbevestigde overdrachten/);
+  assert.match(portal,/originele eigenaarroutes/);
+  assert.match(portal,/De uitvoerder blijft actief; ontbrekend bewijs blijft OPEN/);
+});
