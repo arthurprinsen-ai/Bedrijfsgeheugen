@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|contacts|original-public-domain-source-retry-masked-by-daily-cap|20261114-v1",
+  "root_cause": "Original SQL #116 dispatcher counted only today's new public-domain source actions (cap eight) plus pending research_enrichment actions in suggested/prepared/waiting. Existing public-domain source actions are status done with a separately scheduled public_email_next_attempt_at; when today's cap is already eight and no other research is pending, dispatcher returns NO_DUE_ORIGINAL_SOURCE_RESEARCH despite due source actions. Existing Edge is able to retry older actions, but never called in this state.",
+  "scope": "ORIGINAL_POWERHOUSE_COMMERCIAL_DISPATCHER_ONLY",
+  "owner": "original commercial #116/identity #138/ONE BRAIN #171; same P0 #4198",
+  "regression": "tests/brain-public-email-overdue-dispatch-20261114.test.mjs",
+  "prevention_rule": "Original #116 dispatch predicate is true when pending original research OR bounded new first-party discovery OR any valid due existing public-domain research action with source_checked=false. Never mask due retries behind full daily new-action cap. Reuse same original Edge/identity/Brain; preserve initial record and source-revision, provider/candidate/consumer/send gates.",
+  "evidence": {
+    "timestamp": "2026-11-14 21:17 UTC",
+    "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "original_commercial_obligation": "43c90754-3fd0-4c97-bb14-fbf815e12f47",
+    "production_source_actions": 8,
+    "source_checked_false": 8,
+    "first_retry_due_utc": "2026-11-14T23:12:44.234Z",
+    "known_emails": 605,
+    "total_connections": 23295,
+    "new_public_work_email_candidates": 0,
+    "provider_current_migrations": 864,
+    "source_last": "20261114235900",
+    "original_edge_version": 39,
+    "new_release": "UNAPPLIED_CANDIDATE_PROTECTED_GATES_REQUIRED"
+  },
+  "outcome": "Original dispatch fix prepared; no new contact, consumer ACK, actual source retry or send claimed",
+  "learning_state": "OBSERVED_NOT_CLOSED",
+  "compiler": {
+    "failure_class": "ORIGINAL_SOURCE_RETRY_DEADLETTER_BY_DISPATCH_CONDITION",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-email-overdue-dispatch-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-email-overdue-dispatch-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-email-overdue-dispatch-20261114.test.mjs"
+    ]
+  }
+}
