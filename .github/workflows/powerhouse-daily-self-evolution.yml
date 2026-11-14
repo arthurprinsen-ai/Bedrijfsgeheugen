@@ -59,6 +59,8 @@ jobs:
         run: node --test tests/brain-all-agent-innovation-duty-20261030.test.mjs
       - name: Verify innovation candidates are handed off to the original ONE BRAIN duty registry
         run: node --test tests/brain-innovation-canonical-handoff-20261114.test.mjs
+      - name: Verify original innovation engineer and CRO consumer intakes never silently disappear
+        run: node --test tests/brain-innovation-original-consumer-intake-20261114.test.mjs
       - name: Capture trusted GitHub-run skill byte audit (NOT application proof)
         run: node scripts/brain/skill-byte-audit.mjs
       - name: Build universal chat-agent-skill snapshot
