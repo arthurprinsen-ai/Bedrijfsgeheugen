@@ -5,6 +5,15 @@ description: Canonical Powerhouse Instagram publishing and recovery skill. Use f
 
 # Instagram Composio Publisher
 
+## 2026-11-14 — Original DataForSEO Google News goto URLs: provider-native resolution
+
+Independent real `net._http_response.id=31065` from original Supabase Edge v974: `runDate=2026-11-14`, HTTP503 `SOURCE_RECOVERY_DUE`, `sourceIntake.providerCandidates=18`, all 18 rejected for `REJECTED_SOURCE_URL_QUALITY` with `source_domain=google.com`. The URL issue is confirmed; this is NOT Instagram OAuth, a valid publisher URL, or a reason to accept redirect/search hosts.
+
+In the SAME original `powerhouse-mira-problem-radar` cron #120 use the documented existing DataForSEO Google News Live Advanced option `resolve_goto_urls:true`, see https://docs.dataforseo.com/v3/serp/google/news/live/advanced/ . It replaces the default `false` in each of the same existing eight provider searches; **no extra paid search tasks**, no new radar, worker, provider or loop. Since provider resolution may add up to 40 seconds per query, the original radar may fetch those eight bounded calls concurrently but MUST process source candidates in existing deterministic channel order. Continue rejecting any unresolved `google.com/goto`, unverified publication date, mismatched source, unapproved PH-P topic, low score, reused 90-day URL/hash and 3-day topic duplicate. Never construct a destination URL from title or redirect token, or silently elevate confidence. A new legitimate URL may advance only via the exact original materializer, frozen winner and media router.
+
+The original OpenArt producer remains the only approved media creator; actual connected matching project scope had zero credits as of 2026-11-14, while original production API billing scope remains to be independently verified. Keep same job `WAITING_ASSET` and no paid call until original funded-budget preflight and exclusive `powerhouse_claim_instagram_media_job_v1`. The existing original Reel face ≥0.940, native 1080x1920 MP4/mute, temporal ≥0.900 and one authorised Meta publisher/independent GET + ONE BRAIN consumer PROCESSED ACK remain unmodified. GitHub/Supabase release state is separate from a new published Instagram post.
+
+
 ## 2026-11-14 — SOURCE INTAKE ZERO-ACCEPTANCE diagnostics: same owner, no bypass
 
 Original production source probe `net._http_response.id=31043`, runDate=2026-11-14, returned 503 `SOURCE_RECOVERY_DUE / NO_FRESH_PUBLIC_PROBLEM_SIGNAL`, with provider counters `dataforseo_news=21`, `dataforseo_no_results=2`, `stored=0`, `eligible=0`. Meta BUSINESS `@bedrijfsgeheugen.nl` is independently readable; this is NOT a disconnected Instagram account. Today has no unique immutable winner; original 5–9 November jobs have status WAITING_ASSET/attempts=0 and are NOT publishable.
