@@ -5,6 +5,12 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## P0 2026-11-14 — innovatie-kandidaat → originele ONE BRAIN-uitvoeringsverplichting
+
+Iedere originele en toekomstige agent moet een kandidaat uit `powerhouse_optimization_candidate_v1` uitsluitend overdragen via dezelfde bestaande `powerhouse_run_self_improvement_layer_v1(date)` naar `brain_obligations`, type `INNOVATION_DELIVERY`, met stabiele `candidate_id`, `source_revision`, `owner_agent`, `correlation_id`, bron en idempotency. **Producer-record is géén consumer ACK**: `OPEN_UNTIL_CONSUMER_ACK` blijft OPEN totdat oorspronkelijke eigenaar het werk aantoonbaar consumeert en de normale beveiligde release, onafhankelijke productie-readback, natuurlijke toepassing, effectmeting en ONE BRAIN learning met hetzelfde bewijs verifieert. Geen automatische `FULFILLED` of cosmetische verbetering op basis van een geslaagde cron of agent assignment.
+
+De natuurlijke dagelijkse eigenaar moet ALLE oude en nieuwe kandidaten reconciliëren en source→obligation readback vergelijken; afwijkingen falen zichtbaar met `INNOVATION_HANDOFF_INCOMPLETE` en blijven herstelverplichting, terwijl de bestaande scheduler actief blijft. Onverifieerbare bron, ontbrekende approval, rechten, consent of geld mogen niet stilzwijgend worden omzeild; de agent herstelt geautoriseerde technische fouten autonoom, maar sluit veiligheids- of kwaliteitsvereisten nooit kunstmatig af. Geen tweede scheduler, queue, agent, Brain, publisher of alternatieve keten. Regressie `tests/brain-innovation-canonical-handoff-20261114.test.mjs`; bron `supabase/migrations/20261114184600_innovation_canonical_candidate_handoff_v1.sql`; incident/evidence https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
 ## P0 2026-11-10 — actie vóór status: herstel ontbrekende leer-ontvangst direct
 
 Verplicht voor ALLE agents/skills die de ONE BRAIN/Powerhouse/Heartbeat-leerlus raken: begin bij de originele operationele record en bewaak elke producent→afnemer-overdracht met immutable providerbewijs, deterministische ontvangende ID en idempotente ACK. Bij falende overdracht geen passieve lijst of een te vervangen "volgende run" als eindresultaat: voer de toegestane bronreparatie meteen uit, activeer uitsluitend de bestaande oorspronkelijke uitvoerder, verifieer bron én consumer in productie en borg hetzelfde incident met regressie, agentskill, BRAIN-leerrecord en beschermde release.
