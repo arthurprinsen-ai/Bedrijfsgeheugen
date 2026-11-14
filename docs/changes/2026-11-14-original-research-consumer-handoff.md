@@ -23,3 +23,5 @@ De originele onderzoek-dispatch doet voortaan alleen de reeds bestaande due onde
 Oorspronkelijke verplichting: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Bronselectieherstel: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5763. Productiebronhistorie: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5764.
 
 Status bij kandidaat: NOT_LIVE.
+
+Extra score-isolation rule: administrative handoff receipts carry `person_key`/`company_key` only in evidence. Top-level runtime event `person_key` and `company_key` are NULL so the original relationship-ranking engine does not misread a technical ACK as a fresh sales signal. Original genuine source event remains separately attributable.
