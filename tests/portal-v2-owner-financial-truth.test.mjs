@@ -49,7 +49,10 @@ test('unknown metrics and invalid financial unit are not printed',()=>{
  const x=ownerFinancialReadouts({status:'OK',forecasts:[forecast('sales',{unit:'USD'}),forecast('gross_margin_pct',{unit:'EUR'})]},{tenantId,now});
  assert.equal(x.revenue,null);assert.equal(x.margin,null);assert.equal(x.cash,null);
 });
-test('browser only fetches finance with authenticated tenant context and no retry fallback',async()=>{
+test('browser only fetches finance with authenticated tenant context and no retry fallback',async(t)=>{
+ // Freeze this legacy October fixture at its own stated reference time.
+ // Production must continue rejecting data older than 30 days.
+ t.mock.method(Date,'now',()=>now);
  let calls=0;
  const c=createOwnerFinancialClient({
   authHeadersProvider:async()=>({authorization:'Bearer sample',accept:'application/json'}),
