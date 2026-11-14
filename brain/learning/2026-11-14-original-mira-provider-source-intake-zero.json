@@ -29,5 +29,15 @@
     "Meta publication",
     "consumer processed ACK",
     "next natural run"
-  ]
+  ],
+  "failure_class": "CLASSIFIER_GAP",
+  "scope": "CONTENT",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-original-provider-rejections-20261114.test.mjs"
+    ]
+  }
 }
