@@ -7,6 +7,7 @@ import path from 'node:path';
 import assert from 'node:assert/strict';
 import {verifyAlreadyApplied818HistoryReconciliation} from './verified-provider-history-reconciliation.mjs';
 import {verifyNativeProviderHealthVersionReconciliation, EXACT_BASE_SHA, PROPOSAL, NATIVE} from './verified-provider-health-native-version-reconciliation.mjs';
+import {verifyAlreadyApplied853OutreachMirror,SOURCE_853_BASE,SOURCE_853_ORIGINAL,SOURCE_853_MIRROR} from './verified-provider-853-original-outreach-source-mirror.mjs';
 
 const TESTS=process.argv.slice(2);
 assert.ok(TESTS.length>=5 && TESTS.every(p=>/^tests\/[a-z0-9._/-]+\.test\.mjs$/.test(p)), 'Pass the existing migration-lock test suite explicitly');
@@ -20,6 +21,7 @@ const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',maxBuffer
 let proposed=[];
 let alreadyAppliedHistoryReconciliation=null;
 let nativeProviderHealthVersionReconciliation=null;
+let originalOutreach853Reconciliation=null;
 
 if (/^[a-f0-9]{40}$/.test(base)) {
   // Fail closed when the immutable review base is unavailable; checkout must fetch full history.
@@ -44,9 +46,36 @@ if (/^[a-f0-9]{40}$/.test(base)) {
       if(proof.ok)nativeProviderHealthVersionReconciliation=proof;
     }
   }
-  if(!nativeProviderHealthVersionReconciliation)
-    assert.deepEqual(changedMigrations.filter(x=>x.status!=='A'),[], 'Applied historical migrations must never be modified or deleted in an ordinary PR');
-  proposed=nativeProviderHealthVersionReconciliation?[]:changedMigrations.map(x=>x.file);
+  // Exact native provider 853 recovery: the real extra 20261114080027 SQL was
+  // independently proven byte-identical to protected canonical 20261114083500,
+  // including native schema_migrations.statements MD5. Restore the missing
+  // EXECUTABLE historical source together with exact 852/853 immutable lock.
+  // No general lock-edit exception; all checks use one pinned original base.
+  if(base===SOURCE_853_BASE&&changedMigrations.length===1
+    &&changedMigrations[0].status==='A'
+    &&changedMigrations[0].file===SOURCE_853_MIRROR){
+    const original=spawnSync('git',['show',base+':'+SOURCE_853_ORIGINAL],
+      {cwd:root,encoding:'utf8',maxBuffer:5e6});
+    const restored=spawnSync('git',['show','HEAD:'+SOURCE_853_MIRROR],
+      {cwd:root,encoding:'utf8',maxBuffer:5e6});
+    const baseLock=spawnSync('git',['show',base+':supabase/migration-history.lock.json'],
+      {cwd:root,encoding:'utf8',maxBuffer:5e6});
+    if(original.status===0&&restored.status===0&&baseLock.status===0){
+      const proof=verifyAlreadyApplied853OutreachMirror({
+        baseSha:base,baseLock:JSON.parse(baseLock.stdout),
+        headLock:JSON.parse(readFileSync(lockPath,'utf8')),
+        proposed:[SOURCE_853_MIRROR],
+        originalBaseSQL:original.stdout,restoredSQL:restored.stdout
+      });
+      if(proof.ok)originalOutreach853Reconciliation=proof;
+    }
+  }
+  if(!nativeProviderHealthVersionReconciliation){
+    if(!originalOutreach853Reconciliation)
+      assert.deepEqual(changedMigrations.filter(x=>x.status!=='A'),[], 'Applied historical migrations must never be modified or deleted in an ordinary PR');
+  }
+  proposed=(nativeProviderHealthVersionReconciliation||originalOutreach853Reconciliation)
+    ?[]:changedMigrations.map(x=>x.file);
   if (proposed.length) {
     assert.ok(event==='pull_request' || event==='merge_group' || (event==='workflow_dispatch' && /^\d+$/.test(pr)),
       'Only an identified protected PR/merge-group may propose new migrations');

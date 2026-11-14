@@ -53,7 +53,7 @@ test('browser only fetches finance with authenticated tenant context and no retr
  let calls=0;
  const c=createOwnerFinancialClient({
   authHeadersProvider:async()=>({authorization:'Bearer sample',accept:'application/json'}),
-  fetchImpl:async(url,options)=>{calls++;assert.equal(url,'/api/portal-forecasts');assert.equal(options.cache,'no-store');assert.equal(options.credentials,'same-origin');assert.equal(options.headers.authorization,'Bearer sample');return {ok:true,json:async()=>({tenantId,status:'OK',forecasts:[forecast('revenue')]})};}
+  fetchImpl:async(url,options)=>{calls++;assert.equal(url,'/api/portal-forecasts');assert.equal(options.cache,'no-store');assert.equal(options.credentials,'same-origin');assert.equal(options.headers.authorization,'Bearer sample');const current=Date.now();const updatedAt=new Date(current-86_400_000).toISOString();const verifiedAt=new Date(current-43_200_000).toISOString();return {ok:true,json:async()=>({tenantId,status:'OK',forecasts:[forecast('revenue',{updatedAt,validation:{status:'passed',tenantBound:true,tenantId,verifiedAt}})]})};}
  });
  const out=await c.load(tenantId);
  assert.equal(calls,1);assert.equal(out.records,1);

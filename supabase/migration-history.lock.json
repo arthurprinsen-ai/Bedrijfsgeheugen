@@ -3404,8 +3404,16 @@
     {
       "version": "20261113190000",
       "name": "original_seo_heartbeat_cro_consumer_receipt_v1"
+    },
+    {
+      "version": "20261114080027",
+      "name": "original_approved_connection_source_priming_v1"
+    },
+    {
+      "version": "20261114083500",
+      "name": "original_approved_connection_source_priming_v1"
     }
   ],
-  "captured_at": "2026-11-13T18:20:40.710020Z",
+  "captured_at": "2026-11-14 08:09:21.06713+00",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
