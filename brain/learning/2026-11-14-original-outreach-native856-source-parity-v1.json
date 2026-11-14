@@ -1,0 +1,79 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|native856-provider-source-lock-lag-and-historical-tests-frozen|20261114-v1",
+  "failure_class": "PROVIDER_APPLIED_SOURCE_LOCK_BEHIND_AND_HISTORICAL_TEST_FROZEN",
+  "root_cause": "Protected PR #5768 migrated native Supabase provider to 856 and restored one exact original waiting email source feedback ACK, but original Git source migration-history lock was 855. Two historical tests required exact length 854/855 and last-row identity, which would falsely block every legitimate N+1. The existing Edge worker remained version 13, without the protected-main waiting-feedback code: the sole allowed Supabase GitHub Integration production promotion must establish runtime parity, not chat/direct deployment.",
+  "evidence": {
+    "observed_utc": "2026-11-14T13:42:27.402065Z",
+    "native_project": "adhjwmvyoixzjtmiroln",
+    "native_count": 856,
+    "latest_provider_version": "20261114142500",
+    "latest_provider_name": "original_outreach_feedback_consumer_ack_v2",
+    "native_sql_statement_count": 3,
+    "source_lock_before": 855,
+    "source_lock_after_candidate": 856,
+    "original_cron_116_active": true,
+    "original_email_received_no_source_ack": 1,
+    "original_email_status": "waiting",
+    "actual_send_message_id_verified_now": false,
+    "edge_function": "powerhouse-relationship-public-research",
+    "edge_provider_version_observed": 13,
+    "edge_has_main_waiting_feedback_code": false,
+    "protected_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5768"
+  },
+  "repair": "Append exact independently read provider migration 856 identity to the sole original Git lock. Rewrite historical 854 and 855 tests as immutable index/prefix assertions, retaining unique monotone history and exact current provider parity gate. Keep original Edge provider deployment OPEN and route only via protected-main Supabase GitHub Integration, never via direct Supabase deploy_edge_function.",
+  "prevention": [
+    "After any protected native migration, immediately reconcile source lock with independently read exact provider version/name and observed timestamp; do not replay already-applied SQL.",
+    "Historical N proof uses lock.applied[N-1] with lock.length>=N, monotone uniqueness and unchanged SQL; current terminal parity separately requires provider count/last version exactly match.",
+    "No Edge production parity if deployed source lacks the exact protected main waiting+NO_SOURCE code, even when SQL and cron succeed.",
+    "Only Supabase GitHub Integration is permitted as production Edge deployer; an attestation-only workflow or chat/provider direct deploy cannot be substituted.",
+    "Original ONE BRAIN receipt counts receipt of an unverified no-source disposition separately from Gmail send; provider ID/recipient/content independent readback required for sent."
+  ],
+  "owner": "ONE BRAIN original migration history owner + Supabase GitHub Integration Edge release authority",
+  "status": "PR_CANDIDATE_SOURCE_LOCK_AND_HISTORY_TEST_FIX;EDGE_PROVIDER_PARITY_STILL_OPEN",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_SOURCE_LOCK_BEHIND_AND_HISTORICAL_TEST_FROZEN",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-outreach-854-source-parity-20261114.test.mjs",
+      "tests/brain-native-855-original-handoff-lock-20261114.test.mjs",
+      "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-native-outreach-854-source-parity-20261114.test.mjs",
+    "tests/brain-native-855-original-handoff-lock-20261114.test.mjs",
+    "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migration-history.lock.json",
+    "tests/brain-native-outreach-854-source-parity-20261114.test.mjs",
+    "tests/brain-native-855-original-handoff-lock-20261114.test.mjs",
+    "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-outreach-native856-source-parity-v1.json",
+    "docs/changes/2026-11-14-original-outreach-native856-source-parity.md",
+    "docs/development-ledger-events/2026-11-14-original-outreach-native856-source-parity.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required/BRAIN/CodeQL and Supabase Preview plus exact protected merge.",
+    "Git source lock count=856 and exact native provider history count=856, identical last version/name, first 855 unchanged.",
+    "Supabase GitHub Integration check/attestation on protected merge SHA and independently deployed Edge source contains exact waiting-owner direct CAS and no-source helper.",
+    "Next natural #116 stage2/3 original no-source disposition is preserved without forced Gmail mail or prematurely repeated provider research."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}
