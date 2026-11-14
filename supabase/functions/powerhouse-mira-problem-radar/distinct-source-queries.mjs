@@ -16,8 +16,17 @@ export const MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES=Object.freeze({
  'capaciteitsplanning':'planning personeelstekort ondernemers',
  'debiteuren':'betaalachterstand debiteuren ondernemers',
  'late-facturering':'late facturering ondernemers',
- 'klantafhankelijkheid':'grote klant afhankelijkheid',
+ 'klantafhankelijkheid':'mkb afhankelijkheid omzetconcentratie',
  'klantverlies':'klantverlies bedrijven'
+});
+// Original production source radar readback #31075 (14 Nov): the old
+// alternate "ondernemer afhankelijk grote klant" returned mostly Nvidia,
+// listed-equity and celebrity succession headlines. Those are not a real
+// customer-concentration problem in a Dutch MKB company. Correct this ONE
+// existing original radar search slot; do not change global shared rotation,
+// add provider calls, or treat the search term as evidence or an approval.
+export const MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES=Object.freeze({
+  'klantafhankelijkheid':'mkb klantconcentratie omzet'
 });
 const familyLookup=new Map(MIRA_SOURCE_TOPIC_QUERIES.flatMap(f=>[
  [f.query,f.topic],[MIRA_SOURCE_ALTERNATE_QUERIES[f.topic],f.topic]
@@ -45,10 +54,14 @@ export function rotateDistinctMiraQueries(runDate,canonicalQueries){
    if(x.channel!=='instagram_company')return x;
    const topic=familyLookup.get(x.query);
    if(!topic)throw new Error('MIRA_UNKNOWN_PH_P_SOURCE_FAMILY');
-   return Object.freeze({
-     ...x,
-     query:useDistinct?MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES[topic]:x.query
-   });
+   // Only replace the proven low-precision ALTERNATE query inside the
+   // existing Mira-owned six-business search slots. No new topic or slot.
+   const originalAlternate=MIRA_SOURCE_ALTERNATE_QUERIES[topic];
+   const originalQuery=x.query;
+   const precision=MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES[topic];
+   const approvedQuery=useDistinct?MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES[topic]
+     :precision && originalQuery===originalAlternate?precision:originalQuery;
+   return Object.freeze({...x,query:approvedQuery});
  });
  if(new Set(rows.map(x=>x.query)).size!==8)
    throw new Error('ORIGINAL_RADAR_QUERY_DUPLICATE');
