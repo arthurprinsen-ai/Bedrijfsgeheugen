@@ -1,0 +1,89 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v2",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|original-waiting-email-source-feedback-receiver-discarded|20261114-v2",
+  "failure_class": "RESEARCH_RESULT_TO_ORIGINAL_WAITING_EMAIL_HANDOFF_LOST",
+  "root_cause": "The sole DataForSEO relationship-public-research worker wrote source candidates back only when the matching original autonomous_email had status prepared. The active original held email is waiting; a result (including NO_VERIFIED_SOURCE) was not acknowledged by that original consumer. The existing #116 reconciliation counted only UNVERIFIED_SOURCE_CANDIDATE, never an exact NO_SOURCE disposition. Provider search succeeded but downstream original owner ACK remained 0; this masks real consumer progress and repeats old source-gate status indefinitely.",
+  "evidence": {
+    "capture_utc": "2026-11-14T13:17:53Z",
+    "original_cron_116_active": true,
+    "original_handoff_receipts": 18,
+    "original_consumer_ack_count": 0,
+    "active_held_original_email_status": "waiting",
+    "matching_internal_research_status": "waiting",
+    "matching_original_research_provider": "dataforseo-serp",
+    "matching_original_research_reason": "NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH",
+    "matching_retry_due_utc": "2026-11-15T06:38:14.244Z",
+    "original_message_provider_delivered_proven": false,
+    "historic_source_worker_writeback_only": "prepared",
+    "root_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "ci_historic_contract_regression": {
+      "first_run": "43599843552",
+      "root_causes": [
+        "Historical prepared-only source CAS assumption excluded legitimate waiting originals",
+        "Overbroad no-sender regex matched a documentation comment containing email...send but not an actual provider call"
+      ],
+      "resolution": "Update historical source test to require same original waiting/prepared exact identity and CAS; preserve no-sender regex unchanged and revise only comment; regression in same incident/PR"
+    }
+  },
+  "repair": "Same original DataForSEO worker now accepts exact original prepared OR waiting action (person, company, action ID) and CAS writeback, with protected original send quarantine; it returns a separately typed NO_SOURCE disposition with exact original research action ID, provider research timestamp and 24h retry without send authority. Same original #116 reconciling stage2/3 repairs a missed worker writeback from recorded original provider result (no second provider call) and distinguishes received/no-source vs unverified candidate vs missing consumer ACK. No new email, recipients, cron, queue, provider authority or permissions.",
+  "prevention": [
+    "Every source result must have exact-original-action ID, matching person/company, source revision/timestamp, due_at and a next-owner readback; research done is not consumer processed.",
+    "Original email can be safely held in prepared or waiting. Never promote waiting to prepared or bypass original composer/recipient consent/verified public source.",
+    "A provider attempt finding NO_VERIFIED_SOURCE requires an original consumer NO_SOURCE_RECEIVED receipt with retry_at; waiting remains non-send.",
+    "Concurrent writes use source-level CAS; missed direct writeback is safely replayed only through the existing original #116 reconciling stage, not a parallel email executor.",
+    "No source candidate can be called verified unless independent source page and recency evidence are present; provider ID/readback is essential for sent.",
+    "Provider uncertainty, existing Gmail ID, no-resend or suppression never triggers a new outbound attempt.",
+    "Update agent/skill, tests, human ledger and actual native Supabase + Edge readback after protected release.",
+    "When a historical test overfits prepared-only state, strengthen it to assert exact old/new recipient identity and CAS instead of weakening safety gates; keep the no-sender policy test unchanged."
+  ],
+  "owner": "Original commercial cron #116 stage2/3, sole DataForSEO research Edge worker, original human-quality gated Gmail composer",
+  "status": "PROTECTED_PR_CANDIDATE_NOT_LIVE_YET",
+  "compiler": {
+    "failure_class": "RESEARCH_RESULT_TO_ORIGINAL_WAITING_EMAIL_HANDOFF_LOST",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+      "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+      "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+      "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+    "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
+  ],
+  "scope": [
+    "supabase/migrations/20261114142500_original_outreach_feedback_consumer_ack_v2.sql",
+    "supabase/functions/_shared/relationship-research-feedback.mjs",
+    "supabase/functions/powerhouse-relationship-public-research/index.ts",
+    "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-outreach-feedback-consumer-ack-v2.json",
+    "docs/changes/2026-11-14-original-outreach-feedback-consumer-ack-v2.md",
+    "docs/development-ledger-events/2026-11-14-original-outreach-feedback-consumer-ack-v2.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",
+    "AGENTS.md",
+    "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required/BRAIN/CodeQL and hosted native Supabase preview for the exact candidate head; merge via canonical protected release.",
+    "Verify native schema migration version/name, function body, service-only ACL, and still one original active #116 job; append-only source migration history separately after real provider application.",
+    "Next natural stage2/3: exact original waiting email receives no-source disposition from existing research record and one durable receipt with same research ID; no 24h premature new DataForSEO attempt.",
+    "Verify research Edge deployment version and readback of new waiting-CAS source helper; do not claim new Edge LIVE from repository merge alone.",
+    "Gmail send only after lawful authorization, independently sourced current page and composer quality; require actual provider message ID and independent readback."
+  ],
+  "no_duplicate_sends": true,
+  "no_false_green": true
+}
