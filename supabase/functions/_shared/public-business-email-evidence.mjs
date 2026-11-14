@@ -27,7 +27,7 @@ function textOnly(html){
   if(j>=source.length)break;
   const inside=source.slice(i+1,j).trim().toLowerCase();
   const closing=inside.startsWith('/');
-  const name=(closing?inside.slice(1).trim():inside).split(/[\\s/]/,1)[0];
+  const name=(closing?inside.slice(1).trim():inside).match(/^[a-z0-9-]+/)?.[0]??'';
   if(hidden){
    if(closing&&name===hidden)hidden=null;
   }else if(!closing&&['script','style','template','noscript','svg'].includes(name)){
