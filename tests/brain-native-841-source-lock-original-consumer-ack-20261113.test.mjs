@@ -21,7 +21,7 @@ test('original provider 841 stays in the one immutable 840-prefix migration hist
   assert.equal(lock.applied[i - 1].version, '20261113062500');
   // The 841 receipt is immutable; the single native provider lock may advance
   // captured_at as later legitimate migrations are appended.
-  assert.match(lock.captured_at, /^\\d{4}-\\d\\d-\\d\\dT\\d\\d:\\d\\d:\\d\\d\\.\\d+Z$/);
+  assert.match(lock.captured_at, /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d+Z$/);
   assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-13T00:00:00Z'),
     'latest native recapture cannot predate the original 841 proof');
   assert.match(migration, /CREATE OR REPLACE FUNCTION public\.powerhouse_content_handoff_receipts_v1/);
