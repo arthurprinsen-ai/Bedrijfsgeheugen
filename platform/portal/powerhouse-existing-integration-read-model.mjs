@@ -17,12 +17,105 @@ const SOURCES=Object.freeze([
   {name:'commercialHandoff',table:'powerhouse_commercial_handoff_scorecard_v1',
     query:'select=measured_at,original_email_actions_7d,provider_readback_proven_7d,broken_or_unproven_handoffs_7d,linked_experiment_treatments_7d,provider_linked_replies_7d,provider_linked_meetings_7d,provider_linked_realized_revenue_eur_7d,handoff_health&limit=2',max:1},
   {name:'commercialIncidents',table:'brain_blockers',
-    query:'select=fingerprint,scope,severity,state,updated_at,resolved_at&scope=like.powerhouse%3Acommercial%3A*&order=updated_at.desc&limit=17',max:16}
+    query:'select=fingerprint,scope,severity,state,updated_at,resolved_at&scope=like.powerhouse%3Acommercial%3A*&order=updated_at.desc&limit=17',max:16},
+  // Same original innovation candidate → ONE BRAIN obligation → agent intake.
+  // Source-bounded admin-only projection, NOT a second registry or executor.
+  {name:'innovationCandidates',table:'powerhouse_optimization_candidate_v1',
+    query:'select=candidate_id,source_key,owner_agent,status,safety_class&tenant_id=eq.canonical&order=created_at.asc&limit=101',max:100},
+  {name:'innovationObligations',table:'brain_obligations',
+    query:'select=business_entity,change_id,owner,state,payload_sha256,evidence&obligation_type=eq.INNOVATION_DELIVERY&capability_id=eq.powerhouse-self-improvement-layer-v1&limit=101',max:100},
+  {name:'innovationIntakes',table:'brain_operations',
+    query:'select=operation_type,capability_id,status,correlation_id,idempotency_key,change_id,payload_sha256,remote_ref,evidence,updated_at&operation_type=eq.INNOVATION_INTAKE&limit=101',max:100}
 ]);
 const metric=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
 const text=v=>typeof v==='string'?v.slice(0,90):null;
 const rows=v=>Array.isArray(v)?v:[];
 const usable=(readStates,key)=>readStates[key]==='LIVE';
+
+const bounded=v=>typeof v==='string'?v.slice(0,160):null;
+const ACK_TRUE=v=>v===true||v==='true';
+/**
+ * Read-only exact-identity reconciliation of the SAME existing source,
+ * ONE BRAIN obligation and original agent intake; no guessed ACK or effect.
+ * Fail closed on duplicate cardinality, unknown owner, partial provider reads.
+ */
+export function projectOriginalInnovationHandoff({candidates=[],obligations=[],intakes=[],at=new Date().toISOString()}={}){
+  const c=rows(candidates),b=rows(obligations),o=rows(intakes);
+  const expectedAgent=owner=>owner==='engineering'?'agent:agent-integration-engineer':
+    owner==='cro'?'agent:agent-growth-market':null;
+  const byId=new Map(),byOp=new Map();
+  for(const record of b){
+    const id=record?.business_entity;
+    if(typeof id!=='string')continue;
+    const group=byId.get(id)||[]; group.push(record);byId.set(id,group);
+  }
+  for(const record of o){
+    const id=String(record?.correlation_id||'');
+    const group=byOp.get(id)||[];group.push(record);byOp.set(id,group);
+  }
+  const entries=c.map(record=>{
+    const id=String(record?.candidate_id||'');
+    const owner=String(record?.owner_agent||'');
+    const expected=expectedAgent(owner);
+    const matches=byId.get(id)||[];
+    const operations=byOp.get('innovation-delivery:'+id)||[];
+    const obligation=matches.length===1?matches[0]:null;
+    const operation=operations.length===1?operations[0]:null;
+    const digest=String(obligation?.payload_sha256||'');
+    const exact=Boolean(
+      id && expected && matches.length===1 && operations.length===1
+      && obligation?.change_id===record.source_key
+      && obligation?.owner==='original-agent:'+owner
+      && digest.length===64 && /^[a-f0-9]{64}$/i.test(digest)
+      && operation?.operation_type==='INNOVATION_INTAKE'
+      && operation?.capability_id===expected
+      && operation?.change_id===record.source_key
+      && operation?.payload_sha256===digest
+      && operation?.idempotency_key==='innovation-delivery:'+id+':'+digest.slice(0,16)
+    );
+    const evidence=operation?.evidence||{};
+    const ack=exact && operation?.status==='VERIFIED'
+      && typeof operation.remote_ref==='string' && operation.remote_ref.trim()!==''
+      && evidence.consumer_owner===expected
+      && evidence.source_revision===obligation?.evidence?.source_revision
+      && ACK_TRUE(evidence.independent_consumer_readback);
+    return {
+      candidateId:bounded(id),sourceKey:bounded(record?.source_key),
+      ownerAgent:expected,operationStatus:bounded(operation?.status),
+      obligationState:bounded(obligation?.state),sourceBound:exact,consumerAckProven:ack,
+      reviewRequired:record?.safety_class==='review_required',
+      // Every candidate remains open for independently measured improvement.
+      nextSafeAction:!exact?'REPAIR_ORIGINAL_SOURCE_OPERATION_BINDING':
+        !ack?'ORIGINAL_AGENT_SOURCE_BOUND_REVIEW_AND_RECEIPT':
+        'PROTECTED_RELEASE_INDEPENDENT_EFFECT_AND_LEARNING_PROOF'
+    };
+  });
+  const uniqueIds=new Set(entries.map(e=>e.candidateId));
+  const bound=entries.filter(x=>x.sourceBound).length;
+  const verified=entries.filter(x=>x.consumerAckProven).length;
+  const orphans=Array.from(byOp.keys()).filter(key=>key.startsWith('innovation-delivery:') &&
+    !uniqueIds.has(key.slice('innovation-delivery:'.length))).length;
+  const orphanObligations=Array.from(byId.keys()).filter(id=>!uniqueIds.has(id)).length;
+  const duplicate=uniqueIds.size!==entries.length;
+  const complete=entries.length<=100 && b.length<=100 && o.length<=100
+    && orphans===0 && orphanObligations===0 && !duplicate;
+  const state=!complete?'SOURCE_IDENTITY_CONFLICT':!entries.length?'NO_SOURCE_CANDIDATES':
+    bound!==entries.length?'SOURCE_LINEAGE_GAP':
+    verified!==entries.length?'CONSUMER_ACK_DUE':'CONSUMER_ACK_PROVEN_OUTCOME_DUE';
+  return {
+    state,readAt:at,candidates:entries.length,sourceBound:bound,
+    ownerEngineering:entries.filter(x=>x.ownerAgent==='agent:agent-integration-engineer').length,
+    ownerCro:entries.filter(x=>x.ownerAgent==='agent:agent-growth-market').length,
+    awaitingAgentAck:entries.filter(x=>!x.consumerAckProven).length,
+    verifiedConsumerAcks:verified,
+    orphanOperations:orphans,orphanObligations,duplicateCandidateIds:duplicate,
+    independentlyVerifiedInnovations:null,
+    source:'ORIGINAL_CANDIDATE_BRAIN_OBLIGATION_BRAIN_OPERATION_READBACK',
+    outcomeProof:'NOT_IN_THIS_PROJECTION',
+    entries:entries.slice(0,25)
+  };
+}
+
 
 export function projectPowerhouseIntegrationReadback({datasets={},readStates={},at=new Date().toISOString()}={}){
   const healthRows=usable(readStates,'health')?rows(datasets.health):[];
@@ -34,6 +127,11 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
   const terminalRows=usable(readStates,'terminal')?rows(datasets.terminal):[];
   const handoffRows=usable(readStates,'commercialHandoff')?rows(datasets.commercialHandoff):[];
   const incidentRows=usable(readStates,'commercialIncidents')?rows(datasets.commercialIncidents).filter(r=>String(r?.scope||'').startsWith('powerhouse:commercial:')).slice(0,16):[];
+  const innovationAvailable=['innovationCandidates','innovationObligations','innovationIntakes'].every(x=>usable(readStates,x));
+  const innovation=innovationAvailable?projectOriginalInnovationHandoff({
+    candidates:datasets.innovationCandidates,obligations:datasets.innovationObligations,
+    intakes:datasets.innovationIntakes,at
+  }):null;
   const health=healthRows[0]||null, experiments=expRows[0]||null, revenue=revenueRows[0]||null;
   const loops=loopRows[0]||null, terminal=terminalRows[0]||null;
   const handoff=handoffRows[0]||null;
@@ -61,6 +159,12 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
   if(handoff && handoff.handoff_health!=='GREEN')gaps.push('COMMERCIAL_HANDOFF_PROOF_OPEN');
   if(handoff && metric(handoff.broken_or_unproven_handoffs_7d)>0)gaps.push('HISTORICAL_COMMERCIAL_HANDOFF_DEBT_OPEN');
   if(incidentActive>0)gaps.push('ACTIVE_COMMERCIAL_BRAIN_INCIDENT_REQUIRES_READBACK');
+  if(innovation){
+    if(innovation.state==='SOURCE_IDENTITY_CONFLICT'||innovation.state==='SOURCE_LINEAGE_GAP')gaps.push('INNOVATION_SOURCE_LINEAGE_GAP');
+    if(innovation.state==='NO_SOURCE_CANDIDATES')gaps.push('INNOVATION_NO_SOURCE_CANDIDATES');
+    if(innovation.awaitingAgentAck>0)gaps.push('INNOVATION_CONSUMER_ACK_DUE');
+    gaps.push('INNOVATION_INDEPENDENT_OUTCOME_PROOF_REQUIRED');
+  }
   return {
     contract:'POWERHOUSE_EXISTING_SYSTEMS_ADMIN_READBACK_V1',
     observedAt:at,
@@ -138,6 +242,7 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
       })),
       readAt:at
     }:null,
+    innovationHandoff:innovation,
     gapCodes:gaps
   };
 }
@@ -159,8 +264,8 @@ export async function readPowerhouseIntegrationReadback({baseUrl,key,fetchImpl=g
   const datasets={},readStates={};
   settled.forEach((r,index)=>{
     const source=SOURCES[index],value=r.status==='fulfilled'?r.value:null;
-    const good=value!==null && value.length<=source.max && (source.max!==1 || value.length===1);
-    readStates[source.name]=good?'LIVE':value&&value.length>source.max?'TRUNCATED':'UNAVAILABLE';
+    const good=Array.isArray(value) && value.length<=source.max && (source.max!==1 || value.length===1);
+    readStates[source.name]=good?'LIVE':Array.isArray(value)&&value.length>source.max?'TRUNCATED':'UNAVAILABLE';
     datasets[source.name]=good?value:[];
   });
   return projectPowerhouseIntegrationReadback({datasets,readStates,at});
