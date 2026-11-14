@@ -13,13 +13,21 @@
     "independent_provider_sends_today": 0,
     "original_cron_owner": "#116 stage 2",
     "prior_migration": "20261114083500_original_approved_connection_source_priming_v1",
-    "original_mergesha": "7603fc67c85093bcd03328fa1e42f6c128200cbb"
+    "original_mergesha": "7603fc67c85093bcd03328fa1e42f6c128200cbb",
+    "native_migration_pairs_readback": 853,
+    "native_lock_prefix_verified_pairs": 851,
+    "native_lock_prefix_mismatches": 0,
+    "actual_original_provider_migration_versions": [
+      "20261114080027",
+      "20261114083500"
+    ]
   },
   "repair": "Replace ONLY the existing approved-source priming function, changing generic research cooldown 30 days to 7 days. Preserve all other security, suppressions, idempotency, five source-action/day cap, source-approval and strict email no-send guard. No new cron or recipient authorization. Keep original existing research/composer/provider/Brain lineages.",
   "prevention": [
     "Preview the production-eligible source-research cohort through the complete proposed WHERE clause before merge. A successful SQL deployment with zero candidates must be diagnosed, not reported as commercial improvement.",
     "Do not equate any generic internal research with current independently verified evidence; track previous research age and quality separately.",
-    "Keep contact cooldown and research freshness distinct, preserving 90-day outbound cooldown and all suppressions."
+    "Keep contact cooldown and research freshness distinct, preserving 90-day outbound cooldown and all suppressions.",
+    "Inspect native Supabase provider migration history after protected merge before any manual migration action. If the canonical release already applied a migration, never replay it; retain immutable provider migration identities, including a historical duplicate safe CREATE OR REPLACE."
   ],
   "owner": "Original Powerhouse commercial source-stage #116 and ONE BRAIN; original Gmail executor unchanged",
   "status": "PR_PENDING_PROTECTED_CI_AND_PRODUCTION_READBACK",
@@ -46,6 +54,7 @@
   },
   "scope": [
     "supabase/migrations/20261114090000_original_approved_source_cooldown_false_block_v1.sql",
+    "supabase/migration-history.lock.json",
     "tests/brain-original-approved-source-cooldown-correction-20261114.test.mjs",
     "brain/learning/2026-11-14-original-approved-source-cooldown-false-block-v1.json",
     "docs/development-ledger-events/2026-11-14-original-approved-source-cooldown-false-block.md",
@@ -54,7 +63,8 @@
   "production_proof_to_complete": [
     "Protected Required/BRAIN/CodeQL/Supabase-preview pass; protected main merge.",
     "Apply migration through original Supabase native migration; inspect exact function definition 7d, ACL, unchanged #116.",
-    "Next natural stage 2 source priming 1..5 actions (when eligible) with no send-side effect, independent source quality readback and provider message ID only upon permitted successful delivery."
+    "Next natural stage 2 source priming 1..5 actions (when eligible) with no send-side effect, independent source quality readback and provider message ID only upon permitted successful delivery.",
+    "Keep provider-applied migration history parity with source lock; prior 851 pair prefix independently exact, append only two verified original releases."
   ],
   "no_false_green": true,
   "no_duplicate_sends": true
