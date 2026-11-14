@@ -70,8 +70,10 @@ if (/^[a-f0-9]{40}$/.test(base)) {
       if(proof.ok)originalOutreach853Reconciliation=proof;
     }
   }
-  if(!nativeProviderHealthVersionReconciliation&&!originalOutreach853Reconciliation)
-    assert.deepEqual(changedMigrations.filter(x=>x.status!=='A'),[], 'Applied historical migrations must never be modified or deleted in an ordinary PR');
+  if(!nativeProviderHealthVersionReconciliation){
+    if(!originalOutreach853Reconciliation)
+      assert.deepEqual(changedMigrations.filter(x=>x.status!=='A'),[], 'Applied historical migrations must never be modified or deleted in an ordinary PR');
+  }
   proposed=(nativeProviderHealthVersionReconciliation||originalOutreach853Reconciliation)
     ?[]:changedMigrations.map(x=>x.file);
   if (proposed.length) {
