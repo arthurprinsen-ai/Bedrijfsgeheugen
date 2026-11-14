@@ -13,3 +13,5 @@ Regression: `tests/brain-original-research-consumer-handoff-receipts-20261114.te
 Release required: protected Required/CodeQL/Preview, native migration and next natural stage2/3 event readback.
 Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
 State at creation: candidate, not live.
+
+Extra score-isolation rule: administrative handoff receipts carry `person_key`/`company_key` only in evidence. Top-level runtime event `person_key` and `company_key` are NULL so the original relationship-ranking engine does not misread a technical ACK as a fresh sales signal. Original genuine source event remains separately attributable.
