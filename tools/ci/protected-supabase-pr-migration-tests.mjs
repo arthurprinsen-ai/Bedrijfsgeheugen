@@ -6,6 +6,7 @@ import {tmpdir} from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {verifyAlreadyApplied818HistoryReconciliation} from './verified-provider-history-reconciliation.mjs';
+import {verifyProvider852853OutreachReconciliation, OUTREACH_BASE_SHA, RESTORED_852, APPLIED_853, PROPOSED_854} from './verified-provider-852-853-outreach-reconciliation.mjs';
 import {verifyNativeProviderHealthVersionReconciliation, EXACT_BASE_SHA, PROPOSAL, NATIVE} from './verified-provider-health-native-version-reconciliation.mjs';
 
 const TESTS=process.argv.slice(2);
@@ -20,6 +21,7 @@ const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8',maxBuffer
 let proposed=[];
 let alreadyAppliedHistoryReconciliation=null;
 let nativeProviderHealthVersionReconciliation=null;
+let exactOutreachHistoryReconciliation=null;
 
 if (/^[a-f0-9]{40}$/.test(base)) {
   // Fail closed when the immutable review base is unavailable; checkout must fetch full history.
@@ -27,6 +29,25 @@ if (/^[a-f0-9]{40}$/.test(base)) {
   const changes=git('diff','--name-status','--no-renames',base,'HEAD').split('\n').filter(Boolean)
     .map(line=>{const [status,...rest]=line.split('\t');return {status,file:rest.join('\t')};});
   const changedMigrations=changes.filter(x=>x.file.startsWith('supabase/migrations/'));
+  // One-time exact native provider 852/853 source restoration (no replay).
+  // 854 is still an UNAPPLIED proposal and must pass normal preview / merge.
+  if(base===OUTREACH_BASE_SHA && changedMigrations.length===2){
+    const readGit=(rev)=>spawnSync('git',['show',rev],{cwd:root,encoding:'utf8',maxBuffer:5e6});
+    const original=readGit(base+':'+APPLIED_853);
+    const restored=readGit('HEAD:'+RESTORED_852);
+    const hotfix=readGit('HEAD:'+PROPOSED_854);
+    const baseLock=readGit(base+':supabase/migration-history.lock.json');
+    assert.ok([original,restored,hotfix,baseLock].every(x=>x.status===0),
+      'Exact provider 852/853 recovery must have original protected sources');
+    const proof=verifyProvider852853OutreachReconciliation({
+      baseSha:base,changedMigrations,
+      baseLock:JSON.parse(baseLock.stdout),
+      headLock:JSON.parse(readFileSync(lockPath,'utf8')),
+      originalSQL:original.stdout,restored852SQL:restored.stdout,hotfixSQL:hotfix.stdout
+    });
+    assert.ok(proof.ok,'Native 852/853 recovery rejected: '+proof.reason);
+    exactOutreachHistoryReconciliation=proof;
+  }
   // Exactly one provider-attested change-of-version ONLY after PR #5586 was
   // protected merged and its original SQL actually applied at a new native
   // version. Ordinary historical migrations are still immutable.
@@ -46,7 +67,8 @@ if (/^[a-f0-9]{40}$/.test(base)) {
   }
   if(!nativeProviderHealthVersionReconciliation)
     assert.deepEqual(changedMigrations.filter(x=>x.status!=='A'),[], 'Applied historical migrations must never be modified or deleted in an ordinary PR');
-  proposed=nativeProviderHealthVersionReconciliation?[]:changedMigrations.map(x=>x.file);
+  proposed=nativeProviderHealthVersionReconciliation?[]:
+    exactOutreachHistoryReconciliation?[PROPOSED_854]:changedMigrations.map(x=>x.file);
   if (proposed.length) {
     assert.ok(event==='pull_request' || event==='merge_group' || (event==='workflow_dispatch' && /^\d+$/.test(pr)),
       'Only an identified protected PR/merge-group may propose new migrations');
@@ -69,9 +91,9 @@ if (/^[a-f0-9]{40}$/.test(base)) {
       proposed,originalBaseSQL,restoredSQL
     });
     if (reconciliation.ok)alreadyAppliedHistoryReconciliation=reconciliation;
-    else assert.equal(headLock,baseLock,
+    else if(!exactOutreachHistoryReconciliation) assert.equal(headLock,baseLock,
       'PR candidates must not predeclare unapplied migrations as production-applied: '+reconciliation.reason);
-    const lock=JSON.parse(baseLock);
+    const lock=JSON.parse(exactOutreachHistoryReconciliation?headLock:baseLock);
     assert.equal(lock.source,'supabase_migration_history');
     const applied=new Map(lock.applied.map(row=>[row.version,row.name]));
     const last=lock.applied.at(-1)?.version || '';
@@ -120,10 +142,12 @@ try {
 for (const filename of proposed) assert.ok(readFileSync(path.join(root,filename),'utf8').trim(),'Proposed SQL lost after test: '+filename);
 console.log(JSON.stringify({
   contract:'supabase-protected-pr-migration-admission-v1',
-  result:nativeProviderHealthVersionReconciliation?'EXACT_PROVIDER_APPLIED_824_NATIVE_VERSION_SOURCE_PARITY_PREVIEW_REQUIRED':
+  result:exactOutreachHistoryReconciliation?'EXACT_NATIVE_852_853_SOURCE_RECONCILIATION_854_PREVIEW_REQUIRED':
+    nativeProviderHealthVersionReconciliation?'EXACT_PROVIDER_APPLIED_824_NATIVE_VERSION_SOURCE_PARITY_PREVIEW_REQUIRED':
     alreadyAppliedHistoryReconciliation?'EXACT_PROVIDER_APPLIED_818_RECONCILIATION_PREVIEW_REQUIRED':
     proposed.length?'PROPOSED_SOURCE_ONLY_PREVIEW_REQUIRED':'EXACT_PROVIDER_BASELINE_PARITY',
   native_provider_version_reconciliation:nativeProviderHealthVersionReconciliation?.state||null,
+  original_outreach_852_853_reconciliation:exactOutreachHistoryReconciliation?.state||null,
   already_applied_reconciliation:alreadyAppliedHistoryReconciliation?.state||null,
   base_sha:base||null,proposed_migrations:proposed,
   provider_applied_claim:false,hosted_preview_pass_claim:false
