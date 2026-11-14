@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-863-lock-862-source-parity|20261114-v1",
+  "maturity": "OBSERVED",
+  "status": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ]
+  },
+  "root_cause": "Original protected source-stage handoff PR #5797 native provider-applied exact migration version/name 20261114230000/original_source_consumption_stage_receipt_parity_v1, but original immutable source lock still listed first 862 versions and not this real 863rd identity.",
+  "evidence": {
+    "canonical_project": "adhjwmvyoixzjtmiroln",
+    "native_provider_count": 863,
+    "original_main_lock_count": 862,
+    "provider_latest_version": "20261114230000",
+    "provider_latest_name": "original_source_consumption_stage_receipt_parity_v1",
+    "observed_at": "2026-11-14T19:39:19.081145Z",
+    "source_lock_original_prefix_preserved": true
+  },
+  "prevention": {
+    "original_gitops_lock_only": true,
+    "protected_exact_head_required": true,
+    "independent_provider_readback_required": true,
+    "no_manual_provider_history_rewrite": true,
+    "no_new_scheduler_or_worker": true
+  },
+  "expected_proof": "original main source-lock 863 equals native applied 863 with same exact source version/name; pending innovation PR #5800 must rebase and move proposed migration AFTER provider 863, never claim released from this lock repair"
+}
