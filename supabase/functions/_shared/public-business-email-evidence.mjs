@@ -5,7 +5,39 @@ const FREE_MAIL=new Set(['gmail.com','outlook.com','hotmail.com','yahoo.com','li
 const GENERIC=/^(info|contact|hello|sales|support|office|admin|receptie|reception|hr|jobs|team|marketing|service|noreply|no-reply|privacy|hello|recruitment|recruiting|careers)([.+_-]|@)/i;
 const EXCLUDED_HOST=/(^|\.)(linkedin|facebook|instagram|tiktok|google|bing|youtube|reddit|indeed|glassdoor|jobbird|monsterboard|apollo|hunter|rocketreach|signalhire|zoominfo|lusha|wikipedia)\.(com|nl|net|org|co\.uk)$/i;
 const ascii=v=>String(v??'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/&amp;/g,' and ').replace(/[^a-z0-9]+/g,' ').trim();
-const textOnly=html=>String(html??'').replace(/<script\b[^>]*>[\s\S]*?<\/script\s*>/gi,' ').replace(/<style\b[^>]*>[\s\S]*?<\/style\s*>/gi,' ').replace(/<[^>]*>/g,' ').replace(/&(?:nbsp|amp|quot|apos|lt|gt);/gi,' ');
+// Conservative, bounded HTML text scanner. Do not use tag-stripping
+// regular expressions: malformed closing tags could leak script/style
+// code into the person/company identity evidence.
+function textOnly(html){
+ const source=String(html??'');
+ let out='', hidden=null, i=0;
+ while(i<source.length){
+  if(source[i]!=='<'){
+   if(!hidden)out+=source[i];
+   i++;
+   continue;
+  }
+  let j=i+1, quote=null;
+  for(;j<source.length;j++){
+   const ch=source[j];
+   if(quote){if(ch===quote)quote=null;continue;}
+   if(ch==='"'||ch==="'"){quote=ch;continue;}
+   if(ch==='>')break;
+  }
+  if(j>=source.length)break;
+  const inside=source.slice(i+1,j).trim().toLowerCase();
+  const closing=inside.startsWith('/');
+  const name=(closing?inside.slice(1).trim():inside).split(/[\\s/]/,1)[0];
+  if(hidden){
+   if(closing&&name===hidden)hidden=null;
+  }else if(!closing&&['script','style','template','noscript','svg'].includes(name)){
+   hidden=name;
+  }
+  out+=' ';
+  i=j+1;
+ }
+ return out.replace(/&(?:nbsp|amp|quot|apos|lt|gt);/gi,' ');
+}
 function sourceURL(raw){
  try {
   const u=new URL(String(raw??''));
