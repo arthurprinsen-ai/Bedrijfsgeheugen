@@ -47,8 +47,47 @@ async function readBoundedPublicPage(url:string):Promise<string|null>{
     return new TextDecoder().decode(buffer);
   }catch{return null;}
 }
+async function writePublicBusinessSourceReceipt(db:any,action:any,source:any,observedAt:string,recovered=false){
+  // Producer INGEST receipt only. An existing named consumer PROCESSED receipt
+  // must NEVER be downgraded by a duplicate source replay.
+  const key='public-work-email-source:'+action.action_id;
+  const row={
+    dedupe_key:key,event_type:'contact_public_work_email_candidate',
+    source:CONTRACT,subject_key:'relationship:'+action.person_key,
+    person_key:action.person_key,company_key:action.company_key,
+    occurred_at:observedAt,
+    evidence:{contract:source.contract,classification:source.classification,
+      source_url:source.source_url,observed_at:source.observed_at,
+      candidate_address_present:true,canonical_email_written:false,
+      deliverability:'UNVERIFIED',provider_send_authorized:false,
+      original_research_action_id:action.action_id,
+      handoff_state:'CANDIDATE_INGEST_ACK_CONSUMER_PROCESSED_PENDING',
+      source_receipt_recovered_from_canonical:recovered},
+    context:{original_owner:'powerhouse-commercial-learning-v1',
+      consumer_owner:'powerhouse-identity-graph-v1',correlation_id:action.action_id,
+      person_key:action.person_key,external_messages_sent:0,
+      source_revision:source.observed_at},
+    state:'observed',data_quality:'SOURCE_ATTESTED_NOT_DELIVERABILITY',
+    confidence:Number(source.confidence)||0.9
+  };
+  const {error:insertErr}=await db.from('powerhouse_runtime_events')
+    .upsert(row,{onConflict:'dedupe_key',ignoreDuplicates:true});
+  if(insertErr)throw new Error('PUBLIC_EMAIL_ORIGINAL_EVENT_ACK:'+insertErr.message);
+  const {data:verified,error:verifyErr}=await db.from('powerhouse_runtime_events')
+    .select('event_id,evidence,person_key,company_key,context')
+    .eq('dedupe_key',key).maybeSingle();
+  if(verifyErr||!verified)throw new Error('PUBLIC_EMAIL_ORIGINAL_EVENT_ACK:'+(verifyErr?.message||'READBACK_MISSING'));
+  if(verified.person_key!==action.person_key||verified.company_key!==action.company_key||
+    verified.evidence?.original_research_action_id!==action.action_id||
+    verified.evidence?.source_url!==source.source_url||
+    verified.evidence?.observed_at!==source.observed_at||
+    verified.context?.source_revision!==source.observed_at)
+    throw new Error('PUBLIC_EMAIL_ORIGINAL_EVENT_SOURCE_REVISION_CONFLICT');
+  return verified.event_id;
+}
+
 async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:string){
-  // The original business contact record and its explicit approval are mandatory.
+  // Source research may stage only public B2B evidence; recipient authorization remains independent.
   // STAGE ONLY: unverified public address is never promoted to the canonical contact delivery field.
   let q=await db.from('bg_connecties')
     .select('sleutel,linkedin_url,naam,bedrijf,rol,email,extra,bijgewerkt_op')
@@ -66,6 +105,16 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
      clean(contact.bedrijf).toLowerCase()!==clean(action.company_name).toLowerCase()||
      clean(contact.email))
     return {status:'NOT_ELIGIBLE',sites:0,stored:0,receipts:0};
+  const priorCandidate=contact.extra?.public_work_email_candidate;
+  if(priorCandidate?.research_action_id===action.action_id&&
+     priorCandidate?.person_key===action.person_key&&
+     priorCandidate?.send_authorized===false&&
+     priorCandidate?.email_verification==='UNVERIFIED'&&
+     eligiblePublicCompanyPage(priorCandidate.source_url,contact.bedrijf)&&
+     Number.isFinite(Date.parse(priorCandidate.observed_at))){
+    await writePublicBusinessSourceReceipt(db,action,priorCandidate,observedAt,true);
+    return {status:'SOURCE_CANDIDATE_RECEIPT_REPLAY',sites:0,stored:0,receipts:1};
+  }
   const sites=(organic||[]).filter((item:any)=>['organic','first_party_company_domain'].includes(item?.type)&&
     eligiblePublicCompanyPage(item?.url,contact.bedrijf)).slice(0,2);
   let checked=0;
@@ -111,26 +160,7 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
     }
     // Candidate ACK != consumer PROCESSED. #138 identity graph and #116 NBA
     // must independently read this real canonical contact/event on their natural runs.
-    const {data:evt,error:eErr}=await db.from('powerhouse_runtime_events').upsert({
-      dedupe_key:'public-work-email-source:'+action.action_id,
-      event_type:'contact_public_work_email_candidate',
-      source:CONTRACT,subject_key:'relationship:'+action.person_key,
-      person_key:action.person_key,company_key:action.company_key,
-      occurred_at:observedAt,
-      evidence:{contract:evidence.contract,classification:evidence.classification,
-        source_url:evidence.source_url,observed_at:evidence.observed_at,
-        candidate_address_present:true,
-        canonical_email_written:false,
-        deliverability:'UNVERIFIED',
-        provider_send_authorized:false,
-        original_research_action_id:action.action_id,
-        handoff_state:'CANDIDATE_INGEST_ACK_CONSUMER_PROCESSED_PENDING'},
-      context:{original_owner:'powerhouse-commercial-learning-v1',consumer_owner:'powerhouse-identity-graph-v1',
-        correlation_id:action.action_id,person_key:action.person_key,
-        external_messages_sent:0,source_revision:evidence.observed_at},
-      state:'observed',data_quality:'SOURCE_ATTESTED_NOT_DELIVERABILITY',confidence:evidence.confidence
-    },{onConflict:'dedupe_key'}).select('event_id').maybeSingle();
-    if(eErr||!evt)throw new Error('PUBLIC_EMAIL_ORIGINAL_EVENT_ACK:'+(eErr?.message||'READBACK_MISSING'));
+    await writePublicBusinessSourceReceipt(db,action,evidence,observedAt);
     return {status:'SOURCE_CANDIDATE_INGESTED_CONSUMER_PENDING',sites:checked,stored:written,receipts:1};
   }
   return {status:'NO_EXPLICIT_NAMED_OFFICIAL_MAILTO',sites:checked,stored:0,receipts:0};
@@ -213,7 +243,7 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
        {type:'first_party_company_domain',url:'https://'+domain+'/contact'}],observedAt);
     // This original action is terminal only after a real source disposition AND
     // its original evidence receipt. An HTTP/DB error leaves it retriable.
-    const checked=result.sites>0||result.status==='SUPPRESSED'||
+    const checked=result.sites>0||result.receipts>0||result.status==='SUPPRESSED'||
       result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION';
     const nextAttemptAt=checked?null:new Date(Date.parse(observedAt)+4*3600000).toISOString();
     const evidence={...(selected.evidence||record.evidence),
