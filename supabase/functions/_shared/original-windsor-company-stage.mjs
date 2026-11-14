@@ -105,3 +105,26 @@ export function stageOriginalWindsorCompanySources({
    source_rows_accepted:staged.length,rejected,
    provider_delivery_proven:false,causal_improvement_proven:false};
 }
+
+
+/**
+ * Never promote SOURCE->METRICS->BRAIN health from a connected-app one-off
+ * recovery. Linked snapshots can be true while the ORIGINAL autonomous #177
+ * Vault-authenticated provider call is still denied (HTTP 403). All gates
+ * must refer to the same authorized source owner and original consumer.
+ */
+export function originalCompanySourceProviderHealth({
+ sourceRefresh,companyState,companyMetricLink,companyRegistry
+}={}){
+ return sourceRefresh?.state==='PROVIDER_ACCOUNT_SOURCE_REFRESHED_AND_STAGED'
+   &&sourceRefresh?.original_cron===177
+   &&sourceRefresh?.provider==='windsor.ai'
+   &&sourceRefresh?.authorized_account==='18234216'
+   &&sourceRefresh?.posts_staged>0
+   &&sourceRefresh?.account_source_staged===true
+   &&sourceRefresh?.verified_daily_readback>=sourceRefresh.posts_staged
+   &&companyState?.state==='WINDSOR_FRESH'
+   &&companyMetricLink?.state==='VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED'
+   &&companyMetricLink?.linked>0
+   &&companyRegistry?.eligible>0;
+}
