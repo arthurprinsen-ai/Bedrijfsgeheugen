@@ -34,11 +34,12 @@ test('no-signal retry is bounded, deterministic and never an extra scheduler',()
  assert.equal(researchRetryAt(at,0),null);
  assert.equal(researchRetryAt(at,168),null);
 });
-test('original Edge conservatively links candidate to SAME prepared outreach only with CAS',()=>{
+test('original Edge conservatively links candidate to SAME prepared OR waiting outreach only with CAS',()=>{
  const src=readFileSync('supabase/functions/powerhouse-relationship-public-research/index.ts','utf8');
  assert.match(src,/researchSourceCandidate\(action,best,observedAt\)/);
  assert.match(src,/eq\('action_id',originId\)\.eq\('person_key',action\.person_key\)/);
- assert.match(src,/eq\('company_key',action\.company_key\)\.eq\('status','prepared'\)/);
+ assert.match(src,/eq\('company_key',action\.company_key\)\.in\('status',\['prepared','waiting'\]\)/);
+ assert.match(src,/eq\('action_id',originId\)\.eq\('status',origin\.status\)/);
  assert.match(src,/origin\?\.evidence\?\.execution_gate\?\.reason==='SOURCE_SPECIFIC_EVIDENCE_REQUIRED'/);
  assert.match(src,/relationship_source_candidate:candidate/);
  assert.match(src,/eq\('updated_at',origin\.updated_at\)\.select\('action_id'\)\.maybeSingle\(\)/);
