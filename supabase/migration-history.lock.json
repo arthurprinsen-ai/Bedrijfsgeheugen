@@ -3436,8 +3436,12 @@
     {
       "version": "20261114184600",
       "name": "innovation_canonical_candidate_handoff_v1"
+    },
+    {
+      "version": "20261114193000",
+      "name": "innovation_original_agent_intake_proof_v1"
     }
   ],
-  "captured_at": "2026-11-14T18:15:52.019662Z",
+  "captured_at": "2026-11-14T18:36:16.045516Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
