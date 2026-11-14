@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|contacts|daily-refresh-erases-email-authority|20261114-v1",
+  "compiler": {
+    "failure_class": "CONTACT_AUTHORITY_STATE_LOSS",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-contact-authority-refresh-preservation-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-contact-authority-refresh-preservation-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-contact-authority-refresh-preservation-20261114.test.mjs"
+    ]
+  },
+  "root_cause": "Canonical full and bounded daily connection-enrichment functions rebuild source_snapshot from excluded data and daily_decision, dropping independently recorded email_authority review. This can falsely overstate full-chain readiness. Daily evaluation is not new provider email discovery.",
+  "prevention_rule": "Keep original email_authority with its run_date through full and bounded enrichment; stale reviews never imply consent or deliverability. Independently assert contact count, daily review coverage, existing address coverage, source freshness, named consumer processed ACK, and unchanged contact-authority gates. Do not add schedulers, scrape LinkedIn, guess email addresses, or send without exact authorization.",
+  "owner": "Original Powerhouse identity graph + commercial Heartbeat and ONE BRAIN owner",
+  "evidence": {
+    "original_cron": 138,
+    "original_commercial_cron": 116,
+    "source_tables": [
+      "public.bg_connecties",
+      "public.powerhouse_connection_enrichment_state_v1"
+    ],
+    "observed_at": "2026-11-14",
+    "live_proof": "NOT_YET_PROVEN",
+    "provider_email_acquisition": "NOT_VERIFIED",
+    "protected_release": "PENDING",
+    "parent_issue": 4198,
+    "test_regression": "tests/brain-contact-authority-refresh-preservation-20261114.test.mjs",
+    "no_parallel_executor": true
+  }
+}
