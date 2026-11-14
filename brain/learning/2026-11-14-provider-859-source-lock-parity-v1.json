@@ -24,12 +24,12 @@
     "native_function": "public.powerhouse_run_self_improvement_layer_v1(date)",
     "native_function_contains_original_handoff": true,
     "readback_at": "2026-11-14T18:15:52.019662Z",
-    "security": "No SQL execution, no RLS or privilege change, no new cron/provider call, no duplicate agent"
+    "security": "No SQL execution, no RLS or privilege change, no new cron/provider call, no duplicate agent",
+    "regression_also_run_in_protected_migration_suite": "tests/supabase-migration-history-integrity.test.mjs (CI separate suite, not canonicalized historical_replay path)"
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
     ],
     "expected": "858 historic provider-attested lock entries gain exactly native verified #859. Protected GitHub PR migration admission excludes unrelated proposed migrations.",
     "business_effect": "NONE; source history parity is not consumer ACK or actual customer outcome."
