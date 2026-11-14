@@ -8,3 +8,6 @@
 - Status: CODE_CANDIDATE. Provider deployment, new candidate, final media, Instagram publish, complete downstream ACK NOT YET VERIFIED.
 - Regression: tests/brain-mira-original-provider-rejections-20261114.test.mjs.
 - Parent: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232
+
+## Protected admission repair (same candidate, no alternative pipeline)
+Initial exact-head Required run 43599952984 failed at metadata admission `PR_MACHINE_METADATA_INVALID:BASE_SHA_INVALID,BASE_SHA_MISSING`, BEFORE tests. The first PR description omitted the immutable `Base-SHA` header; canonical PR #5769 was corrected with its original base commit `2b28941aa931dc546a79b439220aaababdb1c65c`. This append-only source event retriggers the same protected Required/CodeQL gates, not a test bypass or a new publisher. Source code effectiveness and provider result remain unproven until provider readback.
