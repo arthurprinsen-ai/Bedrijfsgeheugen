@@ -1,0 +1,36 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-860-lock-859-source-parity|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "Protected original innovation-agent PR #5793 was correctly merged and native Supabase applied migration 20261114193000; repo production source lock remained at 859. Serial source lock reconciliation is a second required protected step, not new schema or an excuse to bypass required Preview checks.",
+  "prevention": "Append native provider-attested identities using the same original Supabase migration owner and immutable prefix, protected PR+provider preview/CodeQL, and independent main source readback. Never declare an unapplied PR migration as applied, rerun a previously applied SQL migration, create a duplicate delivery executor, or hide out-of-sync provider history.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 860,
+    "source_lock_count_before": 859,
+    "matched_provider_prefix_count": 859,
+    "matched_prefix_conflicts": 0,
+    "provider_applied_extra": {
+      "version": "20261114193000",
+      "name": "innovation_original_agent_intake_proof_v1"
+    },
+    "existing_source_sql": "supabase/migrations/20261114193000_innovation_original_agent_intake_proof_v1.sql",
+    "original_owner": "ONE BRAIN innovation agent PR #5793",
+    "readback_at": "2026-11-14T18:36:16.045516Z",
+    "security": "No production SQL execution, no newly applied migration, no RLS, cron, provider or outbound action."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "860 exact provider-attested identities and unchanged first 859 source rows, no false applied claim for separate PR #5794",
+    "business_effect": "NO_NEW_OUTCOME_CLAIM"
+  },
+  "no_new_scheduler": true
+}
