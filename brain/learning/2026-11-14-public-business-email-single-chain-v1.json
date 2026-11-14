@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|contacts|public-web-email-not-ingested-or-acknowledged|20261114-v1",
+  "compiler": {
+    "failure_class": "SOURCE_RESEARCH_CONTACT_EVIDENCE_HANDOFF_GAP",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-business-email-single-chain-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-business-email-single-chain-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-business-email-single-chain-20261114.test.mjs"
+    ]
+  },
+  "root_cause": "Original #116 public relation research reads company news/triggers and writes runtime evidence but has no explicit, person/company/domain matched public business email candidate handoff. A 100% daily contextual refresh or a Gmail sender authorization does not imply new verified addresses.",
+  "prevention_rule": "Reuse only original source provider organic results, read one bounded public HTTPS official company page, accept only explicit named business mailto, and stage exclusively under canonical bg_connecties.extra.public_work_email_candidate. Persist original source/action correlation and event ingest ACK; consumer PROCESSED only after independent readback, never from source ingest. Do not fill sender-visible email, grant mailing authority, infer formats, scrape LinkedIn, create a second scheduler/CRM, call paid contact vendors, or claim new mail deliverability. Explicitly reject existing JSONB approval_revoked KEYS of any value/type in canonical contact, not just boolean true. An original first-party source action must never be considered complete merely because an action row was inserted with status done. A source/no-source disposition must be read back from the SAME original action; failures and missing receipt remain retryable under the same correlation id and daily cap; never silently skip a prior incomplete action. Source event retries use insert-on-conflict-do-nothing plus a separate exact person/company/action/source-revision readback. Never overwrite a receiver's processed acknowledgment. If staging succeeded but event insert failed, the same action may replay the stored CAS source proof, not fabricate another source or duplicate Gmail provider side effect.",
+  "owner": "Original Powerhouse #116 relationship-public-research + #138 identity graph + ONE BRAIN/Heartbeat consumer",
+  "evidence": {
+    "reference_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "previous_production_repair": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5785",
+    "source": "supabase/functions/powerhouse-relationship-public-research/index.ts",
+    "previous_contact_count": 23295,
+    "previous_sender_visible_emails": 605,
+    "new_paid_queries_added": 0,
+    "new_senders_or_schedulers": 0,
+    "candidate_storage": "bg_connecties.extra.public_work_email_candidate",
+    "event_type": "contact_public_work_email_candidate",
+    "actual_candidate_ingest": "PENDING_PRODUCTION_READBACK",
+    "independent_consumer_ack": "NOT_YET_PROVEN",
+    "actual_email_delivery": "NOT_AUTHORIZED_BY_THIS_CHANGE",
+    "protected_release": "PENDING",
+    "test_regression": "tests/brain-public-business-email-single-chain-20261114.test.mjs",
+    "revoked_key_live_shape": "jsonb object",
+    "revoked_records_observed": 233,
+    "revoked_records_missing_email_observed": 0,
+    "revoked_key_prevention": "Object.hasOwn(extra,'approval_revoked') in both source-only candidate entry points; boolean comparison misses object-valued recorded revocation",
+    "revocation_send_gate_remains_separate": true,
+    "first_party_original_source_action_disposition_ack": "REQUIRES_CHECKED_RECEIPT_PERSISTENCE",
+    "source_failure_retry": "REUSE_ORIGINAL_ACTION_ID_WITH_NEXT_SAFE_RETRY_AT",
+    "daily_cap_replay_guard": "The eight source slots cap NEW actions, not retries of preexisting incompletely acknowledged source actions",
+    "pending_consumer_processed_remains": "NOT_PROVEN",
+    "source_event_replay": "RECOVER_SOURCE_INGEST_ONLY_FROM_CANONICAL_CAS_WITH_EXACT_PERSON_ACTION_URL_REVISION",
+    "duplicate_event_policy": "IGNORE_CONFLICT_INSERT_THEN_INDEPENDENT_READBACK; NEVER_DOWNGRADE_RECEIVER_PROCESSED",
+    "source_ack_recovery_test": "tests/brain-public-business-email-single-chain-20261114.test.mjs",
+    "actual_receiver_proof": "NOT_PROVEN"
+  }
+}
