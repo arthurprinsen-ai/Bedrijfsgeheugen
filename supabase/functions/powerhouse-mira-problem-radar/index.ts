@@ -75,9 +75,13 @@ Deno.serve(async(req:Request)=>{
    if(dfsUser&&dfsPass){
      // Google News live accepts one task per request and ignores time_range, so the age window is enforced here.
      // The request can be 20000 while the task itself failed (e.g. 40101): check both. Task 40101 (Google-side, no results for a niche query) is counted, not an error.
+     // DataForSEO's documented native resolution handles the 2026 Google /goto rollout
+     // inside the SAME paid News task, not an extra search or a guessed publisher URL.
+     // A still-unresolved redirect is rejected by the existing source-quality gate.
+     // https://docs.dataforseo.com/v3/serp/google/news/live/advanced/
      let r:Response, b:any, taskCode=0;
      for(let attempt=0;attempt<1;attempt++){
-       r=await fetch('https://api.dataforseo.com/v3/serp/google/news/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',depth:20}])});
+       r=await fetch('https://api.dataforseo.com/v3/serp/google/news/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',depth:20,resolve_goto_urls:true}])});
        b=await r.json().catch(()=>({}));
        taskCode=Number(b?.tasks?.[0]?.status_code||0);
        if(r.ok&&Number(b?.status_code||0)===20000&&taskCode===20000) break;
@@ -109,8 +113,19 @@ Deno.serve(async(req:Request)=>{
      reason,query:query.slice(0,100),source_domain:domain(url),title:title.slice(0,140)
    });
  };
+ // Google /goto resolution can add up to 40s per news task. Run only the
+ // SAME original eight queries concurrently (never a ninth call) to keep the
+ // existing 120s scheduler HTTP budget, then consume them deterministically in
+ // the original 6-business/2-personal order to preserve winner/source gates.
+ const sourceResponses=await Promise.all(queries.map(async ({query:q})=>{
+   try{return {result:await search(q),error:null};}
+   catch(e:any){return {result:null,error:String(e?.message||e)};}
+ }));
+ let sourceResponseIndex=0;
  for(const {query:q,channel,topic:personalQueryTopic} of queries){
-  let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}
+  const returned=sourceResponses[sourceResponseIndex++];
+  if(returned.error){errors.push(q+':'+returned.error);continue}
+  const sr:any=returned.result;
   providers[sr.provider]=(providers[sr.provider]||0)+(sr.results||[]).length;
   for(const x of (sr.results||[])){
    sourceCandidates++;
