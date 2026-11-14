@@ -663,6 +663,49 @@ Deno.serve(async (req) => {
         ok:!requiresRecovery,degraded:requiresRecovery,
         error:requiresRecovery?'ORIGINAL_HANDOFF_OWNER_OR_RECEIVER_RECHECK_REQUIRED':null});
     }
+    // Existing ONE BRAIN incident writer, not a new queue. Persist the exact
+    // original owner and safe next action for handoffs the original receiver
+    // could not yet accept. A process may continue while its receipt is RED.
+    const handoffGaps=[
+      ...handoffWriteback.unresolved,
+      ...handoffWriteback.original_owner_routes.filter((route:any)=>
+        route.reason!=='ORIGINAL_EMAIL_OWNER_ONLY')
+    ].slice(0,8);
+    if(handoffWriteback.errors>0 && handoffGaps.length===0){
+      handoffGaps.push({channel:'canonical',owner:'original-powerhouse-content-orchestrator',
+        reason:'ORIGINAL_HANDOFF_WRITE_OR_READBACK_FAILED'});
+    }
+    for(const gap of handoffGaps){
+      try {
+        const occurrenceId='original-content-handoff:'+runDate+':'+gap.channel+':'+gap.reason;
+        const payloadSha=[...new Uint8Array(await crypto.subtle.digest('SHA-256',
+          new TextEncoder().encode(occurrenceId)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+        const recorded=await db.rpc('brain_observe_failure',{
+          p_occurrence_id:occurrenceId,
+          p_fingerprint:'powerhouse|content|original-handoff-receiver-unacknowledged|'+
+            runDate.replaceAll('-','')+'-v1',
+          p_payload_sha256:payloadSha,
+          p_evidence:{
+            run_date:runDate,original_owner:gap.owner,channel:gap.channel,
+            failure_reason:gap.reason,
+            next_action:'Read original obligation and independent provider side effect, restore the SAME original receiver acknowledgement; never duplicate send or bypass permission.',
+            original_executor_continues:true,
+            provider_side_effect_proven:false,
+            no_second_scheduler:true,
+            contract:'ORIGINAL_CONTENT_HANDOFF_NO_SILENT_DROP_V1'
+          }
+        });
+        if(recorded.error||!recorded.data)handoffWriteback.errors++;
+      }catch{
+        handoffWriteback.errors++;
+      }
+    }
+    stepResults.push({name:'publication-handoff-brain-receipt',
+      ok:handoffWriteback.errors===0 && handoffGaps.length===0,
+      degraded:handoffWriteback.errors>0 || handoffGaps.length>0,
+      error:handoffGaps.length?'ORIGINAL_UNACKNOWLEDGED_HANDOFF_OPEN':
+        handoffWriteback.errors?'BRAIN_HANDOFF_OBSERVATION_FAILED':null});
+
     stepResults.push({name:'publication-proof-deadline',
       ok:recovery.status==='PROVIDER_PROOF_COMPLETE',
       degraded:recovery.status!=='PROVIDER_PROOF_COMPLETE',
