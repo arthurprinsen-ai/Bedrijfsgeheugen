@@ -26,6 +26,17 @@ test('reject guesses, private mailbox, generic inbox, wrong identity, company mi
  assert.equal(eligiblePublicCompanyPage('https://www.acmeresearch.com/team','Acme Research'),true);
  assert.equal(eligiblePublicCompanyPage('https://www.example.com/team','Acme Research'),false);
 });
+test('person identity inside script, style or a malformed script closing tag is never accepted as published identity',()=>{
+ const fields={sourceUrl:'https://www.acmeresearch.com/team',personName:'Jane Doe',companyName:'Acme Research',observedAt:at};
+ for(const bad of [
+  '<main>Acme Research<script>Jane Doe</script\\t\\n bar><a href="mailto:jane@acmeresearch.com">Email</a></main>',
+  '<main>Acme Research<style>Jane Doe</style><a href="mailto:jane@acmeresearch.com">Email</a></main>',
+  '<main>Acme Research<template>Jane Doe</template><a href="mailto:jane@acmeresearch.com">Email</a></main>'
+ ]){
+   assert.equal(publishedBusinessMailto({...fields,html:bad}),null,
+     'script/style/template content is not human-visible name evidence');
+ }
+});
 test('original authorized worker is the only writer; its receiver records INGEST_ACK but NOT consumer PROCESSED',()=>{
  const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
  assert.match(src,/ingestPublicWorkEmail\(db,action,organic,observedAt\)/);
