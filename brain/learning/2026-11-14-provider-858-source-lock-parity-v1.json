@@ -1,0 +1,35 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-858-lock-857-source-parity|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "The independent native production migration 20261114164500 was applied and had executable source, but the original immutable provider-history lock stopped at 20261114161000.",
+  "prevention": "The original database owner must append each exact provider-applied version/name to the existing lock as a protected lock-only commit after provider verification; never predeclare a proposed migration or replay the existing SQL to make counts match.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 858,
+    "source_lock_count_before": 857,
+    "matched_provider_prefix_count": 857,
+    "matched_prefix_conflicts": 0,
+    "provider_applied_extra": {
+      "version": "20261114164500",
+      "name": "preserve_contact_authority_on_connection_refresh_v1"
+    },
+    "existing_source_sql": "supabase/migrations/20261114164500_preserve_contact_authority_on_connection_refresh_v1.sql",
+    "readback_at": "2026-11-14T17:50:22.204Z",
+    "security": "No SQL execution, no RLS change, no cron or provider side effect"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "858 provider-attested source lock entries and exactly 858 historical executable files, pending PR migrations excluded by original candidate driver",
+    "business_effect": "NO_NEW_OUTCOME_CLAIM"
+  },
+  "no_new_scheduler": true
+}
