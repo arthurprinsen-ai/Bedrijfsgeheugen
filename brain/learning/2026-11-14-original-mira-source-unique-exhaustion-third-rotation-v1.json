@@ -19,7 +19,8 @@
     "openart_connected_plan": "Plus",
     "openart_credits": 0,
     "original_email_waiting_no_source_ack": true,
-    "native_original_heartbeat_v857": true
+    "native_original_heartbeat_v857": true,
+    "protected_preflight_first_attempt": "LEARNING_EVALUATION_TESTS_REQUIRED:historical_replay; corrected canonical learning record instead of weakening admission gate."
   },
   "fix": "Add a THIRD short high-recall Dutch query phrasing per same twelve approved PH-P topic family. Alternate between existing primary, existing secondary and third distinct discovery phrasings across six-day rotation inside the same original six business / two personal search requests. This can improve source discovery without additional paid provider calls or any change to original source/recency/identity/content/face/duplicate/consumer authority. Real source uniqueness remains determined exclusively by provider search, page published_at, canonical portal problem fit, 0.72 eligibility, 90-day source and 3-day topic dedupe. Existing #120 daily radar and #140/#171 heartbeat/scheduler only.",
   "prevention": [
@@ -51,5 +52,20 @@
     "Only existing Supabase GitHub Integration deploys original Mira radar dependency, followed by independently verified Edge source parity.",
     "Next natural original #120 provider attempt demonstrates new dated unique source or leaves SOURCE_STARVATION OPEN with real reason.",
     "Original #171 publisher and #140 Heartbeat still require unique winner, media>=0.940, provider post ID/readback before declaring LIVE; Gmail #116 independent lawful recipient/verified copy/readback."
-  ]
+  ],
+  "tests": [
+    "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+    "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ]
+  }
 }
