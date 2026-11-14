@@ -50,6 +50,29 @@ function sourceURL(raw){
   return u;
  } catch{return null}
 }
+
+// Canonical no-cost page targets, bounded to public, first-party company domains.
+// Existing same-domain public page evidence is preferred over external search APIs.
+export function publicCompanyContactPaths(domain){
+ const u=sourceURL('https://'+String(domain||'').trim()+'/');
+ if(!u)return [];
+ return ['/over-ons/','/team/','/contact/'].map(path=>new URL(path,u).toString());
+}
+// A redirect may only canonicalize the same company domain (for example
+// barnes.nl -> www.barnes.nl). Never follow to another company, cloud metadata,
+// private IP, auth URL, external short-link, or non-HTTPS scheme.
+export function samePublicCompanyRedirect(current,location,company){
+ const from=sourceURL(current);
+ if(!from||!location||typeof location!=='string')return null;
+ try{
+  const to=new URL(location,from);
+  const normalize=host=>host.toLowerCase().replace(/^www\./,'');
+  if(!sourceURL(to.toString())||normalize(to.hostname)!==normalize(from.hostname)||
+    !eligiblePublicCompanyPage(to.toString(),company))return null;
+  return to.toString();
+ }catch{return null}
+}
+
 export function eligiblePublicCompanyPage(raw,company){
  const u=sourceURL(raw);
  const tokens=ascii(company).split(' ').filter(t=>t.length>=3);
@@ -80,6 +103,36 @@ export function publishedBusinessMailto({html,sourceUrl,personName,companyName,o
    email:address,source_url:u.toString(),person_name:personName,
    company_name:companyName,observed_at:new Date(at).toISOString(),
    identity_match:'NAME_COMPANY_OFFICIAL_DOMAIN',confidence:0.9,
+   format_valid:true,deliverability:'UNVERIFIED',send_authority:'NOT_INFERRED',
+   source_publication_date:'UNKNOWN',data_source:'PUBLIC_COMPANY_WEBPAGE',
+   privacy:'BUSINESS_CONTACT_ONLY'
+  });
+ }
+ // Some official team cards publish the literal work address as visible
+ // text rather than a mailto link. Evidence must be explicitly adjacent to
+ // the named person, on the matching public company domain; never infer format.
+ const visible=textOnly(page).normalize('NFKD');
+ const exactName=String(personName??'').normalize('NFKD').toLowerCase();
+ const lower=visible.toLowerCase();
+ let pos=-1;
+ for(let repeat=0;repeat<8;repeat++){
+  pos=lower.indexOf(exactName,pos+1);
+  if(pos<0)break;
+  const before=pos>0?lower[pos-1]:' ';
+  if(/[a-z]/i.test(before))continue;
+  const after=visible.slice(pos+exactName.length,pos+exactName.length+105);
+  const found=after.match(/^[^@]{0,95}?\b([a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,})\b/i);
+  if(!found)continue;
+  const email=found[1].toLowerCase(), [local,domain]=email.split('@');
+  const host=u.hostname.replace(/^www\./,'');
+  if(FREE_MAIL.has(domain)||GENERIC.test(local+'@')||
+    !(host===domain||host.endsWith('.'+domain)))continue;
+  return Object.freeze({
+   contract:'POWERHOUSE_PUBLIC_BUSINESS_EMAIL_EVIDENCE_V1',
+   classification:'EXPLICIT_VISIBLE_PERSON_WORK_EMAIL',
+   email,source_url:u.toString(),person_name:personName,
+   company_name:companyName,observed_at:new Date(at).toISOString(),
+   identity_match:'NAME_COMPANY_OFFICIAL_DOMAIN',confidence:0.78,
    format_valid:true,deliverability:'UNVERIFIED',send_authority:'NOT_INFERRED',
    source_publication_date:'UNKNOWN',data_source:'PUBLIC_COMPANY_WEBPAGE',
    privacy:'BUSINESS_CONTACT_ONLY'
