@@ -43,5 +43,6 @@ test('853 source restoration does not broaden ordinary migration admission',()=>
  assert.match(admission,/originalOutreach853Reconciliation/);
  assert.match(admission,/base===SOURCE_853_BASE&&changedMigrations\.length===1/);
  assert.match(admission,/changedMigrations\[0\]\.status==='A'/);
- assert.match(admission,/if\(!nativeProviderHealthVersionReconciliation&&!originalOutreach853Reconciliation\)/);
+ assert.match(admission,/if\(!nativeProviderHealthVersionReconciliation\)/);
+ assert.match(admission,/if\(!originalOutreach853Reconciliation\)/);
 });
