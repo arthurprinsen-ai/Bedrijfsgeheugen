@@ -16,7 +16,12 @@
     "authorized_gmail_sends_proven_today": 0,
     "original_cron_job": 116,
     "status_gap": "commercial_stage_execution.state=actioned even with v_result.dispatched=false or without provider/consumer acknowledgment",
-    "other_production_boundary": "A google.com/goto DataForSEO SERP redirect and freshness_verified=false are not independently verified company source content or lawful recipient-send authority"
+    "other_production_boundary": "A google.com/goto DataForSEO SERP redirect and freshness_verified=false are not independently verified company source content or lawful recipient-send authority",
+    "first_hosted_preview_failure": {
+      "head": "e6592ac8712eed370f270ea9ceb1772ec09e776e",
+      "cause": "Native SQL parser expected a semicolon after pg_get_functiondef-produced $function$ terminators before next CREATE; preview SQLSTATE 42601",
+      "provider_sql_applied": false
+    }
   },
   "repair": "Use only existing commercial hourly stage #116 after stage2 and stage3. Persist idempotent action-keyed owner/handoff receipts in powerhouse_runtime_events including original research action ID, exact person/company, optional origin email action, real dataforseo attempt, current source candidate status and exact original composer receipt. Explicit error after 2h of due, unattempted research or missing original receiver ACK; stage uses only existing schema-permitted observed/error states (exact waiting reason in evidence) rather than actioned. Stage3 redispatch only for due_at<=now to preserve 24h no-source retry, report pg_net request ID as queue receipt not delivery. No new cron, queue, contact, send, or authority. Keep administrative ACK runtime event top-level person/company NULL to avoid score inflation, while retaining exact lineage keys in evidence.",
   "prevention": [
@@ -27,7 +32,8 @@
     "Preserve recipient-specific authorization, legal opt-in, opt-out, suppression, 90-day fatigue, trusted current source, composer copy approval, provider ID and independent Gmail readback.",
     "Persist owner, correlation ID, run_date, due_at and next action to ONE BRAIN and use unchanged Heartbeat/commercial reporting; do not claim actual portal consumer if no independent receipt.",
     "Administrative ACK events must have NULL top-level person_key/company_key, with exact correlation identities only in their receipt evidence: the original relationship revenue scorer counts all person_key-bearing runtime events and must never treat an internal receipt as a new commercial buying signal.",
-    "Respect original runtime event check constraint state IN (observed, decided, actioned, closed, ignored, error); waiting is an evidence-level handoff condition, not a new database enum."
+    "Respect original runtime event check constraint state IN (observed, decided, actioned, closed, ignored, error); waiting is an evidence-level handoff condition, not a new database enum.",
+    "When composing multiple PostgreSQL pg_get_functiondef outputs into one migration, terminate each reconstructed CREATE OR REPLACE FUNCTION at `$function$;`, never just `$function$`; regression counts exact terminators and Supabase Preview must pass."
   ],
   "owner": "Original Powerhouse #116 stages 2/3, research provider and original commercial-mail composer; ONE BRAIN/Heartbeat",
   "status": "PR_CANDIDATE_NO_PRODUCTION_ACK_YET",
