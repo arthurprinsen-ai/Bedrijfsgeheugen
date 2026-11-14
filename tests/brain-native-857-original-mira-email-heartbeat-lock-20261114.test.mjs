@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const lock=JSON.parse(read('supabase/migration-history.lock.json'));
+const sql=read('supabase/migrations/20261114161000_original_daily_mira_email_heartbeat_handoff_v1.sql');
+test('independently applied native provider version 857 is the exact immutable prefix after 856',()=>{
+ assert.equal(lock.source,'supabase_migration_history');
+ assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
+ assert.ok(lock.applied.length>=857);
+ assert.deepEqual(lock.applied[855],{version:'20261114142500',name:'original_outreach_feedback_consumer_ack_v2'});
+ assert.deepEqual(lock.applied[856],{version:'20261114161000',name:'original_daily_mira_email_heartbeat_handoff_v1'});
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
+ assert.ok(lock.applied.every((x,i)=>i===0||x.version>lock.applied[i-1].version));
+ assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-14T14:16:51Z'));
+ const future=[...lock.applied,{version:'29991231235959',name:'future_synthetic_only'}];
+ assert.deepEqual(future[856],lock.applied[856]);
+});
+test('native v857 is read-only delivery OBSERVER in original #140 with no extra source/sender',()=>{
+ assert.match(sql,/CREATE OR REPLACE FUNCTION public\.powerhouse_commercial_intelligence_heartbeat_v1/);
+ assert.match(sql,/ORIGINAL_DAILY_MIRA_EMAIL_TO_HEARTBEAT_ACK_V1/);
+ assert.match(sql,/ORIGINAL_SEO_TO_HEARTBEAT_CRO_RECEIPT_V1/);
+ assert.match(sql,/original_daily_mira_email_handoff/);
+ assert.match(sql,/original_brain_exact_ack/);
+ assert.match(sql,/source_lineage_rows/);
+ assert.match(sql,/exact_no_source_consumer_acks/);
+ assert.match(sql,/provider_verified_sends_today/);
+ assert.match(sql,/provider_readback_verified/);
+ assert.match(sql,/recipient_authority_not_inferred/);
+ assert.match(sql,/no_false_green/);
+ assert.match(sql,/REVOKE ALL ON FUNCTION public\.powerhouse_commercial_intelligence_heartbeat_v1\(date\) FROM PUBLIC, anon, authenticated/);
+ assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_commercial_intelligence_heartbeat_v1\(date\) TO service_role/);
+ assert.doesNotMatch(sql,/\bcron\.schedule\s*\(|\bnet\.http_post\s*\(|\bGMAIL_SEND_EMAIL\b|\bCREATE\s+TABLE\b/i);
+});
