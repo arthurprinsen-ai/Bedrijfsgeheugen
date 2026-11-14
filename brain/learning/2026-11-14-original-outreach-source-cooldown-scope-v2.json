@@ -36,6 +36,13 @@
       },
       "native_854_applied": false,
       "missing_git_historical_source_852": true
+    },
+    "ci_incidental_portal_fixture": {
+      "failed_test": "browser only fetches finance with authenticated tenant context and no retry fallback",
+      "fixture_reference_time_utc": "2026-10-15T15:00:00Z",
+      "production_policy": "Financial source and validation evidence must be fresh within 30 days",
+      "cause": "Test invoked client with actual runtime now (14 Nov), thus correct production freshness rejection yielded records=0 but test asserted 1",
+      "safe_repair": "Only test mocks Date.now for its own fixture's reference time; runtime financial freshness remains intact"
     }
   },
   "repair": "Update ONLY existing powerhouse_prime_approved_connection_research_v1 using a native migration: 30-day research cooldown requires same person or company AND a genuinely attempted public source record (researched_at) OR an existing dedicated approved-source/outreach-source research action. Preserve max five per local day, stable dedupe/lock, prior suppression/contact fatigue/authority gates and existing #116 stage 2. Do not introduce another scheduler, sender, public grant, or new contact authorization. Reconcile the actually provider-applied duplicate 852/853 history with exact protected source, append-only native lock and narrow one-time CI verifier; preserve all original history. 854 remains proposed and cannot be marked applied before protected merge/preview.",
@@ -45,7 +52,8 @@
     "Preserve policy safety: original approved recipient, suppression, negative outcomes, 90-day send cooldown; nobody is authorized to send merely because a source job exists.",
     "Two-level dedupe: Amsterdam-day global max and same-company/provider 30-day budget.",
     "Production proof requires native SQL migration/readback and next natural stage 2. Provider-mail proof requires Gmail message ID and exact readback, which source priming can never assert.",
-    "Before applying native SQL independently, inspect original pending source deployment and native migration history; concurrent independent native apply and canonical release may create two valid historical entries. Never delete native migration ledger rows merely to make source tests green."
+    "Before applying native SQL independently, inspect original pending source deployment and native migration history; concurrent independent native apply and canonical release may create two valid historical entries. Never delete native migration ledger rows merely to make source tests green.",
+    "Time-dependent integration-test fixtures must explicitly control the clock; never relax production data freshness because an old fixture expired."
   ],
   "owner": "Original commercial #116 stage 2 research and original single Gmail sender; ONE BRAIN, Heartbeat",
   "status": "PR_CANDIDATE_PENDING_PROTECTED_CI_AND_NATIVE_PROVIDER_PROOF",
@@ -85,7 +93,8 @@
     "supabase/migration-history.lock.json",
     "tools/ci/verified-provider-852-853-outreach-reconciliation.mjs",
     "tools/ci/protected-supabase-pr-migration-tests.mjs",
-    "tests/brain-native-outreach-852-853-reconciliation-20261114.test.mjs"
+    "tests/brain-native-outreach-852-853-reconciliation-20261114.test.mjs",
+    "tests/portal-v2-owner-financial-truth.test.mjs"
   ],
   "production_proof_to_complete": [
     "Protected Required, backend, Source, Supabase Preview and CodeQL green; no bypass.",
