@@ -1,0 +1,9 @@
+# 14 november 2026 — Provider 863 naar de oorspronkelijke Supabase-sourcelock
+
+Oorspronkelijke productieproject `adhjwmvyoixzjtmiroln`: 2026-11-14 19:39:19.081145 UTC 863 daadwerkelijk toegepaste native migraties. Huidige oorspronkelijke repository-source-lock had slechts 862. De ene ontbrekende toegepaste identiteit is exact `20261114230000 original_source_consumption_stage_receipt_parity_v1`, reeds uitvoerbare beschermde SQL op `main` via oorspronkelijke P0 #5797. De eerste 862 bestaande entries blijven onaangeroerd.
+
+Reparatie van alleen `supabase/migration-history.lock.json`: append deze native-provider-bewezen 863e identiteit, actualiseer alleen `captured_at` tot de SQL-waarneming en behoud alle migratiebestanden. Geen `apply_migration`, geen SQL/DDL-mutation, geen tweede cron, agent of queue, en geen zelf verzonnen providerstatus. Exact-head Required + CodeQL + native preview/merge, daarna readback zowel GitHub `main` als `supabase_migrations.schema_migrations`.
+
+Oorspronkelijke innovatiewatchdog herstel-PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5800 blijft **onafhankelijk open**; diens kandidaat-migratie `20261114213500` is nooit in originele productie toegepast en staat chronologisch vóór de nieuw daadwerkelijk toegepaste provider 863 `20261114230000`. Nieuwe voorgestelde migratie moet **ná** 20261114230000 worden geordend onder de oorspronkelijke beschermde release-eigenaar. De 14 oude `INNOVATION_INTAKE` blijven `RESULT_UNKNOWN`, 14 oorspronkelijke recoveryjobs `ESCALATED`, 0 consumer ACK en geen gemeten innovatie — geen false green.
+
+BRAIN fingerprint: `supabase|migration-history|provider-863-lock-862-source-parity|20261114-v1`; origineel P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198, regressie `tests/supabase-migration-history-integrity.test.mjs`.
