@@ -1,0 +1,44 @@
+{
+  "fingerprint": "supabase|migration-history|original-native-865-public-email-retry-source-lock|20261114-v1",
+  "root_cause": "After protected original commercial source retry PR #5817 merged at main 359329c9340296e755285836c1980216d7bdc7b6, native Supabase production applied exact new migration 20261115001500 original_public_email_overdue_source_replay_dispatch_v1, making 865 native migrations while protected main immutable source lock still held the preceding 864 pairs.",
+  "scope": "ORIGINAL_PROVIDER_VERIFIED_GITOPS_HISTORY_SOURCE_ONLY",
+  "owner": "original Supabase migration-history / ONE BRAIN GitOps release owner",
+  "prevention_rule": "Append only a real native-applied version/name pair to source lock; preserve exact verified 864-row prefix and do not fabricate future migrations, bypass branch protection, or directly execute production SQL. Verify exact protected source-lock vs native provider and latest main after merge; keep separate original commercial #116/#138/Heartbeat outcome obligations OPEN.",
+  "regression": "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+  "evidence": {
+    "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "original_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5817",
+    "main_sha": "359329c9340296e755285836c1980216d7bdc7b6",
+    "native_applied_count": 865,
+    "original_source_lock_count": 864,
+    "exact_prefix_pair_conflicts": 0,
+    "actual_native_extra": {
+      "version": "20261115001500",
+      "name": "original_public_email_overdue_source_replay_dispatch_v1"
+    },
+    "native_captured_at": "2026-11-14T21:34:21.495Z",
+    "original_commercial_obligation": "43c90754-3fd0-4c97-bb14-fbf815e12f47",
+    "commercial_source_outcome": "0_NEW_EMAILS_OR_PROCESSED_SOURCE_ACKS_PROVEN",
+    "release": "PROTECTED_SOURCE_LOCK_ONLY_CANDIDATE"
+  },
+  "learning_state": "OBSERVED_NOT_CLOSED_UNTIL_PROTECTED_PROVIDER_READBACK",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_SOURCE_HISTORY_ONE_BEHIND",
+    "scope": "GITOPS_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "business_effect": "NO_NEW_WORK_EMAIL_OR_PROCESSED_ACK_CLAIMED"
+  }
+}
