@@ -98,17 +98,33 @@ Deno.serve(async(req:Request)=>{
  const runDate=String(body?.runDate||new Date(Date.now()+86400000).toISOString().slice(0,10));
  const queries=selectCanonicalRadarSourceQueries(runDate);
  let stored=0, eligible=0, personalStored=0, personalEligible=0; const seen=new Set<string>(); const errors:string[]=[];
+ // Independent evidence about why a provider result was NOT accepted by the existing
+ // single source consumer. Do not treat provider results as approved sources or posts.
+ let sourceCandidates=0;
+ const sourceRejectCounts:Record<string,number>={};
+ const sourceRejectSamples:Array<{reason:string,query:string,source_domain:string,title:string}>=[];
+ const reject=(reason:string,query:string,url:string,title:string)=>{
+   sourceRejectCounts[reason]=(sourceRejectCounts[reason]||0)+1;
+   if(sourceRejectSamples.length<8)sourceRejectSamples.push({
+     reason,query:query.slice(0,100),source_domain:domain(url),title:title.slice(0,140)
+   });
+ };
  for(const {query:q,channel,topic:personalQueryTopic} of queries){
   let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}
   providers[sr.provider]=(providers[sr.provider]||0)+(sr.results||[]).length;
   for(const x of (sr.results||[])){
-   const sourceUrl=String(x.url||'').trim(); if(!sourceUrl||seen.has(sourceUrl)) continue; seen.add(sourceUrl);
+   sourceCandidates++;
+   const sourceUrl=String(x.url||'').trim();
+   if(!sourceUrl){reject('MISSING_PROVIDER_URL',q,'',String(x.title||''));continue}
+   if(seen.has(sourceUrl)){reject('DUPLICATE_IN_SAME_RADAR_RUN',q,sourceUrl,String(x.title||''));continue}
+   seen.add(sourceUrl);
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
-   if(!d||title.length<12||!classifyMiraSourceUrl(sourceUrl).ok) continue;
+   if(!d||title.length<12){reject('INVALID_DOMAIN_OR_SHORT_TITLE',q,sourceUrl,title);continue}
+   if(!classifyMiraSourceUrl(sourceUrl).ok){reject('REJECTED_SOURCE_URL_QUALITY',q,sourceUrl,title);continue}
    const personalTopic=channel==='linkedin_personal'?classifyObservationalPersonalSource({topic:personalQueryTopic,title,excerpt}):null;
    const problemTopic=personalTopic||topic(title+' '+excerpt); const portalProblemId=portalIds[problemTopic]||'';
    // Do not leak unsupported public signals to the Instagram winner or personal publisher.
-   if(!problemTopic||(!personalTopic&&!portalProblemId)) continue;
+   if(!problemTopic||(!personalTopic&&!portalProblemId)){reject('NO_CANONICAL_TOPIC_MATCH',q,sourceUrl,title);continue}
    const all=(title+' '+excerpt).toLowerCase();
    const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
    // Recognition is validated differently per lane: a real matched daily-life
@@ -130,10 +146,11 @@ Deno.serve(async(req:Request)=>{
    const priorContract=String(prior.data?.metadata?.contract||'');
    if(priorContract && priorContract!==row.metadata.contract){
      providers.source_contract_collision_skipped=(providers.source_contract_collision_skipped||0)+1;
+     reject('CROSS_CHANNEL_SOURCE_CONTRACT_COLLISION',q,sourceUrl,title);
      continue;
    }
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
-   stored++; if(row.eligible) eligible++;
+   stored++; if(row.eligible) eligible++; else reject('FAILED_SCORE_OR_VERIFIED_DATE_GATE',q,sourceUrl,title);
    if(personalTopic){personalStored++;if(row.eligible)personalEligible++;}
   }
  }
@@ -159,7 +176,8 @@ Deno.serve(async(req:Request)=>{
        problem:'No new eligible independent source-backed Mira winner',
        preventive_action:'Use original dated source search and immutable 90-day source/3-day topic dedupe before media; no original gate bypass.',
        independent_publication_proven:false,
-       no_second_scheduler:true
+       no_second_scheduler:true,
+       source_intake_audit:{provider_candidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples}
      }
    });
    if(observed.error)errors.push('original_brain_source_shortage_writeback_failed');
@@ -178,6 +196,7 @@ Deno.serve(async(req:Request)=>{
      sendsAuthorized:false
    },
    runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
+   sourceIntake:{providerCandidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples},
    materialized:mat.data,personalSourceRotation:personalRotation.data||null,errors
  }, classifyMiraRadarHttpStatus({sourceReady:supply.ok,errors}));
 });
