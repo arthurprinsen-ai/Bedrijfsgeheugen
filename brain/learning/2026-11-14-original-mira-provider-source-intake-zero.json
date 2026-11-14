@@ -1,0 +1,59 @@
+{
+  "version": "mira-original-provider-source-intake-zero-20261114-v1",
+  "status": "CODE_CANDIDATE",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "owner": "original powerhouse-mira-problem-radar #120 / original OpenArt producer / original social publisher",
+  "observed": {
+    "date": "2026-11-14",
+    "pg_net_request_id": 31043,
+    "http_status": 503,
+    "provider_news_candidates": 21,
+    "provider_empty_task_count": 2,
+    "accepted_sources": 0,
+    "eligible_sources": 0,
+    "last_frozen_winner": "2026-11-09",
+    "old_media_jobs": "2026-11-05..2026-11-09 WAITING_ASSET attempts=0",
+    "post_created": false
+  },
+  "root_cause": "The real provider returned candidate news but the original source collector had no per-reason reject evidence, preventing safe source-quality or topic-recall recovery. Separately, original OpenArt jobs remain unclaimed.",
+  "fix": "Instrument the existing authenticated radar with bounded sourceIntake per-reason counts/examples, record to existing ONE BRAIN failure when no eligible winner; retain original source, quality, duplicate, media, and Meta gates. Require original media producer claim.",
+  "prevention": "Reject reasons rather than speculative low-quality re-search or bypass; preserve exact owner and original source revision/media/provider consumer ACK; new post only verified by Meta and original BRAIN consumer.",
+  "regression": "tests/brain-mira-original-provider-rejections-20261114.test.mjs",
+  "not_proven": [
+    "GitHub CI",
+    "protected main merge",
+    "Supabase source parity",
+    "eligible new source",
+    "unique day winner",
+    "OpenArt exact asset",
+    "Meta publication",
+    "consumer processed ACK",
+    "next natural run"
+  ],
+  "failure_class": "CLASSIFIER_GAP",
+  "scope": "CONTENT",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-original-provider-rejections-20261114.test.mjs"
+    ]
+  },
+  "fingerprint": "powerhouse|mira|provider-news-21-source-stored-zero-invisible-rejection-reasons|20261114-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "source": "public.content_publication_obligations + public.powerhouse_instagram_media_jobs_v1 + original pg_net 31043 / status 503",
+    "provider_candidates": 21,
+    "stored": 0,
+    "eligible": 0,
+    "source_fingerprint": "powerhouse|mira|provider-news-21-source-stored-zero-invisible-rejection-reasons|20261114-v1",
+    "external_post_verified": false
+  }
+}
