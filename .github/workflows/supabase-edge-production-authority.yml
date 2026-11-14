@@ -232,6 +232,34 @@ jobs:
           }
           mkdir -p .artifacts/supabase-edge-production-readback/provider
           converged=false
+          # An isolated provider 401 after successful prior downloads can be transient:
+          # observed on 2026-11-14; identical protected rerun succeeded.
+          # Recheck ONLY this function, bounded to three attempts. Three 401s
+          # remain terminal; no token bypass, new deployment, or false green.
+          download_with_bounded_auth_recovery() {
+            local fn="$1"
+            local root="$2"
+            local auth_attempt
+            for auth_attempt in 1 2 3; do
+              if (
+                cd "$root"
+                supabase functions download "$fn" --project-ref "$PROJECT_REF" --use-api 2>&1 | tee "$root/download.log"
+              ); then
+                return 0
+              fi
+              if grep -Eiq 'Error status 401|Invalid access token' "$root/download.log"; then
+                if [ "$auth_attempt" -lt 3 ]; then
+                  echo "::warning::SUPABASE_EDGE_TRANSIENT_401_RECHECK:fn=$fn attempt=$auth_attempt/3"
+                  sleep "$auth_attempt"
+                  continue
+                fi
+                echo "::error::SUPABASE_ACCESS_TOKEN_INVALID_REAUTH_REQUIRED:fn=$fn after=$auth_attempt"
+                return 78
+              fi
+              return 1
+            done
+            return 78
+          }
           for attempt in $(seq 1 24); do
             : > .artifacts/supabase-edge-production-readback/provider/source-sha256.txt
             attempt_ok=true
@@ -239,18 +267,13 @@ jobs:
               root="/tmp/supabase-readback/$fn"
               rm -rf "$root"
               mkdir -p "$root"
-              if ! (
-                cd "$root"
-                # Retain the diagnostic for classification without exposing credentials.
-                supabase functions download "$fn" --project-ref "$PROJECT_REF" --use-api 2>&1 | tee "$root/download.log"
-              ); then
-                # Authentication failures cannot recover through retries; require a
-                # renewed GitHub Actions SUPABASE_ACCESS_TOKEN. Preserve the release
-                # gate and stop immediately instead of repeating the same 401 24 times.
-                if grep -Eiq 'Error status 401|Invalid access token' "$root/download.log"; then
-                  echo "::error::SUPABASE_ACCESS_TOKEN_INVALID_REAUTH_REQUIRED"
-                  exit 78
-                fi
+              if download_with_bounded_auth_recovery "$fn" "$root"; then
+                :
+              else
+                auth_result=$?
+                # 78 means three consecutive 401s on this exact function.
+                # Stop the protected attestation; never infer a release.
+                if [ "$auth_result" -eq 78 ]; then exit 78; fi
                 attempt_ok=false
                 break
               fi

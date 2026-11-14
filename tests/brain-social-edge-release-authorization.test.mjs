@@ -10,10 +10,13 @@ test('independent social reviewer remains declared for protected-main provider r
   assert.match(config,/\[functions\.powerhouse-social-publisher\][\s\S]*?entrypoint = "\.\/functions\/powerhouse-social-publisher\/index\.ts"/);
 });
 
-test('401 invalid credential is terminal rather than retried as eventual deployment',()=>{
+test('transient 401 is retried only three times; persistent invalid credentials remain terminal',()=>{
   assert.match(workflow,/supabase functions download "\$fn" --project-ref "\$PROJECT_REF" --use-api/);
   assert.match(workflow,/if grep -Eiq 'Error status 401\|Invalid access token'/);
+  assert.match(workflow,/for auth_attempt in 1 2 3/);
+  assert.match(workflow,/SUPABASE_EDGE_TRANSIENT_401_RECHECK/);
   assert.match(workflow,/SUPABASE_ACCESS_TOKEN_INVALID_REAUTH_REQUIRED/);
+  assert.match(workflow,/return 78/);
   assert.match(workflow,/exit 78/);
   assert.match(workflow,/SUPABASE_EDGE_PROVIDER_SOURCE_PARITY_TIMEOUT/);
 });
