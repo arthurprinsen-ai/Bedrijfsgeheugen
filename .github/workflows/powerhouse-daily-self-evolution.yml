@@ -57,6 +57,8 @@ jobs:
         run: node --test tests/brain-self-improvement-layer-v1.test.mjs
       - name: Verify every registered agent inherits the bounded autonomous innovation duty
         run: node --test tests/brain-all-agent-innovation-duty-20261030.test.mjs
+      - name: Verify innovation candidates are handed off to the original ONE BRAIN duty registry
+        run: node --test tests/brain-innovation-canonical-handoff-20261114.test.mjs
       - name: Capture trusted GitHub-run skill byte audit (NOT application proof)
         run: node scripts/brain/skill-byte-audit.mjs
       - name: Build universal chat-agent-skill snapshot
