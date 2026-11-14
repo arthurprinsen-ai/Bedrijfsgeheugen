@@ -356,6 +356,7 @@ async function refreshOriginalCompanyWindsorSources(db:any){
   if(keys.some(k=>!observedKeys.has(k)))
     throw new Error('WINDSOR_ORIGINAL_SOURCE_MISMATCH_OR_OTHER_WRITER');
   return {state:'PROVIDER_ACCOUNT_SOURCE_REFRESHED_AND_STAGED',
+    source_receipt:'original_company_provider_source_refresh',
     original_cron:177,provider:'windsor.ai',authorized_account:'18234216',
     provider_rows_examined:staged.provider_rows_examined,
     posts_staged:staged.source_rows.length,
