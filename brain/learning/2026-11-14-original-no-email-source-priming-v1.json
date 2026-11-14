@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|contacts|original-research-queue-excludes-all-no-email-relations|20261114-v1",
+  "compiler": {
+    "failure_class": "CONTACT_SOURCE_PRIMING_NO_EMAIL_STARVATION",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-public-email-source-priming-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-public-email-source-priming-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-public-email-source-priming-20261114.test.mjs"
+    ]
+  },
+  "root_cause": "The sole #116 approved-source priming function required an existing syntactically valid email and human send approval. All 123 currently approved relations already had email, leaving zero of the 22,690 missing-email people ever in the original queued public research provider.",
+  "prevention_rule": "Use the same existing #116 original research action queue, provider and 5/day cap. Allocate 2 professional B2B source-only candidate slots to warm existing relationships without addresses; preserve 3 existing approved source checks; never set send permission or bypass suppression/cooldown. Separate raw source acquisition candidate ACK from independently verified address delivery and ONE BRAIN/Heartbeat PROCESSED. No new scheduler/queue/email sender/provider budget.",
+  "owner": "Original #116 source research + #138 original identity graph + ONE BRAIN/Heartbeat",
+  "evidence": {
+    "observed_date": "2026-11-14",
+    "total_contacts": 23295,
+    "missing_email": 22690,
+    "human_approved_contacts": 123,
+    "human_approved_without_email": 0,
+    "due_research_actions_without_email": 0,
+    "eligible_warm_missing_own_source_after_filters": 4782,
+    "original_source_actions_today": 5,
+    "original_source_covered_existing_email_only": 5,
+    "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "superseded_unmerged_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5760",
+    "source_migration": "supabase/migrations/20261114210000_original_public_work_email_source_priming_v1.sql",
+    "existing_source_stage_owner": "powerhouse_prime_approved_connection_research_v1",
+    "no_new_provider_queries_above_existing_daily_cap": true,
+    "original_publisher_not_changed": true,
+    "consumer_processed": "NOT_PROVEN",
+    "candidate_public_source_live": "NOT_YET_APPLIED",
+    "send_authorized": false
+  }
+}
