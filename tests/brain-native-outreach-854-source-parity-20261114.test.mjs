@@ -7,10 +7,10 @@ const sql=readFileSync(new URL('../supabase/migrations/'+file,import.meta.url),'
 test('native provider 854 version identity readback remains exact append of 853',()=>{
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,854);
- assert.deepEqual(lock.applied.at(-2),{version:'20261114083500',name:'original_approved_connection_source_priming_v1'});
- assert.deepEqual(lock.applied.at(-1),{version:'20261114091500',name:'original_outreach_source_research_cooldown_scope_v2'});
- assert.equal(new Set(lock.applied.map(x=>x.version)).size,854);
+ assert.ok(lock.applied.length>=854,'historical applied migration must survive future native migrations');
+ assert.deepEqual(lock.applied[852],{version:'20261114083500',name:'original_approved_connection_source_priming_v1'});
+ assert.deepEqual(lock.applied[853],{version:'20261114091500',name:'original_outreach_source_research_cooldown_scope_v2'});
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
  assert.equal(Date.parse(lock.captured_at)>=Date.parse('2026-11-14T08:52:15Z'),true);
 });
 test('actual native 854 cannot grant email send or add another scheduler',()=>{
