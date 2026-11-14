@@ -8,7 +8,8 @@
     "failure_class": "ASSURANCE_CHECKER_STALE_SCHEDULER_TOPOLOGY",
     "source": "production Supabase readback 2026-11-14",
     "proposed_fix": "replace original source-consumption read model with observed original #116 stage receipts and #171 scheduler; preserve provider-outcome truth boundaries",
-    "safety": "No new scheduler, sender, queue, RLS or permission changes"
+    "safety": "No new scheduler, sender, queue, RLS or permission changes",
+    "scope": "GENERAL"
   },
   "observation": {
     "old_assurance_healthy": false,
@@ -27,10 +28,13 @@
     }
   },
   "evaluation": {
-    "historical_replay": "production source SQL evidence #116 14 distinct stage receipts over 36h, latest relationship context, internal action and internal learning stages seen within 26h; staging test only until protected migration and independent provider readback",
+    "historical_replay": [
+      "tests/brain-original-source-consumption-stage-parity-20261114.test.mjs"
+    ],
     "expected": "Source-consumption-only healthy may become true when original stage receipts current; closure remains unproven until exact provider/consumer/outcome/learning gates",
     "independent_after_release": "Re-run source consumption read model and compare with actual job 116 + 171, verify zero retired split writers, read nonterminal original obligations and provider outputs, wait for next natural tick",
-    "business_effect": "UNKNOWN_NOT_YET_MEASURED"
+    "business_effect": "UNKNOWN_NOT_YET_MEASURED",
+    "historical_context": "Independent production SQL read-only replay established current original stage IDs. CI replays the changed dependency-free regression as historical_replay; this does not prove provider writes or customer outcomes."
   },
   "prevention_rule": "Never check a retired scheduler identity after canonical consolidation; require current original scheduler plus successful nondegraded stage receipts, and keep source-only assurance separate from full end-to-end closure.",
   "regression_ref": "tests/brain-original-source-consumption-stage-parity-20261114.test.mjs",
