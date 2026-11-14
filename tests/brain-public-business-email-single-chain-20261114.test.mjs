@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {eligiblePublicCompanyPage,publishedBusinessMailto} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
+import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactPaths,samePublicCompanyRedirect} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
 
 const at=new Date().toISOString();
 const html='<html><title>Acme Research | Team</title><main><h1>Acme Research</h1><p>Jane Doe, Director <a href="mailto:jane@acmeresearch.com">Email Jane</a></p></main></html>';
@@ -111,4 +111,52 @@ test('separate original #138 consumer verifies exact source, action and contact 
  assert.match(sql,/'sender_email_promotions',0/);
  assert.match(sql,/'external_messages_sent',0/);
  assert.doesNotMatch(sql,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/i);
+});
+
+
+test('first-party Dutch about pages precede the old team/contact dead ends; same company https canonicalization only',()=>{
+ assert.deepEqual(publicCompanyContactPaths('barnes.nl'),[
+  'https://barnes.nl/over-ons/','https://barnes.nl/team/','https://barnes.nl/contact/'
+ ]);
+ assert.equal(samePublicCompanyRedirect('https://barnes.nl/over-ons/','https://www.barnes.nl/over-ons/','Barnes'),
+   'https://www.barnes.nl/over-ons/');
+ assert.equal(samePublicCompanyRedirect('https://barnes.nl/team/','/over-ons/','Barnes'),
+   'https://barnes.nl/over-ons/');
+ for(const url of ['http://barnes.nl/private','https://evil.example/contact',
+   'https://127.0.0.1/','https://169.254.169.254/latest/meta-data','//evil.com/']){
+   assert.equal(samePublicCompanyRedirect('https://barnes.nl/over-ons/',url,'Barnes'),null);
+ }
+ assert.deepEqual(publicCompanyContactPaths('127.0.0.1'),[]);
+});
+test('literal published visible work addresses on official Dutch staff cards are provenance-only, not guesses or send authority',()=>{
+ const f={sourceUrl:'https://barnes.nl/over-ons/',personName:'Lieke Verheij',
+  companyName:'Barnes',observedAt:at};
+ const listing='<main><h1>Over Barnes</h1><h2>Ons team</h2><p>Cayro Blank Managing Partner cayro@barnes.nl</p><p>Lieke Verheij Managing Partner lieke@barnes.nl</p></main>';
+ const evidence=publishedBusinessMailto({...f,html:listing});
+ assert.equal(evidence?.email,'lieke@barnes.nl');
+ assert.equal(evidence?.classification,'EXPLICIT_VISIBLE_PERSON_WORK_EMAIL');
+ assert.equal(evidence?.deliverability,'UNVERIFIED');
+ assert.equal(evidence?.send_authority,'NOT_INFERRED');
+ assert.equal(evidence?.confidence,0.78);
+ assert.equal(publishedBusinessMailto({...f,html:'<main>Barnes Lieke Verheij Managing Partner</main>'}),null);
+ assert.equal(publishedBusinessMailto({...f,html:'<main>Barnes Lieke Verheij John Smith john@barnes.nl</main>'}),null,
+   'never assign adjacent colleagues direct business addresses');
+ assert.equal(publishedBusinessMailto({...f,html:'<main>Barnes Lieke Verheij lieke@gmail.com</main>'}),null);
+ assert.equal(publishedBusinessMailto({...f,html:'<main>Barnes Lieke Verheij info@barnes.nl</main>'}),null);
+ assert.equal(publishedBusinessMailto({...f,html:'<main>Barnes Lieke Verheij lieke@unrelated.com</main>'}),null);
+ assert.equal(publishedBusinessMailto({...f,html:'<main>Barnes <script>Lieke Verheij lieke@barnes.nl</script></main>'}),null);
+});
+test('original provider source worker distinguishes unreadable HTML from an accessible page with no named listed address',()=>{
+ const code=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
+ assert.match(code,/publicCompanyContactPaths\(domain\)/);
+ assert.match(code,/samePublicCompanyRedirect\(current,res\.headers\.get\('location'\),company\)/);
+ assert.match(code,/redirect:'manual'/);
+ assert.match(code,/SOURCE_REDIRECT_NOT_ALLOWED/);
+ assert.match(code,/SOURCE_PAGE_UNAVAILABLE/);
+ assert.match(code,/attempted\+\+/);
+ assert.match(code,/SOURCE_HTML_READ/);
+ assert.match(code,/public_work_email_candidates_staged/);
+ assert.match(code,/new_provider_queries:0/);
+ assert.doesNotMatch(code,/redirect:'follow'/);
+ assert.doesNotMatch(code,/GMAIL_SEND_EMAIL|APOLLO_PEOPLE_ENRICHMENT|HUNTER_EMAIL_FINDER/);
 });
