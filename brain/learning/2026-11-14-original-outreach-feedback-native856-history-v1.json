@@ -1,0 +1,77 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|native856-waiting-email-handoff-source-lock-lag|20261114-v1",
+  "failure_class": "NATIVE_PROVIDER_856_APPLIED_ORIGINAL_SOURCE_LOCK_STALE",
+  "root_cause": "The existing protected production release for PR #5768 applied original Supabase native migration 20261114142500; separate source migration-history.lock.json retained only 855 provider identities. The already-applied 856 source cannot be replayed, and historical 854/855 tests must not freeze last-row or total length when newer valid migrations appear.",
+  "evidence": {
+    "provider_ref": "adhjwmvyoixzjtmiroln",
+    "observed_at_utc": "2026-11-14T13:36:14.965667Z",
+    "provider_count": 856,
+    "original_git_lock_previous_count": 855,
+    "provider_last": {
+      "version": "20261114142500",
+      "name": "original_outreach_feedback_consumer_ack_v2",
+      "sql_statements": 3
+    },
+    "original_email_receiver_ack_proven": 1,
+    "original_email_state": "waiting",
+    "original_email_feedback": "NO_VERIFIED_SOURCE_RETRY",
+    "external_gmail_delivery_proven": false,
+    "edge_provider_new_code_proven": false
+  },
+  "repair": "Append only exact native 856 version/name to original source lock, keep first 855 immutable, and update historical 854/855 assertions to fixed prefix positions with >= counts; current actual full provider/source parity still exact.",
+  "prevention": [
+    "Reconcile actual native provider migrations with canonical source lock immediately after protected provider releases without executing SQL twice.",
+    "Never hardcode a past migration's full lock length or last-row as the historical test; compare exact applied[versionIndex] and preserved unique ordered prefix.",
+    "Do not claim Edge or Gmail live from native SQL + source lock alone; require separately observed provider deployment and original Gmail ID/readback."
+  ],
+  "owner": "Original native Supabase GitOps migration history writer, BRAIN P0 #4198",
+  "status": "PROTECTED_CANDIDATE_NOT_MERGED",
+  "compiler": {
+    "failure_class": "NATIVE_PROVIDER_856_APPLIED_ORIGINAL_SOURCE_LOCK_STALE",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs",
+      "tests/brain-native-855-original-handoff-lock-20261114.test.mjs",
+      "tests/brain-native-outreach-854-source-parity-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs",
+      "tests/brain-native-855-original-handoff-lock-20261114.test.mjs",
+      "tests/brain-native-outreach-854-source-parity-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs",
+      "tests/brain-native-855-original-handoff-lock-20261114.test.mjs",
+      "tests/brain-native-outreach-854-source-parity-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs",
+    "tests/brain-native-855-original-handoff-lock-20261114.test.mjs",
+    "tests/brain-native-outreach-854-source-parity-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migration-history.lock.json",
+    "tests/brain-native-856-original-outreach-feedback-lock-20261114.test.mjs",
+    "tests/brain-native-855-original-handoff-lock-20261114.test.mjs",
+    "tests/brain-native-outreach-854-source-parity-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-outreach-feedback-native856-history-v1.json",
+    "docs/development-ledger-events/2026-11-14-original-outreach-feedback-native856-history.md",
+    "docs/changes/2026-11-14-original-outreach-feedback-native856-history.md"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required+CodeQL/preview and protected main merge with Git source exactly 856, native provider 856 unchanged.",
+    "Preserve original #116 receipt: exact one NO_SOURCE consumer ACK and next due, no Gmail sender side effect.",
+    "Check original Edge GitHub Integration provider deploy separately; no direct deploy or false live."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}
