@@ -55,7 +55,8 @@
     "tests/brain-original-outreach-research-cooldown-20261114.test.mjs",
     "brain/learning/2026-11-14-original-outreach-source-cooldown-scope-v2.json",
     "docs/development-ledger-events/2026-11-14-original-outreach-source-cooldown-scope-v2.md",
-    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md"
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",
+    "docs/changes/2026-11-14-original-outreach-research-cooldown-scope-v2.md"
   ],
   "production_proof_to_complete": [
     "Protected Required, backend, Source, Supabase Preview and CodeQL green; no bypass.",
