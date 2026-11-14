@@ -4,7 +4,7 @@
   "scope": "ORIGINAL_PROVIDER_VERIFIED_GITOPS_HISTORY_SOURCE_ONLY",
   "owner": "original Supabase migration-history / ONE BRAIN GitOps release owner",
   "prevention_rule": "Append only a real native-applied version/name pair to source lock; preserve exact verified 864-row prefix and do not fabricate future migrations, bypass branch protection, or directly execute production SQL. Verify exact protected source-lock vs native provider and latest main after merge; keep separate original commercial #116/#138/Heartbeat outcome obligations OPEN.",
-  "regression": "existing protected Required migration-lock parity/native-source admission/CodeQL",
+  "regression": "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
   "evidence": {
     "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
     "original_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5817",
@@ -31,13 +31,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "original protected migration-history pairwise preflight"
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
     ],
     "shadow": [
-      "original protected migration lock parity"
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
     ],
     "canary": [
-      "native provider 865/865 readback after protected merge"
-    ]
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "business_effect": "NO_NEW_WORK_EMAIL_OR_PROCESSED_ACK_CLAIMED"
   }
 }
