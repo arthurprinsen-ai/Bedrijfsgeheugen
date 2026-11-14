@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|source-priming-30d-generic-research-false-block|20261114-v1",
+  "failure_class": "GENERIC_RESEARCH_COOLDOWN_MASKS_NEED_FOR_VERIFIED_SOURCE",
+  "root_cause": "Source-first priming was correctly introduced but its 30-day research_enrichment cooldown covered all generic internal research, even where headline, verified public source and specific current context were missing. In production 123/123 approved recipients had such a generic research action within 30d; the new source priming would create zero tasks. 10/123 have research in the last 7d.",
+  "evidence": {
+    "approved_business_with_emails": 123,
+    "generic_research_30d": 123,
+    "generic_research_7d": 10,
+    "safe_source_research_eligible_before_correction": 0,
+    "independent_provider_sends_today": 0,
+    "original_cron_owner": "#116 stage 2",
+    "prior_migration": "20261114083500_original_approved_connection_source_priming_v1",
+    "original_mergesha": "7603fc67c85093bcd03328fa1e42f6c128200cbb"
+  },
+  "repair": "Replace ONLY the existing approved-source priming function, changing generic research cooldown 30 days to 7 days. Preserve all other security, suppressions, idempotency, five source-action/day cap, source-approval and strict email no-send guard. No new cron or recipient authorization. Keep original existing research/composer/provider/Brain lineages.",
+  "prevention": [
+    "Preview the production-eligible source-research cohort through the complete proposed WHERE clause before merge. A successful SQL deployment with zero candidates must be diagnosed, not reported as commercial improvement.",
+    "Do not equate any generic internal research with current independently verified evidence; track previous research age and quality separately.",
+    "Keep contact cooldown and research freshness distinct, preserving 90-day outbound cooldown and all suppressions."
+  ],
+  "owner": "Original Powerhouse commercial source-stage #116 and ONE BRAIN; original Gmail executor unchanged",
+  "status": "PR_PENDING_PROTECTED_CI_AND_PRODUCTION_READBACK",
+  "compiler": {
+    "failure_class": "GENERIC_RESEARCH_COOLDOWN_MASKS_NEED_FOR_VERIFIED_SOURCE",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "tests": [
+    "tests/brain-original-approved-source-cooldown-correction-20261114.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-approved-source-cooldown-correction-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-approved-source-cooldown-correction-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-approved-source-cooldown-correction-20261114.test.mjs"
+    ]
+  },
+  "scope": [
+    "supabase/migrations/20261114090000_original_approved_source_cooldown_false_block_v1.sql",
+    "tests/brain-original-approved-source-cooldown-correction-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-approved-source-cooldown-false-block-v1.json",
+    "docs/development-ledger-events/2026-11-14-original-approved-source-cooldown-false-block.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required/BRAIN/CodeQL/Supabase-preview pass; protected main merge.",
+    "Apply migration through original Supabase native migration; inspect exact function definition 7d, ACL, unchanged #116.",
+    "Next natural stage 2 source priming 1..5 actions (when eligible) with no send-side effect, independent source quality readback and provider message ID only upon permitted successful delivery."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}
