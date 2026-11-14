@@ -15,8 +15,8 @@ test('original recovery agent owns bounded prompt stability, not a new executor'
  assert.match(skill,/No new background task or chat-specific manual executor/);
 });
 test('all original source, provider, security, Brain Heartbeat and receiver gates stay mandatory',()=>{
- for(const marker of ['original #120 Mira','original #140 content/Heartbeat',
-   'original #171 BRAIN','Gmail #116','six business/two personal',
+ for(const marker of ['original #120 Mira','#140 content/Heartbeat',
+   '#171 BRAIN','Gmail #116','six business/two personal',
    'LinkedIn company/personal','Instagram business-only','blog',
    'original named consumer processed ACK','PRIVATE','>=0.940',
    '>=0.900','independent numeric provider ID/permalink']){
