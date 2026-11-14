@@ -599,19 +599,30 @@ Deno.serve(async (req) => {
     // concurrent publisher. This never retries or dispatches a publication.
     const handoffPlan=planOriginalPublicationHandoffs(recovery,obligations||[]);
     const handoffWriteback={contract:'original-publication-obligation-recovery-v1',
-      planned:handoffPlan.updates.length,applied:0,conflicts:0,errors:0};
+      planned:handoffPlan.updates.length,applied:0,already_received:handoffPlan.alreadyIdentical?.length||0,
+      unresolved:handoffPlan.unresolved||[],
+      original_owner_routes:handoffPlan.routedToOriginalOwner||[],
+      conflicts:0,conflict_readbacks:0,errors:0,
+      original_executor_continues:true,provider_send_authorized:false};
     if(!handoffPlan.ok) {
       handoffWriteback.errors++;
       stepResults.push({name:'publication-handoff-writeback',ok:false,degraded:true,
         error:'RECOVERY_SOURCE_UNVERIFIED'});
     } else {
       for(const handoff of handoffPlan.updates){
-        const update=await db.from('content_publication_obligations')
+        // PostgREST requires IS NULL for nullable CAS columns. eq('field',null)
+        // does not establish a correct SQL NULL predicate and can cause a
+        // silent zero-row handoff: the original overdue obligation then persists
+        // with a stale/missing next action. Keep the original idempotency guards.
+        let updateQuery=db.from('content_publication_obligations')
           .update({next_action:handoff.nextAction,updated_at:new Date().toISOString()})
           .eq('tenant_id','canonical').eq('publication_date',runDate)
-          .eq('channel',handoff.channel).eq('next_action',handoff.previous)
-          .in('status',['PLANNED','BLOCKED','FAILED']).eq('external_id',null)
-          .select('channel,next_action,status,external_id');
+          .eq('channel',handoff.channel)
+          .in('status',['PLANNED','BLOCKED','FAILED']).is('external_id',null);
+        updateQuery=handoff.previous===null
+          ?updateQuery.is('next_action',null)
+          :updateQuery.eq('next_action',handoff.previous);
+        const update=await updateQuery.select('channel,next_action,status,external_id');
         if(update.error){
           handoffWriteback.errors++;
           console.error('PUBLICATION_HANDOFF_WRITEBACK_FAILED',handoff.channel);
@@ -620,14 +631,37 @@ Deno.serve(async (req) => {
           const local=(obligations||[]).find((o:any)=>o.channel===handoff.channel);
           if(local)local.next_action=handoff.nextAction;
         }else{
-          // A newer writer may have advanced the original obligation:
-          // preserve its provider truth, never overwrite blindly.
-          handoffWriteback.conflicts++;
+          // Do not drop a 0-row CAS or assume a successful provider side effect.
+          // Perform READ-ONLY reconciliation against the same original row.
+          handoffWriteback.conflict_readbacks++;
+          const observed=await db.from('content_publication_obligations')
+            .select('channel,next_action,status,external_id,live_proven_at')
+            .eq('tenant_id','canonical').eq('publication_date',runDate)
+            .eq('channel',handoff.channel).maybeSingle();
+          if(observed.error)handoffWriteback.errors++;
+          if(observed.data?.next_action===handoff.nextAction
+            &&!observed.data?.external_id
+            &&['PLANNED','BLOCKED','FAILED'].includes(observed.data?.status)){
+            // Another original run has already delivered this SAME next action.
+            handoffWriteback.already_received++;
+          }else{
+            handoffWriteback.conflicts++;
+            handoffWriteback.unresolved.push({
+              channel:handoff.channel,
+              owner:handoff.owner,
+              reason:observed.error?'ORIGINAL_CAS_CONFLICT_READBACK_FAILED':
+                observed.data?.external_id?'POSSIBLE_EXTERNAL_SIDE_EFFECT_READBACK_REQUIRED':
+                'ORIGINAL_CAS_CONFLICT_OWNER_RECONCILIATION_REQUIRED'
+            });
+          }
         }
       }
+      const requiresRecovery=handoffWriteback.errors>0 || handoffWriteback.conflicts>0
+        || handoffWriteback.unresolved.length>0
+        || handoffWriteback.original_owner_routes.some((x:any)=>x.reason!=='ORIGINAL_EMAIL_OWNER_ONLY');
       stepResults.push({name:'publication-handoff-writeback',
-        ok:handoffWriteback.errors===0,degraded:handoffWriteback.errors>0,
-        error:handoffWriteback.errors?'ORIGINAL_OBLIGATION_HANDOFF_WRITE_FAILED':null});
+        ok:!requiresRecovery,degraded:requiresRecovery,
+        error:requiresRecovery?'ORIGINAL_HANDOFF_OWNER_OR_RECEIVER_RECHECK_REQUIRED':null});
     }
     stepResults.push({name:'publication-proof-deadline',
       ok:recovery.status==='PROVIDER_PROOF_COMPLETE',
