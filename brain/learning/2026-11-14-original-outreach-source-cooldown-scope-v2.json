@@ -17,15 +17,35 @@
     "production_readback": "Original powerhouse_prime_approved_connection_research_v1 exists, its original stage #116 calls it, but prior to correction no approved-source tasks created; underlying data shows 123/123 approved had some research_enrichment in prior 30 days, vs 18 independent actual public research receipts and 4 direct outreach research actions.",
     "already_sent_today": 0,
     "source_only": true,
-    "provider_send_proven": false
+    "provider_send_proven": false,
+    "native_migration_reconciliation": {
+      "observed_at_utc": "2026-11-14T08:26:46.930229Z",
+      "provider_applied_count": 853,
+      "old_git_source_lock_count": 851,
+      "native_852": {
+        "version": "20261114080027",
+        "name": "original_approved_connection_source_priming_v1",
+        "first_statement_chars": 11353,
+        "first_statement_md5": "7f3b733b4f450b931b416bcaf9eac773",
+        "identical_to_protected_main_853_source": true
+      },
+      "native_853": {
+        "version": "20261114083500",
+        "name": "original_approved_connection_source_priming_v1",
+        "statements": 4
+      },
+      "native_854_applied": false,
+      "missing_git_historical_source_852": true
+    }
   },
-  "repair": "Update ONLY existing powerhouse_prime_approved_connection_research_v1 using a native migration: 30-day research cooldown requires same person or company AND a genuinely attempted public source record (researched_at) OR an existing dedicated approved-source/outreach-source research action. Preserve max five per local day, stable dedupe/lock, prior suppression/contact fatigue/authority gates and existing #116 stage 2. Do not introduce another scheduler, sender, public grant, or new contact authorization.",
+  "repair": "Update ONLY existing powerhouse_prime_approved_connection_research_v1 using a native migration: 30-day research cooldown requires same person or company AND a genuinely attempted public source record (researched_at) OR an existing dedicated approved-source/outreach-source research action. Preserve max five per local day, stable dedupe/lock, prior suppression/contact fatigue/authority gates and existing #116 stage 2. Do not introduce another scheduler, sender, public grant, or new contact authorization. Reconcile the actually provider-applied duplicate 852/853 history with exact protected source, append-only native lock and narrow one-time CI verifier; preserve all original history. 854 remains proposed and cannot be marked applied before protected merge/preview.",
   "prevention": [
     "An internal task with type research_enrichment is not evidence of actual public company research; use typed provider-attempt timestamps and dedicated work identities.",
     "Measure not only legacy task counts but eligible approved population after every major exclusion predicate; fail false-green if eligible>0 but primed=0 because of a flawed filter.",
     "Preserve policy safety: original approved recipient, suppression, negative outcomes, 90-day send cooldown; nobody is authorized to send merely because a source job exists.",
     "Two-level dedupe: Amsterdam-day global max and same-company/provider 30-day budget.",
-    "Production proof requires native SQL migration/readback and next natural stage 2. Provider-mail proof requires Gmail message ID and exact readback, which source priming can never assert."
+    "Production proof requires native SQL migration/readback and next natural stage 2. Provider-mail proof requires Gmail message ID and exact readback, which source priming can never assert.",
+    "Before applying native SQL independently, inspect original pending source deployment and native migration history; concurrent independent native apply and canonical release may create two valid historical entries. Never delete native migration ledger rows merely to make source tests green."
   ],
   "owner": "Original commercial #116 stage 2 research and original single Gmail sender; ONE BRAIN, Heartbeat",
   "status": "PR_CANDIDATE_PENDING_PROTECTED_CI_AND_NATIVE_PROVIDER_PROOF",
@@ -38,17 +58,21 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs"
+      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs",
+      "tests/brain-native-outreach-852-853-reconciliation-20261114.test.mjs"
     ],
     "shadow": [
-      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs"
+      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs",
+      "tests/brain-native-outreach-852-853-reconciliation-20261114.test.mjs"
     ],
     "canary": [
-      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs"
+      "tests/brain-original-outreach-research-cooldown-20261114.test.mjs",
+      "tests/brain-native-outreach-852-853-reconciliation-20261114.test.mjs"
     ]
   },
   "tests": [
-    "tests/brain-original-outreach-research-cooldown-20261114.test.mjs"
+    "tests/brain-original-outreach-research-cooldown-20261114.test.mjs",
+    "tests/brain-native-outreach-852-853-reconciliation-20261114.test.mjs"
   ],
   "scope": [
     "supabase/migrations/20261114091500_original_outreach_source_research_cooldown_scope_v2.sql",
@@ -56,7 +80,12 @@
     "brain/learning/2026-11-14-original-outreach-source-cooldown-scope-v2.json",
     "docs/development-ledger-events/2026-11-14-original-outreach-source-cooldown-scope-v2.md",
     ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",
-    "docs/changes/2026-11-14-original-outreach-research-cooldown-scope-v2.md"
+    "docs/changes/2026-11-14-original-outreach-research-cooldown-scope-v2.md",
+    "supabase/migrations/20261114080027_original_approved_connection_source_priming_v1.sql",
+    "supabase/migration-history.lock.json",
+    "tools/ci/verified-provider-852-853-outreach-reconciliation.mjs",
+    "tools/ci/protected-supabase-pr-migration-tests.mjs",
+    "tests/brain-native-outreach-852-853-reconciliation-20261114.test.mjs"
   ],
   "production_proof_to_complete": [
     "Protected Required, backend, Source, Supabase Preview and CodeQL green; no bypass.",
