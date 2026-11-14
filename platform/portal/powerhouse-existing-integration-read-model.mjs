@@ -21,9 +21,9 @@ const SOURCES=Object.freeze([
   // Existing immutable agent work/recovery dispatch, aggregated in PostgREST only.
   // Never retrieve idempotency keys, tenant rows, provider secrets or work payloads.
   {name:'agentWorkPending',table:'brain_outcome_obligation_dispatch',
-    query:'select=idempotency_key&record_type=eq.AgentWork&state=eq.PENDING&limit=1',max:1,countOnly:true},
+    query:'select=state&record_type=eq.AgentWork&state=eq.PENDING&limit=1',max:1,countOnly:true},
   {name:'recoveryWorkActive',table:'brain_outcome_obligation_dispatch',
-    query:'select=idempotency_key&record_type=eq.RecoveryWork&state=eq.RECOVERING&limit=1',max:1,countOnly:true},
+    query:'select=state&record_type=eq.RecoveryWork&state=eq.RECOVERING&limit=1',max:1,countOnly:true},
   // Same original innovation candidate → ONE BRAIN obligation → agent intake.
   // Source-bounded admin-only projection, NOT a second registry or executor.
   {name:'innovationCandidates',table:'powerhouse_optimization_candidate_v1',
