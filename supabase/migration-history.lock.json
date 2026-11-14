@@ -3420,8 +3420,12 @@
     {
       "version": "20261114101000",
       "name": "original_research_consumer_handoff_receipts_v1"
+    },
+    {
+      "version": "20261114142500",
+      "name": "original_outreach_feedback_consumer_ack_v2"
     }
   ],
-  "captured_at": "2026-11-14T09:20:28.073423Z",
+  "captured_at": "2026-11-14T13:42:27.402065Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
