@@ -17,7 +17,15 @@
     "matching_retry_due_utc": "2026-11-15T06:38:14.244Z",
     "original_message_provider_delivered_proven": false,
     "historic_source_worker_writeback_only": "prepared",
-    "root_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+    "root_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "ci_historic_contract_regression": {
+      "first_run": "43599843552",
+      "root_causes": [
+        "Historical prepared-only source CAS assumption excluded legitimate waiting originals",
+        "Overbroad no-sender regex matched a documentation comment containing email...send but not an actual provider call"
+      ],
+      "resolution": "Update historical source test to require same original waiting/prepared exact identity and CAS; preserve no-sender regex unchanged and revise only comment; regression in same incident/PR"
+    }
   },
   "repair": "Same original DataForSEO worker now accepts exact original prepared OR waiting action (person, company, action ID) and CAS writeback, with protected original send quarantine; it returns a separately typed NO_SOURCE disposition with exact original research action ID, provider research timestamp and 24h retry without send authority. Same original #116 reconciling stage2/3 repairs a missed worker writeback from recorded original provider result (no second provider call) and distinguishes received/no-source vs unverified candidate vs missing consumer ACK. No new email, recipients, cron, queue, provider authority or permissions.",
   "prevention": [
@@ -27,7 +35,8 @@
     "Concurrent writes use source-level CAS; missed direct writeback is safely replayed only through the existing original #116 reconciling stage, not a parallel email executor.",
     "No source candidate can be called verified unless independent source page and recency evidence are present; provider ID/readback is essential for sent.",
     "Provider uncertainty, existing Gmail ID, no-resend or suppression never triggers a new outbound attempt.",
-    "Update agent/skill, tests, human ledger and actual native Supabase + Edge readback after protected release."
+    "Update agent/skill, tests, human ledger and actual native Supabase + Edge readback after protected release.",
+    "When a historical test overfits prepared-only state, strengthen it to assert exact old/new recipient identity and CAS instead of weakening safety gates; keep the no-sender policy test unchanged."
   ],
   "owner": "Original commercial cron #116 stage2/3, sole DataForSEO research Edge worker, original human-quality gated Gmail composer",
   "status": "PROTECTED_PR_CANDIDATE_NOT_LIVE_YET",
@@ -40,17 +49,21 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs"
+      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+      "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
     ],
     "shadow": [
-      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs"
+      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+      "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
     ],
     "canary": [
-      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs"
+      "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+      "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
     ]
   },
   "tests": [
-    "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs"
+    "tests/brain-original-outreach-feedback-ack-v2-20261114.test.mjs",
+    "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
   ],
   "scope": [
     "supabase/migrations/20261114142500_original_outreach_feedback_consumer_ack_v2.sql",
@@ -61,7 +74,8 @@
     "docs/changes/2026-11-14-original-outreach-feedback-consumer-ack-v2.md",
     "docs/development-ledger-events/2026-11-14-original-outreach-feedback-consumer-ack-v2.md",
     ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",
-    "AGENTS.md"
+    "AGENTS.md",
+    "tests/brain-relationship-research-source-backfeed-20261030.test.mjs"
   ],
   "production_proof_to_complete": [
     "Protected Required/BRAIN/CodeQL and hosted native Supabase preview for the exact candidate head; merge via canonical protected release.",
