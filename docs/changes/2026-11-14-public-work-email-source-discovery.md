@@ -17,3 +17,7 @@ Gevonden e-mails worden alleen bij expliciete naam + bedrijf + domein + `mailto:
 ## Acceptatie
 
 Node-regressie voor same-origin redirects, offsite/privéadres-afwijzing, daadwerkelijk gepubliceerde paginalinks en no-send. Daarna beschermde exacte Required/CodeQL, originele Edge-main-deploy, letterlijk bronbestands-readback, echte natuurlijke bronpagina's >0, kandidaat-/NO_SOURCE-registratie met originele actie-ID, onafhankelijke #138 PROCESSED-ACK alleen bij echte kandidaat. Zonder kandidaat geen claim van e-mailgroei of volledige een-lus-uitkomst.
+
+## Herproberen na middernacht is een verplicht onderdeel van één keten
+
+De eerste acht onderzoeken zijn op zaterdag 14 november rond 19:12 UTC aangemaakt, met een herprobeertijd van 23:12 UTC (in Nederland al zondag 15 november). Omdat de dagelijkse lijst draait, zouden die acht oude onderzoekstaken zonder extra logica niet vanzelf terugkeren. De oorspronkelijke #116 onderzoeksworker leest nu ook verstreken oude herprobeermomenten uit dezelfde `powerhouse_sales_actions`-registratie en verwerkt maximaal twee per bestaande aanroep. Dit gebruikt exact dezelfde bedrijfsbroncontrole, kandidaat-registratie, bronstatus en ontvangstbewijzen. Geen tweede wachtrij, cron, betaalde lookup of Gmail-verzending. Pas na live HTTP-bewijs en originele ONE BRAIN-ontvangst kan een resultaat groen zijn.
