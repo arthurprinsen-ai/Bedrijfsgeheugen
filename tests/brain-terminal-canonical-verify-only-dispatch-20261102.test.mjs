@@ -27,7 +27,7 @@ test('still requires real successful BRAIN exact candidate and protected main so
   assert.match(terminal,/TERMINAL_CRITICAL_GATE_NOT_TERMINAL/);
   assert.match(terminal,/TERMINAL_CRITICAL_GATE_FAILED/);
   assert.match(terminal,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
-  assert.match(terminal,/\.display_title==\$title/);
+  assert.match(terminal,/brain-verification-flight-index\.mjs --title "\$expected_title" --since "\$since"/);
   assert.match(brain,/MERGED_CANDIDATE_READ_ONLY_VERIFIED/);
   assert.match(brain,/verification_only != true/);
   assert.match(brain,/BG169 GitHub-native production transport/);
