@@ -42,3 +42,18 @@ test('named public business address remains a non-sendable evidence candidate, n
  assert.equal(found?.deliverability,'UNVERIFIED');
  assert.equal(found?.send_authority,'NOT_INFERRED');
 });
+
+test('Amsterdam midnight never drops prior-day original source attempts or adds a parallel process',()=>{
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
+ assert.match(src,/async function replayDueHistoricalFirstPartySources/);
+ assert.match(src,/evidence->>public_email_next_attempt_at/);
+ assert.match(src,/\.lte\('evidence->>public_email_next_attempt_at',observedAt\)/);
+ assert.match(src,/key\.includes\(':'\+today\+':'\)/);
+ assert.match(src,/async function processOriginalFirstPartyPublicSource/);
+ assert.match(src,/processOriginalFirstPartyPublicSource\(\s*db,action,domain,company,key,observedAt,action\.evidence\)/);
+ assert.match(src,/const overdue=await replayDueHistoricalFirstPartySources\(db,observedAt\)/);
+ assert.match(src,/freeDomain\.historical_due_retries=overdue/);
+ assert.match(src,/public_email_source_attempts:/);
+ assert.match(src,/original_lineage_reused:true,new_provider_queries:0/);
+ assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/);
+});
