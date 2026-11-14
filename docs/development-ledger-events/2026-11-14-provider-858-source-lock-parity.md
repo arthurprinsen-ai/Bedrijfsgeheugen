@@ -1,0 +1,4 @@
+# 2026-11-14 — Provider 858 / source-lock 857 incident, append-only herstel
+Owner: bestaande Supabase-migratie- en ONE BRAIN-release-eigenaar. Parent P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+Geobserveerd: 858 native provider-applied (version,name), 857 source-lock-rijen; exacte overeenstemming voor eerste 857 records, nul conflict. Uitsluitend migratie 20261114164500 preserve_contact_authority_on_connection_refresh_v1 ontbreekt uit de originele lock, niet uit het uitvoerbare bronbestand. Deze mismatch blokkeerde de eigen beschermde PR #5786 preflight. Gekozen herstel is een source-lock-only protected PR, zonder productie SQL opnieuw uit te voeren. Toestemming, security en release gates blijven ongewijzigd. Acceptance: eigen Required/CodeQL, beschermd merge, onafhankelijk main readback, daarna originele #5786 opnieuw toetsen; geen green claim zonder echte protected release.
