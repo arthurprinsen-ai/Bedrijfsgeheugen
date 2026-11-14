@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-14",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|innovation|unstarted-intake-worker-lost-false-alarm|20261114-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-consumer-intake-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-consumer-intake-20261114.test.mjs"
+    ]
+  },
+  "root_cause": "Existing original execution-resilience watchdog interpreted a PLANNED, never-started INNOVATION_INTAKE with stale creation heartbeat as WORKER_LOST; generic original reconciliation worker has only SELFTEST recovery and returned NO_SAFE_CANONICAL_RECOVERY_HANDLER.",
+  "evidence": {
+    "original_production_project": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-14T18:41:00Z",
+    "source": "public.brain_operations",
+    "operation_type": "INNOVATION_INTAKE",
+    "planned_intake_count": 14,
+    "misclassified_result_unknown": 14,
+    "side_effect_state": "NOT_STARTED",
+    "remote_ref": null,
+    "reconciliation_jobs_pending": 14,
+    "verified_consumer_acks": 0,
+    "independent_improvement_outcomes": 0
+  },
+  "prevention": {
+    "original_watchdog_only": true,
+    "original_reconciliation_worker_only": true,
+    "never_start_is_not_worker_lost": true,
+    "source_revision_and_owner_binding_required": true,
+    "no_external_replay": true,
+    "restore_only_original_planned_intent": true,
+    "consumer_ack_never_inferred": true,
+    "no_new_cron_or_store": true,
+    "regression": "tests/brain-innovation-original-consumer-intake-20261114.test.mjs"
+  },
+  "proposed_protected_migration": "supabase/migrations/20261114211500_original_innovation_intake_watchdog_recovery_v1.sql",
+  "release_state": "CANDIDATE_PROTECTED_DELIVERY_NOT_YET_LIVE",
+  "attribution": "Recovered operation state is not implementation or evidence of customer uplift."
+}
