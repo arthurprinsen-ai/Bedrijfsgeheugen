@@ -3448,8 +3448,12 @@
     {
       "version": "20261114211500",
       "name": "original_public_business_email_dispatch_v1"
+    },
+    {
+      "version": "20261114230000",
+      "name": "original_source_consumption_stage_receipt_parity_v1"
     }
   ],
-  "captured_at": "2026-11-14T19:15:21.009609Z",
+  "captured_at": "2026-11-14T19:38:33.585619Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
