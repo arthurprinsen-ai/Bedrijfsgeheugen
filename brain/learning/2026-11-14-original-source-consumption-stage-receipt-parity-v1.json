@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|one-brain|source-consumption-assurance-retired-split-cron-false-negative|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "owner": "original-commercial-stage-116-and-original-mux-171",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "ASSURANCE_CHECKER_STALE_SCHEDULER_TOPOLOGY",
+    "source": "production Supabase readback 2026-11-14",
+    "proposed_fix": "replace original source-consumption read model with observed original #116 stage receipts and #171 scheduler; preserve provider-outcome truth boundaries",
+    "safety": "No new scheduler, sender, queue, RLS or permission changes",
+    "scope": "GENERAL"
+  },
+  "observation": {
+    "old_assurance_healthy": false,
+    "connections_total": 23295,
+    "enriched_today": 23295,
+    "original_116_active": true,
+    "original_171_active": true,
+    "retired_split_job_count": 0,
+    "observed_original_stage_count": 14,
+    "verified_provider_outcome_from_stage_receipts": false,
+    "open_brain_obligations": 420,
+    "assurance_loops": {
+      "green": 7,
+      "amber": 1,
+      "red": 7
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-source-consumption-stage-parity-20261114.test.mjs"
+    ],
+    "expected": "Source-consumption-only healthy may become true when original stage receipts current; closure remains unproven until exact provider/consumer/outcome/learning gates",
+    "independent_after_release": "Re-run source consumption read model and compare with actual job 116 + 171, verify zero retired split writers, read nonterminal original obligations and provider outputs, wait for next natural tick",
+    "business_effect": "UNKNOWN_NOT_YET_MEASURED",
+    "historical_context": "Independent production SQL read-only replay established current original stage IDs. CI replays the changed dependency-free regression as historical_replay; this does not prove provider writes or customer outcomes."
+  },
+  "prevention_rule": "Never check a retired scheduler identity after canonical consolidation; require current original scheduler plus successful nondegraded stage receipts, and keep source-only assurance separate from full end-to-end closure.",
+  "regression_ref": "tests/brain-original-source-consumption-stage-parity-20261114.test.mjs",
+  "no_parallel_executor": true,
+  "root_cause": "The source-consumption assurance function continued to require retired commercial split-cron job names after the explicitly consolidated original #116 stage owner and #171 mux took over; this produced an unjustified false-negative source health verdict.",
+  "evidence": {
+    "production_readback": "2026-11-14 independently checked active cron jobs 116 and 171, legacy split jobs zero, and 23,295/23,295 connection enrichment today; exact-stage read-only SQL probe returned true for 3 non-degraded original internal receipts in 26 hours",
+    "actual_source_truth": "powerhouse_runtime_events.source=powerhouse-commercial-learning-v1; event_type=commercial_stage_execution; evidence.reported_degraded=false; context.canonical_job_id=116",
+    "regression_test": "tests/brain-original-source-consumption-stage-parity-20261114.test.mjs",
+    "limitations": "No verified provider send, consumer ACK, realized revenue, or next-run learning follows from source-to-executor stage receipts"
+  },
+  "supersedes_pr": 5786,
+  "provider_baseline_attestation": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "native_applied_count": 859,
+    "latest_applied_version": "20261114184600",
+    "github_main_lock_count": 859,
+    "verified_at": "2026-11-14T18:25:47Z"
+  },
+  "recovery_reason": "Original candidate #5786 had no Supabase Preview association and its proposed SQL version 20261114180000 became older than native migration 20261114184600. Preserve one original owner and migrate code to valid new source-only version 20261114194000, protected GitHub/Preview release required.",
+  "proposed_sql_source": "supabase/migrations/20261114194000_original_source_consumption_stage_receipt_parity_v1.sql"
+}
