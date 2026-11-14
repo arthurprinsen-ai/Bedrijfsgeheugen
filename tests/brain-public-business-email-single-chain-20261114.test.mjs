@@ -45,6 +45,12 @@ test('original authorized worker is the only writer; its receiver records INGEST
  assert.match(src,/originalFirstPartyDomainCandidatePass\(db,observedAt\)/);
  assert.match(src,/first_party_company_domain/);
  assert.match(src,/FIRST_PARTY_DAILY_CAP_READ/);
+ assert.match(src,/FIRST_PARTY_RESEARCH_DISPOSITION_ACK/);
+ assert.match(src,/public_email_source_checked:checked/);
+ assert.match(src,/public_email_next_attempt_at:nextAttemptAt/);
+ assert.match(src,/if\(prior\?\.evidence\?\.public_email_source_checked===true\)continue/);
+ assert.doesNotMatch(src,/if\(!remaining\)return/,'a full eight-slot day must still retry incomplete source ACKs');
+
  assert.match(src,/new_provider_queries:0/);
  assert.match(src,/CANDIDATE_INGEST_ACK_CONSUMER_PROCESSED_PENDING/);
  assert.doesNotMatch(src,/if\(!contact\|\|!isTrue\(contact\.extra\?\.human_approved\)/,
