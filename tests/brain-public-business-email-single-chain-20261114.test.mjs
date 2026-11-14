@@ -46,6 +46,13 @@ test('original authorized worker is the only writer; its receiver records INGEST
  assert.match(src,/first_party_company_domain/);
  assert.match(src,/FIRST_PARTY_DAILY_CAP_READ/);
  assert.match(src,/FIRST_PARTY_RESEARCH_DISPOSITION_ACK/);
+ assert.match(src,/writePublicBusinessSourceReceipt/);
+ assert.match(src,/SOURCE_CANDIDATE_RECEIPT_REPLAY/);
+ assert.match(src,/ignoreDuplicates:true/,'duplicate producer replay cannot regress original consumer PROCESSED state');
+ assert.match(src,/PUBLIC_EMAIL_ORIGINAL_EVENT_SOURCE_REVISION_CONFLICT/);
+ assert.match(src,/source_receipt_recovered_from_canonical:recovered/);
+ assert.match(src,/result\.receipts>0/,'canonical candidate replay with source ACK completes same original research action');
+
  assert.match(src,/public_email_source_checked:checked/);
  assert.match(src,/public_email_next_attempt_at:nextAttemptAt/);
  assert.match(src,/if\(prior\?\.evidence\?\.public_email_source_checked===true\)continue/);
