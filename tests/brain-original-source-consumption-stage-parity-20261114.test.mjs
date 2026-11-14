@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migration = await readFile('supabase/migrations/20261114194000_original_source_consumption_stage_receipt_parity_v1.sql','utf8');
+const migration = await readFile('supabase/migrations/20261114230000_original_source_consumption_stage_receipt_parity_v1.sql','utf8');
 const agents = await readFile('platform/agents/agent-team.mjs','utf8');
 const skill = await readFile('.agents/skills/powerhouse-source-universe-impact-engine/SKILL.md','utf8');
 
