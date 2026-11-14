@@ -4,7 +4,7 @@
   "date": "2026-11-14",
   "fingerprint": "powerhouse|mira|no-new-unique-source-after-90-day-dedupe|three-query-variants|20261114",
   "failure_class": "MIRA_ORIGINAL_UNIQUE_SOURCE_DISCOVERY_STARVATION",
-  "root_cause": "Original Mira source materializer correctly applied 90-day exact-source uniqueness and 3-day topic uniqueness. At independent production 2026-11-14 check there were 373 source signals, 125 eligible, 21 recent eligible/datable, only four correct canonical Mira entrepreneur problem sources with an approved PH-P scene, and all four were previously used within 90 days; zero novel source can be materialized. Existing original six fixed business searches rotate 12 canonical topic families but only two query phrasings. Repeated search terms can recall already used stories rather than novel source URLs.",
+  "root_cause": "Original Mira source materializer correctly applied 90-day exact-source uniqueness and 3-day topic uniqueness. At independent production 2026-11-14 check there were 373 source signals, 125 eligible, 21 recent eligible/datable, only four correct canonical Mira entrepreneur problem sources with an approved PH-P scene, and all four were previously used within 90 days; zero novel source can be materialized. Existing original six fixed business searches rotate 12 canonical topic families but only two query phrasings. Repeated search terms can recall already used stories rather than novel source URLs. A globally shared _shared helper change would expand the protected provider Edge attestation scope to every declared function; localizing within the original Radar directory is essential to avoid a site-wide deploy blast radius.",
   "evidence": {
     "project": "adhjwmvyoixzjtmiroln",
     "source_records": 373,
@@ -20,9 +20,11 @@
     "openart_credits": 0,
     "original_email_waiting_no_source_ack": true,
     "native_original_heartbeat_v857": true,
-    "protected_preflight_first_attempt": "LEARNING_EVALUATION_TESTS_REQUIRED:historical_replay; corrected canonical learning record instead of weakening admission gate."
+    "protected_preflight_first_attempt": "LEARNING_EVALUATION_TESTS_REQUIRED:historical_replay; corrected canonical learning record instead of weakening admission gate.",
+    "first_protected_ci_rejection": "LEARNING_EVALUATION_TESTS_REQUIRED:historical_replay; fixed with exact historical/shadow/canary references, no weakening of admission gate.",
+    "scoping_preflight": "edge-runtime-scope.mjs sharedChanged => all declared functions; repaired local-only to original powerhouse-mira-problem-radar."
   },
-  "fix": "Add a THIRD short high-recall Dutch query phrasing per same twelve approved PH-P topic family. Alternate between existing primary, existing secondary and third distinct discovery phrasings across six-day rotation inside the same original six business / two personal search requests. This can improve source discovery without additional paid provider calls or any change to original source/recency/identity/content/face/duplicate/consumer authority. Real source uniqueness remains determined exclusively by provider search, page published_at, canonical portal problem fit, 0.72 eligibility, 90-day source and 3-day topic dedupe. Existing #120 daily radar and #140/#171 heartbeat/scheduler only.",
+  "fix": "Scoped exact original powerhouse-mira-problem-radar Edge function only: keep existing global _shared rotation untouched, import a local side-effect-free helper that overlays a THIRD short high-recall query phrasing per twelve unchanged canonical PH-P topic families two days per six-day rotation on SAME original 6 business+2 personal provider calls. All original real-source provider, date, 0.72 score, unique source/topic and funding/face/Meta protections are unchanged. Exact original Radar-only provider deploy via protected-main Supabase GitHub Integration, not all Edge functions.",
   "prevention": [
     "Trigger original SOURCE_STARVATION when canonical mapped eligible count >0 but 90-day source novelty count=0; classify source shortage separately from media funding, Meta transport and Gmail evidence.",
     "Never lower 90-day/3-day duplicate barriers, face match >=0.940, copyright or actual provider readback to manufacture a post.",
@@ -30,13 +32,14 @@
     "Treat changed search query as discovery only, not proof of publishing nor eligible evidence; a source must be provider dated/verified and linked through original winner/asset/Meta recipient readback.",
     "Never hide the zero-credit OpenArt capacity limit; production provider funding or existing unique approved media required before actual Meta post.",
     "Historical source→ONE BRAIN→Heartbeat ACK remains OPEN until original owner processes, with exact day/source revision and real provider IDs.",
-    "Supabase Edge source is NOT live until protected-main Supabase GitHub Integration deploys exact source and readback; chat direct deploy forbidden."
+    "Supabase Edge source is NOT live until protected-main Supabase GitHub Integration deploys exact source and readback; chat direct deploy forbidden.",
+    "Do not change globally shared Supabase helper for a single producer's query variants; original edge-runtime-scope resolver treats any _shared path as all Edge functions. Localize to original Radar directory to keep one-function provider attestation."
   ],
   "owner": "Original Mira source radar #120 / original Mira media routing & publisher / BRAIN #171 / Heartbeat #140",
   "status": "PROTECTED_PR_CANDIDATE_NOT_EDGE_PROVEN",
   "scope": [
-    "supabase/functions/_shared/mira-source-query-rotation.mjs",
-    "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+    "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+    "supabase/functions/powerhouse-mira-problem-radar/distinct-source-queries.mjs",
     "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs",
     "brain/learning/2026-11-14-original-mira-source-unique-exhaustion-third-rotation-v1.json",
     "docs/changes/2026-11-14-original-mira-unique-source-discovery-v1.md",
@@ -44,8 +47,8 @@
     ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md"
   ],
   "regression_tests": [
-    "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
-    "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs",
+    "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs"
   ],
   "acceptance": [
     "Protected exact candidate Required + CodeQL + Supabase preview pass, then protected merge main.",
