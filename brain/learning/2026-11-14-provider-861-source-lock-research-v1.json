@@ -1,0 +1,39 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-861-lock-860-original-source-research|20261114-v1",
+  "status": "SOURCE_LOCK_RECOVERY_CANDIDATE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "Protected source PR #5792 merged and original provider applied real 20261114210000 public work-email source priming; original production history lock was one entry behind (860 vs 861). Protected receiver PR #5787 intentionally fails until this source history is reconciled.",
+  "prevention": "Original migration owner appends only independently verified Supabase production version/name after a real apply, preserves exact 860-row prefix and sends consumer to same protected release flow. Never fake applied status, republish migration, bypass Protected Required or invent a send/consumer receipt.",
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 861,
+    "source_lock_before": 860,
+    "matched_prefix": 860,
+    "prefix_conflicts": 0,
+    "provider_last": {
+      "version": "20261114210000",
+      "name": "original_public_work_email_source_priming_v1"
+    },
+    "provider_readback_at": "2026-11-14T18:51:36.129743Z",
+    "original_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5792",
+    "receiver_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5787",
+    "source_file": "supabase/migrations/20261114210000_original_public_work_email_source_priming_v1.sql",
+    "no_new_sql_execution": true,
+    "no_additional_schedulers": true,
+    "no_contact_sends": true,
+    "receiver_consumed_proof": "NOT_YET_PROVEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "Exact 860 historical Supabase identities unchanged and only real provider 861 appended; original receiver release must be re-run on new lock.",
+    "business_effect": "NONE—history parity is not externally observed contact enrichment."
+  }
+}
