@@ -19,3 +19,7 @@ Original PR #5785 head at creation was `c5fbd36cc5ca2738f39d260be9ad55c17da1ff70
 
 ## Next original-owner step
 Pass protected gates; merge only via original authorized delivery; read back both production function definitions, then measure that already-reviewed `email_authority` survives original full refresh and that today's authority review completes 23,295/23,295. For acquisition, only verifiable, authorized first-party/public business sources with lawful purpose and source linkage; zero fresh addresses is explicit OPEN. Keep one commercial and ONE BRAIN lineage #4198 with 24/72h effect follow-ups.
+
+## Protected admission scope correction
+
+Required run #43619415797 passed the original learning evidence gate but rejected `SCOPE_CONTAMINATED` because `Change-Scope` must be a comma-separated allowlist of the exact **five non-verification** paths, not the number of files. The separate verification test is exempt from the scope budget by the repository's existing trusted guard. The original PR metadata was corrected to that five-file exact allowlist and `Scope-Budget: 5`; no broad-approval label, security exception, or bypass was used. The current protected exact-head checks must pass independently before release.
