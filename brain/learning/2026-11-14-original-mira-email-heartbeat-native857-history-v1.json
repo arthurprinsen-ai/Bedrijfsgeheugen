@@ -1,0 +1,87 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|content-commercial|native857-original-heartbeat-handoff-provider-source-lock-lag|20261114",
+  "failure_class": "PRODUCTION_PROVIDER_APPLIED_NATIVE_857_SOURCE_LOCK_NOT_YET_APPENDED",
+  "root_cause": "Protected original #140 Heartbeat / Mira / Gmail handoff PR #5774 merged and provider applied the exact original SQL function as native migration 857, but source Git migration-history.lock.json still listed only 856. Without source provider history reconciliation every later original CI could fail, despite a valid applied provider migration. A handoff observer live is not Instagram or Gmail delivery authority.",
+  "evidence": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5774",
+    "source_merge_sha": "0e638817c484e5b50e6f087206d8031804a71c9b",
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_observed_at_utc": "2026-11-14T14:16:51.001596Z",
+    "native_provider_count": 857,
+    "native_last_version": "20261114161000",
+    "native_last_name": "original_daily_mira_email_heartbeat_handoff_v1",
+    "source_lock_before": 856,
+    "source_lock_candidate_after": 857,
+    "exact_sql_function_live": true,
+    "service_role_only": true,
+    "original_cron_140_active": true,
+    "manual_original_heartbeat_receiver_readback": {
+      "date": "2026-11-14",
+      "contract": "ORIGINAL_DAILY_MIRA_EMAIL_TO_HEARTBEAT_ACK_V1",
+      "instagram_source_state": "PLANNED",
+      "original_brain_exact_ack": true,
+      "source_lineage_rows": 0,
+      "media_jobs": 0,
+      "meta_delivery_proven": false,
+      "gmail_exact_no_source_consumer_acks": 1,
+      "provider_verified_sends_today": 0,
+      "next_original_research_due_utc": "2026-11-15T06:38:14.244Z",
+      "handoff_state": "OPEN_ORIGINAL_OWNERS_WAITING"
+    },
+    "openart_connected_account_credits_at_check": 0,
+    "real_provider_gmail_sends_today": 0,
+    "original_incidents": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232"
+    ]
+  },
+  "repair": "Append ONLY the exact already applied provider migration 857 version/name to original Git source lock with provider observed timestamp; historical native 857 test must be immutable N-index/prefix and current source-v-provider exact. No SQL replay, no cron, media generation, Gmail send, Meta publication, or claimed fake conversion.",
+  "prevention": [
+    "Do not treat SQL source in main as deployed until independently read from native provider; after real deploy append exact version/name with actual capture time.",
+    "Historical N tests assert source lock.applied[N-1] and length>=N; prohibit frozen last-row or exact length assertions that fail on valid N+1.",
+    "No early DONE on Heartbeat original combined receipt: Instagram source/ONE BRAIN transfer can be valid while Meta provider still missing, and Gmail NO_SOURCE ACK still not a provider send.",
+    "Source lock only after true provider registration and original function ACL; never second SQL deployment or bypass protected release.",
+    "Next natural original #140 run and exact daily provider/consumer ACK must independently match the stored receipt; preserve original owner/due."
+  ],
+  "owner": "ONE BRAIN canonical migration history owner + original #140 Heartbeat + #171 content + #116 Gmail",
+  "status": "PR_CANDIDATE_NATIVE_857_SOURCE_LOCK_ONLY",
+  "compiler": {
+    "failure_class": "PRODUCTION_PROVIDER_APPLIED_NATIVE_857_SOURCE_LOCK_NOT_YET_APPENDED",
+    "scope": "COMMERCIAL_CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-857-original-mira-email-heartbeat-lock-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-857-original-mira-email-heartbeat-lock-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-857-original-mira-email-heartbeat-lock-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-native-857-original-mira-email-heartbeat-lock-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migration-history.lock.json",
+    "tests/brain-native-857-original-mira-email-heartbeat-lock-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-mira-email-heartbeat-native857-history-v1.json",
+    "docs/changes/2026-11-14-original-mira-email-heartbeat-native857-history-v1.md",
+    "docs/development-ledger-events/2026-11-14-original-mira-email-heartbeat-native857-history-v1.md"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required/CodeQL/Supabase preview and merge.",
+    "Original source lock count 857 and independent native provider count 857, last exact version/name identical, unchanged first 856.",
+    "Next original natural #140 run after native 857 provider application retains actual original consumer source revisions and non-delivery labels."
+  ],
+  "no_duplicate_sends": true,
+  "no_false_green": true,
+  "no_unapproved_spend": true
+}
