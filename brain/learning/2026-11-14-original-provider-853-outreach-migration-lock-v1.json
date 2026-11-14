@@ -25,14 +25,18 @@
     "original_stage_readback": true,
     "anon_execute": false,
     "authenticated_execute": false,
-    "service_role_execute": true
+    "service_role_execute": true,
+    "native_version_80027_statement_md5": "7f3b733b4f450b931b416bcaf9eac773",
+    "original_protected_83500_source_bytes": 11353,
+    "native_80027_sql_byte_identical_to_83500": true
   },
-  "repair": "In a protected source-lock-only PR, append only the two independently confirmed native (version,name) pairs and exact native captured_at; do not run any migrations here or fabricate further applied states. Preserve first 851 unchanged. Keep unrelated source-only cooldown change in a separate protected PR.",
+  "repair": "In a protected source-lock-only PR, append only the two independently confirmed native (version,name) pairs and exact native captured_at; do not run any migrations here or fabricate further applied states. Preserve first 851 unchanged. Keep unrelated source-only cooldown change in a separate protected PR. To close the original exact executable-source gap, restore 20261114080027 under its original filename using byte-identical already-protected 83500 SQL and add only a pinned one-time CI reconciliation that requires the exact protected base, source and actual native version/name/digest. Keep all other migrations under the existing immutable admission gate.",
   "prevention": [
     "Wait for canonical postmerge provider migration readback before considering any direct apply; if provider version exists, do not apply it again.",
     "Source migration files and immutable applied-provider lock changes are distinct protected phases. Never mark unexecuted SQL in source lock.",
     "Any duplicate idempotent native provider migration recorded must be transparently retained; do not delete actual audit history.",
-    "Provider stage and Gmail send proof are separate; migration or cron success is not a send."
+    "Provider stage and Gmail send proof are separate; migration or cron success is not a send.",
+    "Never soften original migration-inventory parity globally. The 853 history recovery is a one-time exception limited to the exact original SHA, two provider versions and native statements MD5, with negative drift tests."
   ],
   "owner": "ONE BRAIN native migration-history recorder and protected GitHub/Supabase release; original commercial #116 unchanged",
   "status": "PENDING_PROTECTED_MERGE_PRODUCTION_SOURCE_READBACK",
@@ -62,7 +66,10 @@
     "brain/learning/2026-11-14-original-provider-853-outreach-migration-lock-v1.json",
     "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs",
     "docs/changes/2026-11-14-original-provider-853-outreach-lock.md",
-    "docs/development-ledger-events/2026-11-14-original-provider-853-outreach-lock.md"
+    "docs/development-ledger-events/2026-11-14-original-provider-853-outreach-lock.md",
+    "supabase/migrations/20261114080027_original_approved_connection_source_priming_v1.sql",
+    "tools/ci/protected-supabase-pr-migration-tests.mjs",
+    "tools/ci/verified-provider-853-original-outreach-source-mirror.mjs"
   ],
   "production_proof_to_complete": [
     "Protected Required/CodeQL pass, source lock PR merges; verify original provider still 853 before merge, source lock 853 exact.",
