@@ -57,3 +57,19 @@ test('original engineering + CRO roster, skill and natural workflow wired',()=>{
   assert.match(skill,/independent_consumer_readback/);
   assert.match(workflow,/tests\/brain-innovation-original-consumer-intake-20261114\.test\.mjs/);
 });
+
+test('zero source is never independently verified or silent-green in original runtime replay',()=>{
+  const followup=fs.readFileSync('supabase/migrations/20261114204500_innovation_zero_source_false_green_prevention_v1.sql','utf8');
+  for(const proof of [
+    /when v_intake_expected=0 then 'NO_SOURCE_CANDIDATES'/,
+    /when v_intake_expected=0 or v_unclaimed>0/,
+    /when v_intake_expected=0 then 'NO_SOURCE_CANDIDATES'[\s\S]*when v_unclaimed>0/,
+    /zero_sources_never_green',true/,
+    /data_quality=excluded.data_quality/,
+    /public.brain_create_operation\(/,
+    /v_intake_expected <> v_intake_proven/
+  ]) assert.match(followup,proof);
+  assert.doesNotMatch(followup,/cron\.schedule|create\s+table|create\s+trigger/i);
+  assert.match(followup,/revoke execute[\s\S]*from public, anon, authenticated/i);
+  assert.match(followup,/grant execute[\s\S]*to service_role/i);
+});
