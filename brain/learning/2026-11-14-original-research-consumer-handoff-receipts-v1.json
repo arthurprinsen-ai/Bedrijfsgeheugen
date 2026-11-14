@@ -1,0 +1,77 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|original-research-provider-consumer-handoff-unacknowledged|20261114-v1",
+  "failure_class": "COMMERCIAL_STAGE_SUCCESS_WITHOUT_CONSUMER_ACK",
+  "root_cause": "Original hourly stage #116 records actioned upon returning from a SQL stage, even when DataForSEO was only queued over pg_net or a research_enrichment produced source evidence with no exact original email consumer. Stages #2/#3 lack a per-action producer→provider→consumer ACK. Original dispatch also counts waiting research whose due_at is in the future, causing unnecessary async provider calls. These gaps can conceal silent unprocessed work and permit false-green operational reporting.",
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "observed_at_date": "2026-11-14",
+    "native_854_verified": true,
+    "primed_internal_source_actions": 5,
+    "research_actions_done": 1,
+    "provider_attempted_no_source_waiting": 4,
+    "source_candidate_verified_for_send": false,
+    "authorized_gmail_sends_proven_today": 0,
+    "original_cron_job": 116,
+    "status_gap": "commercial_stage_execution.state=actioned even with v_result.dispatched=false or without provider/consumer acknowledgment",
+    "other_production_boundary": "A google.com/goto DataForSEO SERP redirect and freshness_verified=false are not independently verified company source content or lawful recipient-send authority",
+    "first_hosted_preview_failure": {
+      "head": "e6592ac8712eed370f270ea9ceb1772ec09e776e",
+      "cause": "Native SQL parser expected a semicolon after pg_get_functiondef-produced $function$ terminators before next CREATE; preview SQLSTATE 42601",
+      "provider_sql_applied": false
+    }
+  },
+  "repair": "Use only existing commercial hourly stage #116 after stage2 and stage3. Persist idempotent action-keyed owner/handoff receipts in powerhouse_runtime_events including original research action ID, exact person/company, optional origin email action, real dataforseo attempt, current source candidate status and exact original composer receipt. Explicit error after 2h of due, unattempted research or missing original receiver ACK; stage uses only existing schema-permitted observed/error states (exact waiting reason in evidence) rather than actioned. Stage3 redispatch only for due_at<=now to preserve 24h no-source retry, report pg_net request ID as queue receipt not delivery. No new cron, queue, contact, send, or authority. Keep administrative ACK runtime event top-level person/company NULL to avoid score inflation, while retaining exact lineage keys in evidence.",
+  "prevention": [
+    "An HTTP enqueue ACK is not an external provider source result; a research DONE event is not a verified company's publication or an email sent.",
+    "Require original research action id, exact person/company and original recipient-action candidate readback before consumer ACK.",
+    "Reuse one original scheduler and same runtime event dedupe; classify no-source 24h research wait, terminal no resend and stale provider acceptance separately.",
+    "Raise `PROVIDER_RECEIPT_OVERDUE` and `ORIGINAL_CONSUMER_CANDIDATE_ACK_MISSING` rather than mark commercial stages successful.",
+    "Preserve recipient-specific authorization, legal opt-in, opt-out, suppression, 90-day fatigue, trusted current source, composer copy approval, provider ID and independent Gmail readback.",
+    "Persist owner, correlation ID, run_date, due_at and next action to ONE BRAIN and use unchanged Heartbeat/commercial reporting; do not claim actual portal consumer if no independent receipt.",
+    "Administrative ACK events must have NULL top-level person_key/company_key, with exact correlation identities only in their receipt evidence: the original relationship revenue scorer counts all person_key-bearing runtime events and must never treat an internal receipt as a new commercial buying signal.",
+    "Respect original runtime event check constraint state IN (observed, decided, actioned, closed, ignored, error); waiting is an evidence-level handoff condition, not a new database enum.",
+    "When composing multiple PostgreSQL pg_get_functiondef outputs into one migration, terminate each reconstructed CREATE OR REPLACE FUNCTION at `$function$;`, never just `$function$`; regression counts exact terminators and Supabase Preview must pass."
+  ],
+  "owner": "Original Powerhouse #116 stages 2/3, research provider and original commercial-mail composer; ONE BRAIN/Heartbeat",
+  "status": "PR_CANDIDATE_NO_PRODUCTION_ACK_YET",
+  "compiler": {
+    "failure_class": "COMMERCIAL_STAGE_SUCCESS_WITHOUT_CONSUMER_ACK",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-research-consumer-handoff-receipts-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-research-consumer-handoff-receipts-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-research-consumer-handoff-receipts-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-research-consumer-handoff-receipts-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migrations/20261114101000_original_research_consumer_handoff_receipts_v1.sql",
+    "tests/brain-original-research-consumer-handoff-receipts-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-research-consumer-handoff-receipts-v1.json",
+    "docs/changes/2026-11-14-original-research-consumer-handoff.md",
+    "docs/development-ledger-events/2026-11-14-original-research-consumer-handoff.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required + CodeQL + Supabase Hosted Preview all green; exact protected merge and canonical native migration applied, without a second application.",
+    "Read actual native SQL function definitions, roles and original active cron #116; compare one original source action with exact durable runtime-event consumer/provider receipts.",
+    "On next natural stage2/3, verify row-level research source/consumer states and no duplicate research provider call before due_at; no external email side effects.",
+    "Only a real original permitted Gmail message with provider ID, exact independent recipient/content readback and downstream outcome can close email delivery; 0 today is honest."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}
