@@ -60,6 +60,7 @@ export function powerhouseIntegrationMarkup(snapshot){
         ' · historisch writer+actie bevestigd '+knownNum(salesAudit.actionBackedSample)+
         ' · historisch niet ondersteund '+knownNum(salesAudit.unsupportedSample)+
         ' · actuele actiestatus niet done '+knownNum(salesAudit.currentActionNotDoneSample)+
+        ' · nieuwste uitvoering zonder onveranderlijk event '+knownNum(salesAudit.currentExecutionWithoutEventSample)+
         ' · dekking '+esc(salesAudit.scope||'ONBEKEND')+
         ' · externe provider-uitvoering niet bewezen':'Geen recente brongekoppelde uitvoeringscontrole'],
     ['Growth / Revenue',commercial?'BRON UITGELEZEN':'GEEN BRON',commercial?'Prospects '+knownNum(commercial.prospects)+' · acties '+knownNum(commercial.nextBestActions)+' · bron-omzet '+esc(knownMoney(commercial.realizedRevenueEur)):'Geen betrouwbaar omzetoverzicht'],
