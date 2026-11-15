@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|backfill-per-historic-identity-dispatch-amplification|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "BACKFILL_SOURCE_IDENTITY_FANOUT_UNBOUNDED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original completion-supervisor-backfill activeDispatches emitted one new event/lineage per historical source identity even when thousands belonged to only six registered original obligations. Every resume creates a distinct immutable AgentWork idempotency key while its original backfill remains running. This creates work ledger amplification without independent source-bound consumer completion evidence.",
+  "evidence": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "observed_utc": "2026-11-15T09:37:37Z",
+    "source_table": "public.brain_outcome_obligation_dispatch",
+    "source_agentwork_total": 4208,
+    "source_recoverywork_total": 1055,
+    "recent_interval_utc": "2026-11-15T09:10:00Z..2026-11-15T09:32:46Z",
+    "recent_distinct_original_obligations": 6,
+    "recent_new_agentwork_immutable_keys": 728,
+    "native_original_backfill_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43697572565",
+    "original_backfill_state": "IN_PROGRESS_NO_FINAL_ARTIFACT_AT_OBSERVATION",
+    "parent_source": "tools/outcome-obligation-completion-supervisor-backfill.mjs::activeDispatches",
+    "actual_provider_actions_or_terminal_execution_proven": false,
+    "regression": "tests/brain-completion-supervisor-backfill.test.mjs"
+  },
+  "prevention": {
+    "single_existing_workflow": true,
+    "no_new_scheduler": true,
+    "no_bulk_close": true,
+    "source_candidates_retained": true,
+    "grouping_key": "registered canonical obligationId",
+    "stable_resume_key": "completion-backfill|canonical-obligation|sha256(obligationId)",
+    "stable_trigger": "completion-backfill:canonical-obligation:sha256(obligationId)",
+    "full_provenance_in_original_report": true,
+    "source_manifest_digest_and_count": true,
+    "source_action_vocabulary_preserved": true,
+    "hard_boundaries_fail_closed": true,
+    "no_unverified_provider_send": true,
+    "no_shadow_executor": true
+  },
+  "semantic_learning": {
+    "failure": "SOURCE_HISTORY_MULTIPLIED_INTO_NEW_BACKFILL_TASKS",
+    "cause": "A separate source-specific lineage for every historical immutable work identity; no per-owner coalescing, long running original job and rising PENDING register",
+    "prevention_rule": "Reconcile all original source identities in report.candidates but dispatch a maximum of one deterministic source-bound wakeup per registered canonical obligation. Preserve action priorities, provenance counts and hashes; do not bypass WAIT_EXTERNAL.",
+    "regression_guard": "tests/brain-completion-supervisor-backfill.test.mjs",
+    "next_owner": "Original ONE BRAIN completion-supervisor Reliability + Data Quality",
+    "effect_proof": "EXACT_HEAD_PROTECTED_CI_AND_NEXT_NATURAL_BACKFILL_PRODUCTION_ARTIFACT_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-completion-supervisor-backfill.test.mjs",
+      "tests/brain-completion-supervisor-backfill-workflow.test.mjs",
+      "tests/brain-outcome-obligation-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}
