@@ -14,8 +14,13 @@ const formatValue = (v,unit) => unit==='EUR'
 
 function resultFor(action,outcomes){
  if(!clean(action?.id))return null;
+ const actionTenant=clean(action.tenant_id||action.tenantId);
+ const actionBaseline=clean(action.baseline_id||action.baseline_ref);
  for(const outcome of Array.isArray(outcomes)?outcomes:[]){
   if(clean(outcome?.action_id||outcome?.source_action_id)!==clean(action.id))continue;
+  // The authenticated tenant projection is authoritative; reject any explicit cross-tenant evidence.
+  const outcomeTenant=clean(outcome?.tenant_id||outcome?.tenantId);
+  if(actionTenant&&outcomeTenant&&actionTenant!==outcomeTenant)continue;
   if(!terminal.has(clean(outcome?.verification_status||outcome?.status).toUpperCase()) || !verifiedEvidence(outcome))continue;
   const result=outcome.realized||{};
   const amount=number(result.amount??outcome.realized_amount);
@@ -25,6 +30,8 @@ function resultFor(action,outcomes){
   const period=clean(result.period_id||outcome.realized_period_id||outcome.measurement_period);
   // A provider ACK, untyped euro amount or missing baseline is NOT customer value.
   if(amount===null||!units.has(unit)||!metric||!baseline||!period)continue;
+  // Do not display a measured result against the wrong original baseline.
+  if(actionBaseline&&baseline!==actionBaseline)continue;
   return Object.freeze({amount,unit,metric,baseline,period,sourceRefs:Object.freeze(refs(outcome)),
    learningProven:outcome.learning_verified===true&&Array.isArray(outcome.learning_evidence_refs)&&outcome.learning_evidence_refs.some(v=>clean(v))&&Boolean(clean(outcome.next_decision_id||outcome.next_decision))});
  }

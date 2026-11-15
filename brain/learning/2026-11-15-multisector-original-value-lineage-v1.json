@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|customer-value|cross-sector-baseline-and-tenant-proof-mismatch|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "CUSTOMER_VALUE_BASELINE_OR_TENANT_MISMATCH",
+    "scope": "PORTAL_VALUE_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Code inspection: the original customer value briefing accepted any verified outcome with matching action-id even if the outcome baseline differed from the action's known baseline; explicit tenant mismatch was not rejected. This is a potential inaccurate display, not observed data leakage or measured customer loss.",
+  "change": {
+    "authority": "original authenticated Portal V2 projection and Company Intelligence OS",
+    "source": "portal-v2/operating-system/customer-value-briefing.js",
+    "existing_skill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+    "new_scheduler": false,
+    "new_store": false,
+    "new_sender": false,
+    "new_database_migration": false
+  },
+  "prevention": {
+    "action_and_realized_baseline_must_match_when_action_baseline_provided": true,
+    "explicit_tenant_mismatch_rejected": true,
+    "authenticated_server_tenant_scope_still_required": true,
+    "provider_proof_before_outcome_claim": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-customer-value-briefing-20261101.test.mjs",
+      "tests/brain-multisector-original-value-lineage-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-multisector-original-value-lineage-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-multisector-original-value-lineage-20261115.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "cause": "Action-ID alone is not sufficient to associate measured customer improvement across differing baselines or tenants.",
+    "prevention_rule": "For original portal customer-value projection, reject outcomes referencing a baseline different from the originating action, or an explicitly different tenant; preserve independent source/readback and verified learning lineage.",
+    "regression_guard": "tests/brain-multisector-original-value-lineage-20261115.test.mjs",
+    "next_owner": "Original Company Intelligence OS / Portal V2 + independent Data Quality",
+    "effect_proof": "PROTECTED_CI_AND_PRODUCTION_READBACK_DUE"
+  },
+  "evidence": {
+    "observed_at": "2026-11-15",
+    "observed_kind": "SOURCE_CODE_INSPECTION",
+    "confirmed_customer_misreporting": false,
+    "production_customer_uplift_proven": false,
+    "live_state": "CANDIDATE_NOT_LIVE"
+  }
+}
