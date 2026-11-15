@@ -1,0 +1,46 @@
+{
+  "fingerprint": "supabase|migration|provider-applied-20261115162500-missing-source-lock|20261115-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+  "observed_at_utc": "2026-11-15T16:03:11Z",
+  "failure_class": "PRODUCTION_PROVIDER_MIGRATION_LOCK_DRIFT",
+  "scope": "SUPABASE_MIGRATION_SOURCE_PARITY",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "A new executable original personal-source supplier migration 20261115162500 was present in protected Git source and already applied in native Supabase, but the canonical migration-history.lock.json remained at 869/870 versions; protected preflight rightly rejected PR #5884 even though it did not touch migrations.",
+  "evidence": {
+    "native_supabase_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_migrations": 870,
+    "original_lock": 869,
+    "source_unrecorded_migration": {
+      "version": "20261115162500",
+      "name": "original_personal_source_supplier_completeness_v4"
+    },
+    "native_verified_at_utc": "2026-11-15T16:04:24.453883Z",
+    "existing_provider_version_name_conflicts": 0,
+    "existing_lock_versions_missing_in_provider": 0,
+    "affected_required_run": 43733201478,
+    "proof": "provider native list_migrations 870 and exact original Git SQL; no DB migration DDL run again",
+    "new_provider_migration_created": false
+  },
+  "owner": "original Supabase migration history/agent-integration-engineer and agent-reliability; original commercial P0 #4198 remains separate",
+  "corrective_action": "Append exactly the one already-applied original 20261115162500 migration/version-name to protected existing lock; update its verified capture time and preserve all 869 exact prior provider identities. Do NOT apply DDL, delete migration SQL, hide test, or relax migration checks.",
+  "prevention_rule": "Every original protected migration must update provider history, executable source, and captured original provider lock consistently; CI refuses new merge until all three match; when drift occurs, reconcile native provider exact version/name with a lock-only protected PR.",
+  "regression": "tests/supabase-migration-history-integrity.test.mjs",
+  "human_ledger": "docs/development-ledger-events/2026-11-15-provider-870-source-lock-parity.md",
+  "human_documentation": "docs/changes/2026-11-15-provider-870-source-lock-parity.md",
+  "release_status": "CANDIDATE_PENDING_REQUIRED_CODEQL_PROVIDER_READBACK",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_PROVIDER_MIGRATION_LOCK_DRIFT",
+    "scope": "SUPABASE_MIGRATION_SOURCE_PARITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
