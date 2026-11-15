@@ -44,10 +44,15 @@ export function deriveSourceBoundFinancialForecast(action={}){
  const d=f.drivers||{};
  const names=['cases_per_month','baseline_minutes_per_case','hourly_loaded_cost_eur',
   'rework_cases_per_month','rework_cost_eur_per_case','unit_contribution_margin_eur',
-  'one_time_implementation_cost_eur','monthly_operating_cost_eur','cash_capture_fraction'];
+  'one_time_implementation_cost_eur','monthly_operating_cost_eur','cash_capture_fraction',
+  'rework_cash_capture_fraction'];
  const values=Object.fromEntries(names.map(name=>[name,numeric(d[name],{max:1e8})]));
  if(names.some(name=>values[name]===null))return missing('DRIVER_SOURCE_OR_COST_EVIDENCE_DUE');
- if(values.cash_capture_fraction>1)return missing('CASH_CAPTURE_SHARE_INVALID');
+ if(values.cash_capture_fraction>1||values.rework_cash_capture_fraction>1)
+  return missing('CASH_CAPTURE_SHARE_INVALID');
+ const accounting=f.accounting_policy||{};
+ if(accounting.rework_disjoint_from_process_labor!==true||!refs(accounting).length)
+  return missing('REWORK_DOUBLE_COUNT_CONTROL_DUE');
  const modelCatalog=Array.isArray(f.models)?f.models:[];
  const models=modelCatalog.filter(m=>clean(m?.name)&&clean(m?.version)&&refs(m).length)
   .slice(0,8).map(m=>Object.freeze({name:clean(m.name),version:clean(m.version),source_refs:refs(m)}));
@@ -70,7 +75,12 @@ export function deriveSourceBoundFinancialForecast(action={}){
     return missing('NO_ACTION_COUNTERFACTUAL_INVALID');
   const capacityHours=values.cases_per_month*saved/60*months*adoption;
   const capturedLabour=capacityHours*values.hourly_loaded_cost_eur*values.cash_capture_fraction;
-  const avoidedRework=avoid*values.rework_cost_eur_per_case*months*adoption;
+  if(units>0&&(!Array.isArray(f.throughput_proof?.demand_source_refs)
+    ||!f.throughput_proof.demand_source_refs.some(clean)
+    ||!Array.isArray(f.throughput_proof?.constraint_source_refs)
+    ||!f.throughput_proof.constraint_source_refs.some(clean)))
+    return missing('CONSTRAINT_AND_DEMAND_PROOF_DUE');
+  const avoidedRework=avoid*values.rework_cost_eur_per_case*months*adoption*values.rework_cash_capture_fraction;
   const incrementalContribution=units*values.unit_contribution_margin_eur*months*adoption;
   const gross=capturedLabour+avoidedRework+incrementalContribution;
   const cost=id==='no_action'?0:values.one_time_implementation_cost_eur+values.monthly_operating_cost_eur*months;
@@ -97,7 +107,11 @@ export function deriveSourceBoundFinancialForecast(action={}){
   {name:'Niet cashbaar inzetbare tijd',cost_eur:null,
    source_refs:refs(d.cash_capture_fraction)}
  ];
- const sourceRefs=unique([f,...names.map(n=>d[n]),...modelCatalog,...usedCaseRefs]);
+ const sourceRefs=unique([f,...names.map(n=>d[n]),accounting,...modelCatalog,...usedCaseRefs]);
+ if(Array.isArray(f.throughput_proof?.demand_source_refs))
+  sourceRefs.push(...f.throughput_proof.demand_source_refs.map(clean).filter(Boolean));
+ if(Array.isArray(f.throughput_proof?.constraint_source_refs))
+  sourceRefs.push(...f.throughput_proof.constraint_source_refs.map(clean).filter(Boolean));
  return Object.freeze({
   status:'MODELLED_NOT_REALIZED',evidence_health:Object.freeze({status:'healthy'}),
   source_refs:Object.freeze(sourceRefs),model_version:clean(f.model_version),
