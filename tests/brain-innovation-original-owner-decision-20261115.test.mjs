@@ -172,7 +172,14 @@ test('existing daily workflow calls owner decision in the same main and bounded 
   assert.match(workflow,/innovation-original-agent-pre-review\.mjs --writeback[\s\S]*innovation-original-owner-decision\.mjs --writeback/);
   assert.match(workflow,/schedule:[\s\S]*cron: '47 4 \* \* \*'/);
   assert.equal((workflow.match(/cron: '47 4 \* \* \*'/g)||[]).length,1);
-  assert.doesNotMatch(workflow,/issues: write|pull-requests: write/);
+  // Original source/owner decisions remain read-only; the single bounded
+  // protected-PR job is the only workflow location with write permission.
+  const [ownerDecisionJobs,originalCodeJob]=workflow.split('\n  original-innovation-code-candidate:\n');
+  assert.ok(originalCodeJob);
+  assert.doesNotMatch(ownerDecisionJobs,/^\s*(?:contents|issues|pull-requests): write\s*$/m);
+  assert.match(originalCodeJob,/^    permissions:\n      contents: write\n      pull-requests: write\n      actions: read/m);
+  assert.equal((workflow.match(/^\s*pull-requests: write\s*$/gm)||[]).length,1);
+  assert.doesNotMatch(workflow,/^\s*issues: write\s*$/m);
 });
 
 function obligationHandoffFixture(){
