@@ -2,7 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
 import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
 import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
-import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource } from '../_shared/personal-observational-source-routing.mjs';
+import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource, isPersonalEditorialSourceSafe, canonicalPersonalSourceUrl, reconcileDatedPersonalSourceContext } from '../_shared/personal-observational-source-routing.mjs';
 import { rotateDistinctMiraQueries } from './distinct-source-queries.mjs';
 import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-result.mjs';
@@ -63,15 +63,27 @@ Deno.serve(async(req:Request)=>{
  const dfsUser=String(dfsLogin.data||'').trim(), dfsPass=String(dfsPassword.data||'').trim();
  if(!tavily&&!dfsUser) return json({error:'SEARCH_PROVIDER_UNAVAILABLE'},503);
  const providers:Record<string,number>={};
+ const advancedPersonalContextByUrl=new Map<string,string>();
  // SAME eight source searches: existing 2 personal slots can return 3 contextual chunks.
  const search=async(q:string,channel:string)=>{
    const personalDepth=channel==='linkedin_personal';
    if(tavily){
-     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'news',days:MAX_AGE_DAYS,search_depth:personalDepth?'advanced':'basic',...(personalDepth?{chunks_per_source:3}:{}),max_results:8,include_answer:false})});
+     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'news',days:MAX_AGE_DAYS,search_depth:personalDepth?'advanced':'basic',...(personalDepth?{chunks_per_source:3}:{}),max_results:8,include_answer:false,...(personalDepth?{include_raw_content:true}:{})})});
      const b:any=await r.json().catch(()=>({}));
      if(r.ok){
        providers.tavily_raw=(providers.tavily_raw||0)+(b.results||[]).length;
-       const rows=(b.results||[]).map((x:any)=>({url:x.url,title:x.title,content:x.content,score:x.score,publishedAt:isoFromProvider(x.published_date||x.published_at)})).filter((x:any)=>withinWindow(x.publishedAt));
+       const rows=(b.results||[]).map((x:any)=>{
+        const sourceUrl=String(x.url||'');
+        const searchContent=String(x.content||'');
+        const rawContent=personalDepth?String(x.raw_content||'').slice(0,4000):'';
+        const contextualContent=rawContent.length>searchContent.length?rawContent:searchContent;
+        const publishedAt=isoFromProvider(x.published_date||x.published_at);
+        const sourceKey=canonicalPersonalSourceUrl(sourceUrl);
+        if(personalDepth&&!publishedAt&&sourceKey&&contextualContent.trim().length>=240){
+          advancedPersonalContextByUrl.set(sourceKey,contextualContent);
+        }
+        return {url:sourceUrl,title:x.title,content:contextualContent,score:x.score,publishedAt};
+       }).filter((x:any)=>withinWindow(x.publishedAt));
        if(rows.length) return {provider:'tavily_news',results:rows};
      } else if(r.status!==432 && r.status!==429) throw new Error('TAVILY_'+r.status);
    }
@@ -95,7 +107,7 @@ Deno.serve(async(req:Request)=>{
      const rows:any[]=[];
      for(const x of items){
        const flat=x.type==='news_search'?[x]:Array.isArray(x.items)?x.items:[x];
-       for(const y of flat){ if(y?.url) rows.push({url:y.url,title:y.title,content:y.snippet||y.description||'',score:1/Math.max(1,Number(y.rank_absolute||10)),publishedAt:isoFromProvider(y.timestamp||y.date)}); }
+       for(const y of flat){ if(y?.url) rows.push({url:y.url,title:y.title,content:personalDepth?reconcileDatedPersonalSourceContext({url:y.url,snippet:y.snippet||y.description||'',advancedByUrl:advancedPersonalContextByUrl}):(y.snippet||y.description||''),score:1/Math.max(1,Number(y.rank_absolute||10)),publishedAt:isoFromProvider(y.timestamp||y.date)}); }
      }
      return {provider:'dataforseo_news',results:rows.filter(x=>withinWindow(x.publishedAt)).slice(0,8)};
    }
@@ -139,6 +151,10 @@ Deno.serve(async(req:Request)=>{
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
    if(!d||title.length<12){reject('INVALID_DOMAIN_OR_SHORT_TITLE',q,sourceUrl,title);continue}
    if(!classifyMiraSourceUrl(sourceUrl).ok){reject('REJECTED_SOURCE_URL_QUALITY',q,sourceUrl,title);continue}
+   if(channel==='linkedin_personal'&&!isPersonalEditorialSourceSafe({title,excerpt})){
+     reject('PERSONAL_EDITORIAL_SAFETY_REJECTED',q,sourceUrl,title);
+     continue;
+   }
    const personalTopic=channel==='linkedin_personal'?classifyObservationalPersonalSource({topic:personalQueryTopic,title,excerpt}):null;
    // Original provider text must support the final 150-word factual narrative.
    const personalSourceTextComplete=!personalTopic || (
