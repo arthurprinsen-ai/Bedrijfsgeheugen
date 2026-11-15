@@ -63,9 +63,11 @@ Deno.serve(async(req:Request)=>{
  const dfsUser=String(dfsLogin.data||'').trim(), dfsPass=String(dfsPassword.data||'').trim();
  if(!tavily&&!dfsUser) return json({error:'SEARCH_PROVIDER_UNAVAILABLE'},503);
  const providers:Record<string,number>={};
- const search=async(q:string)=>{
+ // SAME eight source searches: existing 2 personal slots can return 3 contextual chunks.
+ const search=async(q:string,channel:string)=>{
+   const personalDepth=channel==='linkedin_personal';
    if(tavily){
-     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'news',days:MAX_AGE_DAYS,search_depth:'basic',max_results:8,include_answer:false})});
+     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'news',days:MAX_AGE_DAYS,search_depth:personalDepth?'advanced':'basic',...(personalDepth?{chunks_per_source:3}:{}),max_results:8,include_answer:false})});
      const b:any=await r.json().catch(()=>({}));
      if(r.ok){
        providers.tavily_raw=(providers.tavily_raw||0)+(b.results||[]).length;
@@ -118,8 +120,8 @@ Deno.serve(async(req:Request)=>{
  // SAME original eight queries concurrently (never a ninth call) to keep the
  // existing 120s scheduler HTTP budget, then consume them deterministically in
  // the original 6-business/2-personal order to preserve winner/source gates.
- const sourceResponses=await Promise.all(queries.map(async ({query:q})=>{
-   try{return {result:await search(q),error:null};}
+ const sourceResponses=await Promise.all(queries.map(async ({query:q,channel})=>{
+   try{return {result:await search(q,channel),error:null};}
    catch(e:any){return {result:null,error:String(e?.message||e)};}
  }));
  let sourceResponseIndex=0;
@@ -138,6 +140,13 @@ Deno.serve(async(req:Request)=>{
    if(!d||title.length<12){reject('INVALID_DOMAIN_OR_SHORT_TITLE',q,sourceUrl,title);continue}
    if(!classifyMiraSourceUrl(sourceUrl).ok){reject('REJECTED_SOURCE_URL_QUALITY',q,sourceUrl,title);continue}
    const personalTopic=channel==='linkedin_personal'?classifyObservationalPersonalSource({topic:personalQueryTopic,title,excerpt}):null;
+   // Original provider text must support the final 150-word factual narrative.
+   const personalSourceTextComplete=!personalTopic || (
+     excerpt.trim().length>=240
+     && !/(?:\.{3}|…)\s*$/u.test(excerpt)
+     && /^https:\/\//i.test(sourceUrl)
+     && !/^https:\/\/google\.com\/goto(?:[/?#]|$)/i.test(sourceUrl)
+   );
    const problemTopic=personalTopic||topic(title+' '+excerpt); const portalProblemId=portalIds[problemTopic]||'';
    // Do not leak unsupported public signals to the Instagram winner or personal publisher.
    if(!problemTopic||(!personalTopic&&!portalProblemId)){reject('NO_CANONICAL_TOPIC_MATCH',q,sourceUrl,title);continue}
@@ -154,7 +163,7 @@ Deno.serve(async(req:Request)=>{
    const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&(Boolean(portalProblemId)||Boolean(personalTopic)),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&personalSourceTextComplete&&(Boolean(portalProblemId)||Boolean(personalTopic)),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),source_text_complete_verified:personalTopic?personalSourceTextComplete:null,first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
    // Existing source_url is globally unique, but personal and Mira contracts MUST
    // never overwrite each other's previously collected evidence or frozen lineage.
    const prior=await db.from('powerhouse_mira_problem_signals_v1').select('metadata').eq('source_url',sourceUrl).maybeSingle();
@@ -166,7 +175,7 @@ Deno.serve(async(req:Request)=>{
      continue;
    }
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
-   stored++; if(row.eligible) eligible++; else reject('FAILED_SCORE_OR_VERIFIED_DATE_GATE',q,sourceUrl,title);
+   stored++; if(row.eligible) eligible++; else reject(!personalSourceTextComplete?'PERSONAL_OBSERVATIONAL_SOURCE_TEXT_INCOMPLETE':'FAILED_SCORE_OR_VERIFIED_DATE_GATE',q,sourceUrl,title);
    if(personalTopic){personalStored++;if(row.eligible)personalEligible++;}
   }
  }
@@ -202,9 +211,33 @@ Deno.serve(async(req:Request)=>{
  // This is source->recommendation only: no post dispatch or uniqueness bypass.
  const personalRotation=await db.rpc('powerhouse_ensure_personal_source_rotation_v2',{p_date:runDate});
  if(personalRotation.error)errors.push('personal_source_rotation:'+personalRotation.error.message);
+ const personalSourceReady=!personalRotation.error && personalRotation.data?.ok===true;
+ // Preserve the same original ONE BRAIN and exactly one idempotent daily owner.
+ if(!personalRotation.error&&!personalSourceReady){
+   const occurrenceId='personal-radar:source-supply:'+runDate+':complete-source-not-ready';
+   const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(occurrenceId));
+   const payloadSha=[...new Uint8Array(digest)].map(v=>v.toString(16).padStart(2,'0')).join('');
+   const observed=await db.rpc('brain_observe_failure',{
+     p_occurrence_id:occurrenceId,
+     p_fingerprint:'powerhouse|linkedin|original-personal-source-incomplete|'+runDate.replaceAll('-','')+'-v1',
+     p_payload_sha256:payloadSha,
+     p_evidence:{
+       run_date:runDate,canonical_owner:'powerhouse-mira-problem-radar-v1 / powerhouse_ensure_personal_source_rotation_v2',
+       problem:'NO_COMPLETE_VERIFIED_PERSONAL_OBSERVATION_SOURCE',
+       original_rotation:personalRotation.data||null,
+       corrective_action:'Existing radar must supply unused complete >=240-char nontruncated dated HTTPS source or leave original personal obligation OPEN.',
+       personal_source_ready:false,provider_post_proven:false,no_second_scheduler:true,
+       source_intake_audit:{provider_candidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples}
+     }
+   });
+   if(observed.error)errors.push('personal_source_supply_brain_receipt_failed');
+ }
+ const allSourceReady=supply.ok&&personalSourceReady;
  return json({
-   ok:errors.length===0&&supply.ok,
-   state:supply.ok?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   ok:errors.length===0&&allSourceReady,
+   state:allSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   personalSourceState:personalSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   personalSourceRecovery:personalSourceReady?null:{owner:'powerhouse-mira-problem-radar-v1 / powerhouse_ensure_personal_source_rotation_v2',reason:personalRotation.data?.reason||'ORIGINAL_PERSONAL_SOURCE_UNVERIFIED',sendsAuthorized:false},
    sourceRecovery:supply.ok?null:{
      contract:supply.contract,status:'RECOVERY_DUE',
      reason:supply.reason,code:supply.code,
@@ -214,5 +247,5 @@ Deno.serve(async(req:Request)=>{
    runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
    sourceIntake:{providerCandidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples},
    materialized:mat.data,personalSourceRotation:personalRotation.data||null,errors
- }, classifyMiraRadarHttpStatus({sourceReady:supply.ok,errors}));
+ }, classifyMiraRadarHttpStatus({sourceReady:allSourceReady,errors}));
 });
