@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|innovation|last-100-execution-audit-cannot-prove-full-week|20261115-v2",
+  "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+  "original_owner": "agent:agent-integration-engineer",
+  "original_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Existing protected innovation readback joins the first 100 original sales_action/execution events to action records but a 7-day source count of 164 makes its sample incomplete. A sample can never verify the whole week.",
+  "prevention_rule": "Use original PostgREST exact count and unique event UUID over stable ordered 100-row pages with a fixed 7d-to-observation window; require all pages and full action-id joins before claiming FULL_LAST_7D. Fail closed beyond 500 events or on count/page/identity drift. Never claim provider delivery or paid impact from internal done/executed_at alone.",
+  "evidence": {
+    "historical_original_production_count": "2026-11-15 independent canonical SQL returned 164 execution events in previous 7 days, all 164 matched a done action with executed_at; not a post-release readback.",
+    "previous_live_behavior": "Original code sampled latest 100 only; scope LATEST_100_ONLY when totalEvents7d>100.",
+    "test_evidence": "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+    "release_evidence": "PENDING_PROTECTED_REQUIRED_CODEQL_MERGE_AND_PRODUCTION_SHA_READBACK",
+    "original_consumer_ack": "NOT_PROVEN",
+    "impact_measurement": "NOT_PROVEN",
+    "safety_gate": "Internal counts only, no action mutation, no PII or external provider claim"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+    ]
+  },
+  "change_scope": [
+    "platform/portal/powerhouse-existing-integration-read-model.mjs",
+    "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+    "brain/learning/2026-11-15-original-execution-week-census-v1.json",
+    "docs/changes/2026-11-15-original-execution-week-census.md",
+    "docs/development-ledger-events/2026-11-15-original-execution-week-census.md"
+  ],
+  "implementation_state": "PROTECTED_CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "audit_read_only": true,
+  "no_parallel_executor": true,
+  "no_new_scheduler": true,
+  "original_14_tasks_remain_open": true,
+  "rollback": "Protected revert via existing main/Netlify release; never alter historical source rows"
+}
