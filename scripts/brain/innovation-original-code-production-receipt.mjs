@@ -8,6 +8,7 @@ import {isExactOriginalInnovationImplementationPr} from './innovation-original-c
 const CONTRACT='ORIGINAL_INNOVATION_CODE_RELEASE_INDEPENDENT_READBACK_V1';
 const REPO='arthurprinsen-ai/Bedrijfsgeheugen';
 const SHA=/^[a-f0-9]{40}$/i;
+const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const need=(ok,code)=>{if(!ok)throw new Error('ORIGINAL_INNOVATION_RELEASE_'+code);};
 const positiveText=v=>typeof v==='string'&&v.trim().length>0;
 const mergedSha=pr=>pr?.mergeCommit?.oid;
@@ -25,7 +26,7 @@ export function verifyOriginalInnovationRelease({
     'EXECUTION_IDENTITY_REQUIRED');
   need(candidate?.candidate_id===receipt?.candidate_id&&
     candidate.owner_agent==='engineering'&&candidate.status==='candidate'&&
-    operation.id===String(operation?.id)&&
+    UUID.test(operation?.id)&&
     operation.operation_type==='INNOVATION_INTAKE'&&
     operation.status==='PLANNED'&&!operation.remote_ref&&
     operation.capability_id===owner&&
