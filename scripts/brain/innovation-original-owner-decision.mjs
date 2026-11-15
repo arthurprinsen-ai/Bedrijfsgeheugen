@@ -246,6 +246,213 @@ export async function persistOriginalOwnerDecisions({plan,config,fetchImpl=globa
   }
   return Object.freeze(result);
 }
+
+// Original ONE BRAIN obligation is the receiver of the decision; a decision
+// is NOT a provider-verified implementation or the original agent's final ACK.
+export const OBLIGATION_HANDOFF_CONTRACT='ORIGINAL_INNOVATION_OWNER_DECISION_TO_ONE_BRAIN_OBLIGATION_V1';
+const ALLOWED_DECISIONS=new Set([
+  'BASELINE_AND_EVALUATION_DESIGN_REQUIRED',
+  'CONCRETE_PROTECTED_CHANGE_PROPOSAL_DUE',
+  'CRO_MEASUREMENT_AND_HOLDOUT_DESIGN_REQUIRED',
+  'INSUFFICIENT_ACTIONABLE_SOURCE_EVIDENCE'
+]);
+
+export function planOriginalDecisionObligationHandoffs({snapshot,report,observedAt=new Date().toISOString()}={}){
+  assert(report?.contract==='ORIGINAL_INNOVATION_AGENT_OWNER_READBACK_V1'
+    &&Number.isFinite(Date.parse(observedAt)),'INVALID_OBLIGATION_SOURCE_REPORT');
+  const candidates=snapshot?.candidates,obligations=snapshot?.obligations,intakes=snapshot?.intakes;
+  assert([candidates,obligations,intakes].every(Array.is)
+    &&report.counts?.candidates===candidates.length
+    &&report.counts?.obligations===obligations.length
+    &&report.counts?.intakes===intakes.length,'OBLIGATION_SOURCE_COUNT_DRIFT');
+  const byOb=new Map(obligations.map(o=>[String(o.business_entity),o]));
+  const byOp=new Map(intakes.map(o=>[String(o.correlation_id),o]));
+  assert(byOb.size===obligations.length&&byOp.size===intakes.length,'OBLIGATION_SOURCE_DUPLICATE');
+  const work=[],held=[];
+  for(const task of report.tasks){
+    const ob=byOb.get(task.candidate_id);
+    const op=byOp.get('innovation-delivery:'+task.candidate_id);
+    assert(ob&&op,'ORIGINAL_OBLIGATION_OR_OPERATION_MISSING');
+    if(task.consumer_ack_verified){
+      held.push({reason:'ORIGINAL_CONSUMER_ACK_ALREADY_PROVEN'});
+      continue;
+    }
+    const decision=op.evidence?.original_owner_decision;
+    const review=op.evidence?.original_agent_pre_review;
+    if(!decision){
+      held.push({reason:'SOURCE_BOUND_ORIGINAL_DECISION_NOT_YET_RECORDED'});
+      continue;
+    }
+    assert(op.status==='PLANNED'&&!text(op.remote_ref)
+      &&ob.state==='OPEN'
+      &&ob.owner==='original-agent:'+(task.original_owner==='agent:agent-growth-market'?'cro':'engineering')
+      &&op.capability_id===task.original_owner
+      &&op.id===task.original_operation_id
+      &&op.payload_sha256===ob.payload_sha256
+      &&op.change_id===ob.change_id
+      &&decision.source_sha256===ob.payload_sha256
+      &&decision.original_owner===task.original_owner
+      &&decision.source_revision===ob.evidence?.source_revision
+      &&decision.source_revision===task.source_revision
+      &&decision.source_pre_review_fingerprint===review?.fingerprint
+      &&decision.original_operation_id===op.id
+      &&decision.original_correlation_id===op.correlation_id
+      &&decision.original_idempotency_key===op.idempotency_key
+      &&decision.contract===CONTRACT
+      &&ALLOWED_DECISIONS.has(decision.decision)
+      &&text(decision.fingerprint).length===64
+      &&decision.consumer_ack_verified===false
+      &&decision.production_mutation_authorized===false
+      &&decision.external_side_effect===false
+      &&decision.terminal_success===false,'OBLIGATION_DECISION_SOURCE_OWNER_OR_POLICY_DRIFT');
+    const receipt=Object.freeze({
+      contract:OBLIGATION_HANDOFF_CONTRACT,
+      original_operation_id:op.id,
+      original_owner:task.original_owner,
+      original_decision_fingerprint:decision.fingerprint,
+      original_pre_review_fingerprint:review.fingerprint,
+      source_revision:task.source_revision,
+      source_sha256:ob.payload_sha256,
+      original_correlation_id:op.correlation_id,
+      original_idempotency_key:op.idempotency_key,
+      original_change_id:ob.change_id,
+      decision:decision.decision,
+      next_action:decision.next_action,
+      handoff_state:'ORIGINAL_OWNER_DECISION_READBACK__PROTECTED_IMPLEMENTATION_DUE',
+      independently_read_original_decision:true,
+      original_operation_still_planned:true,
+      original_obligation_still_open:true,
+      protected_implementation_verified:false,
+      independent_provider_effect_verified:false,
+      consumer_ack_verified:false,
+      external_side_effect:false,
+      financial_benefit_claimed:false,
+      terminal_success:false,
+      observed_at:observedAt
+    });
+    const previous=ob.evidence?.original_owner_decision_handoff;
+    if(previous){
+      assert(previous.contract===OBLIGATION_HANDOFF_CONTRACT
+        &&previous.original_decision_fingerprint===decision.fingerprint
+        &&previous.original_operation_id===op.id
+        &&previous.original_owner===task.original_owner
+        &&previous.source_revision===task.source_revision
+        &&previous.source_sha256===ob.payload_sha256
+        &&previous.consumer_ack_verified===false
+        &&previous.terminal_success===false,'OBLIGATION_PREVIOUS_HANDOFF_CONFLICT');
+      held.push({reason:'IDENTICAL_ORIGINAL_OBLIGATION_RECEIPT_ALREADY_PERSISTED'});
+      continue;
+    }
+    work.push(Object.freeze({
+      business_entity:task.candidate_id,source_sha256:ob.payload_sha256,
+      source_revision:task.source_revision,change_id:ob.change_id,
+      original_owner:ob.owner,original_capability_id:task.original_owner,
+      original_operation_id:op.id,receipt
+    }));
+  }
+  assert(work.length+held.length===report.tasks.length,'OBLIGATION_HANDOFF_SOURCE_DROPPED');
+  return Object.freeze({contract:OBLIGATION_HANDOFF_CONTRACT,work:Object.freeze(work.slice(0,MAX_WORK)),
+    held:Object.freeze(held),candidate_count:report.tasks.length,
+    deferred_by_budget:Math.max(0,work.length-MAX_WORK),
+    external_dispatch:false,new_scheduler:false,new_queue:false,
+    no_original_agent_ack_claimed:true});
+}
+
+async function readExactOriginalObligation({config,fetchImpl,businessEntity}){
+  const params=new URLSearchParams({
+    business_entity:'eq.'+businessEntity,
+    obligation_type:'eq.INNOVATION_DELIVERY',
+    capability_id:'eq.powerhouse-self-improvement-layer-v1',
+    select:'id,version,obligation_type,capability_id,business_entity,change_id,owner,state,payload_sha256,evidence'
+  });
+  const response=await fetchImpl(config.origin+'/rest/v1/brain_obligations?'+params,{
+    method:'GET',
+    headers:{apikey:config.key,Authorization:'Bearer '+config.key,Accept:'application/json'}
+  });
+  assert(response?.ok,'OBLIGATION_READBACK_HTTP_ERROR');
+  let data;try{data=await response.json();}catch{assert(false,'OBLIGATION_READBACK_INVALID_JSON');}
+  assert(Array.isArray(data)&&data.length===1,'OBLIGATION_READBACK_CARDINALITY');
+  return data[0];
+}
+function matchesOriginalObligation(row,item){
+  return row?.obligation_type==='INNOVATION_DELIVERY'
+    &&row?.capability_id==='powerhouse-self-improvement-layer-v1'
+    &&row?.business_entity===item.business_entity
+    &&row?.change_id===item.change_id
+    &&row?.owner===item.original_owner
+    &&row?.state==='OPEN'
+    &&row?.payload_sha256===item.source_sha256
+    &&row?.evidence?.source_revision===item.source_revision;
+}
+function exactDecisionReceipt(row,item){
+  const receipt=row?.evidence?.original_owner_decision_handoff;
+  return matchesOriginalObligation(row,item)
+    &&receipt?.contract===OBLIGATION_HANDOFF_CONTRACT
+    &&receipt?.original_operation_id===item.original_operation_id
+    &&receipt?.original_owner===item.original_capability_id
+    &&receipt?.original_decision_fingerprint===item.receipt.original_decision_fingerprint
+    &&receipt?.source_revision===item.source_revision
+    &&receipt?.source_sha256===item.source_sha256
+    &&receipt?.consumer_ack_verified===false
+    &&receipt?.protected_implementation_verified===false
+    &&receipt?.external_side_effect===false
+    &&receipt?.terminal_success===false;
+}
+
+export async function persistOriginalDecisionObligationHandoffs({plan,config,fetchImpl=globalThis.fetch}={}){
+  assert(plan?.contract===OBLIGATION_HANDOFF_CONTRACT&&Array.isArray(plan.work),'INVALID_OBLIGATION_HANDOFF_PLAN');
+  assert(/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(config?.origin??'')
+    &&text(config?.key).length>=12&&typeof fetchImpl==='function','UNTRUSTED_OBLIGATION_PROVIDER');
+  const result={contract:OBLIGATION_HANDOFF_CONTRACT,attempted:0,readback_proven:0,
+    already_present:0,failed:0,errors:[],consumer_ack_claimed:0,
+    implementations_verified:0,external_side_effects:0,original_obligations_open:true};
+  for(const item of plan.work){
+    result.attempted++;
+    try{
+      const current=await readExactOriginalObligation({config,fetchImpl,businessEntity:item.business_entity});
+      assert(matchesOriginalObligation(current,item)
+        &&Number.isSafeInteger(Number(current.version))
+        &&Number(current.version)>0
+        &&typeof current.id==='string','OBLIGATION_NATIVE_IDENTITY_INVALID');
+      if(current.evidence?.original_owner_decision_handoff){
+        assert(exactDecisionReceipt(current,item),'OBLIGATION_EXISTING_PROVIDER_CONFLICT');
+        result.already_present++;continue;
+      }
+      const response=await fetchImpl(config.origin+'/rest/v1/rpc/brain_transition_obligation',{
+        method:'POST',
+        headers:{apikey:config.key,Authorization:'Bearer '+config.key,
+          'content-type':'application/json',Accept:'application/json'},
+        body:JSON.stringify({
+          p_obligation_id:current.id,p_expected_version:Number(current.version),
+          p_state:'OPEN',p_owner:item.original_owner,
+          p_evidence:{...current.evidence,original_owner_decision_handoff:item.receipt}
+        })
+      });
+      if(!response?.ok){
+        const latest=await readExactOriginalObligation({config,fetchImpl,businessEntity:item.business_entity});
+        if(exactDecisionReceipt(latest,item)){result.already_present++;continue;}
+        throw new Error('ORIGINAL_INNOVATION_OWNER_DECISION_OBLIGATION_CAS_CONFLICT');
+      }
+      let written;try{written=await response.json();}catch{assert(false,'OBLIGATION_WRITE_JSON_INVALID');}
+      assert(exactDecisionReceipt(written,item)
+        &&Number(written.version)===Number(current.version)+1,
+        'OBLIGATION_WRITE_RECEIPT_MISMATCH');
+      const check=await readExactOriginalObligation({config,fetchImpl,businessEntity:item.business_entity});
+      assert(exactDecisionReceipt(check,item)
+        &&Number(check.version)>=Number(written.version),
+        'OBLIGATION_INDEPENDENT_CONSUMER_READBACK_MISMATCH');
+      result.readback_proven++;
+    }catch(error){
+      result.failed++;
+      const message=String(error?.message??'UNKNOWN');
+      result.errors.push(message.startsWith('ORIGINAL_INNOVATION_OWNER_DECISION_')
+        ?message.slice('ORIGINAL_INNOVATION_OWNER_DECISION_'.length).slice(0,120)
+        :'UNCLASSIFIED_ORIGINAL_OBLIGATION_HANDOFF_FAILURE');
+    }
+  }
+  return Object.freeze(result);
+}
+
 export async function runOriginalOwnerDecision({env=process.env,fetchImpl=globalThis.fetch,
   observedAt=new Date().toISOString(),writeback=false}={}){
   const config=trustedBrainReadConfig(env);
@@ -253,7 +460,20 @@ export async function runOriginalOwnerDecision({env=process.env,fetchImpl=global
   const report=evaluateOriginalOwnerHandoff(snapshot,{now:observedAt});
   const plan=planOriginalOwnerDecisions({snapshot,report,observedAt});
   const execution=writeback?await persistOriginalOwnerDecisions({plan,config,fetchImpl}):null;
-  return Object.freeze({report,plan,execution,writeback});
+  let obligation_plan=null,obligation_execution=null;
+  if(writeback&&execution.failed===0){
+    // Re-read the SOURCE after actual original native decision CAS writes.
+    // A pending predecessor cannot be treated as an acknowledged consumer.
+    const fresh=await readCanonicalRows({config,fetchImpl});
+    const freshReport=evaluateOriginalOwnerHandoff(fresh,{now:observedAt});
+    obligation_plan=planOriginalDecisionObligationHandoffs({
+      snapshot:fresh,report:freshReport,observedAt
+    });
+    obligation_execution=await persistOriginalDecisionObligationHandoffs({
+      plan:obligation_plan,config,fetchImpl
+    });
+  }
+  return Object.freeze({report,plan,execution,obligation_plan,obligation_execution,writeback});
 }
 export function publicSummary(result){
   const decisions=result.plan.work.reduce((a,x)=>{
@@ -269,6 +489,12 @@ export function publicSummary(result){
     newly_proven_source_decisions:result.execution?.readback_proven??0,
     native_errors:result.execution?.errors??[],
     native_failed:result.execution?.failed??0,
+    original_obligation_handoffs_readback_proven:result.obligation_execution?.readback_proven??0,
+    original_obligation_handoffs_already_present:result.obligation_execution?.already_present??0,
+    original_obligation_handoffs_held:result.obligation_plan?.held.length??0,
+    original_obligation_handoff_errors:result.obligation_execution?.errors??[],
+    original_obligation_handoff_failed:result.obligation_execution?.failed??0,
+    original_obligations_remain_open:true,
     deferred_by_budget:result.plan.deferred_by_budget,
     original_agent_consumer_ack_verified:result.report.counts.owner_ack_verified,
     protected_implementations_verified:0,
@@ -287,7 +513,7 @@ async function main(){
   await mkdir('artifacts/quality',{recursive:true});
   await writeFile(ARTIFACT,JSON.stringify(publicSummary(result),null,2)+'\n');
   process.stdout.write(JSON.stringify(publicSummary(result))+'\n');
-  if(result.execution?.failed)process.exitCode=1;
+  if(result.execution?.failed||result.obligation_execution?.failed)process.exitCode=1;
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
   main().catch(err=>{console.error(String(err?.message??'ORIGINAL_OWNER_DECISION_FAILED').slice(0,180));process.exitCode=1;});
