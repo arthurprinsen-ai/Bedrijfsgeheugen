@@ -281,11 +281,14 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
 export async function readOriginalSalesExecutionAudit({
   baseUrl,key,fetchImpl=globalThis.fetch,at=new Date().toISOString()
 }={}){
-  // Original ONE BRAIN engineering candidate 55bb0754. A sample is never
-  // a full-week census. Bound network work and fail closed beyond that bound.
+  // Original ONE BRAIN engineering candidate 55bb0754. Historical execution
+  // is assessed at immutable writer-event time, NEVER by a later mutable action
+  // status (which can legitimately return to waiting). A sample is not a census.
+  // Still no proof of external provider dispatch, human ACK or paid result.
   const MAX_EVENTS=500,PAGE_SIZE=100;
   const unknown={state:'SOURCE_UNAVAILABLE',totalEvents7d:null,sampledEvents:null,
     actionBackedSample:null,unsupportedSample:null,missingActionSample:null,
+    currentActionNotDoneSample:null,
     scope:'UNKNOWN',externalProviderProof:false,paidOutcomeProof:false,readOnly:true};
   const observed=Date.parse(at);
   if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(String(baseUrl||''))||
@@ -298,7 +301,7 @@ export async function readOriginalSalesExecutionAudit({
     const cutoff=new Date(observed).toISOString();
     const eventQuery=offset=>{
       const p=new URLSearchParams({
-        select:'event_id,entity_id,occurred_at',tenant_id:'eq.canonical',
+        select:'event_id,entity_id,occurred_at,evidence_ref,payload',tenant_id:'eq.canonical',
         entity_type:'eq.sales_action',stage:'eq.execution',
         occurred_at:'gte.'+from,order:'occurred_at.desc,event_id.desc',
         limit:String(PAGE_SIZE),offset:String(offset)
@@ -328,7 +331,8 @@ export async function readOriginalSalesExecutionAudit({
     const first=await readEventPage(0);
     if(first.total===0)return {...unknown,state:'NO_EXECUTION_EVENTS_OBSERVED',
       totalEvents7d:0,sampledEvents:0,actionBackedSample:0,unsupportedSample:0,
-      missingActionSample:0,scope:'FULL_LAST_7D',observedAt:at};
+      missingActionSample:0,currentActionNotDoneSample:0,
+      scope:'FULL_LAST_7D',observedAt:at};
     if(first.total>MAX_EVENTS)return {...unknown,
       state:'SOURCE_SCOPE_EXCEEDS_SAFE_CAP',totalEvents7d:first.total,
       scope:'ABOVE_500_FAIL_CLOSED',observedAt:at};
@@ -372,19 +376,37 @@ export async function readOriginalSalesExecutionAudit({
         byId.set(action.action_id,action);
       }
     }
-    let supported=0,missing=0;
+    let supported=0,missing=0,currentActionNotDone=0;
     for(const event of events){
       const action=byId.get(event.entity_id);
       if(!action){missing++;continue;}
-      const executed=Date.parse(action.executed_at);
-      if(action.status==='done'&&Number.isFinite(executed)&&
-        executed<=Date.parse(event.occurred_at)+300000)supported++;
+      const proof=event.payload;
+      const eventAt=Date.parse(event.occurred_at);
+      const historyAt=Date.parse(proof?.executed_at);
+      const currentStoredExecutionAt=Date.parse(action.executed_at);
+      // Original source writer was guarded by status=done AND executed_at when
+      // minting this immutable event. Match the writer identity, evidence ref,
+      // recorded historical timestamp, and still-linked action execution time.
+      // Never use mutable current status as historical truth.
+      const originalWriterAtEvent=proof!==null&&typeof proof==='object'&&
+        !Array.isArray(proof)&&
+        proof.status==='done'&&proof.truth_class==='observed_action_state'&&
+        proof.writer_component==='public.powerhouse_advance_sales_action_v1'&&
+        proof.writer_contract_version==='v1'&&
+        event.evidence_ref==='powerhouse_sales_actions:'+event.entity_id+':execution'&&
+        Number.isFinite(historyAt)&&historyAt<=eventAt+300000&&
+        historyAt<=observed&&currentStoredExecutionAt===historyAt;
+      if(originalWriterAtEvent){
+        supported++;
+        if(action.status!=='done')currentActionNotDone++;
+      }
     }
     const unsupported=events.length-supported;
     return {
-      state:unsupported>0?'SOURCE_EXECUTION_GAP':'ACTION_RECORDS_MATCH_IN_SAMPLE_PROVIDER_UNVERIFIED',
+      state:unsupported>0?'SOURCE_EXECUTION_GAP':'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED',
       totalEvents7d:first.total,sampledEvents:events.length,
-      actionBackedSample:supported,unsupportedSample:unsupported,missingActionSample:missing,
+      actionBackedSample:supported,unsupportedSample:unsupported,
+      missingActionSample:missing,currentActionNotDoneSample:currentActionNotDone,
       scope:'FULL_LAST_7D',observedAt:at,externalProviderProof:false,
       paidOutcomeProof:false,readOnly:true
     };
