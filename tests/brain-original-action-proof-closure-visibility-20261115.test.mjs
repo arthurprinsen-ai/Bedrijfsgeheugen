@@ -89,9 +89,14 @@ test('financial savings require original verified net proof; duplicate action ID
 test('original server tenant gate remains intact; no sender, new database or client-side closing write',async()=>{
  const f=await readFile(new URL('../portal-v2/operating-system/customer-value-briefing.js',import.meta.url),'utf8');
  assert.doesNotMatch(f,/fetch\s*\(|setInterval\s*\(|localStorage|sessionStorage|supabase\.from/);
- const html=customerActionProgressMarkup(model([action({title:'<script>alert(1)</script>'})]));
- assert.doesNotMatch(html,/<script>/);
- assert.match(html,/&lt;script&gt;/);
+ // Test actual escaped output; do not use a case-sensitive HTML regexp as a security filter.
+ for(const payload of ['<script>alert(1)</script>','<SCRIPT>alert(1)</SCRIPT>','<ScRiPt>alert(1)</ScRiPt>','<IMG SRC=x onerror=alert(1)>']){
+  const html=customerActionProgressMarkup(model([action({title:payload})]));
+  assert.equal(html.includes(payload),false,'raw attacker-controlled markup was rendered');
+  assert.equal(html.toLowerCase().includes('<script'),false,'unescaped script element');
+  assert.equal(html.toLowerCase().includes('<img'),false,'unescaped image element');
+  assert.match(html,/&lt;/);
+ }
  const projection=await readFile(new URL('../portal-v2/operating-system/executive-projection.js',import.meta.url),'utf8');
  assert.match(projection,/safeEvidence\(source\.action_history,tenantId,now\)/);
  assert.match(projection,/action_history:history/);
