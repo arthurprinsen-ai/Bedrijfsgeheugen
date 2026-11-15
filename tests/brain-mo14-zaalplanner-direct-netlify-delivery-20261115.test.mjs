@@ -9,11 +9,11 @@ test('MO14 zaalplanner has an exact independent website delivery owner',()=>{
   assert.ok(!website.paths.includes('pw-mo14-1/'));
   assert.ok(actual.startsWith('pw-mo14-1/zaalplanner/'));
 });
-test('MO14 planner includes keeper, absent roster, bench and seven-match export',()=>{
+test('MO14 planner includes keeper, absent roster, bench and matchday-aware multi-fixture export',()=>{
   const html=readFileSync(actual,'utf8');
   for(const marker of ['id="keeper"','id="roster"','id="bench"','id="pdfAll"','function rotationsFor','id="pdfGame"']) {
     assert.ok(html.includes(marker),`Missing planner contract: ${marker}`);
   }
-  assert.match(html,/Array\.from\(\{length:7\}/);
+  assert.match(html,/Array\.from\(\{length:state\.matches\.length\}/);
   assert.doesNotMatch(html,/make\.com|hook\.make\.com|buffer\.com/i);
 });
