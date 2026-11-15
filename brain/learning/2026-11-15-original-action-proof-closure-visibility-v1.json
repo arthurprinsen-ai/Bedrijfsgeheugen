@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|financial-intelligence|original-action-execution-measurement-closure-invisible|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "COMPLETED_RECOMMENDATION_MISSING_FROM_CUSTOMER_COCKPIT",
+    "scope": "PORTAL_VALUE_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original customer-value daily briefing selects only an eligible next action and excludes DONE and COMPLETED. The authenticated executive projection truncated next_best_actions to five and had no historical action projection. Thus users cannot distinguish a recorded completion from independently confirmed execution, matched actual value, following learning and ONE BRAIN closure. Production source also has 829 done action-value entries but none with proven net resource economics. This is a visibility and handoff gap, not proof of customer savings.",
+  "change": {
+    "existing_customer_value": "portal-v2/operating-system/customer-value-briefing.js",
+    "existing_executive_projection": "portal-v2/operating-system/executive-projection.js",
+    "existing_skill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+    "new_scheduler": false,
+    "new_store": false,
+    "new_automatic_action_writer": false,
+    "new_provider": false,
+    "direct_production_mutation": false
+  },
+  "prevention": {
+    "original_action_id_dedupe": true,
+    "action_history_source_tenant_evidence_normalization": true,
+    "recorded_done_not_execution": true,
+    "independent_action_tenant_baseline_provider_receipt": true,
+    "financial_net_saving_requires_costs_and_comparator": true,
+    "verified_next_decision_for_review": true,
+    "independent_original_one_brain_closure_proof": true,
+    "client_action_completion_never_committed_by_renderer": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-action-proof-closure-visibility-20261115.test.mjs",
+      "tests/brain-customer-value-briefing-20261101.test.mjs",
+      "tests/brain-financial-decision-proof-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-action-proof-closure-visibility-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-action-proof-closure-visibility-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "native_checked_at": "2026-11-15",
+    "existing_done_action_value_rows": 829,
+    "proven_net_savings_rows": 0,
+    "tenant_financial_forecast_rows": 0,
+    "tenant_action_history_provider_readback": false,
+    "source_fix_only": true,
+    "actual_customer_savings_verified": false,
+    "production_live": false
+  },
+  "semantic_learning": {
+    "cause": "A next-recommendation-only projection hides earlier recorded actions, while DONE labels may incorrectly be read as measured savings and completed closure.",
+    "prevention_rule": "In the original executive tenant read model separately retain source-backed action history and show recorded status, independent execution, verified same-action outcome, verified financial net and ONE BRAIN closure receipt as distinct stages.",
+    "regression_guard": "tests/brain-original-action-proof-closure-visibility-20261115.test.mjs",
+    "next_owner": "Original Company Intelligence OS tenant data producer -> original ONE BRAIN action executor -> Heartbeat outcome and original portal",
+    "effect_proof": "PROTECTED_CI_AND_AUTHENTICATED_PRODUCTION_DATA_READBACK_DUE"
+  },
+  "supporting_legacy_regressions": [
+    "tests/portal-v2-executive-cockpit.test.mjs"
+  ]
+}

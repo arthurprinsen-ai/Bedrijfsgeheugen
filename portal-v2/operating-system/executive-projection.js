@@ -82,19 +82,27 @@ export function buildExecutiveProjection(state={}, {role='directie',tenantId,now
  const normalizedRole=ROLE_SECTIONS[role]?role:'directie';
  const source=state?.powerhouse?.executive;
  const sections=ROLE_SECTIONS[normalizedRole];
- const unavailable=Object.freeze({available:false,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:null,strategy_progress:null,problems:[],risks:[],opportunities:[],next_best_actions:[],decision_queue:[],attention:[],outcomes:[],changes:[],forecasts:[],evidence_health:Object.freeze({healthy:0,stale:0,low_confidence:0,unavailable:0,total:0})});
+ const unavailable=Object.freeze({available:false,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:null,strategy_progress:null,problems:[],risks:[],opportunities:[],next_best_actions:[],action_history:[],decision_queue:[],attention:[],outcomes:[],changes:[],forecasts:[],evidence_health:Object.freeze({healthy:0,stale:0,low_confidence:0,unavailable:0,total:0})});
  if(!tenantId||!source||typeof source!=='object')return unavailable;
  const problems=arr(source.problems).map(item=>normalizeProblem(item,tenantId,now)).filter(Boolean).sort((a,b)=>urgency(b)-urgency(a)).slice(0,5);
  const risks=safeEvidence(source.risks,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
  const opportunities=safeEvidence(source.opportunities,tenantId,now).sort((a,b)=>priority(b)-priority(a));
  const actions=safeEvidence(source.next_best_actions,tenantId,now).sort((a,b)=>priority(b)-priority(a)).slice(0,5);
+ const nativeHistory=safeEvidence(source.action_history,tenantId,now);
+ const existingTenantActions=safeEvidence(state?.powerhouse?.actions,tenantId,now);
+ const historyIds=new Set();
+ const history=[...nativeHistory,...existingTenantActions].filter(item=>{
+  const id=txt(item?.id||item?.action_id);
+  if(item?.evidence_health?.status!=='healthy'||!id||historyIds.has(id))return false;
+  historyIds.add(id);return true;
+ }).map(item=>Object.freeze({...item,id:txt(item.id||item.action_id)})).slice(0,5);
  const outcomes=safeEvidence(source.outcomes,tenantId,now);
  const changes=safeEvidence(source.changes,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
  const forecasts=safeEvidence(source.forecasts,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
  const decisions=actions.filter(needsDecision);
  const attention=attentionItems({risks,actions,forecasts,changes});
- const evidence=[...problems,...risks,...opportunities,...actions,...outcomes,...changes,...forecasts];
+ const evidence=[...problems,...risks,...opportunities,...actions,...history,...outcomes,...changes,...forecasts];
  const health={healthy:0,stale:0,low_confidence:0,unavailable:0,total:evidence.length};
  for(const item of evidence){const status=item.evidence_health.status;if(status==='healthy')health.healthy++;else if(status==='stale')health.stale++;else if(status==='low-confidence')health.low_confidence++;else health.unavailable++;}
- return Object.freeze({available:true,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:num(source.health_score),strategy_progress:num(source.strategy_progress),problems,risks,opportunities,next_best_actions:actions,decision_queue:decisions,attention,outcomes,changes,forecasts,evidence_health:Object.freeze(health)});
+ return Object.freeze({available:true,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:num(source.health_score),strategy_progress:num(source.strategy_progress),problems,risks,opportunities,next_best_actions:actions,action_history:history,decision_queue:decisions,attention,outcomes,changes,forecasts,evidence_health:Object.freeze(health)});
 }

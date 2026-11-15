@@ -271,3 +271,20 @@ De oorspronkelijke, geauthenticeerde customer-value-briefing en Impact-pagina zi
 - De Impact-pagina mag afwezige revenue/cost capacity nooit met een nulbedrag presenteren. Maak ontbrekende brondata zichtbaar als ‘Nog niet gekwantificeerd’.
 - Productiebronmeting op 2026-11-15: 14.732 bestaande actie-economieprojecties; alle business_value_status=no_resource_evidence; 829 acties zijn ‘done’ zonder geverifieerde netto waarde; portal_financial_forecasts_v1=0 en powerhouse_realized_values=0. Dit is een open DATASPINE/FINANCIAL_OUTCOME-obligatie, niet commercieel succes. Originele datakoppelingen moeten de echte financiële brondata en meettijdstippen aanleveren.
 - Regressie tests/brain-financial-decision-proof-20261115.test.mjs en oorspronkelijke briefingtests. P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198; fingerprint powerhouse|financial-intelligence|forecast-versus-net-realized-proof-gap|20261115-v1.
+
+
+## 2026-11-15 — werkelijk uitgevoerde aanbevelingen en afsluitbewijs op dezelfde directiecockpit
+
+**Original owner / fingerprint:** Company Intelligence OS, authentic Portal V2, ONE BRAIN action authority; `powerhouse|financial-intelligence|original-action-execution-measurement-closure-invisible|20261115-v1` onder #4198. De bestaande executive-cockpit projectie moet niet alleen de volgende aanbeveling maar ook de laatst uitgevoerde/afgeronde tenantacties (optioneel `source.action_history`) via dezelfde `normalizeEvidenceEnvelope` en tenant-evidence gate tonen. Hergebruik tevens echte action-statussen binnen `next_best_actions`; dedupe op originele ID. Geen aparte frontendbron of globale action-query.
+
+**Menselijk begrijpelijke bewijsstatussen per actie:**
+1. Status in de operationele bron (DONE / COMPLETED / SENT / QUEUED / ...). Deze is uitsluitend een *registratie*, niet bewezen externe uitvoering.
+2. Onafhankelijk uitvoeringsbewijs met exact action-ID, tenant, baseline en oorspronkelijke provider-ID; ontbreekt dit, toon `Uitvoering niet onafhankelijk bevestigd` ongeacht het geregistreerde statuslabel.
+3. Onafhankelijk getypeerde outcome-meting in dezelfde actie, baseline en periode; zonder match geen gerealiseerde hoeveelheid of geld.
+4. Netto besparing uitsluitend na gemeten bruto resultaat minus volledige implementatie- en exploitatiekosten en onafhankelijke no-action-vergelijker. Een modelverwachting, sales `done`, provider `sent` en `execution_completed` zijn nooit verdiend geld of financieel effect.
+5. Leerbewijs (bronrefs, oorspronkelijke volgende decision-ID) en eventueel original ONE BRAIN `closure_proof` met `CLOSED_VERIFIED`, `original_authority=ONE_BRAIN`, onafhankelijke readback, exact source action/tenant/baseline en refs.
+6. **Review-ready** is niet **closed**. Een gewone, niet-financiële verified metric (uren, aantal, percentage) kan onder oorspronkelijke policy klaarstaan voor afronding na gevalideerde uitvoering + meting + learning; bij een financieel netto-besparingsresultaat zijn de kostprijscomponenten verplicht. Sluit nooit rechtstreeks via read-only klant-HTML of de client-side decision store.
+
+**Behouden toezicht:** de oorspronkelijke authenticated server moet tenant-gebonden action_history werkelijk leveren, niet de globale `powerhouse_sales_actions` uitlezen in de browser. `DONE` zonder receipt blijft open bewijsverplichting en nooit groen. De oorspronkelijke ONE BRAIN owner moet het status- en meetbewijs afhandelen en definitieve closure readback terugschrijven binnen dezelfde lineage; als action_history niet is aangeleverd, toont de cockpit een expliciete bronstatus. De Frontend is geen SSOT.
+
+**Test:** `tests/brain-original-action-proof-closure-visibility-20261115.test.mjs` plus de bestaande financial-decision, customer-value, tenant en executive-projectietests. Kleine brongebonden UI-uitbreiding zonder nieuwe scheduler, database, provider-write of agent. Alle incidenten en conclusies blijven onder https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
