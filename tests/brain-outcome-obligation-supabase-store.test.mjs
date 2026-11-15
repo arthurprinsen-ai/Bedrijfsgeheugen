@@ -234,7 +234,7 @@ test('evidence putIfAbsent writes one canonical row and coalesces an exact repla
     calls.push({ url:String(url), init });
     if (init.method === 'POST') {
       persisted = JSON.parse(init.body);
-      return jsonResponse(201, []);
+      return jsonResponse(201, [persisted]);
     }
     return jsonResponse(200, persisted ? [persisted] : []);
   };
@@ -247,6 +247,78 @@ test('evidence putIfAbsent writes one canonical row and coalesces an exact repla
   assert.equal(calls.filter(call => call.init.method === 'POST').length, 1);
   assert.equal(persisted.evidence_ref, record.ref);
   assert.equal(persisted.metadata.producer, 'COMPLETION_SUPERVISOR');
+});
+
+test('concurrent evidence writer wins after stale GET: duplicate is not newly created',async()=>{
+  const canonical={
+    idempotency_key:'obligation|race',evidence_ref:'proof:race',evidence_type:'FUNCTIONAL_READBACK',
+    independent:true,accepted:true,exact_production:true,
+    metadata:{producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',productionIdentity:'P1'}
+  };
+  let reads=0;const posts=[];
+  const fetchImpl=async(url,init={})=>{
+    if(init.method==='POST'){posts.push(JSON.parse(init.body));return jsonResponse(201,[]);}
+    reads++;
+    return jsonResponse(200,reads===1?[]:[canonical]);
+  };
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  const r=await stores.evidenceStore.putIfAbsent({
+    idempotencyKey:'obligation|race',ref:'proof:race',type:'FUNCTIONAL_READBACK',
+    producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',
+    productionIdentity:'P1',independent:true,accepted:true,exactProduction:true
+  });
+  assert.equal(posts.length,1);
+  assert.equal(reads,2);
+  assert.equal(r.created,false,'a competing existing proof is not a newly written proof');
+  assert.equal(r.record.productionIdentity,'P1');
+});
+
+test('same evidence ref cannot silently elevate nonindependent proof to accepted production proof',async()=>{
+  const existing={
+    evidence_ref:'proof:immutable',evidence_type:'FUNCTIONAL_READBACK',
+    independent:false,accepted:false,exact_production:false,
+    metadata:{producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',productionIdentity:'P1'}
+  };
+  let postCalled=false;
+  const fetchImpl=async(url,init={})=>{
+    if(init.method==='POST'){postCalled=true;return jsonResponse(201,[]);}
+    return jsonResponse(200,[existing]);
+  };
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  await assert.rejects(stores.evidenceStore.putIfAbsent({
+    idempotencyKey:'obligation|proof',ref:'proof:immutable',type:'FUNCTIONAL_READBACK',
+    producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',
+    productionIdentity:'P1',independent:true,accepted:true,exactProduction:true
+  }),/immutable evidence identity conflict \\(independent\\)/);
+  assert.equal(postCalled,false,'do not submit conflicting proof to the provider');
+});
+
+test('evidence provider result must prove exact immutable composite key',async()=>{
+  const req={idempotencyKey:'obligation|proof',ref:'proof:real',type:'FUNCTIONAL_READBACK',
+    producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',
+    productionIdentity:'P1',independent:true,accepted:true,exactProduction:true};
+  const fetchImpl=async(url,init={})=>{
+    if(init.method==='POST')return jsonResponse(201,[{...JSON.parse(init.body),evidence_ref:'proof:other'}]);
+    return jsonResponse(200,[]);
+  };
+  await assert.rejects(
+    createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl}).evidenceStore.putIfAbsent(req),
+    /inserted evidence identity unverified/
+  );
+});
+
+test('unknown evidence insert response cannot fabricate independent proof',async()=>{
+  let reads=0;
+  const fetchImpl=async(url,init={})=>{
+    if(init.method==='POST')return new Response(null,{status:204});
+    reads++;return jsonResponse(200,[]);
+  };
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  await assert.rejects(stores.evidenceStore.putIfAbsent({
+    idempotencyKey:'obligation|proof',ref:'proof:unverified',type:'FUNCTIONAL_READBACK',
+    independent:true,accepted:true,exactProduction:true
+  }),/evidence insert outcome unverified/);
+  assert.equal(reads,1);
 });
 
 test('remote auth or validation errors fail closed instead of degrading to empty state', async () => {
