@@ -23,6 +23,7 @@ function compute(index){
  if(!Number.isFinite(step)||step<=0||half%step!==0)return {error:'De bloklengte moet in een helft passen.'};
  const B=total/step,swaps=Math.min(5,n-5),holds=5-swaps;
  const rng=seededRand(42281+index*15241+pool.reduce((a,p)=>a+p.id.length*17,0));
+ const allIds=state.roster.map(p=>p.id);
  const baseField=Object.fromEntries(state.roster.map(p=>[p.id,0]));
  const baseTotal=Object.fromEntries(state.roster.map(p=>[p.id,0]));
  const firstSetHistory=new Set();
