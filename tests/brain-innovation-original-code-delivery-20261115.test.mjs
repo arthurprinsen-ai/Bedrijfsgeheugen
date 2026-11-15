@@ -59,7 +59,10 @@ test('pre-review mismatch cannot be turned into green',()=>{
   assert.throws(()=>selectOriginalCodeCandidate(o),/PRE_REVIEW_CONFLICT/);
 });
 test('read-only proposal with old PR reference is held, not rebuilt',()=>{
-  const o=fixture();o.snapshot.candidates[0].proposed_action.action='Protected PR5109 already requires status done and a real timestamp before minting execution stage in the original writer.';
+  const o=fixture();o.snapshot.candidates[0].proposed_action.parent_pr=5109;
+  const actionHash=hash(o.snapshot.candidates[0].proposed_action);
+  o.snapshot.intakes[0].evidence.original_agent_pre_review.exact_source_action_digest=actionHash;
+  o.snapshot.intakes[0].evidence.original_owner_decision.original_action_digest=actionHash;
   assert.equal(selectOriginalCodeCandidate(o).selected,false);
 });
 test('bounded diff rejects workflow, destructive paths, tests-only and fake learning',()=>{
