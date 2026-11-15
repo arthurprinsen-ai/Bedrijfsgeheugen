@@ -143,9 +143,106 @@ const INITIAL=[
  {id:'cato',name:'Cato',num:11,roles:['A','M']},
  {id:'steffi',name:'Steffi',num:6,roles:['M']}
 ];
-const DEFAULTS=()=>({roster:structuredClone(INITIAL),half:20,step:5,rotation:'balanced',selectedMatch:0,selectedBlock:0,matches:Array.from({length:7},()=>({absent:[],keeper:'coco',date:''}))});
-let state;try{let s=JSON.parse(localStorage.getItem('mo14_zaal_v2'));state=s&&Array.isArray(s.roster)&&Array.isArray(s.matches)&&s.matches.length===7?s:DEFAULTS()}catch(e){state=DEFAULTS()}
-state.matches.forEach(m=>{if(typeof m.date!=='string'||(m.date&&!/^\d{4}-\d{2}-\d{2}$/.test(m.date)))m.date=''});
+const OFFICIAL_FIXTURES=[
+ {
+  "fixtureId": "pw-2026-12-06-1200",
+  "date": "2026-12-06",
+  "time": "12:00",
+  "opponent": "MO14-2 zaal",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2026-12-06-1340",
+  "date": "2026-12-06",
+  "time": "13:40",
+  "opponent": "Twente MO14-2",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2026-12-13-1205",
+  "date": "2026-12-13",
+  "time": "12:05",
+  "opponent": "Zutphen MO14-1",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2026-12-13-1255",
+  "date": "2026-12-13",
+  "time": "12:55",
+  "opponent": "Twente MO14-2",
+  "home": false
+ },
+ {
+  "fixtureId": "pw-2026-12-19-1520",
+  "date": "2026-12-19",
+  "time": "15:20",
+  "opponent": "Haackey MO14-1-mix",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2026-12-19-1610",
+  "date": "2026-12-19",
+  "time": "16:10",
+  "opponent": "Apeldoorn MO14-3",
+  "home": false
+ },
+ {
+  "fixtureId": "pw-2027-01-09-1130",
+  "date": "2027-01-09",
+  "time": "11:30",
+  "opponent": "Apeldoorn MO14-2",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2027-01-09-1310",
+  "date": "2027-01-09",
+  "time": "13:10",
+  "opponent": "Apeldoorn MO14-3",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2027-01-24-1130",
+  "date": "2027-01-24",
+  "time": "11:30",
+  "opponent": "Haackey MO14-1-mix",
+  "home": false
+ },
+ {
+  "fixtureId": "pw-2027-01-24-1220",
+  "date": "2027-01-24",
+  "time": "12:20",
+  "opponent": "MO14-2 zaal",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2027-02-13-1200",
+  "date": "2027-02-13",
+  "time": "12:00",
+  "opponent": "Apeldoorn MO14-2",
+  "home": false
+ },
+ {
+  "fixtureId": "pw-2027-02-13-1250",
+  "date": "2027-02-13",
+  "time": "12:50",
+  "opponent": "Zutphen MO14-1",
+  "home": false
+ }
+];
+const toMatch=f=>({...f,absent:[],keeper:'coco'});
+const DEFAULTS=()=>({roster:structuredClone(INITIAL),half:20,step:5,rotation:'balanced',selectedMatch:0,selectedBlock:0,scheduleVersion:2,matches:OFFICIAL_FIXTURES.map(toMatch)});
+let state;
+try{const saved=JSON.parse(localStorage.getItem('mo14_zaal_v2'));state=saved&&Array.isArray(saved.roster)&&Array.isArray(saved.matches)?saved:DEFAULTS()}catch(e){state=DEFAULTS()}
+if(state.scheduleVersion!==2){
+ const previous=state.matches.slice();
+ state.matches=OFFICIAL_FIXTURES.map((f,i)=>({...toMatch(f),keeper:previous[i]?.keeper||'coco',absent:Array.isArray(previous[i]?.absent)?previous[i].absent.slice():[]}));
+ state.scheduleVersion=2;state.selectedMatch=Math.min(state.selectedMatch||0,state.matches.length-1);
+}else{
+ const existingIds=new Set(state.matches.map(m=>m.fixtureId));
+ OFFICIAL_FIXTURES.forEach((f,i)=>{if(!existingIds.has(f.fixtureId))state.matches.splice(i,0,toMatch(f))});
+}
+state.matches.forEach((m,i)=>{if(typeof m.date!=='string'||(m.date&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(m.date)))m.date='';if(!Array.isArray(m.absent))m.absent=[];if(typeof m.time!=='string'||!/^(?:[01]\\d|2[0-3]):[0-5]\\d$/.test(m.time))m.time='';if(typeof m.opponent!=='string')m.opponent='';if(typeof m.home!=='boolean')m.home=true;if(!m.fixtureId)m.fixtureId='extra-'+i});
+state.selectedMatch=Math.max(0,Math.min(Number(state.selectedMatch)||0,state.matches.length-1));
 const $=id=>document.getElementById(id);let cache={};const ALLPOS=['AL','AR','M','VL','VR'];const POSROLE=p=>p[0]==='A'?'A':p[0]==='V'?'V':'M';const POSLABEL={AL:'Linksachter',AR:'Rechtsachter',M:'Midden',VL:'Linksvoor',VR:'Rechtsvoor'};
 function save(){try{localStorage.setItem('mo14_zaal_v2',JSON.stringify(state))}catch(e){}}
 function find(id){return state.roster.find(p=>p.id===id)}
