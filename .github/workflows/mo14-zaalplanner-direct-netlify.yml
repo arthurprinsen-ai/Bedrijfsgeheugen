@@ -1,3 +1,4 @@
+# MO14 V9: recorded actual field/goal minutes rebaseline future plans, portable backup, independent live readback; no Make.
 # MO14 V8: user-anchored first five, season-minute fairness, tactical whiteboard, no Make.
 # MO14 V7 source test retry: documented bug fix in rotation generator after fail-closed CI.
 # MO14 V7: responsive iPhone one-column day cards; four 10-minute blocks; exchange all possible field players; readback, no Make.
@@ -142,6 +143,10 @@ jobs:
           cmp -s pw-mo14-1/zaalplanner/coach-core.js /tmp/mo14-coach-core.js
           cmp -s pw-mo14-1/zaalplanner/coach-ui.js /tmp/mo14-coach-ui.js
           cmp -s pw-mo14-1/zaalplanner/coach-plus.css /tmp/mo14-coach-plus.css
+          grep -q 'coachActualMinutes' /tmp/mo14-coach-ui.js
+          grep -q 'coachConfirmActual' /tmp/mo14-coach-ui.js
+          grep -q 'coachBackupFile' /tmp/mo14-coach-ui.js
+          grep -q 'actualConfirmed' /tmp/mo14-coach-core.js
           grep -q 'playersStaying:5-theoreticalSwaps' /tmp/mo14-new.html
           grep -q 'home-rounds{display:block!important' /tmp/mo14-new.html
           grep -q 'half:20,step:10' /tmp/mo14-new.html
