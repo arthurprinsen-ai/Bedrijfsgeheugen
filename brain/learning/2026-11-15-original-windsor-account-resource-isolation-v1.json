@@ -2,8 +2,8 @@
   "date": "2026-11-15",
   "version": "v1",
   "type": "POWERHOUSE_LEARNING",
-  "maturity": "OBSERVED",
-  "status": "CANDIDATE",
+  "maturity": "PROVIDER_SOURCE_VERIFIED",
+  "status": "ORIGINAL_PROVIDER_SOURCE_RECOVERED_VERIFIED_DOWNSTREAM_OPEN",
   "fingerprint": "powerhouse|original177|optional-account-read-rejects-verified-posts|20261115-v1",
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "compiler": {
@@ -49,7 +49,39 @@
     ],
     "canary": [
       "tests/brain-original-windsor-177-brain-failure-handoff-20261114.test.mjs"
-    ]
+    ],
+    "latest_production_receipt": {
+      "original_owner": "bg-social-metrics-source-6h-v1/#177",
+      "protected_pr": 5862,
+      "protected_merge_sha": "df5b999fdf9a6205844b1e1acb918730e4122d77",
+      "deployed_edge_slug": "bg-social-metrics-sync",
+      "deployed_edge_version": 835,
+      "deployed_source_parity": "readOriginalWindsorCompanySourcePair and no forced refresh_interval or refresh_since independently observed in actual Supabase Edge source",
+      "authorized_same_owner_canary_request_id": 32121,
+      "canary_http_status": 200,
+      "canary_healthy": true,
+      "original_poll_time": "2026-11-15T14:50:05.573Z",
+      "source_observed_at": "2026-11-15T14:50:09.098Z",
+      "native_original_cron_id": 177,
+      "provider": "windsor.ai",
+      "authorized_organization_id": "18234216",
+      "company_provider_rows": 12,
+      "staged_post_rows": 12,
+      "staged_account_rows": 1,
+      "verified_daily_source_readback": 13,
+      "rejected_unverified": 0,
+      "independently_linked_company_provider_snapshots_in_recovery": 16,
+      "original_publication_metric_handoffs_recorded": 10,
+      "original_publication_metric_handoffs_failed": 0,
+      "original_publication_metric_handoffs_overdue": 0,
+      "original_provider_failure_403_in_canary": false,
+      "original_company_source_health": true,
+      "autonomous_natural_next_run_still_due": true,
+      "downstream_social_window_consumer_proven": false,
+      "applied_learning_proven": false,
+      "real_business_outcome_proven": false,
+      "no_causal_uplift_or_revenue_claim": true
+    }
   },
   "semantic_learning": {
     "failure": "OPTIONAL_ACCOUNT_READ_FAILURE_DROPS_MANDATORY_POST_READ",
@@ -59,7 +91,7 @@
     "next_owner": "existing bg-social-metrics-sync cron177 plus original Data Quality and social-learning/cron171",
     "effect_proof": "PROTECTED_RELEASE_AND_REAL_ORIGINAL_177_RUN_PENDING"
   },
-  "release_state": "PROTECTED_CANDIDATE_PENDING_WITH_BASIC_PLAN_REQUEST_GUARD",
+  "release_state": "PROTECTED_MERGED_SUPABASE_EDGE_V835_NATIVE_READBACK_VERIFIED",
   "verified_business_outcome": false,
   "evidence": {
     "original_source_proof": "Original Supabase #177 provider_social_metric_ingest_receipt 2026-11-15 00:18,06:18,12:18 UTC has WINDSOR_PROVIDER_HTTP_403 and WINDSOR_STALE",
@@ -69,10 +101,18 @@
     "live_provider_source_fulfilled": false,
     "original_downstream_learning_proven": false,
     "plan_authority": "Official Windsor public API docs; original user-linked delegated Windsor account reported BASIC on 2026-11-15, NOT proof of Supabase Vault-key plan ownership",
-    "plan_based_403_remediation_proven": false
+    "plan_based_403_remediation_proven": false,
+    "protected_production_software_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5862",
+    "actual_production_original_readback": "Original Supabase net._http_response id=32121 HTTP200 and public.powerhouse_runtime_events original provider_social_metric_ingest_receipt at 2026-11-15T14:50:05Z with provider account verified and source readback 13/13",
+    "original_12_post_source_rows_with_exact_identity_verified": true,
+    "original_provider_health_confirmed_after_change": true,
+    "provider_account_403_recovery_verified_one_canary": true,
+    "natural_original_cron_continuity_awaits_future_proof": true,
+    "exact_social_window_ack_from_new_late_observation_proven": false,
+    "actual_learning_and_outcomes_proven": false
   },
   "provider_plan_diagnosis": {
-    "status": "REPRODUCTION_PENDING_ORIGINAL_VAULT_PROVIDER_READ",
+    "status": "ONE_NATIVE_TEST_RECOVERED_AFTER_REMOVING_FORCED_REFRESH_NOT_CAUSALLY_ISOLATED",
     "connected_delegated_windsor_plan": "BASIC",
     "observed_original_failure": "WINDSOR_PROVIDER_HTTP_403",
     "original_query_explicit_refresh_interval_before_fix": "6h",
@@ -81,6 +121,6 @@
     "official_plan_reference": "https://windsor.ai/documentation/pricing-information",
     "finding": "Windsor documents Basic as daily refresh versus hourly access at Standard and above; forcing public refresh_interval=6h can be incompatible. It is a plausible contributor, not an independently demonstrated root of the 403.",
     "prevention": "Use same original #177 Vault-key provider reader with original bounded date/account fields and provider-managed refresh/cache, no forced refresh_interval or refresh_since query params",
-    "expected_evidence": "Native original #177 read must return qualified provider rows and independent source receipt without WINDSOR_PROVIDER_HTTP_403; otherwise preserve WAIT_EXTERNAL or explicit permission failure and original ONE BRAIN owner."
+    "expected_evidence": "Original next natural cron #177 post/account readback again, then original #171 evaluator source window/consumer proof. Do not infer all historical time windows from one daily cumulative snapshot."
   }
 }
