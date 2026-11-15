@@ -137,12 +137,38 @@ export function customerValueBriefingMarkup(model={}){
   ?'<p><b>Werkelijk gemeten:</b> '+escapeHtml(formatValue(briefing.result.amount,briefing.result.unit))+' · '+escapeHtml(briefing.result.metric)+' · periode '+escapeHtml(briefing.result.period)+'. Geverifieerd meetresultaat, niet automatisch door deze actie veroorzaakte winst of betaalde omzet.</p>'+
    '<p><b>Leereffect:</b> '+(briefing.result.learningProven?'geverifieerde volgende beslissing gekoppeld.':'nog niet onafhankelijk bewezen.')+'</p>'
   :'<p><b>Werkelijk resultaat:</b> nog niet aangetoond. Een actie, publicatie of providerbevestiging is geen omzetbewijs.</p>';
+
+ const finance=briefing.finance,forecast=finance.forecast;
+ const labels={no_action:'Niets doen',downside:'Tegenvaller',base:'Verwacht',upside:'Meevaller'};
+ const scenarioHtml=forecast.status==='MODELLED_NOT_REALIZED'
+  ?'<div data-financial-scenarios="source-backed"><p><b>Scenarioforecast · '+escapeHtml(forecast.period)+'</b> · model '+escapeHtml(forecast.modelVersion)+' · '+escapeHtml(forecast.metric)+'</p>'+
+   '<ul>'+forecast.scenarios.map(c=>'<li>'+escapeHtml(labels[c.id])+': '+escapeHtml(formatValue(c.amount,'EUR'))+' (scenario, geen realisatie)</li>').join('')+'</ul>'+
+   '<details><summary>Modellen, aannames en financiële fricties</summary><p>Modellen: '+forecast.models.map(m=>escapeHtml(m.name+' v'+m.version)).join(' · ')+'</p>'+
+   '<p>Aannames: '+forecast.assumptions.map(a=>escapeHtml(a.name+': '+a.value+(a.unit?' '+a.unit:''))).join(' · ')+'</p>'+
+   '<p>Fricties: '+(forecast.frictions.length?forecast.frictions.map(a=>escapeHtml(a.name)+(a.cost===null?' (bedrag niet bewezen)':' ('+escapeHtml(formatValue(a.cost,'EUR'))+')')).join(' · '):'nog niet afzonderlijk onderbouwd')+'</p>'+
+   '<p>Bronnen: '+forecast.sourceRefs.map(escapeHtml).join(' · ')+'</p></details></div>'
+  :'<p data-financial-scenarios="evidence-due"><b>Scenarioforecast:</b> brongebonden nulmeting, modelversie, aannames en complete scenario’s ontbreken. Geen fictieve prognoses.</p>';
+ const realizedHtml=finance.savings
+  ?'<p data-financial-savings="verified"><b>Werkelijk netto bespaard:</b> '+escapeHtml(formatValue(finance.savings.net,'EUR'))+
+   ' (bruto '+escapeHtml(formatValue(finance.savings.gross,'EUR'))+
+   ' − implementatie '+escapeHtml(formatValue(finance.savings.investment,'EUR'))+
+   ' − terugkerende kosten '+escapeHtml(formatValue(finance.savings.ongoing,'EUR'))+
+   '). Methode: '+escapeHtml(finance.savings.method)+'. '+(finance.savings.causality==='INCREMENTAL_VERIFIED'?'Tegenfeitelijke onderbouwing gekoppeld.':'Causale toerekening niet onafhankelijk bewezen.')+'</p>'
+  :'<p data-financial-savings="evidence-due"><b>Werkelijk netto bespaard:</b> nog niet bewezen; onbekend is niet € 0. Afgerond of verzonden is geen besparingsbewijs.</p>';
+ const comparison=finance.comparable
+  ?'<p><b>Forecast versus werkelijk:</b> '+escapeHtml(formatValue(finance.forecastVsActual,'EUR'))+' verschil bij identieke meetlat, nulmeting en periode; geen automatische causale claim.</p>'
+  :'<p><b>Forecast versus werkelijk:</b> niet vergelijkbaar zonder gelijke meetlat, periode, nulmeting, uitvoering en kostenbewijs.</p>';
+ const closure='<p data-financial-closure="'+(finance.closingEligible?'review-ready':'evidence-due')+'"><b>Actie afsluiten:</b> '+
+  (finance.closingEligible?'bewijs beschikbaar ter beoordeling; sluit uitsluitend via de bestaande ONE BRAIN-actieautoriteit.':
+  'nog niet verantwoord; onafhankelijk uitvoeringsbewijs, gemeten netto-effect en leerevidence vereist.')+'</p>';
+ const financialHtml='<section aria-label="Financieel beslis- en resultaatdossier">'+scenarioHtml+realizedHtml+comparison+closure+'</section>';
+
  return '<section class="os-strategy-advisor" data-customer-value="action-evidence" aria-label="Bedrijfsverbetering">'+intro+
  '<article class="os-strategy-card"><h4>'+escapeHtml(briefing.title)+'</h4><p><b>Waarom:</b> '+escapeHtml(briefing.problem)+'</p>'+
  '<p><b>Wat nu:</b> '+escapeHtml(briefing.nextAction)+'</p>'+
  '<p><b>Meetlat:</b> '+escapeHtml(briefing.metric||'nog vast te leggen')+' · <b>Nulmeting:</b> '+escapeHtml(briefing.baseline||'ontbreekt')+'</p>'+
  '<p><b>Verwachte waarde:</b> '+(briefing.expected?escapeHtml(briefing.expected)+' ('+escapeHtml(briefing.expectedKind)+', geen realisatie)':'nog niet betrouwbaar te kwantificeren')+'</p>'+
- proof+'<p>'+(briefing.approvalRequired?'Jouw toestemming of bevoegd besluit is vereist vóór uitvoering.':'Uitvoering uitsluitend via de bestaande goedgekeurde Powerhouse-policy.')+'</p>'+
+ proof+financialHtml+'<p>'+(briefing.approvalRequired?'Jouw toestemming of bevoegd besluit is vereist vóór uitvoering.':'Uitvoering uitsluitend via de bestaande goedgekeurde Powerhouse-policy.')+'</p>'+
  '<details><summary>Waarop is dit gebaseerd?</summary><p>'+briefing.sourceRefs.map(escapeHtml).join(' · ')+'</p></details>'+
  '<button type="button" data-os-page="next-best-actions" aria-pressed="false">Beoordeel deze verbeteractie →</button></article></section>';
 }
