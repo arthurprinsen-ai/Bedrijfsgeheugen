@@ -76,6 +76,26 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
        decision.actionable_work_package!==true||
        decision.production_mutation_authorized!==false||
        decision.consumer_ack_verified!==false)fail('ORIGINAL_OWNER_DECISION_CONFLICT');
+    // Reconcile exact prior protected PRs and no-change review in the ORIGINAL operation.
+    // A no-change review is NOT implementation evidence; it only prevents repeat model
+    // spend against the same source revision while independent evaluation is due.
+    const priorBuild=op.evidence?.original_code_candidate_pr;
+    if(priorBuild){
+      if(priorBuild.candidate_id!==c.candidate_id||
+         priorBuild.source_revision!==obligation.evidence.source_revision||
+         priorBuild.source_sha256!==obligation.payload_sha256)fail('ORIGINAL_PRIOR_CODE_PR_CONFLICT');
+      held++;continue;
+    }
+    const priorNoChange=op.evidence?.original_code_nochange_review;
+    if(priorNoChange){
+      if(priorNoChange.candidate_id!==c.candidate_id||
+         priorNoChange.source_revision!==obligation.evidence.source_revision||
+         priorNoChange.source_sha256!==obligation.payload_sha256||
+         priorNoChange.decision_fingerprint!==decision.fingerprint||
+         priorNoChange.implementation_verified!==false||
+         priorNoChange.consumer_ack_verified!==false)fail('ORIGINAL_NOCHANGE_REVIEW_CONFLICT');
+      held++;continue;
+    }
     // A previously implemented source, or a duplicate candidate PR, must be reconciled, not rebuilt.
     if(/\bPR\s*#?\d{3,6}\b/i.test(action)||c.proposed_action.parent_pr){held++;continue;}
     eligible++;
@@ -119,6 +139,16 @@ export function checkChangedPaths({workorder,changed,deleted=[]}={}){
      source.length+test.length+learn.length+docs.length!==changed.length)fail('PATH_SCOPE_OR_EVIDENCE_MISSING');
   return {source,test,learn,docs,changed};
 }
+export function classifyOriginalCodeDiff({workorder,changed,deleted=[]}={}){
+  if(workorder?.contract!==CONTRACT||workorder.selected!==true||
+     !Array.isArray(changed)||!Array.isArray(deleted))fail('INVALID_DIFF');
+  if(changed.length===0&&deleted.length===0){
+    return Object.freeze({has_changes:false,status:'NO_CODE_CHANGE_INDEPENDENT_REVIEW_DUE',
+      implementation_verified:false,consumer_ack_verified:false,terminal_success:false});
+  }
+  const checked=checkChangedPaths({workorder,changed,deleted});
+  return Object.freeze({...checked,has_changes:true,status:'BOUNDED_CODE_CANDIDATE'});
+}
 function recordOutput(name,value){
   if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,name+'='+value+'\n');
 }
@@ -144,7 +174,13 @@ async function main(){
     const untracked=git(['ls-files','--others','--exclude-standard']).split('\n')
       .filter(x=>x&&!x.startsWith('artifacts/quality/'));
     const changed=[...new Set([...tracked,...untracked])].sort();
-    const result=checkChangedPaths({workorder:selected,changed,deleted});
+    const result=classifyOriginalCodeDiff({workorder:selected,changed,deleted});
+    recordOutput('has_changes',result.has_changes?'true':'false');
+    if(!result.has_changes){
+      process.stdout.write(JSON.stringify({candidate_id:selected.candidate_id,
+        result:result.status,implementation_verified:false,original_remains_planned:true})+'\n');
+      return;
+    }
     for(const path of result.learn){
       const lesson=JSON.parse(readFileSync(path,'utf8'));
       if(!lesson.compiler?.failure_class||
