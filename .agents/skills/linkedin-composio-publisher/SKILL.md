@@ -467,3 +467,23 @@ lane only once it has an exact eligible source and valid editorial artifact.
 The original publisher/agent remains the owner, not a second scheduler or sender.
 Do not claim repair complete before protected CI, production edge source parity,
 natural provider publication, ONE BRAIN consumer PROCESSED, and Heartbeat learning.
+
+
+## 15 November 2026 — guarded rebootstrap of ORIGINAL personal 422
+Fingerprint `powerhouse|linkedin|personal-observation-review-no-rebootstrap|20261115-v1`.
+The original hourly `powerhouse_content_closed_loop_tick_v1` calls
+`powerhouse-content-loop`, not the editor directly. After the successful
+shared observer lexicon release, the original personal source claim remained
+BLOCKED (two prior recovery attempts), but the loop did not recognize
+`OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED` as a rebootstrap reason.
+The existing content-loop now owns a bounded, **pre-provider-only** check:
+both original daily records must have the exact same source ID, reviewed
+SHA256, matching 422 failure and status; no original provider ID, live URL,
+publication timestamp, consumed authority, possible provider side effect,
+or republish prohibition. At most one additional attempt when the recorded
+original recovery count is 2 (limit 3), with the full unchanged source/identity/
+editorial/uniqueness/OAuth/provider review in the original orchestrator.
+If anything fails or the source becomes ineligible, keep OPEN with the original
+owner and explicit typed reason, never fake a result and never create a second
+sender/scheduler. Production green requires provider URN and independent
+GET, named ONE BRAIN PROCESSED plus Heartbeat measurement and learning.
