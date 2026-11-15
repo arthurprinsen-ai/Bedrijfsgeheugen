@@ -53,7 +53,9 @@ test('Gmail zero-output cannot masquerade as a successful commercial delivery',(
   assert.equal(outboundDeliveryGap({selected:0,sent:0,results:[]}), 'NO_ELIGIBLE_PREPARED_EMAIL');
   assert.equal(outboundDeliveryGap({selected:1,sent:0,results:[{status:'held'}]}), 'NO_PROVIDER_CONFIRMED_EMAIL');
   assert.equal(outboundDeliveryGap({selected:1,sent:0,results:[{status:'unverified'}]}), 'PROVIDER_READBACK_UNVERIFIED');
-  assert.match(sender,/external_outreach_executed:sent>0/);
+  assert.match(sender,/external_outreach_executed:providerAttemptedNow>0/);
+  assert.match(sender,/priorReadbacksSettled\+\+/);
+  assert.match(sender,/verifiedNewSends\+\+/);
   assert.match(sender,/const sent=out\.filter\(x=>x\.status==='sent'\)\.length/);
   assert.match(sender,/provider_ack_verified:true/);
   assert.match(sender,/CONTACT_SUPPRESSED/);
