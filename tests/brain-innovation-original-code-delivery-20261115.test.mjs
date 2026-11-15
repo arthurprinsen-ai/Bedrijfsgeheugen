@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {selectOriginalCodeCandidate,checkChangedPaths,classifyOriginalCodeDiff,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
+import {selectOriginalCodeCandidate,isExactOriginalInnovationImplementationPr,checkChangedPaths,classifyOriginalCodeDiff,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
 import {evaluateOriginalNochangeReview} from '../scripts/brain/innovation-original-code-nochange-review.mjs';
 import {verifyOriginalCandidateReceipt} from '../scripts/brain/innovation-original-code-pr-receipt.mjs';
 
@@ -143,4 +143,38 @@ test('reject invalid no-change review without mutating a Brain source',()=>{
   assert.throws(()=>evaluateOriginalNochangeReview({workorder,operation:f.snapshot.intakes[0],headSha:'untrusted'}),/INVALID_ORIGINAL_IDENTITY/);
   assert.throws(()=>evaluateOriginalNochangeReview({workorder,operation:{...f.snapshot.intakes[0],status:'VERIFIED'},headSha:'a'.repeat(40)}),/SOURCE_VERSION_OWNER_OR_DECISION_DRIFT/);
   assert.throws(()=>evaluateOriginalNochangeReview({workorder,operation:{...f.snapshot.intakes[0],evidence:{}},headSha:'a'.repeat(40)}),/SOURCE_VERSION_OWNER_OR_DECISION_DRIFT/);
+});
+
+
+test('exact GitHub implementation identity differentiates PR from unrelated recovery text',()=>{
+  const w=selectOriginalCodeCandidate(fixture());
+  const valid={
+    headRefName:'writer/innovation-'+w.candidate_id.slice(0,8)+'-43752164113',
+    body:[
+      'Parent-P0: #4198',
+      'Candidate-Type: implementation',
+      'Original-Candidate: '+w.candidate_id,
+      'Original-Source-SHA256: '+w.source_sha256,
+      'Original-Source-Revision: '+w.source_revision,
+      'Original-Operation: '+w.operation_id,
+      'Writer-Lease-Owner: agent:agent-integration-engineer'
+    ].join('\n')
+  };
+  const args={pr:valid,candidateId:w.candidate_id,sourceSha:w.source_sha256,sourceRevision:w.source_revision};
+  assert.equal(isExactOriginalInnovationImplementationPr(args),true);
+  assert.equal(isExactOriginalInnovationImplementationPr({...args,pr:{...valid,headRefName:'fix/4198-original-code-nochange-reconcile-20261115'}}),false);
+  assert.equal(isExactOriginalInnovationImplementationPr({...args,pr:{...valid,body:valid.body.replace('Candidate-Type: implementation','Candidate-Type: recovery')}}),false);
+  assert.equal(isExactOriginalInnovationImplementationPr({...args,pr:{...valid,body:valid.body.replace('Original-Source-SHA256: '+w.source_sha256,'Original-Source-SHA256: '+('f'.repeat(64)))}}),false);
+  assert.equal(isExactOriginalInnovationImplementationPr({...args,pr:{...valid,body:valid.body+'\nOriginal-Candidate: '+w.candidate_id.replace(/.$/,'f'),headRefName:'writer/innovation-fake-123'}}),false);
+  assert.equal(isExactOriginalInnovationImplementationPr({...args,pr:{...valid,body:'Mentioned original candidate '+w.candidate_id+' during repair, not a built PR'}}),false);
+});
+test('one canonical candidate selector passes exact immutable source identity into GitHub dedupe gate',()=>{
+  const f=fixture(),w=selectOriginalCodeCandidate(f);
+  let call=null;
+  const result=selectOriginalCodeCandidate({...f,existingPrFor:(id,sha,rev)=>{
+    call={id,sha,rev};return true;
+  }});
+  assert.deepEqual(call,{id:w.candidate_id,sha:w.source_sha256,rev:w.source_revision});
+  assert.equal(result.selected,false);
+  assert.equal(result.existing,1);
 });
