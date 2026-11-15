@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readOriginalSalesExecutionAudit,projectPowerhouseIntegrationReadback}
   from '../platform/portal/powerhouse-existing-integration-read-model.mjs';
+import {powerhouseIntegrationMarkup} from '../portal-v2/control-plane-cockpit.js';
 
 const uuid=n=>'00000000-0000-4000-8000-'+String(n).padStart(12,'0');
 const at='2026-11-15T12:00:00Z';
@@ -160,4 +161,18 @@ test('empty source and incomplete exact provider metadata never invent proof',as
   assert.equal(unknown.state,'SOURCE_UNAVAILABLE');
   assert.equal(unknown.totalEvents7d,null);
   assert.equal(unknown.currentActionNotDoneSample,null);
+});
+
+test('existing Powerhouse admin cockpit shows historical event and current mutable status separately',()=>{
+  const html=powerhouseIntegrationMarkup({salesExecutionAudit:{
+    state:'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED',
+    totalEvents7d:164,sampledEvents:164,actionBackedSample:164,
+    unsupportedSample:0,currentActionNotDoneSample:1,
+    scope:'FULL_LAST_7D',externalProviderProof:false
+  }});
+  assert.match(html,/historisch writer\+actie bevestigd 164/);
+  assert.match(html,/historisch niet ondersteund 0/);
+  assert.match(html,/actuele actiestatus niet done 1/);
+  assert.match(html,/externe provider-uitvoering niet bewezen/);
+  assert.match(html,/NIET BEWEZEN/);
 });
