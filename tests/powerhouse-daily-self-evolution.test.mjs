@@ -1,4 +1,5 @@
 import test from 'node:test';
+import './brain-innovation-original-owner-readback-20261115.test.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { buildDailySelfEvolutionSnapshot } from '../scripts/brain/daily-self-evolution.mjs';
