@@ -20,6 +20,30 @@ const isExactOriginalProof=(p,organizationUrn)=>p?.tenant_id==='canonical'
   &&URN.test(String(p.external_id||''))
   &&date(p.publication_date)!==null
   &&Number.isFinite(Date.parse(String(p.live_proven_at||'')));
+/** The SAME original #177 provider poll fetches post and account resources in
+ * parallel but never lets an OPTIONAL account aggregate failure discard a
+ * VERIFIED post resource read. This is not a fallback provider or writer.
+ * The caller must still mark account failure NON-GREEN and log the original
+ * ONE BRAIN failure receipt. Never convert old post statistics into missing
+ * exact 24/48/72-hour snapshots. */
+export async function readOriginalWindsorCompanySourcePair({fetchPosts,fetchAccount}={}){
+ if(typeof fetchPosts!=='function'||typeof fetchAccount!=='function')
+   throw new TypeError('WINDSOR_ORIGINAL_SOURCE_READERS_REQUIRED');
+ const [posts,account]=await Promise.allSettled([fetchPosts(),fetchAccount()]);
+ // A missing authorized post source is a HARD original-owner boundary.
+ if(posts.status==='rejected')throw posts.reason;
+ if(!Array.isArray(posts.value))throw new Error('WINDSOR_POST_SOURCE_ARRAY_REQUIRED');
+ if(account.status==='fulfilled'&&Array.isArray(account.value))
+   return {postRows:posts.value,accountRows:account.value,accountFailure:null};
+ const code=String(account.status==='rejected'
+   ?account.reason?.message||'': 'WINDSOR_ACCOUNT_ROWS_NOT_ARRAY');
+ // No response body, request URL, API key or external account identity is
+ // forwarded to existing runtime/Brain logs.
+ const accountFailure=/^WINDSOR_[A-Z0-9_]{3,100}$/.test(code)
+   ?code:'WINDSOR_ACCOUNT_SOURCE_UNAVAILABLE';
+ return {postRows:posts.value,accountRows:[],accountFailure};
+}
+
 export function stageOriginalWindsorCompanySources({
  postRows=[],accountRows=[],publicationProofs=[],slotDay,
  observedAt,organizationId='18234216',maxRows=40
