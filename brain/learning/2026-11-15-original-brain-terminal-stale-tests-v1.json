@@ -14,13 +14,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
     ],
     "shadow": [
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
     ],
     "canary": [
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
     ]
   },
   "root_cause": "After protected #5825 independently fixed the four originally failing full-BRAIN backend test contracts, the separate historical test suite tests/github-delivery-state-machine-terminal-closure.test.mjs still contained two exact stale first-page-only selectors and direct .display_title==$title checks. Their static assertions contradict the already-live final native PR-era full-pagination flight index. This last independent regression source can reject the correct workflow in a future extended test path. This is a source/test-drift observation, NOT evidence of a new post-#5825 terminal failure.",
@@ -42,7 +42,8 @@
     "new_scheduler": false,
     "new_worker": false,
     "new_queue": false,
-    "new_store": false
+    "new_store": false,
+    "canonical_learning_evaluation_wrapper": "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
   },
   "prevention": {
     "full_original_native_provider_pagination_required": true,
@@ -51,7 +52,8 @@
     "original_protected_main_source_required": true,
     "original_success_required": true,
     "original_agent_ack_not_inferred_from_agent_task": true,
-    "avoid_concurrent_duplicate_original_fixed_four_tests": true
+    "avoid_concurrent_duplicate_original_fixed_four_tests": true,
+    "canonical_brain_prefixed_replay_executes_existing_original_historical_test_suite": true
   },
   "remaining_evidence": "Release exact-head Required/CodeQL/full BRAIN (when applicable), protected current-main merge and independent original terminal, then separate real source-bound agent/operation consumption/impact/learning; source test alone never proves those.",
   "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
@@ -60,6 +62,7 @@
     "prior_original_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5825",
     "original_failed_BRAIN": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458",
     "independent_test_release": "NOT_YET_PROVEN",
-    "independent_innovation_agent_consumer_receipts": "NONE_VERIFIED"
+    "independent_innovation_agent_consumer_receipts": "NONE_VERIFIED",
+    "regression": "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
   }
 }
