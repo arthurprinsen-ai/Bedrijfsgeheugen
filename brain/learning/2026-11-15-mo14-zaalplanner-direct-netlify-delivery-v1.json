@@ -12,7 +12,16 @@
       "config/brain-delivery-system.json"
     ],
     "observation": "PR #5875 initially failed Required hygiene due to missing machine PR metadata; after repair it failed on unclassified path pw-mo14-1/zaalplanner/index.html. After registering only the owned planner prefix, hygiene admitted the candidate but rejected the missing activity ledger, human change documentation and structured Brain learning. The existing pw-mo14-1 Netlify site continued to report the August 2026 production deploy.",
-    "proof_limits": "Code in GitHub and successful previews of the Bedrijfsgeheugen repo are not evidence that the independent MO14 Netlify site has been updated."
+    "proof_limits": "Code in GitHub and successful previews of the Bedrijfsgeheugen repo are not evidence that the independent MO14 Netlify site has been updated.",
+    "independent_site_production": {
+      "status": "LIVE_PROVEN",
+      "site_id": "1c4fa5ce-45ae-45dc-b3e2-11f90587c474",
+      "deploy_id": "6af9d8a86acb2f10f6e00ed4",
+      "published_at": "2026-11-15T16:09:25.135Z",
+      "github_actions_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43733598207",
+      "readback": "HTTP /zaalplanner/ contains keeper and PDF-export inputs; original / index.html byte-equal to predeployment backup",
+      "scope_limit": "Source PR remains open and broader Bedrijfsgeheugen CI has independent failure; live browser input interaction not yet independently automated"
+    }
   },
   "root_cause": "MO14 planner source was added to the business-system repository without its exact delivery-lane ownership, metadata and required one-loop learning artifacts; the independent Netlify site still requires its own authorized deploy and provider readback.",
   "fix": "Register only pw-mo14-1/zaalplanner/ under the canonical website delivery lane, add pure regression and full machine/ledger/human learning records to the same PR, retain GitHub branch protection, and publish the existing MO14 Netlify project using direct GitHub/Netlify authority only (never Make).",
@@ -39,5 +48,5 @@
     "security_sensitive": false
   },
   "owner": "original MO14-1 website protected delivery lane",
-  "terminal_rule": "Candidate remains UNVERIFIED until protected checks, authorized independent Netlify production release and explicit runtime readback succeed."
+  "terminal_rule": "Independent MO14 website deployment and structural HTTP readback are LIVE_PROVEN; separately keep repository merge and full browser interaction as EVIDENCE_DUE, without claiming all Powerhouse checks green."
 }
