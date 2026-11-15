@@ -37,7 +37,7 @@ test('new reexecution uses original bounded monotonic stage writer in a distinct
   assert.match(migration,/late_registered/);
   assert.match(migration,/truth_class','observed_action_state'/);
   assert.match(migration,/agent_attribution','UNKNOWN_NOT_ATTESTED'/);
-  assert.doesNotMatch(migration,/external_provider_(?:verified|proof)',true);
+  assert.doesNotMatch(migration,/external_provider_(?:verified|proof)/i);
 });
 
 test('admin audit treats old real writer events as historical, but later mutable action executions require a distinct event',()=>{
