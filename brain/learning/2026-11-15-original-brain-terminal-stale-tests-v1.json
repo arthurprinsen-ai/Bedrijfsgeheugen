@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|terminal|remaining-github-delivery-regression-oracle-first-page-literal|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "INTEGRATION_REGRESSION_STALE_CONTRACT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+    ]
+  },
+  "root_cause": "After protected #5825 independently fixed the four originally failing full-BRAIN backend test contracts, the separate historical test suite tests/github-delivery-state-machine-terminal-closure.test.mjs still contained two exact stale first-page-only selectors and direct .display_title==$title checks. Their static assertions contradict the already-live final native PR-era full-pagination flight index. This last independent regression source can reject the correct workflow in a future extended test path. This is a source/test-drift observation, NOT evidence of a new post-#5825 terminal failure.",
+  "production_observation": {
+    "original_source_pr": 5821,
+    "original_source_sha": "ded9ff6a1ace0c39f2520b978bce666342b9c487",
+    "fixed_full_brain_pr": 5825,
+    "fixed_full_brain_merge": "06bc3201131191eea4c01588d3701927db04951b",
+    "remaining_test": "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "actual_original_agent_intakes_planned": 14,
+    "actual_open_innovation_delivery": 14,
+    "independent_agent_acks": 0
+  },
+  "change": {
+    "original_runtime_control_plane_unchanged": ".github/workflows/obligation-terminal-closure.yml",
+    "remaining_regression_test": "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "agent_roles_updated_in_existing_roster": "platform/agents/agent-team.mjs",
+    "prior_skill_release_from_original_pr": 5825,
+    "new_scheduler": false,
+    "new_worker": false,
+    "new_queue": false,
+    "new_store": false,
+    "canonical_learning_evaluation_wrapper": "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+  },
+  "prevention": {
+    "full_original_native_provider_pagination_required": true,
+    "first_page_only_terminal_literal_rejected": true,
+    "original_workflow_exact_title_required": true,
+    "original_protected_main_source_required": true,
+    "original_success_required": true,
+    "original_agent_ack_not_inferred_from_agent_task": true,
+    "avoid_concurrent_duplicate_original_fixed_four_tests": true,
+    "canonical_brain_prefixed_replay_executes_existing_original_historical_test_suite": true
+  },
+  "remaining_evidence": "Release exact-head Required/CodeQL/full BRAIN (when applicable), protected current-main merge and independent original terminal, then separate real source-bound agent/operation consumption/impact/learning; source test alone never proves those.",
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evidence": {
+    "observed_source": "native repository main 06bc3201131191eea4c01588d3701927db04951b: two remaining old selector assertions in tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "prior_original_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5825",
+    "original_failed_BRAIN": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458",
+    "independent_test_release": "NOT_YET_PROVEN",
+    "independent_innovation_agent_consumer_receipts": "NONE_VERIFIED",
+    "regression": "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+  }
+}
