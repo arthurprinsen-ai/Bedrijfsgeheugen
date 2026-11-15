@@ -52,6 +52,7 @@ jobs:
           path: .mo14-backup/
           retention-days: 30
           if-no-files-found: error
+          include-hidden-files: true
       - name: Direct Netlify production upload (no Make)
         run: |
           set -euo pipefail
