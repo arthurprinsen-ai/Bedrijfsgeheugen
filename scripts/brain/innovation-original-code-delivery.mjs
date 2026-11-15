@@ -99,7 +99,7 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
     // A previously implemented source, or a duplicate candidate PR, must be reconciled, not rebuilt.
     if(/\bPR\s*#?\d{3,6}\b/i.test(action)||c.proposed_action.parent_pr){held++;continue;}
     eligible++;
-    if(existingPrFor(c.candidate_id)){existing++;continue;}
+    if(existingPrFor(c.candidate_id,obligation.payload_sha256,obligation.evidence.source_revision)){existing++;continue;}
     return Object.freeze({contract:CONTRACT,selected:true,
       candidate_id:c.candidate_id,component_id:c.component_id,
       owner,source_key:c.source_key,source_revision:obligation.evidence.source_revision,
@@ -118,13 +118,30 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
 function git(args){
   return execFileSync('git',args,{encoding:'utf8',timeout:15000,maxBuffer:2000000}).trim();
 }
-function existingPrFor(id){
+export function isExactOriginalInnovationImplementationPr({pr,candidateId,sourceSha,sourceRevision}={}){
+  if(!UUID.test(candidateId)||!SHA.test(sourceSha)||
+     typeof sourceRevision!=='string'||!sourceRevision.trim()||
+     typeof pr?.body!=='string')return false;
+  // A recovery/doc PR can mention the UUID but is NOT an implementation receipt.
+  if(typeof pr.headRefName!=='string'||
+     !new RegExp('^writer/innovation-'+candidateId.slice(0,8)+'-[0-9]+$').test(pr.headRefName))return false;
+  const lines=pr.body.split(/\r?\n/).map(line=>line.trim());
+  return lines.includes('Candidate-Type: implementation')&&
+    lines.includes('Original-Candidate: '+candidateId)&&
+    lines.includes('Original-Source-SHA256: '+sourceSha)&&
+    lines.includes('Original-Source-Revision: '+sourceRevision)&&
+    lines.some(line=>line.startsWith('Original-Operation: '))&&
+    lines.includes('Writer-Lease-Owner: agent:agent-integration-engineer');
+}
+function existingPrFor(id,sourceSha,sourceRevision){
   const data=JSON.parse(execFileSync('gh',
     ['pr','list','--repo',REPO,'--state','all','--search',id,
-      '--limit','100','--json','number,body'],
+      '--limit','100','--json','number,body,headRefName'],
     {encoding:'utf8',timeout:25000,maxBuffer:4000000}));
   if(!Array.isArray(data))fail('GITHUB_PR_READBACK_INVALID');
-  return data.some(pr=>typeof pr.body==='string'&&pr.body.includes(id));
+  return data.some(pr=>isExactOriginalInnovationImplementationPr({
+    pr,candidateId:id,sourceSha,sourceRevision
+  }));
 }
 export function checkChangedPaths({workorder,changed,deleted=[]}={}){
   if(workorder?.contract!==CONTRACT||workorder.selected!==true||
