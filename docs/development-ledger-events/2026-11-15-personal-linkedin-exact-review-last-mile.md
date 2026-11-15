@@ -16,3 +16,7 @@ User rejected nonsensical personal LinkedIn copy, with many views but no authent
 
 ## Terminal evidence gate
 Code committed and a PR opened are **not** LIVE_PROVEN. Consumer learning/Heartbeat closure remains open until independent production evidence. Existing public URN must never be replaced automatically.
+
+## CI admission incident — 2026-11-15
+
+Original PR #5914 hygiene admission (run 43762946554) was rejected before unit tests because the submitted PR body lacked mandatory delivery metadata: `Obligation-ID`, `Base-SHA`, `Delivery-Lane`, `Candidate-Type`, `Change-Scope`. This was an authoring/metadata error, not a failing regression test. Remediation: add exact original owner, canonical backend lane, main base SHA, recovery candidate type, scope budget and all eight changed paths to the original PR body; create an updated exact-head test run. Never bypass admission or silently claim Required green.
