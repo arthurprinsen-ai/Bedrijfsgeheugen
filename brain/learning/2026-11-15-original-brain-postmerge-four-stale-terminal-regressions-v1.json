@@ -1,0 +1,75 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|brain|postmerge-original-terminal-full-history-four-stale-regression-fixtures|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "BRAIN_REGRESSION_FIXTURE_DRIFT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ]
+  },
+  "root_cause": "A genuine fix to the original terminal complete PR-era paginated native BRAIN lookup was accepted by Required+CodeQL, but four separate backend regression tests still asserted the abolished 100-result first-page-only URL and a Bash gh mock that did not model complete paginated native runs. Post-merge original BRAIN run correctly refused terminal closure.",
+  "evidence": {
+    "original_head": "173b53fd0e84b27a078cad39dcbbe8f2fae413df",
+    "original_main": "ded9ff6a1ace0c39f2520b978bce666342b9c487",
+    "original_terminal_run": 43695356905,
+    "original_brain_run": 43695381458,
+    "original_backend_job": 132754808017,
+    "actual_backend_results": {
+      "tests": 6786,
+      "pass": 6780,
+      "fail": 4,
+      "skip": 2
+    },
+    "actual_failed_tests": [
+      "brain-terminal-brain-gate-trigger-parity-v1",
+      "brain-terminal-descendant-evidence-recovery-v1",
+      "brain-terminal-gate-trigger-awareness-v1",
+      "brain-terminal-runtime-authority-v1"
+    ],
+    "direct_error": "TERMINAL_CRITICAL_GATE_FAILED:BRAIN:run=43695381458:conclusion=failure",
+    "provider_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458",
+    "new_candidate_protected_required": "NOT_YET_PROVEN",
+    "new_candidate_production_readback": "NOT_YET_PROVEN",
+    "original_innovation_consumer_acks": 0
+  },
+  "change": {
+    "existing_scope": "same GitHub terminal owner and original ONE BRAIN evidence gate",
+    "test_contract": "replay original fully paginated and created-bound verifier for the real final terminal; retain original second terminalizer fixture until independently changed",
+    "existing_skill": ".agents/skills/powerhouse-post-merge-codeql/SKILL.md",
+    "new_executor": false,
+    "new_scheduler": false,
+    "new_queue": false,
+    "no_production_bypass": true,
+    "no_test_removals": true
+  },
+  "prevention": {
+    "fail_closed_on_incomplete_provider_history": true,
+    "fail_closed_on_missing_or_non_success_brain": true,
+    "exact_candidate_pr_head_title_required": true,
+    "protected_main_origin_verified": true,
+    "positive_and_negative_shell_replay_required": true,
+    "first_page_only_query_forbidden_in_new_original_final_gate": true,
+    "genuine_agent_outcome_required_for_innovation_closure": true
+  },
+  "remaining_evidence": "Protected exact-head Required/CodeQL/full BRAIN on corrective PR, protected merge, independent original terminal success and source-bound original innovation 14 actual agent actions/outcomes.",
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}
