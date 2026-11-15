@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "SOURCE_CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "fingerprint": "powerhouse|innovation|original-code-agent-legitimate-no-diff-classified-as-failed-build|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Existing original innovation code writer accepted only source+test+learning diffs; on the genuine original_code_recovery run the authorized agent correctly found the requested source correction already implemented and made no changes. The deterministic --validate path raised PATH_SCOPE_OR_EVIDENCE_MISSING and the original work repeated instead of recording nonterminal inspection.",
+  "source_evidence": {
+    "github_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43752164113",
+    "job_id": 132928288752,
+    "observed_error": "ORIGINAL_INNOVATION_CODE_PATH_SCOPE_OR_EVIDENCE_MISSING",
+    "source_candidate_class": "NO_CODE_DIFF_UNVERIFIED",
+    "original_innovation_open": 14,
+    "independent_measured_results": 0
+  },
+  "compiler": {
+    "failure_class": "ORIGINAL_INNOVATION_NO_DIFF_MISCLASSIFIED_AS_DELIVERY_FAILURE",
+    "severity": "P0_AGENT_LOOP_STALL",
+    "machine_enforceable": true,
+    "forbidden_false_success": true
+  },
+  "change": {
+    "same_workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "same_original_intake": "public.brain_operations.INNOVATION_INTAKE",
+    "same_original_CAS": "public.brain_transition_operation",
+    "no_change_is_nonterminal": true,
+    "do_not_publish_empty_PR": true,
+    "original_safety_review_retained": true,
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_agent": false,
+    "new_table": false,
+    "provider_dispatch_authority_unchanged": true
+  },
+  "prevention": {
+    "classify_zero_diff_separately_from_invalid_partial_diff": true,
+    "fail_closed_on_nonzero_unapproved_paths": true,
+    "record_original_operation_no_diff_with_version_CAS": true,
+    "independent_provider_GET_readback": true,
+    "skip_same_source_revision_without_discouraging_independent_verification": true,
+    "never_mint_consumer_ACK_or_measured_savings_from_no_diff": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "protected_required_codeql_due": true,
+    "next_original_runner_and_native_readback_due": true
+  },
+  "semantic_learning": {
+    "cause": "A zero-file diff can be a correct engineering conclusion or an unverified inference; it is neither invalid delivery input nor independent production proof.",
+    "prevention_rule": "Branch by verified file-diff classification: no-diff -> exact original nonterminal Brain CAS/readback, source+test+learning diff -> protected PR, unsafe partial changes -> fail. Keep due verification as OPEN.",
+    "regression_guard": "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
+    "effect_proof": "PROTECTED_MERGE_AND_NEXT_NATURAL_ORIGINAL_OWNER_READBACK_DUE"
+  }
+}
