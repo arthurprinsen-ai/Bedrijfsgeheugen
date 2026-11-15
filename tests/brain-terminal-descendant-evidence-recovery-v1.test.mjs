@@ -8,9 +8,13 @@ const delivery=await readFile('tools/brain-delivery-system.mjs','utf8');
 
 test('cancelled or skipped exact Brain run remains nonterminal without descendant substitution',()=>{
   assert.match(closure,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
-  assert.ok(closure.includes('runs?branch=main&event=workflow_dispatch&per_page=100'));
+  assert.ok(closure.includes('runs?branch=main&event=workflow_dispatch&created=${created_filter}&per_page=100'));
+  assert.ok(closure.includes('gh api --paginate --slurp "$query"'));
+  assert.ok(closure.includes('brain-verification-flight-index.mjs --title "$expected_title" --since "$since"'));
+  assert.match(closure,/TERMINAL_BRAIN_HISTORY_INCOMPLETE/);
+  assert.doesNotMatch(closure,/runs\?branch=main&event=workflow_dispatch&per_page=100/);
   assert.ok(closure.includes('BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}'));
-  assert.ok(closure.includes('.display_title==$title'));
+  // Exact PR/head title is verified by the shared full-history flight index, never by a first-page-only selector.
   assert.ok(closure.includes('/compare/${run_source_sha}...main'));
   assert.match(closure,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
   assert.doesNotMatch(closure,/require_brain_evidence|TERMINAL_BRAIN_(FOUNDATION|DESCENDANT)_PROVEN/);
