@@ -99,6 +99,21 @@ test('provider fails to report insert outcome: no fabricated new durable dispatc
   }),/dispatch insert outcome unverified/);
 });
 
+test('provider-reported new insert must match the exact original immutable key',async()=>{
+  const canonical={idempotency_key:'obligation|abc',record_type:'AgentWork',
+    obligation_id:'original-abc',owner_agent:'agent-reliability',
+    trace_id:'trace-abc',state:'PENDING',record:{}};
+  const fetchImpl=async(url,init={})=>init.method==='POST'
+    ?jsonResponse(201,[{...canonical,idempotency_key:'wrong-key'}])
+    :jsonResponse(200,[canonical]);
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  await assert.rejects(stores.workStore.putIfAbsent({
+    type:'AgentWork',idempotencyKey:'obligation|abc',
+    obligationId:'original-abc',ownerAgent:'agent-reliability',
+    traceId:'trace-abc',state:'PENDING'
+  }),/inserted dispatch identity unverified/);
+});
+
 test('dispatch stores list only their canonical record type for backfill collection', async () => {
   const calls = [];
   const fetchImpl = async (url, init={}) => {
