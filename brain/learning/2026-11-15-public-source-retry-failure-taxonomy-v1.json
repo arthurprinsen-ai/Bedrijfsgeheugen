@@ -29,6 +29,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
     ]
   },
   "compiler": {
@@ -37,5 +43,13 @@
     "machine_enforceable": true,
     "repeat_count": 5,
     "security_sensitive": true
-  }
+  },
+  "candidate_failures_observed": [
+    {
+      "code": "LEARNING_EVALUATION_TESTS_REQUIRED:shadow",
+      "reason": "security_sensitive=true requires canonical historical_replay+shadow+canary tests in admission",
+      "fix": "explicit local reproducible original read-only regression in all three canonical evaluation modes",
+      "prevention": "Require compiler-evaluation mode parity for all security-sensitive original source-reader changes"
+    }
+  ]
 }
