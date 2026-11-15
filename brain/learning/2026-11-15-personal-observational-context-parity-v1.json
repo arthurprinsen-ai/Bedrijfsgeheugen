@@ -24,5 +24,15 @@
   ],
   "false_green_forbidden": true,
   "new_scheduler": false,
-  "new_publisher": false
+  "new_publisher": false,
+  "failure_class": "CLASSIFIER_GAP",
+  "scope": "CONTENT",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-final-truth-editorial-parity-20261115.test.mjs"
+    ]
+  }
 }
