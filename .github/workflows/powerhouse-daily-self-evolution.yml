@@ -264,9 +264,17 @@ jobs:
             Only change a listed allowed_source_path, create a NEW named
             tests/brain-innovation-*.test.mjs regression and a NEW
             brain/learning/2026-11-*-innovation-*.json learning record with
-            compiler.failure_class and evaluation.historical_replay. Optionally write
-            NEW docs/changes/2026-11-*-innovation-*.md and
-            docs/development-ledger-events/2026-11-*-innovation-*.md.
+            compiler.failure_class, root_cause, fingerprint and evaluation evidence.
+            Determine REQUIRED evaluation modes using the existing
+            scripts/brain/learning-canonicalization-gate.mjs compiler:
+            historical_replay always, shadow for relevant recovery/security,
+            canary for runtime FALSE_GREEN/FALSE_SUCCESS and security.
+            All required test paths must exist and pass in their actual modes.
+            MUST also create ONE NEW docs/changes/2026-11-*-innovation-*.md
+            human-readable explanation and ONE NEW
+            docs/development-ledger-events/2026-11-*-innovation-*.md
+            with original candidate ID, failures, source fix, rollback and
+            nonterminal delivery status. These two documents are NOT optional.
             Max eight changed files. Never edit a pre-existing test, workflow,
             policy, auth/tenant security, secrets, migration, lock, dependency or
             personal/customer data. No deletion, network publication, git push,
@@ -293,7 +301,7 @@ jobs:
         run: |
           set -euo pipefail
           mapfile -t paths < <(node scripts/brain/innovation-original-code-delivery.mjs --paths)
-          test "${#paths[@]}" -ge 3
+          test "${#paths[@]}" -ge 5
           base="$(git rev-parse HEAD)"
           branch="writer/innovation-${CANDIDATE_ID:0:8}-${GITHUB_RUN_ID}"
           git switch -c "$branch"
