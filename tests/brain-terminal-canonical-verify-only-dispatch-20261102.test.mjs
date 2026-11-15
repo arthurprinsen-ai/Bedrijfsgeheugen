@@ -27,7 +27,7 @@ test('still requires real successful BRAIN exact candidate and protected main so
   assert.match(terminal,/TERMINAL_CRITICAL_GATE_NOT_TERMINAL/);
   assert.match(terminal,/TERMINAL_CRITICAL_GATE_FAILED/);
   assert.match(terminal,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
-  assert.match(terminal,/\.display_title==\$title/);
+  assert.match(terminal,/brain-verification-flight-index\.mjs --title "\$expected_title" --since "\$since"/);
   assert.match(brain,/MERGED_CANDIDATE_READ_ONLY_VERIFIED/);
   assert.match(brain,/verification_only != true/);
   assert.match(brain,/BG169 GitHub-native production transport/);
@@ -181,4 +181,37 @@ test('no false green on GitHub 1000 result cap, old timestamps, truncated or shi
     {total_count:2,workflow_runs:[mk(1,'2026-11-12T17:01:00Z')]},
     {total_count:3,workflow_runs:[mk(2,'2026-11-12T17:02:00Z')]}
   ],title,{since}).safe_to_dispatch,false);
+});
+
+test('final terminal BRAIN gate consumes the same complete original PR-era flight history as the dispatch guard',()=>{
+  const critical=terminal.split('name: Verify exact-head critical delivery gates before terminal claim')[1]
+    ?.split('name: Require explicit Supabase Edge Function provider readback before terminal claim')[0];
+  assert.ok(critical,'terminal critical gate is required');
+  const consumer=critical.split('require_workflow() {')[1]?.split('require_required_or_descendant() {')[0];
+  assert.ok(consumer,'the original terminal BRAIN verifier must remain the same owner');
+  assert.match(consumer,/originalBrainFlightSince/);
+  assert.match(consumer,/created=\$\{created_filter\}/);
+  assert.match(consumer,/gh api --paginate --slurp "\$query"/);
+  assert.match(consumer,/brain-verification-flight-index\.mjs --title "\$expected_title" --since "\$since"/);
+  assert.match(consumer,/TERMINAL_BRAIN_HISTORY_INCOMPLETE/);
+  assert.match(consumer,/TERMINAL_BRAIN_FLIGHT_ID_UNVERIFIED/);
+  assert.match(consumer,/TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED/);
+  assert.match(consumer,/TERMINAL_CRITICAL_GATE_FAILED/);
+  assert.match(consumer,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
+  assert.doesNotMatch(consumer,/runs\?branch=main&event=workflow_dispatch&per_page=100/);
+  assert.doesNotMatch(consumer,/TERMINAL_CRITICAL_GATE_PROVEN.*NO_FLIGHT_PROVEN_FULL_HISTORY/);
+
+  const title='BRAIN delivery PR #5816 '+('a'.repeat(40));
+  const rows=Array.from({length:205},(_,i)=>({
+    id:1000+i,created_at:'2026-11-14T21:25:00Z',
+    event:'workflow_dispatch',head_branch:'main',status:'completed',
+    display_title:i===180?title:'BRAIN delivery PR #9999 '+('b'.repeat(40))
+  }));
+  const pages=[
+    {total_count:205,workflow_runs:rows.slice(0,100)},
+    {total_count:205,workflow_runs:rows.slice(100,200)},
+    {total_count:205,workflow_runs:rows.slice(200)}
+  ];
+  assert.equal(classifyOriginalBrainFlightPages(pages.slice(0,1),title,{since:'2026-11-14T21:00:00Z'}).complete,false);
+  assert.equal(classifyOriginalBrainFlightPages(pages,title,{since:'2026-11-14T21:00:00Z'}).run_id,1180);
 });
