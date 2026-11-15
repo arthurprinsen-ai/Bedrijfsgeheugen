@@ -344,11 +344,3 @@ jobs:
           if ! gh pr merge "$PR_URL" --auto --squash; then
             echo "::warning::PROTECTED_AUTO_MERGE_NOT_ENABLED: candidate remains open; no green claim."
           fi
-      - name: Preserve sanitized source-bound candidate receipt
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: original-innovation-code-candidate-${{ github.run_id }}
-          path: artifacts/quality/original-innovation-code-pr-receipt.json
-          if-no-files-found: warn
-          retention-days: 30
