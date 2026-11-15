@@ -100,6 +100,45 @@
         "Current homepage preserved byte-identical",
         "No false assertions about protected merge PR #5875"
       ]
+    },
+    "mobile_app_v9": {
+      "status": "LIVE_PROVEN",
+      "site": "https://pw-mo14-1.netlify.app/zaalplanner/",
+      "provider_deploy": "6afa1f5f9413c94b90d228cd",
+      "provider_state": "CURRENT/READY",
+      "published_at": "2026-11-15T21:08:52.203Z",
+      "verified_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43761982007",
+      "use_case": "Coach-selected lineup, near-equal season playing time, actual minute accounting, tactical board and portable user data backup",
+      "production_acceptance": [
+        "12 fixtures, six doubleheader matchdays remain intact",
+        "10-player selection / 4×10 minute blocks / 4-at-once substitutions with one stay-in",
+        "20 visible field/goal actual-minute inputs per game; illegal player/game total rejected before writing",
+        "valid 200 field + 40 goalie real-minute allocation confirmed and preserved across full browser reload",
+        "confirmed actual field/goal minute values feed cumulative scorer for later games",
+        "full JSON export includes all 12 fixtures, notes, goal keeper and actual data",
+        "malformed backup rejected without mutation; valid backup imports and restores notes and actuals",
+        "original homepage independently read back unchanged and PWA now caches updated assets"
+      ],
+      "observed_incidents": [
+        {
+          "run": 43761657728,
+          "symptom": "allIds is not defined",
+          "root_cause": "missed helper in refactor of planned vs confirmed minutes",
+          "repair": "restore roster-id helper and retain actual-minute engine regression"
+        },
+        {
+          "run": 43761773180,
+          "symptom": "401 Unauthorized",
+          "root_cause": "short-lived Netlify deploy credential expired",
+          "repair": "rotate scoped Netlify proxy as encrypted GitHub Actions repository secret and retry one canonical pipeline"
+        }
+      ],
+      "proof_boundaries": [
+        "not every player can have identical total minutes when same keeper stays 40 min every game",
+        "actual minutes require explicit coach confirmation and are not inferred from planned figures",
+        "no automatic Google Drive/cloud sync; backup is downloaded locally",
+        "separate GH source PR #5875 remains open, not merged"
+      ]
     }
   },
   "root_cause": "MO14 planner source was added to the business-system repository without its exact delivery-lane ownership, metadata and required one-loop learning artifacts; the independent Netlify site still requires its own authorized deploy and provider readback.",
@@ -115,11 +154,16 @@
     "Rotate 5 field slots by exactly 5 cyclic places between blocks to guarantee maximum simultaneous field changes with N available field players.",
     "With N=9, 4 players leave and enter at each of 3 boundaries across 4×10-minute blocks; show the one player staying and the keeper.",
     "Render each matchday full width on phones with cards stacked, independently verify no horizontal overflow at 320–820 px.",
-    "Fail closed on incomplete runtime rotation tests or expiring Netlify credentials; never claim READY without provider deploy ID and browser/HTTP readback."
+    "Fail closed on incomplete runtime rotation tests or expiring Netlify credentials; never claim READY without provider deploy ID and browser/HTTP readback.",
+    "Separate forecast versus confirmed actual minutes, validate both field and goalie totals (5× and 1× game length) before committing.",
+    "Incorporate confirmed game minutes into subsequent game optimization and never infer real play from an unexecuted rotation plan.",
+    "Validate portable JSON backups before any overwrite; reject malformed or oversized files, require explicit user confirmation.",
+    "Test release failure modes: unresolved JS identifiers and expired scoped provider tokens must fail closed before marking production green."
   ],
   "tests": [
     "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs",
-    "tests/brain-mo14-max-turnover-ux-20261115.test.mjs"
+    "tests/brain-mo14-max-turnover-ux-20261115.test.mjs",
+    "tests/brain-mo14-coach-plus-20261115.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
@@ -135,5 +179,5 @@
     "security_sensitive": false
   },
   "owner": "original MO14-1 website protected delivery lane",
-  "terminal_rule": "Independent MO14 app site V7: provider CURRENT/READY, semantic live readback, and actual production browser interaction at 8 viewport sizes are LIVE_PROVEN. Protected merge of parent Bedrijfsgeheugen PR #5875 remains separately open."
+  "terminal_rule": "Isolated MO14 V9 Netlify production LIVE_PROVEN after provider CURRENT/READY and browser actual-minute and backup acceptance. Do not assert total-time parity including a permanent keeper or that parent repo protected merge #5875 is complete."
 }
