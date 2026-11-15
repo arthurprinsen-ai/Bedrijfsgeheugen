@@ -24,10 +24,13 @@ const TRIGGERS=[
 
 
 const isTrue=(v:unknown)=>v===true||v==='true';
-async function readBoundedPublicPage(url:string,failureCodes?:string[]):Promise<string|null>{
-  // First-party-only source diagnostics. Codes intentionally exclude hosts, URLs,
-  // contact names, body text, secrets and emails. Never turn failure into consent.
-  const fail=(code:string):null=>{if(failureCodes)failureCodes.push(code);return null;};
+// Overload keeps the original source reader directly testable without changing
+// its legacy one-argument implementation; optional codes remain request-local.
+function readBoundedPublicPage(url:string,failureCodes:string[]):Promise<string|null>;
+async function readBoundedPublicPage(url:string):Promise<string|null>{
+  const failureCodes=arguments.length>1&&Array.isArray(arguments[1])?arguments[1]:null;
+  // Only fixed non-PII codes: never store the URL, person or response body.
+  const fail=(code='SOURCE_READ_FAILED')=>{if(failureCodes)failureCodes.push(code);return null;};
   try{
     const original=new URL(url);
     const companyHost=original.hostname.toLowerCase().replace(/^www\./,'');
@@ -73,8 +76,8 @@ async function readBoundedPublicPage(url:string,failureCodes?:string[]):Promise<
       return new TextDecoder().decode(buffer);
     }
     return fail('REDIRECT_LIMIT_EXCEEDED');
-  }catch(error:any){
-    return fail(error?.name==='TimeoutError'||error?.name==='AbortError'
+  }catch(error){
+    return fail(error instanceof Error && (error.name==='TimeoutError'||error.name==='AbortError')
       ?'FETCH_TIMEOUT_2500MS':'FETCH_NETWORK_OR_TLS_FAILURE');
   }
 }
