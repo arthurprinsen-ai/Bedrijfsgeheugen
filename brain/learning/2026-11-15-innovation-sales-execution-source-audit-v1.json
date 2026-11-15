@@ -16,7 +16,8 @@
     "brain/learning/2026-11-15-innovation-sales-execution-source-audit-v1.json",
     "docs/changes/2026-11-15-innovation-sales-execution-source-audit.md",
     "docs/development-ledger-events/2026-11-15-innovation-sales-execution-source-audit.md",
-    "platform/system-map/canonical-system-map.mjs"
+    "platform/system-map/canonical-system-map.mjs",
+    "portal-v2/index.html"
   ],
   "controls": [
     "admin-jwt-before-service-read",
@@ -64,6 +65,7 @@
     "independent_effect": "NOT_PROVEN",
     "ack": "NOT_PROVEN",
     "system_map_sha_from_original_required_generator": "dc19a4084ff42cae46ed459d3e30e9ac32f9f1dff59a60b5ba836f64f88da7fd",
-    "system_map_regression": "Original Required run 43706130090 preflight rejected stale generated inventory; exact generator-produced hash synced, no guard bypass"
+    "system_map_regression": "Original Required run 43706130090 preflight rejected stale generated inventory; exact generator-produced hash synced, no guard bypass",
+    "system_map_generated_hash_after_main_sync": "0f0073eb1d5a1271c5978f318fb071c87c88aec3c4cdc9d671364bdd0f7124ab"
   }
 }
