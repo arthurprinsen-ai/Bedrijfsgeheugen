@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|contacts|source-bound-identity-proceeded-heartbeat-receipt-missing|20261115-v1",
+  "root_cause": "On Nov 15 2026 original public work-email producer staged one UNVERIFIED work email candidate and original identity #138 generated a source-bound BRAIN FULFILLED PROCESSED receipt, but the existing commercial_heartbeat emitted numerous generic commercial events with zero candidate-specific source_revision/consumer_brain_obligation identity. The source-to-heartbeat handoff was not independently evidenced, so original commercial #4198 must not close.",
+  "scope": "ORIGINAL_COMMERICAL_HEARTBEAT_CANDIDATE_SOURCE_RECEIPT",
+  "owner": "existing commercial heartbeat + original commercial data-quality owner; original #138 identity source consumer",
+  "prevention_rule": "Existing commercial Heartbeat independently checks original candidate event state decided, exact source event id, #138 FULFILLED BRAIN source revision, exact research action and safety hold in bg_connecties; writes one idempotent observed non-sendable heartbeat receipt per source_event_id with next_owner original-agent:commercial. No parallel scheduler, no inferred consent/send authorization and no fake Heartbeat coverage from generic heartbeat 200. Preserve all prior commercial gates and source-debt metrics.",
+  "regression": "tests/brain-original-public-work-email-heartbeat-source-receipt-20261115.test.mjs",
+  "evidence": {
+    "timestamp_utc": "2026-11-15T08:31:10Z",
+    "original_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "original_commercial_obligation": "43c90754-3fd0-4c97-bb14-fbf815e12f47",
+    "original_source_event_id": "9ce440b1-d819-449d-b03e-991454a35f42",
+    "identity_brain_obligation_id": "d5a1c24c-2b15-4935-aa58-53f8790f53d1",
+    "identity_processed_at_utc": "2026-11-14T23:17:00Z",
+    "source_revision_utc": "2026-11-14T23:07:02.056Z",
+    "identity_consumer_state": "FULFILLED_PROCESSED",
+    "existing_generic_heartbeats_since_midnight": 103,
+    "original_candidate_specific_heartbeat_receipts": 0,
+    "staged_candidate_unverified": 1,
+    "original_source_retry_unreadable": 10,
+    "new_email_send_authority": false,
+    "canonical_email_promoted": false,
+    "new_runtime_receipt": "NOT_LIVE_UNTIL_PROTECTED_PROVIDER_READBACK"
+  },
+  "learning_state": "OBSERVED_NOT_CLOSED",
+  "compiler": {
+    "failure_class": "ORIGINAL_PUBLIC_WORK_EMAIL_IDENTITY_TO_HEARTBEAT_SOURCE_ACK_MISSING",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-public-work-email-heartbeat-source-receipt-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-public-work-email-heartbeat-source-receipt-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-public-work-email-heartbeat-source-receipt-20261115.test.mjs"
+    ]
+  }
+}
