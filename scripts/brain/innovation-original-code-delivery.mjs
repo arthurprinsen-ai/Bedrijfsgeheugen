@@ -78,6 +78,15 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
        decision.consumer_ack_verified!==false)fail('ORIGINAL_OWNER_DECISION_CONFLICT');
     // A previously implemented source, or a duplicate candidate PR, must be reconciled, not rebuilt.
     if(/\bPR\s*#?\d{3,6}\b/i.test(action)||c.proposed_action.parent_pr){held++;continue;}
+    const priorNoDiff=op.evidence?.original_code_no_diff_review;
+    if(priorNoDiff){
+      if(priorNoDiff.candidate_id!==c.candidate_id||
+         priorNoDiff.source_revision!==obligation.evidence.source_revision||
+         priorNoDiff.source_sha256!==obligation.payload_sha256||
+         priorNoDiff.consumer_ack_verified!==false||
+         priorNoDiff.production_verified!==false)fail('PRIOR_NO_DIFF_REVIEW_CONFLICT');
+      held++;continue; // An original verification duty remains OPEN; do not re-generate an identical PR.
+    }
     eligible++;
     if(existingPrFor(c.candidate_id)){existing++;continue;}
     return Object.freeze({contract:CONTRACT,selected:true,
@@ -119,6 +128,76 @@ export function checkChangedPaths({workorder,changed,deleted=[]}={}){
      source.length+test.length+learn.length+docs.length!==changed.length)fail('PATH_SCOPE_OR_EVIDENCE_MISSING');
   return {source,test,learn,docs,changed};
 }
+export function classifyOriginalCodeDiff({workorder,changed,deleted=[]}={}){
+  if(workorder?.contract!==CONTRACT||workorder.selected!==true||
+     !Array.isArray(changed)||!Array.isArray(deleted))fail('INVALID_DIFF_CLASSIFICATION');
+  if(deleted.length)fail('DELETION_FORBIDDEN');
+  if(changed.length===0)return Object.freeze({
+    changed:false,state:'NO_DIFF_INSPECTION_REQUIRES_ORIGINAL_OWNER_FOLLOWUP',
+    consumer_ack_verified:false,production_verified:false,terminal_success:false
+  });
+  return Object.freeze({
+    changed:true,state:'VALIDATION_REQUIRED',scope:checkChangedPaths({workorder,changed,deleted}),
+    consumer_ack_verified:false,production_verified:false,terminal_success:false
+  });
+}
+
+export async function persistOriginalCodeNoDiffReview({workorder,config,fetchImpl=globalThis.fetch,observedAt=new Date().toISOString()}={}){
+  if(workorder?.contract!==CONTRACT||workorder.selected!==true||
+     !UUID.test(workorder.operation_id)||!SHA.test(workorder.source_sha256)||
+     !UUID.test(workorder.candidate_id)||!text(workorder.source_revision)||
+     !/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(config?.origin??'')||
+     text(config?.key).length<12||typeof fetchImpl!=='function')fail('NO_DIFF_SOURCE_INVALID');
+  const headers={apikey:config.key,Authorization:'Bearer '+config.key,Accept:'application/json'};
+  const params=new URLSearchParams({id:'eq.'+workorder.operation_id,
+    select:'id,operation_type,capability_id,status,idempotency_key,payload_sha256,change_id,correlation_id,remote_ref,evidence,version'});
+  const get=async()=>{
+    const res=await fetchImpl(config.origin+'/rest/v1/brain_operations?'+params,{method:'GET',headers});
+    if(!res?.ok)fail('NO_DIFF_READBACK_HTTP_'+(res?.status??'UNKNOWN'));
+    const rows=await res.json();
+    if(!Array.isArray(rows)||rows.length!==1)fail('NO_DIFF_READBACK_CARDINALITY');
+    return rows[0];
+  };
+  const fingerprint=digest({candidate_id:workorder.candidate_id,
+    source_revision:workorder.source_revision,source_sha256:workorder.source_sha256,
+    operation_id:workorder.operation_id,decision_fingerprint:workorder.decision_fingerprint,
+    class:'NO_DIFF_INSPECTION_NOT_PRODUCTION_PROOF'});
+  const matches=row=>row?.id===workorder.operation_id&&row?.operation_type==='INNOVATION_INTAKE'&&
+    row?.capability_id===workorder.owner&&row?.status==='PLANNED'&&!text(row?.remote_ref)&&
+    row?.idempotency_key===workorder.idempotency_key&&row?.correlation_id===workorder.correlation_id&&
+    row?.payload_sha256===workorder.source_sha256&&row?.change_id===workorder.source_key;
+  const current=await get();
+  if(!matches(current))fail('NO_DIFF_ORIGINAL_SOURCE_CHANGED');
+  const prior=current.evidence?.original_code_no_diff_review;
+  if(prior){
+    if(prior.fingerprint!==fingerprint||prior.consumer_ack_verified!==false||
+       prior.production_verified!==false)fail('NO_DIFF_PRIOR_CONFLICT');
+    return Object.freeze({recorded:true,already_recorded:true,terminal_success:false});
+  }
+  if(Number(current.version)!==Number(workorder.operation_version))fail('NO_DIFF_VERSION_CONFLICT');
+  const review=Object.freeze({fingerprint,candidate_id:workorder.candidate_id,
+    source_revision:workorder.source_revision,source_sha256:workorder.source_sha256,
+    original_owner:workorder.owner,status:'NO_CODE_DIFF_REVIEW_PENDING',
+    next_action:'Original owner independently verifies source revision and production behavior; do not mark this innovation delivered or learned',
+    consumer_ack_verified:false,production_verified:false,independent_effect_verified:false,
+    terminal_success:false,external_side_effect:false,observed_at:observedAt});
+  const response=await fetchImpl(config.origin+'/rest/v1/rpc/brain_transition_operation',{
+    method:'POST',headers:{...headers,'content-type':'application/json'},
+    body:JSON.stringify({p_operation_id:workorder.operation_id,
+      p_expected_version:current.version,p_status:'PLANNED',p_dispatch_generation:null,
+      p_remote_ref:null,p_evidence:{...current.evidence,original_code_no_diff_review:review}})
+  });
+  // Ambiguous write outcome: re-read the SAME original record, never retry blindly.
+  const after=await get();
+  if(!matches(after)||after.evidence?.original_code_no_diff_review?.fingerprint!==fingerprint||
+     after.evidence.original_code_no_diff_review.consumer_ack_verified!==false||
+     after.evidence.original_code_no_diff_review.production_verified!==false||
+     Number(after.version)<Number(current.version)+1)fail('NO_DIFF_NATIVE_CAS_OR_READBACK_FAILED');
+  if(!response?.ok&&after.evidence.original_code_no_diff_review.fingerprint!==fingerprint)
+    fail('NO_DIFF_PROVIDER_REJECTED');
+  return Object.freeze({recorded:true,already_recorded:false,terminal_success:false});
+}
+
 function recordOutput(name,value){
   if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,name+'='+value+'\n');
 }
@@ -144,7 +223,14 @@ async function main(){
     const untracked=git(['ls-files','--others','--exclude-standard']).split('\n')
       .filter(x=>x&&!x.startsWith('artifacts/quality/'));
     const changed=[...new Set([...tracked,...untracked])].sort();
-    const result=checkChangedPaths({workorder:selected,changed,deleted});
+    const classification=classifyOriginalCodeDiff({workorder:selected,changed,deleted});
+    if(!classification.changed){
+      recordOutput('changed','false');
+      process.stdout.write(JSON.stringify({state:classification.state,
+        candidate_id:selected.candidate_id,terminal_success:false,original_obligation_still_open:true})+'\n');
+      return;
+    }
+    const result=classification.scope;
     for(const path of result.learn){
       const lesson=JSON.parse(readFileSync(path,'utf8'));
       if(!lesson.compiler?.failure_class||
@@ -154,8 +240,24 @@ async function main(){
     git(['diff','--check']);
     for(const path of result.test)execFileSync('node',['--test',path],
       {stdio:'inherit',timeout:120000});
+    recordOutput('changed','true');
     process.stdout.write(JSON.stringify({validated:true,changed:result.changed,
       candidate_id:selected.candidate_id,protected_release_due:true})+'\n');
+    return;
+  }
+  if(mode==='--record-no-diff'){
+    const selected=JSON.parse(readFileSync(WORK_ORDER,'utf8'));
+    const tracked=git(['diff','HEAD','--name-only']).split('\n').filter(Boolean);
+    const untracked=git(['ls-files','--others','--exclude-standard']).split('\n')
+      .filter(x=>x&&!x.startsWith('artifacts/quality/'));
+    const classification=classifyOriginalCodeDiff({workorder:selected,
+      changed:[...new Set([...tracked,...untracked])],
+      deleted:git(['diff','HEAD','--name-only','--diff-filter=D']).split('\n').filter(Boolean)});
+    if(classification.changed)fail('NO_DIFF_MODE_WITH_CHANGES');
+    const result=await persistOriginalCodeNoDiffReview({
+      workorder:selected,config:trustedBrainReadConfig(process.env)});
+    process.stdout.write(JSON.stringify({state:'NO_DIFF_REVIEW_RECORDED',...result,
+      original_operation_still_planned:true,original_obligation_still_open:true})+'\n');
     return;
   }
   if(mode==='--paths'){
