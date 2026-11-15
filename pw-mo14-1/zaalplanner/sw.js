@@ -1,4 +1,4 @@
-const CACHE = 'mo14-zaalcoach-v8-coachboard-20261115';
+const CACHE = 'mo14-zaalcoach-v8-coachboard-20261115-r2';
 const ASSETS = ['./pw-logo.png','./','./index.html','./manifest.webmanifest','./icons/icon-192.png','./icons/icon-512.png','./coach-core.js','./coach-ui.js','./coach-plus.css'];
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('mo14-zaalcoach-')&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
