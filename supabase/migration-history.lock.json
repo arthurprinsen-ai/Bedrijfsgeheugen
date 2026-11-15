@@ -3480,8 +3480,12 @@
     {
       "version": "20261115162500",
       "name": "original_personal_source_supplier_completeness_v4"
+    },
+    {
+      "version": "20261115170000",
+      "name": "outcome_memory_source_readback_truth_v1"
     }
   ],
-  "captured_at": "2026-11-15T15:52:42.26634Z",
+  "captured_at": "2026-11-15T16:17:21.028Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
