@@ -369,6 +369,35 @@ async function recoverWrappedOriginalResearchSources(db:any,observedAt:string){
     const next=researchRetryAt(observedAt,24);
     const feedback=researchNoSourceFeedback(a,owner,observedAt,next);
     if(!feedback){held++;continue}
+    // Quarantine the exact old false-VERIFIED source event FIRST. An internal
+    // SERP tracking redirect was never a publisher page; its past quality
+    // assertion must not continue to feed intelligence/agents as verified.
+    // Preserve immutable event identity and original evidence for audit.
+    const {data:staleEvents,error:sourceEventErr}=await db.from('powerhouse_runtime_events')
+      .select('event_id,dedupe_key,data_quality,evidence,updated_at')
+      .eq('event_type','relationship_public_research_evidence')
+      .eq('source',CONTRACT)
+      .like('dedupe_key','relationship-public-research:'+a.action_id+':%')
+      .eq('evidence->>source_url',source).limit(5);
+    if(sourceEventErr)throw new Error('ORIGINAL_WRAPPED_SOURCE_EVENT_READ:'+sourceEventErr.message);
+    for(const prior of staleEvents||[]){
+      if(prior.data_quality==='REJECTED_TRACKING_REDIRECT')continue;
+      const {data:rejected,error:eventErr}=await db.from('powerhouse_runtime_events')
+        .update({state:'error',data_quality:'REJECTED_TRACKING_REDIRECT',
+          evidence:{...(prior.evidence||{}),original_source_quality_correction:{
+            contract:'ORIGINAL_SERP_REDIRECT_SOURCE_REVIEW_V1',
+            original_research_action_id:a.action_id,corrected_at:observedAt,
+            prior_quality:prior.data_quality,
+            reason:'TRACKING_REDIRECT_NOT_PUBLISHER_SOURCE',
+            source_page_independently_read:false,
+            provider_send_authorized:false,external_send_executed:false}},
+          updated_at:observedAt})
+        .eq('event_id',prior.event_id).eq('updated_at',prior.updated_at)
+        .eq('data_quality',prior.data_quality)
+        .select('event_id').maybeSingle();
+      if(eventErr||!rejected)throw new Error('ORIGINAL_WRAPPED_SOURCE_EVENT_QUARANTINE:'+
+        (eventErr?.message||'CONCURRENT_REVISION'));
+    }
     const evidence={...(a.evidence||{}),relationship_source_candidate:null,
       public_research_execution:{
         ...(a.evidence?.public_research_execution||{}),
