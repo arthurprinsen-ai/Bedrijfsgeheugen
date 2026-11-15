@@ -1,0 +1,50 @@
+{
+  "contract": "POWERHOUSE_ORIGINAL_ENGINEERING_AUTHORING_PROOF_PREVENTION_V1",
+  "observed_on": "2026-11-15",
+  "fingerprint": "powerhouse|innovation|original-code-writer-missed-required-evaluation-and-closure|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_candidate_id": "2c1ecc77-58aa-4f25-ae68-e2337853fdc7",
+  "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5908",
+  "original_operation_id": "56e16919-6275-4c2e-9208-6ac0c8a29a29",
+  "root_cause": "The original AI engineering writer prompt treated human documentation and activity ledger as optional and the deterministic workorder validator accepted historical replay alone, while the protected learning canonicalization requires canary for RUNTIME/FALSE_GREEN and integration closure requires human documentation plus append-only ledger.",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ]
+  },
+  "failure_evidence": {
+    "initial_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43755019133",
+    "initial_failure": "LEARNING_EVALUATION_TESTS_REQUIRED:canary",
+    "second_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43755513741",
+    "second_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,human_documentation"
+  },
+  "change": {
+    "existing_workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "deterministic_original_script": "scripts/brain/innovation-original-code-delivery.mjs",
+    "reuse_source_of_truth": "scripts/brain/learning-canonicalization-gate.mjs",
+    "required_source_test_learning_human_ledger": true,
+    "historical_shadow_canary_derived_from_canonical_compiler": true,
+    "no_new_scheduler": true,
+    "no_new_queue": true,
+    "no_new_agent": true,
+    "no_approvals_bypassed": true
+  },
+  "prevention_rule": "Before opening any original engineering candidate PR, require a bounded source modification, new test, original learning record with every required historical/shadow/canary mode and passing tests in each mode, plus exactly one source-linked human change document and one append-only development ledger. Partial bundles fail closed and original Brain remains PLANNED until provider proof.",
+  "regression_guard": "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
+  "status": "IMPLEMENTATION_CANDIDATE_PROTECTED_CI_AND_NATURAL_RUN_NOT_YET_VERIFIED",
+  "outcome_evidence": {
+    "protected_release_verified": false,
+    "production_exact_sha_verified": false,
+    "original_consumer_ack_verified": false,
+    "original_effect_verified": false,
+    "realized_savings_eur_proven": false,
+    "completed_original_innovations_claimed": 0
+  }
+}
