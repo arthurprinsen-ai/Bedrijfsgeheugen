@@ -289,8 +289,10 @@ async function originalWindsorCompanyRows(apiKey:string,fields:string[],since:st
   endpoint.searchParams.set('fields',fields.join(','));
   endpoint.searchParams.set('_max_rows',String(maxRows));
   endpoint.searchParams.set('_renderer','json');
-  endpoint.searchParams.set('refresh_since','3d');
-  endpoint.searchParams.set('refresh_interval','6h');
+  // Do not force hourly paid-tier public refresh on the existing Windsor Basic
+  // connection. The ORIGINAL #177 cron may poll every six hours, but its API
+  // reads must respect provider-managed cache/plan limits; never pretend a
+  // cached daily value is a new exact 24/48/72h post-observation receipt.
   let response:Response;
   try{
     response=await fetch(endpoint.toString(),{
