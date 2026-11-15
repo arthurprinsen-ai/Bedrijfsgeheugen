@@ -78,6 +78,58 @@ test('only complete live evidence and closed obligations normalize to LIVE_VERIF
   assert.deepEqual(result.open_obligations, []);
 });
 
+test('328-style historical self-certified material receipts never authorize LIVE_VERIFIED', () => {
+  const historical=trustedEvidence().map(item => item.type === 'OBLIGATIONS_COMPLETE'
+    ? {...item,producer:'OUTCOME_OBLIGATION_RUNTIME',exactProduction:true,metadata:{
+        materialSourceRef:'claimed-from-runtime-not-an-independent-source',
+        materialSourceRevision:'claimed-revision',
+        materialObligations:[{id:'production',status:'VERIFIED'}]
+      }}
+    :item);
+  const decision=evaluateCompletion({
+    obligationId:'change-4',workId:'work-change-4',
+    candidateIdentity:CANDIDATE,productionIdentity:PRODUCTION,
+    materialObligations:[{id:'production',status:'VERIFIED'}],evidence:historical
+  });
+  assert.equal(decision.success,false);
+  assert.notEqual(decision.normalized_state,'LIVE_VERIFIED');
+  assert.ok(decision.required_evidence.includes('OBLIGATIONS_COMPLETE'));
+  assert.equal(decision.next_action,'RECOVER');
+});
+
+test('independent producer label without exact source readback and source revision cannot close material work',()=>{
+  for(const incomplete of [
+    {exactProduction:false,metadata:{materialSourceRef:'receipt:1',materialSourceRevision:'revision:1'}},
+    {exactProduction:true,metadata:{materialSourceRef:'',materialSourceRevision:'revision:1'}},
+    {exactProduction:true,metadata:{materialSourceRef:'receipt:1',materialSourceRevision:''}},
+    {exactProduction:true},
+  ]){
+    const evidence=trustedEvidence().map(item=>item.type==='OBLIGATIONS_COMPLETE'?{
+      ...item,...incomplete, metadata:incomplete.metadata,
+    }:item);
+    const result=evaluateCompletion({
+      obligationId:'change-4',workId:'work-change-4',
+      candidateIdentity:CANDIDATE,productionIdentity:PRODUCTION,
+      materialObligations:[{id:'production',status:'VERIFIED'}],evidence
+    });
+    assert.equal(result.success,false);
+    assert.ok(result.required_evidence.includes('OBLIGATIONS_COMPLETE'));
+  }
+});
+
+test('source-bound independent material readback only counts for exact task and production identities',()=>{
+  const evidence=trustedEvidence().map(item=>item.type==='OBLIGATIONS_COMPLETE'
+    ?{...item,productionIdentity:'another-production'}
+    :item);
+  const result=evaluateCompletion({
+    obligationId:'change-4',workId:'work-change-4',candidateIdentity:CANDIDATE,
+    productionIdentity:PRODUCTION,materialObligations:[{id:'production',status:'VERIFIED'}],evidence
+  });
+  assert.equal(result.success,false);
+  assert.ok(result.required_evidence.includes('IDENTITY_MATCH'));
+  assert.ok(result.required_evidence.includes('OBLIGATIONS_COMPLETE'));
+});
+
 test('a third identical recovery attempt requires a new hypothesis or proven fallback', () => {
   const result = evaluateCompletion({
     obligationId:'change-5', workId:'work-change-5', candidateIdentity:CANDIDATE, claim:'FAILED',
