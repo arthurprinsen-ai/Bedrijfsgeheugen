@@ -10,3 +10,9 @@
 - Authorization and safety: no direct main edits, no external sends, no new scheduler, no false acknowledgement; review-required stays in force.
 - Release status at creation: SOURCE_CANDIDATE; protected exact-head Required, CodeQL and production readback DUE.
 - Follow-through: after green protected promotion, original daily workflow natural run must show a native pending owner-review receipt and progress past repeated empty candidates, with independently proved implementation/effect/learning required before terminal.
+
+## Same-PR protected admission recovery (actual failures, 2026-11-15)
+- Original candidate PR: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5905, first head `1f951270ad533dd97015eabecb8d256b4aa066ce`.
+- First Required admission https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43753505978 rejected `PR_MACHINE_METADATA_INVALID:BASE_SHA_INVALID,BASE_SHA_MISSING`. Corrected the SAME PR body by adding the immutable provider-read base SHA `b7c019bc1b06e711ae11f928278b6f0bbd51c08c`; no base rewrite.
+- Failed-job rerun of this Required check advanced beyond metadata but rejected `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning` because the learning JSON used `source_evidence` instead of the mandatory canonical `evidence` key. Corrected that one existing Brain learning source, keeping the original evidence and prevention semantics intact.
+- Both failures and repairs are nonterminal; new exact-head Required, CodeQL and protected merge remain due. Prevention: include `Base-SHA` in the initial PR body; use explicit canonical `evidence` plus root cause, prevention, compiler.failure_class, and replay before opening an integration PR.
