@@ -5,6 +5,13 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## P0 15 november 2026 — zelfstandig provider-attested migratielock, géén gewone SQL-migratie
+
+Controleer vóór iedere nieuwe `supabase/migrations/*.sql`-PR of de **volledige** lijst werkelijk toegepaste `supabase_migrations.schema_migrations` in de vaste bestaande productieprovider identiek is aan `supabase/migration-history.lock.json`: exacte geordende `version` plus `name` en exact dezelfde cardinaliteit, niet alleen een nieuwste versie of een providerclaim van een ander project. Op 15 november had de provider 870 werkelijke toegepast-rijen en het lockdocument 869. De eerste 869 waren identiek; de provider-attested extra `20261115162500_original_personal_source_supplier_completeness_v4` stond als uitvoerbare bron al op main. De oorspronkelijke protected source-PR #5879 voor een andere **nog niet toegepaste** 235500-migratie werd daardoor terecht geblokkeerd.
+
+Herstel deze specifieke discrepantie **apart** als lock-only protected kandidaat met de werkelijk geobserveerde provider-identiteit, machineleesbaar Brain-bewijs en original Required/CodeQL. Maak de nog niet toegepaste nieuwe SQL **niet** voortijdig `applied`. Verander historische SQL niet. Laat bij provider/lock-conflict nooit een scheduler, workaround, fake applied state of uitgeschakelde test ontstaan. Eerst alle oorspronkelijke provider-applied identiteiten volledig gelijk, dan dezelfde oorspronkelijke migratie-PR opnieuw op nieuwste protected main baseren, normaal testen, door originele Supabase-provider uitvoeren, providerreadback en pas daarna bronresultaat meten. De original ONE BRAIN 14 innovatieverplichtingen blijven OPEN totdat echte agent-ACK en effect zijn gecontroleerd. Incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
 ## P0 15 november 2026 — onafhankelijk geauthenticeerd bewijs van originele innovatiebron
 
 Een succesvolle protected merge en Netlify `READY` zijn **geen** bewijs dat de oorspronkelijke admin-only Powerhouse-control-plane brongebonden uitvoeringshistorie met een ondertekende echte adminsessie toegankelijk is. Gebruik de reeds bestaande canonieke signed-admin-rolhulp `isPowerhouseAdmin` voor `/api/powerhouse-control-plane`; behoud de bestaande authenticatievolgorde `Bearer` → eerste-partij `getUser` → admin-rol → originele EU-service-readback. Laat rollen uit user_metadata nooit toegang verlenen. De geldige ondertekende rol `powerhouse-admin` moet dezelfde betekenis hebben als in `powerhouse-one-loop-assurance` en de bestaande Netlify-Identity-productieproef.
