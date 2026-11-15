@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {selectOriginalCodeCandidate,checkChangedPaths,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
+import {selectOriginalCodeCandidate,checkChangedPaths,classifyOriginalCodeDiff,
+  persistOriginalCodeNoDiffReview,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
 import {verifyOriginalCandidateReceipt} from '../scripts/brain/innovation-original-code-pr-receipt.mjs';
 
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -109,4 +110,63 @@ test('network-derived GitHub PR receipt is kept in native Brain, never dumped to
   assert.match(source,/brain_transition_operation/);
   assert.match(source,/INDEPENDENT_READBACK_FAILED/);
   assert.match(source,/JSON\.stringify\(safe\)/);
+});
+
+test('already-present implementation with no changed source remains a nonterminal inspection, not failure or green',()=>{
+  const workorder=selectOriginalCodeCandidate(fixture());
+  const state=classifyOriginalCodeDiff({workorder,changed:[],deleted:[]});
+  assert.equal(state.changed,false);
+  assert.equal(state.state,'NO_DIFF_INSPECTION_REQUIRES_ORIGINAL_OWNER_FOLLOWUP');
+  assert.equal(state.terminal_success,false);
+  assert.equal(state.production_verified,false);
+  assert.equal(state.consumer_ack_verified,false);
+  assert.throws(()=>classifyOriginalCodeDiff({workorder,changed:[],deleted:['secret.txt']}),/DELETION_FORBIDDEN/);
+  assert.equal(classifyOriginalCodeDiff({workorder,changed:[
+    'platform/portal/powerhouse-existing-integration-read-model.mjs',
+    'tests/brain-innovation-autonomous-build-20261115.test.mjs',
+    'brain/learning/2026-11-15-innovation-engineering-code-v1.json'
+  ]}).changed,true);
+});
+
+test('native CAS stores exact original nonterminal no-diff review; readback is idempotent and never invents ACK',async()=>{
+  const fixtureData=fixture();
+  const workorder=selectOriginalCodeCandidate(fixtureData);
+  let original=structuredClone(fixtureData.snapshot.intakes[0]),posts=0,reads=0;
+  const mock=async(url,options)=>{
+    if(options.method==='GET'){
+      reads++;
+      assert.match(url,/\/rest\/v1\/brain_operations\?/);
+      return {ok:true,json:async()=>[structuredClone(original)]};
+    }
+    assert.equal(options.method,'POST');
+    assert.match(url,/\/rest\/v1\/rpc\/brain_transition_operation$/);
+    const req=JSON.parse(options.body);
+    assert.equal(req.p_operation_id,original.id);
+    assert.equal(req.p_expected_version,original.version);
+    assert.equal(req.p_status,'PLANNED');
+    assert.equal(req.p_remote_ref,null);
+    assert.equal(req.p_evidence.original_code_no_diff_review.terminal_success,false);
+    posts++;
+    original={...original,version:original.version+1,evidence:req.p_evidence};
+    return {ok:true,json:async()=>structuredClone(original)};
+  };
+  const config={origin:'https://adhjwmvyoixzjtmiroln.supabase.co',key:'x'.repeat(25)};
+  const result=await persistOriginalCodeNoDiffReview({workorder,config,fetchImpl:mock,
+    observedAt:'2026-11-15T19:30:00Z'});
+  assert.equal(result.recorded,true);
+  assert.equal(result.terminal_success,false);
+  assert.equal(posts,1);
+  assert.equal(reads,2);
+  const second=await persistOriginalCodeNoDiffReview({workorder,config,fetchImpl:mock});
+  assert.equal(second.already_recorded,true);
+  assert.equal(posts,1);
+  assert.equal(selectOriginalCodeCandidate({...fixtureData,
+    snapshot:{...fixtureData.snapshot,intakes:[original]}}).selected,false);
+});
+
+test('the original code workflow has a nonterminal no-change branch and never publishes an empty PR',()=>{
+  const yaml=readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+  assert.match(yaml,/id: validation[\s\S]*--validate/);
+  assert.match(yaml,/steps\.validation\.outputs\.changed == 'false'[\s\S]*--record-no-diff/);
+  assert.match(yaml,/Publish only the validated code candidate[\s\S]*steps\.validation\.outputs\.changed == 'true'/);
 });
