@@ -1,0 +1,51 @@
+{
+  "fingerprint": "supabase|native-provider-migration-20261115162500-applied-but-source-lock-stale|20261115-v1",
+  "original_owner": "original Supabase production migration authority + ONE BRAIN delivery + original LinkedIn source PR #5878",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "SOURCE_DRIFT",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Protected PR #5878 native Supabase migration 20261115162500 original_personal_source_supplier_completeness_v4 was genuinely applied and provider schema_migrations recorded three statements, but canonical protected GitHub migration-history.lock.json stayed at 20261115162000. This made the original provider-applied migration regression suite correctly fail: one executable migration filename had no corresponding native source lock. Downstream independent SQL writer PR #5879 cannot be admitted safely until source history is reconciled.",
+  "prevention_rule": "After original protected Supabase production migration provider confirms the exact immutable native version/name in supabase_migrations.schema_migrations and original function runtime proof, update ONLY the canonical source lock once, preserving all historical entries and capturing independent provider observation time; demand protected migration-history tests and exact expected 870 entries. Never add a future proposed migration as applied, never edit historical SQL, and do not run an additional database job.",
+  "source_evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_version": "20261115162500",
+    "provider_name": "original_personal_source_supplier_completeness_v4",
+    "provider_statement_count": 3,
+    "native_pg_get_functiondef_source_text_complete_verified": true,
+    "provider_observed_at": "2026-11-15T15:55:57.640411Z",
+    "prior_lock_count": 869,
+    "new_lock_count": 870,
+    "previous_last_version": "20261115162000",
+    "native_version_applied": true,
+    "new_sql_not_applied": true,
+    "original_downstream_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5879"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ]
+  },
+  "change_scope": [
+    "supabase/migration-history.lock.json",
+    "brain/learning/2026-11-15-native-162500-provider-lock-parity-v1.json",
+    "docs/changes/2026-11-15-native-162500-provider-lock-parity.md",
+    "docs/development-ledger-events/2026-11-15-native-162500-provider-lock-parity.md"
+  ],
+  "protected_release_required": true,
+  "no_new_scheduler": true,
+  "no_parallel_executor": true,
+  "no_new_migration": true,
+  "no_new_db_write": true,
+  "downstream_original_innovations_closed": false,
+  "rollback": "Only protected source lock correction if independent remote provider proof disproves record; never delete applied provider history."
+}
