@@ -57,8 +57,9 @@ export function powerhouseIntegrationMarkup(snapshot){
     ['Innovatie · verkoopuitvoering bronbewijs',salesAudit?esc(salesAudit.state):'GEEN BRON',
       salesAudit?'Uitvoerings-events 7d '+knownNum(salesAudit.totalEvents7d)+
         ' · gecontroleerd '+knownNum(salesAudit.sampledEvents)+
-        ' · actiebron bevestigd '+knownNum(salesAudit.actionBackedSample)+
-        ' · niet ondersteund '+knownNum(salesAudit.unsupportedSample)+
+        ' · historisch writer+actie bevestigd '+knownNum(salesAudit.actionBackedSample)+
+        ' · historisch niet ondersteund '+knownNum(salesAudit.unsupportedSample)+
+        ' · actuele actiestatus niet done '+knownNum(salesAudit.currentActionNotDoneSample)+
         ' · dekking '+esc(salesAudit.scope||'ONBEKEND')+
         ' · externe provider-uitvoering niet bewezen':'Geen recente brongekoppelde uitvoeringscontrole'],
     ['Growth / Revenue',commercial?'BRON UITGELEZEN':'GEEN BRON',commercial?'Prospects '+knownNum(commercial.prospects)+' · acties '+knownNum(commercial.nextBestActions)+' · bron-omzet '+esc(knownMoney(commercial.realizedRevenueEur)):'Geen betrouwbaar omzetoverzicht'],
