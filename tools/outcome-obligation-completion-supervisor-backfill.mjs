@@ -3,7 +3,7 @@ import { pathToFileURL } from 'node:url';
 import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
 import { evaluateCompletion } from '../platform/agents/completion-supervisor.mjs';
 import { createSupabaseOutcomeObligationStores } from './outcome-obligation-supabase-store.mjs';
-import { loadCanonicalObligations, runOutcomeObligationCli } from './outcome-obligation-runtime.mjs';
+import { defaultDue, loadCanonicalObligations, runOutcomeObligationCli } from './outcome-obligation-runtime.mjs';
 
 const PARTIAL_OBLIGATION_STATUSES = new Set(['PENDING','AWAITING_OUTCOME','MISSED_OBLIGATION','RECOVERING','BLOCKED_HARD_BOUNDARY']);
 const PARTIAL_PR_CLAIMS = new Set(['COMMITTED','MERGED','PREVIEW_READY','DEPLOYED_UNVERIFIED','NOT_CLAIMED','DEELS LIVE','NIET GEDAAN','FAILED','RED']);
@@ -203,11 +203,41 @@ export function reconcileCompletionBackfill({ pullRequests = [], workflowRuns = 
   });
 }
 
-/**
- * Crash-safe progress in the ORIGINAL immutable backfill artifact only.
- * PENDING is source history, not a consumer ACK; only a complete series of
- * exact canonical resumes can carry checkpoint.state=COMPLETE.
- */
+// Historical readback is not itself an external write. Only the original
+// obligation's declared due policy can authorize its original recovery trigger.
+export function selectOriginalBackfillTrigger(obligation) {
+  if (!obligation || typeof obligation !== 'object') throw new TypeError('registered original obligation is required');
+  if (defaultDue(obligation, {type:'event-trigger'}) === true) return 'event-trigger';
+  if (defaultDue(obligation, {type:'scheduled-sweep'}) === true) return 'scheduled-sweep';
+  return null;
+}
+
+export function applyOriginalBackfillDuePolicy(report, registeredObligations) {
+  if (!Array.isArray(registeredObligations)) throw new TypeError('registered original obligations must be provided');
+  const known = new Map(registeredObligations.map(obligation => [obligation.id, obligation]));
+  const dispatches = [];
+  const deferredNotDue = [];
+  for (const dispatch of report?.dispatches ?? []) {
+    const obligation = known.get(dispatch.obligationId);
+    if (!obligation) throw new Error('Backfill original registered obligation missing: '+dispatch.obligationId);
+    const triggerType = selectOriginalBackfillTrigger(obligation);
+    if (triggerType === null) {
+      // Do not fabricate an event solely to satisfy an actual pre-write,
+      // consent or other non-scheduled boundary. Its full source audit stays
+      // in the same report, and original owner remains responsible.
+      deferredNotDue.push(Object.freeze({ ...dispatch,
+        reason:'NO_ORIGINAL_DUE_TRIGGER_FOR_BACKFILL',
+        dueAt:obligation.dueAt ?? null,
+        nextSafeAction:'WAIT_FOR_ORIGINAL_SOURCE_TRIGGER' }));
+    } else {
+      dispatches.push(Object.freeze({ ...dispatch, triggerType }));
+    }
+  }
+  return Object.freeze({ ...report,
+    dispatches:Object.freeze(dispatches),
+    deferredNotDue:Object.freeze(deferredNotDue) });
+}
+
 export function checkpointCompletionBackfill(report, resumeResults = [], state = 'IN_PROGRESS', at = new Date().toISOString()) {
   const dispatches = report?.dispatches;
   if (!Array.isArray(dispatches) || !Array.isArray(resumeResults))
@@ -254,14 +284,23 @@ export async function executeCompletionBackfillDispatches(report, { env = proces
   for (let index = 0; index < (report.dispatches ?? []).length; index += 1) {
     const dispatch = report.dispatches[index];
     const output = `${outputDir}-${String(index + 1).padStart(3, '0')}.json`;
+    if (!['event-trigger','scheduled-sweep'].includes(dispatch.triggerType)) {
+      throw new Error('Backfill original due trigger is missing: '+dispatch.obligationId);
+    }
     const artifact = await runOutcomeObligationCli([
       'event',
       '--obligation', dispatch.obligationId,
-      '--trigger-type', 'event-trigger',
+      '--trigger-type', dispatch.triggerType,
       '--fingerprint', dispatch.triggerFingerprint,
       '--coalesce-key', dispatch.coalesceKey,
       '--output', output
     ], { env, fetchImpl });
+    if (artifact?.mode !== 'durable-supabase'
+      || artifact.decisions?.length !== 1
+      || artifact.decisions[0]?.obligationId !== dispatch.obligationId
+      || artifact.decisions[0]?.status === 'NOT_DUE') {
+      throw new Error('Backfill original consumer durable due/readback unverified: '+dispatch.obligationId);
+    }
     const result = Object.freeze({ dispatch, output, artifact });
     results.push(result);
     if (onResult) await onResult(result);
@@ -321,11 +360,12 @@ async function main(argv = process.argv.slice(2)) {
   }
   const snapshot = collect ? await collectCompletionBackfillSnapshot() : JSON.parse(await readFile(input, 'utf8'));
   const canonical = await loadCanonicalObligations();
-  const report = reconcileCompletionBackfill({ ...snapshot, mode, registeredObligationIds:canonical.map(item => item.id) });
+  const proposed = reconcileCompletionBackfill({ ...snapshot, mode, registeredObligationIds:canonical.map(item => item.id) });
+  const report = applyOriginalBackfillDuePolicy(proposed, canonical);
   await mkdir(output.split('/').slice(0, -1).join('/') || '.', { recursive:true });
   const completed = [];
-  // Publish an immutable-source checkpoint BEFORE any event-trigger side effect.
-  // Atomic rename leaves the last valid checkpoint if the worker is interrupted.
+  // The same original owner stores an atomic checkpoint before the first
+  // allowed resume; a failed owner step leaves its last truthful progress.
   const persist = async state => {
     const checkpoint = checkpointCompletionBackfill(report, completed, state);
     const tempPath = `${output}.checkpoint-${process.pid}.tmp`;
@@ -334,12 +374,10 @@ async function main(argv = process.argv.slice(2)) {
     return checkpoint;
   };
   await persist('IN_PROGRESS');
-  await executeCompletionBackfillDispatches(report, {
-    onResult:async result => {
-      completed.push(result);
-      await persist('IN_PROGRESS');
-    }
-  });
+  await executeCompletionBackfillDispatches(report, { onResult: async result => {
+    completed.push(result);
+    await persist('IN_PROGRESS');
+  }});
   return persist('COMPLETE');
 }
 
