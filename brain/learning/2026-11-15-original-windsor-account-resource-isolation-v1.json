@@ -7,7 +7,7 @@
   "fingerprint": "powerhouse|original177|optional-account-read-rejects-verified-posts|20261115-v1",
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "compiler": {
-    "failure_class": "ORIGINAL_WINDOR_ACCOUNT_PROVIDER_FAILURE_DISCARDS_POSTS",
+    "failure_class": "ORIGINAL_WINDSOR_ACCOUNT_PROVIDER_FAILURE_DISCARDS_POSTS",
     "scope": "BACKEND",
     "machine_enforceable": true,
     "repeat_count": 1,
