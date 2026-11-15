@@ -3472,8 +3472,12 @@
     {
       "version": "20261115121500",
       "name": "original_wrapped_serp_source_dispatch_wakeup_v1"
+    },
+    {
+      "version": "20261115162000",
+      "name": "personal_observation_source_no_resurrection_v1"
     }
   ],
-  "captured_at": "2026-11-15T11:42:57.174Z",
+  "captured_at": "2026-11-15T15:27:58.083020Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
