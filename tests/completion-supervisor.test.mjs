@@ -77,6 +77,29 @@ test('only a complete identity-bound trusted evidence bundle becomes LIVE_VERIFI
   assert.equal(result.productionIdentity, PRODUCTION);
 });
 
+test('historical self-certified handoff and learning flags cannot close the original work', () => {
+  const base=liveVerifiedFixture();
+  for (const kind of ['CAPABILITY_HANDOFF','LEARNING_WRITEBACK']) {
+    const old=liveVerifiedFixture();
+    old.evidence=old.evidence.map(item=>item.type===kind
+      ? {...item,metadata:{},exactProduction:true}
+      : item);
+    const assessed=evaluateCompletion(old);
+    assert.equal(assessed.success,false,kind);
+    assert.equal(assessed.next_action,'WRITEBACK',kind);
+    assert.ok(assessed.required_evidence.includes(kind),kind);
+    assert.notEqual(assessed.normalized_state,'LIVE_VERIFIED');
+    const mismatched=liveVerifiedFixture();
+    mismatched.evidence=mismatched.evidence.map(item=>item.type===kind
+      ? {...item,metadata:{...item.metadata,sourceRevision:'old-source-revision'}}
+      : item);
+    const drift=evaluateCompletion(mismatched);
+    assert.equal(drift.success,false,kind+' wrong revision');
+    assert.ok(drift.required_evidence.includes(kind));
+  }
+  assert.equal(evaluateCompletion(base).success,true,'source-bound receipts still allow legitimate terminal proof');
+});
+
 test('identity mismatch stays active and requests readback', () => {
   const input = liveVerifiedFixture({ productionIdentity:'production-new789' });
   const result = evaluateCompletion(input);
