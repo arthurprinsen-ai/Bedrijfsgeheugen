@@ -3476,8 +3476,12 @@
     {
       "version": "20261115162000",
       "name": "personal_observation_source_no_resurrection_v1"
+    },
+    {
+      "version": "20261115162500",
+      "name": "original_personal_source_supplier_completeness_v4"
     }
   ],
-  "captured_at": "2026-11-15T15:27:58.083020Z",
+  "captured_at": "2026-11-15T15:57:47.361Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
