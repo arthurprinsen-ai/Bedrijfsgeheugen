@@ -1,0 +1,9 @@
+# 2026-11-15 — oorspronkelijke ONE BRAIN historische dispatch-storm
+
+- P0-eigenaar: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+- Feitelijke oorzaak in originele code: `tools/outcome-obligation-completion-supervisor-backfill.mjs::activeDispatches` maakte één eigen coalesced wakeup **per historische bronidentiteit**, niet per geregistreerde oorspronkelijke verplichting.
+- Onafhankelijke native Postgres: 4.208 AgentWork, 1.055 RecoveryWork bij 2026-11-15 09:37 UTC; 728 nieuwe unieke AgentWork-idempotency keys voor zes verplichtingen in circa 22 minuten; originele backfill #43697572565 langdurig in_progress, zonder bewezen eindrapport. Deze feiten zijn **geen bewijs** dat 728 provider- of clientacties zijn uitgevoerd.
+- Bestaande ketenaanpassing: **alle bronnen behouden** in `report.candidates`; één stabiele safe-resume per originele geregistreerde `obligationId`, nooit per bronregel/dag. Bronmanifest-digest en -teller + oorspronkelijke actieklassen zichtbaar. Exact `WAIT_EXTERNAL`-poort blijft fail-closed.
+- Geen bronrecords verwijderd/gesloten, geen parallelle worker/scheduler, geen duplicaat GitHub-run door handmatige trigger, geen database-migratie, geen betaalde provider-toename. Bestaande workflow-on-push is oorspronkelijke uitvoeringsroute.
+- Negatieve regressies `tests/brain-completion-supervisor-backfill.test.mjs` (4.000→6 fanout, idempotent herhaalrun, nieuwe bron, harde grens). Machine-learning `brain/learning/2026-11-15-backfill-source-lineage-fanout-v1.json`; menselijke change `docs/changes/2026-11-15-backfill-one-canonical-resume-per-obligation.md`; originele agent-roster en recovery skill aangepast.
+- Acceptatie pas na beschermde tests, exacte main-merge, Netlify READY, werkelijke originele completion-backfill artifact, provider/consumer-ACK en Heartbeat-uitkomst. P0 blijft OPEN bij ontbrekend eindbewijs.

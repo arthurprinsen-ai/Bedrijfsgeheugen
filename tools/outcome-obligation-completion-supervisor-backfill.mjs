@@ -95,19 +95,38 @@ function activeDispatches(candidates, registeredObligationIds = null) {
   const registered = registeredObligationIds == null
     ? null
     : new Set((registeredObligationIds ?? []).map(text).filter(Boolean));
-  const dispatches = [];
+  // Historical source identities are preserved in report.candidates. They
+  // must NOT each create another AgentWork for the same canonical obligation:
+  // that amplifies the immutable ledger and can keep the original job running
+  // for hours without yielding more independent consumer/outcome proof.
+  const groups = new Map();
   for (const candidate of candidates) {
-    if (candidate.nextAction === 'WAIT_EXTERNAL') continue;
     for (const obligationId of candidate.obligationIds) {
       if (registered && !registered.has(obligationId)) continue;
-      dispatches.push(Object.freeze({
-        obligationId,
-        identity:candidate.identity,
-        coalesceKey:candidate.lineageKey,
-        triggerFingerprint:`${BACKFILL_TRIGGER_PREFIX}${candidate.idempotencyKey}`,
-        nextAction:candidate.nextAction
-      }));
+      if (!groups.has(obligationId)) groups.set(obligationId, []);
+      groups.get(obligationId).push(candidate);
     }
+  }
+  const dispatches = [];
+  for (const [obligationId, originals] of [...groups.entries()].sort(([a], [b]) => a.localeCompare(b))) {
+    // No backfill wakeup can bypass a proven hard human/provider boundary.
+    if (originals.some(candidate => candidate.nextAction === 'WAIT_EXTERNAL')) continue;
+    const sourceIdentities = [...new Set(originals.map(candidate => candidate.identity))].sort();
+    const sourceIdentityDigest = stableKey(sourceIdentities.join('\n'));
+    const nextAction = ['RECOVER','READBACK','PROMOTE','WRITEBACK','CONTINUE']
+      .find(action => originals.some(candidate => candidate.nextAction === action))
+      ?? originals[0].nextAction;
+    const key = stableKey(obligationId);
+    dispatches.push(Object.freeze({
+      obligationId,
+      identity:sourceIdentities[0],
+      coalesceKey:`completion-backfill|canonical-obligation|${key}`,
+      triggerFingerprint:`${BACKFILL_TRIGGER_PREFIX}canonical-obligation:${key}`,
+      nextAction,
+      sourceActions:Object.freeze([...new Set(originals.map(candidate => candidate.nextAction))].sort()),
+      sourceCandidateCount:sourceIdentities.length,
+      sourceIdentityDigest,
+    }));
   }
   return Object.freeze(dispatches);
 }

@@ -48,13 +48,15 @@ test('active backfill creates idempotent resumes only for existing canonical obl
   assert.equal(report.mode, 'active');
   assert.equal(report.productionMutation, false);
   assert.equal(report.durableResumeEnabled, true);
-  assert.deepEqual(report.dispatches, [{
-    obligationId:'ob-1',
-    identity:'sha-partial',
-    coalesceKey:report.candidates[0].lineageKey,
-    triggerFingerprint:`completion-backfill:${report.candidates[0].idempotencyKey}`,
-    nextAction:report.candidates[0].nextAction
-  }]);
+  assert.equal(report.dispatches.length,1);
+  assert.equal(report.dispatches[0].obligationId,'ob-1');
+  assert.equal(report.dispatches[0].identity,'sha-partial');
+  assert.match(report.dispatches[0].coalesceKey,/^completion-backfill\|canonical-obligation\|/);
+  assert.match(report.dispatches[0].triggerFingerprint,/^completion-backfill:canonical-obligation:/);
+  assert.equal(report.dispatches[0].sourceCandidateCount,1);
+  assert.match(report.dispatches[0].sourceIdentityDigest,/^[a-f0-9]{20}$/);
+  assert.equal(report.dispatches[0].nextAction,report.candidates[0].nextAction);
+  assert.deepEqual(report.dispatches[0].sourceActions,[report.candidates[0].nextAction]);
 });
 
 test('active backfill does not recursively resume rows created by completion backfill itself', () => {
@@ -71,6 +73,72 @@ test('active backfill does not recursively resume rows created by completion bac
   assert.equal(report.dispatches[0].identity, 'original-work');
   assert.ok(report.candidates.some(item => item.identity === 'original-work'));
   assert.ok(!report.candidates.some(item => item.identity === 'resume-work'));
+});
+
+test('4,000 source identities for six canonical obligations cause six wakeups, not 4,000 AgentWork writes',()=>{
+  const source=Array.from({length:4000},(_,i)=>({
+    id:`ob-${i%6+1}`,
+    identity:`immutable-original-${String(i).padStart(6,'0')}`,
+    status:'PENDING',
+    triggerFingerprint:`source-original:${i}`
+  }));
+  const report=reconcileCompletionBackfill({
+    mode:'active',
+    registeredObligationIds:['ob-1','ob-2','ob-3','ob-4','ob-5','ob-6'],
+    obligations:source,
+  });
+  assert.equal(report.candidateCount,4000,'every original source identity remains in the audit report');
+  assert.equal(report.candidates.length,4000);
+  assert.equal(report.dispatches.length,6,'exactly one durable wakeup per original registered owner obligation');
+  assert.equal(report.dispatches.reduce((n,d)=>n+d.sourceCandidateCount,0),4000);
+  assert.equal(new Set(report.dispatches.map(d=>d.coalesceKey)).size,6);
+  assert.equal(new Set(report.dispatches.map(d=>d.triggerFingerprint)).size,6);
+  assert.ok(report.dispatches.every(d=>['RECOVER','READBACK','PROMOTE','WRITEBACK','CONTINUE'].includes(d.nextAction)));
+  assert.ok(report.dispatches.every(d=>Array.isArray(d.sourceActions)&&d.sourceActions.length>=1));
+  assert.ok(report.dispatches.every(d=>/^[a-f0-9]{20}$/.test(d.sourceIdentityDigest)));
+});
+
+test('replaying a historic snapshot or adding more source IDs cannot create another wakeup lineage',()=>{
+  const original=[{id:'ob-1',identity:'event-a',status:'PENDING'},
+    {id:'ob-1',identity:'event-b',status:'PENDING'},
+    {id:'ob-2',identity:'event-c',status:'RECOVERING'}];
+  const options={mode:'active',registeredObligationIds:['ob-1','ob-2']};
+  const first=reconcileCompletionBackfill({...options,obligations:original});
+  const repeated=reconcileCompletionBackfill({...options,obligations:[...original].reverse()});
+  const expanded=reconcileCompletionBackfill({...options,obligations:[
+    ...original,{id:'ob-1',identity:'event-newer',status:'PENDING'}
+  ]});
+  assert.deepEqual(first.dispatches,repeated.dispatches);
+  assert.equal(first.dispatches.length,2);
+  assert.deepEqual(
+    first.dispatches.map(d=>[d.obligationId,d.coalesceKey,d.triggerFingerprint]),
+    expanded.dispatches.map(d=>[d.obligationId,d.coalesceKey,d.triggerFingerprint]),
+    'new original evidence extends the same owner lineage, not a second owner dispatch'
+  );
+  assert.equal(expanded.candidateCount,4);
+  assert.equal(expanded.dispatches[0].sourceCandidateCount,3);
+  assert.notEqual(expanded.dispatches[0].sourceIdentityDigest,first.dispatches[0].sourceIdentityDigest,
+    'source audit fingerprint changes while immutable wakeup idempotency stays stable');
+});
+
+test('a single proven hard boundary prevents source fanout for that owner without hiding its provenance',()=>{
+  const r=reconcileCompletionBackfill({
+    mode:'active',registeredObligationIds:['ob-1'],
+    obligations:[
+      {id:'ob-1',identity:'normal-source',status:'PENDING'},
+      {id:'ob-1',identity:'blocked-source',status:'BLOCKED_HARD_BOUNDARY',hardBoundary:{
+        present:true,proven:true,evidence:'external provider consent absent',
+        recovery_packet:{
+          blocker:'provider permission missing',root_cause:'no consent',evidence_refs:['ref:permission'],
+          attempted_repairs:['checked authorized scopes'],safe_remaining_actions:['retry when user grants consent'],
+          minimum_human_action:'authorize required scope',fix_agent_handoff:'agent-reliability',
+          boundary_fingerprint:'provider-permission-v1',resume_when:{signal:'permission_available'}
+        }
+      }}
+    ]
+  });
+  assert.equal(r.candidateCount,2);
+  assert.equal(r.dispatches.length,0,'original blocked owner remains open; never bypass consent via another source');
 });
 
 test('active backfill does not invent obligations or resume a hard external boundary', () => {
