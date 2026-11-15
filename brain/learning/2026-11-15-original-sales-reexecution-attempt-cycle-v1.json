@@ -41,7 +41,8 @@
     "actual_new_attempts_provider_verified": false,
     "original_consumer_ack": false,
     "external_provider_delivery": false,
-    "realized_financial_benefit": false
+    "realized_financial_benefit": false,
+    "generated_portal_system_map_hash": "0f50f26b5b628a76b7759e871e9b17da66d67c322c0253b00be5d5487d9dda8e"
   },
   "change_scope": [
     "supabase/migrations/20261115235500_sales_action_reexecution_immutable_attempt_lineage_v1.sql",
@@ -52,7 +53,9 @@
     "brain/learning/2026-11-15-original-sales-reexecution-attempt-cycle-v1.json",
     "docs/changes/2026-11-15-original-sales-reexecution-attempt-cycle.md",
     "docs/development-ledger-events/2026-11-15-original-sales-reexecution-attempt-cycle.md",
-    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "portal-v2/index.html"
   ],
   "production_status": "PROTECTED_CANDIDATE_NOT_YET_APPLIED",
   "no_new_scheduler": true,
