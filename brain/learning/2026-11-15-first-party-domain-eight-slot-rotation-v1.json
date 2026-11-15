@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|contacts|first-party-one-slot-rotation-repeats-unreadable-domains|20261115-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "observed_at_utc": "2026-11-15T14:11:34Z",
+  "root_cause": "Existing #116 first-party public business email research candidate offset used (UTC day index) modulo company count, shifting only 1 index per day despite 8 allowed daily company slots. This repeatedly researched overlapping unavailable company websites and starved other eligible companies; technical full graph refresh misleadingly showed all 23,295 records touched while 605 canonical existing addresses remained unchanged.",
+  "evidence": {
+    "canonical_connections": 23295,
+    "canonical_existing_email_addresses": 605,
+    "missing_addresses": 22690,
+    "companies_with_known_corporate_domain_and_missing_colleague": 85,
+    "unreadable_source_retries": 10,
+    "provider_proven_new_contact_emails": 0,
+    "scheduler_authority": "existing pg_cron #116",
+    "no_second_scheduler": true
+  },
+  "owner": "original #116 commercial public research, with #138 identity/ONE BRAIN/Heartbeat consumer; original Reliability/Data Quality monitor",
+  "corrective_action": "Rotate daily first-party company cohort by the existing exact 8 slot budget, not 1. Keep same original source actions, source URL and retry evidence, date/identity dedupe, existing HTML guards and never infer send approval or deliverability.",
+  "prevention_rule": "On a stable company candidate list of 85, the original 8-slot daily rotation must visit 80 distinct candidate companies in the first 10 consecutive business dates and cover all 85 within 11 dates; zero duplicate daily sends, new schedulers or paid provider calls. Persist rotation offset/step/company-count in original bg_gezondheid evidence. Continue truthful sourced address acquisition and original owner receipts.",
+  "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+  "human_ledger": "docs/development-ledger-events/2026-11-15-first-party-domain-eight-slot-rotation.md",
+  "release_status": "PROTECTED_GITHUB_CANDIDATE_NEEDS_TESTS_MERGE_DEPLOY_AND_INDEPENDENT_PRODUCTION_READBACK",
+  "no_false_green": "Do not claim new addresses, delivery, consent, provider messages, replies or revenue from rotation or scheduler success alone.",
+  "failure_class": "RESEARCH_COHORT_STARVATION",
+  "scope": "SOURCE_SELECTION",
+  "machine_enforceable": true,
+  "repeat_count": 2,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RESEARCH_COHORT_STARVATION",
+    "scope": "SOURCE_SELECTION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  }
+}
