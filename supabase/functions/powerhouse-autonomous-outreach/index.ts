@@ -185,6 +185,32 @@ Deno.serve(async(req)=>{
    if(!to||!sub||!body){await db.from('powerhouse_sales_actions').update({status:'error',evidence:{...(a.evidence||{}),autonomous_outbound:{contract:C,failed_at:now,error:{code:'MISSING_RECIPIENT_SUBJECT_OR_BODY'},retryable:false}},updated_at:now}).eq('action_id',a.action_id);out.push({action_id:a.action_id,status:'error',reason:'MISSING_FIELDS'});continue}
    const{data:blocked,error:be}=await db.from('powerhouse_email_contact_suppressions').select('suppression_id,reason').eq('email',to.toLowerCase()).eq('active',true).maybeSingle();if(be)throw{code:'SUPPRESSION_READ',message:be.message};
    if(blocked){await db.from('powerhouse_sales_actions').update({status:'skipped',evidence:{...(a.evidence||{}),suppressed:{reason:blocked.reason,checked_at:now}},updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');out.push({action_id:a.action_id,status:'skipped',reason:'CONTACT_SUPPRESSED'});continue}
+   // Preserve the original recipient's 14-day contact pressure and any
+   // uncertain provider write before attempting another send.
+   const since=new Date(Date.parse(now)-14*86400000).toISOString();
+   const{count:recentSent,error:recentErr}=await db.from('powerhouse_sales_outcomes')
+     .select('outcome_id',{head:true,count:'exact'}).eq('person_key',a.person_key)
+     .eq('outcome_type','sent').eq('channel','email').gte('occurred_at',since);
+   if(recentErr)throw{code:'CONTACT_PRESSURE_READ_FAILED',message:recentErr.message};
+   const{count:uncertainSamePerson,error:uncertainErr}=await db.from('powerhouse_sales_actions')
+     .select('action_id',{head:true,count:'exact'}).eq('person_key',a.person_key)
+     .eq('action_type','autonomous_email').eq('channel','email').eq('status','waiting')
+     .contains('evidence',{autonomous_outbound:{needs_readback:true}});
+   if(uncertainErr)throw{code:'RECIPIENT_UNCERTAIN_OUTBOUND_READ_FAILED',message:uncertainErr.message};
+   if(Number(recentSent||0)>0||Number(uncertainSamePerson||0)>0){
+     const reason=Number(uncertainSamePerson||0)>0?'RECIPIENT_PENDING_PROVIDER_READBACK':'RECIPIENT_CONTACT_PRESSURE_14D';
+     const heldEvidence={...(a.evidence||{}),execution_gate:{
+       contract:'ORIGINAL_EMAIL_RECIPIENT_PRESSURE_AND_UNCERTAINTY_V1',
+       reason,checked_at:now,original_owner:'powerhouse-autonomous-outreach',
+       original_action_id:a.action_id,provider_send_executed:false,
+       next_action:'RECHECK_ORIGINAL_RECIPIENT_OUTCOME_BEFORE_NEXT_SEND'}};
+     const{error:holdErr}=await db.from('powerhouse_sales_actions')
+       .update({evidence:heldEvidence,updated_at:now})
+       .eq('action_id',a.action_id).eq('status','prepared').eq('updated_at',a.updated_at);
+     if(holdErr)throw{code:'RECIPIENT_PRESSURE_HOLD_WRITEBACK',message:holdErr.message};
+     out.push({action_id:a.action_id,status:'held',reason,provider_send_attempted:false});
+     continue;
+   }
    // Atomic claim and durable intent BEFORE external Gmail invocation.
     // On crash or timeout, the action remains uncertain and must not be resent.
     const sendIntent={...(a.evidence||{}),autonomous_outbound:{
