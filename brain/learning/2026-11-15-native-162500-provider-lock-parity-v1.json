@@ -51,5 +51,20 @@
   "no_new_migration": true,
   "no_new_db_write": true,
   "downstream_original_innovations_closed": false,
-  "rollback": "Only protected source lock correction if independent remote provider proof disproves record; never delete applied provider history."
+  "rollback": "Only protected source lock correction if independent remote provider proof disproves record; never delete applied provider history.",
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_version": "20261115162500",
+    "provider_name": "original_personal_source_supplier_completeness_v4",
+    "provider_statement_count": 3,
+    "native_pg_get_functiondef_source_text_complete_verified": true,
+    "provider_observed_at": "2026-11-15T15:55:57.640411Z",
+    "prior_lock_count": 869,
+    "new_lock_count": 870,
+    "previous_last_version": "20261115162000",
+    "native_version_applied": true,
+    "new_sql_not_applied": true,
+    "original_downstream_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5879",
+    "source": "independent original supabase_migrations.schema_migrations and pg_get_functiondef readback, not a new provider operation"
+  }
 }
