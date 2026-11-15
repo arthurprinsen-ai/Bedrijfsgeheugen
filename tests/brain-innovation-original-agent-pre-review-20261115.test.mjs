@@ -125,7 +125,9 @@ test('uncertain CAS conflict cannot create duplicate work or manufacture a recei
   return persistOriginalAgentPreReviews({plan:packet,config,fetchImpl});
  };
  assert.equal((await withCurrent(item.review.fingerprint)).already_registered,1);
- await assert.rejects(withCurrent('wrong'),/VERSION_OR_PROVIDER_CONFLICT/);
+ const rejected=await withCurrent('wrong');
+ assert.equal(rejected.failed,1);
+ assert.deepEqual(rejected.error_codes,['VERSION_OR_PROVIDER_CONFLICT']);
 });
 
 test('the same existing daily workflow consumes pre-review; no new cron, queue, sender, or false completion',()=>{
