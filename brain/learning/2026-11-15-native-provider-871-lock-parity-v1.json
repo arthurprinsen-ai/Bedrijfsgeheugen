@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse|supabase|native-provider-871-applied-after-protected-870-lock-closure|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original Supabase native migration provider + ONE BRAIN protected source-lock writer",
+  "compiler": {
+    "failure_class": "FALSE_NEGATIVE",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "An independent protected main migration 20261115170000_outcome_memory_source_readback_truth_v1 was natively APPLIED after the original 870-lock source-parity repair #5881. Original main then held 870 identical version/name prefix entries while provider had 871. This blocks the original proposed 20261115235500 reexecution writer migration until EXACT current provider-applied history is reflected via a separate protected source-lock PR.",
+  "prevention_rule": "Do not merge a new proposed Supabase migration while the original complete source lock lags the native provider. Independently list provider migrations and compare ALL ordered version/name identities; append only independently observed applied tail in a separate protected lock source owner PR, never mark the unrelated new migration applied. Keep original migrator and entire Required/CodeQL/preview gate. Long-term original terminalizer should hand off successful provider application into the same protected source-lock writer, not assume applied==tracked.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "observed_provider_applied": 871,
+    "observed_original_main_lock": 870,
+    "exact_native_original_870_prefix": true,
+    "added_version": "20261115170000",
+    "added_name": "outcome_memory_source_readback_truth_v1",
+    "provider_migration_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5882",
+    "previous_lock_protected_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5881",
+    "blocked_original_reexecution_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5879",
+    "next_original_writer_migration_applied": false,
+    "original_14_innovation_obligations_closed": false,
+    "external_provider_delivery_proven": false,
+    "business_effect_proven": false
+  },
+  "change_scope": [
+    "supabase/migration-history.lock.json",
+    "brain/learning/2026-11-15-native-provider-871-lock-parity-v1.json",
+    "docs/changes/2026-11-15-native-provider-871-lock-parity.md",
+    "docs/development-ledger-events/2026-11-15-native-provider-871-lock-parity.md"
+  ],
+  "state": "PROTECTED_SOURCE_LOCK_CANDIDATE_REQUIRES_REQUIRED_CODEQL_AND_PROVIDER_READBACK",
+  "no_new_scheduler": true,
+  "no_parallel_sql_writer": true,
+  "no_premature_migration_application": true
+}
