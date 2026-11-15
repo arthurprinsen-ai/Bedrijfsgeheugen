@@ -3460,8 +3460,12 @@
     {
       "version": "20261115001500",
       "name": "original_public_email_overdue_source_replay_dispatch_v1"
+    },
+    {
+      "version": "20261115094500",
+      "name": "original_public_work_email_heartbeat_source_receipt_v1"
     }
   ],
-  "captured_at": "2026-11-14T21:34:21.495Z",
+  "captured_at": "2026-11-15T09:39:08.405Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
