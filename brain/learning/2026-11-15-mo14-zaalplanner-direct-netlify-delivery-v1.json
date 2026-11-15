@@ -40,6 +40,66 @@
       "qa": "Playwright local mobile 390x844: all tabs, goalkeeper, absence, 7 distinct starting lineups, PDF+PNG downloads, zero browser page errors",
       "preservation": "original homepage byte-for-byte equal after production release",
       "limitations": "full interactive production browser acceptance and broad Bedrijfsgeheugen source PR merge not yet proven"
+    },
+    "mobile_app_v7": {
+      "root_cause": "A two-column parent grid placed entire matchdays side-by-side; initial rotation targeted many small tactical changes instead of one near-complete line change per interval.",
+      "source": "User iPhone screenshot, 2026-11-15",
+      "release_status": "LIVE_PROVEN",
+      "production_url": "https://pw-mo14-1.netlify.app/zaalplanner/",
+      "netlify_site_id": "1c4fa5ce-45ae-45dc-b3e2-11f90587c474",
+      "deploy_id": "6afa004b5ef62b6927e8863e",
+      "published_at": "2026-11-15T18:56:16.327Z",
+      "actions_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43749505438",
+      "runtime_browser_checks": {
+        "matchdays": 6,
+        "fixtures": 12,
+        "blocks": 4,
+        "block_minutes": 10,
+        "fields": 5,
+        "keeper": "Coco",
+        "available_field_players": 9,
+        "simultaneous_subs": 4,
+        "holdover": 1,
+        "transition_count": 3,
+        "viewport_px": [
+          320,
+          360,
+          375,
+          390,
+          430,
+          650,
+          768,
+          820
+        ],
+        "horizontal_overflow": false,
+        "mobile_day_cards_stacked": true,
+        "day_pdf_inside_width": true,
+        "alternate_keeper_test": {
+          "keeper": "Eline",
+          "field_players": 8,
+          "swaps": 3,
+          "holdover": 2
+        },
+        "interactive_navigation": true
+      },
+      "failed_checks_and_repair": [
+        {
+          "run": 43749220401,
+          "issue": "Unterminated inline comment swallowed 'groups/last' declarations",
+          "resolution": "Restore declaration on separate line and enforce actual rotation engine regression"
+        },
+        {
+          "run": 43749353214,
+          "issue": "401 Unauthorized due to expiring scoped Netlify deploy proxy",
+          "resolution": "Request new site-specific deploy capability, seal via GitHub repo public key/libsodium, update encrypted Actions secret; retry same canonical workflow"
+        }
+      ],
+      "guardrails": [
+        "No Make",
+        "Existing Netlify website unchanged until atomic deploy ready",
+        "Current homepage preserved byte-identical",
+        "No false assertions about protected merge PR #5875"
+      ]
     }
   },
   "root_cause": "MO14 planner source was added to the business-system repository without its exact delivery-lane ownership, metadata and required one-loop learning artifacts; the independent Netlify site still requires its own authorized deploy and provider readback.",
@@ -51,14 +111,20 @@
     "Do not weaken protected GitHub checks or use Make for MO14 production releases.",
     "Only mark LIVE_PROVEN after a new provider deploy ID, correct site ID, successful HTTP readback of /zaalplanner/ and functional keeper/absent/export verification.",
     "MO14 Netlify credentials are short-lived; check actual provider authorization and refuse a 401 rather than marking LIVE, and never use Make.",
-    "A standalone mobile PWA must ship manifest, scoped service worker, icons and cached application shell with actual route readback."
+    "A standalone mobile PWA must ship manifest, scoped service worker, icons and cached application shell with actual route readback.",
+    "Rotate 5 field slots by exactly 5 cyclic places between blocks to guarantee maximum simultaneous field changes with N available field players.",
+    "With N=9, 4 players leave and enter at each of 3 boundaries across 4×10-minute blocks; show the one player staying and the keeper.",
+    "Render each matchday full width on phones with cards stacked, independently verify no horizontal overflow at 320–820 px.",
+    "Fail closed on incomplete runtime rotation tests or expiring Netlify credentials; never claim READY without provider deploy ID and browser/HTTP readback."
   ],
   "tests": [
-    "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs"
+    "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs",
+    "tests/brain-mo14-max-turnover-ux-20261115.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs"
+      "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs",
+      "tests/brain-mo14-max-turnover-ux-20261115.test.mjs"
     ]
   },
   "compiler": {
@@ -69,5 +135,5 @@
     "security_sensitive": false
   },
   "owner": "original MO14-1 website protected delivery lane",
-  "terminal_rule": "MO14 app v3 is LIVE_PROVEN for exact Netlify provider deploy, static assets and original homepage parity; local UI functional tests passed. Full interactive browser run against the actual production URL and the broader parent repository PR merge remain separately open."
+  "terminal_rule": "Independent MO14 app site V7: provider CURRENT/READY, semantic live readback, and actual production browser interaction at 8 viewport sizes are LIVE_PROVEN. Protected merge of parent Bedrijfsgeheugen PR #5875 remains separately open."
 }
