@@ -34,5 +34,23 @@
     "historical_replay": [
       "tests/brain-personal-final-truth-editorial-parity-20261115.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "Both original LinkedIn personal editor and independent final review MUST import and call the identical shared personalObservationalLifeContextSignal; retain independent source, identity, nonbusiness, uniqueness and provider gates.",
+  "evidence": {
+    "kind": "production-observed-and-source-regression",
+    "production_obligation_date": "2026-11-15",
+    "channel": "linkedin_personal",
+    "production_status": "BLOCKED",
+    "rejection": "OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED",
+    "provider_id": null,
+    "regression_test": "tests/brain-personal-final-truth-editorial-parity-20261115.test.mjs",
+    "provider_readback_verified": false
   }
 }
