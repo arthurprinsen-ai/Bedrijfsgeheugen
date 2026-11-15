@@ -26,7 +26,7 @@ test('standalone app declares scoped offline resources and actual icons',()=>{
    assert.ok(data.length>1000);
  }
  const sw=readFileSync(base+'sw.js','utf8');
- assert.match(sw,/mo14-zaalcoach-v7-full-line-swaps-20261115/);
+ assert.match(sw,/mo14-zaalcoach-v8-coachboard/);
  assert.match(sw,/self\.registration\.scope/);
  assert.doesNotMatch(sw,/make\.com|buffer\.com/);
 });
@@ -61,7 +61,7 @@ test('PW Enschede branding and independent editable match dates share the existi
  assert.ok(html.includes('canvasMatchDate(matchIndex)'));
  const sw=readFileSync(base+'sw.js','utf8');
  assert.ok(sw.includes('./pw-logo.png'));
- assert.match(sw,/mo14-zaalcoach-v7-full-line-swaps-20261115/);
+ assert.match(sw,/mo14-zaalcoach-v8-coachboard/);
 });
 
 test('12 screenshot-grounded PW fixtures across six days have separate time, opponent and keepers',()=>{
@@ -84,6 +84,6 @@ test('12 screenshot-grounded PW fixtures across six days have separate time, opp
  assert.deepEqual(fixtures.map(f=>f.home),[true,true,true,false,true,false,true,true,false,true,false,false]);
  for(const marker of ['function pdfForDay','id="pdfDay"','data-day-pdf','id="addFixture"','id="copyPresenceDay"','function fixtureTitle','function formatKickoff','data-fixture-index'])
   assert.ok(html.includes(marker),'missing real matchday experience: '+marker);
- const script=html.slice(html.indexOf('<script>')+8,html.lastIndexOf('</script>'));
+ const script=html.slice(html.indexOf('<script>')+8,html.indexOf('</script>',html.indexOf('<script>')));
  assert.doesNotThrow(()=>new Function(script),'complete client JavaScript must parse in Node');
 });
