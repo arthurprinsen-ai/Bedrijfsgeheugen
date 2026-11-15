@@ -28,3 +28,13 @@
 - **QA op lokaal mobiel browserformaat:** keeper wijzigen, Jackie afwezig melden, opstelling regenereert, 6 personen (5+keeper) op veld, 4 op bank bij volledige selectie, 7 verschillende startopstellingen, PNG + PDF werkend gegenereerd, geen JavaScript-paginafouten.
 - **Onafhankelijke productieproef:** providercurrent = nieuw deploy-ID, HTTP `/zaalplanner/` plus manifest, sw.js en beide iconen aanwezig, oorspronkelijke homepage byte-identiek; GitHub Actions `success`.
 - **Restgrens:** interactieve productiebrowser-acceptatietest ontbreekt. De hoofdrepository-PR #5875 is niet beschermd gemerged; dat is geen blocker voor de afzonderlijk aantoonbaar gepubliceerde MO14-site, maar blijft open governance-werk.
+
+## Bevestigde actuele app-release — 15 november 2026 17:31 UTC
+
+- De MO14-specifieke Netlify-providercredential `MO14_NETLIFY_PROXY_TEMP` bleek bij run 43740869990 verlopen: `401 Unauthorized`. De credential is als nieuwe versleutelde GitHub Actions-secret via de geautoriseerde Netlify-verbinding vernieuwd; geen tokens in broncode of logs.
+- De bestaande directe GitHub→Netlify workflow is op exacte kandidaat-SHA `3f9a08ca99aa3bac7f4114aa3f180ff2fe1668cd` opnieuw uitgevoerd via https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43741527569 (completed: SUCCESS).
+- Netlify site `1c4fa5ce-45ae-45dc-b3e2-11f90587c474` publiceerde deploy `6af9ec6155a593caa523acbc` op `2026-11-15T17:31:17.791Z`; providerstatus `READY` en `CURRENT`.
+- De geïsoleerde GitHub-run bevestigde bronregressies, volledige sitebestandsbackup, publicatie van `/zaalplanner/` plus PWA manifest, service worker en PNG-iconen, en byte-identieke bestaande homepage.
+- Lokale mobiele Chromium-interactietest opnieuw uitgevoerd: schermtabs, keeper wisselen, afwezige speler, 6 veldpersonen inclusief keeper, 4 bankzitters, 7 verschillende beginopstellingen, PNG/PDF-downloads, 0 JavaScript-paginafouten.
+- Op een iPhone kan de gebruiker de site in Safari via Delen > Zet op beginscherm als zelfstandige PWA openen. **Beperking:** er is nog geen geautomatiseerde interactieve productiebrowserproef tegen de echte Netlify-host; alleen provider-HTTP- en lokale browserproeven zijn aantoonbaar.
+- Geen Make gebruikt. De brede repo-PR #5875 blijft open; geslaagde separate sitepublicatie is geen bewijs van een beschermde merge van de hoofdrepository.
