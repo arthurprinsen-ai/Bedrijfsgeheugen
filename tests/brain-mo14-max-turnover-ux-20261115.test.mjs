@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const html=readFileSync('pw-mo14-1/zaalplanner/index.html','utf8');
-const script=html.slice(html.indexOf('<script>')+8,html.lastIndexOf('</script>'));
+const script=html.slice(html.indexOf('<script>')+8,html.indexOf('</script>',html.indexOf('<script>')));
 const start=script.indexOf('function seeded(n)');
 const end=script.indexOf('function matchData()',start);
 assert.ok(start>=0&&end>start,'must locate actual production rotation implementation');
