@@ -63,12 +63,15 @@
     "audit_runs_at_end_of_existing_job_even_after_previous_step_error": true,
     "existing_daily_execution_not_disabled": true,
     "no_customer_data_emitted": true,
-    "original_real_execution_and_effect_measurement_still_required": true
+    "original_real_execution_and_effect_measurement_still_required": true,
+    "github_artifact_redacts_source_bound_candidate_and_operation_identity": true,
+    "github_artifact_preserves_only_status_owner_counts": true
   },
-  "remaining_evidence": "Current source work creates an owner-specific readback audit/diagnostic packet, not a real consumer agent claim, protected code execution, independent remote ref, external side effect, or measured innovation. Need exact-head Required/CodeQL, protected merge, next natural daily run provider readback and artifact, then original registered agent owner builds one source-bound change at a time and supplies real consumer receipt/production impact before closing any of the 14.",
+  "remaining_evidence": "Current source work creates an owner-specific readback audit/diagnostic packet, not a real consumer agent claim, protected code execution, independent remote ref, external side effect, or measured innovation. Need exact-head Required/CodeQL, protected merge, next natural daily run provider readback and artifact, then original registered agent owner builds one source-bound change at a time and supplies real consumer receipt/production impact before closing any of the 14. GitHub public Actions artifact must be redacted; regression checks enforced.",
   "release_state": "PROTECTED_CANDIDATE_NOT_LIVE",
   "human_documentation": "docs/changes/2026-11-15-original-innovation-owner-native-daily-readback.md",
   "regressions": [
-    "tests/brain-innovation-original-owner-readback-20261115.test.mjs"
+    "tests/brain-innovation-original-owner-readback-20261115.test.mjs",
+    "tests/powerhouse-daily-self-evolution.test.mjs"
   ]
 }
