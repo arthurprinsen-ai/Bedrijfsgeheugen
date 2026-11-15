@@ -28,6 +28,18 @@ function normalizeDispatchRow(row) {
   });
 }
 
+function assertCanonicalDispatchIdentity(input, persisted) {
+  if (!persisted) throw new Error('Supabase outcome obligation store failed: persisted dispatch record not found');
+  // The dispatch ledger is append-only. An identical idempotency key must
+  // never silently transfer an existing obligation to a different owner.
+  for (const field of ['type','idempotencyKey','obligationId','ownerAgent','traceId','state']) {
+    if (persisted[field] !== input[field]) {
+      throw new Error(`Supabase outcome obligation store failed: immutable dispatch identity conflict (${field})`);
+    }
+  }
+  return persisted;
+}
+
 function normalizeEvidenceRow(row) {
   if (!row) return null;
   const metadata = row.metadata && typeof row.metadata === 'object' ? Object.freeze({ ...row.metadata }) : Object.freeze({});
@@ -114,17 +126,32 @@ export function createSupabaseOutcomeObligationStores({
           state:requireText(record.state, 'record.state'),
           record:metadataFromRecord(record),
         };
-        await request(dispatchEndpoint, {
+        // PostgREST only returns newly inserted rows with return=representation.
+        // An ignored duplicate returns [], so a replay is not a new handoff.
+        // Keep atomic ignore-duplicates for concurrent original-owner runners.
+        const inserted = await request(dispatchEndpoint, {
           method:'POST',
           headers:headers({
             'content-type':'application/json',
-            Prefer:'resolution=ignore-duplicates,return=minimal',
+            Prefer:'resolution=ignore-duplicates,return=representation',
           }),
           body:JSON.stringify(row),
         });
-        const persisted = await getDispatch(idempotencyKey, recordType);
-        if (!persisted) throw new Error('Supabase outcome obligation store failed: persisted dispatch record not found');
-        return Object.freeze({ created:true, record:persisted });
+        if (!Array.isArray(inserted) || inserted.length > 1) {
+          throw new Error('Supabase outcome obligation store failed: dispatch insert outcome unverified');
+        }
+        if (inserted.length === 1 && (
+          inserted[0]?.idempotency_key !== idempotencyKey
+          || inserted[0]?.record_type !== recordType
+        )) {
+          throw new Error('Supabase outcome obligation store failed: inserted dispatch identity unverified');
+        }
+        const persisted = assertCanonicalDispatchIdentity(
+          row && { type:recordType, idempotencyKey, obligationId:row.obligation_id,
+            ownerAgent:row.owner_agent, traceId:row.trace_id, state:row.state },
+          await getDispatch(idempotencyKey, recordType)
+        );
+        return Object.freeze({ created:inserted.length === 1, record:persisted });
       },
     });
   }
