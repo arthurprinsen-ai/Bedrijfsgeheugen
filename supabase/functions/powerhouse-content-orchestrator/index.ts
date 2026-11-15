@@ -55,6 +55,8 @@ function blogReaderReadyViolations(artifact:any):string[]{
 }
 
 const PERSONAL_STEERING_STORY='In een geverifieerd ondernemersbouwverhaal is AI het technische middel, niet de propositie. Mijn overtuiging gaat over bedrijven die continu veranderen en daarom iedere dag beter moeten kunnen anticiperen, besluiten, uitvoeren en leren. Alleen bronbevestigde persoonlijke ervaringen; geen reclame, jargon of ongevraagde salespitch.';
+const OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT="Je bent eindredacteur van een strikt observerende, niet-zakelijke LinkedIn-post in natuurlijk Nederlands. Lever uitsluitend hetzelfde JSON-artifact. Schrijf 150 tot 175 woorden in vier korte alinea's. Gebruik uitsluitend de feiten uit verified_personal_source en source_text; beschrijf een herkenbaar alledaags voorval, de oorzaak en het concrete gevolg, zonder te doen alsof Arthur het zelf heeft meegemaakt. Geen ik/mijn/mij/me, geen eigen ervaringen, geen ondernemerschap, bedrijf, klant, Bedrijfsgeheugen, consultancy, zakelijke moraal, strategie, omzet, verkoop of oproep tot actie. Geen interne technische systemen of ongecontroleerde cijfers. Verzin niets; als de bron onvoldoende is, blijft publicatie afgekeurd. De vorige afgekeurde tekst is uitsluitend negatieve context. Controleer voordat je afrondt of de tekst geen zakelijke signalen bevat.";
+const PERSONAL_LIFE_CORRECTION_PROMPT="Je bent eindredacteur van een persoonlijk LinkedIn-verhaal. Lever hetzelfde JSON-artifact: 150 tot 175 natuurlijke Nederlandse woorden in vier korte alinea's. Gebruik alleen verified_personal_source en uitsluitend expliciet geverifieerde persoonlijke handelingen en uitspraken; nooit verzonnen gebeurtenissen, meningen, gevoelens of ervaringen. Geen zakelijke brug, geen bedrijven, klanten, strategie, omzet, Bedrijfsgeheugen of consultancy. Gebruik ik/mijn alleen als de bron eerste-persoonsclaims werkelijk ondersteunt; eindig met een oprechte vraag. Geen links, verkoop-CTA, systeemtaal of verzonnen bewijs. Als het persoonlijke feit onvoldoende is, moet de bestaande gate afkeuren.";
 
 function compactLinkedInCommentary(value:string,maxLength=2800):string{
   const original=clean(value);
@@ -967,7 +969,11 @@ Deno.serve(async (req) => {
         // The original full editorialSystem is several independent channel, experiment and
         // governance instructions; repeating it during repair kept producing contradictory prose.
         // This bounded retry is not an alternate publisher or quality-policy override.
-        const correctionPrompt = 'Je bent eindredacteur voor een authentieke Nederlandstalige LinkedIn-post van een ondernemer. '
+        const correctionPrompt = personalSource?.evidence?.observational_personal_theme_verified===true
+          && personalSource?.evidence?.ai_native_builder_story_verified!==true
+          ? OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT
+          : personalSource?.evidence?.ai_native_builder_story_verified===true
+            ? ('Je bent eindredacteur voor een authentieke Nederlandstalige LinkedIn-post van een ondernemer. '
           + 'Antwoord uitsluitend via het verplichte JSON-artifact met exact dezelfde velden. Schrijf de body '
           + 'met 150 tot 175 normale Nederlandse woorden, precies vier natuurlijke alinea’s. '
           + 'De eerste 140 tekens bevatten een herkenbaar, feitelijk ondernemersprobleem. '
@@ -978,7 +984,8 @@ Deno.serve(async (req) => {
           + 'Eindig met exact één oprechte open vraag met vraagteken. '
           + 'De vorige afgekeurde tekst is alleen foutcontext, geen feitelijke bron. '
           + 'Bij onvoldoende geverifieerde nieuwe feiten: verzin niets; de bestaande redactiecontrole wijst dan af. '
-          + 'Controleer de woordtelling voor afronden.';
+          + 'Controleer de woordtelling voor afronden.')
+            : PERSONAL_LIFE_CORRECTION_PROMPT;
         const revisionInput={
           channel:'linkedin_personal',
           verified_personal_source:personalSource,
