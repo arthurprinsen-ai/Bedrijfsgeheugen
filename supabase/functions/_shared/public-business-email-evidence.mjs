@@ -136,3 +136,19 @@ export function firstPartySourceRetryHours(attemptNumber){
  const n=Number.isSafeInteger(attemptNumber)&&attemptNumber>0?attemptNumber:1;
  return Math.min(48,4*2**Math.min(4,n-1));
 }
+
+// Same canonical original first-party action is retryable on its OWN due day as
+// well as after Amsterdam midnight. No extra company slots or sends created.
+// A due timestamp is authority for research only, never for message delivery.
+export function firstPartySourceRetryDue(key,evidence,observedAt){
+ const identity=String(key??'');
+ if(!/^relationship-research:public-domain:\d{4}-\d{2}-\d{2}:[^:]+$/.test(identity)||
+    evidence?.public_email_source_checked!==false)return false;
+ const due=Date.parse(String(evidence?.public_email_next_attempt_at??''));
+ const now=Date.parse(String(observedAt??''));
+ if(!Number.isFinite(due)||!Number.isFinite(now)||due>now)return false;
+ const originalDay=identity.split(':')[2];
+ const currentDay=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',
+  year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(now));
+ return originalDay<=currentDay;
+}

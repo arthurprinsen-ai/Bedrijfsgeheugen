@@ -4,7 +4,8 @@ import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
 import {evaluateOriginalOwnerHandoff} from '../scripts/brain/innovation-original-owner-readback.mjs';
 import {
-  CONTRACT,planOriginalOwnerDecisions,persistOriginalOwnerDecisions,publicSummary
+  CONTRACT,planOriginalOwnerDecisions,persistOriginalOwnerDecisions,publicSummary,
+  OBLIGATION_HANDOFF_CONTRACT,planOriginalDecisionObligationHandoffs,persistOriginalDecisionObligationHandoffs
 } from '../scripts/brain/innovation-original-owner-decision.mjs';
 
 const sha='a'.repeat(64);
@@ -172,4 +173,109 @@ test('existing daily workflow calls owner decision in the same main and bounded 
   assert.match(workflow,/schedule:[\s\S]*cron: '47 4 \* \* \*'/);
   assert.equal((workflow.match(/cron: '47 4 \* \* \*'/g)||[]).length,1);
   assert.doesNotMatch(workflow,/issues: write|pull-requests: write/);
+});
+
+function obligationHandoffFixture(){
+  const fx=fixture();
+  fx.operation.evidence.original_owner_decision=copy(plan(fx).work[0].decision);
+  const sourceReport=evaluateOriginalOwnerHandoff(fx.snapshot,{now:NOW});
+  return {fx,plan:planOriginalDecisionObligationHandoffs({snapshot:fx.snapshot,report:sourceReport,observedAt:NOW})};
+}
+test('original ONE BRAIN obligation receipt binds same engineering/CRO source, remains OPEN without fake ACK',()=>{
+  const {fx,plan:handoff}=obligationHandoffFixture();
+  assert.equal(handoff.contract,OBLIGATION_HANDOFF_CONTRACT);
+  assert.equal(handoff.work.length,1);
+  const receipt=handoff.work[0].receipt;
+  assert.equal(receipt.original_operation_id,fx.operation.id);
+  assert.equal(receipt.original_owner,'agent:agent-growth-market');
+  assert.equal(receipt.source_sha256,sha);
+  assert.equal(receipt.original_decision_fingerprint,fx.operation.evidence.original_owner_decision.fingerprint);
+  assert.equal(receipt.consumer_ack_verified,false);
+  assert.equal(receipt.protected_implementation_verified,false);
+  assert.equal(receipt.external_side_effect,false);
+  assert.equal(receipt.terminal_success,false);
+  assert.equal(receipt.financial_benefit_claimed,false);
+  assert.equal(handoff.new_queue,false);
+  assert.equal(handoff.new_scheduler,false);
+});
+test('native obligation source drift and false original agent ACK are rejected before update',()=>{
+  for(const mutate of [
+    fx=>{fx.operation.evidence.original_owner_decision.original_owner='agent:untrusted';},
+    fx=>{fx.operation.evidence.original_owner_decision.consumer_ack_verified=true;},
+    fx=>{fx.operation.evidence.original_owner_decision.production_mutation_authorized=true;},
+    fx=>{fx.operation.evidence.original_owner_decision.terminal_success=true;},
+    fx=>{fx.operation.evidence.original_owner_decision.source_revision='different';},
+    fx=>{fx.operation.evidence.original_owner_decision.source_pre_review_fingerprint='other';},
+    fx=>{fx.obligation.owner='original-agent:engineering';},
+    fx=>{fx.obligation.state='FULFILLED';}
+  ]){
+    const {fx}=obligationHandoffFixture();mutate(fx);
+    assert.throws(()=>planOriginalDecisionObligationHandoffs({
+      snapshot:fx.snapshot,report:fx.report,observedAt:NOW
+    }),/ORIGINAL_INNOVATION_OWNER_DECISION_/);
+  }
+});
+test('original decision obligation handoff is idempotent only for same immutable source fingerprint',()=>{
+  const {fx,plan:handoff}=obligationHandoffFixture();
+  fx.obligation.evidence.original_owner_decision_handoff=copy(handoff.work[0].receipt);
+  const same=planOriginalDecisionObligationHandoffs({
+    snapshot:fx.snapshot,report:fx.report,observedAt:NOW
+  });
+  assert.equal(same.work.length,0);
+  assert.equal(same.held[0].reason,'IDENTICAL_ORIGINAL_OBLIGATION_RECEIPT_ALREADY_PERSISTED');
+  fx.obligation.evidence.original_owner_decision_handoff.original_decision_fingerprint='0'.repeat(64);
+  assert.throws(()=>planOriginalDecisionObligationHandoffs({
+    snapshot:fx.snapshot,report:fx.report,observedAt:NOW
+  }),/OBLIGATION_PREVIOUS_HANDOFF_CONFLICT/);
+});
+test('same canonical original obligation native CAS + independent GET proves decision received but NOT agent implementation',async()=>{
+  const {fx,plan:handoff}=obligationHandoffFixture();
+  let stored={...copy(fx.obligation),id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    version:3,obligation_type:'INNOVATION_DELIVERY',capability_id:'powerhouse-self-improvement-layer-v1'};
+  let gets=0,posts=0;
+  const fetchImpl=async(url,options)=>{
+    if(url.includes('/rpc/brain_transition_obligation')){
+      posts++;
+      const input=JSON.parse(options.body);
+      assert.equal(input.p_obligation_id,stored.id);
+      assert.equal(input.p_expected_version,3);
+      assert.equal(input.p_state,'OPEN');
+      assert.equal(input.p_owner,'original-agent:cro');
+      assert.equal(input.p_evidence.original_owner_decision_handoff.consumer_ack_verified,false);
+      stored={...stored,version:stored.version+1,evidence:copy(input.p_evidence)};
+      return {ok:true,json:async()=>copy(stored)};
+    }
+    assert.ok(url.includes('/rest/v1/brain_obligations?'));
+    gets++;
+    return {ok:true,json:async()=>[copy(stored)]};
+  };
+  const result=await persistOriginalDecisionObligationHandoffs({plan:handoff,config,fetchImpl});
+  assert.equal(result.failed,0);
+  assert.equal(result.readback_proven,1);
+  assert.equal(result.consumer_ack_claimed,0);
+  assert.equal(result.implementations_verified,0);
+  assert.equal(stored.state,'OPEN');
+  assert.equal(stored.version,4);
+  assert.equal(posts,1);
+  assert.equal(gets,2);
+  assert.equal(stored.evidence.original_owner_decision_handoff.original_operation_id,fx.operation.id);
+});
+test('original obligation provider-CAS conflict never fabricates a new receipt',async()=>{
+  const {fx,plan:handoff}=obligationHandoffFixture();
+  let stored={...copy(fx.obligation),id:'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+    version:3,obligation_type:'INNOVATION_DELIVERY',capability_id:'powerhouse-self-improvement-layer-v1'};
+  let failPost=true;
+  const fetchImpl=async(url)=>{
+    if(url.includes('/rpc/brain_transition_obligation'))return {ok:false,status:409};
+    return {ok:true,json:async()=>[copy(stored)]};
+  };
+  const broken=await persistOriginalDecisionObligationHandoffs({plan:handoff,config,fetchImpl});
+  assert.equal(broken.failed,1);
+  assert.equal(broken.readback_proven,0);
+  assert.equal(broken.consumer_ack_claimed,0);
+  stored.evidence.original_owner_decision_handoff=copy(handoff.work[0].receipt);
+  const already=await persistOriginalDecisionObligationHandoffs({plan:handoff,config,fetchImpl});
+  assert.equal(already.failed,0);
+  assert.equal(already.already_present,1);
+  assert.equal(already.readback_proven,0);
 });
