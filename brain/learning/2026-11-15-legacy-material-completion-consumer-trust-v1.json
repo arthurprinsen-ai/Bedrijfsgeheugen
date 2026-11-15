@@ -1,0 +1,69 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|legacy-self-certified-material-completion-still-trusted-by-consumer|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "LEGACY_SELF_CERTIFIED_MATERIAL_PROOF_ACCEPTED_BY_CONSUMER",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "After the protected original runtime stopped producing independent=true OBLIGATIONS_COMPLETE, its original Completion Supervisor still listed OUTCOME_OBLIGATION_RUNTIME as a TRUSTED_PRODUCER of the independent material-completion class. Previously persisted self-produced proof can therefore continue satisfying later LIVE_VERIFIED evaluations despite the writer being disabled.",
+  "evidence": {
+    "observed_at_utc": "2026-11-15",
+    "native_provider_project": "adhjwmvyoixzjtmiroln",
+    "source_table": "public.brain_outcome_obligation_evidence",
+    "matching_legacy_rows": 328,
+    "source_predicate": "evidence_type=OBLIGATIONS_COMPLETE AND metadata.producer=OUTCOME_OBLIGATION_RUNTIME AND independent=true AND accepted=true AND exact_production=true",
+    "all_from_obligation": "material-change-live-verification",
+    "historical_rows_mutated": false,
+    "external_outcomes_proven_for_all": false,
+    "previous_protected_writer_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5851",
+    "source_consumer": "platform/agents/completion-supervisor.mjs::acceptedEvidence",
+    "regression": [
+      "tests/brain-completion-supervisor.test.mjs",
+      "tests/completion-supervisor.test.mjs",
+      "tests/brain-completion-readiness.test.mjs",
+      "tests/brain-completion-supervisor-backfill.test.mjs",
+      "tests/brain-outcome-obligation-runtime.test.mjs"
+    ]
+  },
+  "prevention": {
+    "legacy_self_certified_producer_denied": true,
+    "original_independent_production_readback_only": true,
+    "exactProduction": true,
+    "materialSourceRef_required": true,
+    "materialSourceRevision_required": true,
+    "original_obligation_candidate_production_identities_required": true,
+    "no_bulk_history_update": true,
+    "no_parallel_provider_writer": true,
+    "original_completion_supervisor_only": true,
+    "missing_proof_fails_closed": true
+  },
+  "semantic_learning": {
+    "failure": "REMOVED_WRITER_BUT_LEGACY_SELF_PROOFS_REMAINED_TRUSTED",
+    "cause": "Consumer trust rule still accepted claimant as independent producer",
+    "prevention_rule": "For OBLIGATIONS_COMPLETE require independent PRODUCTION_READBACK producer, exact production evidence, source readback ref and source revision; never trust OUTCOME_OBLIGATION_RUNTIME even when immutable historical rows carry accepted/independent flags.",
+    "regression_guard": "tests/brain-completion-supervisor.test.mjs",
+    "next_owner": "Existing agent-reliability with independent agent-data-quality under original ONE BRAIN #171",
+    "effect_proof": "PROTECTED_CI_AND_NETLIFY_PRODUCTION_DEPLOY_READBACK_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-completion-supervisor.test.mjs",
+      "tests/brain-completion-supervisor-backfill.test.mjs",
+      "tests/brain-outcome-obligation-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-completion-supervisor.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-completion-supervisor.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}

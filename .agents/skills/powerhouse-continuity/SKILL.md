@@ -3,6 +3,14 @@ name: powerhouse-continuity
 description: Use when materially operating, changing, debugging, recovering, documenting, or handing off Bedrijfsgeheugen Powerhouse work across chats, agents, workflows, repositories, providers, or interrupted execution.
 ---
 
+## 15 november 2026 — onderbroken originele backfill houdt een controleerbaar checkpoint
+
+**Reliability en Data Quality: dezelfde bestaande Completion Supervisor, geen extra executor.** Het oorspronkelijke `tools/outcome-obligation-completion-supervisor-backfill.mjs` moet vóór elke oorspronkelijke resume-side-effect atomair een `IN_PROGRESS`-checkpoint schrijven. Na iedere exact gebonden canonieke `resumeResults`-ontvangst wordt dat checkpoint atomair vervangen; alleen nadat álle toegestane unieke `obligationId`-wakes zijn verwerkt, mag `resumeCheckpoint.state=COMPLETE` staan. Een dubbel obligationId, verkeerd `coalesceKey`, ontbrekende output of onvolledig resultaat is fail-closed en houdt het eerdere bewijs.
+
+De bestaande workflow `.github/workflows/completion-supervisor-backfill-shadow.yml` probeert met `if: always()` ook bij mislukking het laatste checkpoint via de **bestaande artifact-upload** op te slaan. Harde annulering kan upload alsnog verhinderen: dat is een expliciete `EVIDENCE_DUE`, nooit een groen terminal claim. De originele Supabase-dispatch en -evidence blijven append-only onveranderd en leiden het herstel opnieuw, idempotent, via dezelfde oorspronkelijke eigenaar. `COMPLETE` bewijst hoogstens dat de canonieke triggers zijn aangeboden; geen `PROCESSED`, provideractie, contentpublicatie, Heartbeat of besparing. Bron-/uitkomstbewijs moet onafhankelijk worden nagelezen en laat werk OPEN zolang dat ontbreekt.
+
+Regressie: `tests/brain-completion-supervisor-backfill.test.mjs` (onvolledig checkpoint, verkeerde identity, dubbele oorspronkelijke trigger, volledig maar nog geen business-proof); incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198 . Geen nieuwe queue, scheduler, ontvanger, publicatie of bulkclosure.
+
 ## 15 november 2026 — dezelfde originele verplichting, één harde grens voor alle bronidentiteiten
 
 Een correctie op de bestaande live coalesced Completion Supervisor Backfill (#5835): `WAIT_EXTERNAL` mag niet alleen voor zijn eigen historische rij worden overgeslagen terwijl een andere oude bron dezelfde `obligationId` weer activeert. Elke onafhankelijk bewezen providerconsent-, security- of financiële hard boundary geldt voor **de hele geregistreerde oorspronkelijke verplichting**. De originele `activeDispatches()` houdt daarom per geregistreerde `obligationId` alle WAIT_EXTERNAL-bronnen apart in een veto-set en creëert voor die verplichting geen nieuwe wakeup, ook als er andere veilige historische bronnen zijn. Alle oorspronkelijke kandidaten en hun bewijzen blijven in `report.candidates`; geen afsluiting, providerreplay, bronverlies of andere owner.
