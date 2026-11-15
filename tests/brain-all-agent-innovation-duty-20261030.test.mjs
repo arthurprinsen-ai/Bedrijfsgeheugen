@@ -79,7 +79,18 @@ test('daily existing self evolution checks every registered agent without new sc
  assert.match(workflow,/node --test tests\/brain-all-agent-innovation-duty-20261030\.test\.mjs/);
  assert.equal((workflow.match(/schedule:/g)||[]).length,1);
  assert.doesNotMatch(workflow,/^  pull_request:/m);
- assert.doesNotMatch(workflow,/contents: write/);
+ // Keep the global and all ordinary jobs read-only. Only the existing
+ // protected original engineering PR publisher may request repository writes.
+ const [readOnlyJobs,originalCodeJob]=workflow.split('\n  original-innovation-code-candidate:\n');
+ assert.ok(originalCodeJob,'original engineering code job must exist exactly once');
+ assert.match(readOnlyJobs,/^permissions:\n  contents: read\n  actions: read/m);
+ assert.doesNotMatch(readOnlyJobs,/^\s*(?:contents|issues|pull-requests): write\s*$/m);
+ assert.match(originalCodeJob,/^    permissions:\n      contents: write\n      pull-requests: write\n      actions: read/m);
+ assert.equal((workflow.match(/^\s*contents: write\s*$/gm)||[]).length,1);
+ assert.equal((workflow.match(/^\s*pull-requests: write\s*$/gm)||[]).length,1);
+ assert.doesNotMatch(workflow,/^\s*issues: write\s*$/m);
+ assert.match(originalCodeJob,/persist-credentials: false/);
+ assert.match(originalCodeJob,/gh pr create/);
  const contract=JSON.parse(readFileSync('config/powerhouse-daily-self-evolution.json','utf8'));
  assert.equal(contract.rules.all_registered_agents_innovation_duty_required,true);
  assert.equal(contract.rules.agent_innovation_assignment_not_execution,true);

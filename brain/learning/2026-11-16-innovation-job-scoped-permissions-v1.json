@@ -1,0 +1,46 @@
+{
+  "fingerprint": "brain|innovation|job-local-write-vs-unscoped-regression|20261116-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "observed_on": "2026-11-16",
+  "owner": "original-agent:engineering / existing protected delivery",
+  "scope": "CI_INNOVATION_WORKFLOW_LEAST_PRIVILEGE",
+  "failure_class": "CI",
+  "root_cause": "Two BRAIN regression tests incorrectly used file-wide negative regexes to forbid any contents: write or pull-requests: write; the existing original-innovation-code-candidate job has exactly those narrowly scoped permissions for creating a source-bounded protected GitHub PR. Global defaults and all other jobs are read-only. The initial recovery PR also omitted mandatory Base-SHA and then omitted this canonical learning record; both were rejected correctly by existing admission gates.",
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43763904923",
+    "recovery_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5916",
+    "first_admission_failure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43773405437",
+    "first_admission_failure": "PR_MACHINE_METADATA_INVALID:BASE_SHA_INVALID,BASE_SHA_MISSING",
+    "second_admission_failure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43773566599",
+    "second_admission_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:brain_learning",
+    "base_sha": "ddde1bcd12aa8144262fd2876806e351c3445dc8",
+    "privileged_job": "original-innovation-code-candidate",
+    "permission_change_made": false,
+    "new_schedulers_created": 0,
+    "new_provider_side_effects": 0,
+    "innovation_obligations_implemented_by_this_test_fix": 0,
+    "original_commercial_outcome_state": "OPEN_UNVERIFIED"
+  },
+  "corrective_action": "Update the two existing regressions to assert that global and ordinary jobs stay read-only and exactly one original protected-PR job has required job-local contents-write and PR-write; forbid issues-write everywhere. Retain no-persisted checkout credentials and actual gh pr create path; keep the existing YAML, permissions, users, agents, release and provider operations unchanged.",
+  "prevention_rule": "Tests must evaluate permissions by GitHub Actions job scope, fail if any unrelated job gains write rights, never rewrite security assertions to simply accept unscoped privilege. PR must contain immutable observed Base-SHA and changed learning + change doc + ledger before first submission.",
+  "regression": "tests/brain-all-agent-innovation-duty-20261030.test.mjs",
+  "human_documentation": "docs/changes/2026-11-16-brain-innovation-job-permission-test-repair.md",
+  "human_ledger": "docs/development-ledger-events/2026-11-16-brain-innovation-permission-regression.md",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-all-agent-innovation-duty-20261030.test.mjs",
+      "tests/brain-innovation-original-owner-decision-20261115.test.mjs"
+    ],
+    "technical_result": "NOT_YET_EXACT_HEAD_CI_VERIFIED",
+    "business_outcome_status": "OPEN_NOT_PROVEN"
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "release_status": "CANDIDATE_TESTS_AND_PROTECTED_MERGE_DUE",
+  "rollback": "Protected revert of only scoped two test assertions and learning/docs if regression evidence disproves this change; preserve original least-privilege YAML, open innovation operations and provider/outcome lineage."
+}
