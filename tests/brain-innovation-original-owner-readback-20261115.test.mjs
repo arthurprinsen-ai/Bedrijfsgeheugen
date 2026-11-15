@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
   AUDIT_FILE,CONTRACT,readCanonicalRows,evaluateOriginalOwnerHandoff,
-  runOriginalInnovationOwnerAudit
+  runOriginalInnovationOwnerAudit,summarizeOriginalOwnerAudit
 } from '../scripts/brain/innovation-original-owner-readback.mjs';
 
 const NOW='2026-11-15T09:00:00.000Z';
@@ -147,4 +147,24 @@ test('single existing daily schedule retains independently failing source check 
   assert.match(w,/if: always\(\)/);
   assert.match(w,/path: artifacts\/quality\//);
   assert.doesNotMatch(w,/innovation.*cron\.schedule|new-innovation-scheduler/i);
+});
+
+test('GitHub artifact redacts all original candidate, operation and source identities',()=>{
+  const detailed=evaluateOriginalOwnerHandoff(makeSource(),{now:NOW});
+  const summary=summarizeOriginalOwnerAudit(detailed);
+  const serialized=JSON.stringify(summary);
+  assert.equal(summary.original_owner_packet_redacted,true);
+  assert.equal(summary.counts.candidates,2);
+  assert.equal(summary.owner_ack_due,2);
+  assert.equal(summary.terminal_innovation_success,false);
+  assert.equal('tasks' in summary,false);
+  for(const item of detailed.tasks){
+    assert.ok(!serialized.includes(item.candidate_id));
+    assert.ok(!serialized.includes(item.original_operation_id));
+    assert.ok(!serialized.includes(item.source_key));
+    assert.ok(!serialized.includes(item.source_revision));
+  }
+  const unknown=summarizeOriginalOwnerAudit({contract:CONTRACT,health:'SOURCE_UNAVAILABLE',error_code:'SOURCE_AUTH_UNAVAILABLE'});
+  assert.equal(unknown.health,'SOURCE_UNAVAILABLE');
+  assert.equal(unknown.counts,null);
 });
