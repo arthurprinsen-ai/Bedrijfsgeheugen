@@ -8,9 +8,13 @@ test('terminal closure Brain gate matches executable workflow triggers', async()
   assert.match(unified,/workflow_dispatch:/);
   assert.doesNotMatch(unified,/pull_request:/);
   assert.match(workflow,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
-  assert.ok(workflow.includes('runs?branch=main&event=workflow_dispatch&per_page=100'));
+  assert.ok(workflow.includes('runs?branch=main&event=workflow_dispatch&created=${created_filter}&per_page=100'));
+  assert.ok(workflow.includes('gh api --paginate --slurp "$query"'));
+  assert.ok(workflow.includes('brain-verification-flight-index.mjs --title "$expected_title" --since "$since"'));
+  assert.match(workflow,/TERMINAL_BRAIN_HISTORY_INCOMPLETE/);
+  assert.doesNotMatch(workflow,/runs\?branch=main&event=workflow_dispatch&per_page=100/);
   assert.ok(workflow.includes('BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}'));
-  assert.ok(workflow.includes('.display_title==$title'));
+  // Exact PR/head title is verified by the shared full-history flight index, never by a first-page-only selector.
   assert.ok(workflow.includes('/compare/${run_source_sha}...main'));
   assert.match(workflow,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
   assert.doesNotMatch(workflow,/require_brain_evidence|TERMINAL_BRAIN_(FOUNDATION|DESCENDANT)_PROVEN/);
