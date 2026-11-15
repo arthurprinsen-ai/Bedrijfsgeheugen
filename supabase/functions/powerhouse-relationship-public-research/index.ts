@@ -1,5 +1,5 @@
 import {researchSourceCandidate,researchRetryAt,researchNoSourceFeedback,directResearchSourceUrl} from '../_shared/relationship-research-feedback.mjs';
-import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks,firstPartyDailyRotationOffset,firstPartySourceRetryHours} from '../_shared/public-business-email-evidence.mjs';
+import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks,firstPartyDailyRotationOffset,firstPartySourceRetryHours,firstPartySourceRetryDue} from '../_shared/public-business-email-evidence.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-relationship-public-research-v1';
@@ -255,8 +255,9 @@ async function processOriginalFirstPartyPublicSource(db:any,selected:any,
 async function replayDueHistoricalFirstPartySources(db:any,observedAt:string){
   // Query ORIGINAL completed internal research records with a persisted due time.
   // Do not create another action/queue/cron; same key, same person and company.
-  const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',
-    year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(observedAt));
+  // Due source debt is eligible on its own Amsterdam day too. The daily
+  // eight-new-company cap controls creation, not recovery of an existing ID.
+  // A strict due-time predicate and at-most-two retry budget prevent storms.
   const {data:due,error:dErr}=await db.from('powerhouse_sales_actions')
     .select('action_id,dedupe_key,person_key,person_name,company_key,company_name,role,evidence,updated_at')
     .eq('action_type','research_enrichment').eq('channel','internal').eq('status','done')
@@ -269,11 +270,7 @@ async function replayDueHistoricalFirstPartySources(db:any,observedAt:string){
   for(const action of due||[]){
     if(retried>=2)break;
     const key=String(action.dedupe_key||'');
-    if(!/^relationship-research:public-domain:\d{4}-\d{2}-\d{2}:[^:]+$/.test(key)||
-       key.includes(':'+today+':')||
-       action.evidence?.public_email_source_checked!==false||
-       !Number.isFinite(Date.parse(action.evidence?.public_email_next_attempt_at||''))||
-       Date.parse(action.evidence.public_email_next_attempt_at)>Date.parse(observedAt))continue;
+    if(!firstPartySourceRetryDue(key,action.evidence,observedAt))continue;
     const domain=clean(action.evidence?.first_party_domain).toLowerCase();
     const company=clean(action.company_name);
     if(!eligiblePublicCompanyPage('https://'+domain+'/',company)||
