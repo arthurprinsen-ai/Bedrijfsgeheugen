@@ -1,0 +1,91 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|brain|postmerge-terminal-full-history-test-oracle-drift|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "POSTMERGE_BRAIN_TEST_EXPECTATION_DRIFT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Four inherited backend test assertions still require the old truncated first-page main-indexed BRAIN workflow query. Protected PR #5821 intentionally replaced that final-gate query with PR-created bounded complete native pagination + an exact source index, but the inherited older test mock still rejects its valid gh --paginate --slurp, provider-created time, and strong index contract.",
+  "production_observation": {
+    "github_original_merge_sha": "ded9ff6a1ace0c39f2520b978bce666342b9c487",
+    "github_original_protected_pr": 5821,
+    "original_postmerge_terminal_run": 43695356905,
+    "original_exact_brain_verifier_run": 43695381458,
+    "exact_brain_backend_job": 132754808017,
+    "backend_passed": 6780,
+    "backend_failed": 4,
+    "backend_skipped": 2,
+    "failed_test_titles": [
+      "terminal closure Brain gate matches executable workflow triggers",
+      "cancelled or skipped exact Brain run remains nonterminal without descendant substitution",
+      "terminal closure requires exact-candidate Brain evidence with executable dispatch triggers",
+      "obligation-terminal-closure.yml requires successful exact candidate BRAIN, never foundation/descendant substitution"
+    ],
+    "terminal_error": "TERMINAL_CRITICAL_GATE_FAILED:BRAIN:run=43695381458:conclusion=failure",
+    "innovation_native_planned": 14,
+    "innovation_native_open_obligations": 14,
+    "independent_owner_acks": 0
+  },
+  "change": {
+    "runtime_workflow_modified": false,
+    "original_terminal_workflow": ".github/workflows/obligation-terminal-closure.yml",
+    "source_test_only_fix": true,
+    "original_four_regression_tests": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "postmerge_skill": ".agents/skills/powerhouse-post-merge-codeql/SKILL.md",
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_agent": false,
+    "new_executor": false,
+    "new_store": false
+  },
+  "prevention": {
+    "do_not_assert_retired_per_page100_without_created_filter": true,
+    "gate_must_have_complete_native_pagination": true,
+    "provider_source_time_bound_required": true,
+    "original_exact_candidate_head_required": true,
+    "successful_exact_native_run_required": true,
+    "protected_main_ancestry_required": true,
+    "one_original_dispatch_only": true,
+    "independent_consumer_outcome_still_required": true,
+    "partial_failed_skipped_provider_results_fail_closed": true
+  },
+  "remaining_evidence": "New exact-head Required, CodeQL, existing full BRAIN verification_only, protected merge, original successful terminal readback and protected main source proof. Existing 14 innovation intakes remain unconsumed; this test repair does not provide reviewer/agent ACK, implementation, causal effect, sales or learning execution.",
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evidence": {
+    "original_failed_backend": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458/job/132754808017",
+    "original_failed_terminal": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695356905",
+    "negative_test_source": "tests/brain-terminal-runtime-authority-v1.test.mjs"
+  }
+}
