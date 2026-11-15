@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {selectOriginalCodeCandidate,checkChangedPaths,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
 import {verifyOriginalCandidateReceipt} from '../scripts/brain/innovation-original-code-pr-receipt.mjs';
 
@@ -100,4 +101,12 @@ test('PR receipt only records provider-linked candidate and cannot invent verifi
     /ORIGINAL_SOURCE_CHANGED/);
   f.snapshot.intakes[0].evidence.original_code_candidate_pr={...decision.receipt,url:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/12345'};
   assert.throws(()=>verifyOriginalCandidateReceipt({workorder,pr,operation:f.snapshot.intakes[0]}),/CONFLICTING_PRIOR_BUILD/);
+});
+
+test('network-derived GitHub PR receipt is kept in native Brain, never dumped to local artifact',()=>{
+  const source=readFileSync('scripts/brain/innovation-original-code-pr-receipt.mjs','utf8');
+  assert.doesNotMatch(source,/writeFileSync\s*\(/);
+  assert.match(source,/brain_transition_operation/);
+  assert.match(source,/INDEPENDENT_READBACK_FAILED/);
+  assert.match(source,/JSON\.stringify\(safe\)/);
 });
