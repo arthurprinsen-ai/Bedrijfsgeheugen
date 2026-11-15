@@ -112,7 +112,17 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
       metadata:{ normalizedState:supervision.normalized_state, nextAction:supervision.next_action, requiredEvidence:supervision.required_evidence },
     });
 
-    return Object.freeze({ ...decision, supervision });
+    // A valid observation or one independently marked receipt is NOT the
+    // material, source-bound terminal proof. The existing Completion Supervisor
+    // is the sole terminal authority for this same obligation. Do not let the
+    // easier observational evaluator return COMPLETED while it says EVIDENCE_DUE.
+    const terminalEvidenceDue = decision.status === 'COMPLETED' && supervision.success !== true;
+    return Object.freeze({
+      ...decision,
+      status:terminalEvidenceDue ? 'AWAITING_OUTCOME' : decision.status,
+      terminalEvidenceDue,
+      supervision,
+    });
   }
 
   return Object.freeze({
