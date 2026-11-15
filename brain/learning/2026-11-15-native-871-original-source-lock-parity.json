@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|native-migration-lock|source-lock-870-provider-871-outcome-proof|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "The original provider-applied Outcome Memory migration 20261115170000 was independently applied as native migration #871, while original immutable Git source lock still stopped at provider #870. A subsequent PR preflight would fail 871 versus 870 after a successful exact source-protected deployment. This is a source-to-consumer handoff gap, not an authorization to change migration policy or fabricate tenant business evidence.",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_SOURCE_LOCK_OUTCOME_PROOF_ACK_DUE",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "change": {
+    "source": "supabase/migration-history.lock.json",
+    "canonical_owner": "original Supabase native provider and original Git history lock",
+    "changed_identities": 1,
+    "source_already_applied": true,
+    "additional_database_mutation": false,
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_agent": false
+  },
+  "evidence": {
+    "native_project": "adhjwmvyoixzjtmiroln",
+    "native_applied_count": 871,
+    "native_last_version": "20261115170000",
+    "native_last_name": "outcome_memory_source_readback_truth_v1",
+    "native_observed_at": "2026-11-15T16:13:57.369674Z",
+    "original_source_count": 870,
+    "original_protected_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5882",
+    "original_merge_sha": "3a723d25ce9d31929888866a4578d8c0e7478848",
+    "real_outcome_view_total": 11618,
+    "new_verified_source_matched": 14,
+    "old_verified_metadata_only": 11618,
+    "independent_financial_saving_proven": false
+  },
+  "prevention": {
+    "original_source_locked_history_preserved": true,
+    "no_fabricated_applied_identity": true,
+    "no_direct_repeat_apply": true,
+    "provider_attested_version_name_only": true,
+    "terminal_business_outcome_not_inferred": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-871-source-lock-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-871-source-lock-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-871-source-lock-20261115.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "cause": "Successful original Supabase GitOps migration is not simultaneously acknowledged in original immutable Git migration-history lock, causing subsequent protected PR preflight drift.",
+    "prevention_rule": "After every verified native provider applied migration, append only the observed exact version/name to canonical lock via original protected PR, with independent native readback, before releasing a dependent change.",
+    "regression_guard": "tests/brain-original-native-871-source-lock-20261115.test.mjs",
+    "next_owner": "Original Supabase migration source-lock authority / ONE BRAIN engineering owner",
+    "effect_proof": "NATIVE_PROVIDER_871_VERIFIED_PROTECTED_LOCK_PR_AND_EXACT_AFTER_MERGE_READBACK_REQUIRED"
+  }
+}
