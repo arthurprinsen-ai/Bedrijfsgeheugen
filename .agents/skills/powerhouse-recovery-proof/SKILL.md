@@ -5,6 +5,14 @@ description: Use for original Powerhouse/ONE BRAIN/Heartbeat automatic error, in
 
 # Powerhouse original autonomous recovery proof — 4 November 2026
 
+## 15 november 2026 — één terminale waarheid in de bestaande Completion Supervisor
+
+In `tools/outcome-obligation-runtime.mjs` kon `evaluateOutcomeObligation` de status `COMPLETED` teruggeven zodra één onafhankelijk gemarkeerd bewijsrecord voldeed, hoewel de oorspronkelijke Completion Supervisor tegelijk `success=false`, `OBLIGATIONS_COMPLETE` ontbrekend en géén `LIVE_VERIFIED` vaststelde. Dit liet een observatie-status ten onrechte als terminale uitvoering klinken.
+
+De oorspronkelijke runtime geeft bij zo'n tegenstelling voortaan `AWAITING_OUTCOME` plus `terminalEvidenceDue=true`; uitsluitend de bestaande `evaluateCompletion` kan een terminale `COMPLETED` vrijgeven. De bestaande `SUPERVISOR_DECISION` in ONE BRAIN bewaart de exacte ontbrekende bewijzen. Alle bron-/providerrecords, idempotency keys, eigenaren, originele scheduler en append-only historie blijven intact.
+
+De Reliability-agent herstelt het ontbrekende echte bron-/consumer-/providerbewijs via de oorspronkelijke eigenaar; Data Quality verwerpt generieke `independent:true`, `exactProduction:true` of `outcome` zonder zeven echte terminale bronnen als afsluiting. Regressie `tests/brain-outcome-obligation-runtime.test.mjs` bewijst zowel negatieve observaties als het positieve bewijsgeval. Dezelfde originele backfill is de natuurlijke uitvoerder; geen parallelle agent, cron, tabel, provider write of massale bulkclosure. Oorspronkelijk incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
 ## 15 november 2026 — eigenaar en status uitsluitend uit de onveranderlijke SQL-bron
 
 In de oorspronkelijke Supabase-dispatchadapter kon een `record`-JSONB-veld met `ownerAgent`, `state` of `obligationId` eerder de originele SQL-kolommen overschrijven: `normalizeDispatchRow` spreidde de metadata als laatste. De adapter gebruikt nu SQL `record_type,idempotency_key,obligation_id,owner_agent,trace_id,state` als exclusieve bron en verwerpt ieder metadata-conflict voor die zes velden, óók bij een replay of historische pagina. Matching bestaande metadata mag blijven bestaan; onveranderlijke historie blijft onaangeroerd. Geen nieuwe agent, scheduler, database, uitgaande provideractie, bulkclose of claims over echte verwerking.

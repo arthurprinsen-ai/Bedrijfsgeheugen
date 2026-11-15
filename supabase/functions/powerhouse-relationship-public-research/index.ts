@@ -1,5 +1,5 @@
 import {researchSourceCandidate,researchRetryAt,researchNoSourceFeedback,directResearchSourceUrl} from '../_shared/relationship-research-feedback.mjs';
-import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks} from '../_shared/public-business-email-evidence.mjs';
+import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks,firstPartyDailyRotationOffset} from '../_shared/public-business-email-evidence.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-relationship-public-research-v1';
@@ -280,7 +280,9 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
   }
   const entries=[...domains.values()].sort((a,b)=>a.company.localeCompare(b.company));
   if(!entries.length)return {companies:0,sites:0,candidates:0,ingest_acks:0,reason:'NO_SOURCE_DOMAIN'};
-  const offset=Math.floor(Date.parse(day+'T00:00:00Z')/86400000)%entries.length;
+  // Rotate all eight original daily slots together; one-slot/day caused repeated
+   // unreachable company domains and starved otherwise eligible companies.
+   const offset=firstPartyDailyRotationOffset(day,entries.length,8);
   const {count:already,error:countErr}=await db.from('powerhouse_sales_actions')
     .select('action_id',{count:'exact',head:true})
     .like('dedupe_key','relationship-research:public-domain:'+day+':%');
@@ -340,7 +342,7 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
     if(result.status==='SOURCE_HTML_UNAVAILABLE')htmlUnavailable++;
     if(result.status==='NO_EXPLICIT_NAMED_OFFICIAL_MAILTO')noNamedMailto++;
   }
-  return {companies,sites,candidates,ingest_acks:ingestAcks,html_unavailable:htmlUnavailable,no_named_work_mailto:noNamedMailto,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
+  return {companies,sites,candidates,ingest_acks:ingestAcks,html_unavailable:htmlUnavailable,no_named_work_mailto:noNamedMailto,candidate_company_domains:entries.length,rotation_offset:offset,rotation_step:8,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
 }
 
 
