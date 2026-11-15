@@ -289,7 +289,7 @@ test('same evidence ref cannot silently elevate nonindependent proof to accepted
     idempotencyKey:'obligation|proof',ref:'proof:immutable',type:'FUNCTIONAL_READBACK',
     producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',
     productionIdentity:'P1',independent:true,accepted:true,exactProduction:true
-  }),/immutable evidence identity conflict \\(independent\\)/);
+  }),/immutable evidence identity conflict \(independent\)/);
   assert.equal(postCalled,false,'do not submit conflicting proof to the provider');
 });
 
