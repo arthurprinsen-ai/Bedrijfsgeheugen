@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|linkedin|original-radar-accepts-truncated-source|20261115-v2",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original powerhouse-mira-problem-radar / protected source-rotation v2 from #5874",
+  "status": "SOURCE_CANDIDATE",
+  "root_cause": "Original personal radar used basic Tavily news and 140-character previews; downstream original writer demands >=240 and final-text truth, while earlier supplier could treat previews as eligible. Protected #5874 separately repaired SQL min-length, no-resurrection and source quarantine. Remaining producer defect is thin source retrieval and missing typed personal shortage receipt.",
+  "prevention_rule": "Preserve original #5874 SQL ON CONFLICT DO NOTHING, quarantine, min240 and original service ACL. In original 8-call radar only 2 personal Tavily queries use advanced/three chunks; reject truncated personal excerpt; log absent complete source to original ONE BRAIN and never report full source readiness if either source lane is missing. No additional publisher/scheduler.",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 6,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-personal-radar-source-parity-20261115.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-mira-radar-http-contract-20261113.test.mjs",
+      "tests/brain-mira-original-provider-rejections-20261114.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_blocked_date": "2026-11-15",
+    "personal_provider_id": null,
+    "source_evidence_original_chars": 143,
+    "observed_personal_generation_failures": 6,
+    "protected_existing_source_sql": "supabase/migrations/20261115162000_personal_observation_source_no_resurrection_v1.sql",
+    "original_radar": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+    "overlapping_unsafe_pr_closed": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5873"
+  },
+  "acceptance": [
+    "Required+CodeQL protected merge",
+    "Original Supabase Edge source parity",
+    "Preserve applied protected original migration #5874",
+    "Original next source run source-complete or typed supply failure",
+    "LinkedIn provider URN+independent GET",
+    "ONE BRAIN named PROCESSED consumer",
+    "Heartbeat measured outcome"
+  ],
+  "false_green_forbidden": true,
+  "new_scheduler": false,
+  "new_publisher": false
+}
