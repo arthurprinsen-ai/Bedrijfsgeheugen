@@ -12,6 +12,71 @@ const formatValue = (v,unit) => unit==='EUR'
  ?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:2}).format(v)
  :new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2}).format(v)+(unit==='HOURS'?' uur':unit==='PERCENT'?'%':'');
 
+
+const financeCases=['no_action','downside','base','upside'];
+function financialForecast(action){
+ const f=action?.financial_forecast,empty=Object.freeze({status:'EVIDENCE_DUE',scenarios:[],models:[],assumptions:[],frictions:[]});
+ if(!verifiedEvidence(f)||clean(f.unit).toUpperCase()!=='EUR'||!clean(f.model_version)
+  ||!clean(f.metric_id)||!clean(f.baseline_id)||!clean(f.period_id)
+  ||(clean(action.baseline_id||action.baseline_ref)&&clean(f.baseline_id)!==clean(action.baseline_id||action.baseline_ref)))return empty;
+ const models=(Array.isArray(f.models)?f.models:[]).filter(m=>clean(m?.name)&&clean(m?.version)&&refs(m).length).slice(0,8)
+  .map(m=>Object.freeze({name:clean(m.name),version:clean(m.version)}));
+ const assumptions=(Array.isArray(f.assumptions)?f.assumptions:[]).filter(a=>clean(a?.name)&&clean(a?.value)&&refs(a).length).slice(0,8)
+  .map(a=>Object.freeze({name:clean(a.name),value:clean(a.value),unit:clean(a.unit)}));
+ if(!models.length||!assumptions.length)return empty;
+ const all=Array.isArray(f.scenarios)?f.scenarios:[];
+ const scenarios=[];
+ for(const id of financeCases){
+  const matching=all.filter(a=>clean(a?.case).toLowerCase()===id);
+  if(matching.length!==1||!refs(matching[0]).length)return empty;
+  const value=number(matching[0].net_value_eur);
+  if(value===null)return empty;
+  scenarios.push(Object.freeze({id,amount:value,sourceRefs:Object.freeze(refs(matching[0]))}));
+ }
+ const frictions=(Array.isArray(f.frictions)?f.frictions:[]).filter(a=>clean(a?.name)&&refs(a).length).slice(0,8)
+  .map(a=>Object.freeze({name:clean(a.name),cost:number(a.cost_eur),sourceRefs:Object.freeze(refs(a))}));
+ return Object.freeze({status:'MODELLED_NOT_REALIZED',modelVersion:clean(f.model_version),metric:clean(f.metric_id),
+  baseline:clean(f.baseline_id),period:clean(f.period_id),scenarios:Object.freeze(scenarios),
+  models:Object.freeze(models),assumptions:Object.freeze(assumptions),frictions:Object.freeze(frictions),
+  sourceRefs:Object.freeze(refs(f))});
+}
+function verifiedExecution(action){
+ const x=action?.execution_proof||{},tenant=clean(action?.tenant_id||action?.tenantId);
+ return Boolean(clean(action?.id)&&clean(x.action_id)===clean(action.id)
+  &&clean(x.status).toUpperCase()==='INDEPENDENTLY_VERIFIED'
+  &&x.independent_readback===true&&clean(x.provider_receipt_id)&&refs(x).length
+  &&(!tenant||clean(x.tenant_id)===tenant)
+  &&(!clean(action.baseline_id||action.baseline_ref)||clean(x.baseline_id)===clean(action.baseline_id||action.baseline_ref)));
+}
+function verifiedSavings(outcome,realized){
+ const f=outcome?.financial_measurement||{};
+ if(realized.unit!=='EUR'||clean(realized.metric).toUpperCase()!=='NET_SAVINGS_EUR'
+  ||clean(f.comparator).toUpperCase()!=='NO_ACTION'||!clean(f.method_version)||!refs(f).length
+  ||clean(f.action_id)!==clean(outcome.action_id||outcome.source_action_id)
+  ||clean(f.baseline_id)!==realized.baseline||clean(f.period_id)!==realized.period)return null;
+ const gross=number(f.gross_savings_eur),investment=number(f.implementation_cost_eur),ongoing=number(f.operating_cost_eur);
+ if([gross,investment,ongoing].some(v=>v===null||v<0))return null;
+ const net=Number((gross-investment-ongoing).toFixed(2));
+ if(Math.abs(net-realized.amount)>0.01)return null;
+ return Object.freeze({gross,investment,ongoing,net,method:clean(f.method_version),
+  causality:f.causal_attribution_verified===true&&clean(f.counterfactual_evidence_ref)?'INCREMENTAL_VERIFIED':'ATTRIBUTION_UNVERIFIED',
+  sourceRefs:Object.freeze(refs(f))});
+}
+export function buildFinancialDecisionDossier(action={},result=null){
+ const forecast=financialForecast(action),executionVerified=verifiedExecution(action);
+ const savings=executionVerified&&result?.savings?result.savings:null;
+ const central=forecast.scenarios.find(a=>a.id==='base');
+ const comparable=Boolean(central&&savings&&forecast.metric==='NET_SAVINGS_EUR'
+  &&forecast.metric===result.metric&&result.unit==='EUR'
+  &&forecast.baseline===result.baseline&&forecast.period===result.period);
+ return Object.freeze({forecast,executionStatus:executionVerified?'INDEPENDENTLY_VERIFIED':'NOT_VERIFIED',
+  savings,forecastVsActual:comparable?Number((savings.net-central.amount).toFixed(2)):null,
+  comparable,closingEligible:Boolean(executionVerified&&savings&&result?.learningProven),
+  closureAuthority:'ORIGINAL_ONE_BRAIN_ONLY'});
+}
+// Read-only original authenticated executive projection: no independent model
+// engine, new scheduler, action writer, or fabricated financial result.
+
 function resultFor(action,outcomes){
  if(!clean(action?.id))return null;
  const actionTenant=clean(action.tenant_id||action.tenantId);
@@ -33,6 +98,7 @@ function resultFor(action,outcomes){
   // Do not display a measured result against the wrong original baseline.
   if(actionBaseline&&baseline!==actionBaseline)continue;
   return Object.freeze({amount,unit,metric,baseline,period,sourceRefs:Object.freeze(refs(outcome)),
+   savings:verifiedSavings(outcome,{amount,unit,metric,baseline,period}),
    learningProven:outcome.learning_verified===true&&Array.isArray(outcome.learning_evidence_refs)&&outcome.learning_evidence_refs.some(v=>clean(v))&&Boolean(clean(outcome.next_decision_id||outcome.next_decision))});
  }
  return null;
@@ -52,12 +118,13 @@ export function buildCustomerValueBriefing(model={}){
  const expectedKind=clean(impact.kind).toLowerCase();
  const expected=['forecast','estimated','assumption','derived'].includes(expectedKind)&&units.has(expectedUnit)&&expectedAmount!==null
   ?formatValue(expectedAmount,expectedUnit):null;
+ const realized=resultFor(next,model.outcomes);
  return Object.freeze({available:true,id:clean(next.id),title:clean(next.title||next.label)||'Controleer dit verbeterpunt',
   problem:clean(problem?.title||next.problem_statement)||'Oorzaak nog te bevestigen',
   nextAction:clean(next.next_action||next.recommended_action)||'Beoordeel de onderbouwing en bepaal de eerste veilige stap.',
   metric:metric||null,baseline:baseline||null,expected,expectedKind:expected?expectedKind:null,
   approvalRequired:Boolean(next.requires_approval||next.approval_required||next.decision_required),
-  sourceRefs:Object.freeze(refs(next)),result:resultFor(next,model.outcomes)});
+  sourceRefs:Object.freeze(refs(next)),result:realized,finance:buildFinancialDecisionDossier(next,realized)});
 }
 
 export function customerValueBriefingMarkup(model={}){
