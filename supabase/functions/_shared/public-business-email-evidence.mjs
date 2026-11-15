@@ -117,3 +117,14 @@ export function publishedBusinessMailto({html,sourceUrl,personName,companyName,o
  }
  return null;
 }
+
+// Rotate the SAME eight original first-party company research slots by a full
+// daily cohort, not by one company/day. This is discovery scheduling only:
+// it cannot create an email address, a provider query, or send authority.
+export function firstPartyDailyRotationOffset(isoDay, companyCount, dailySlots=8){
+  const at=typeof isoDay==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(isoDay)
+    ?Date.parse(isoDay+'T00:00:00Z'):NaN;
+  if(!Number.isFinite(at)||!Number.isSafeInteger(companyCount)||companyCount<=0||
+     !Number.isSafeInteger(dailySlots)||dailySlots<=0)return 0;
+  return (Math.floor(at/86400000)*dailySlots)%companyCount;
+}
