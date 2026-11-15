@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|immutable-dispatch-history-first-page-truncation|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "POSTGREST_BACKFILL_FIRST_PAGE_SILENT_TRUNCATION",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The original append-only completion-supervisor snapshot calls workStore.list and recoveryStore.list; source store listDispatch issued a single unpaginated PostgREST select=*, without exact Count/Range. The REST server can return only first 1000 rows while original production contains 3313 AgentWork and 1055 RecoveryWork. The code treated the partial response as all rows.",
+  "evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "observed_at_utc": "2026-11-15T08:55:06Z",
+    "original_table": "public.brain_outcome_obligation_dispatch",
+    "agent_pending": 3313,
+    "recovery_active": 1055,
+    "content_handoff_open": 387,
+    "innovation_planned": 14,
+    "original_jobs_active": 4,
+    "caller": "tools/outcome-obligation-completion-supervisor-backfill.mjs collectCompletionBackfillSnapshot",
+    "source_reader": "tools/outcome-obligation-supabase-store.mjs listDispatch",
+    "source_exact_count": "INDEPENDENT_NATIVE_SQL_AGGREGATE",
+    "truncation_consequence": "EXPOSURE_RISK_CONFIRMED_IN_SOURCE; actual worker omission not yet independently observed",
+    "provider_execution_claim": false,
+    "regression": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ]
+  },
+  "prevention": {
+    "one_original_reader": true,
+    "one_original_owner": true,
+    "range_page_size": 500,
+    "stable_sort": "created_at.asc,idempotency_key.asc",
+    "header": "Prefer: count=exact",
+    "required_readback": "Content-Range",
+    "total_constant_across_pages": true,
+    "duplicate_key_rejected": true,
+    "malformed_or_drift_fails_closed": true,
+    "no_bulk_close": true,
+    "no_second_scheduler": true,
+    "no_new_table": true
+  },
+  "semantic_learning": {
+    "failure": "INCOMPLETE_SOURCE_MISCLASSIFIED_AS_COMPLETE",
+    "cause": "Unpaginated PostgREST GET ignored provider max rows, no independent source total or range",
+    "prevention_rule": "Fetch full append-only dispatch via stable tie-break order and exact-count Range windows until accumulated count equals provider count; any drift, truncation, dup or malformed provider response fails closed.",
+    "regression_guard": "tests/brain-outcome-obligation-supabase-store.test.mjs",
+    "next_owner": "Original ONE BRAIN Reliability + Data Quality in existing completion-supervisor-bakfill workflow",
+    "effect_proof": "PROTECTED_RELEASE_AND_NATURAL_CONSUMER_RUN_PENDING"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs",
+      "tests/brain-outcome-obligation-durable-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_PENDING"
+}
