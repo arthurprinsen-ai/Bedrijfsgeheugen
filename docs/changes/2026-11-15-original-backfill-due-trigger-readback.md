@@ -1,0 +1,14 @@
+# ONE BRAIN — original backfill due-trigger + durable readback, 15 November 2026
+
+Parent P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+## Actual original provider artifact, not a predicted failure
+Original GitHub run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43704154620 SUCCEEDED (2026-11-15 10:27–10:29 UTC). Downloaded original provider artifact `completion-supervisor-backfill-resume-43704154620`, artifact ID 14158370530 and SHA256 9d83c6ec1328b5a9fe15a6600e7fb6b052e5e58d77f0841f6e75433a6b3b9243. Exact immutable `completion-supervisor-backfill-report.json` recorded **3705 original candidates**, nine originally reported resumeResults, all CLI mode `durable-supabase`, **one NOT_DUE** (`cost-policy-10000-monthly`, dueAt `continuous_with_daily_recalculation`) and **zero terminally verified outcomes** (all original `supervision.normalized_state=RECOVERING`). Original `external-mutation-prewrite-obligation` only permits `before_each_material_external_mutation`; it must not be woken by an unrelated historical event.
+
+## Same canonical owner source correction
+Reuse **exact original** `defaultDue` policy from `tools/outcome-obligation-runtime.mjs` (export it, no new due evaluator). Before executing original backfill, partition canonical registered owner dispatches into authorized `event-trigger` or `scheduled-sweep` and explicit `deferredNotDue` with `WAIT_FOR_ORIGINAL_SOURCE_TRIGGER`. All original `report.candidates`, canonical `coalesceKey`, idempotency keys, historical source identities and source digest stay intact; never fake an external prewrite event or bypass OAuth consent. Existing `runOutcomeObligationCli` and `Completion Supervisor Backfill Resume` are the ONLY executor/scheduler. CLI result must have `mode=durable-supabase`, exactly one matching original obligation decision, status not `NOT_DUE`; fail-closed otherwise.
+
+Existing protected workflow acceptance gate must independently reject false successful due receipts, audit `durableResumed` and `deferredNotDue` separately and retain original artifact. Existing Reliability and Data Quality roster and recovery skill updated; no source mutation, DB migration, new webhook/worker/provider send or new scheduler.
+
+## Acceptance sequence
+Exact-head Required+CodeQL with native System Map parity → protected merge → production Netlify READY exact SHA → **next natural original** backfill run and immutable artifact readback proving daily obligation executed as due and prewrite obligation explicitly deferred → exact independent consumer/provider/Heartbeat outcome and learning before any historical work terminal. Source restoration is not a claim that original thousands of historical work items have produced customer value. P0 #4198 stays OPEN until those results exist.
