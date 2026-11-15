@@ -33,7 +33,10 @@ const SOURCES=Object.freeze([
   {name:'innovationIntakes',table:'brain_operations',
     query:'select=operation_type,capability_id,status,correlation_id,idempotency_key,change_id,payload_sha256,remote_ref,evidence,updated_at&operation_type=eq.INNOVATION_INTAKE&limit=101',max:100}
 ]);
-const metric=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
+// Only numeric source scalars prove a measurement; coercible blanks, booleans
+// and containers must never become observed zeroes or clear evidence gaps.
+const metric=v=>(typeof v==='number'||(typeof v==='string'&&v.trim()!==''))
+  &&Number.isFinite(Number(v))?Number(v):null;
 const text=v=>typeof v==='string'?v.slice(0,90):null;
 const rows=v=>Array.isArray(v)?v:[];
 const usable=(readStates,key)=>readStates[key]==='LIVE';
