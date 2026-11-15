@@ -109,8 +109,7 @@ test('first-party HTML failures are source-specific, privacy-safe and move to bo
  const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
  for(const code of ['UNSAFE_PUBLIC_SOURCE_URL','CROSS_HOST_OR_UNSAFE_REDIRECT','HTTP_STATUS_',
    'NON_HTML_RESPONSE','HTML_TOO_LARGE','FETCH_TIMEOUT_2500MS',
-   'FETCH_NETWORK_OR_TLS_FAILURE','ORIGINAL_SOURCE_ALTERNATIVE']){
-   if(code==='ORIGINAL_SOURCE_ALTERNATIVE')continue;
+   'FETCH_NETWORK_OR_TLS_FAILURE']){
    assert.ok(src.includes(code),code);
  }
  assert.match(src,/public_email_source_failure_codes:checked\?\[\]:sourceFailureCodes/);
