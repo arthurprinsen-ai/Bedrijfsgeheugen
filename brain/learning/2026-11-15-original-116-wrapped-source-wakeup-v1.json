@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|commercial116|wrapped-serp-retry-starved-by-zero-pending-dispatch|20261115-v1",
+  "root_cause": "Protected PR #5848 was successfully merged as main 069d76d2 and native original Supabase Edge v63 independently served the safer directOrganic filtering and same-action wrapped-source recovery. Yet original research action 1be12b8f-8d43-42e1-b0da-d8ce20291ee4 remained terminal done on a google.com/goto tracking redirect; its old relationship_public_research_evidence record remained data_quality=VERIFIED, and original held recipient e5047182-405c-43f2-8c25-7674f1a2cb70 stayed prepared with SOURCE_SPECIFIC_EVIDENCE_REQUIRED. Original dispatch function only invoked Edge when new due actions, first-party daily slots or HTML retries were due. With all three false, it returned NO_DUE_ORIGINAL_SOURCE_RESEARCH; therefore the built-in repair never ran. The deployed code was correct but unreachable by the existing schedule.",
+  "scope": "ORIGINAL_CANONICAL_CRON_116_TO_SINGLE_PUBLIC_RESEARCH_EDGE_HANDOFF",
+  "owner": "existing cron #116 commercial source stage and same original relationship public research Edge; original commercial action remains held",
+  "prevention_rule": "The original dispatch source needs its own bounded, safe due condition for a prior false-VERIFIED google.com/goto tracking redirect tied to an exact still-held original recipient, excluding any provider receipt, ambiguous send or resend prohibition. Wake SAME already-existing Edge even at zero otherwise due actions. Before source action replay, quarantine old matching runtime event quality from VERIFIED to REJECTED_TRACKING_REDIRECT using exact event-id/source/revision CAS, retaining historical information. Then reuse original research/recipient action IDs and original no-source ACK, 24h bounded retry; never start parallel job/provider or send.",
+  "regression": "tests/brain-original-116-wrapped-source-dispatch-wakeup-20261115.test.mjs",
+  "evidence": {
+    "observed_at_utc": "2026-11-15T11:15:13.929273Z",
+    "protected_base_main": "069d76d2566d9d1d5b41ba7251af4b7a3c3fbb5c",
+    "original_edge_version": 63,
+    "edge_status": "ACTIVE",
+    "new_worker_logic_present": true,
+    "natural_worker_execution_since_deploy": false,
+    "source_action_id": "1be12b8f-8d43-42e1-b0da-d8ce20291ee4",
+    "source_action_status": "done",
+    "source_directness": "google.com/goto TRACKING_REDIRECT_UNVERIFIED",
+    "historical_event_id": "05618504-b072-4c35-ade3-d365bdfd70fe",
+    "historical_event_quality_before": "VERIFIED false assertion",
+    "original_recipient_action_id": "e5047182-405c-43f2-8c25-7674f1a2cb70",
+    "original_recipient_status": "prepared",
+    "original_recipient_gate": "SOURCE_SPECIFIC_EVIDENCE_REQUIRED",
+    "native_safe_eligible_wrapped_count": 1,
+    "native_html_source_retry_backlog": 10,
+    "original_commercial_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "release_state": "CANDIDATE_UNTIL_PROTECTED_NATIVE_AND_NATURAL_EXECUTION"
+  },
+  "learning_state": "OBSERVED_NOT_CLOSED_UNTIL_NATIVE_116_WAKE_AND_ORIGINAL_EVENT_ACK",
+  "compiler": {
+    "failure_class": "CANONICAL_RESEARCH_DISPATCH_ZERO_DUE_STARVES_EXISTING_SAFE_RETRY",
+    "scope": "COMMERCIAL_RESEARCH_ORIGINAL_CHAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-116-wrapped-source-dispatch-wakeup-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-116-wrapped-source-dispatch-wakeup-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-116-wrapped-source-dispatch-wakeup-20261115.test.mjs"
+    ]
+  }
+}
