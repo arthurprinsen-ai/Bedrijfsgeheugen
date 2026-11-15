@@ -6,8 +6,10 @@ import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback
 import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup, mountControlPlaneCockpit }
   from '../portal-v2/control-plane-cockpit.js';
 
-const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE',loops:'LIVE',terminal:'LIVE',commercialHandoff:'LIVE',commercialIncidents:'LIVE',innovationCandidates:'LIVE',innovationObligations:'LIVE',innovationIntakes:'LIVE'};
+const states={health:'LIVE',capabilities:'LIVE',layers:'LIVE',experiments:'LIVE',revenue:'LIVE',loops:'LIVE',terminal:'LIVE',commercialHandoff:'LIVE',commercialIncidents:'LIVE',innovationCandidates:'LIVE',innovationObligations:'LIVE',innovationIntakes:'LIVE',agentWorkPending:'LIVE',recoveryWorkActive:'LIVE'};
 const datasets={
+  // Two new original immutable dispatch count-only sources. Source rows are never exposed.
+  agentWorkPending:[{count:3313}],recoveryWorkActive:[{count:1055}],
   health:[{observed_at:'2026-10-29T16:20:00Z',architecture_state:'AMBER',
     learning_state:'EVIDENCE_DUE_GAPS',content_loop_state:'BLOCKED',
     total_layers:32,wired_layers:32,required_jobs:18,active_jobs:18,
@@ -96,12 +98,21 @@ test('read-only REST readback uses original authority views and native Brain blo
     assert.equal(options.headers.authorization,'Bearer secret');
     assert.equal(options.method,undefined);
     assert.match(url,/^https:\/\/project\.supabase\.co\/rest\/v1\//);
+    if(key==='brain_outcome_obligation_dispatch'){
+      assert.equal(options.headers.prefer,'count=exact');
+      assert.match(url,/select=state/);
+      assert.doesNotMatch(url,/idempotency_key/);
+      const count=url.includes('state=eq.PENDING')?3313:1055;
+      return {ok:true,headers:{get:()=>`0-0/${count}`}};
+    }
     return {ok:true,json:async()=>mapping[key]};
   };
   const p=await readPowerhouseIntegrationReadback({baseUrl:'https://project.supabase.co',key:'secret',fetchImpl:mock});
-  assert.equal(seen.length,12,'all twelve original authority sources, including native Brain blockers, must be checked');
-  assert.deepEqual(new Set(seen),new Set(Object.keys(mapping)),
-    'provider reads must not escape the original twelve-source allowlist');
+  assert.equal(seen.length,14,'all fourteen original authority sources, including immutable agent dispatch and Brain blockers, must be checked');
+  assert.deepEqual(new Set(seen),new Set([...Object.keys(mapping),'brain_outcome_obligation_dispatch']),
+    'provider reads must not escape the original fourteen-source allowlist');
+  assert.equal(p.agentDispatch.pending,3313);
+  assert.equal(p.agentDispatch.recovering,1055);
   assert.equal(p.sourceState,'READABLE');
   assert.equal(p.loopAssurance.red,6);
   assert.equal(p.terminalControl.blocked,3);
@@ -154,7 +165,7 @@ test('provider errors and oversized responses fail closed',async()=>{
 test('panel is embedded in existing cockpit and can never claim green',()=>{
   const html=controlPlaneCockpitMarkup({systemIntegration:projection()});
   assert.match(html,/powerhouse-integration-health/);
-  assert.match(html,/Bronnen LIVE: <strong>12 \/ 12<\/strong>/);
+  assert.match(html,/Bronnen LIVE: <strong>14 \/ 14<\/strong>/);
   assert.match(html,/NIET BEWEZEN/);
   assert.match(html,/Heartbeat/);
   assert.match(html,/bron-omzet/);
@@ -166,7 +177,7 @@ test('admin portal reports partial live-source coverage and never paints missing
   at:'2026-11-02T08:00:00Z'
  });
  const html=powerhouseIntegrationMarkup(incomplete);
- assert.match(html,/Bronnen LIVE: <strong>11 \/ 12<\/strong>/);
+ assert.match(html,/Bronnen LIVE: <strong>13 \/ 14<\/strong>/);
  assert.match(html,/Broncontrole: PARTIAL/);
  assert.match(html,/NIET BEWEZEN/);
  assert.match(html,/SOURCE_UNAVAILABLE:terminal/);
