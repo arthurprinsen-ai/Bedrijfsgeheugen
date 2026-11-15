@@ -59,5 +59,15 @@
     "prevention_rule": "Branch by verified file-diff classification: no-diff -> exact original nonterminal Brain CAS/readback, source+test+learning diff -> protected PR, unsafe partial changes -> fail. Keep due verification as OPEN.",
     "regression_guard": "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
     "effect_proof": "PROTECTED_MERGE_AND_NEXT_NATURAL_ORIGINAL_OWNER_READBACK_DUE"
+  },
+  "evidence": {
+    "original_workflow_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43752164113",
+    "original_job_id": 132928288752,
+    "native_failure": "ORIGINAL_INNOVATION_CODE_PATH_SCOPE_OR_EVIDENCE_MISSING",
+    "original_canonical_intakes": 14,
+    "independent_terminal_acks": 0,
+    "current_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5905",
+    "candidate_regression": "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
+    "protected_release_status": "PENDING"
   }
 }
