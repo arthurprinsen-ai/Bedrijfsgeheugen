@@ -1,14 +1,14 @@
 import { getUser } from '@netlify/identity';
+import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
 import { readPowerhouseIntegrationReadback } from '../../platform/portal/powerhouse-existing-integration-read-model.mjs';
 
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 
+// Reuse the original canonical signed app-metadata admin role boundary; the
+// synthetic production proof and other authenticated APIs use "powerhouse-admin".
+// Keep the existing app_metadata.powerhouse_admin legacy grant, never user_metadata.
 function hasAdminRole(user){
-  const roles=[
-    ...(Array.isArray(user?.app_metadata?.roles)?user.app_metadata.roles:[]),
-    ...(Array.isArray(user?.roles)?user.roles:[])
-  ].map(value=>String(value||'').trim().toLowerCase());
-  return user?.app_metadata?.powerhouse_admin===true || roles.includes('admin') || roles.includes('powerhouse_admin');
+  return isPowerhouseAdmin(user) || user?.app_metadata?.powerhouse_admin===true;
 }
 
 export default async function handler(request){

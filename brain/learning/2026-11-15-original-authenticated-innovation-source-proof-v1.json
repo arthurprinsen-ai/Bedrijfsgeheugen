@@ -1,0 +1,61 @@
+{
+  "fingerprint": "powerhouse|innovation|original-authenticated-admin-source-proof-and-role-parity|20261115-v1",
+  "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+  "original_operation_id": "edebcb32-335b-49f0-b527-eb4289f95c5c",
+  "original_owner": "agent:agent-integration-engineer",
+  "original_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "A protected Netlify production SHA and independent SQL source count do not establish that the existing admin-only Powerhouse function is actually readable with the canonical signed powerhouse-admin role. The original function's custom allowlist omitted the canonical signed powerhouse-admin alias, despite other production proof routes and admin-owned Identity claims using it. Existing deploySucceeded signed ephemeral admin proof did not request the original Powerhouse control-plane audit.",
+  "prevention_rule": "Use the existing canonical isPowerhouseAdmin authorization only (plus previously supported signed app_metadata.powerhouse_admin flag) and deny anonymous/non-admin callers; never infer admin from user_metadata. Within the SAME existing deploySucceeded ephemeral signed Identity proof, GET the immutable deploy's existing /api/powerhouse-control-plane under admin, nonadmin and anonymous credentials, require provider header FULL_LAST_7D and exact bounded source counts with non-external-proof flags, preserve synthetic cleanup, store ONLY redacted numeric evidence in the existing Netlify proof store. The existing protected production-release-readback requires that proof for changes affecting original audit/function/proof. No new endpoint, token persistence, DB, scheduler, background worker or fabricated agent ACK.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs",
+      "tests/brain-control-plane-admin-cockpit-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs",
+      "tests/brain-control-plane-admin-cockpit-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "baseline_protected_main_sha": "cbbaf6f046e920018396e612f2b2c542785ff59f",
+    "baseline_production_netlify_deploy": "6af9c4a72b8d06b35bbdf8ba",
+    "baseline_production_state": "READY",
+    "source_sql_historical_events": 164,
+    "original_agent_consumer_ack_proven": false,
+    "original_obligation_closed": false,
+    "authenticated_admin_original_api_proof": "NOT_YET_PROVEN",
+    "independent_business_outcome": "NOT_YET_PROVEN",
+    "original_source_can_have_mutable_requeue": true,
+    "recovery_source": "existing Netlify deploySucceeded portal-authenticated-production-proof and protected release readback"
+  },
+  "change_scope": [
+    "netlify/functions/powerhouse-control-plane.mjs",
+    "platform/api/portal-authenticated-production-proof-core.mjs",
+    "netlify/functions/portal-authenticated-production-proof.mjs",
+    ".github/workflows/production-release-readback.yml",
+    "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs",
+    "tests/brain-control-plane-admin-cockpit-v1.test.mjs",
+    "brain/learning/2026-11-15-original-authenticated-innovation-source-proof-v1.json",
+    "docs/changes/2026-11-15-original-authenticated-innovation-source-proof.md",
+    "docs/development-ledger-events/2026-11-15-original-authenticated-innovation-source-proof.md",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
+  ],
+  "state": "PROTECTED_CANDIDATE_NEEDS_REQUIRED_CODEQL_AND_IMMUTABLE_PRODUCTION_RECEIPT",
+  "security_review_required": true,
+  "privacy": "Never persist bearer tokens, synthetic user IDs, full control-plane response, original row UUIDs, raw provider payload, or recipient data.",
+  "original_intakes_expected_to_remain_planned": 14,
+  "no_new_executor": true,
+  "no_new_scheduler": true,
+  "no_new_queue": true,
+  "rollback": "Protected code rollback in original GitHub/Netlify path, preserve original ONE BRAIN source, signed-Identity boundary and event history."
+}
