@@ -45,10 +45,10 @@ test('never reopen ambiguity, authorization, mismatched source or wrong error',(
 });
 test('existing original loop only reboots via protected original supervisor, no sender created',()=>{
  const s=readFileSync(new URL('../supabase/functions/powerhouse-content-loop/index.ts',import.meta.url),'utf8');
- assert.match(s,/planPersonalObservationalReviewRecovery\\(\\{/);
- assert.match(s,/retryableCompanyEditorialBlock \\|\\| retryablePersonalObservationReview\\)/);
- assert.match(s,/obligationSource\\.error\\|\\|capabilitySource\\.error/);
+ assert.ok(s.includes('planPersonalObservationalReviewRecovery({'));
+ assert.ok(s.includes('retryableCompanyEditorialBlock || retryablePersonalObservationReview)'));
+ assert.ok(s.includes('obligationSource.error||capabilitySource.error'));
  assert.match(s,/maxAttempts:3/);
- assert.match(s,/invoke\\(url, expected, 'powerhouse-content-orchestrator', \\{ runDate \\}\\)/);
+ assert.ok(s.includes("invoke(url, expected, 'powerhouse-content-orchestrator', { runDate })"));
  assert.doesNotMatch(s,/MAKE_FALLBACK_SCHEDULER|new ParallelPublisher/);
 });
