@@ -14,3 +14,6 @@
 - Human documentation: docs/changes/2026-11-15-original-email-source-handoff-reliability.md.
 - Release stage: CANDIDATE / NOT GREEN / NOT LIVE. Protected Required, CodeQL, Supabase provider parity and natural original consumer/outcome readback not yet proven by this ledger.
 - Recovery if checks fail: preserve exact source/action keys and evidence, diagnose failure, fix this same branch/lineage through protected CI. Never bypass controls or silently report fulfilled.
+
+- Protected delivery recovery: predecessor #5909 passed Required+CodeQL but was closed UNMERGED after current main advanced one independent commit and protected GitHub merge returned HTTP 405 `3 of 3 required status checks are expected`; candidate #5911 reuses the same nine files on new immutable main `60c41d4813f3bc0d3a3ef9fcdca095597221a0da` without changing any unrelated files.
+- Candidate metadata failure (run 43756970098): `PR_MACHINE_METADATA_INVALID:SUPERSEDES_INVALID`. Cause: freeform `Supersedes: #5909 (...)` where the canonical parser requires exact numeric predecessor. Fix: PR #5911 body now has precisely `Supersedes: 5909`; rerun admission on new exact-head commit. Prevention: use machine-only exact numeric metadata values; keep human explanation in prose, not the parsed header.
