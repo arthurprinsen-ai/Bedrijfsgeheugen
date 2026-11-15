@@ -4,6 +4,7 @@ import {appendFileSync, mkdirSync, readFileSync, writeFileSync} from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {readCanonicalRows, evaluateOriginalOwnerHandoff} from './innovation-original-owner-readback.mjs';
 import {trustedBrainReadConfig} from './planned-action-review-audit.mjs';
+import {compileLearningEvaluationPlan, validateEvaluationContract} from './learning-canonicalization-gate.mjs';
 
 export const CONTRACT='ORIGINAL_INNOVATION_BOUNDED_CODE_CANDIDATE_V1';
 export const WORK_ORDER='artifacts/quality/original-innovation-code-workorder.json';
@@ -152,7 +153,10 @@ export function checkChangedPaths({workorder,changed,deleted=[]}={}){
   const test=changed.filter(x=>/^tests\/brain-innovation-[a-z0-9-]+\.test\.mjs$/.test(x));
   const learn=changed.filter(x=>/^brain\/learning\/2026-11-\d{2}-innovation-[a-z0-9-]+\.json$/.test(x));
   const docs=changed.filter(x=>/^docs\/(changes|development-ledger-events)\/2026-11-\d{2}-innovation-[a-z0-9-]+\.md$/.test(x));
-  if(changed.length<3||changed.length>8||source.length<1||test.length<1||learn.length<1||
+  const human=docs.filter(x=>x.startsWith('docs/changes/'));
+  const ledger=docs.filter(x=>x.startsWith('docs/development-ledger-events/'));
+  if(changed.length<5||changed.length>8||source.length<1||test.length<1||learn.length<1||
+     human.length!==1||ledger.length!==1||
      source.length+test.length+learn.length+docs.length!==changed.length)fail('PATH_SCOPE_OR_EVIDENCE_MISSING');
   return {source,test,learn,docs,changed};
 }
@@ -200,9 +204,19 @@ async function main(){
     }
     for(const path of result.learn){
       const lesson=JSON.parse(readFileSync(path,'utf8'));
-      if(!lesson.compiler?.failure_class||
-         !Array.isArray(lesson.evaluation?.historical_replay)||
-         !lesson.evaluation.historical_replay.length)fail('LEARNING_REGRESSION_REQUIRED');
+      if(!lesson.compiler?.failure_class||!lesson.fingerprint||!lesson.root_cause)
+        fail('LEARNING_ROOT_CAUSE_REQUIRED');
+      const plan=compileLearningEvaluationPlan(lesson);
+      const modes=validateEvaluationContract(lesson,plan);
+      for(const [mode,tests] of Object.entries(modes.tests_by_mode)){
+        execFileSync('node',['--test',...tests],{stdio:'inherit',timeout:120000,
+          env:{...process.env,POWERHOUSE_LEARNING_EVAL_MODE:mode.toUpperCase()}});
+      }
+    }
+    for(const path of result.docs){
+      const content=readFileSync(path,'utf8');
+      if(content.trim().length<180||!content.includes(selected.candidate_id))
+        fail('ORIGINAL_DOC_SOURCE_OR_CONTENT_MISSING');
     }
     git(['diff','--check']);
     for(const path of result.test)execFileSync('node',['--test',path],
