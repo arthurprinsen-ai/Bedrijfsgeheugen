@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { reconcileCompletionBackfill } from '../tools/outcome-obligation-completion-supervisor-backfill.mjs';
 
 const productionIdentity = 'deploy:sha-live';
@@ -36,7 +37,7 @@ test('shadow backfill reopens partial PR and failed workflow candidates without 
   assert.equal(report.dispatches.length, 0);
 });
 
-test('active backfill creates idempotent resumes only for existing canonical obligations', () => {
+test('active backfill creates one stable canonical resume for each registered obligation', () => {
   const report = reconcileCompletionBackfill({
     mode:'active',
     registeredObligationIds:['ob-1'],
@@ -45,16 +46,51 @@ test('active backfill creates idempotent resumes only for existing canonical obl
     obligations:[{ id:'ob-1', identity:'sha-partial', status:'AWAITING_OUTCOME', materialObligations:[{id:'prod',status:'OPEN'}] }]
   });
 
+  const fingerprint = createHash('sha256').update('canonical-obligation:ob-1').digest('hex').slice(0, 20);
+  const sourceDigest = createHash('sha256').update(JSON.stringify(['sha-partial'])).digest('hex');
   assert.equal(report.mode, 'active');
   assert.equal(report.productionMutation, false);
   assert.equal(report.durableResumeEnabled, true);
   assert.deepEqual(report.dispatches, [{
     obligationId:'ob-1',
-    identity:'sha-partial',
-    coalesceKey:report.candidates[0].lineageKey,
-    triggerFingerprint:`completion-backfill:${report.candidates[0].idempotencyKey}`,
-    nextAction:report.candidates[0].nextAction
+    identity:'canonical-obligation:ob-1',
+    coalesceKey:'completion-backfill|obligation|' + fingerprint,
+    triggerFingerprint:'completion-backfill:' + fingerprint,
+    nextAction:report.candidates[0].nextAction,
+    sourceCandidateCount:1,
+    sourceIdentityDigest:sourceDigest
   }]);
+});
+
+test('backfill coalesces 1201 historical source identities without dropping any or spawning duplicate agent work', () => {
+  const historical = Array.from({ length:1201 }, (_, index) => ({
+    id:'material-change-live-verification',
+    identity:'historical:' + String(index).padStart(4, '0'),
+    status:'PENDING'
+  }));
+  const params = {
+    mode:'active',
+    registeredObligationIds:['material-change-live-verification','supabase-performance-evidence-daily'],
+    obligations:[...historical, { id:'supabase-performance-evidence-daily', identity:'other', status:'PENDING' }]
+  };
+  const report = reconcileCompletionBackfill(params);
+  assert.equal(report.candidateCount, 1202);
+  assert.equal(report.candidates.length, 1202);
+  assert.equal(report.dispatches.length, 2);
+  const grouped = report.dispatches.find(x => x.obligationId === 'material-change-live-verification');
+  assert.equal(grouped.sourceCandidateCount, 1201);
+  assert.ok(grouped.sourceIdentityDigest.match(/^[a-f0-9]{64}$/));
+  assert.equal(report.candidates.filter(x => x.obligationIds.includes('material-change-live-verification')).length, 1201);
+  const reordered = reconcileCompletionBackfill({ ...params, obligations:[...params.obligations].reverse() });
+  assert.deepEqual(report.dispatches, reordered.dispatches);
+  // Re-running this exact original obligation must have the same durable CAS identity.
+  const later = reconcileCompletionBackfill({ ...params, obligations:[...params.obligations, { id:'material-change-live-verification', identity:'later-observation', status:'PENDING' }] });
+  const next = later.dispatches.find(x => x.obligationId === 'material-change-live-verification');
+  assert.equal(next.coalesceKey, grouped.coalesceKey);
+  assert.equal(next.triggerFingerprint, grouped.triggerFingerprint);
+  assert.equal(next.sourceCandidateCount, 1202);
+  assert.notEqual(next.sourceIdentityDigest, grouped.sourceIdentityDigest);
+  assert.equal(later.candidateCount, 1203);
 });
 
 test('active backfill does not recursively resume rows created by completion backfill itself', () => {
