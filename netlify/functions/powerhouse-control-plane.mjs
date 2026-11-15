@@ -38,7 +38,14 @@ export default async function handler(request){
     key:globalThis.Netlify?.env?.get?.('SUPABASE_SERVICE_ROLE_KEY')||process.env.SUPABASE_SERVICE_ROLE_KEY,
     includeSalesExecutionAudit:true
   });
-  return json({...body,systemIntegration},200);
+  // This header is emitted ONLY after first-party Identity and admin-role gates.
+  // It exposes no row IDs or secrets and permits a genuine authenticated
+  // source-scope readback (never a synthetic provider-delivery claim).
+  const responseWithAudit=json({...body,systemIntegration},200);
+  const scope=systemIntegration?.salesExecutionAudit?.scope;
+  responseWithAudit.headers.set('x-bg-innovation-audit-scope',
+    scope==='FULL_LAST_7D'||scope==='ABOVE_500_FAIL_CLOSED'?scope:'UNKNOWN');
+  return responseWithAudit;
 }
 
 export const config={path:'/api/powerhouse-control-plane'};

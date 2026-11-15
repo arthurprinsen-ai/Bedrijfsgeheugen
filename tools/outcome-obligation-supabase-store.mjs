@@ -15,17 +15,32 @@ function metadataFromRecord(record) {
   return metadata;
 }
 
+const DISPATCH_IDENTITY_FIELDS = Object.freeze(['type','idempotencyKey','obligationId','ownerAgent','traceId','state']);
+
 function normalizeDispatchRow(row) {
   if (!row) return null;
-  return Object.freeze({
+  // The append-only SQL columns are the ONLY identity, owner and lifecycle
+  // authority. JSONB record is untrusted supplemental metadata: spreading it
+  // last silently allowed a forged owner/state to shadow immutable columns.
+  if (row.record !== null && row.record !== undefined
+      && (typeof row.record !== 'object' || Array.isArray(row.record))) {
+    throw new Error('Supabase outcome obligation store failed: dispatch metadata is not an object');
+  }
+  const metadata = row.record ?? {};
+  const canonical = {
     type:row.record_type,
     idempotencyKey:row.idempotency_key,
     obligationId:row.obligation_id,
     ownerAgent:row.owner_agent,
     traceId:row.trace_id,
     state:row.state,
-    ...(row.record && typeof row.record === 'object' ? row.record : {}),
-  });
+  };
+  for (const key of DISPATCH_IDENTITY_FIELDS) {
+    if (Object.hasOwn(metadata,key) && metadata[key] !== canonical[key]) {
+      throw new Error(`Supabase outcome obligation store failed: dispatch metadata identity conflict (${key})`);
+    }
+  }
+  return Object.freeze({ ...metadata, ...canonical });
 }
 
 function assertCanonicalDispatchIdentity(input, persisted) {

@@ -1,0 +1,71 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|dispatch-jsonb-metadata-shadows-canonical-owner-state|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "IMMUTABLE_DISPATCH_JSONB_IDENTITY_SHADOW",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "normalizeDispatchRow originally spread supplemental JSONB record after canonical database identity, allowing metadata keys to override record_type, idempotency_key, obligation_id, owner_agent, trace_id or state and potentially satisfy an incorrect replay identity comparison or route work to a different owner.",
+  "evidence": {
+    "independent_source": "public.brain_outcome_obligation_dispatch",
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "observed_at_utc": "2026-11-15T14:20:56Z",
+    "original_dispatch_records": 6017,
+    "metadata_owner_rows": 0,
+    "metadata_obligation_rows": 0,
+    "metadata_state_rows": 0,
+    "metadata_idempotency_rows": 0,
+    "actual_shadowing_incident_proven": false,
+    "code_path_proven": true,
+    "original_db_mutated": false,
+    "negative_replays": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ],
+    "existing_runner": "Completion Supervisor Backfill Resume"
+  },
+  "prevention": {
+    "sql_column_authority_only": true,
+    "metadata_conflict_fails_closed": true,
+    "source_identity_fields": [
+      "type",
+      "idempotencyKey",
+      "obligationId",
+      "ownerAgent",
+      "traceId",
+      "state"
+    ],
+    "immutable_owner_trace_proven_on_replay": true,
+    "no_parallel_agent": true,
+    "no_new_cron": true,
+    "no_schema_change": true,
+    "no_bulk_history_update": true,
+    "no_fabricated_consumer_processed": true
+  },
+  "semantic_learning": {
+    "failure": "SUPPLEMENTAL_METADATA_CAN_SHADOW_IMMUTABLE_DISPATCH",
+    "cause": "Spread order granted JSONB record authority over six immutable canonical columns",
+    "prevention_rule": "At every original dispatch read, canonical SQL identity and lifecycle fields win; a differing JSONB identity field fails closed before owner handoff, list pagination, or idempotent replay can report success.",
+    "regression_guard": "tests/brain-outcome-obligation-supabase-store.test.mjs",
+    "next_owner": "Original agent-reliability with agent-data-quality independent verification; #4198",
+    "effect_proof": "EXACT_HEAD_PROTECTED_CI_MERGE_NATURAL_RUN_AND_PRODUCTION_READBACK_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}
