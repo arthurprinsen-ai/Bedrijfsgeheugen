@@ -123,9 +123,11 @@ export async function persistOriginalAgentPreReviews({plan,config,fetchImpl=glob
    &&typeof config?.key==='string'&&config.key.length>=12,'SOURCE_AUTH_INVALID');
  const result={contract:CONTRACT,readback_proven:0,already_registered:0,
    accepted_consumer_acks:0,implementations_verified:0,external_side_effects:0,
-   fail_closed:true,attempted:0,failed:0,original_work_kept_open:true};
+   fail_closed:true,attempted:0,failed:0,error_codes:[],original_work_kept_open:true};
  for(const item of plan.work){
    result.attempted++;
+   // One faulty source or CAS conflict must not strand unrelated existing agents.
+   try {
    const evidence={...item.previousEvidence,original_agent_pre_review:item.review};
    const response=await fetchImpl(config.origin+'/rest/v1/rpc/brain_transition_operation',{
      method:'POST',
@@ -147,7 +149,6 @@ export async function persistOriginalAgentPreReviews({plan,config,fetchImpl=glob
        result.already_registered++;
        continue;
      }
-     result.failed++;
      throw new Error('ORIGINAL_INNOVATION_REVIEW_VERSION_OR_PROVIDER_CONFLICT');
    }
    let write;try{write=await response.json();}catch{throw new Error('ORIGINAL_INNOVATION_REVIEW_WRITEBACK_JSON_INVALID');}
@@ -164,6 +165,13 @@ export async function persistOriginalAgentPreReviews({plan,config,fetchImpl=glob
      &&current.evidence?.original_agent_pre_review?.consumer_ack_verified===false,
      'INDEPENDENT_READBACK_MISMATCH');
    result.readback_proven++;
+   } catch(error) {
+     result.failed++;
+     const message=String(error?.message||'ORIGINAL_INNOVATION_REVIEW_UNKNOWN_ERROR');
+     result.error_codes.push(message.startsWith('ORIGINAL_INNOVATION_REVIEW_')
+       ? message.slice('ORIGINAL_INNOVATION_REVIEW_'.length).slice(0,120)
+       : 'UNCLASSIFIED_REVIEW_FAILURE');
+   }
  }
  return Object.freeze(result);
 }
@@ -186,6 +194,8 @@ function publicSummary(result){
    review_already_registered:result.execution?.already_registered??0,
    held_by_existing_source_or_gate:result.plan.held.length,
    deferred_by_budget:result.plan.deferred_by_budget,
+   failed_pre_reviews:result.execution?.failed??0,
+   failure_codes:result.execution?.error_codes??[],
    execution_mode:result.writeback?'EXISTING_ORIGINAL_AGENT_PRE_REVIEW':'READ_ONLY',
    source_cardinality_verified:true,
    original_agent_consumer_ack_proven:result.report.counts.owner_ack_verified,
@@ -205,6 +215,7 @@ async function main(){
  await mkdir('artifacts/quality',{recursive:true});
  await writeFile(OUT,JSON.stringify(summary,null,2)+'\n');
  process.stdout.write(JSON.stringify(summary)+'\n');
+ if(result.execution?.failed>0)process.exitCode=1;
  // No synthetic green when any original agent receipt or implementation is absent.
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1]){
