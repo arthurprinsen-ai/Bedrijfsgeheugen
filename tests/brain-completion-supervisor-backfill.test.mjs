@@ -104,7 +104,8 @@ test('active backfill does not recursively resume rows created by completion bac
   });
 
   assert.equal(report.dispatches.length, 1);
-  assert.equal(report.dispatches[0].identity, 'original-work');
+  assert.equal(report.dispatches[0].identity, 'canonical-obligation:ob-1');
+  assert.equal(report.dispatches[0].sourceCandidateCount, 1);
   assert.ok(report.candidates.some(item => item.identity === 'original-work'));
   assert.ok(!report.candidates.some(item => item.identity === 'resume-work'));
 });
