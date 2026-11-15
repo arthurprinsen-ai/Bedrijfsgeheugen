@@ -1,0 +1,17 @@
+# ONE BRAIN — één hervatting per originele verplichting; volledige bronhistorie behouden
+
+**Datum:** 15 november 2026. **Oorspronkelijke P0:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+## Aantoonbare bronfout
+De bestaande `Completion Supervisor Backfill Resume` roept `collectCompletionBackfillSnapshot()`, `reconcileCompletionBackfill()` en `executeCompletionBackfillDispatches()` aan. In `activeDispatches()` produceerde iedere historische originele dispatchidentiteit een apart `completion-backfill:`-event met eigen idempotency key. De bron bevatte om 09:37 UTC 4.208 `AgentWork` en 1.055 `RecoveryWork`, terwijl een recent interval 728 **verschillende immutable sleutels voor slechts zes** canonieke verplichtingen liet zien. Bestaande oorspronkelijke run #43697572565 was nog bezig zonder final artifact. Dit bevestigt vermenigvuldiging van *registraties*, niet dubbel uitgevoerde externe acties of werkelijk afgehandelde consumer-ACKs.
+
+## Dezelfde originele keten, geen tweede uitvoerder
+Alle bronidentiteiten, bronsoorten, bronredenen en bronstatussen blijven apart in `report.candidates` voor audit en herstel. Alleen het veilige hervattingssignaal wordt gegroepeerd op een reeds bestaande geregistreerde `obligationId` uit `config/outcome-obligations.json`. De nieuwe `coalesceKey` en `completion-backfill:canonical-obligation:`-fingerprint blijven identiek, ongeacht datum, nieuwe bronrijen of workflow-herhaling. Elke groep draagt `sourceCandidateCount`, `sourceIdentityDigest` en oorspronkelijke `sourceActions`; het report heeft de volledige lijst. De strengste bestaande actiecategorie wordt behouden (`RECOVER`, `READBACK`, `PROMOTE`, `WRITEBACK`, `CONTINUE`). Zodra één bron in een groep onafhankelijk `WAIT_EXTERNAL` heeft, wordt geen nieuw safe-resume geforceerd: rechtmatige providerconsent blijft nodig.
+
+Een geslaagde coalesced wakeup is geen per-bron consumer-ACK, geen onafhankelijke provider-side-effect, geen Heartbeat-outcome en **mag nooit** historische werkregels bulkafsluiten. Oorspronkelijke `Outcome Obligation Runtime` en supervisor, oorspronkelijke GitHub-workflow, Supabase-tabellen, crons en owner blijven ongewijzigd. Geen extra scheduler, worker, queue, database-migratie of providerverzending.
+
+## Regressie en observatie
+De bestaande `tests/brain-completion-supervisor-backfill.test.mjs` simuleert 4.000 historische bronidentiteiten gekoppeld aan zes geregistreerde originele verplichtingen: verwachte uitvoer is zes veilige coalesced wakeups en 4.000 auditbare kandidaten. Aanvullende tests bewijzen dat een herhaling en nieuwe bronrijen geen nieuwe eigenaar-handoff maken, dat bronmanifesten veranderen zonder idempotency-reset, en dat één bewezen hard boundary de hele betreffende eigenaar faal-gesloten houdt. Dezelfde bestaande Reliability-agent, Data Quality-agent en originele recovery skill bevatten het permanente contract.
+
+## Release / daadwerkelijk bewijs
+Exact-head Required, security-sensitive historical replay + shadow + canary, CodeQL, oorspronkelijke protected GitHub merge en exact Netlify READY/readback vereist voor code-live. Daarna moet de **bestaande** natuurlijke completion-supervisor-run zijn daadwerkelijke eindartifact publiceren: alle originele bronkandidaten auditbaar, maximaal één dispatch per geregistreerde verplichting, geen dubbele provideractie, bron-ACK en resultaat per gerechtigde eigenaar. Totdat dit onafhankelijk blijkt, blijft #4198 OPEN/DEGRADED. Voortijdige of schijnbaar groene afsluiting verboden.
