@@ -38,5 +38,18 @@
     "machine_enforceable": true,
     "repeat_count": 2,
     "security_sensitive": false
-  }
+  },
+  "human_documentation": "docs/changes/2026-11-15-no-premature-closure-agent-contract.md",
+  "candidate_failures_observed": [
+    {
+      "code": "PR_MACHINE_METADATA_INVALID:OBLIGATION_ID_MISSING",
+      "cause": "PR field mislabeled Fingerprint",
+      "fix": "Use exact Obligation-ID and path-scoped Change-Scope"
+    },
+    {
+      "code": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:human_documentation",
+      "cause": "Ledger and learning present but no docs/changes human artifact",
+      "fix": "Add docs/changes artifact within same 7-file budget, preserve existing canonical playbook unchanged"
+    }
+  ]
 }

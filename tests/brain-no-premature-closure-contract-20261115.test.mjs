@@ -5,18 +5,19 @@ import {readFileSync} from 'node:fs';
 const read=path=>readFileSync(new URL('../'+path,import.meta.url),'utf8');
 const agents=read('AGENTS.md');
 const playbook=read('docs/brain/groen-draaiboek.md');
+const documentation=read('docs/changes/2026-11-15-no-premature-closure-agent-contract.md');
 const registry=read('platform/agents/agent-team.mjs');
 const enrichment=read('.agents/skills/powerhouse-daily-full-connection-enrichment/SKILL.md');
 
 test('global chat and agent contract forbids false closure before production, consumer, outcome and learning',()=>{
  assert.ok(agents.slice(0,2500).includes('docs/brain/groen-draaiboek.md'));
  for(const phrase of ['onderliggende probleem','OPEN/DEGRADED','consumer-ACK','provider','regressietest','oorspronkelijke ONE BRAIN','volledig groene keten']){
-   assert.ok((agents+' '+playbook).includes(phrase),phrase);
+   assert.ok((agents+' '+playbook+' '+documentation).includes(phrase),phrase);
  }
- assert.match(playbook,/TECHNICAL_RELEASE_VERIFIED/);
- assert.match(playbook,/BUSINESS_OUTCOME_VERIFIED/);
- assert.match(playbook,/UNKNOWN ≠ N\/A/);
- assert.match(playbook,/oorzaak, herstel, regressie, preventieregel/);
+ assert.match(documentation,/TECHNICAL_RELEASE_VERIFIED/);
+ assert.match(documentation,/BUSINESS_OUTCOME_VERIFIED/);
+ assert.match(documentation,/UNKNOWN ≠ N\/A/);
+ assert.match(documentation,/oorzaak, herstel, regressie, preventieregel/);
 });
 test('existing specialist agents own exact remediation and independent evidence without duplicate executors',()=>{
  for(const task of [

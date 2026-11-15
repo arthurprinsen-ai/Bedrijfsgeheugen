@@ -10,3 +10,10 @@ Agent/chat completion language conflated a technical release with the final busi
 
 ## Regression / prevention / acceptance
 Guard: tests/brain-no-premature-closure-contract-20261115.test.mjs. Admission, Required, CodeQL and protected GitHub main deployment plus independently verified actual agent uptake are distinct gates. Update all intermediate repair errors under original P0 and failure-registry; terminal BUSINESS_OUTCOME_VERIFIED requires independent provider, exact consumer receipt, measured business outcome and applied learning when relevant. Otherwise record the original owner and next due safe action in ONE BRAIN. This policy patch by itself is NOT proof that all agents have consumed it or that 3 handoffs are fixed.
+
+## Candidate CI fouten en herstelde oorzaak — 2026-11-15
+
+- `PR_MACHINE_METADATA_INVALID:OBLIGATION_ID_MISSING` (eerste Required run): machineveld was verkeerd als Fingerprint geëtiketteerd. PR-body hersteld naar `Obligation-ID` en exacte `Change-Scope`, opnieuw getriggerd via dezelfde PR/branche.
+- `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:human_documentation` (tweede Required run): een activity ledger is niet hetzelfde als human documentation. Oorspronkelijke closure-compiler verlangt een extra pad onder `docs/changes/` of `docs/learning/`. Herstel: toegevoegd `docs/changes/2026-11-15-no-premature-closure-agent-contract.md`, oorspronkelijk playbook ongewijzigd behouden binnen scope-budget zeven, regressie test ziet het eigen doc. Security/CI-poort niet versoepeld.
+
+Deze fixes claimen geen volledige bedrijfsuitslag, enkel correct kandidaatbewijs.
