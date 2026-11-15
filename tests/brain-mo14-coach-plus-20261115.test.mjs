@@ -41,7 +41,7 @@ test('keeper plus five field roles, maximally swappable with even block minutes'
    const c=Object.values(p.counts);
    assert.ok(Math.max(...c)-Math.min(...c)<=1,'equal as possible within game');
   }
-  const all=g.state.roster.slice(1).map(person=>g.cache.reduce?0:g.state.matches.reduce((sum,_,i)=>sum+(g.cache[i].counts[person.id]||0)*10,0));
+  const all=g.state.roster.slice(1).map(person=>g.state.matches.reduce((sum,_,i)=>sum+(g.cache[i].counts[person.id]||0)*10,0));
   assert.ok(Math.max(...all)-Math.min(...all)<=10,'season field-minute spread <= one 10-minute block for n='+n);
  }
 });
@@ -50,9 +50,9 @@ test('manual first-five is fixed at exact positions and subsequent blocks still 
  const m=g.state.matches[0];m.firstLineup={AL:names[0],AR:names[1],M:names[2],VL:names[3],VR:names[4]};
  const p=g.plan(0);assert.ok(!p.error,p.error);
  for(const [pos,id] of Object.entries(m.firstLineup))assert.equal(p.blocks[0].map[pos].id,id);
- assert.deepEqual(p.blocks.slice(0,-1).map(b=>b.stays.length),[1,1,1]);
- assert.deepEqual(p.blocks.slice(0,-1).map(b=>b.ins.length),[4,4,4]);
- const q=g.plan(1);assert.ok(!q.error);assert.notDeepEqual(q.sets[0].map(x=>x.id).sort(),p.sets[0].map(x=>x.id).sort());
+ assert.deepEqual(Array.from(p.blocks.slice(0,-1),b=>b.stays.length),[1,1,1]);
+ assert.deepEqual(Array.from(p.blocks.slice(0,-1),b=>b.ins.length),[4,4,4]);
+ const q=g.plan(1);assert.ok(!q.error);assert.notEqual(Array.from(q.sets[0],x=>x.id).sort().join('|'),Array.from(p.sets[0],x=>x.id).sort().join('|'));
 });
 test('conflicting manual positions and missing field players fail explicitly',()=>{
  const g=makeGame(8,1);g.state.matches[0].firstLineup={AL:'f0',AR:'f0'};
