@@ -321,13 +321,20 @@ const previous=matchIndex>0?(cache[matchIndex-1]&&cache[matchIndex-1].sets?cache
 let best=null;
 const historicalStarts=new Set(Object.keys(cache).filter(k=>Number(k)<matchIndex&&cache[k]?.sets?.[0]).map(k=>cache[k].sets[0].map(x=>x.id).sort().join('|')));
 const theoreticalSwaps=Math.min(5,n-5);
+const pin=m.manualStart&&ALLPOS.every(pos=>typeof m.manualStart[pos]==='string'&&m.manualStart[pos]);
+const pinned=pin?ALLPOS.map(pos=>pool.find(p=>p.id===m.manualStart[pos])):null;
+if(pin&&(!pinned.every(Boolean)||new Set(pinned.map(p=>p.id)).size!==5))return {error:'De gekozen startopstelling bevat afwezige of dubbele speelsters. Kies vijf verschillende aanwezige veldspeelsters.'};
+const before=Object.fromEntries(pool.map(p=>[p.id,0])),appearances=Object.fromEntries(pool.map(p=>[p.id,0]));
+for(let h=0;h<matchIndex;h++){const q=cache[h];if(!q||q.error)continue;for(const p of pool){if(q.counts[p.id]!==undefined){before[p.id]+=q.counts[p.id]*q.step;appearances[p.id]++;}}}
+
 for(let iter=0;iter<Math.max(140,n*20);iter++){
- let order=shuffled(pool,rng),phase=(matchIndex+Math.floor(rng()*n))%n;
+ let order=pinned?[...pinned,...shuffled(pool.filter(q=>!pinned.some(p=>p.id===q.id)),rng)]:shuffled(pool,rng);
+ let phase=pinned?0:(matchIndex+Math.floor(rng()*n))%n;
  let st=5; // Next five players in a cyclic ring: maximal simultaneous substitutions.
  let groups=[];let counts=Object.fromEntries(pool.map(p=>[p.id,0]));let last={},sumRoleCost=0,swapCount=0,streak={};let maxStreak=0,misfits=[];
  for(let b=0;b<blocks;b++){
    let members=Array.from({length:5},(_,i)=>order[(phase+b*st+i)%n]);
-   let ass=bestAssignment(members,last);groups.push({members,ass:ass.map,cost:ass.cost});sumRoleCost+=ass.cost;
+   let ass=bestAssignment(members,last,pinned&&b===0?m.manualStart:null);groups.push({members,ass:ass.map,cost:ass.cost});sumRoleCost+=ass.cost;
    members.forEach(p=>counts[p.id]++);
    if(b){swapCount+=members.filter(p=>!groups[b-1].members.some(q=>q.id===p.id)).length}
    const curr=new Set(members.map(p=>p.id));for(let p of pool){streak[p.id]=curr.has(p.id)?(streak[p.id]||0)+1:0;maxStreak=Math.max(maxStreak,streak[p.id]||0)}
@@ -336,7 +343,9 @@ for(let iter=0;iter<Math.max(140,n*20);iter++){
  }
  let vals=Object.values(counts),avg=5*blocks/n,variance=vals.reduce((s,v)=>s+(v-avg)**2,0),startNew=previous&&groups[0].members.every(p=>previous.some(x=>x.id===p.id));
  let signature=groups[0].members.map(x=>x.id).sort().join('|');
- let cost=variance*160+misfits.length*70+sumRoleCost*.75+Math.max(0,maxStreak-3)*15+(startNew?280:0)+(historicalStarts.has(signature)?420:0)+rng()*2;
+ let cumulativeRates=pool.map(p=>(before[p.id]+counts[p.id]*step)/(appearances[p.id]+1));
+ let fairMean=cumulativeRates.reduce((a,b)=>a+b,0)/n,seasonVariance=cumulativeRates.reduce((a,b)=>a+(b-fairMean)**2,0);
+ let cost=variance*55+seasonVariance*220+misfits.length*55+sumRoleCost*.65+Math.max(0,maxStreak-3)*15+(startNew?280:0)+(historicalStarts.has(signature)?420:0)+rng()*2;
  // The cyclic ring guarantees each boundary changes min(5,n-5) field players.
  if(groups.some((g,i)=>i>0&&g.members.filter(p=>!groups[i-1].members.some(q=>q.id===p.id)).length!==theoreticalSwaps))continue;
  if(!best||cost<best.cost){best={cost,groups,counts,misfits,keeper,pool,step,total,half:Number(state.half)}}
@@ -346,7 +355,7 @@ if(!best)return {error:'Er kon geen opstelling worden berekend.'};
 let blocksOut=best.groups.map((g,i)=>{let members=g.members;let on=new Set(members.map(p=>p.id));let bench=[...best.pool.filter(p=>!on.has(p.id)),...reserveOnly];let next=best.groups[i+1];let outs=next?members.filter(p=>!next.members.some(x=>x.id===p.id)):[];let ins=next?next.members.filter(p=>!members.some(x=>x.id===p.id)):[];let stays=next?members.filter(p=>next.members.some(x=>x.id===p.id)):[];return{number:i+1,start:i*step,end:(i+1)*step,map:g.ass,members,bench,outs,ins,stays}});
 return {...best,reserveOnly,blocks:blocksOut,maxSwaps:theoreticalSwaps,playersStaying:5-theoreticalSwaps,sets:best.groups.map(g=>g.members)};
 }
-function bestAssignment(members,prev){let chosen={},used=new Set(),best={cost:Infinity,map:null};let lineup=ALLPOS.slice();function dfs(i,cost){if(cost>=best.cost)return;if(i===5){best={cost,map:{...chosen}};return}let pos=lineup[i],role=POSROLE(pos);for(let p of members){if(used.has(p.id))continue;let fit=p.roles.includes(role);let base=fit?0:20; // try preferred position, but allow tactical emergency roles
+function bestAssignment(members,prev,locked=null){let chosen={},used=new Set(),best={cost:Infinity,map:null};let lineup=ALLPOS.slice();function dfs(i,cost){if(cost>=best.cost)return;if(i===5){best={cost,map:{...chosen}};return}let pos=lineup[i],role=POSROLE(pos);for(let p of members){if(used.has(p.id)||(locked&&locked[pos]&&locked[pos]!==p.id))continue;let fit=p.roles.includes(role);let base=fit?0:20; // try preferred position, but allow tactical emergency roles
  let prevPos=Object.keys(prev).find(x=>prev[x].id===p.id);if(prevPos&&prevPos!==pos){base+=POSROLE(prevPos)===role?0.9:2.8}
  if(p.id==='lidewij'&&role==='V')base+=2;if(p.id==='tess'&&role!=='A')base+=15;
  used.add(p.id);chosen[pos]=p;dfs(i+1,cost+base);used.delete(p.id);delete chosen[pos];}}
