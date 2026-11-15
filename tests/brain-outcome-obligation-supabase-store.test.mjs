@@ -132,7 +132,7 @@ test('a conflicting SQL owner cannot be concealed by matching metadata on a dupl
   await assert.rejects(store.workStore.putIfAbsent({
     type:'AgentWork',idempotencyKey:'obligation|truth',obligationId:'original-1',
     ownerAgent:'agent-reliability',traceId:'trace-1',state:'PENDING',
-  }),/dispatch metadata identity conflict \\(ownerAgent\\)/);
+  }),/dispatch metadata identity conflict \(ownerAgent\)/);
 });
 
 test('a corrupted historical page fails closed instead of silently misrouting the next agent',async()=>{
@@ -144,7 +144,7 @@ test('a corrupted historical page fails closed instead of silently misrouting th
       status:206,headers:{'content-type':'application/json','Content-Range':'0-0/1'}
     })});
   await assert.rejects(store.recoveryStore.list(),
-    /dispatch metadata identity conflict \\(state\\)/);
+    /dispatch metadata identity conflict \(state\)/);
 });
 
 test('provider fails to report insert outcome: no fabricated new durable dispatch',async()=>{
