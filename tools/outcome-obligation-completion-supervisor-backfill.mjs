@@ -100,10 +100,16 @@ function activeDispatches(candidates, registeredObligationIds = null) {
   // A stable obligation-level coalesce key prevents a backfill from amplifying
   // thousands of old observations into thousands of new PENDING agent tasks.
   const byObligation = new Map();
+  // A proven external authorization boundary applies to the whole original
+  // obligation. Another historical source must never reopen it by accident.
+  const hardBoundaryObligations = new Set();
   for (const candidate of candidates) {
-    if (candidate.nextAction === 'WAIT_EXTERNAL') continue;
     for (const obligationId of candidate.obligationIds) {
       if (registered && !registered.has(obligationId)) continue;
+      if (candidate.nextAction === 'WAIT_EXTERNAL') {
+        hardBoundaryObligations.add(obligationId);
+        continue;
+      }
       let group = byObligation.get(obligationId);
       if (!group) {
         group = { sourceIdentities:new Set(), nextAction:candidate.nextAction };
@@ -114,6 +120,7 @@ function activeDispatches(candidates, registeredObligationIds = null) {
   }
   const dispatches = [];
   for (const obligationId of [...byObligation.keys()].sort()) {
+    if (hardBoundaryObligations.has(obligationId)) continue;
     const group = byObligation.get(obligationId);
     const sourceIdentities = [...group.sourceIdentities].sort();
     const canonicalIdentity = 'canonical-obligation:' + obligationId;
