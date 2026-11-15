@@ -301,3 +301,20 @@ Fingerprint `powerhouse|financial-intelligence|source-driver-forecast-no-invente
 **Sluitend werk:** deze scenario's blijven verwachtingen (model), nooit echte uitvoering. Voor daadwerkelijke actieafsluiting blijft de bestaande ONE BRAIN-authority vereist: brongebonden besluit, geautoriseerde providerwijziging, onafhankelijke provider-ID/readback, vóór- en nameting met gelijke KPI/baseline/horizon, geobserveerde kosten, causale referentie en learning, daarna brongebonden originele closure. Geen frontend-schrijfroute, geen fake `DONE` of geforceerde nulwaarde.
 
 **Regressie:** `tests/brain-source-bound-financial-scenario-decision-loop-20261115.test.mjs`. Productiegat bij inspectie: `portal_financial_forecasts_v1` en `powerhouse_realized_values` leeg, bestaande 14 optimizerkandidaten `review_required`. Laat hetzelfde originele bedrijfsketen-/agentlandschap nieuwe tenantbronmetingen en echte acties verwerken, beveiligde Required/CodeQL, exact Netlify-SHA en onafhankelijke effectmeting verplicht. Deze bron- en rekenlaag blijft een **modelvoorwaarde**, geen zelfgeclaimde gerealiseerde besparing.
+
+
+## Source-gated autonomous business optimization — decision contract (2026-11-15)
+Fingerprint: `powerhouse|company-intelligence|source-gated-decision-to-verified-outcome|20261115-v1`.
+
+This is an extension of the **existing** Company Intelligence OS, not a new optimization service. The pure `decideCompanyOptimization` export in `brain/company-intelligence/company-intelligence-os.mjs` is available to the existing original owner and the `buildCompoundIntelligence({optimization})` output. A returned eligibility decision **does not execute anything**.
+
+Mandatory states, in order:
+1. Tenant-scoped, current canonical observation with source revision and correlation; missing source means `SOURCE_EVIDENCE_DUE`.
+2. Original candidate identity, source-backed measured baseline and four distinct financial scenarios (including zero-incremental **no action**). Reject synthetic EUR, missing provenance and proposed savings without underlying economic measurements.
+3. `safe_reversible` plus rollback, with non-negative downside and positive base net scenario; all alternatives otherwise remain `MEASUREMENT_OR_POLICY_REVIEW_DUE`. No automatic approval of existing `review_required` candidates.
+4. Only under the existing approved tenant policy, active matching original owner lease, exact candidate, immutable idempotency key and revision can the pure decision emit `READY_FOR_ORIGINAL_EXECUTOR`. Original Powerhouse action/agent fabric is the **only** writer/dispatcher, with independent provider readback and no duplicate send.
+5. Receipt without baseline-linked independent counterfactual and actual net costs gives `INDEPENDENT_MEASUREMENT_DUE`; measured outcome without next-decision learning gives `NEXT_DECISION_LEARNING_DUE`.
+6. `ONE_BRAIN_CLOSURE_REVIEW_DUE` is **not** closed. The original ONE BRAIN authority must separately verify and transition the original obligation, preserving exact tenant/action/baseline/period/source revision/owner/consumer ACK and effect evidence. Observed zero is valid; absent evidence is unknown.
+7. Project the reason and next original owner in the existing authenticated Portal V2 customer decision journey; never expose another tenant's data or infer customer savings from a pure model or green CI.
+
+This contract is an **eligibility/veto guard**, not a new producer, scheduled executor, connector, data store, autonomous provider action, completed handoff or customer saving. Next source owner must close original financial DATA_GAP obligation `8a0a5a8d-595f-4bb1-8522-14a9507cb7f7` using measured tenant-specific source rows, no invented amounts. Operational acceptance is still governed by original P0 issue https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215 and protected Required/CodeQL/main/exact Netlify/tenant/provider/Heartbeat proofs. Regression: `tests/brain-company-intelligence-os-v1.test.mjs`.
