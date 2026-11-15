@@ -212,5 +212,12 @@ begin
 end;
 $function$
 
+-- Same pre-existing production ACL, explicit fail-closed permission proof
+-- for the replacement SECURITY DEFINER body: no browser RPC execution.
+revoke execute on function public.powerhouse_commercial_heartbeat_v1(timestamptz)
+  from public, anon, authenticated;
+grant execute on function public.powerhouse_commercial_heartbeat_v1(timestamptz)
+  to service_role;
+
 comment on function public.powerhouse_commercial_heartbeat_v1(timestamptz) is
 'Original commercial Heartbeat persists idempotent exact #138 work-email candidate receipts and original source retry debt; candidate remains UNVERIFIED and NOT SENDABLE.';
