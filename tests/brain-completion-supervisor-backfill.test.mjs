@@ -55,7 +55,8 @@ test('active backfill creates idempotent resumes only for existing canonical obl
   assert.match(report.dispatches[0].triggerFingerprint,/^completion-backfill:canonical-obligation:/);
   assert.equal(report.dispatches[0].sourceCandidateCount,1);
   assert.match(report.dispatches[0].sourceIdentityDigest,/^[a-f0-9]{20}$/);
-  assert.equal(report.dispatches[0].nextAction,'RECONCILE_SOURCE_BOUND_PROOF');
+  assert.equal(report.dispatches[0].nextAction,report.candidates[0].nextAction);
+  assert.deepEqual(report.dispatches[0].sourceActions,[report.candidates[0].nextAction]);
 });
 
 test('active backfill does not recursively resume rows created by completion backfill itself', () => {
