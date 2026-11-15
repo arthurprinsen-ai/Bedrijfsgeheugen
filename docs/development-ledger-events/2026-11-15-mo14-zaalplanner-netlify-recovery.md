@@ -60,3 +60,19 @@
 - Original direct GitHub→Netlify workflow run: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43745641533 SUCCESS including preserved homepage, PNG crest/icon verification, branded manifest, seven date bindings and provider live readback.
 - Original Netlify project pw-mo14-1 ID 1c4fa5ce-45ae-45dc-b3e2-11f90587c474: deploy 6af9f6b25c81bf8adaae9dc5, CURRENT/READY, published 2026-11-15 18:15:19 UTC. https://pw-mo14-1.netlify.app/zaalplanner/
 - No Make, no new Netlify project. Broader Bedrijfsgeheugen source PR #5875 still open; full interactive browser test against production host not independently completed (local browser + provider structural HTTP readback proven).
+
+## Werkelijk zaalprogramma: 12 wedstrijden op 6 speeldagen — productie 2026-11-15 18:36 UTC
+
+- Bron: zes door de coach aangeleverde PW MO14-1 zaal-schermopnamen op 15 november 2026; uitsluitend zichtbare regels met exacte teamnaam `MO14-1 zaal` zijn meegenomen. De overige getoonde wedstrijden betreffen andere teams en zijn niet aan het PW-team toegewezen.
+- Zondag 6 december 2026: 12:00 thuis tegen MO14-2 zaal; 13:40 thuis tegen Twente MO14-2.
+- Zondag 13 december 2026: 12:05 thuis tegen Zutphen MO14-1; 12:55 uit tegen Twente MO14-2.
+- Zaterdag 19 december 2026: 15:20 thuis tegen Haackey MO14-1-mix; 16:10 uit tegen Apeldoorn MO14-3.
+- Zaterdag 9 januari 2027: 11:30 thuis tegen Apeldoorn MO14-2; 13:10 thuis tegen Apeldoorn MO14-3.
+- Zondag 24 januari 2027: 11:30 uit tegen Haackey MO14-1-mix; 12:20 thuis tegen MO14-2 zaal.
+- Zaterdag 13 februari 2027: 12:00 uit tegen Apeldoorn MO14-2; 12:50 uit tegen Zutphen MO14-1.
+- De schermen tonen **zes** relevante wedstrijddagen en **twaalf** wedstrijden. Geen zevende wedstrijddag verzinnen; de UI ondersteunt het toevoegen van een extra wedstrijd en het aanpassen van datum, tijd, tegenstander en thuis/uit.
+- Datamodel-migratie: originele `mo14_zaal_v2` localStorage met 7 placeholder-wedstrijden wordt éénmalig en niet-destructief omgezet naar twaalf brongebonden fixtures, waarbij bestaande keeper-/absentie-instellingen voor de eerste zeven wedstrijden behouden blijven. Nieuwe records krijgen unieke fixture-ID, keeper en eigen absentie; toekomstig custom matchrecord blijft behouden.
+- App v6: zes datumgroeperingen met twee aparte wedstrijdkaarten, starttijd/tegenstander/thuis-uit, aparte keeper/afwezigheid/wissels, speelsters van dezelfde speeldag kopiëren, download PDF van één wedstrijd, beide wedstrijden van een speeldag of alle wedstrijden, en datums/tijden/tegenstanders op PDF-/PNG-platen.
+- Eerste beschermde app-run: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43747590626 **SUCCESS**; 7 gerichte Node-regressietests geslaagd, 0 mislukt; Netlify rechtstreeks aangeroepen zonder Make, site-back-up plus ongewijzigde homepage geverifieerd.
+- Provider: Netlify-project `pw-mo14-1` (ID `1c4fa5ce-45ae-45dc-b3e2-11f90587c474`), productie deploy `6af9fb73c70c4f552de882c0`, `CURRENT / READY`, gepubliceerd `2026-11-15T18:36:06.643Z`. HTTP-readback controleerde de 12-fixture-bron, 2027-02-13, dag-PDF, clublogo, PWA-manifest/cache en homepage-pariteit.
+- Beperkingen: geen officiële public-web/KNHB crosscheck van toekomstige wijzigingen en geen volledig interactieve browserproef op de live-host; handmatig op screenshots vastgelegde planning kan door de club later worden aangepast. Bredere Bedrijfsgeheugen hoofdrepo-PR #5875 blijft onafhankelijk van deze aparte MO14-site-publicatie open.
