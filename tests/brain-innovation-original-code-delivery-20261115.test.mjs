@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {selectOriginalCodeCandidate,checkChangedPaths,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
+import {selectOriginalCodeCandidate,checkChangedPaths,classifyOriginalCodeDiff,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
+import {evaluateOriginalNochangeReview} from '../scripts/brain/innovation-original-code-nochange-review.mjs';
 import {verifyOriginalCandidateReceipt} from '../scripts/brain/innovation-original-code-pr-receipt.mjs';
 
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
@@ -109,4 +110,37 @@ test('network-derived GitHub PR receipt is kept in native Brain, never dumped to
   assert.match(source,/brain_transition_operation/);
   assert.match(source,/INDEPENDENT_READBACK_FAILED/);
   assert.match(source,/JSON\.stringify\(safe\)/);
+});
+
+
+test('legitimate zero changed files is an audited no-op, never a fake implementation',()=>{
+  const workorder=selectOriginalCodeCandidate(fixture());
+  const result=classifyOriginalCodeDiff({workorder,changed:[],deleted:[]});
+  assert.equal(result.has_changes,false);
+  assert.equal(result.status,'NO_CODE_CHANGE_INDEPENDENT_REVIEW_DUE');
+  assert.equal(result.implementation_verified,false);
+  assert.equal(result.terminal_success,false);
+  assert.throws(()=>classifyOriginalCodeDiff({workorder,changed:[],deleted:['platform/system-map/canonical-system-map.mjs']}),/DELETION_FORBIDDEN|PATH_SCOPE/);
+});
+
+test('no-change review requires identical ORIGINAL operation, owner, source and branch SHA',()=>{
+  const f=fixture(),workorder=selectOriginalCodeCandidate(f);
+  const plan=evaluateOriginalNochangeReview({workorder,operation:f.snapshot.intakes[0],headSha:'a'.repeat(40),observedAt:'2026-11-15T19:24:34Z'});
+  assert.equal(plan.already_recorded,false);
+  assert.equal(plan.receipt.implementation_verified,false);
+  assert.equal(plan.receipt.terminal_success,false);
+  assert.equal(plan.receipt.consumer_ack_verified,false);
+  assert.equal(plan.receipt.original_operation_stays,'PLANNED');
+  f.snapshot.intakes[0].evidence.original_code_nochange_review=plan.receipt;
+  const replay=evaluateOriginalNochangeReview({workorder,operation:f.snapshot.intakes[0],headSha:'a'.repeat(40)});
+  assert.equal(replay.already_recorded,true);
+  assert.equal(selectOriginalCodeCandidate(f).selected,false,'same source no-change review must not spend again');
+  f.snapshot.intakes[0].evidence.original_code_nochange_review.source_sha256='f'.repeat(64);
+  assert.throws(()=>selectOriginalCodeCandidate(f),/ORIGINAL_NOCHANGE_REVIEW_CONFLICT/);
+});
+test('reject invalid no-change review without mutating a Brain source',()=>{
+  const f=fixture(),workorder=selectOriginalCodeCandidate(f);
+  assert.throws(()=>evaluateOriginalNochangeReview({workorder,operation:f.snapshot.intakes[0],headSha:'untrusted'}),/INVALID_ORIGINAL_IDENTITY/);
+  assert.throws(()=>evaluateOriginalNochangeReview({workorder,operation:{...f.snapshot.intakes[0],status:'VERIFIED'},headSha:'a'.repeat(40)}),/SOURCE_VERSION_OWNER_OR_DECISION_DRIFT/);
+  assert.throws(()=>evaluateOriginalNochangeReview({workorder,operation:{...f.snapshot.intakes[0],evidence:{}},headSha:'a'.repeat(40)}),/SOURCE_VERSION_OWNER_OR_DECISION_DRIFT/);
 });
