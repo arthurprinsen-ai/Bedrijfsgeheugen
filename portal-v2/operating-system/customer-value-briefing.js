@@ -127,12 +127,101 @@ export function buildCustomerValueBriefing(model={}){
   sourceRefs:Object.freeze(refs(next)),result:realized,finance:buildFinancialDecisionDossier(next,realized)});
 }
 
+
+const recordedActionStates=new Set([
+ 'QUEUED','EXECUTING','READBACK_PENDING','SENT','VERIFIED','PROVIDER_VERIFIED',
+ 'EXECUTION_COMPLETED','OUTCOME_PENDING','OUTCOME_RECORDED','LEARNED',
+ 'DONE','COMPLETED','OUTCOME_VERIFIED','REALIZED_VERIFIED','CLOSED','BLOCKED','FAILED'
+]);
+// A state string is never independent proof of execution, net saving or closure.
+// This is a source-only journal over the ORIGINAL authenticated executive data.
+export function buildCustomerActionProgress(model={}){
+ if(model?.available!==true)return Object.freeze([]);
+ const source=[...(Array.isArray(model.action_history)?model.action_history:[]),
+  ...(Array.isArray(model.next_best_actions)?model.next_best_actions:[])];
+ const seen=new Set(),rows=[];
+ for(const action of source){
+  const id=clean(action?.id),recorded=clean(action?.status).toUpperCase();
+  if(!id||seen.has(id)||!recordedActionStates.has(recorded)||!verifiedEvidence(action))continue;
+  seen.add(id);
+  const result=resultFor(action,model.outcomes);
+  const finance=buildFinancialDecisionDossier(action,result);
+  const executed=finance.executionStatus==='INDEPENDENTLY_VERIFIED';
+  const outcomeVerified=Boolean(executed&&result);
+  const financeMetric=result?.unit==='EUR'&&result?.metric==='NET_SAVINGS_EUR';
+  const eligible=Boolean(outcomeVerified&&result.learningProven&&(!financeMetric||finance.savings));
+  const closed=action?.closure_proof||{};
+  const actionTenant=clean(action.tenant_id||action.tenantId);
+  const closureVerified=Boolean(eligible&&clean(closed.action_id)===id
+   &&clean(closed.status).toUpperCase()==='CLOSED_VERIFIED'
+   &&clean(closed.original_authority).toUpperCase()==='ONE_BRAIN'
+   &&closed.independent_readback===true&&refs(closed).length
+   &&(!actionTenant||clean(closed.tenant_id)===actionTenant)
+   &&(!clean(action.baseline_id||action.baseline_ref)
+      ||clean(closed.baseline_id)===clean(action.baseline_id||action.baseline_ref)));
+  const phase=closureVerified?'CLOSED_PROVEN':eligible?'CLOSURE_REVIEW_READY':
+   !executed?'EXECUTION_RECEIPT_DUE':!result?'MEASUREMENT_DUE':
+   !result.learningProven?'LEARNING_DUE':'FINANCIAL_PROOF_DUE';
+  rows.push(Object.freeze({
+   id,title:clean(action.title||action.label)||'Actie '+id,
+   recordedStatus:recorded,phase,executionVerified:executed,
+   actual:outcomeVerified?Object.freeze({amount:result.amount,unit:result.unit,metric:result.metric,
+    baseline:result.baseline,period:result.period,sourceRefs:result.sourceRefs}):null,
+   netSaving:finance.savings?.net??null,
+   forecastVsActual:finance.comparable?finance.forecastVsActual:null,
+   learningVerified:Boolean(result?.learningProven),
+   closeReviewReady:eligible,closedVerified:closureVerified,
+   sourceRefs:Object.freeze(refs(action))
+  }));
+  if(rows.length===4)break;
+ }
+ return Object.freeze(rows);
+}
+
+export function customerActionProgressMarkup(model={}){
+ const rows=buildCustomerActionProgress(model);
+ const title='<header><small>ONE BRAIN · originele actie-ID’s</small><h3>Wat heeft de intelligentie gedaan en wat kwam eruit?</h3></header>';
+ if(!rows.length)return '<section class="os-strategy-advisor" data-customer-action-progress="evidence-due" aria-label="Actievoortgang">'+title+
+  '<p>Er zijn nog geen betrouwbare uitvoeringsacties in deze tenantprojectie. Verbind de oorspronkelijke acties, uitvoeringsontvangst en metingen voordat er resultaat wordt getoond.</p></section>';
+ const phaseLabel={
+  CLOSED_PROVEN:'Afgesloten, onafhankelijk bevestigd',
+  CLOSURE_REVIEW_READY:'Klaar voor afsluitcontrole door ONE BRAIN',
+  EXECUTION_RECEIPT_DUE:'Uitvoering niet onafhankelijk bevestigd',
+  MEASUREMENT_DUE:'Uitvoering bevestigd; effectmeting ontbreekt',
+  LEARNING_DUE:'Uitvoering en meting bevestigd; volgende leerbeslissing ontbreekt',
+  FINANCIAL_PROOF_DUE:'Financieel effect of kostenbewijs ontbreekt'
+ };
+ const content=rows.map(row=>{
+  const actual=row.actual?
+   '<p><b>Onafhankelijk gemeten:</b> '+escapeHtml(formatValue(row.actual.amount,row.actual.unit))+
+    ' · '+escapeHtml(row.actual.metric)+' · periode '+escapeHtml(row.actual.period)+
+    '. Een gemeten KPI is niet automatisch een causale besparing.</p>':
+   '<p><b>Werkelijk effect:</b> nog niet onafhankelijk aangetoond.</p>';
+  const money=row.netSaving!==null?
+   '<p><b>Geverifieerd netto financieel meetresultaat:</b> '+escapeHtml(formatValue(row.netSaving,'EUR'))+
+   '. Financiële attributie vergt afzonderlijk tegenfeitelijk bewijs.</p>':
+   '<p><b>Netto besparing:</b> onbekend; niet automatisch € 0.</p>';
+  const close=row.closedVerified?'Deze actie heeft een onafhankelijk ONE BRAIN-afsluitbewijs.':
+   row.closeReviewReady?'Onderbouwing aanwezig; afsluiting is uitsluitend via de bestaande ONE BRAIN-autoriteit mogelijk.':
+   'Niet afsluiten op basis van de geregistreerde status; de genoemde bewijsstap ontbreekt.';
+  return '<li class="os-strategy-card" data-action-proof="'+escapeHtml(row.phase)+'">'+
+   '<h4>'+escapeHtml(row.title)+'</h4><p><b>Geregistreerde status:</b> '+escapeHtml(row.recordedStatus)+
+   ' · <b>Bewijsstap:</b> '+escapeHtml(phaseLabel[row.phase])+'</p>'+
+   '<p><b>Uitvoering:</b> '+(row.executionVerified?'onafhankelijk bevestigd.':'geen geldig provider-/consumer-readback.')+'</p>'+
+   actual+money+'<p><b>Afsluiten:</b> '+escapeHtml(close)+'</p>'+
+   '<details><summary>Bronnen en actie-ID</summary><p>'+escapeHtml(row.id)+' · '+row.sourceRefs.map(escapeHtml).join(' · ')+'</p></details>'+
+   '<button type="button" data-os-page="next-best-actions" aria-pressed="false">Bekijk actie en afronding →</button></li>';
+ }).join('');
+ return '<section class="os-strategy-advisor" data-customer-action-progress="source-bound" aria-label="Actievoortgang">'+title+
+  '<ol>'+content+'</ol></section>';
+}
+
 export function customerValueBriefingMarkup(model={}){
  const briefing=buildCustomerValueBriefing(model);
  const intro='<header><small>Jouw bedrijf beter maken · Powerhouse</small><h3>Welke verbetering pakken we vandaag aan?</h3><p>Van bedrijfsprobleem naar besluit, uitvoering, gemeten effect en leren. Alleen bewijs telt als gerealiseerde waarde.</p></header>';
  if(!briefing.available)return '<section class="os-strategy-advisor" data-customer-value="evidence-due" aria-label="Bedrijfsverbetering">'+intro+
  '<p>Er is nog geen actuele, onderbouwde en uitvoerbare verbeteractie. Begin met een betrouwbare nulmeting en controleer de gekoppelde bedrijfsgegevens. Geen verzonnen omzet- of ROI-claims.</p>'+
- '<button type="button" data-os-page="evidence-health" aria-pressed="false">Controleer bedrijfsgegevens →</button></section>';
+ '<button type="button" data-os-page="evidence-health" aria-pressed="false">Controleer bedrijfsgegevens →</button></section>'+customerActionProgressMarkup(model);
  const proof=briefing.result
   ?'<p><b>Werkelijk gemeten:</b> '+escapeHtml(formatValue(briefing.result.amount,briefing.result.unit))+' · '+escapeHtml(briefing.result.metric)+' · periode '+escapeHtml(briefing.result.period)+'. Geverifieerd meetresultaat, niet automatisch door deze actie veroorzaakte winst of betaalde omzet.</p>'+
    '<p><b>Leereffect:</b> '+(briefing.result.learningProven?'geverifieerde volgende beslissing gekoppeld.':'nog niet onafhankelijk bewezen.')+'</p>'
@@ -170,5 +259,5 @@ export function customerValueBriefingMarkup(model={}){
  '<p><b>Verwachte waarde:</b> '+(briefing.expected?escapeHtml(briefing.expected)+' ('+escapeHtml(briefing.expectedKind)+', geen realisatie)':'nog niet betrouwbaar te kwantificeren')+'</p>'+
  proof+financialHtml+'<p>'+(briefing.approvalRequired?'Jouw toestemming of bevoegd besluit is vereist vóór uitvoering.':'Uitvoering uitsluitend via de bestaande goedgekeurde Powerhouse-policy.')+'</p>'+
  '<details><summary>Waarop is dit gebaseerd?</summary><p>'+briefing.sourceRefs.map(escapeHtml).join(' · ')+'</p></details>'+
- '<button type="button" data-os-page="next-best-actions" aria-pressed="false">Beoordeel deze verbeteractie →</button></article></section>';
+ '<button type="button" data-os-page="next-best-actions" aria-pressed="false">Beoordeel deze verbeteractie →</button></article></section>'+customerActionProgressMarkup(model);
 }
