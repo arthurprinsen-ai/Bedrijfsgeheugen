@@ -47,7 +47,10 @@ test('original rejected source safely replays ONLY original #116 action and orig
  assert.match(src,/researchRetryAt\(observedAt,24\)/);
  assert.match(src,/researchNoSourceFeedback\(a,owner,observedAt,next\)/);
  assert.match(src,/source_redirect_rejected:true/);
- assert.match(src,/\.update\(\{status:'waiting',due_at:next,source_url:null,evidence,updated_at:observedAt\}\)/);
+ assert.match(src,/\.update\(\{status:'waiting',due_at:next,evidence,updated_at:observedAt\}\)/);
+ assert.match(src,/Preserve the non-null raw source_url as an audit trail only/);
+ assert.doesNotMatch(src,/\.update\(\{status:'waiting',due_at:next,source_url:null/,'never violate source_url NOT NULL constraint');
+ assert.match(src,/source_url:null,reason:'NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH'/,'usable source evidence must be invalidated');
  assert.match(src,/\.eq\('updated_at',a.updated_at\)/);
  assert.match(src,/\.in\('status',\['prepared','waiting'\]\)/);
  assert.match(src,/status:'SOURCE_REDIRECT_REJECTED_NOT_VERIFIED'/);
