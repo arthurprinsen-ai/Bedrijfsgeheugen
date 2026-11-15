@@ -38,7 +38,8 @@ function compute(index){
   const meanSlots=5*round/n;
   const dispersion=current.reduce((a,x)=>a+(x-meanSlots)*(x-meanSlots),0);
   const sig=firstSet.map(p=>p.id).sort().join('|');
-  return variance(totals)*1.1+dispersion*30+(firstSetHistory.has(sig)?200:0);
+  const seasonField=pool.map(p=>(base[p.id]||0)+(counts[p.id]||0)*step);
+  return variance(seasonField)*100+variance(totals)*1.1+dispersion*30+(firstSetHistory.has(sig)?200:0);
  }
  function startOptions(){
   const pinned=pool.filter(p=>forced.has(p.id));
