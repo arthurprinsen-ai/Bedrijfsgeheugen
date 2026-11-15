@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|contacts|heartbeat-owner-context-without-durable-commercial-safe-review-obligation|20261115-v1",
+  "root_cause": "Native production verified one original public business work-email candidate from #116, original #138 FULFILLED/PROCESSED BRAIN exact source acknowledgement and one idempotent commercial Heartbeat source receipt. The commercial Heartbeat receipt specified next_owner=original-agent:commercial only in event context, while independent native BRAIN search for the candidate showed exactly one identity-consumer obligation and no durable commercial owner review obligation or associated action. This allowed an apparently connected handoff to have no persisted owner work item.",
+  "scope": "ORIGINAL_COMMERCIAL_HEARTBEAT_TO_ONE_BRAIN_COMMERCIAL_OWNER_SAFE_REVIEW",
+  "owner": "original-agent:commercial via existing commercial Heartbeat and original ONE BRAIN; Reliability/Data Quality monitor",
+  "prevention_rule": "On the existing commercial Heartbeat, independently revalidate exact original #138 FULFILLED consumer source_event_id, source_revision and research_action_id plus current quarantined candidate, then atomically create and transition ONE idempotent original-agent:commercial BRAIN obligation per person/source event to BLOCKED/OWNER_ACCEPTED_SAFE_HOLD with precise verification next action, source identity, and no sender or consent inference. Later same-heartbeat replays must not create duplicates. Preserve source retries and P0 degraded state until lawful verification and independently measured results.",
+  "regression": "tests/brain-original-public-work-email-commercial-owner-ack-20261115.test.mjs",
+  "evidence": {
+    "observed_at_utc": "2026-11-15T10:02:13Z",
+    "original_p0_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "native_heartbeat_release_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5827",
+    "original_commercial_p0_obligation": "43c90754-3fd0-4c97-bb14-fbf815e12f47",
+    "source_event_id": "9ce440b1-d819-449d-b03e-991454a35f42",
+    "source_revision": "2026-11-14T23:07:02.056Z",
+    "identity_brain_obligation": "d5a1c24c-2b15-4935-aa58-53f8790f53d1",
+    "original_heartbeat_receipt": "35a0c7cf-b898-47ad-b257-49bbf68239ae",
+    "commercial_owner_work_obligation_count_before": 0,
+    "safe_eligible_candidate_count": 1,
+    "canonical_total_connections": 23295,
+    "canonical_existing_emails": 605,
+    "unverified_candidates": 1,
+    "unreadable_original_source_retries": 10,
+    "candidate_contact_approval_evidenced": false,
+    "candidate_delivery_verified": false,
+    "external_send_authorized": false,
+    "runtime_owner_review_status": "NOT_YET_DEPLOYED"
+  },
+  "learning_state": "OBSERVED_NOT_CLOSED_UNTIL_NATIVE_OWNER_ACK",
+  "compiler": {
+    "failure_class": "HEARTBEAT_CONTEXT_OWNER_WITHOUT_DURABLE_ORIGINAL_BRAIN_ACK",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-public-work-email-commercial-owner-ack-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-public-work-email-commercial-owner-ack-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-public-work-email-commercial-owner-ack-20261115.test.mjs"
+    ]
+  }
+}
