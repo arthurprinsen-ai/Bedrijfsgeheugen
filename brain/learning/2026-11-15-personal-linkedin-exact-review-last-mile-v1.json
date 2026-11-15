@@ -37,8 +37,23 @@
     ".agents/skills/linkedin-composio-publisher/SKILL.md"
   ],
   "owner": "original Powerhouse Daily Publisher and current canonical LinkedIn Composio transport",
-  "status": "PROTECTED_CANDIDATE_AWAITING_CI_DEPLOY_AND_NEGATIVE_PRODUCTION_TEST",
+  "status": "PROTECTED_CANDIDATE_LEARNING_CANONICALIZATION_REPAIR_PENDING",
   "customer_business_outcome_proven": false,
   "production_last_mile_negative_test_proven": false,
-  "terminal": false
+  "terminal": false,
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ]
+  }
 }
