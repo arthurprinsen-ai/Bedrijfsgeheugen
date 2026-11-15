@@ -122,7 +122,8 @@ function activeDispatches(candidates, registeredObligationIds = null) {
       identity:sourceIdentities[0],
       coalesceKey:`completion-backfill|canonical-obligation|${key}`,
       triggerFingerprint:`${BACKFILL_TRIGGER_PREFIX}canonical-obligation:${key}`,
-      nextAction:'RECONCILE_SOURCE_BOUND_PROOF',
+      nextAction,
+      sourceActions:Object.freeze([...new Set(originals.map(candidate => candidate.nextAction))].sort()),
       sourceCandidateCount:sourceIdentities.length,
       sourceIdentityDigest,
     }));
