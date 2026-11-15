@@ -19,27 +19,84 @@ test('AgentWork putIfAbsent is idempotent and returns the canonical persisted re
   const calls = [];
   const fetchImpl = async (url, init={}) => {
     calls.push({ url:String(url), init });
-    if (init.method === 'POST') return jsonResponse(201, []);
-    return jsonResponse(200, [{ idempotency_key:'obligation|abc', record_type:'AgentWork', obligation_id:'supabase-performance-evidence-daily', owner_agent:'agent-performance', trace_id:'trace-1', state:'PENDING', record:{ requestedOutcome:'measurement' } }]);
+    const canonical={ idempotency_key:'obligation|abc', record_type:'AgentWork', obligation_id:'supabase-performance-evidence-daily', owner_agent:'agent-performance', trace_id:'trace-1', state:'PENDING', record:{ requestedOutcome:'measurement' } };
+    if (init.method === 'POST') return jsonResponse(201, [canonical]);
+    return jsonResponse(200, [canonical]);
   };
   const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
   const persisted = await stores.workStore.putIfAbsent({ type:'AgentWork', idempotencyKey:'obligation|abc', obligationId:'supabase-performance-evidence-daily', ownerAgent:'agent-performance', traceId:'trace-1', state:'PENDING', requestedOutcome:'measurement' });
   assert.equal(persisted.record.idempotencyKey, 'obligation|abc');
   assert.equal(persisted.record.type, 'AgentWork');
+  assert.equal(persisted.created, true);
   assert.equal(calls[0].init.method, 'POST');
-  assert.match(calls[0].init.headers.Prefer, /resolution=ignore-duplicates/);
+  assert.match(calls[0].init.headers.Prefer, /resolution=ignore-duplicates,return=representation/);
   assert.equal(calls[0].init.headers.apikey, TOKEN);
   assert.equal(calls[0].init.headers.authorization, `Bearer ${TOKEN}`);
   assert.equal(calls[1].init.method, 'GET');
 });
 
 test('recovery records share the durable dispatch ledger but keep their record type', async () => {
+  const canonical={ idempotency_key:'recovery|obligation|abc', record_type:'RecoveryWork', obligation_id:'supabase-performance-evidence-daily', owner_agent:'agent-performance', trace_id:'trace-1', state:'RECOVERING', record:{} };
   const fetchImpl = async (url, init={}) => init.method === 'POST'
-    ? jsonResponse(201, [])
-    : jsonResponse(200, [{ idempotency_key:'recovery|obligation|abc', record_type:'RecoveryWork', obligation_id:'supabase-performance-evidence-daily', owner_agent:'agent-performance', trace_id:'trace-1', state:'RECOVERING', record:{} }]);
+    ? jsonResponse(201, [canonical])
+    : jsonResponse(200, [canonical]);
   const stores = createSupabaseOutcomeObligationStores({ url:URL, token:TOKEN, fetchImpl });
   const persisted = await stores.recoveryStore.putIfAbsent({ type:'RecoveryWork', idempotencyKey:'recovery|obligation|abc', obligationId:'supabase-performance-evidence-daily', ownerAgent:'agent-performance', traceId:'trace-1', state:'RECOVERING' });
   assert.equal(persisted.record.type, 'RecoveryWork');
+  assert.equal(persisted.created, true);
+});
+
+test('existing immutable AgentWork replay is not reported as a newly created handoff', async () => {
+  const canonical={ idempotency_key:'obligation|abc', record_type:'AgentWork',
+    obligation_id:'supabase-performance-evidence-daily',owner_agent:'agent-performance',
+    trace_id:'trace-1',state:'PENDING',record:{requestedOutcome:'measurement'} };
+  let stored=null;const calls=[];
+  const fetchImpl=async (url,init={})=>{
+    calls.push({url:String(url),init});
+    if(init.method==='POST'){
+      const inserted=stored===null;
+      if(inserted)stored=JSON.parse(init.body);
+      return jsonResponse(201,inserted?[stored]:[]);
+    }
+    return jsonResponse(200,stored?[stored]:[]);
+  };
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  const request={type:'AgentWork',idempotencyKey:'obligation|abc',
+    obligationId:'supabase-performance-evidence-daily',ownerAgent:'agent-performance',
+    traceId:'trace-1',state:'PENDING',requestedOutcome:'measurement'};
+  const first=await stores.workStore.putIfAbsent(request);
+  const replay=await stores.workStore.putIfAbsent(request);
+  assert.equal(first.created,true);
+  assert.equal(replay.created,false);
+  assert.deepEqual(first.record,replay.record);
+  assert.equal(calls.filter(x=>x.init.method==='POST').length,2,'one atomic conflict-safe insert per invocation');
+  assert.ok(calls.filter(x=>x.init.method==='POST').every(x=>x.init.headers.Prefer.includes('return=representation')));
+});
+
+test('immutable idempotency key cannot silently transfer ownership on duplicate replay',async()=>{
+  const existing={idempotency_key:'obligation|abc',record_type:'AgentWork',
+    obligation_id:'canonical-original',owner_agent:'agent-reliability',
+    trace_id:'trace-1',state:'PENDING',record:{}};
+  const fetchImpl=async (url,init={})=>init.method==='POST'
+    ?jsonResponse(201,[]):jsonResponse(200,[existing]);
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  await assert.rejects(
+    stores.workStore.putIfAbsent({type:'AgentWork',idempotencyKey:'obligation|abc',
+      obligationId:'canonical-original',ownerAgent:'agent-performance',
+      traceId:'trace-1',state:'PENDING'}),
+    /immutable dispatch identity conflict \(ownerAgent\)/
+  );
+});
+
+test('provider fails to report insert outcome: no fabricated new durable dispatch',async()=>{
+  const fetchImpl=async(url,init={})=>init.method==='POST'
+    ?new Response(null,{status:204}):jsonResponse(200,[]);
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  await assert.rejects(stores.recoveryStore.putIfAbsent({
+    type:'RecoveryWork',idempotencyKey:'recovery|abc',
+    obligationId:'original-abc',ownerAgent:'agent-reliability',
+    traceId:'trace-abc',state:'RECOVERING'
+  }),/dispatch insert outcome unverified/);
 });
 
 test('dispatch stores list only their canonical record type for backfill collection', async () => {
