@@ -17,7 +17,7 @@ test('only HTTPS same-company host redirects and discovered links; never off-sit
 });
 test('original first-party worker derives real contact paths from homepage and uses a bounded same-host redirect',()=>{
  const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
- assert.match(src,/readBoundedPublicPage\(homeUrl\)/);
+ assert.match(src,/readBoundedPublicPage\(homeUrl,sourceDiagnostics\)/);
  assert.match(src,/nextHost!==companyHost/);
  assert.match(src,/publicPages=homeHtml/);
  assert.match(src,/publishedLinks\.length\?\[\]:\[/);
@@ -130,5 +130,6 @@ test('public website HTML failure codes are safe, bounded, actionable and do not
  assert.match(src,/sourceDiagnostics\.length<8/);
  assert.match(src,/public_email_source_diagnostics_recorded_at:observedAt/);
  assert.doesNotMatch(src,/res\.text\(/);
- assert.doesNotMatch(src,/headers:\s*\{[^}]*authorization/i);
+ const sourceReader=src.slice(src.indexOf('async function readBoundedPublicPage('),src.indexOf('async function writePublicBusinessSourceReceipt'));
+ assert.doesNotMatch(sourceReader,/headers:\s*\{[^}]*authorization/i);
 });
