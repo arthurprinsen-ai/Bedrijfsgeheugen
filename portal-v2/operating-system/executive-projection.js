@@ -88,7 +88,14 @@ export function buildExecutiveProjection(state={}, {role='directie',tenantId,now
  const risks=safeEvidence(source.risks,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
  const opportunities=safeEvidence(source.opportunities,tenantId,now).sort((a,b)=>priority(b)-priority(a));
  const actions=safeEvidence(source.next_best_actions,tenantId,now).sort((a,b)=>priority(b)-priority(a)).slice(0,5);
- const history=safeEvidence(source.action_history,tenantId,now).filter(item=>item?.evidence_health?.status==='healthy'&&txt(item?.id)).slice(0,5);
+ const nativeHistory=safeEvidence(source.action_history,tenantId,now);
+ const existingTenantActions=safeEvidence(state?.powerhouse?.actions,tenantId,now);
+ const historyIds=new Set();
+ const history=[...nativeHistory,...existingTenantActions].filter(item=>{
+  const id=txt(item?.id||item?.action_id);
+  if(item?.evidence_health?.status!=='healthy'||!id||historyIds.has(id))return false;
+  historyIds.add(id);return true;
+ }).map(item=>Object.freeze({...item,id:txt(item.id||item.action_id)})).slice(0,5);
  const outcomes=safeEvidence(source.outcomes,tenantId,now);
  const changes=safeEvidence(source.changes,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
  const forecasts=safeEvidence(source.forecasts,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
