@@ -12,19 +12,22 @@
     "security_sensitive": true
   },
   "root_cause": "Original powerhouse_advance_sales_action_v1 always resolves one source_signal_ref cycle per action. The original monotonic powerhouse_append_cycle_event_v2 rank prevents a second execution stage, while powerhous_sales_actions.executed_at can legitimately advance on subsequent internal research_enrichment execution. Verified canonical source: 164 last-seven-day original execution events, 163 source-linked to current executed_at, one historical action now reexecuted and status done at a newer executed_at but its second event was not minted. Another exact read-only source count found four original actions with a later current executed_at than their historical execution events.",
-  "prevention_rule": "Keep original monotonic decision stages and immutable historical events. When original guarded action status=done and current executed_at strictly advances beyond latest original writer-status-done event, the SAME original function serializes on source action row and appends one new 5-stage attempt cycle with stable execution timestamp-scoped idempotency keys; never repeat the old cycle's execution event. Do not infer provider delivery or revenue. Original full-week admin readback validates all event-time writer receipts independently of mutable action executed_at, but flags current mutable executed_at with no matching original immutable attempt as a separate RED source gap. No separate worker/scheduler/table/provider action.",
+  "prevention_rule": "Keep original monotonic decision stages and immutable historical events. When original guarded action status=done and current executed_at strictly advances beyond latest original writer-status-done event, the SAME original function serializes on source action row and appends one new 5-stage attempt cycle with stable execution timestamp-scoped idempotency keys; never repeat the old cycle's execution event. Do not infer provider delivery or revenue. Original full-week admin readback validates all event-time writer receipts independently of mutable action executed_at, but flags current mutable executed_at with no matching original immutable attempt as a separate RED source gap. No separate worker/scheduler/table/provider action. Existing signed immutable production admin proof must preserve a separate currentExecutionWithoutEventSample=1 as explicitly RED while confirming historical receipts, denying nonadmin/anonymous access and preserving external-provider-proof=false; accept only a consistent fail-closed source state, never turn this into a fake completed innovation.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-original-sales-reexecution-attempt-cycle-20261115.test.mjs",
-      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
     ],
     "shadow": [
       "tests/brain-original-sales-reexecution-attempt-cycle-20261115.test.mjs",
-      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
     ],
     "canary": [
       "tests/brain-original-sales-reexecution-attempt-cycle-20261115.test.mjs",
-      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
     ]
   },
   "evidence": {
@@ -42,7 +45,9 @@
     "original_consumer_ack": false,
     "external_provider_delivery": false,
     "realized_financial_benefit": false,
-    "generated_portal_system_map_hash": "0f50f26b5b628a76b7759e871e9b17da66d67c322c0253b00be5d5487d9dda8e"
+    "generated_portal_system_map_hash": "0f50f26b5b628a76b7759e871e9b17da66d67c322c0253b00be5d5487d9dda8e",
+    "signed_admin_current_retry_gap_supported": true,
+    "signed_admin_current_retry_gap_production_verified": false
   },
   "change_scope": [
     "supabase/migrations/20261115235500_sales_action_reexecution_immutable_attempt_lineage_v1.sql",
@@ -55,7 +60,9 @@
     "docs/development-ledger-events/2026-11-15-original-sales-reexecution-attempt-cycle.md",
     ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
     "platform/system-map/canonical-system-map.mjs",
-    "portal-v2/index.html"
+    "portal-v2/index.html",
+    "platform/api/portal-authenticated-production-proof-core.mjs",
+    "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
   ],
   "production_status": "PROTECTED_CANDIDATE_NOT_YET_APPLIED",
   "no_new_scheduler": true,
