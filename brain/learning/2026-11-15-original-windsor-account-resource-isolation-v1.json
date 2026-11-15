@@ -59,5 +59,13 @@
     "effect_proof": "PROTECTED_RELEASE_AND_REAL_ORIGINAL_177_RUN_PENDING"
   },
   "release_state": "PROTECTED_CANDIDATE_PENDING",
-  "verified_business_outcome": false
+  "verified_business_outcome": false,
+  "evidence": {
+    "original_source_proof": "Original Supabase #177 provider_social_metric_ingest_receipt 2026-11-15 00:18,06:18,12:18 UTC has WINDSOR_PROVIDER_HTTP_403 and WINDSOR_STALE",
+    "parallel_read_failure_risk": "Original #177 source Promise.all rejects both post and account source results if either provider read rejects; isolated by same-original source adapter",
+    "independent_account_connector": "Windsor delegated linkedin_organic account 18234216 returned 12 original company post URNs and account rows read-only on 2026-11-15, no authorization transfer or provider write",
+    "published_provider_id_proof": "12/12 delegated provider post URNs matched existing social_posts; this is not production Vault credential proof or a measurement-window completion",
+    "live_provider_source_fulfilled": false,
+    "original_downstream_learning_proven": false
+  }
 }
