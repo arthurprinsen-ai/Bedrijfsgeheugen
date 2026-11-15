@@ -24,8 +24,10 @@ const inputs=()=>({
   hourly_loaded_cost_eur:evidence(60),rework_cases_per_month:evidence(20),
   rework_cost_eur_per_case:evidence(30),unit_contribution_margin_eur:evidence(0),
   one_time_implementation_cost_eur:evidence(1000),monthly_operating_cost_eur:evidence(100),
-  cash_capture_fraction:evidence(0.5)
+  cash_capture_fraction:evidence(0.5),rework_cash_capture_fraction:evidence(1)
  },
+ accounting_policy:{rework_disjoint_from_process_labor:true,source_refs:ref},
+ throughput_proof:{demand_source_refs:ref,constraint_source_refs:ref},
  models:[{name:'Time-Driven Activity-Based Costing',version:'v1',source_refs:ref},
   {name:'Lean process rework',version:'v1',source_refs:ref}],
  scenarios:scenarios()
@@ -90,6 +92,9 @@ test('tenant, baseline, revision, cost, uptake and source refs are mandatory',()
  {...inputs(),horizon_months:null},
  {...inputs(),drivers:{...inputs().drivers,hourly_loaded_cost_eur:{value:60,source_refs:[]}}},
  {...inputs(),drivers:{...inputs().drivers,cash_capture_fraction:evidence(1.5)}},
+ {...inputs(),drivers:{...inputs().drivers,rework_cash_capture_fraction:evidence(1.5)}},
+ {...inputs(),accounting_policy:null},
+ {...inputs(),throughput_proof:null,scenarios:scenarios().map((x,i)=>i===2?{...x,extra_units_per_month:evidence(1)}:x),metric_id:'NET_ECONOMIC_VALUE_EUR'},
  {...inputs(),scenarios:scenarios().slice(0,3)},
  {...inputs(),scenarios:scenarios().map((x,i)=>i===1?{...x,source_refs:[]}:x)},
  {...inputs(),models:[]}
@@ -111,4 +116,14 @@ test('no noncash capacity is claimed as actual savings and unsafe model HTML is 
  assert.equal(html.includes('<SCRIPT>'),false);
  assert.match(html,/&lt;SCRIPT&gt;/);
  assert.equal(typeof FINANCIAL_DRIVER_MODEL_VERSION,'string');
+});
+
+
+test('without separately sourced cashable rework, estimated economic savings are not invented',()=>{
+ const f=inputs();f.drivers.rework_cash_capture_fraction=evidence(0);
+ const output=deriveSourceBoundFinancialForecast(action({financial_model_inputs:f}));
+ assert.equal(output.scenarios[2].expected_avoided_rework_eur,0);
+ assert.equal(output.scenarios[2].net_value_eur,3800);
+ const noRef=inputs();noRef.drivers.rework_cash_capture_fraction={value:1,source_refs:[]};
+ assert.equal(deriveSourceBoundFinancialForecast(action({financial_model_inputs:noRef})).status,'EVIDENCE_DUE');
 });
