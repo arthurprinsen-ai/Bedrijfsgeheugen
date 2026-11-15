@@ -1,5 +1,15 @@
 # Skill: Powerhouse SEO Conversion-to-Orders
 
+## 15 november 2026 — originele #175 → #140 → Heartbeat bronrevisie-zelfherstel (zelfde executor)
+
+Oorspronkelijke bronwaarneming: na de natuurlijke #175-capture van 12:46 UTC verschenen nieuwe #177-providerwaarnemingen om 14:50 UTC. De oorspronkelijke #140-consumer zag 28 bronregels maar weigerde de oude sourceRevision; hij rapporteerde `consumer_accepted=false`. De oorspronkelijke #175-capture op 15:02:16 UTC gaf uitsluitend dezelfde canonical sourceRevision `e108560fd449a29c059c80079c843ea6a1c831d80c9342f87ffb7688186c89b7` opnieuw uit; de oorspronkelijke #140-consumer gaf daarna `consumer_accepted=true`, en dezelfde originele Heartbeat verifieerde die exacte SHA om 15:02:47 UTC. Dit is een echte bronoverdracht, **niet** bewijs van een site-interventie (`site_receipt_count=0`), experiment, lead, order of gerealiseerde euro.
+
+De bestaande `powerhouse-content-loop` wordt al uitsluitend door originele #140 met de oorspronkelijke token, dag-idempotentie en lease aangeroepen. Bij uitsluitend een **actuele Amsterdamse dag** en een exacte `original-daily-growth-source-one-loop-v1`-ontvangst met `consumer_accepted=false` én expliciete `SOURCE_REVISION_MISMATCH_OR_PRODUCER_MISSING_RETRY_ORIGINAL_175` gebruikt dezelfde orchestrator eenmaal de oorspronkelijke `powerhouse_capture_growth_source_daily_v1`, vervolgens `powerhouse_daily_source_consume_v1` en bij echte consumer-ACK de oorspronkelijke `powerhouse_commercial_intelligence_heartbeat_v1`. De recovery-helper is alleen een zuivere beslissing/bevestiging, géén nieuw werkproces of autoriteit. De originele #175-functie gebruikt een advisory lock, daarom `SKIPPED_OVERLAP` afbreken, niet busy-retryen. Andere dag, broncontract, tenant, sourceRevision, ontvanger, eigenaar of providerbewijs = `EVIDENCE_DUE`.
+
+De enige positieve bron-ACK vereist 64-tekens SHA256 met **exact identieke** dag, tenant `bedrijfsgeheugen`, bronrijaantal en revisie in 175 producer, 140 consumer en Heartbeat. Een geaccepteerde originele bron mag alleen `ORIGINAL_BRAIN_INPUT_ACCEPTED_WAIT_CRO_OUTCOME` betekenen. Ook bij exact herstel blijven ontbrekende GA4/GSC/technische bronwaarnemingen, independent Netlify/site action receipt, prospectieve controlegroep, causaliteit, daadwerkelijke besparingen, provider-URN en geleerde volgende uitvoering apart OPEN. De andere originele blog/LinkedIn/Instagram-uitvoerders blijven actief; een mislukte bronrecovery is een geïsoleerd `degraded` readback en mag nooit tot blind resend of fallback leiden.
+
+Bewijs- en regressiebron: `tests/brain-original-growth-source-revision-recovery-20261115.test.mjs`, `supabase/functions/_shared/original-growth-source-revision-recovery.mjs`, canonieke GitHub P0 #4198. Bestaande #140 schedule, Supabase RPC-grants, single-tenant autorisatie en beveiligde main/CodeQL/Netlify/Edge-producer-readbacks blijven verplicht. Een code-merge zonder echte eerstvolgende natuurlijke #140 ACK is nog geen structureel bewezen herstel.
+
 Fingerprint: `powerhouse-seo-conversion-orders-v1`
 
 ## Doel
