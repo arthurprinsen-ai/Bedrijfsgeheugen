@@ -49,3 +49,26 @@ export function personalFirstPersonCopyViolations(text,evidence={},runDate){
    out.push('PERSONAL_CONCRETE_OWN_MOMENT_REQUIRED');
  return [...new Set(out)];
 }
+
+/**
+ * Final, channel-specific security boundary before a personal LinkedIn provider write.
+ * A historical approval, a post-create readback, or an accepted news source never
+ * substitutes for a PASS on the identical final text and a verified user fact.
+ * The existing publisher owns the only transport; this does not create a sender.
+ */
+export function personalLastMilePublicationViolations({
+  text='', evidence={}, runDate='', review=null,
+  expectedTextHash='', actualTextHash='', sourceVerified=false
+}={}) {
+  const failures=personalFirstPersonCopyViolations(text,evidence,runDate);
+  if(sourceVerified!==true)failures.push('PERSONAL_SOURCE_REVISION_NOT_VERIFIED');
+  if(review?.http!==200 || review?.can_publish!==true ||
+     review?.identity_gate_decision!=='PASS' ||
+     review?.final_text_hash!==actualTextHash)
+    failures.push('PERSONAL_EXACT_REVIEW_PASS_REQUIRED');
+  if(!/^[a-f0-9]{64}$/.test(clean(actualTextHash)) ||
+     clean(expectedTextHash)!==clean(actualTextHash) ||
+     clean(evidence?.final_text_hash)!==clean(actualTextHash))
+    failures.push('PERSONAL_FINAL_TEXT_HASH_NOT_BOUND');
+  return [...new Set(failures)];
+}
