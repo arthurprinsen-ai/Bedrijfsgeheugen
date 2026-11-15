@@ -261,7 +261,7 @@ export function planOriginalDecisionObligationHandoffs({snapshot,report,observed
   assert(report?.contract==='ORIGINAL_INNOVATION_AGENT_OWNER_READBACK_V1'
     &&Number.isFinite(Date.parse(observedAt)),'INVALID_OBLIGATION_SOURCE_REPORT');
   const candidates=snapshot?.candidates,obligations=snapshot?.obligations,intakes=snapshot?.intakes;
-  assert([candidates,obligations,intakes].every(Array.is)
+  assert([candidates,obligations,intakes].every(Array.isArray)
     &&report.counts?.candidates===candidates.length
     &&report.counts?.obligations===obligations.length
     &&report.counts?.intakes===intakes.length,'OBLIGATION_SOURCE_COUNT_DRIFT');
