@@ -39,7 +39,9 @@ test('person identity inside script, style or a malformed script closing tag is 
 });
 test('original authorized worker is the only writer; its receiver records INGEST_ACK but NOT consumer PROCESSED',()=>{
  const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
- assert.match(src,/ingestPublicWorkEmail\(db,action,organic,observedAt\)/);
+ assert.match(src,/ingestPublicWorkEmail\(db,action,directOrganic,observedAt\)/);
+ assert.match(src,/directOrganic=organic\.filter\(\(x:any\)=>Boolean\(directResearchSourceUrl\(x\?\.url\)\)\)/);
+ assert.match(src,/tracked_serp_redirects_rejected:trackedRedirectsRejected/);
  assert.match(src,/public_work_email_candidate:{...lineage,email:evidence.email/);
  assert.match(src,/PUBLIC_EMAIL_CANONICAL_WRITE/);
  assert.match(src,/PUBLIC_EMAIL_ORIGINAL_EVENT_ACK/);
