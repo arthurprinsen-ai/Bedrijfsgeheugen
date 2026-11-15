@@ -22,19 +22,22 @@
   "owner": "original #116 research worker, #138 identity consumer, original-agent:commercial, agent-reliability",
   "corrective_action": "Keep original Edge and original records; record small stable fetch-failure class counts in original action evidence; exponential bounded next retry at 4/8/16/32/48h; retain canonical owner, source revision, actual successful page proof and legal send gate. Never replay expired emails.",
   "prevention_rule": "Source reader failure cannot be terminal success; must preserve false checked flag, real recorded failure classification, exact action, next scheduled bounded retry and independent consumer. Only successful official HTML with named published business mailto produces a non-sendable candidate.",
-  "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+  "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs; tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs",
   "human_documentation": "docs/changes/2026-11-15-public-source-retry-failure-taxonomy.md",
   "human_ledger": "docs/development-ledger-events/2026-11-15-public-source-retry-failure-taxonomy.md",
   "release_status": "CANDIDATE_REQUIRES_REQUIRED_CODEQL_PRODUCTION_EDGE_SOURCE_PARITY",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
     ],
     "shadow": [
-      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
     ],
     "canary": [
-      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
     ]
   },
   "compiler": {
@@ -50,6 +53,12 @@
       "reason": "security_sensitive=true requires canonical historical_replay+shadow+canary tests in admission",
       "fix": "explicit local reproducible original read-only regression in all three canonical evaluation modes",
       "prevention": "Require compiler-evaluation mode parity for all security-sensitive original source-reader changes"
+    },
+    {
+      "code": "SOURCE_READER_DYNAMIC_TEST_MOCK_SYNTAX",
+      "reason": "Existing same-domain redirect regression extracts bounded reader from source with new Function and assumes old one-arg TypeScript signature. The new optional diagnostics argument and typed record arrow caused SyntaxError before any redirect test executed.",
+      "fix": "Update original SAME regression source transformer to strip the exact optional diagnostics TypeScript annotations, and add real safety assertions for 403 and cross-domain redirect classification.",
+      "prevention": "When extending a source function called through a historical JS extraction harness, update extraction adapter and rerun all original threat-model tests; do not weaken forbidden-host guards."
     }
   ]
 }
