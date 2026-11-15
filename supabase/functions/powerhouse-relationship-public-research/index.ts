@@ -378,7 +378,10 @@ async function recoverWrappedOriginalResearchSources(db:any,observedAt:string){
         next_research_at:next,external_outreach_executed:false,evidence_only:true
       }};
     const {data:saved,error:sErr}=await db.from('powerhouse_sales_actions')
-      .update({status:'waiting',due_at:next,source_url:null,evidence,updated_at:observedAt})
+      // Preserve the non-null raw source_url as an audit trail only.
+      // Usable evidence.public_research_execution.source_url is null and
+      // the recipient source candidate is explicitly quarantined below.
+      .update({status:'waiting',due_at:next,evidence,updated_at:observedAt})
       .eq('action_id',a.action_id).eq('status','done')
       .eq('updated_at',a.updated_at).select('action_id').maybeSingle();
     if(sErr)throw new Error('ORIGINAL_WRAPPED_SOURCE_SAFE_RETRY:'+sErr.message);
