@@ -54,5 +54,20 @@
     "next_owner": "Original agent-reliability + original affected agent consumer, audited by agent-data-quality",
     "effect_proof": "PROTECTED_CI_EXACT_PRODUCTION_READBACK_AND_REAL_OWNER_CONSUMER_ACK_DUE"
   },
-  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/completion-supervisor-evidence.test.mjs",
+      "tests/completion-supervisor.test.mjs",
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "shadow": [
+      "tests/completion-supervisor.test.mjs",
+      "tests/brain-completion-readiness.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outcome-obligation-runtime.test.mjs",
+      "tests/brain-outcome-obligation-workflow.test.mjs"
+    ]
+  }
 }
