@@ -1,3 +1,4 @@
+import {deriveSourceBoundFinancialForecast} from './financial-driver-forecast.js';
 // Customer value briefing from the ORIGINAL authenticated Executive Projection.
 // Read-only: never create a customer action, settle an outcome, or claim paid revenue.
 const escapeHtml = v => String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -15,7 +16,7 @@ const formatValue = (v,unit) => unit==='EUR'
 
 const financeCases=['no_action','downside','base','upside'];
 function financialForecast(action){
- const f=action?.financial_forecast,empty=Object.freeze({status:'EVIDENCE_DUE',scenarios:[],models:[],assumptions:[],frictions:[]});
+ const f=action?.financial_forecast??deriveSourceBoundFinancialForecast(action),empty=Object.freeze({status:'EVIDENCE_DUE',scenarios:[],models:[],assumptions:[],frictions:[]});
  if(!verifiedEvidence(f)||clean(f.unit).toUpperCase()!=='EUR'||!clean(f.model_version)
   ||!clean(f.metric_id)||!clean(f.baseline_id)||!clean(f.period_id)
   ||(clean(action.baseline_id||action.baseline_ref)&&clean(f.baseline_id)!==clean(action.baseline_id||action.baseline_ref)))return empty;
