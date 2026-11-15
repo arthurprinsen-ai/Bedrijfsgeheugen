@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|immutable-evidence-concurrent-replay-false-created|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "IMMUTABLE_EVIDENCE_RACE_FALSE_NEW_AND_FALSE_PROOF_UPGRADE",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original evidenceStore.putIfAbsent did a non-atomic GET before POST resolution=ignore-duplicates,return=minimal and unconditionally returned created:true after GET; concurrent original evidence insertion between GET and POST can be skipped while still reported created. Identical immutable ref could silently resolve to an existing proof with different independence/acceptance/production identity.",
+  "evidence": {
+    "source": "tools/outcome-obligation-supabase-store.mjs",
+    "original_tables": [
+      "public.brain_outcome_obligation_evidence",
+      "public.brain_outcome_obligation_dispatch"
+    ],
+    "native_observed_utc": "2026-11-15T09:18:41Z",
+    "latest_three_hour_supervisor_decision_evidence": 250,
+    "supervisor_decisions_are_independent_accepted": false,
+    "agentwork_pending_at_check": 3557,
+    "recoverywork_recovering_at_check": 1055,
+    "confirmed_duplicate_side_effect": false,
+    "confirmed_false_new_runtime_occurrence": false,
+    "risk_proven_by": "Source code inspection and targeted race regression",
+    "regression": "tests/brain-outcome-obligation-supabase-store.test.mjs"
+  },
+  "prevention": {
+    "same_original_store": true,
+    "atomic_conflict_ignore": true,
+    "provider_return_representation_required": true,
+    "strict_inserted_key_ref_type": true,
+    "immutable_evidence_fields": [
+      "ref",
+      "type",
+      "producer",
+      "taskIdentity",
+      "candidateIdentity",
+      "productionIdentity",
+      "independent",
+      "accepted",
+      "exactProduction"
+    ],
+    "reject_ambiguous_response": true,
+    "reject_preexisting_proof_upgrade": true,
+    "created_only_on_actual_insert": true,
+    "never_claim_terminal_from_created": true,
+    "parallel_executor": false,
+    "database_migration": false
+  },
+  "semantic_learning": {
+    "failure": "EVIDENCE_RACE_MISCLASSIFIED_AS_NEW_OR_VERIFIED",
+    "cause": "TOCTOU pre-read and unconditional created:true following PostgREST conflict-ignore",
+    "prevention_rule": "Use atomic provider insert representation and exact original immutable proof identity check; existing composite key returns created:false; conflicting or missing provider response fail closed.",
+    "regression_guard": "tests/brain-outcome-obligation-supabase-store.test.mjs",
+    "next_owner": "Existing Reliability and Data Quality agents under original ONE BRAIN #171",
+    "effect_proof": "PROTECTED_CANARY_REGRESSION_TEST_PENDING_AND_PRODUCTION_READBACK_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs",
+      "tests/brain-outcome-obligation-runtime.test.mjs",
+      "tests/brain-outcome-obligation-durable-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}
