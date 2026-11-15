@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {stageOriginalWindsorCompanySources,originalCompanySourceProviderHealth} from '../supabase/functions/_shared/original-windsor-company-stage.mjs';
+import {stageOriginalWindsorCompanySources,originalCompanySourceProviderHealth,readOriginalWindsorCompanySourcePair} from '../supabase/functions/_shared/original-windsor-company-stage.mjs';
 
 const id='urn:li:share:7526904394580238336';
 const org='urn:li:organization:18234216';
@@ -97,4 +97,64 @@ test('original metrics production health uses actual provider #177 receipt, not 
  assert.match(code,/originalCompanySourceProviderHealth\(\{[\s\S]*sourceRefresh:companySourceRefresh/);
  assert.doesNotMatch(code,/companyHandoffOk=companyRegistry\?\.eligible===0/);
  assert.match(code,/company_source_refresh:companySourceRefresh/);
+});
+
+test('original #177 independently retains exact post source if OPTIONAL Windsor account analytics HTTP 403',async()=>{
+ let postCalls=0,accountCalls=0;
+ const r=await readOriginalWindsorCompanySourcePair({
+   fetchPosts:async()=>{postCalls++;return [actualProvider];},
+   fetchAccount:async()=>{accountCalls++;throw new Error('WINDSOR_PROVIDER_HTTP_403');}
+ });
+ assert.equal(postCalls,1);
+ assert.equal(accountCalls,1);
+ assert.equal(r.accountFailure,'WINDSOR_PROVIDER_HTTP_403');
+ assert.deepEqual(r.accountRows,[]);
+ const staged=prepare({postRows:r.postRows,accountRows:r.accountRows});
+ assert.equal(staged.source_rows.length,1);
+ assert.equal(staged.source_rows[0].metrics.share_impression_count,3);
+ assert.equal(staged.account_row,null);
+ // The SAME original provider Health gate stays RED even if source rows
+ // were protected from loss, and ONLY the original Brain observes the 403.
+ assert.equal(originalCompanySourceProviderHealth({
+  sourceRefresh:{state:'ORIGINAL_COMPANY_SOURCE_REFRESH_UNAVAILABLE',
+    failure_class:r.accountFailure,posts_staged:1,account_source_staged:false},
+  companyState:{state:'WINDSOR_FRESH'},
+  companyMetricLink:{state:'VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED',linked:1},
+  companyRegistry:{eligible:1}
+ }),false);
+});
+
+test('original source post read stays mandatory and cannot fallback to account-only or fabricated success',async()=>{
+ await assert.rejects(
+  readOriginalWindsorCompanySourcePair({
+   fetchPosts:async()=>{throw new Error('WINDSOR_PROVIDER_HTTP_403');},
+   fetchAccount:async()=>[actualAccount]
+  }),/WINDSOR_PROVIDER_HTTP_403/
+ );
+ const normal=await readOriginalWindsorCompanySourcePair({
+  fetchPosts:async()=>[actualProvider],
+  fetchAccount:async()=>[actualAccount]
+ });
+ assert.equal(normal.accountFailure,null);
+ assert.equal(prepare({postRows:normal.postRows,accountRows:normal.accountRows}).account_row?.metrics.impressions,1);
+ await assert.rejects(
+  readOriginalWindsorCompanySourcePair({fetchPosts:async()=>null,fetchAccount:async()=>[]}),
+  /WINDSOR_POST_SOURCE_ARRAY_REQUIRED/
+ );
+});
+
+test('optional provider account error must never leak API key, URL, or raw response body into Brain failure',async()=>{
+ const r=await readOriginalWindsorCompanySourcePair({
+  fetchPosts:async()=>[actualProvider],
+  fetchAccount:async()=>{throw new Error('forbidden?api_key=SECRET');}
+ });
+ assert.equal(r.accountFailure,'WINDSOR_ACCOUNT_SOURCE_UNAVAILABLE');
+ assert.doesNotMatch(JSON.stringify(r),/api_key|SECRET|forbidden/);
+ const src=await readFile('supabase/functions/bg-social-metrics-sync/index.ts','utf8');
+ assert.match(src,/readOriginalWindsorCompanySourcePair\(\{/);
+ assert.match(src,/failure_component:'linkedin_company_account_analytics'/);
+ assert.match(src,/missingAccount\?'ORIGINAL_COMPANY_SOURCE_REFRESH_UNAVAILABLE'/);
+ assert.match(src,/originalCompanySourceBrainFailureInput\(\{/);
+ assert.match(src,/originalCompanySourceProviderHealth\(\{/);
+ assert.doesNotMatch(src,/supabase\.cron\.schedule|cron\.schedule\(/);
 });
