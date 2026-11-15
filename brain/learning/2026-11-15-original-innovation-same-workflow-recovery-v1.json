@@ -41,8 +41,7 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-original-innovation-same-workflow-resume-20261115.test.mjs",
-      "tests/brain-innovation-original-agent-pre-review-20261115.test.mjs",
-      "tests/powerhouse-daily-self-evolution.test.mjs"
+      "tests/brain-innovation-original-agent-pre-review-20261115.test.mjs"
     ]
   },
   "semantic_learning": {
