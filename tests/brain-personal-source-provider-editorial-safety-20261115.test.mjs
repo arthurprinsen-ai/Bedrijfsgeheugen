@@ -36,6 +36,9 @@ test('existing one original radar uses same search budget, explicit typed editor
  assert.ok(radar.includes('include_raw_content:true'));
  assert.ok(radar.includes('advancedPersonalContextByUrl'));
  assert.ok(radar.includes('reconcileDatedPersonalSourceContext({url:y.url'));
+ assert.ok(radar.includes("contentProvider:context!==datedSnippet?'tavily_advanced_exact_url'"));
+ assert.ok(radar.includes('source_context_provider:x.contentProvider||sr.provider'));
+ assert.ok(radar.includes('source_date_provider:x.dateProvider||sr.provider'));
  assert.ok(radar.includes("reject('PERSONAL_EDITORIAL_SAFETY_REJECTED'"));
  assert.ok(radar.includes('publishedAt:isoFromProvider(y.timestamp||y.date)'));
  assert.ok(radar.includes('PERSONAL_OBSERVATIONAL_SOURCE_TEXT_INCOMPLETE'));
