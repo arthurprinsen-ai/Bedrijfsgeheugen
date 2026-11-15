@@ -25,7 +25,8 @@ const preserve=(row,channel,personalSource,obligation=null)=>canonicalPreserve(r
 
 const identity={identity_contract:'arthur-personal-linkedin-identity-v4',identity_gate_version:'channel-identity-hard-gate-v3',content_id:'content-1',source_lineage:['lineage-1'],arthur_anchor_verified:true,corporate_voice:false,company_page_interchangeable:false,forced_business_moral:false};
 const builderSource=(over={})=>({status:'accepted',target_channel:'linkedin_personal',evidence:{...identity,ai_native_builder_story_verified:true,ai_native_builder_policy:'personal-linkedin-ai-native-builder-v1',build_event_verified:true,source_backed:true,business_topic:true,...over}});
-const observationalSource=(over={})=>({status:'accepted',target_channel:'linkedin_personal',evidence:{...identity,observational_personal_theme_verified:true,public_theme_source_verified:true,first_person_claims_present:false,personal_life_topic:true,business_topic:false,personal_life_only_verified:true,...over}});
+const fullObservationSource="De beschrijving gaat over een onlinebestelling waarbij de klant niet snel kon zien waar het pakket bleef. De klantenservice bleef moeilijk bereikbaar, waardoor de wachttijd voor een antwoord toenam. Het nieuwsbericht bespreekt hoe bezoekers in een webwinkel steeds vaker eerst bij een automatische chatfunctie uitkomen en daardoor geen medewerker te spreken krijgen.";
+const observationalSource=(over={})=>({status:'accepted',target_channel:'linkedin_personal',evidence:{...identity,observational_personal_theme_verified:true,public_theme_source_verified:true,first_person_claims_present:false,personal_life_topic:true,business_topic:false,personal_life_only_verified:true,source_text:fullObservationSource,public_theme_source_url:'https://example.org/complete-dated-observation',public_theme_source_published_at:'2026-11-12T00:00:00Z',public_theme_source_observed_at:'2026-11-14T20:02:42Z',...over}});
 
 test('a repeated unverified first-person claim must not starve due company and blog',()=>{
   const personal={channel:'linkedin_personal',state:'blocked',decision:'publish',priority:100,delivery_evidence:{error:'PERSONAL_SOURCE_UNVERIFIED'}};
@@ -42,6 +43,10 @@ test('genuinely new personal evidence resumes same blocked claim, not duplicate 
   assert.equal(preserve(blocked,'linkedin_personal',builderSource()),false);
   assert.equal(preserve(blocked,'linkedin_personal',observationalSource()),false);
   assert.equal(preserve(blocked,'linkedin_personal',observationalSource({public_theme_source_verified:false})),true);
+  assert.equal(preserve(blocked,'linkedin_personal',observationalSource({source_text:'Een onlinebestelling en klantenservice...'})),true,'truncated factual excerpt must not trigger costly generation');
+  assert.equal(preserve(blocked,'linkedin_personal',observationalSource({source_text:fullObservationSource+'...'})),true,'ellipsized excerpt is not a complete source');
+  assert.equal(preserve(blocked,'linkedin_personal',observationalSource({public_theme_source_url:'http://untrusted.test/source'})),true,'unverified source scheme rejected');
+  assert.equal(preserve(blocked,'linkedin_personal',observationalSource({public_theme_source_observed_at:''})),true,'source timing must be independently checkable');
 });
 
 test('provider side effects are never reopened and hard auth failures remain separately recoverable',()=>{
