@@ -1,5 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations} from '../_shared/personal-first-person-story-gate.mjs';
+import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations,personalLastMilePublicationViolations} from '../_shared/personal-first-person-story-gate.mjs';
 import {canRecoverExpiredCompanyClaim,canRecoverExpiredPersonalClaim} from '../_shared/social-publish-claim-recovery.mjs';
 import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
@@ -479,11 +479,21 @@ async function preflightLinkedInViaComposio(db:any){
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   return {apiKey,accountId,userId,personId};
 }
-async function publishLinkedInPersonalViaComposio(db:any,art:any){
+async function publishLinkedInPersonalViaComposio(db:any,art:any,approval:any){
+  // Last-metre transport veto: re-hash the actual bytes about to be sent.
+  // This cannot be bypassed by a stale PASS, prior capability or accepted news.
+  const commentary=clean(art.body);
+  const exactFinalHash=await digest(commentary);
+  const lastMileViolations=personalLastMilePublicationViolations({
+    text:commentary,evidence:approval?.evidence,runDate:approval?.runDate,
+    review:approval?.review,expectedTextHash:approval?.expectedTextHash,
+    actualTextHash:exactFinalHash,sourceVerified:approval?.sourceVerified
+  });
+  if(lastMileViolations.length)
+    throw new Error('PERSONAL_LAST_MILE_PUBLICATION_VETO:'+lastMileViolations.join(','));
   const {apiKey,accountId,userId,personId}=await composioLinkedInContext(db);
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   const author=`urn:li:person:${personId}`;
-  const commentary=clean(art.body);
   const created=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary,visibility:'PUBLIC',lifecycleState:'PUBLISHED'});
   const createdData=created?.data||created;
   const postUrn=clean(createdData?.x_restli_id)||deepPickLinkedInPostUrn(createdData);
@@ -1560,7 +1570,7 @@ Deno.serve(async (req) => {
       if (!personalTruthMode && !observationalMode && !builderMode) {
         const blocked = { ...(row.delivery_evidence || {}), error: 'PERSONAL_SOURCE_UNVERIFIED', provider_truth_verified: false, personal_truth_verified: false, observational_personal_theme_verified: false };
         await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_evidence: blocked, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
-        await recordObligation(db, runDate, row.channel, 'BLOCKED', null, blocked, 'Provide a verified personal truth source or a verified non-first-person daily-life observation source.', 'PERSONAL_SOURCE_UNVERIFIED');
+        await recordObligation(db, runDate, row.channel, 'BLOCKED', null, blocked, 'Recover a verified user-authored first-person personal story. Public news or observational fallback is forbidden.', 'PERSONAL_SOURCE_UNVERIFIED');
         results.push({ channel: row.channel, status: 'blocked', reason: 'PERSONAL_SOURCE_UNVERIFIED' }); continue;
       }
       reviewPayload = { ...evidence, personal_truth_verified: personalTruthMode, observational_personal_theme_verified: observationalMode, ai_native_builder_story_verified: builderMode, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash), final_copy_approved:art.generation_evidence?.final_copy_approved===true,editorial_policy_version:clean(art.generation_evidence?.editorial_policy_version) };
@@ -1831,7 +1841,11 @@ Deno.serve(async (req) => {
           continue;
         }
         await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
-        const direct=await publishLinkedInPersonalViaComposio(db,art);
+        const direct=await publishLinkedInPersonalViaComposio(db,art,{
+          runDate,
+          evidence:row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{},
+          review:gate,expectedTextHash:textHash,sourceVerified:lastPersonalSource.ok===true
+        });
         const exactReadbackVerified=direct.provider_truth_verified===true;
         const providerCreateProven=direct.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(clean(direct.provider_post_id));
         if(!providerCreateProven)throw new Error('LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN');

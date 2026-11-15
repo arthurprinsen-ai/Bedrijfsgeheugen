@@ -5,7 +5,8 @@ import {
  PERSONAL_FIRST_PERSON_STORY_CONTRACT,
  isPersonalPublicationDay,
  personalFirstPersonSourceViolations,
- personalFirstPersonCopyViolations
+ personalFirstPersonCopyViolations,
+ personalLastMilePublicationViolations
 } from '../supabase/functions/_shared/personal-first-person-story-gate.mjs';
 
 const e={
@@ -62,4 +63,37 @@ test('the original generator, independent reviewer and final publisher enforce t
  assert.ok(pub.indexOf('const lastPersonalSource=await verifyCurrentPersonalStorySource')<pub.indexOf('const direct=await publishLinkedInPersonalViaComposio'));
  assert.ok(reviewer.includes('personalFirstPersonCopyViolations(text,body,body.calendar_date)'));
  assert.doesNotMatch(pub,/MAKE_FALLBACK_SCHEDULER|new ParallelPublisher/);
+});
+
+test('incident #5913: exact last-metre PASS and original user story are required for personal send',()=>{
+ const hash='a'.repeat(64);
+ const approved={http:200,can_publish:true,identity_gate_decision:'PASS',final_text_hash:hash};
+ const opts={text,evidence:{...e,final_text_hash:hash},runDate:date,review:approved,expectedTextHash:hash,actualTextHash:hash,sourceVerified:true};
+ assert.deepEqual(personalLastMilePublicationViolations(opts),[]);
+ assert.ok(personalLastMilePublicationViolations({...opts,review:{...approved,http:422,can_publish:false}}).includes('PERSONAL_EXACT_REVIEW_PASS_REQUIRED'));
+ assert.ok(personalLastMilePublicationViolations({...opts,review:{...approved,final_text_hash:'b'.repeat(64)}}).includes('PERSONAL_EXACT_REVIEW_PASS_REQUIRED'));
+ assert.ok(personalLastMilePublicationViolations({...opts,expectedTextHash:'b'.repeat(64)}).includes('PERSONAL_FINAL_TEXT_HASH_NOT_BOUND'));
+ assert.ok(personalLastMilePublicationViolations({...opts,evidence:{...e,final_text_hash:'b'.repeat(64)}}).includes('PERSONAL_FINAL_TEXT_HASH_NOT_BOUND'));
+ assert.ok(personalLastMilePublicationViolations({...opts,sourceVerified:false}).includes('PERSONAL_SOURCE_REVISION_NOT_VERIFIED'));
+ assert.ok(personalLastMilePublicationViolations({...opts,runDate:'2026-11-15'}).includes('PERSONAL_SUNDAY_OR_INVALID_DATE'));
+});
+
+test('incident #5913: the actual news, marketing and AI fallback failures cannot get a personal dispatch',()=>{
+ const hash='a'.repeat(64),approved={http:200,can_publish:true,identity_gate_decision:'PASS',final_text_hash:hash};
+ const opts={evidence:{...e,final_text_hash:hash},runDate:date,review:approved,expectedTextHash:hash,actualTextHash:hash,sourceVerified:true};
+ const news='Rond 15.30 uur werd een pakketbezorger in Amsterdam getaserd na foutparkeren. Omstanders filmden de gebeurtenis.';
+ assert.ok(personalLastMilePublicationViolations({...opts,text:news,evidence:{...opts.evidence,source_lineage:['powerhouse_mira_problem_signals_v1:d542a27e'],observational_personal_theme_verified:true,personal_truth_verified:false}}).includes('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN'));
+ assert.ok(personalLastMilePublicationViolations({...opts,text:'Wachtwoorden: AI-agents loggen vandaag in zonder een wachtwoord te zien.',evidence:{...opts.evidence,observational_personal_theme_verified:true,public_theme_source_verified:true}}).includes('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN'));
+ assert.ok(personalLastMilePublicationViolations({...opts,text:'Ik zag 211 interne acties en 20 uitkomsten bij Bedrijfsgeheugen.',evidence:{...opts.evidence,ai_native_builder_story_verified:true,business_topic:true}}).includes('PERSONAL_COMPANY_COPY_NOT_ALLOWED'));
+});
+
+test('incident #5913: transport invocation itself revalidates the exact review before create',()=>{
+ const pub=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+ const functionStart=pub.indexOf('async function publishLinkedInPersonalViaComposio');
+ const createCall=pub.indexOf("'LINKEDIN_CREATE_LINKED_IN_POST'",functionStart);
+ const hardVeto=pub.indexOf('PERSONAL_LAST_MILE_PUBLICATION_VETO',functionStart);
+ assert.ok(functionStart>=0&&hardVeto>functionStart&&createCall>hardVeto);
+ assert.ok(pub.includes('personalLastMilePublicationViolations({'));
+ assert.ok(pub.includes('actualTextHash:exactFinalHash,sourceVerified:approval?.sourceVerified'));
+ assert.ok(pub.includes('review:gate,expectedTextHash:textHash,sourceVerified:lastPersonalSource.ok===true'));
 });
