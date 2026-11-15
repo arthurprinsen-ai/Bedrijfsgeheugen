@@ -5,6 +5,13 @@ description: Use whenever CodeQL or another post-merge security workflow is queu
 
 # Powerhouse Post-Merge CodeQL
 
+## 2026-11-14 — terminale BRAIN-leespoort moet exact dezelfde volledige vlucht vinden
+
+Na de oorspronkelijke volledige, op PR-aanmaakdatum begrensde `unified-brain-delivery.yml`-zoekactie mag de **laatste** originele `obligation-terminal-closure.yml`-acceptatie niet terugvallen op `per_page=100` zonder paginatie. De testbare bug is het verschil tussen preflight-dispatchbewijs en terminal-acceptatie: bij veel latere GitHub-runs kan de exacte originele BRAIN-run buiten de eerste 100 resultaten vallen, terwijl het workflowbewijs wel bestaat. De originele terminale guard hergebruikt daarom `originalBrainFlightSince` en `brain-verification-flight-index.mjs` met dezelfde PR-era `created`-filter, alle native pagina's, identieke exacte titel `BRAIN delivery PR #<pr> <head_sha>`, uniek echt `run_id`, volledig providerbewijs en vervolgens de al bestaande `success`- en protected-main-broncontrole. Onvolledig, verschoven, onbekend, >=1000 resultaten, API-fout, oudere/andere candidate of run zonder success blijven **niet groen**. De eerste dispatch mag nooit dubbel worden gedaan wegens een zoekresultaat dat slechts een deel van de geschiedenis beslaat.
+
+Bij geannuleerde oude terminalrun: leg originele run, job, foutstap, kandidaat en merge-SHA in dezelfde oorspronkelijke P0-incidentlineage vast. De eerdere succesvol gepubliceerde Netlify-code wordt niet teruggedraaid op basis van ontbrekende terminale boekhouding. Een herhaalde **bestaande** verificatie mag geen tweede publisher of Brain-workflow-executor worden. Bewijs van terminale afsluiting volgt pas na beschermde code-release, exacte originele BRAIN-verificatierun, onafhankelijke provider-/productie-readback en de oorspronkelijke leerregistratie. Regressie: `tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs`; huidige observatie `#5816`, geannuleerde terminal run `43642425605`, oorspronkelijk P0 `#4198`.
+
+
 ## 2026-11-02 — keep recovered 0-failure BRAIN software truth visible, without false business green
 
 - Original protected ONE BRAIN backend run `41430758451`, job `125229059857`, independently reported 5,392 total, 5,390 passed, 0 failed, 2 skipped. Original protected main `79d99ce9d03068dae3c909707d00dde1933f9d78` reached Netlify provider READY deploy `6ae8689d8166870bb317e761`; original `public.brain_failure_registry.evidence.software_recovery_20261102` already records this separate software milestone.
