@@ -23,9 +23,11 @@ test('original rejected-personal retry uses concise source-locked instruction an
  assert.match(block,/150 tot 175 normale Nederlandse woorden/);
  assert.match(block,/observational_personal_theme_verified===true/);
  assert.match(block,/ai_native_builder_story_verified===true/);
- assert.match(block,/strikt observerende, niet-zakelijke LinkedIn-post/);
- assert.match(block,/zonder te doen alsof Arthur het zelf heeft meegemaakt/);
- assert.match(block,/geen zakelijke brug/i);
+ assert.match(block,/OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT/);
+ assert.match(source,/const OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT=.*strikt observerende, niet-zakelijke LinkedIn-post/);
+ assert.match(source,/const OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT=.*zonder te doen alsof Arthur het zelf heeft meegemaakt/);
+ assert.match(block,/PERSONAL_LIFE_CORRECTION_PROMPT/);
+ assert.match(source,/const PERSONAL_LIFE_CORRECTION_PROMPT=.*Geen zakelijke brug/);
  assert.match(block,/verzin nooit klanten/);
  assert.match(block,/exact één oprechte open vraag/);
 });
