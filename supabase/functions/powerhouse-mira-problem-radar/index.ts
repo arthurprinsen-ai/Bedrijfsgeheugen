@@ -271,7 +271,7 @@ Deno.serve(async(req:Request)=>{
  const personalPublishingSourceReady=!personalStoryDue||genuinePersonalStoryReady;
 
  // Preserve the same original ONE BRAIN and exactly one idempotent daily owner.
- if(!personalRotation.error&&!personalSourceReady){
+ if(!personalRotation.error&&!personalSourceReady&&personalStoryDue&&!genuinePersonalStoryReady){
    const occurrenceId='personal-radar:source-supply:'+runDate+':complete-source-not-ready';
    const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(occurrenceId));
    const payloadSha=[...new Uint8Array(digest)].map(v=>v.toString(16).padStart(2,'0')).join('');
