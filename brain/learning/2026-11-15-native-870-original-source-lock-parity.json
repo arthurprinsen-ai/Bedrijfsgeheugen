@@ -7,8 +7,8 @@
   "root_cause": "Original PR #5878 correctly applied native migration 20261115162500 to the canonical Supabase provider, increasing provider to 870, while Git source migration-history.lock.json still attested 869 and would reject the next independent protected migration.",
   "prevention_rule": "Original provider migration version/name readback must append to one immutable original migration source lock immediately after GitOps apply, without inventing or predeclaring any unapplied version. Existing protected lock suite compares provider-backed identities and no new migration is proposed.",
   "compiler": {
-    "failure_class": "RECEIPT_GAP",
-    "scope": "CONTENT",
+    "failure_class": "METADATA_DRIFT",
+    "scope": "DATABASE",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
@@ -39,5 +39,7 @@
     "Native provider still independently 870/870",
     "No missing original LinkedIn provider effect falsely green"
   ],
-  "false_green_forbidden": true
+  "false_green_forbidden": true,
+  "failure_class": "METADATA_DRIFT",
+  "scope": "DATABASE"
 }
