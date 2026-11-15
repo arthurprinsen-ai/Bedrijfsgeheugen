@@ -41,6 +41,9 @@
       "provider_count_drift",
       "duplicate_event_uuid",
       "over_500_cap"
+    ],
+    "canary": [
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
     ]
   },
   "change_scope": [
