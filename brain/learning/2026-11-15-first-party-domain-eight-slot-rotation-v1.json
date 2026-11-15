@@ -29,5 +29,12 @@
     "historical_replay": [
       "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "RESEARCH_COHORT_STARVATION",
+    "scope": "SOURCE_SELECTION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
   }
 }
