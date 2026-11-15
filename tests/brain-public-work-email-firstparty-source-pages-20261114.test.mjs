@@ -63,7 +63,8 @@ test('original #116 differentiates unreadable HTML from genuinely observed no na
  assert.match(src,/status:checked>0\?'NO_EXPLICIT_NAMED_OFFICIAL_MAILTO':'SOURCE_HTML_UNAVAILABLE'/);
  assert.match(src,/if\(result\.status==='SOURCE_HTML_UNAVAILABLE'\)htmlUnavailable\+\+/);
  assert.match(src,/if\(result\.status==='NO_EXPLICIT_NAMED_OFFICIAL_MAILTO'\)noNamedMailto\+\+/);
- assert.match(src,/freeDomain\.html_unavailable>0\|\|pendingPublicSource>0\?'waarschuwing':'ok'/);
+ assert.match(src,/freeDomain\.html_unavailable>0\|\|pendingPublicSource>0\|\|trackedRedirectsRejected>0\|\|wrappedRecovery\.recovered>0\?'waarschuwing':'ok'/);
+ assert.match(src,/source_redirect_rejected:true/);
  assert.match(src,/ORIGINAL_PUBLIC_SOURCE_BACKLOG_READ/);
  assert.match(src,/original_public_email_source_retry_backlog:pendingPublicSource/);
  assert.match(src,/\.eq\('evidence->>public_email_source_checked','false'\)/);
