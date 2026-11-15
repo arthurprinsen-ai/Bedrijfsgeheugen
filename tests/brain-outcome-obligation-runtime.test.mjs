@@ -105,7 +105,11 @@ test('activity evidence cannot complete but independent evidence can complete an
   assert.equal(activityOnly.status, 'AWAITING_OUTCOME');
   evidence.set(initial.idempotencyKey, [{ type:'outcome', ref:'performance:measurement:1', independent:true, accepted:true }]);
   const [completed] = await runtime.evaluateSweep({ obligationIds:['supabase-performance-evidence-daily'], trigger:{ type:'scheduled-sweep', fingerprint:'daily' } });
-  assert.equal(completed.status, 'COMPLETED');
+  assert.equal(completed.status, 'AWAITING_OUTCOME',
+    'one independently accepted measurement is not the same as terminal material proof');
+  assert.equal(completed.terminalEvidenceDue,true);
+  assert.equal(completed.supervision.success,false);
+  assert.ok(completed.supervision.required_evidence.includes('OBLIGATIONS_COMPLETE'));
 });
 
 test('production remeasurement requirement prevents premature completion', async () => {
@@ -118,7 +122,10 @@ test('production remeasurement requirement prevents premature completion', async
   assert.equal(waiting.status, 'AWAITING_OUTCOME');
   evidence.set(initial.idempotencyKey, [{ type:'production', ref:'production:exact-sha', independent:true, accepted:true, exactProduction:true }]);
   const [completed] = await runtime.evaluateSweep({ obligationIds:['supabase-performance-evidence-daily'], trigger:{ type:'scheduled-sweep', fingerprint:'daily' }, productionProofRequired:true });
-  assert.equal(completed.status, 'COMPLETED');
+  assert.equal(completed.status, 'AWAITING_OUTCOME',
+    'an exactProduction flag on a generic receipt cannot close missing material obligations');
+  assert.equal(completed.terminalEvidenceDue,true);
+  assert.equal(completed.supervision.success,false);
 });
 
 test('runtime emits governed metadata only and never direct production mutation commands', async () => {
@@ -152,6 +159,8 @@ test('trusted exact evidence completes the same durable obligation as LIVE_VERIF
   assert.equal(workStore.records.size, 1);
   assert.equal(completed.supervision.success, true);
   assert.equal(completed.supervision.normalized_state, 'LIVE_VERIFIED');
+  assert.equal(completed.status, 'COMPLETED');
+  assert.equal(completed.terminalEvidenceDue, false);
 });
 
 test('runtime cannot self-attest independent obligations-complete from empty material context', async () => {
@@ -180,6 +189,8 @@ test('runtime cannot self-attest independent obligations-complete from empty mat
   assert.equal(result.supervision.success,false);
   assert.notEqual(result.supervision.normalized_state,'LIVE_VERIFIED');
   assert.ok(result.supervision.required_evidence.includes('OBLIGATIONS_COMPLETE'));
+  assert.equal(result.status,'AWAITING_OUTCOME');
+  assert.equal(result.terminalEvidenceDue,true);
   const repeated = await runtime.evaluateSweep({
     obligationIds:['supabase-performance-evidence-daily'],trigger,coalesceKey,completionContext:context,
   });
