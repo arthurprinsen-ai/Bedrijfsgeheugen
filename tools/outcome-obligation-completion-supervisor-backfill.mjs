@@ -70,7 +70,13 @@ function candidateFromGroup(identity, sources) {
     ?? sources.find(source => source.sourceKind === 'pull_request')?.record
     ?? sources[0]?.record
     ?? {};
-  const decision = completionFor({ ...representative, identity });
+  // An identity can contain multiple original source observations. A proven
+  // external boundary in ANY of them vetoes the entire grouped candidate:
+  // selecting only the first obligation would silently drop later consent,
+  // security or provider restrictions with the same source identity.
+  const sourceDecisions = sources.map(source => completionFor({ ...source.record, identity }));
+  const decision = sourceDecisions.find(item => item.next_action === 'WAIT_EXTERNAL')
+    ?? completionFor({ ...representative, identity });
   const obligationIds = [...new Set(sources
     .filter(source => source.sourceKind === 'obligation')
     .map(source => text(source.record?.id) || text(source.sourceId))
