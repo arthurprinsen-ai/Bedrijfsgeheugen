@@ -1,7 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { createHash } from 'node:crypto';
-import { reconcileCompletionBackfill } from '../tools/outcome-obligation-completion-supervisor-backfill.mjs';
+import { reconcileCompletionBackfill, checkpointCompletionBackfill } from '../tools/outcome-obligation-completion-supervisor-backfill.mjs';
 
 const productionIdentity = 'deploy:sha-live';
 const liveEvidence = [
@@ -192,4 +193,54 @@ test('successful workflow alone never upgrades an identity to LIVE_VERIFIED', ()
   });
   assert.equal(report.skippedLiveVerified.length, 0);
   assert.ok(report.candidates.some(item => item.identity === 'sha-only-green-workflow'));
+});
+
+
+test('original backfill persists truthful partial progress before unsafe retry or interrupted run', () => {
+  const report = reconcileCompletionBackfill({
+    mode:'active',
+    registeredObligationIds:['original-obligation'],
+    obligations:[{id:'original-obligation',identity:'source-history-1',status:'PENDING'}]
+  });
+  assert.equal(report.dispatches.length,1);
+  const inFlight = checkpointCompletionBackfill(report,[],'IN_PROGRESS','2026-11-15T10:45:00Z');
+  assert.equal(inFlight.resumeCheckpoint.state,'IN_PROGRESS');
+  assert.equal(inFlight.resumeCheckpoint.sourceCandidates,1);
+  assert.equal(inFlight.resumeCheckpoint.expectedDispatches,1);
+  assert.equal(inFlight.resumeCheckpoint.completedDispatches,0);
+  assert.equal(inFlight.resumeCheckpoint.remainingDispatches,1);
+  assert.equal(inFlight.resumeCheckpoint.consumerCompletionProven,false);
+  assert.equal(inFlight.resumeCheckpoint.businessOutcomeProven,false);
+  assert.equal(inFlight.productionMutation,false);
+  assert.throws(()=>checkpointCompletionBackfill(report,[],'COMPLETE'),/incomplete/);
+  const completedResume={dispatch:report.dispatches[0],output:'.artifacts/original-resume-001.json',artifact:{kind:'ORIGINAL_IDEMPOTENT_RESUME'}};
+  const afterOne=checkpointCompletionBackfill(report,[completedResume],'IN_PROGRESS');
+  assert.equal(afterOne.resumeCheckpoint.remainingDispatches,0);
+  assert.equal(afterOne.resumeCheckpoint.state,'IN_PROGRESS');
+  const done=checkpointCompletionBackfill(report,[completedResume],'COMPLETE');
+  assert.equal(done.resumeCheckpoint.state,'COMPLETE');
+  assert.equal(done.resumeCheckpoint.consumerCompletionProven,false);
+  assert.equal(done.resumeResults.length,1);
+  assert.equal(done.dispatches[0].coalesceKey,report.dispatches[0].coalesceKey);
+});
+
+test('progress checkpoint fails closed on duplicated wakeups, switched owner or partial completion',()=>{
+  const report=reconcileCompletionBackfill({
+    mode:'active',
+    registeredObligationIds:['original-obligation'],
+    obligations:[{id:'original-obligation',identity:'source-history-1',status:'PENDING'}]
+  });
+  const original=report.dispatches[0];
+  assert.throws(()=>checkpointCompletionBackfill({...report,dispatches:[original,original]},[]),/one wakeup/);
+  assert.throws(()=>checkpointCompletionBackfill(report,[{dispatch:{...original,coalesceKey:'wrong'},output:'x.json'}]),/exact ordered/);
+  assert.throws(()=>checkpointCompletionBackfill(report,[{dispatch:original,output:''}]),/exact ordered/);
+  assert.throws(()=>checkpointCompletionBackfill(report,[{dispatch:original,output:'a.json'},{dispatch:original,output:'b.json'}]),/more results/);
+  assert.throws(()=>checkpointCompletionBackfill(report,[],'LIVE_VERIFIED'),/unsupported/);
+});
+
+test('a failed original backfill still attempts to upload its last durable checkpoint',()=>{
+  const workflow = fs.readFileSync('.github/workflows/completion-supervisor-backfill-shadow.yml','utf8');
+  assert.match(workflow,/name: Upload immutable reconciliation and resume evidence\n\s+if: always\(\)/);
+  assert.match(workflow,/if-no-files-found: error/);
+  assert.match(workflow,/node tools\/outcome-obligation-completion-supervisor-backfill\.mjs --collect --mode active/);
 });
