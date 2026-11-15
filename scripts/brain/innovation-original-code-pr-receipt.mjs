@@ -1,4 +1,4 @@
-import {readFileSync,writeFileSync} from 'node:fs';
+import {readFileSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {WORK_ORDER,CONTRACT} from './innovation-original-code-delivery.mjs';
@@ -87,8 +87,6 @@ async function main(){
     original_operation_id:original.id,github_pr:pr.url,
     protected_candidate_recorded:true,original_still_planned:true,
     consumer_ack_verified:false,production_not_proven:true};
-  writeFileSync('artifacts/quality/original-innovation-code-pr-receipt.json',
-    JSON.stringify(safe,null,2)+'\n');
   process.stdout.write(JSON.stringify(safe)+'\n');
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1])
