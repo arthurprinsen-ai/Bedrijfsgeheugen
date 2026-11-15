@@ -63,6 +63,7 @@ function parseArgs(argv) {
   const out = {};
   for (let i = 0; i < argv.length; i += 1) {
     const key = argv[i];
+    if (key === '--capability-handoff' || key === '--learning-writeback') throw new Error('ORIGINAL_CONSUMER_HANDOFF_AND_LEARNING_SOURCE_RECEIPTS_REQUIRED');
     if (key.startsWith('--') && argv[i + 1]) { out[key.slice(2)] = argv[i + 1]; i += 1; }
     else throw new TypeError(`unknown or incomplete CLI argument: ${key}`);
   }
