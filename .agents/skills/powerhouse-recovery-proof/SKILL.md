@@ -5,6 +5,12 @@ description: Use for original Powerhouse/ONE BRAIN/Heartbeat automatic error, in
 
 # Powerhouse original autonomous recovery proof — 4 November 2026
 
+## 15 november 2026 — volledige boundary-veto binnen één gegroepeerde bronidentiteit
+
+Bestaande Completion Supervisor Backfill Resume: meer dan één historisch obligation-bronrecord kan dezelfde identity dragen. De selectie mag niet de eerste bron als enige gezag nemen: een later record met onafhankelijk bewezen WAIT_EXTERNAL voor dezelfde oorspronkelijke taak blijft bindend, ook bij gewijzigde bronvolgorde. candidateFromGroup beoordeelt nu alle oorspronkelijke bronobservaties; één geldig WAIT_EXTERNAL-oordeel wint van veilige oude status en voorkomt ieder nieuw coalesced wakeup. Alle bronrecords blijven zichtbaar in het bestaande report; één taakidentiteit, één originele uitvoerder, geen extra scheduler/provider-write of herautorisatie-omzeiling.
+
+Regressie: tests/brain-completion-supervisor-backfill.test.mjs dekt beide bronvolgordes met identieke identity. Dit bewijst alleen de veto in de bestaande backfill, niet dat open bronverplichtingen of provideruitkomsten al zijn verwerkt. De oorspronkelijke Reliability-agent en ONE BRAIN #4198 blijven eigenaar van herstel en onafhankelijke PROCESSED/provider-readback.
+
 ## 15 november 2026 — ook oude zelfgecertificeerde bewijsrecords blokkeren in de lezer
 
 P0 `SELF_CERTIFIED_COMPLETION_RECEIPT_TRUSTED_AFTER_WRITER_REMOVED`: de eerdere protected release heeft de zelfcertificerende schrijver in `tools/outcome-obligation-runtime.mjs` uitgeschakeld, maar de oorspronkelijke `platform/agents/completion-supervisor.mjs` bleef de producer `OUTCOME_OBLIGATION_RUNTIME` als onafhankelijke `OBLIGATIONS_COMPLETE`-autoriteit vertrouwen. Daardoor konden de bestaande 328 historische records `accepted=true, independent=true, exact_production=true` in vervolgbeoordelingen nog onterecht de afsluitslot vullen. De oorspronkelijke 328 records blijven append-only aanwezig en moeten historisch te herleiden blijven.
