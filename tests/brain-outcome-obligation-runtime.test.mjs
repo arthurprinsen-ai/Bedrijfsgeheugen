@@ -38,9 +38,9 @@ function evidenceStore() {
 function trustedCompletionEvidence(obligationId, candidateIdentity, productionIdentity) {
   return [
     { ref:'candidate-tests', type:'CANDIDATE_TESTS', producer:'BRAIN_DELIVERY', accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity },
-    ...['PROTECTED_DELIVERY:BG169','PRODUCTION_IDENTITY:BG169','FUNCTIONAL_READBACK:PRODUCTION_READBACK','OBLIGATIONS_COMPLETE:OUTCOME_OBLIGATION_RUNTIME','CAPABILITY_HANDOFF:BG167','LEARNING_WRITEBACK:BG168_BG166'].map(value => {
+    ...['PROTECTED_DELIVERY:BG169','PRODUCTION_IDENTITY:BG169','FUNCTIONAL_READBACK:PRODUCTION_READBACK','OBLIGATIONS_COMPLETE:PRODUCTION_READBACK','CAPABILITY_HANDOFF:BG167','LEARNING_WRITEBACK:BG168_BG166'].map(value => {
       const [type, producer] = value.split(':');
-      return { ref:type.toLowerCase(), type, producer, accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity, productionIdentity };
+      return { ref:type.toLowerCase(), type, producer, accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity, productionIdentity,...(type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:'+obligationId,materialSourceRevision:'source-rev:'+candidateIdentity}}:{}) };
     }),
   ];
 }
