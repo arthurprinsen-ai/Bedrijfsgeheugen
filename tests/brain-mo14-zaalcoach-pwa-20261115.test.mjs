@@ -26,7 +26,22 @@ test('standalone app declares scoped offline resources and actual icons',()=>{
    assert.ok(data.length>1000);
  }
  const sw=readFileSync(base+'sw.js','utf8');
- assert.match(sw,/mo14-zaalcoach-v3/);
+ assert.match(sw,/mo14-zaalcoach-v4/);
  assert.match(sw,/self\.registration\.scope/);
  assert.doesNotMatch(sw,/make\.com|buffer\.com/);
+});
+
+test('native menu items are navigational and backed by real panels',()=>{
+ const html=readFileSync(base+'index.html','utf8');
+ for(const id of ['home','plan','team','stats','more','export','settings']) assert.match(html,new RegExp('data-view-panel="'+id+'"'));
+ for(const id of ['home','plan','team','stats','more']) assert.match(html,new RegExp('data-view="'+id+'"'));
+ for(const id of ['openAppMenu','closeAppMenu','appDrawer','homeRounds','homeNextText']) assert.match(html,new RegExp('id="'+id+'"'));
+ for(const label of ['Downloads','Instellingen','Zet op beginscherm']) assert.ok(html.includes(label));
+ assert.match(html,/function renderHomeHub/);
+ assert.match(html,/function showView\\(next, scrollTop=true, addHistory=true\\)/);
+ assert.match(html,/history\\.pushState/);
+ assert.match(html,/addEventListener\\('popstate'/);
+ assert.match(html,/data-go="settings"/);
+ const m=JSON.parse(readFileSync(base+'manifest.webmanifest','utf8'));
+ assert.ok(m.shortcuts?.length>=3,'real home-screen shortcuts are required');
 });
