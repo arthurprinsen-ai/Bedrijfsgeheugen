@@ -59,6 +59,9 @@ test('original old false green runtime event is quarantined before retry with sa
  assert.ok(eventAt>=0 && sourceAt>eventAt,'old event must be rejected BEFORE same-action retry');
  assert.match(edge,/researchNoSourceFeedback\(a,owner,observedAt,next\)/);
  assert.match(edge,/status:'SOURCE_REDIRECT_REJECTED_NOT_VERIFIED'/);
+ assert.match(edge,/\.update\(\{status:'waiting',due_at:next,source_url:'',evidence,updated_at:observedAt\}\)/);
+ assert.match(edge,/rejected_source_url:source/);
+ assert.doesNotMatch(edge,/\.update\(\{status:'waiting',due_at:next,source_url:null,evidence,updated_at:observedAt\}\)/);
  assert.match(edge,/external_outreach_executed:false,new_scheduler:false,new_provider_queries:0/);
  assert.doesNotMatch(edge,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|GMAIL_CREATE_DRAFT/);
 });
