@@ -116,3 +116,4 @@ el('coachDownloadBoard').addEventListener('click',()=>{paintBoard();board.toBlob
 const baseRender=render;render=function(){baseRender();renderFirst();renderFair();syncNotes();paintBoard();};
 cache={};render();
 window.PWCoachPlus={minuteTotals,render:()=>render(),strong:STRONG};
+})();
