@@ -100,10 +100,56 @@ export function createSupabaseOutcomeObligationStores({
 
   async function listDispatch(recordType) {
     const type = requireText(recordType, 'recordType');
-    const endpoint = `${dispatchEndpoint}?record_type=eq.${encodeURIComponent(type)}&select=*&order=created_at.asc`;
-    const rows = await request(endpoint, { method:'GET', headers:headers() });
-    if (!Array.isArray(rows)) throw new Error('Supabase outcome obligation store failed: dispatch response must be an array');
-    return Object.freeze(rows.map(normalizeDispatchRow));
+    // Append-only source: stable secondary key ensures records sharing a created_at
+    // cannot shift between pages. Never mistake the first PostgREST 1000 rows for
+    // the complete historical backlog.
+    const endpoint = `${dispatchEndpoint}?record_type=eq.${encodeURIComponent(type)}&select=*&order=created_at.asc,idempotency_key.asc`;
+    const pageSize = 500;
+    const collected = [];
+    const seen = new Set();
+    let offset = 0;
+    let expectedTotal = null;
+    for (let page = 0; page < 2048; page += 1) {
+      const response = await fetchImpl(endpoint, {
+        method:'GET',
+        headers:headers({ Prefer:'count=exact', 'Range-Unit':'items', Range:`${offset}-${offset + pageSize - 1}` }),
+      });
+      if (!response?.ok) {
+        let detail = '';
+        try { detail = await response.text(); } catch {}
+        throw new Error(`Supabase outcome obligation store failed: ${response?.status ?? 'unknown'}${detail ? ` ${detail}` : ''}`);
+      }
+      let rows;
+      try { rows = JSON.parse(await response.text()); }
+      catch { throw new Error('Supabase outcome obligation store failed: dispatch page response invalid JSON'); }
+      if (!Array.isArray(rows)) throw new Error('Supabase outcome obligation store failed: dispatch page response must be an array');
+      const contentRange = response.headers?.get?.('content-range') ?? '';
+      const match = /^(\d+)-(\d+)\/(\d+)$/.exec(contentRange);
+      const empty = contentRange === '*/0';
+      if (!match && !empty) throw new Error('Supabase outcome obligation store failed: dispatch exact Content-Range missing');
+      const total = empty ? 0 : Number(match[3]);
+      const first = empty ? 0 : Number(match[1]);
+      const last = empty ? -1 : Number(match[2]);
+      if (!Number.isSafeInteger(total) || total < 0
+          || (expectedTotal !== null && total !== expectedTotal)
+          || first !== offset || last !== offset + rows.length - 1
+          || (total === 0 && rows.length !== 0)
+          || (total > 0 && (rows.length === 0 || rows.length > pageSize || offset + rows.length > total))) {
+        throw new Error('Supabase outcome obligation store failed: dispatch page incomplete or source changed');
+      }
+      if (expectedTotal === null) expectedTotal = total;
+      for (const row of rows) {
+        if (row?.record_type !== type || typeof row.idempotency_key !== 'string'
+            || !row.idempotency_key || seen.has(row.idempotency_key)) {
+          throw new Error('Supabase outcome obligation store failed: dispatch page identity mismatch or duplicate');
+        }
+        seen.add(row.idempotency_key);
+        collected.push(normalizeDispatchRow(row));
+      }
+      offset += rows.length;
+      if (offset === expectedTotal) return Object.freeze(collected);
+    }
+    throw new Error('Supabase outcome obligation store failed: dispatch page limit reached without complete evidence');
   }
 
   function createDispatchStore(recordType) {
