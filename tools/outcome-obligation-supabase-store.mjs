@@ -140,6 +140,12 @@ export function createSupabaseOutcomeObligationStores({
         if (!Array.isArray(inserted) || inserted.length > 1) {
           throw new Error('Supabase outcome obligation store failed: dispatch insert outcome unverified');
         }
+        if (inserted.length === 1 && (
+          inserted[0]?.idempotency_key !== idempotencyKey
+          || inserted[0]?.record_type !== recordType
+        )) {
+          throw new Error('Supabase outcome obligation store failed: inserted dispatch identity unverified');
+        }
         const persisted = assertCanonicalDispatchIdentity(
           row && { type:recordType, idempotencyKey, obligationId:row.obligation_id,
             ownerAgent:row.owner_agent, traceId:row.trace_id, state:row.state },
