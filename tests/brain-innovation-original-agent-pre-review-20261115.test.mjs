@@ -62,7 +62,7 @@ test('pre-review is source-idempotent and refuses silently drifting agent, revis
  const snapshot=fixture();const planned=planning(snapshot);
  snapshot.intakes[0].evidence.original_agent_pre_review=planned.work[0].review;
  assert.deepEqual(planning(snapshot).held.map(x=>x.reason),['REVIEW_ALREADY_REGISTERED']);
- snapshot.intakes[0].evidence.original_agent_pre_review.fingerprint='different';
+ snapshot.intakes[0].evidence.original_agent_pre_review={...planned.work[0].review,fingerprint:'different'};
  assert.throws(()=>planning(snapshot),/PRIOR_REVIEW_CONFLICT/);
  const mismatched=fixture();mismatched.intakes[0].capability_id='agent:unknown';
  assert.throws(()=>planning(mismatched),/SOURCE_BOUND_IDENTITY_MISMATCH|OWNER_UNMAPPED/);
