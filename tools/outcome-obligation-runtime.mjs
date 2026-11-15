@@ -23,7 +23,7 @@ export async function loadCanonicalObligations({ path = 'config/outcome-obligati
   }));
 }
 
-function defaultDue(obligation, trigger) {
+export function defaultDue(obligation, trigger) {
   if (trigger?.type === 'event-trigger') return obligation.dueAt?.includes('after_') || obligation.dueAt?.includes('and_after_') || obligation.dueAt?.includes('every_');
   return obligation.dueAt?.includes('daily') || obligation.dueAt?.includes('continuous') || obligation.dueAt?.includes('every_');
 }
