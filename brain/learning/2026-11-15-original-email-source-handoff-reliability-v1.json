@@ -30,16 +30,20 @@
       "powerhouse_commercial_handoff_telemetry_v1",
       "powerhouse_commercial_handoff_scorecard_v1",
       "cron.job_run_details"
-    ]
+    ],
+    "original_sender_gap": "PRE_SEND_INTENT_NOT_DURABLE_BEFORE_SEND_AT_BASE",
+    "provider_new_send_from_this_change": 0
   },
-  "corrective_action": "Allow first 160kB of a large public HTML page to be inspected within the original worker, preserve SOURCE_HTML_TRUNCATED_UNVERIFIED as retriable if no independently named work-mailto found, and scan four capped stable pages of the original waiting composer view; preserve provider/consent/outcome safeguards.",
-  "prevention_rule": "An oversized or partial website is never COMPLETE without actual identity-bound source proof; a composer may not starve eligible original waiting actions at a fixed top-50 offset; no expired action may be automatically reauthorized, no send/consumer/learning claim without independent proof.",
+  "corrective_action": "Allow first 160kB of a large public HTML page to be inspected within the original worker, preserve SOURCE_HTML_TRUNCATED_UNVERIFIED as retriable if no independently named work-mailto found, and scan four capped stable pages of the original waiting composer view; preserve provider/consent/outcome safeguards. Extend the same original Gmail Edge with pre-send CAS intent, fail-closed pinned provider, 14-day confirmed-outcome and unresolved-send recipient pressure checks, immutable provider outcome first-write and exact readback, and distinct historical readback versus new-send counters.",
+  "prevention_rule": "An oversized or partial website is never COMPLETE without actual identity-bound source proof; a composer may not starve eligible original waiting actions at a fixed top-50 offset; no expired action may be automatically reauthorized, no send/consumer/learning claim without independent proof. No provider send before original action CAS+durable uncertainty evidence; do not silently choose an unpinned Gmail identity; do not rewrite an already verified historical send or count delayed readback as new outreach.",
   "regression": "tests/brain-original-email-research-handoff-20261115.test.mjs",
   "human_documentation": "docs/changes/2026-11-15-original-email-source-handoff-reliability.md",
   "human_ledger": "docs/development-ledger-events/2026-11-15-original-email-source-handoff-reliability.md",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-original-email-research-handoff-20261115.test.mjs"
+      "tests/brain-original-email-research-handoff-20261115.test.mjs",
+      "tests/brain-original-email-atomic-send-and-outcome-20261115.test.mjs",
+      "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs"
     ],
     "live_result": "PENDING_EXACT_HEAD_PROTECTED_CI_AND_NATIVE_SUPABASE_POSTMERGE_SOURCE_AND_CONSUMER_READBACK"
   },
@@ -50,6 +54,12 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "release_status": "CANDIDATE_NOT_LIVE_PROVEN",
-  "rollback": "Revert only both scoped Edge logic changes via protected PR; preserve original source-action IDs, pending retries and provider/consent records. No direct cron or send mutation."
+  "release_status": "CANDIDATE_PROTECTED_CI_PENDING_NOT_PRODUCTION_PROVEN",
+  "rollback": "Revert only both scoped Edge logic changes via protected PR; preserve original source-action IDs, pending retries and provider/consent records. No direct cron or send mutation.",
+  "additional_failure_classes": [
+    "PROVIDER_SEND_ATTEMPT_WITHOUT_DURABLE_PRE_SEND_CLAIM",
+    "MUTABLE_HISTORICAL_PROVIDER_OUTCOME_ON_REPLAY",
+    "PINNED_GMAIL_ACCOUNT_MISMATCH_FALLBACK",
+    "CONTACT_PRESSURE_14D_NOT_INDEPENDENTLY_RECHECKED"
+  ]
 }
