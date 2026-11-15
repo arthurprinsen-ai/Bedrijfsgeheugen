@@ -317,8 +317,8 @@ function validPersonalSource(row:any) {
   const observedText = clean(e.source_text);
   const observationalSourceReady = !observationalMode || (
     observedText.length >= 240
-    && !/(?:\\.{3}|…)\\s*$/u.test(observedText)
-    && /^https:\/\/\\S+/i.test(clean(e.public_theme_source_url))
+    && !/(?:\.{3}|…)\s*$/u.test(observedText)
+    && /^https:\/\/\S+/i.test(clean(e.public_theme_source_url))
     && Number.isFinite(Date.parse(clean(e.public_theme_source_published_at)))
     && Number.isFinite(Date.parse(clean(e.public_theme_source_observed_at)))
   );
