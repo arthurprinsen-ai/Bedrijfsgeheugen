@@ -68,5 +68,21 @@
       "tests/brain-outcome-obligation-workflow.test.mjs",
       "tests/brain-completion-supervisor.test.mjs"
     ]
+  },
+  "evidence": {
+    "native_supabase_project": "adhjwmvyoixzjtmiroln",
+    "original_table": "public.brain_outcome_obligation_evidence",
+    "checked_at_utc": "2026-11-15T15:43:43Z",
+    "capability_handoff_historical": 817,
+    "learning_writeback_historical": 817,
+    "historical_original_consumer_ack_refs": 0,
+    "historical_source_revision_refs": 0,
+    "historical_learning_application_refs": 0,
+    "source_paths": [
+      ".github/workflows/outcome-obligation-sweep.yml",
+      "tools/completion-supervisor-evidence.mjs",
+      "platform/agents/completion-supervisor.mjs"
+    ],
+    "independent_provider_outcomes_verified": false
   }
 }
