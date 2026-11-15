@@ -275,9 +275,16 @@ jobs:
             your workspace-only code edit. Preserve review_required and rollback.
       - name: Enforce exact scoped implementation, new regression and learning evidence
         if: steps.candidate.outputs.selected == 'true'
+        id: validation
         run: node scripts/brain/innovation-original-code-delivery.mjs --validate
+      - name: Preserve no-diff original-owner inspection using native CAS; never record implementation success
+        if: steps.candidate.outputs.selected == 'true' && steps.validation.outputs.changed == 'false'
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/brain/innovation-original-code-delivery.mjs --record-no-diff
       - name: Publish only the validated code candidate on a new protected PR
-        if: steps.candidate.outputs.selected == 'true'
+        if: steps.candidate.outputs.selected == 'true' && steps.validation.outputs.changed == 'true'
         id: delivery
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
