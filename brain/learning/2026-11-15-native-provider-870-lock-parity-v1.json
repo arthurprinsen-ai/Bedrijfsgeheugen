@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|brain|native-provider-870-applied-lock-stale-blocks-next-immutable-reexecution|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_provider_project": "adhjwmvyoixzjtmiroln",
+  "original_proposed_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5879",
+  "owner": "original Supabase migration history + Powerhouse/ONE BRAIN protected delivery",
+  "compiler": {
+    "failure_class": "FALSE_NEGATIVE",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The native Supabase schema_migrations provider already has exactly 870 applied entries, including 20261115162500_original_personal_source_supplier_completeness_v4; the protected repository lock in main has only the first 869 identical entries. A subsequent proposed migration was correctly blocked by original triple-source source-lock parity, so a narrow independent provider-attested lock reconciliation must precede PR #5879; never weaken tests or prematurely mark proposed migration applied.",
+  "prevention_rule": "Read ALL native Supabase provider migrations for the fixed original project; verify every original lock entry is an exact order-preserving version/name prefix and that the only new applied tail is independently observed. Update only the canonical provider-applied lock under a separate protected PR (not the queued unapplied feature PR), keep the feature PR's proposed 20261115235500 migration absent from the applied lock, then rebase the latter and pass original migration admission, preview, CodeQL and provider readbacks.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_applied_rows": 870,
+    "original_lock_rows": 869,
+    "exact_869_provider_prefix": true,
+    "observed_native_added_version": "20261115162500",
+    "observed_native_added_name": "original_personal_source_supplier_completeness_v4",
+    "producer": "mcp Supabase list_migrations + independently read original repository lock",
+    "original_unapplied_feature_migration": "20261115235500_sales_action_reexecution_immutable_attempt_lineage_v1",
+    "original_feature_applied": false,
+    "original_feature_merged": false,
+    "provider_effect_verified": false,
+    "customer_value_verified": false
+  },
+  "change_scope": [
+    "supabase/migration-history.lock.json",
+    "brain/learning/2026-11-15-native-provider-870-lock-parity-v1.json",
+    "docs/changes/2026-11-15-native-provider-870-lock-parity.md",
+    "docs/development-ledger-events/2026-11-15-native-provider-870-lock-parity.md",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
+  ],
+  "status": "PROVIDER_SOURCE_ATTESTED_PROTECTED_CANDIDATE_NOT_YET_MERGED",
+  "no_new_scheduler": true,
+  "no_new_executor": true,
+  "no_fake_production_application": true
+}
