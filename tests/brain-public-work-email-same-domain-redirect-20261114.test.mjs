@@ -72,4 +72,6 @@ test('failed official public fetch exposes only bounded diagnostic category, nev
  const safeReader=publicPageReader(async()=>new Response(null,{status:301,headers:{location:'https://attacker.example/secret'}}));
  assert.equal(await safeReader('https://acmeresearch.com/team',bad),null);
  assert.deepEqual(bad,['REDIRECT_UNSAFE_OR_CROSS_HOST']);
+ const sourceReader=source.slice(source.indexOf('async function readBoundedPublicPage('),source.indexOf('async function writePublicBusinessSourceReceipt'));
+ assert.doesNotMatch(sourceReader,/catch\(error:any\)/);
 });

@@ -59,6 +59,12 @@
       "reason": "Existing same-domain redirect regression extracts bounded reader from source with new Function and assumes old one-arg TypeScript signature. The new optional diagnostics argument and typed record arrow caused SyntaxError before any redirect test executed.",
       "fix": "Update original SAME regression source transformer to strip the exact optional diagnostics TypeScript annotations, and add real safety assertions for 403 and cross-domain redirect classification.",
       "prevention": "When extending a source function called through a historical JS extraction harness, update extraction adapter and rerun all original threat-model tests; do not weaken forbidden-host guards."
+    },
+    {
+      "code": "SOURCE_READER_DYNAMIC_TEST_CATCH_TYPE_ANNOTATION",
+      "reason": "Initial extraction adapter fixed optional arguments but new catch(error:any) TypeScript annotation inside dynamically evaluated reader still threw SyntaxError. Existing CI correctly rejected all three original unsafe redirect tests.",
+      "fix": "Use runtime-safe catch(error) and Error instanceof discrimination, keeping Deno and JavaScript extraction behavior identical; verify actual redirect + HTTP-denial tests.",
+      "prevention": "All adapted source-reader tests must execute the exact function under existing JS runner, not only parse static patterns."
     }
   ]
 }

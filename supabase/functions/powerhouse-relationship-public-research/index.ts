@@ -80,8 +80,9 @@ async function readBoundedPublicPage(url:string,sourceDiagnostics:string[]=[]):P
       return new TextDecoder().decode(buffer);
     }
     return record('REDIRECT_LIMIT_REACHED');
-  }catch(error:any){
-    return record(error?.name==='TimeoutError'||error?.name==='AbortError'
+  }catch(error){
+    const name=error instanceof Error ? error.name : '';
+    return record(name==='TimeoutError'||name==='AbortError'
       ?'SOURCE_FETCH_TIMEOUT':'SOURCE_NETWORK_OR_PARSE_FAILURE');
   }
 }
