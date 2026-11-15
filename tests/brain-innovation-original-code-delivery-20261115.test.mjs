@@ -135,7 +135,7 @@ test('no-change review requires identical ORIGINAL operation, owner, source and 
   const replay=evaluateOriginalNochangeReview({workorder,operation:f.snapshot.intakes[0],headSha:'a'.repeat(40)});
   assert.equal(replay.already_recorded,true);
   assert.equal(selectOriginalCodeCandidate(f).selected,false,'same source no-change review must not spend again');
-  f.snapshot.intakes[0].evidence.original_code_nochange_review.source_sha256='f'.repeat(64);
+  f.snapshot.intakes[0].evidence.original_code_nochange_review={...plan.receipt,source_sha256:'f'.repeat(64)};
   assert.throws(()=>selectOriginalCodeCandidate(f),/ORIGINAL_NOCHANGE_REVIEW_CONFLICT/);
 });
 test('reject invalid no-change review without mutating a Brain source',()=>{
