@@ -116,3 +116,15 @@ When no genuinely unused verified Arthur personal event is available:
 - never accept `NO_ELIGIBLE_CONTENT` / `SKIPPED` as a successful terminal outcome for the daily personal-channel obligation while a compliant observational source exists.
 
 LinkedIn account resolution must prefer the canonical personal connection independently of company/org connections. A revoked or organization-oriented active token may not become the personal publication authority merely because it resolves the same member identity.
+
+## 15 november 2026 — bindende echte ik-verhalen, geen nieuwsfallback
+
+Fingerprint: `powerhouse|personal-linkedin|true-user-story-vs-company|20261115-v1`.
+
+Deze regel vervangt iedere oudere no-gap-rotatie, observerende nieuwsbronfallback, AI-founder-/business-exceptie of automatische herpublicatie van het vorige concrete voorbeeld. `linkedin_personal` publiceert **alleen** een eerstehands, echt door Arthur aangeleverde of persoonlijk bevestigde ervaring, met de originele user-fact-lineage en expliciet `personal_truth_verified`, `arthur_anchor_verified` en `first_person_claims_verified`. Geen fictieve eigen emoties, uitspraken, tijden, gezinsdetails, ontmoetingen of uitkomsten. Niet vrijgegeven privé-informatie blijft niet-publiceerbaar.
+
+De post is vanuit **IK** geschreven en heeft een concrete menselijke gebeurtenis, onverwachte wending/escalatie, lichte humor of zelfspot en een natuurlijke pointe. Geen zakelijke brug, klanten, ondernemerstaal, Bedrijfsgeheugen, AI, sales, links, hashtags of emoji. De stijlreferentie is een herkenbare alledaagse frustratie met korte zinnen, geen managementles. Afwisselende werkelijk bevestigde verhalen uit dagelijks leven, reizen, sport, huis, technologie; niet steeds hockey. Printer-, auto- en vleermuisverhaal zijn verbruikt, nooit opnieuw verpakken.
+
+De persoonlijke publicatiekalender is maandag t/m zaterdag; zondag is geen publicatiedag. Geen bron op de juiste dag betekent `PERSONAL_USER_EXPERIENCE_NOT_VERIFIED` met originele eigenaar, nieuwe bronverwervingsactie en ONE BRAIN bewijs, **niet** een fictieve post of bedrijfsfallback. De bestaande #140-executor blijft actief. Bronstatus wordt in de originele database opnieuw opgehaald bij de eindredactie en direct vóór de provider-call; `skipped`, ingetrokken, in quarantaine of gewijzigde brontekst kan niet worden gepubliceerd. Als de provider al een URN gaf, behoud `republish_forbidden=true` en verzend niet opnieuw.
+
+Nieuwe code: `supabase/functions/_shared/personal-first-person-story-gate.mjs`. De originele orchestrator, onafhankelijke `bg-pre-publish-review` en `powerhouse-social-publisher` voeren dezelfde guard uit. Testroute: `tests/brain-personal-first-person-voice-and-source-20261115.test.mjs`. Terminal: protected Required/CodeQL/Supabase Preview, main, Edge parity, echte providerreadback, ONE BRAIN overdracht, Heartbeat. Geen nieuw systeem.
