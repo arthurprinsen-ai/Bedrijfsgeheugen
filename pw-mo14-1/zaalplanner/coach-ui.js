@@ -91,7 +91,7 @@ function paintBoard(){
 function boardXY(e){const r=board.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))];}
 function remember(){past.push(JSON.stringify(boardState()));if(past.length>40)past.shift();future=[];}
 board.addEventListener('pointerdown',e=>{
- if(e.button!==undefined&&e.button!==0)return;e.preventDefault();const pt=boardXY(e);board.setPointerCapture?.(e.pointerId);
+ if(e.button!==undefined&&e.button!==0)return;e.preventDefault();const pt=boardXY(e);try{board.setPointerCapture?.(e.pointerId)}catch(err){/* Some iOS/synthetic pointer streams cannot be captured; drawing still proceeds. */}
  if(tool==='move'){const hit=pieces().find(p=>Math.hypot(p.x-pt[0],p.y-pt[1])<.06);if(!hit)return;remember();drag={id:e.pointerId,move:hit.id};}
  else{remember();drag={id:e.pointerId,draft:{tool,color,points:[pt],width:tool==='pen'?6:7}};}paintBoard();
 });
