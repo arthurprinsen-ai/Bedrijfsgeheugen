@@ -28,7 +28,7 @@ test('strict channel separation leaves original Mira winner protection in place'
  assert.match(radar,/contract:personalTopic\?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1'/);
  assert.match(radar,/source_channel:personalTopic\?'linkedin_personal':'instagram_company'/);
  assert.match(radar,/first_person_claims_present:false/);
- assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&personalSourceTextComplete/);
  assert.match(radar,/source_published_at:publication\.publishedAt/);
  assert.match(originalSql,/x\.metadata->>'contract'='mira-entrepreneur-portal-story-v1'/);
  assert.ok(originalSql.includes("coalesce(x.metadata->>'portal_problem_id','')"));
@@ -39,8 +39,8 @@ test('personal source collection cannot claim personal lived experience nor rela
  assert.match(radar,/observational_personal_theme_verified:Boolean\(personalTopic\)/);
  assert.match(radar,/first_person_claims_present:false/);
  assert.match(radar,/max_age_days:MAX_AGE_DAYS/);
- assert.match(radar,/ok:errors\.length===0&&supply\.ok/);
- assert.match(radar,/state:supply\.ok\?'SOURCE_READY':'SOURCE_RECOVERY_DUE'/);
+ assert.match(radar,/ok:errors\.length===0&&allSourceReady/);
+ assert.match(radar,/state:allSourceReady\?'SOURCE_READY':'SOURCE_RECOVERY_DUE'/);
  assert.match(radar,/runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS/);
 });
 test('existing source-to-recommendation materializer is called within original radar only',()=>{
@@ -69,7 +69,7 @@ test('personal-life radar queries are short and rotate without relaxing evidence
   assert.ok(personal.every(x=>x.query.trim().split(/\s+/).length<=3));
   assert.ok(personal.every(x=>!x.query.toLowerCase().includes(' ervaringen ')));
  }
- assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&personalSourceTextComplete/);
  assert.match(radar,/MAX_AGE_DAYS=45/);
 });
 
@@ -98,7 +98,7 @@ test('original Mira low-recall rotating query variants keep 6 business + 2 perso
  assert.equal(original.size,12);
  assert.equal(alternates.size,12);
  assert.throws(()=>selectMiraSourceQueries('2026-02-30'),/MIRA_RUN_DATE_INVALID/);
- assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&personalSourceTextComplete/);
  assert.match(originalSql,/x\.metadata->>'contract'='mira-entrepreneur-portal-story-v1'/);
  assert.match(originalSql,/prior\.source_url=x\.source_url or prior\.source_hash=x\.source_hash/);
  assert.doesNotMatch(radar,/cron\.schedule|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
