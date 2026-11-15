@@ -33,7 +33,7 @@ function liveVerifiedFixture(overrides = {}) {
       proof('PROTECTED_DELIVERY', 'BG169', { productionIdentity:PRODUCTION }),
       proof('PRODUCTION_IDENTITY', 'BG169', { productionIdentity:PRODUCTION }),
       proof('FUNCTIONAL_READBACK', 'PRODUCTION_READBACK', { productionIdentity:PRODUCTION }),
-      proof('OBLIGATIONS_COMPLETE', 'OUTCOME_OBLIGATION_RUNTIME', { productionIdentity:PRODUCTION }),
+      proof('OBLIGATIONS_COMPLETE', 'PRODUCTION_READBACK', { productionIdentity:PRODUCTION, exactProduction:true, metadata:{ materialSourceRef:'material-readback:O1', materialSourceRevision:'source-rev:candidate-abc123' } }),
       proof('CAPABILITY_HANDOFF', 'BG167', { productionIdentity:PRODUCTION }),
       proof('LEARNING_WRITEBACK', 'BG168_BG166', { productionIdentity:PRODUCTION }),
     ],
