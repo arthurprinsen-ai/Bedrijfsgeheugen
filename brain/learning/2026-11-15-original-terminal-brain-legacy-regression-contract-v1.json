@@ -1,0 +1,82 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|terminal|legacy-tests-enforce-obsolete-first-page-brain-flight-gate|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "TERMINAL_EXACT_BRAIN_LEGACY_TEST_CONTRACT_DRIFT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Original terminal fix #5821 replaced unsafe final BRAIN first-page-only query with complete bounded native GitHub history. Four older backend regression contracts still demanded the obsolete nonpaginated literal or mocked the removed provider query; exact-head full BRAIN found their 4 assertion failures and correctly failed the original terminal, despite protected Required/CodeQL success.",
+  "actual_evidence": {
+    "protected_original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5821",
+    "protected_original_merge_sha": "ded9ff6a1ace0c39f2520b978bce666342b9c487",
+    "failed_original_brain_run": 43695381458,
+    "failed_original_terminal_run": 43695356905,
+    "failed_backend_test_names": [
+      "terminal closure Brain gate matches executable workflow triggers",
+      "cancelled or skipped exact Brain run remains nonterminal without descendant substitution",
+      "terminal closure requires exact-candidate Brain evidence with executable dispatch triggers",
+      "obligation-terminal-closure.yml requires successful exact candidate BRAIN, never foundation/descendant substitution"
+    ],
+    "protected_required_original_success": 43695108633,
+    "protected_codeql_original_success": 43695108559
+  },
+  "change": {
+    "same_original_final_gate": ".github/workflows/obligation-terminal-closure.yml",
+    "changed_original_workflow": false,
+    "updated_existing_test_contracts": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "existing_post_merge_skill": ".agents/skills/powerhouse-post-merge-codeql/SKILL.md",
+    "new_scheduler": false,
+    "new_executor": false,
+    "new_queue": false,
+    "new_store": false
+  },
+  "prevention": {
+    "full_pr_created_bounded_pagination_required": true,
+    "existing_original_flight_index_required": true,
+    "second_page_fixture_required": true,
+    "truly_failed_or_missing_exact_run_nonterminal": true,
+    "protected_main_source_required": true,
+    "no_test_deleted_or_skipped": true,
+    "no_security_weakening": true,
+    "no_external_consumer_ack_invented": true
+  },
+  "remaining_evidence": "Exact-head Required and CodeQL of this test-only source candidate, genuine next full BRAIN success, protected native merge, original terminal readback and learning needed. Historic failed #5821 BRAIN run must remain a failed historical attempt. The 14 source-bound INNOVATION_INTAKE are still PLANNED and zero real original agent ACK, independent effect still pending.",
+  "release_state": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "evidence": {
+    "source": "native GitHub run 43695381458 backend job 132754808017, original test failure details and unchanged production postgres counts",
+    "regression": "tests/brain-terminal-runtime-authority-v1.test.mjs",
+    "truth": "Full BRAIN failure is a real fail-closed terminal condition, not production-runtime business proof."
+  }
+}

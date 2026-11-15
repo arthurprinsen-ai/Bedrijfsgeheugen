@@ -20,8 +20,19 @@ for(const name of workflows) test(name+' requires successful exact candidate BRA
   gh(){
     [ "$1" = api ] || exit 91
     case "$2" in
-      "repos/fixture/repo/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&per_page=100") printf '%s' "$FIXTURE_PAYLOAD" ;;
-      "repos/fixture/repo/compare/${'c'.repeat(40)}...main") printf '%s' "${'c'.repeat(40)}" ;;
+      "repos/fixture/repo/pulls/1")
+        printf '%s' '2026-11-15T08:00:00Z' ;;
+      "repos/fixture/repo/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&per_page=100")
+        printf '%s' "$FIXTURE_LEGACY_PAYLOAD" ;;
+      "--paginate")
+        [ "$3" = "--slurp" ] || exit 91
+        case "$4" in
+          "repos/fixture/repo/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&created="*"&per_page=100")
+            printf '%s' "$FIXTURE_PAGES" ;;
+          *) exit 92 ;;
+        esac ;;
+      "repos/fixture/repo/compare/${'c'.repeat(40)}...main")
+        printf '%s' "${'c'.repeat(40)}" ;;
       *) exit 92 ;;
     esac
     case "$2" in *event=pull_request*) exit 93;; esac
@@ -29,9 +40,19 @@ for(const name of workflows) test(name+' requires successful exact candidate BRA
   seq(){ printf '1\\n'; }
   sleep(){ :; }
   ${gate}
-  require_workflow "unified-brain-delivery.yml" "BRAIN"`],{encoding:'utf8',env:{...process.env,HEAD_SHA:sha,PR_NUMBER:'1',GITHUB_REPOSITORY:'fixture/repo',FIXTURE_PAYLOAD:JSON.stringify({workflow_runs:payload})}});
-  const row={id:1,head_sha:'c'.repeat(40),head_branch:'main',event:'workflow_dispatch',display_title:`BRAIN delivery PR #1 ${sha}`,status:'completed',conclusion:'success',created_at:'2026-10-26T00:00:00Z'};
+  require_workflow "unified-brain-delivery.yml" "BRAIN"`],{encoding:'utf8',env:{...process.env,HEAD_SHA:sha,PR_NUMBER:'1',GITHUB_REPOSITORY:'fixture/repo',
+    FIXTURE_LEGACY_PAYLOAD:JSON.stringify({workflow_runs:payload}),
+    FIXTURE_PAGES:JSON.stringify((payload.length>100?
+      [payload.slice(0,100),payload.slice(100,200),payload.slice(200)]:
+      [payload]).filter(page=>page.length||payload.length===0).map(workflow_runs=>({total_count:payload.length,workflow_runs}))
+    )}});
+  const row={id:1,head_sha:'c'.repeat(40),head_branch:'main',event:'workflow_dispatch',display_title:`BRAIN delivery PR #1 ${sha}`,status:'completed',conclusion:'success',created_at:'2026-11-15T08:15:00Z'};
   assert.equal(run([row]).status,0);
+  const many=Array.from({length:205},(_,i)=>({...row,id:1000+i,
+    display_title:'BRAIN delivery PR #999 '+('d'.repeat(40))}));
+  many[180]={...row,id:1180};
+  if(name==='obligation-terminal-closure.yml')
+    assert.equal(run(many).status,0,'original revised BRAIN flight beyond first 100 must still prove success');
   for(const payload of [[],[{...row,display_title:`BRAIN delivery PR #1 ${'d'.repeat(40)}`}],[{...row,head_sha:'d'.repeat(40)}],[{...row,head_branch:'feature'}],[{...row,event:'push'}],[{...row,conclusion:'failure'}],[{...row,conclusion:'skipped'}],[{...row,status:'in_progress',conclusion:null}]]) assert.equal(run(payload).status,78);
 });
 
