@@ -25,7 +25,7 @@ test('publisher requires capability consumption before provider calls',()=>{
     assert.ok(consume>branch,'capability consumption must occur inside the channel branch');
     assert.ok(provider>consume,'provider side effect must occur after capability consumption');
   };
-  branchOrder("if (row.channel === 'linkedin_personal')",'publishLinkedInPersonalViaComposio(db,art)');
+  branchOrder("if (row.channel === 'linkedin_personal')",'publishLinkedInPersonalViaComposio(db,art,{');
   branchOrder("if (row.channel === 'linkedin_company')",'publishLinkedInCompanyViaComposio(db,art)');
   branchOrder("if (row.channel === 'instagram_company')",'publishInstagramViaComposio(db,art,runDate,instagramContext)');
   branchOrder("const input: Record<string,unknown>",'created = await createPost(bufferToken, input)');

@@ -5,6 +5,17 @@ description: Enforce Composio as the canonical LinkedIn publication transport an
 
 # LinkedIn — Composio publication authority
 
+## P0 personal identity last-metre rule — 2026-11-15 (#5913)
+
+**This rule supersedes any older observational or generic-news personal fallback instructions in this skill.** Personal LinkedIn is an independently source-verified **Arthur-authored first-person personal story**, not news narration, company marketing, internal metrics or an AI-generated impersonation. The source must be an approved user-origin personal fact, not a reclassified third-party article or an external problem radar result. Preserve provenance, consent/privacy, authenticity, uniqueness and original daily claim. If no trustworthy own story is available, record the same obligation with its owner/next action and do not invent an experience or manufacture a replacement publication. Keep the one canonical executor running; no extra writer or scheduler.
+
+Immediately before **each** personal LinkedIn `LINKEDIN_CREATE_LINKED_IN_POST`, the original `powerhouse-social-publisher` must re-hash the actual final commentary and require all of: current-date permitted schedule, verified immutable user-origin source/revision, source-based personal-first-person checks, independent `bg-pre-publish-review` HTTP 200 + `can_publish=true` + `identity_gate_decision=PASS` on that **identical SHA-256**, and exact equality between actual SHA-256, previous reviewed SHA-256 and source evidence final hash. A missing, stale, 422, contradictory or hash-mismatched review is an unconditional **pre-provider veto**. `final_copy_approved`, a prior `pre_publish_gate=passed`, a 200 from a write API, views, or after-the-fact readback are not replacements for editorial clearance.
+
+Incident evidence: 2026-11-15 news about tasered package courier was registered as personal and `LIVE_PROVEN` despite conflicting reviewer 422, discordant hashes and permission-limited provider readback. Preserve chronological evidence and distinguish provider-created from content-approved, independently verified and measured; **never mark an editorially failed personal post as editorial PASS or regenerate a second provider post**. Reconcile any earlier violation with the original exact URN and source lineage, without deleting existing public content automatically. Company channel remains independent.
+
+Regression: `tests/brain-personal-first-person-voice-and-source-20261115.test.mjs`; source `supabase/functions/_shared/personal-first-person-story-gate.mjs`, last-metre transport `supabase/functions/powerhouse-social-publisher/index.ts`. Protected CI, exact-main source parity, native Edge deployment, negative production review, natural next eligible personal attempt, exact provider URN, ONE BRAIN incident/learning readback are required for terminal closure. Never claim permanent error-proof operation or FULL_GREEN from code alone.
+
+
 Fingerprint: `linkedin-composio-chain-provider-isolation-v1`.
 
 ## Hard transport rule

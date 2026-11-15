@@ -1,0 +1,70 @@
+{
+  "contract": "PERSONAL_LINKEDIN_EXACT_LAST_MILE_REVIEW_V1",
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|linkedin_personal|public-news-observation-422-reviewed-hash-drift|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+  "observed": {
+    "published_date": "2026-11-15",
+    "post_urn": "urn:li:share:7527762350779662336",
+    "post_url": "https://www.linkedin.com/feed/update/urn:li:share:7527762350779662336/",
+    "artifact_title": "Pakketbezorger getaserd na foutparkeren in centrum",
+    "source_kind": "public_news_observation_not_user_authored_story",
+    "review_status": 422,
+    "review_violation": "OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED",
+    "recorded_state": "LIVE_PROVEN",
+    "reviewed_text_hash": "a0d9bc34ebc2d9e0c049ece5bf40e8d35d9c95df1395bf4d3f8809f3d7d17a7d",
+    "recorded_final_hash": "cc1a5da15f0e71b1679ec61fafe521afea3bdd13fa6a61839ea9a2e5ba3be61d",
+    "readback_error": "Forbidden / insufficient scope on exact LinkedIn GET_POST_CONTENT",
+    "verification_pending": true,
+    "chronology_verified": false
+  },
+  "root_cause": "Confirmed editorial trust violation and contradictory state; exact historical writer/reviewer chronology requires independent logs. Previous observational news fallback is inconsistent with user's PERSONAL MEANS PERSONAL norm; code lacked independent exact-final transport veto.",
+  "prevention": {
+    "canonical_writer": "powerhouse-social-publisher",
+    "new_sender": false,
+    "new_scheduler": false,
+    "source_gate": "verified user-origin first-person lived-event; original accepted current source revision",
+    "review_gate": "independent HTTP 200 can_publish=true identity_gate_decision=PASS and exact final SHA256",
+    "transport_gate": "personalLastMilePublicationViolations checks exact outgoing commentary hash and same source just before Composio create",
+    "no_false_green": true,
+    "no_blind_republish": true
+  },
+  "regression_tests": [
+    "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+  ],
+  "agent_skills": [
+    ".agents/skills/personal-linkedin-life-only/SKILL.md",
+    ".agents/skills/linkedin-composio-publisher/SKILL.md"
+  ],
+  "owner": "original Powerhouse Daily Publisher and current canonical LinkedIn Composio transport",
+  "status": "PROTECTED_CANDIDATE_LEARNING_CANONICALIZATION_REPAIR_PENDING",
+  "customer_business_outcome_proven": false,
+  "production_last_mile_negative_test_proven": false,
+  "terminal": false,
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+    "provider_post_id": "urn:li:share:7527762350779662336",
+    "provider_url": "https://www.linkedin.com/feed/update/urn:li:share:7527762350779662336/",
+    "rejected_editorial_review_http": 422,
+    "rejected_review_code": "OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED",
+    "review_hash_mismatch": true,
+    "verified_historical_event_order": false,
+    "regression_test": "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs",
+    "production_test_confirmed": false
+  }
+}
