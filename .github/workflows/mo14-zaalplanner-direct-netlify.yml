@@ -1,3 +1,4 @@
+# V4 app-style menus, five real tabs and native startup hub; release rechecked on exact MO14 site.
 # MO14 PWA mobile-app v3 production release: 2026-11-15 18:xx NL
 # Renewed Netlify deployment authority for MO14 app experience, 2026-11-15
 name: MO14-1 zaalplanner direct Netlify deploy
@@ -72,13 +73,16 @@ jobs:
         run: |
           set -euo pipefail
           for attempt in 1 2 3 4 5 6; do
-            if curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/?sha=${GITHUB_SHA}" -o /tmp/mo14-new.html && grep -q 'id="keeper"' /tmp/mo14-new.html && grep -q 'id="pdfAll"' /tmp/mo14-new.html; then break; fi
+            if curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/?sha=${GITHUB_SHA}" -o /tmp/mo14-new.html && grep -q 'id="keeper"' /tmp/mo14-new.html
+          grep -q 'data-view-panel="home"' /tmp/mo14-new.html
+          grep -q 'id="appDrawer"' /tmp/mo14-new.html
+          grep -q 'data-go="settings"' /tmp/mo14-new.html && grep -q 'id="pdfAll"' /tmp/mo14-new.html; then break; fi
             sleep 10
           done
           grep -q 'id="keeper"' /tmp/mo14-new.html
           curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/manifest.webmanifest?sha=${GITHUB_SHA}" -o /tmp/mo14-manifest.json
-          node -e "const m=require('/tmp/mo14-manifest.json'); if(m.display!=='standalone'||m.scope!=='./'||m.icons.length<2)process.exit(1)"
-          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/sw.js?sha=${GITHUB_SHA}" | grep -q 'mo14-zaalcoach-v3'
+          node -e "const m=require('/tmp/mo14-manifest.json'); if(m.display!=='standalone'||m.scope!=='./'||m.icons.length<2||m.shortcuts?.length<3)process.exit(1)"
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/sw.js?sha=${GITHUB_SHA}" | grep -q 'mo14-zaalcoach-v4'
           for size in 192 512; do
             curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/icons/icon-${size}.png?sha=${GITHUB_SHA}" -o "/tmp/mo14-icon-${size}.png"
             file "/tmp/mo14-icon-${size}.png" | grep -q 'PNG image data'
