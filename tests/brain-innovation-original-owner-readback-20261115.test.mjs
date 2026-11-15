@@ -105,13 +105,17 @@ test('missing exact counts, provider count drift and unrelated output never sile
 });
 
 test('genuine exact owner revision and independently read-back remote ID prove ONLY ACK, not innovation impact',()=>{
-  const snapshot=makeSource(1),op=snapshot.intakes[0];
+  const snapshot=makeSource(1);
+  // This one-item fixture otherwise defaults to CRO; deliberately verify the
+  // original engineering owner identity rather than accepting the wrong agent.
+  snapshot.candidates[0].owner_agent='engineering';
+  snapshot.obligations[0].owner='original-agent:engineering';
+  const op={...snapshot.intakes[0],capability_id:'agent:agent-integration-engineer'};
   snapshot.intakes[0]={...op,status:'VERIFIED',remote_ref:'provider:source-review:123',
     evidence:{consumer_owner:'agent:agent-growth-market',
       source_revision:'real-revision-'+snapshot.candidates[0].candidate_id,
       independent_consumer_readback:true}};
   assert.throws(()=>evaluateOriginalOwnerHandoff(snapshot,{now:NOW}),/UNVERIFIED_CONSUMER_CLAIM/);
-  snapshot.intakes[0].evidence.consumer_owner='agent:agent-growth-market'; // still wrong owner
   snapshot.intakes[0].evidence.consumer_owner='agent:agent-integration-engineer';
   const result=evaluateOriginalOwnerHandoff(snapshot,{now:NOW});
   assert.equal(result.counts.owner_ack_verified,1);
