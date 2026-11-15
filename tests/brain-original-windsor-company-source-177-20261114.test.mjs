@@ -158,3 +158,15 @@ test('optional provider account error must never leak API key, URL, or raw respo
  assert.match(src,/originalCompanySourceProviderHealth\(\{/);
  assert.doesNotMatch(src,/supabase\.cron\.schedule|cron\.schedule\(/);
 });
+
+test('original Windsor Basic provider plan must not be forced into hourly public-refresh entitlement',async()=>{
+ const src=await readFile('supabase/functions/bg-social-metrics-sync/index.ts','utf8');
+ assert.match(src,/new URL\('https:\/\/connectors\.windsor\.ai\/linkedin_organic'\)/);
+ assert.match(src,/endpoint\.searchParams\.set\('select_accounts','18234216'\)/);
+ assert.match(src,/endpoint\.searchParams\.set\('date_from',since\)/);
+ assert.match(src,/endpoint\.searchParams\.set\('date_to',to\)/);
+ assert.match(src,/endpoint\.searchParams\.set\('_max_rows',String\(maxRows\)\)/);
+ assert.doesNotMatch(src,/endpoint\.searchParams\.set\('refresh_interval'/);
+ assert.doesNotMatch(src,/endpoint\.searchParams\.set\('refresh_since'/);
+ assert.match(src,/originalCompanySourceProviderHealth\(\{/);
+});
