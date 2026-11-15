@@ -310,6 +310,18 @@ function validPersonalSource(row:any) {
   const eligibleStatus = ['suggested','accepted'].includes(clean(row?.status));
   const truthMode = e.personal_truth_verified === true && e.arthur_anchor_verified === true && e.first_person_claims_verified === true;
   const observationalMode = e.observational_personal_theme_verified === true && e.public_theme_source_verified === true && e.first_person_claims_present === false;
+  // Independently observed 2026-11-15 source arrived as 143-character text
+  // ending in "..." and repeatedly failed the final truth contract.
+  // Do not let a verified URL disguise an insufficient article excerpt.
+  // Source collection must provide a complete dated observation FIRST.
+  const observedText = clean(e.source_text);
+  const observationalSourceReady = !observationalMode || (
+    observedText.length >= 240
+    && !/(?:\\.{3}|…)\\s*$/u.test(observedText)
+    && /^https:\/\/\\S+/i.test(clean(e.public_theme_source_url))
+    && Number.isFinite(Date.parse(clean(e.public_theme_source_published_at)))
+    && Number.isFinite(Date.parse(clean(e.public_theme_source_observed_at)))
+  );
   const builderMode = e.ai_native_builder_story_verified === true
     && e.ai_native_builder_policy === PERSONAL_AI_NATIVE_POLICY
     && e.build_event_verified === true
@@ -324,6 +336,7 @@ function validPersonalSource(row:any) {
   return eligibleStatus && row?.target_channel === 'linkedin_personal'
     && e.identity_contract === PERSONAL_CONTRACT && e.identity_gate_version === PERSONAL_GATE
     && !!clean(e.content_id) && lineage && (builderMode || legacyPersonal)
+    && observationalSourceReady
     && e.corporate_voice === false && e.company_page_interchangeable === false && e.forced_business_moral === false
     && (e.sensitive_private_detail !== true || e.sensitive_private_approval === true);
 }
