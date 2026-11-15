@@ -95,19 +95,38 @@ function activeDispatches(candidates, registeredObligationIds = null) {
   const registered = registeredObligationIds == null
     ? null
     : new Set((registeredObligationIds ?? []).map(text).filter(Boolean));
-  const dispatches = [];
+  // The historical source candidates remain in report.candidates. They are not
+  // one actionable external event each: many map to the same registered owner.
+  // A stable obligation-level coalesce key prevents a backfill from amplifying
+  // thousands of old observations into thousands of new PENDING agent tasks.
+  const byObligation = new Map();
   for (const candidate of candidates) {
     if (candidate.nextAction === 'WAIT_EXTERNAL') continue;
     for (const obligationId of candidate.obligationIds) {
       if (registered && !registered.has(obligationId)) continue;
-      dispatches.push(Object.freeze({
-        obligationId,
-        identity:candidate.identity,
-        coalesceKey:candidate.lineageKey,
-        triggerFingerprint:`${BACKFILL_TRIGGER_PREFIX}${candidate.idempotencyKey}`,
-        nextAction:candidate.nextAction
-      }));
+      let group = byObligation.get(obligationId);
+      if (!group) {
+        group = { sourceIdentities:new Set(), nextAction:candidate.nextAction };
+        byObligation.set(obligationId, group);
+      }
+      group.sourceIdentities.add(candidate.identity);
     }
+  }
+  const dispatches = [];
+  for (const obligationId of [...byObligation.keys()].sort()) {
+    const group = byObligation.get(obligationId);
+    const sourceIdentities = [...group.sourceIdentities].sort();
+    const canonicalIdentity = 'canonical-obligation:' + obligationId;
+    const stableFingerprint = stableKey(canonicalIdentity);
+    dispatches.push(Object.freeze({
+      obligationId,
+      identity:canonicalIdentity,
+      coalesceKey:'completion-backfill|obligation|' + stableFingerprint,
+      triggerFingerprint:BACKFILL_TRIGGER_PREFIX + stableFingerprint,
+      nextAction:group.nextAction,
+      sourceCandidateCount:sourceIdentities.length,
+      sourceIdentityDigest:createHash('sha256').update(JSON.stringify(sourceIdentities)).digest('hex'),
+    }));
   }
   return Object.freeze(dispatches);
 }
