@@ -122,101 +122,16 @@ export function isExactOriginalInnovationImplementationPr({pr,candidateId,source
   if(!UUID.test(candidateId)||!SHA.test(sourceSha)||
      typeof sourceRevision!=='string'||!sourceRevision.trim()||
      typeof pr?.body!=='string')return false;
-  // A recovery/doc PR may mention the same UUID; it is NOT a code candidate.
+  // A recovery/doc PR can mention the UUID but is NOT an implementation receipt.
   if(typeof pr.headRefName!=='string'||
-     !new RegExp('^writer/innovation-'+candidateId.slice(0,8)+'-[0-9]+
-export function checkChangedPaths({workorder,changed,deleted=[]}={}){
-  if(workorder?.contract!==CONTRACT||workorder.selected!==true||
-     !Array.isArray(workorder.allowed_source_paths)||
-     !Array.isArray(changed)||new Set(changed).size!==changed.length)fail('INVALID_DIFF');
-  if(deleted.length)fail('DELETION_FORBIDDEN');
-  const source=changed.filter(x=>workorder.allowed_source_paths.includes(x));
-  const test=changed.filter(x=>/^tests\/brain-innovation-[a-z0-9-]+\.test\.mjs$/.test(x));
-  const learn=changed.filter(x=>/^brain\/learning\/2026-11-\d{2}-innovation-[a-z0-9-]+\.json$/.test(x));
-  const docs=changed.filter(x=>/^docs\/(changes|development-ledger-events)\/2026-11-\d{2}-innovation-[a-z0-9-]+\.md$/.test(x));
-  if(changed.length<3||changed.length>8||source.length<1||test.length<1||learn.length<1||
-     source.length+test.length+learn.length+docs.length!==changed.length)fail('PATH_SCOPE_OR_EVIDENCE_MISSING');
-  return {source,test,learn,docs,changed};
-}
-export function classifyOriginalCodeDiff({workorder,changed,deleted=[]}={}){
-  if(workorder?.contract!==CONTRACT||workorder.selected!==true||
-     !Array.isArray(changed)||!Array.isArray(deleted))fail('INVALID_DIFF');
-  if(changed.length===0&&deleted.length===0){
-    return Object.freeze({has_changes:false,status:'NO_CODE_CHANGE_INDEPENDENT_REVIEW_DUE',
-      implementation_verified:false,consumer_ack_verified:false,terminal_success:false});
-  }
-  const checked=checkChangedPaths({workorder,changed,deleted});
-  return Object.freeze({...checked,has_changes:true,status:'BOUNDED_CODE_CANDIDATE'});
-}
-function recordOutput(name,value){
-  if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,name+'='+value+'\n');
-}
-async function main(){
-  const mode=process.argv[2];
-  if(mode==='--prepare'){
-    const snapshot=await readCanonicalRows({config:trustedBrainReadConfig(process.env)});
-    const report=evaluateOriginalOwnerHandoff(snapshot);
-    const selected=selectOriginalCodeCandidate({snapshot,report,existingPrFor});
-    mkdirSync('artifacts/quality',{recursive:true});
-    writeFileSync(WORK_ORDER,JSON.stringify(selected,null,2)+'\n');
-    recordOutput('selected',selected.selected?'true':'false');
-    if(selected.selected)recordOutput('candidate_id',selected.candidate_id);
-    process.stdout.write(JSON.stringify({contract:CONTRACT,selected:selected.selected,
-      candidate_id:selected.candidate_id??null,reason:selected.reason??null,
-      source_bound:true,production_authorized:false})+'\n');
-    return;
-  }
-  if(mode==='--validate'){
-    const selected=JSON.parse(readFileSync(WORK_ORDER,'utf8'));
-    const tracked=git(['diff','HEAD','--name-only']).split('\n').filter(Boolean);
-    const deleted=git(['diff','HEAD','--name-only','--diff-filter=D']).split('\n').filter(Boolean);
-    const untracked=git(['ls-files','--others','--exclude-standard']).split('\n')
-      .filter(x=>x&&!x.startsWith('artifacts/quality/'));
-    const changed=[...new Set([...tracked,...untracked])].sort();
-    const result=classifyOriginalCodeDiff({workorder:selected,changed,deleted});
-    recordOutput('has_changes',result.has_changes?'true':'false');
-    if(!result.has_changes){
-      process.stdout.write(JSON.stringify({candidate_id:selected.candidate_id,
-        result:result.status,implementation_verified:false,original_remains_planned:true})+'\n');
-      return;
-    }
-    for(const path of result.learn){
-      const lesson=JSON.parse(readFileSync(path,'utf8'));
-      if(!lesson.compiler?.failure_class||
-         !Array.isArray(lesson.evaluation?.historical_replay)||
-         !lesson.evaluation.historical_replay.length)fail('LEARNING_REGRESSION_REQUIRED');
-    }
-    git(['diff','--check']);
-    for(const path of result.test)execFileSync('node',['--test',path],
-      {stdio:'inherit',timeout:120000});
-    process.stdout.write(JSON.stringify({validated:true,changed:result.changed,
-      candidate_id:selected.candidate_id,protected_release_due:true})+'\n');
-    return;
-  }
-  if(mode==='--paths'){
-    const selected=JSON.parse(readFileSync(WORK_ORDER,'utf8'));
-    const tracked=git(['diff','HEAD','--name-only']).split('\n').filter(Boolean);
-    const untracked=git(['ls-files','--others','--exclude-standard']).split('\n')
-      .filter(x=>x&&!x.startsWith('artifacts/quality/'));
-    const changed=[...new Set([...tracked,...untracked])].sort();
-    checkChangedPaths({workorder:selected,changed,
-      deleted:git(['diff','HEAD','--name-only','--diff-filter=D']).split('\n').filter(Boolean)});
-    process.stdout.write(changed.join('\n')+'\n');
-    return;
-  }
-  fail('UNKNOWN_MODE');
-}
-if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1])main().catch(e=>{
-  process.stderr.write(String(e.message).slice(0,220)+'\n');process.exitCode=1;
-});
-).test(pr.headRefName))return false;
+     !new RegExp('^writer/innovation-'+candidateId.slice(0,8)+'-[0-9]+$').test(pr.headRefName))return false;
   const lines=pr.body.split(/\r?\n/).map(line=>line.trim());
   return lines.includes('Candidate-Type: implementation')&&
     lines.includes('Original-Candidate: '+candidateId)&&
     lines.includes('Original-Source-SHA256: '+sourceSha)&&
     lines.includes('Original-Source-Revision: '+sourceRevision)&&
     lines.some(line=>line.startsWith('Original-Operation: '))&&
-    lines.some(line=>line.startsWith('Writer-Lease-Owner: agent:agent-integration-engineer'));
+    lines.includes('Writer-Lease-Owner: agent:agent-integration-engineer');
 }
 function existingPrFor(id,sourceSha,sourceRevision){
   const data=JSON.parse(execFileSync('gh',
