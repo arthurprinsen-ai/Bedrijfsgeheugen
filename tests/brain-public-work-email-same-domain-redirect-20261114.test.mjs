@@ -52,7 +52,8 @@ test('source worker uses Amsterdam business day and three capped first-party URL
  assert.match(source,/url:'https:\/\/'\+domain\+'\/team'/);
  assert.match(source,/url:'https:\/\/'\+domain\+'\/contact'/);
  assert.match(source,/url:'https:\/\/'\+domain\+'\/'/);
- assert.match(source,/public_email_source_status:result\.status/);
+ assert.match(source,/public_email_source_status:sourceStatus/);
+ assert.match(source,/SOURCE_HTML_TRUNCATED_UNVERIFIED/);
  assert.match(source,/public_email_next_attempt_at/);
  assert.match(source,/FIRST_PARTY_RESEARCH_DISPOSITION_ACK/);
  assert.match(source,/originalFirstPartyDomainCandidatePass\(db,observedAt\)/);
