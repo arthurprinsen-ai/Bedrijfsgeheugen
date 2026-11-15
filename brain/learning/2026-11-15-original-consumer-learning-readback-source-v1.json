@@ -57,17 +57,16 @@
   "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
   "evaluation": {
     "historical_replay": [
-      "tests/completion-supervisor-evidence.test.mjs",
-      "tests/completion-supervisor.test.mjs",
+      "tests/brain-completion-supervisor.test.mjs",
       "tests/brain-completion-supervisor-backfill.test.mjs"
     ],
     "shadow": [
-      "tests/completion-supervisor.test.mjs",
-      "tests/brain-completion-readiness.test.mjs"
+      "tests/brain-completion-readiness.test.mjs",
+      "tests/brain-outcome-obligation-runtime.test.mjs"
     ],
     "canary": [
-      "tests/brain-outcome-obligation-runtime.test.mjs",
-      "tests/brain-outcome-obligation-workflow.test.mjs"
+      "tests/brain-outcome-obligation-workflow.test.mjs",
+      "tests/brain-completion-supervisor.test.mjs"
     ]
   }
 }
