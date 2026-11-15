@@ -46,7 +46,7 @@ test('native menu items are navigational and backed by real panels',()=>{
  assert.ok(m.shortcuts?.length>=3,'real home-screen shortcuts are required');
 });
 
-test('PW Enschede branding and seven editable match dates share the existing planner state',()=>{
+test('PW Enschede branding and independent editable match dates share the existing planner state',()=>{
  const html=readFileSync(base+'index.html','utf8');
  const m=JSON.parse(readFileSync(base+'manifest.webmanifest','utf8'));
  assert.equal(m.theme_color,'#59222d');
@@ -54,7 +54,7 @@ test('PW Enschede branding and seven editable match dates share the existing pla
  assert.ok(html.includes('src="./pw-logo.png"'));
  assert.ok(html.includes('PW HOCKEY ENSCHEDE'));
  for(const id of ['matchDate','matchDateLabel','homeGameDate','homeRounds'])assert.ok(html.includes('id="'+id+'"'));
- for(const marker of ['data-match-date="${i}"',"date:''",'function formatMatchDate(i)','function canvasMatchDate(i)',"state.matches[i].date=input.value||''"]){
+ for(const marker of ['data-fixture-field="date"','data-fixture-field="time"','data-fixture-field="opponent"','data-fixture-field="home"','function formatMatchDate(i)','function canvasMatchDate(i)','function formatKickoff(i)']){
    assert.ok(html.includes(marker),'missing date binding: '+marker);
  }
  assert.ok(html.includes("new Intl.DateTimeFormat('nl-NL'"));
@@ -62,4 +62,28 @@ test('PW Enschede branding and seven editable match dates share the existing pla
  const sw=readFileSync(base+'sw.js','utf8');
  assert.ok(sw.includes('./pw-logo.png'));
  assert.match(sw,/mo14-zaalcoach-v5-pw/);
+});
+
+test('12 screenshot-grounded PW fixtures across six days have separate time, opponent and keepers',()=>{
+ const html=readFileSync(base+'index.html','utf8');
+ const begin=html.indexOf('const OFFICIAL_FIXTURES=');
+ const end=html.indexOf(';\\nconst toMatch=',begin);
+ assert.ok(begin>=0,'fixture declaration missing');
+ const text=html.slice(begin+'const OFFICIAL_FIXTURES='.length,end);
+ const fixtures=JSON.parse(text);
+ assert.equal(fixtures.length,12);
+ assert.equal(new Set(fixtures.map(x=>x.fixtureId)).size,12);
+ const byDay=new Map();
+ fixtures.forEach(f=>{byDay.set(f.date,(byDay.get(f.date)||0)+1);assert.match(f.time,/^\\d{2}:\\d{2}$/)});
+ assert.deepEqual([...byDay.entries()],[
+  ['2026-12-06',2],['2026-12-13',2],['2026-12-19',2],
+  ['2027-01-09',2],['2027-01-24',2],['2027-02-13',2]
+ ]);
+ assert.deepEqual(fixtures.map(f=>f.time),['12:00','13:40','12:05','12:55','15:20','16:10','11:30','13:10','11:30','12:20','12:00','12:50']);
+ assert.deepEqual(fixtures.map(f=>f.opponent),['MO14-2 zaal','Twente MO14-2','Zutphen MO14-1','Twente MO14-2','Haackey MO14-1-mix','Apeldoorn MO14-3','Apeldoorn MO14-2','Apeldoorn MO14-3','Haackey MO14-1-mix','MO14-2 zaal','Apeldoorn MO14-2','Zutphen MO14-1']);
+ assert.deepEqual(fixtures.map(f=>f.home),[true,true,true,false,true,false,true,true,false,true,false,false]);
+ for(const marker of ['function pdfForDay','id="pdfDay"','data-day-pdf','id="addFixture"','id="copyPresenceDay"','function fixtureTitle','function formatKickoff','data-fixture-index'])
+  assert.ok(html.includes(marker),'missing real matchday experience: '+marker);
+ const script=html.slice(html.indexOf('<script>')+8,html.lastIndexOf('</script>'));
+ assert.doesNotThrow(()=>new Function(script),'complete client JavaScript must parse in Node');
 });
