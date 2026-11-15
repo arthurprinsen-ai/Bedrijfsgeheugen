@@ -5,6 +5,12 @@ description: Use for original Powerhouse/ONE BRAIN/Heartbeat automatic error, in
 
 # Powerhouse original autonomous recovery proof — 4 November 2026
 
+## 15 november 2026 — eigenaar en status uitsluitend uit de onveranderlijke SQL-bron
+
+In de oorspronkelijke Supabase-dispatchadapter kon een `record`-JSONB-veld met `ownerAgent`, `state` of `obligationId` eerder de originele SQL-kolommen overschrijven: `normalizeDispatchRow` spreidde de metadata als laatste. De adapter gebruikt nu SQL `record_type,idempotency_key,obligation_id,owner_agent,trace_id,state` als exclusieve bron en verwerpt ieder metadata-conflict voor die zes velden, óók bij een replay of historische pagina. Matching bestaande metadata mag blijven bestaan; onveranderlijke historie blijft onaangeroerd. Geen nieuwe agent, scheduler, database, uitgaande provideractie, bulkclose of claims over echte verwerking.
+
+Reliability leest de originele rij opnieuw bij `dispatch metadata identity conflict`; Data Quality verifieert de negatieve owner-/state-/key- en paginationtests in `tests/brain-outcome-obligation-supabase-store.test.mjs`. De productieaudit van 15 november 14:20:56 UTC vond 6.017 oorspronkelijke dispatchrijen en nul identity-velden in JSONB, dus een actuele productie-impersonatie is **niet** aangetoond. Werkelijke agent-ACK en provider-outcome moeten nog separaat bewezen worden; P0 #4198 blijft de oorspronkelijke controle en eigenaar.
+
 ## 15 november 2026 — volledige boundary-veto binnen één gegroepeerde bronidentiteit
 
 Bestaande Completion Supervisor Backfill Resume: meer dan één historisch obligation-bronrecord kan dezelfde identity dragen. De selectie mag niet de eerste bron als enige gezag nemen: een later record met onafhankelijk bewezen WAIT_EXTERNAL voor dezelfde oorspronkelijke taak blijft bindend, ook bij gewijzigde bronvolgorde. candidateFromGroup beoordeelt nu alle oorspronkelijke bronobservaties; één geldig WAIT_EXTERNAL-oordeel wint van veilige oude status en voorkomt ieder nieuw coalesced wakeup. Alle bronrecords blijven zichtbaar in het bestaande report; één taakidentiteit, één originele uitvoerder, geen extra scheduler/provider-write of herautorisatie-omzeiling.
