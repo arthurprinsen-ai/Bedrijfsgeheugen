@@ -10,10 +10,10 @@ const liveEvidence = [
   { type:'PROTECTED_DELIVERY', producer:'BG169', productionIdentity },
   { type:'PRODUCTION_IDENTITY', producer:'BG169', productionIdentity },
   { type:'FUNCTIONAL_READBACK', producer:'PRODUCTION_READBACK', productionIdentity },
-  { type:'OBLIGATIONS_COMPLETE', producer:'OUTCOME_OBLIGATION_RUNTIME', productionIdentity },
+  { type:'OBLIGATIONS_COMPLETE', producer:'PRODUCTION_READBACK', productionIdentity },
   { type:'CAPABILITY_HANDOFF', producer:'BG167', productionIdentity },
   { type:'LEARNING_WRITEBACK', producer:'BG168_BG166', productionIdentity },
-].map(item => ({ ...item, accepted:true, independent:true, taskIdentity:'ob-2', candidateIdentity:'sha-live' }));
+].map(item => ({ ...item, accepted:true, independent:true, taskIdentity:'ob-2', candidateIdentity:'sha-live', ...(item.type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:ob-2',materialSourceRevision:'source-rev:sha-live'}}:{}) }));
 
 test('shadow backfill reopens partial PR and failed workflow candidates without dispatching', () => {
   const report = reconcileCompletionBackfill({
