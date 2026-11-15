@@ -26,7 +26,7 @@ test('standalone app declares scoped offline resources and actual icons',()=>{
    assert.ok(data.length>1000);
  }
  const sw=readFileSync(base+'sw.js','utf8');
- assert.match(sw,/mo14-zaalcoach-v4/);
+ assert.match(sw,/mo14-zaalcoach-v5-pw/);
  assert.match(sw,/self\.registration\.scope/);
  assert.doesNotMatch(sw,/make\.com|buffer\.com/);
 });
@@ -44,4 +44,22 @@ test('native menu items are navigational and backed by real panels',()=>{
  assert.match(html,/data-go="settings"/);
  const m=JSON.parse(readFileSync(base+'manifest.webmanifest','utf8'));
  assert.ok(m.shortcuts?.length>=3,'real home-screen shortcuts are required');
+});
+
+test('PW Enschede branding and seven editable match dates share the existing planner state',()=>{
+ const html=readFileSync(base+'index.html','utf8');
+ const m=JSON.parse(readFileSync(base+'manifest.webmanifest','utf8'));
+ assert.equal(m.theme_color,'#59222d');
+ assert.ok(html.includes('Clublogo PW Hockey Enschede'));
+ assert.ok(html.includes('src="./pw-logo.png"'));
+ assert.ok(html.includes('PW HOCKEY ENSCHEDE'));
+ for(const id of ['matchDate','matchDateLabel','homeGameDate','homeRounds'])assert.ok(html.includes('id="'+id+'"'));
+ for(const marker of ['data-match-date="${i}"',"date:''",'function formatMatchDate(i)','function canvasMatchDate(i)',"state.matches[i].date=input.value||''"]){
+   assert.ok(html.includes(marker),'missing date binding: '+marker);
+ }
+ assert.ok(html.includes("new Intl.DateTimeFormat('nl-NL'"));
+ assert.ok(html.includes('canvasMatchDate(matchIndex)'));
+ const sw=readFileSync(base+'sw.js','utf8');
+ assert.ok(sw.includes('./pw-logo.png'));
+ assert.match(sw,/mo14-zaalcoach-v5-pw/);
 });
