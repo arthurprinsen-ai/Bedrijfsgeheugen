@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
 import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
-import { stageOriginalWindsorCompanySources, originalCompanySourceProviderHealth } from '../_shared/original-windsor-company-stage.mjs';
+import { stageOriginalWindsorCompanySources, originalCompanySourceProviderHealth, readOriginalWindsorCompanySourcePair } from '../_shared/original-windsor-company-stage.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
 import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity,originalCompanySourceBrainFailureInput} from '../_shared/original-provider-poll-receipt.mjs';
@@ -312,18 +312,21 @@ async function refreshOriginalCompanyWindsorSources(db:any){
   const day=localDay();
   const since=new Date(Date.now()-14*86400000).toISOString().slice(0,10);
   const accountSince=new Date(Date.now()-3*86400000).toISOString().slice(0,10);
-  const [postRows,accountRows]=await Promise.all([
-    originalWindsorCompanyRows(apiKey,[
+  // SAME original #177 / SAME Vault token: a failed account aggregate must
+  // not discard independently authorized and source-verified post rows.
+  // Missing account proof remains a RED original ONE BRAIN receipt.
+  const {postRows,accountRows,accountFailure}=await readOriginalWindsorCompanySourcePair({
+    fetchPosts:()=>originalWindsorCompanyRows(apiKey,[
       'date','post_id','share_id','share_owner','share_published_time',
       'share_url','share_impression_count','share_clicks_count',
       'share_like_count','share_comment_count','share_count','share_video_views'
     ],since,day,40),
-    originalWindsorCompanyRows(apiKey,[
+    fetchAccount:()=>originalWindsorCompanyRows(apiKey,[
       'date','organization_id','account_analytics_impression_count',
       'account_analytics_click_count','account_analytics_comment_count',
       'account_analytics_share_count'
     ],accountSince,day,7)
-  ]);
+  });
   const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
     .select('tenant_id,channel,status,publication_date,external_id,live_proven_at,evidence')
     .eq('tenant_id','canonical').eq('channel','linkedin_company')
@@ -355,7 +358,14 @@ async function refreshOriginalCompanyWindsorSources(db:any){
     .map((x:any)=>x.source_key));
   if(keys.some(k=>!observedKeys.has(k)))
     throw new Error('WINDSOR_ORIGINAL_SOURCE_MISMATCH_OR_OTHER_WRITER');
-  return {state:'PROVIDER_ACCOUNT_SOURCE_REFRESHED_AND_STAGED',
+  const missingAccount=Boolean(accountFailure)||!staged.account_row;
+  return {state:missingAccount?'ORIGINAL_COMPANY_SOURCE_REFRESH_UNAVAILABLE'
+       :'PROVIDER_ACCOUNT_SOURCE_REFRESHED_AND_STAGED',
+    ...(missingAccount?{
+      failure_class:accountFailure||'WINDSOR_ACCOUNT_SOURCE_NOT_OBSERVED',
+      failure_component:'linkedin_company_account_analytics',
+      provider_post_source_preserved:true
+    }:{}),
     source_receipt:'original_company_provider_source_refresh',
     original_cron:177,provider:'windsor.ai',authorized_account:'18234216',
     provider_rows_examined:staged.provider_rows_examined,

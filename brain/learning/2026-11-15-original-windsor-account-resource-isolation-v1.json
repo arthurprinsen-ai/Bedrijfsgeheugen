@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|original177|optional-account-read-rejects-verified-posts|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "ORIGINAL_WINDSOR_ACCOUNT_PROVIDER_FAILURE_DISCARDS_POSTS",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original #177 code used a single Promise.all for mandatory Windsor provider post rows and optional account analytics. Any single rejected request discarded the successful other source read before its original source store; verified production currently shows WINDSOR_PROVIDER_HTTP_403 but has not isolated which underlying resource fails on the Vault key.",
+  "source_evidence": {
+    "original_cron": 177,
+    "original_edge": "bg-social-metrics-sync",
+    "original_failure": "WINDSOR_PROVIDER_HTTP_403",
+    "original_slots_utc": [
+      "2026-11-15T00:18:00Z",
+      "2026-11-15T06:18:00Z",
+      "2026-11-15T12:18:00Z"
+    ],
+    "delegated_windsor_account": "18234216",
+    "delegated_read_only_post_urns": 12,
+    "delegated_account_scope_read": true,
+    "original_vault_scope_not_verified": true
+  },
+  "prevention": {
+    "single_original_provider_reader": true,
+    "post_reader_mandatory": true,
+    "account_failure_safe_partial_post_proof": true,
+    "no_source_loss_on_optional_failure": true,
+    "no_fabricated_account_aggregate": true,
+    "no_new_scheduler_or_writer": true,
+    "original_one_brain_failure_readback": true,
+    "original_health_fail_closed": true,
+    "post_window_exact_proof_required": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-windsor-company-source-177-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-windsor-company-source-177-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-windsor-177-brain-failure-handoff-20261114.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "OPTIONAL_ACCOUNT_READ_FAILURE_DROPS_MANDATORY_POST_READ",
+    "cause": "promise-all-all-or-nothing",
+    "prevention_rule": "retain source-authenticated post rows while reporting optional account fetch failure to original Brain; preserve RED source health",
+    "regression_guard": "tests/brain-original-windsor-company-source-177-20261114.test.mjs",
+    "next_owner": "existing bg-social-metrics-sync cron177 plus original Data Quality and social-learning/cron171",
+    "effect_proof": "PROTECTED_RELEASE_AND_REAL_ORIGINAL_177_RUN_PENDING"
+  },
+  "release_state": "PROTECTED_CANDIDATE_PENDING",
+  "verified_business_outcome": false
+}
