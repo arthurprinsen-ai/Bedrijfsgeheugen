@@ -51,7 +51,7 @@ test('active backfill creates idempotent resumes only for existing canonical obl
   assert.equal(report.dispatches.length,1);
   assert.equal(report.dispatches[0].obligationId,'ob-1');
   assert.equal(report.dispatches[0].identity,'sha-partial');
-  assert.match(report.dispatches[0].coalesceKey,/^completion-backfill\\|canonical-obligation\\|/);
+  assert.match(report.dispatches[0].coalesceKey,/^completion-backfill\|canonical-obligation\|/);
   assert.match(report.dispatches[0].triggerFingerprint,/^completion-backfill:canonical-obligation:/);
   assert.equal(report.dispatches[0].sourceCandidateCount,1);
   assert.match(report.dispatches[0].sourceIdentityDigest,/^[a-f0-9]{20}$/);
