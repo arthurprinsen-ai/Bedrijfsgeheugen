@@ -11,14 +11,6 @@
     "machine_enforceable": true
   },
   "root_cause": "Original existing code selector existingPrFor used any GitHub PR body.includes(candidate_id), not the original implementation PR's typed receipt. Protected incident repair PR #5904 discusses candidate 7ae7a817 in its narrative; the first source-bound post-release run selected:false although no original code implementation/no-change receipt had been written.",
-  "source_evidence": {
-    "original_attempt": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43752164113",
-    "first_fixed_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5904",
-    "first_post_release_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43753665119",
-    "independent_native_original_innovation_total": 14,
-    "original_no_change_receipts": 0,
-    "original_code_candidate_pr_receipts": 0
-  },
   "prevention": {
     "same_original_writer": true,
     "provider_pr_identity_exact_fields": [
@@ -54,5 +46,13 @@
     "regression_guard": "tests/brain-innovation-pr-identity-20261115.test.mjs",
     "next_owner": "existing original innovation agent through same daily Powerhouse workflow",
     "effect_proof": "PROTECTED_MAIN_MERGE_PRODUCTION_READBACK_AND_ORIGINAL_CODE_RECOVERY_DUE"
+  },
+  "evidence": {
+    "original_attempt": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43752164113",
+    "first_fixed_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5904",
+    "first_post_release_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43753665119",
+    "independent_native_original_innovation_total": 14,
+    "original_no_change_receipts": 0,
+    "original_code_candidate_pr_receipts": 0
   }
 }
