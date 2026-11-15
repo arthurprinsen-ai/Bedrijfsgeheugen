@@ -26,12 +26,12 @@ jobs:
       - name: Verify planner and independent website source
         run: |
           set -euo pipefail
-          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs
+          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs
           test -s pw-mo14-1/zaalplanner/index.html
       - name: Preserve existing MO14 homepage and assets before deploy
         run: |
           set -euo pipefail
-          mkdir -p .mo14-stage/zaalplanner .mo14-backup
+          mkdir -p .mo14-stage/zaalplanner/icons .mo14-backup
           for f in index.html style.css data.js player.js team.js sync.js; do
             curl -fLsS --retry 3 --connect-timeout 10 --max-time 40 "${MO14_DOMAIN}/${f}?preserve=${GITHUB_SHA}" -o ".mo14-stage/${f}"
             test -s ".mo14-stage/${f}"
@@ -43,6 +43,10 @@ jobs:
           done
           test "$(wc -c < .mo14-stage/index.html)" -gt 300
           cp pw-mo14-1/zaalplanner/index.html .mo14-stage/zaalplanner/index.html
+          cp pw-mo14-1/zaalplanner/manifest.webmanifest .mo14-stage/zaalplanner/manifest.webmanifest
+          cp pw-mo14-1/zaalplanner/sw.js .mo14-stage/zaalplanner/sw.js
+          mkdir -p .mo14-stage/zaalplanner/icons
+          cp pw-mo14-1/zaalplanner/icons/icon-*.png .mo14-stage/zaalplanner/icons/
           sha256sum .mo14-stage/index.html .mo14-stage/zaalplanner/index.html > .mo14-backup/manifest.sha256
           echo "Original files backed up and planner staged."
       - name: Save original MO14 site artifact
@@ -70,6 +74,13 @@ jobs:
             sleep 10
           done
           grep -q 'id="keeper"' /tmp/mo14-new.html
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/manifest.webmanifest?sha=${GITHUB_SHA}" -o /tmp/mo14-manifest.json
+          node -e "const m=require('/tmp/mo14-manifest.json'); if(m.display!=='standalone'||m.scope!=='./'||m.icons.length<2)process.exit(1)"
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/sw.js?sha=${GITHUB_SHA}" | grep -q 'mo14-zaalcoach-v3'
+          for size in 192 512; do
+            curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/icons/icon-${size}.png?sha=${GITHUB_SHA}" -o "/tmp/mo14-icon-${size}.png"
+            file "/tmp/mo14-icon-${size}.png" | grep -q 'PNG image data'
+          done
           curl -fLsS --max-time 25 "${MO14_DOMAIN}/?sha=${GITHUB_SHA}" -o /tmp/mo14-home.html
           cmp -s .mo14-backup/index.html /tmp/mo14-home.html || { echo 'Original homepage not preserved' >&2; exit 1; }
           echo "MO14 production planner verified at ${MO14_DOMAIN}/zaalplanner/"
