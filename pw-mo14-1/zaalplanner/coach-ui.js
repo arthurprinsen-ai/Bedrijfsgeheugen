@@ -13,6 +13,11 @@ const stats=document.querySelector('[data-view-panel="stats"]');
 const fair=document.createElement('section');fair.className='coach-card';fair.id='coachFairness';
 fair.innerHTML='<div class="coach-heading"><div><span class="coach-tag">Alle ingeplande wedstrijden</span><h3>Speelminuten over het hele seizoen</h3><p>Veldminuten en keepersminuten tellen afzonderlijk mee. De wissels compenseren eerdere verschillen zo veel mogelijk binnen de gekozen bloklengte.</p></div></div><p id="coachFairSummary" class="coach-fair-summary"></p><div id="coachFairRows"></div><p class="coach-fair-legend">Exact gelijk is soms wiskundig onmogelijk: met negen veldspeelsters kun je 200 veldminuten per wedstrijd niet exact verdelen. Als dezelfde keeper vaak alle 40 minuten speelt, ontstaan ook grotere verschillen inclusief keepen.</p>';
 stats.querySelector('.view-head').insertAdjacentElement('afterend',fair);
+
+const actualCard=document.createElement('section');actualCard.id='coachActualMinutes';actualCard.className='coach-card';
+actualCard.innerHTML='<div class="coach-heading"><div><span class="coach-tag">Na de wedstrijd</span><h3>Werkelijk gespeelde minuten</h3><p>Controleer na de wedstrijd de minuten per speelster. Je kunt veld- en keepersminuten afzonderlijk invullen. De volgende wisselplannen houden rekening met deze bevestigde registratie.</p><p id="coachActualFixture" class="coach-current-fixture"></p></div></div><div id="coachActualTable"></div><p class="coach-status" id="coachActualFeedback" aria-live="polite"></p><div class="coach-sticky-actions"><button type="button" id="coachConfirmActual" class="coach-btn is-primary">Bevestig gespeelde minuten</button><button type="button" id="coachActualReset" class="coach-btn">Vul gepland opnieuw in</button><button type="button" id="coachRemoveActual" class="coach-btn">Verwijder registratie</button></div>';
+fair.insertAdjacentElement('afterend',actualCard);
+
 const panel=document.createElement('section');panel.className='view-panel';panel.id='screen-tactics';panel.dataset.viewPanel='tactics';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-label','Tactiek en kladblok');
 panel.innerHTML='<div class="view-head"><div><div class="eyebrow">PW MO14-1</div><h2>Tactiek & kladblok</h2><p class="lead">Notities en veldtekeningen voor jouw wedstrijd. Sleep speelsters, teken looplijnen en download het resultaat.</p><p class="coach-current-fixture" id="coachTacticFixture"></p></div></div><section class="coach-card"><div class="coach-heading"><div><span class="coach-tag">Kladblaadje</span><h3>Jouw wedstrijdaantekeningen</h3><p>Leg opdrachten vast: bijvoorbeeld druk zetten, passing, strafcorners of het sterke blok.</p></div></div><div class="coach-note-row"><div><b>Sterk blok</b>Tess · Cato · Eline · Lidewij · Coco-Mijn, plus een aparte keeper.</div><div><b>Praktische tip</b>Schrijf per blok één aanwijzing. Je kunt de aantekeningen later downloaden.</div></div><label class="fieldlabel" for="coachNotes">Notities</label><textarea id="coachNotes" class="coach-notes" maxlength="5000" placeholder="Tess + Cato achter, Eline midden, Lidewij en Coco voor. Wat doen we bij balverlies?"></textarea><div class="coach-actions" style="margin-top:12px"><button type="button" class="coach-btn" id="coachDownloadNotes">Download notities</button><button type="button" class="coach-btn" id="coachCopyNotes">Kopieer tekst</button></div></section><section class="coach-card"><div class="coach-heading"><div><span class="coach-tag">Zaalveld</span><h3>Teken de spelsituatie</h3><p>Je vinger, stylus en muis werken op hetzelfde veld. Pijlen zijn looplijnen; cirkels zijn zones. Verplaats de pionnen van de opgestelde speelsters.</p></div></div><div class="coach-board-toolbar" role="toolbar" aria-label="Tekengereedschap"><button class="coach-tool is-selected" type="button" data-coach-tool="pen" aria-pressed="true">✎ Pen</button><button class="coach-tool" type="button" data-coach-tool="arrow" aria-pressed="false">➜ Pijl</button><button class="coach-tool" type="button" data-coach-tool="circle" aria-pressed="false">◯ Cirkel</button><button class="coach-tool" type="button" data-coach-tool="move" aria-pressed="false">✥ Verplaats</button><label class="coach-colors"><input type="color" id="coachColor" value="#79283e" aria-label="Penkleur"></label></div><canvas id="coachBoard" class="coach-board-canvas" width="960" height="640" aria-label="Interactief zaalhockeyveld voor tactische tekeningen"></canvas><p class="coach-board-hint">Alles wordt per wedstrijd op dit apparaat bewaard. Kies Verplaats om speelsterpionnen over het veld te schuiven.</p><div class="coach-toolbar-split"><div class="coach-actions"><button class="coach-btn" type="button" id="coachUndo">↶ Ongedaan</button><button class="coach-btn" type="button" id="coachRedo">↷ Opnieuw</button><button class="coach-btn" type="button" id="coachClear">Wis tekening</button></div><button class="coach-btn is-primary" type="button" id="coachDownloadBoard">Download veld als PNG</button></div></section><p class="coach-footnote">Geen gegevens worden gedeeld met een externe dienst. Voor gebruik op een ander apparaat download je de PNG en je notities.</p>';
 plan.parentElement.appendChild(panel);
@@ -46,15 +51,64 @@ el('coachStrong').addEventListener('click',()=>{
  m.firstLineup={...STRONG};if(!m.coachNotes)m.coachNotes='Sterk blok: Tess en Cato achter, Eline midden, Lidewij en Coco voor. Keeper: '+find(m.keeper).name+'.\nAandachtspunten:';
  invalidate();showView('plan',false);
 });
-function minuteTotals(){const sums=Object.fromEntries(state.roster.map(p=>[p.id,{name:p.name,field:0,goal:0,total:0,played:0}]));let games=0;
- for(let i=0;i<state.matches.length;i++){const p=getPlan(i);if(p.error)continue;games++;for(const q of p.pool){sums[q.id].field+=p.counts[q.id]*p.step;sums[q.id].total+=p.counts[q.id]*p.step;sums[q.id].played++;}sums[p.keeper.id].goal+=p.total;sums[p.keeper.id].total+=p.total;sums[p.keeper.id].played++;}
- return {games,rows:Object.values(sums).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name))};
+function minuteTotals(){
+ const sums=Object.fromEntries(state.roster.map(p=>[p.id,{id:p.id,name:p.name,field:0,goal:0,total:0,actual:0,actualField:0,actualGoal:0,played:0}]));
+ let games=0,confirmedGames=0;
+ for(let i=0;i<state.matches.length;i++){
+  const p=getPlan(i),m=state.matches[i];if(p.error)continue;games++;
+  const confirmed=Boolean(m.actualConfirmed&&m.actualField&&m.actualGoal);if(confirmed)confirmedGames++;
+  for(const q of state.roster){
+   const field=p.pool.some(x=>x.id===q.id)?(p.counts[q.id]||0)*p.step:0;
+   const goal=p.keeper.id===q.id?p.total:0;
+   const realField=confirmed?Number(m.actualField[q.id]||0):0;
+   const realGoal=confirmed?Number(m.actualGoal[q.id]||0):0;
+   sums[q.id].field+=confirmed?realField:field;
+   sums[q.id].goal+=confirmed?realGoal:goal;
+   sums[q.id].total+=confirmed?realField+realGoal:field+goal;
+   if(confirmed){sums[q.id].actual+=realField+realGoal;sums[q.id].actualField+=realField;sums[q.id].actualGoal+=realGoal;}
+   if(field+goal>0||realField+realGoal>0)sums[q.id].played++;
+  }
+ }
+ return {games,confirmedGames,rows:Object.values(sums).sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name))};
 }
 function renderFair(){
- const {games,rows}=minuteTotals(),used=rows.filter(q=>q.played),max=Math.max(1,...used.map(x=>x.total)),min=Math.min(...used.map(x=>x.total)),fields=used.filter(x=>x.field),range=Math.max(...fields.map(x=>x.field))-Math.min(...fields.map(x=>x.field));
- el('coachFairSummary').textContent=games+' wedstrijden gepland · verschil veldminuten '+range+' min · verschil inclusief keepen '+(max-min)+' min. '+(max===min?'De totale speeltijden zijn op dit moment gelijk.':'De app verkleint verschillen waar mogelijk; dezelfde keeper iedere wedstrijd geeft onvermijdelijk hogere totaaltijden.');
- el('coachFairRows').innerHTML=rows.map(p=>'<div class="coach-fair-row"><strong>'+safe(p.name)+'</strong><div class="coach-fair-bar" title="'+p.field+' veld + '+p.goal+' doel"><div class="coach-fair-fill" style="width:'+Math.max(1,p.total/max*100).toFixed(1)+'%"></div></div><span>'+p.total+' min</span></div>').join('');
+ const {games,confirmedGames,rows}=minuteTotals(),used=rows.filter(q=>q.played);
+ const max=Math.max(1,...used.map(x=>x.total)),min=Math.min(...used.map(x=>x.total));
+ const field=used.filter(x=>x.field),range=field.length?Math.max(...field.map(x=>x.field))-Math.min(...field.map(x=>x.field)):0;
+ el('coachFairSummary').textContent=games+' wedstrijden in het schema · '+confirmedGames+' werkelijk geregistreerd · verschil veldminuten '+range+' min · verschil inclusief keepen '+(max-min)+' min. '+(max===min?'Iedereen heeft in dit schema evenveel minuten.':'Exact gelijke minuten zijn met de huidige keeperkeuzes en bloklengte niet mogelijk.');
+ el('coachFairRows').innerHTML=rows.map(p=>'<div class="coach-fair-row"><strong>'+safe(p.name)+'</strong><div class="coach-fair-bar" title="'+p.field+' veld + '+p.goal+' doel, waarvan '+p.actual+' min bevestigd"><div class="coach-fair-fill" style="width:'+Math.max(1,p.total/max*100).toFixed(1)+'%"></div></div><span>'+p.total+' min</span></div>').join('');
+ el('coachFairRows').insertAdjacentHTML('afterend','');
 }
+function renderActual(){
+ const m=match(),p=getPlan(state.selectedMatch),confirmed=Boolean(m.actualConfirmed);
+ el('coachActualFixture').textContent='Wedstrijd '+(state.selectedMatch+1)+' · '+formatKickoff(state.selectedMatch)+' · '+(m.opponent||'Tegenstander nog invullen');
+ if(p.error){el('coachActualTable').innerHTML='<p>Los eerst de selectie op om speeltijd vast te leggen.</p>';el('coachActualFeedback').textContent=p.error;return;}
+ el('coachActualTable').innerHTML='<div class="coach-actual-header"><span>Speelster</span><span>Veld (min)</span><span>Doel (min)</span></div>'+state.roster.map(q=>{
+  const field=confirmed?Number(m.actualField?.[q.id]||0):(p.pool.some(x=>x.id===q.id)?(p.counts[q.id]||0)*p.step:0);
+  const goal=confirmed?Number(m.actualGoal?.[q.id]||0):(p.keeper.id===q.id?p.total:0);
+  return '<div class="coach-actual-row"><strong>'+safe(q.name)+'</strong><label><span>Veld</span><input type="number" min="0" max="'+p.total+'" step="1" inputmode="numeric" data-actual-player="'+safe(q.id)+'" data-actual-kind="field" value="'+field+'" aria-label="Veldminuten '+safe(q.name)+'"></label><label><span>Doel</span><input type="number" min="0" max="'+p.total+'" step="1" inputmode="numeric" data-actual-player="'+safe(q.id)+'" data-actual-kind="goal" value="'+goal+'" aria-label="Keepersminuten '+safe(q.name)+'"></label></div>';
+ }).join('');
+ el('coachActualFeedback').textContent=confirmed?'Bevestigd: deze minuten tellen mee voor de volgende wedstrijden. Je kunt ze corrigeren en opnieuw bevestigen.':'Nog niet bevestigd: dit zijn de geplande minuten. Controleer wat er daadwerkelijk gespeeld is.';
+ el('coachActualFeedback').classList.toggle('warn',!confirmed);
+}
+function saveActual(){
+ const m=match(),p=getPlan(state.selectedMatch);if(p.error)return;
+ const field={},goal={};let sumField=0,sumGoal=0;
+ for(const q of state.roster){
+  const read=kind=>Number(el('coachActualTable').querySelector('[data-actual-player="'+q.id+'"][data-actual-kind="'+kind+'"]')?.value);
+  const f=read('field'),g=read('goal');
+  if(!Number.isInteger(f)||!Number.isInteger(g)||f<0||g<0||f+g>p.total){el('coachActualFeedback').textContent='Ongeldige minuten bij '+q.name+': maximaal '+p.total+' minuten totaal per speelster.';el('coachActualFeedback').classList.add('warn');return;}
+  if(m.absent.includes(q.id)&&(f+g)>0){el('coachActualFeedback').textContent=q.name+' staat als afwezig vermeld. Pas eerst de selectie aan.';el('coachActualFeedback').classList.add('warn');return;}
+  field[q.id]=f;goal[q.id]=g;sumField+=f;sumGoal+=g;
+ }
+ if(sumField!==5*p.total||sumGoal!==p.total){el('coachActualFeedback').textContent='Controleer de optelling: '+sumField+'/'+(5*p.total)+' veldminuten en '+sumGoal+'/'+p.total+' keepersminuten. Niet opgeslagen.';el('coachActualFeedback').classList.add('warn');return;}
+ m.actualField=field;m.actualGoal=goal;m.actualConfirmed=true;m.actualRecordedAt=new Date().toISOString();
+ invalidate();showView('stats',false);
+}
+el('coachConfirmActual').addEventListener('click',saveActual);
+el('coachActualReset').addEventListener('click',()=>{delete match().actualConfirmed;delete match().actualField;delete match().actualGoal;invalidate();showView('stats',false);});
+el('coachRemoveActual').addEventListener('click',()=>{if(!match().actualConfirmed)return;if(!confirm('Verwijder de geregistreerde minuten van deze wedstrijd?'))return;delete match().actualConfirmed;delete match().actualField;delete match().actualGoal;delete match().actualRecordedAt;invalidate();showView('stats',false);});
+
 function syncNotes(){const m=match();el('coachTacticFixture').textContent='Wedstrijd '+(state.selectedMatch+1)+' · '+formatKickoff(state.selectedMatch)+' · '+(m.opponent||'Tegenstander nog invullen');if(lastId!==m.fixtureId){el('coachNotes').value=m.coachNotes||'';lastId=m.fixtureId;past=[];future=[];}}
 el('coachNotes').addEventListener('input',e=>{match().coachNotes=e.target.value;save();});
 el('coachDownloadNotes').addEventListener('click',()=>download(new Blob([match().coachNotes||''],{type:'text/plain;charset=utf-8'}),'PW_MO14-1_notities_wedstrijd_'+(state.selectedMatch+1)+'.txt'));
@@ -113,7 +167,7 @@ el('coachRedo').addEventListener('click',()=>{if(!future.length)return;past.push
 el('coachClear').addEventListener('click',()=>{if(!confirm('Wis alle tekeningen en verplaatste speelsters voor deze wedstrijd?'))return;remember();match().coachBoard={strokes:[],tokens:{}};save();paintBoard();});
 el('coachDownloadBoard').addEventListener('click',()=>{paintBoard();board.toBlob(blob=>{if(blob)download(blob,'PW_MO14-1_tactiek_wedstrijd_'+(state.selectedMatch+1)+'.png');},'image/png');});
 
-const baseRender=render;render=function(){baseRender();renderFirst();renderFair();syncNotes();paintBoard();};
+const baseRender=render;render=function(){baseRender();renderFirst();renderFair();renderActual();syncNotes();paintBoard();};
 cache={};render();
 window.PWCoachPlus={minuteTotals,render:()=>render(),strong:STRONG};
 })();
