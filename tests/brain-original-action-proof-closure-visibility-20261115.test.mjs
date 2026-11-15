@@ -44,7 +44,7 @@ test('execution and verified non-financial outcome with learning are visible and
  assert.equal(rows[0].closeReviewReady,true);
  assert.equal(rows[0].closedVerified,false);
  assert.match(customerActionProgressMarkup(model([a])),/6 uur/);
- assert.match(customerActionProgressMarkup(model([a])),/sluit uitsluitend via de bestaande ONE BRAIN-autoriteit/);
+ assert.match(customerActionProgressMarkup(model([a])),/afsluiting is uitsluitend via de bestaande ONE BRAIN-autoriteit mogelijk/);
 });
 
 test('actual closure is shown only with independent source-matched original ONE BRAIN receipt',()=>{
