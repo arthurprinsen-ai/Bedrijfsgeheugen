@@ -3,6 +3,7 @@ import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-au
 import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
 import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
 import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource, isPersonalEditorialSourceSafe, canonicalPersonalSourceUrl, reconcileDatedPersonalSourceContext } from '../_shared/personal-observational-source-routing.mjs';
+import {personalFirstPersonSourceViolations,isPersonalPublicationDay} from '../_shared/personal-first-person-story-gate.mjs';
 import { rotateDistinctMiraQueries } from './distinct-source-queries.mjs';
 import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-result.mjs';
@@ -233,6 +234,42 @@ Deno.serve(async(req:Request)=>{
  const personalRotation=await db.rpc('powerhouse_ensure_personal_source_rotation_v2',{p_date:runDate});
  if(personalRotation.error)errors.push('personal_source_rotation:'+personalRotation.error.message);
  const personalSourceReady=!personalRotation.error && personalRotation.data?.ok===true;
+ // Public news remains useful context, but is NEVER authorization to
+ // impersonate Arthur. Only original, still-eligible user-fact claims prove
+ // personal story supply. Sunday has no personal publishing obligation.
+ const personalStoryDue=isPersonalPublicationDay(runDate);
+ let genuinePersonalStoryReady=false;
+ if(personalStoryDue){
+   const {data:originalPersonalSources,error:personalFactReadError}=await db
+     .from('powerhouse_content_recommendations')
+     .select('recommendation_id,evidence,status,run_date')
+     .eq('run_date',runDate).eq('target_channel','linkedin_personal')
+     .in('status',['suggested','accepted']).limit(100);
+   if(personalFactReadError)errors.push('original_personal_user_fact_read_failed:'+personalFactReadError.message);
+   else genuinePersonalStoryReady=(originalPersonalSources||[]).some((candidate:any)=>
+     personalFirstPersonSourceViolations(candidate.evidence||{},runDate).length===0);
+   if(!genuinePersonalStoryReady){
+     const occurrenceId='original-personal:first-person-user-fact:'+runDate;
+     const dig=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(occurrenceId));
+     const payloadSha=[...new Uint8Array(dig)].map((v)=>v.toString(16).padStart(2,'0')).join('');
+     const recorded=await db.rpc('brain_observe_failure',{
+       p_occurrence_id:occurrenceId,
+       p_fingerprint:'powerhouse|personal-linkedin|no-verified-user-life-story|'+runDate.replaceAll('-','')+'-v1',
+       p_payload_sha256:payloadSha,
+       p_evidence:{
+         run_date:runDate,original_owner:'powerhouse-content-orchestrator / first-person user-fact source intake',
+         problem:'PERSONAL_USER_EXPERIENCE_NOT_VERIFIED',
+         source_rotation_only_supplied_public_news:personalRotation.data?.ok===true,
+         corrective_action:'Obtain a genuinely new owner-confirmed personal-life moment with canonical user-fact lineage. Never draft first-person from public news or company content.',
+         private_sharing_requires_consent:true,provider_post_proven:false,
+         no_parallel_scheduler:true,one_original_executor:true
+       }
+     });
+     if(recorded.error)errors.push('personal_user_fact_brain_receipt_failed');
+   }
+ }
+ const personalPublishingSourceReady=!personalStoryDue||genuinePersonalStoryReady;
+
  // Preserve the same original ONE BRAIN and exactly one idempotent daily owner.
  if(!personalRotation.error&&!personalSourceReady){
    const occurrenceId='personal-radar:source-supply:'+runDate+':complete-source-not-ready';
@@ -253,12 +290,12 @@ Deno.serve(async(req:Request)=>{
    });
    if(observed.error)errors.push('personal_source_supply_brain_receipt_failed');
  }
- const allSourceReady=supply.ok&&personalSourceReady;
+ const allSourceReady=supply.ok&&personalPublishingSourceReady;
  return json({
    ok:errors.length===0&&allSourceReady,
    state:allSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
-   personalSourceState:personalSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
-   personalSourceRecovery:personalSourceReady?null:{owner:'powerhouse-mira-problem-radar-v1 / powerhouse_ensure_personal_source_rotation_v2',reason:personalRotation.data?.reason||'ORIGINAL_PERSONAL_SOURCE_UNVERIFIED',sendsAuthorized:false},
+   personalSourceState:!personalStoryDue?'NOT_DUE':personalPublishingSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   personalSourceRecovery:personalPublishingSourceReady?null:{owner:'powerhouse-content-orchestrator / original user-fact source intake',reason:'PERSONAL_USER_EXPERIENCE_NOT_VERIFIED',public_news_not_authority:true,sendsAuthorized:false},
    sourceRecovery:supply.ok?null:{
      contract:supply.contract,status:'RECOVERY_DUE',
      reason:supply.reason,code:supply.code,
@@ -267,6 +304,6 @@ Deno.serve(async(req:Request)=>{
    },
    runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
    sourceIntake:{providerCandidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples},
-   materialized:mat.data,personalSourceRotation:personalRotation.data||null,errors
+   materialized:mat.data,personalSourceRotation:personalRotation.data||null,personalStoryDue,genuinePersonalStoryReady,errors
  }, classifyMiraRadarHttpStatus({sourceReady:allSourceReady,errors}));
 });
