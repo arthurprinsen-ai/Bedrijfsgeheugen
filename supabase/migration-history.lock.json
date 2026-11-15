@@ -3484,8 +3484,12 @@
     {
       "version": "20261115170000",
       "name": "outcome_memory_source_readback_truth_v1"
+    },
+    {
+      "version": "20261115235500",
+      "name": "sales_action_reexecution_immutable_attempt_lineage_v1"
     }
   ],
-  "captured_at": "2026-11-15T16:17:21.028Z",
+  "captured_at": "2026-11-15T17:03:59.159987Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

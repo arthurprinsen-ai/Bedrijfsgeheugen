@@ -13,7 +13,7 @@ const liveEvidence = [
   { type:'OBLIGATIONS_COMPLETE', producer:'PRODUCTION_READBACK', productionIdentity },
   { type:'CAPABILITY_HANDOFF', producer:'BG167', productionIdentity },
   { type:'LEARNING_WRITEBACK', producer:'BG168_BG166', productionIdentity },
-].map(item => ({ ...item, accepted:true, independent:true, taskIdentity:'ob-2', candidateIdentity:'sha-live', ...(item.type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:ob-2',materialSourceRevision:'source-rev:sha-live'}}:{}) }));
+].map(item => ({ ...item, accepted:true, independent:true, taskIdentity:'ob-2', candidateIdentity:'sha-live', ...(item.type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:ob-2',materialSourceRevision:'source-rev:sha-live'}}:item.type==='CAPABILITY_HANDOFF'?{exactProduction:true,metadata:{sourceRevision:'sha-live',sourceReceiptRef:'original:handoff-readback',consumerAckRef:'original:consumer-processed-ack'}}:item.type==='LEARNING_WRITEBACK'?{exactProduction:true,metadata:{sourceRevision:'sha-live',sourceReceiptRef:'original:learning-readback',learningApplicationRef:'original:verified-learning-application'}}:{}) }));
 
 test('shadow backfill reopens partial PR and failed workflow candidates without dispatching', () => {
   const report = reconcileCompletionBackfill({

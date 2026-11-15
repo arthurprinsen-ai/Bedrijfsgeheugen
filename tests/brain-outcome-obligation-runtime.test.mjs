@@ -40,7 +40,7 @@ function trustedCompletionEvidence(obligationId, candidateIdentity, productionId
     { ref:'candidate-tests', type:'CANDIDATE_TESTS', producer:'BRAIN_DELIVERY', accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity },
     ...['PROTECTED_DELIVERY:BG169','PRODUCTION_IDENTITY:BG169','FUNCTIONAL_READBACK:PRODUCTION_READBACK','OBLIGATIONS_COMPLETE:PRODUCTION_READBACK','CAPABILITY_HANDOFF:BG167','LEARNING_WRITEBACK:BG168_BG166'].map(value => {
       const [type, producer] = value.split(':');
-      return { ref:type.toLowerCase(), type, producer, accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity, productionIdentity,...(type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:'+obligationId,materialSourceRevision:'source-rev:'+candidateIdentity}}:{}) };
+      return { ref:type.toLowerCase(), type, producer, accepted:true, independent:true, taskIdentity:obligationId, candidateIdentity, productionIdentity,...(type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:'+obligationId,materialSourceRevision:'source-rev:'+candidateIdentity}}:type==='CAPABILITY_HANDOFF'?{exactProduction:true,metadata:{sourceRevision:candidateIdentity,sourceReceiptRef:'original:handoff-readback',consumerAckRef:'original:consumer-processed-ack'}}:type==='LEARNING_WRITEBACK'?{exactProduction:true,metadata:{sourceRevision:candidateIdentity,sourceReceiptRef:'original:learning-readback',learningApplicationRef:'original:verified-learning-application'}}:{}) };
     }),
   ];
 }

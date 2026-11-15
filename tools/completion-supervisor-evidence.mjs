@@ -49,8 +49,12 @@ export function deriveTrustedCompletionEvidence(input = {}) {
       record({ type:'PRODUCTION_IDENTITY', producer:'PRODUCTION_READBACK', ref:`${runRef}:production-identity`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }),
       record({ type:'FUNCTIONAL_READBACK', producer:'PRODUCTION_READBACK', ref:`${runRef}:functional-readback`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }),
     );
-    if (input.capabilityHandoff === true) evidence.push(record({ type:'CAPABILITY_HANDOFF', producer:'BG167', ref:`${runRef}:capability-handoff`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }));
-    if (input.learningWriteback === true) evidence.push(record({ type:'LEARNING_WRITEBACK', producer:'BG168_BG166', ref:`${runRef}:learning-writeback`, obligationId, candidateIdentity, productionIdentity, exactProduction:true }));
+    // Release readback is not proof that the original receiving agent processed
+    // the handoff or applied learning. The old boolean CLI flags self-minted
+    // independent receipts without querying those distinct original sources.
+    if (input.capabilityHandoff === true || input.learningWriteback === true) {
+      throw new Error('ORIGINAL_CONSUMER_HANDOFF_AND_LEARNING_SOURCE_RECEIPTS_REQUIRED');
+    }
   }
   return Object.freeze(evidence);
 }
@@ -59,8 +63,8 @@ function parseArgs(argv) {
   const out = {};
   for (let i = 0; i < argv.length; i += 1) {
     const key = argv[i];
-    if (key === '--capability-handoff' || key === '--learning-writeback') out[key.slice(2)] = true;
-    else if (key.startsWith('--') && argv[i + 1]) { out[key.slice(2)] = argv[i + 1]; i += 1; }
+    if (key === '--capability-handoff' || key === '--learning-writeback') throw new Error('ORIGINAL_CONSUMER_HANDOFF_AND_LEARNING_SOURCE_RECEIPTS_REQUIRED');
+    if (key.startsWith('--') && argv[i + 1]) { out[key.slice(2)] = argv[i + 1]; i += 1; }
     else throw new TypeError(`unknown or incomplete CLI argument: ${key}`);
   }
   return out;
