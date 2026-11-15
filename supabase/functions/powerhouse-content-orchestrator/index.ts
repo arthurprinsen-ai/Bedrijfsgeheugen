@@ -2,7 +2,7 @@ import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} f
 import {assessOfficialBlogDateTruth} from '../_shared/blog-official-date-truth.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure,normalizeBlogQualityReview} from '../_shared/blog-quality-recovery.mjs';
-import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {buildVerifiedFounderReserve as buildVerifiedFounderReserve_raw,isStalePersonalSource,personalSourceEventTypes} from '../_shared/personal-founder-source-reserve.mjs';
 import {normalizeRecommendationEvidence} from '../_shared/recommendation-evidence-normalization.mjs';
 const buildVerifiedFounderReserve:(...args:any[])=>any=buildVerifiedFounderReserve_raw;
@@ -55,7 +55,7 @@ function blogReaderReadyViolations(artifact:any):string[]{
 }
 
 const PERSONAL_STEERING_STORY='In een geverifieerd ondernemersbouwverhaal is AI het technische middel, niet de propositie. Mijn overtuiging gaat over bedrijven die continu veranderen en daarom iedere dag beter moeten kunnen anticiperen, besluiten, uitvoeren en leren. Alleen bronbevestigde persoonlijke ervaringen; geen reclame, jargon of ongevraagde salespitch.';
-const OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT="Je bent eindredacteur van een strikt observerende, niet-zakelijke LinkedIn-post in natuurlijk Nederlands. Lever uitsluitend hetzelfde JSON-artifact. Schrijf 150 tot 175 woorden in vier korte alinea's. Gebruik uitsluitend de feiten uit verified_personal_source en source_text; beschrijf een herkenbaar alledaags voorval, de oorzaak en het concrete gevolg, zonder te doen alsof Arthur het zelf heeft meegemaakt. Geen ik/mijn/mij/me, geen eigen ervaringen, geen ondernemerschap, bedrijf, klant, Bedrijfsgeheugen, consultancy, zakelijke moraal, strategie, omzet, verkoop of oproep tot actie. Geen interne technische systemen of ongecontroleerde cijfers. Verzin niets; als de bron onvoldoende is, blijft publicatie afgekeurd. De vorige afgekeurde tekst is uitsluitend negatieve context. Controleer voordat je afrondt of de tekst geen zakelijke signalen bevat.";
+const OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT="Je bent eindredacteur van een strikt observerende, niet-zakelijke LinkedIn-post in natuurlijk Nederlands. Lever uitsluitend hetzelfde JSON-artifact. Schrijf 150 tot 175 woorden in vier korte alinea's. Gebruik uitsluitend de feiten uit verified_personal_source en source_text; beschrijf een herkenbaar alledaags voorval, de oorzaak en het concrete gevolg, zonder te doen alsof Arthur het zelf heeft meegemaakt. Geen ik/mijn/mij/me, geen eigen ervaringen, geen ondernemerschap, bedrijf, klant, Bedrijfsgeheugen, consultancy, zakelijke moraal, strategie, omzet, verkoop of oproep tot actie. Geen interne technische systemen of ongecontroleerde cijfers. Gebruik een alledaags kernwoord uit de bron letterlijk, zoals onlinebestelling of klantenservice wanneer die woorden daadwerkelijk in source_text staan; geen willekeurige dagelijkse situatie toevoegen. Verzin niets; als de bron onvoldoende is, blijft publicatie afgekeurd. De vorige afgekeurde tekst is uitsluitend negatieve context. Controleer voordat je afrondt of de tekst geen zakelijke signalen bevat.";
 const PERSONAL_LIFE_CORRECTION_PROMPT="Je bent eindredacteur van een persoonlijk LinkedIn-verhaal. Lever hetzelfde JSON-artifact: 150 tot 175 natuurlijke Nederlandse woorden in vier korte alinea's. Gebruik alleen verified_personal_source en uitsluitend expliciet geverifieerde persoonlijke handelingen en uitspraken; nooit verzonnen gebeurtenissen, meningen, gevoelens of ervaringen. Geen zakelijke brug, geen bedrijven, klanten, strategie, omzet, Bedrijfsgeheugen of consultancy. Gebruik ik/mijn alleen als de bron eerste-persoonsclaims werkelijk ondersteunt; eindig met een oprechte vraag. Geen links, verkoop-CTA, systeemtaal of verzonnen bewijs. Als het persoonlijke feit onvoldoende is, moet de bestaande gate afkeuren.";
 
 function compactLinkedInCommentary(value:string,maxLength=2800):string{
@@ -384,9 +384,11 @@ function personalFinalCopyValid(body:string, evidence:any) {
     const technicalJargon=/\b(runtime|heartbeat|workflow|pipeline|orchestration|readback|materializer|supabase|github|netlify|postgres(?:ql)?|database|sql|endpoint|deploy|commit|sha|idempotenc(?:y|ie)|lineage|source[_ -]?health|recovery[_ -]?due|evidence[_ -]?gap|architecture[_ -]?state|learning[_ -]?state|content[_ -]?loop)\b|\b[a-z][a-z0-9]*_[a-z0-9_]+\b/i.test(body);
     return hasFirstPerson && buildSignal && !technicalJargon && !salesPitch && clean(body).length >= 280;
   }
-  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|bedrijven|management|ondernemer|organisatie|proces|digitalisering|consultancy|consultant|klant|opdrachtgever|mkb|sales|lead|omzet|offerte|strategie|business|propositie|dienstverlening|dashboard|governance|roadmap|stakeholder|data-platform|datawarehouse/i.test(body);
+  // One exact lexical truth policy: do not confuse 'klantenservice' (an
+  // everyday source event) with the standalone sales claim 'klant'.
+  const noBusinessBridge=!personalNonBuilderBusinessSignal(body,{observational:evidence?.observational_personal_theme_verified===true});
   if (evidence?.observational_personal_theme_verified === true) {
-    const dailyLife=/\b(thuis|telefoon|app|wandeling|winkel|boodschappen|supermarkt|auto|fiets|trein|school|sport|weekend|vakantie|keuken|straat|buurt|regen|pakket|bezorging|scherm|offline)\b/i.test(body);
+    const dailyLife=/\b(thuis|telefoon|app|wandeling|winkel|boodschappen|supermarkt|auto|fiets|trein|school|sport|weekend|vakantie|keuken|straat|buurt|regen|pakket|bezorging|scherm|offline|onlinebestelling|klantenservice|webwinkel)\b/i.test(body);
     return !hasFirstPerson && dailyLife && noBusinessBridge;
   }
   const anchors=['printer','08:07','08:10','cyaan'].filter(x=>source.includes(x));
@@ -965,7 +967,8 @@ Deno.serve(async (req) => {
       let editorialViolations=personalEditorialViolations(bodyText,personalSource?.evidence||{});
       // One source-grounded editorial rewrite is allowed before final rejection.
       // This is not a publication bypass: all existing hard gates run again.
-      if (editorialViolations.length && generationProvider==='OpenAI' && apiKey) {
+      const personalTruthViolation=!personalFinalCopyValid(bodyText,personalSource?.evidence||{});
+      if ((editorialViolations.length||personalTruthViolation) && generationProvider==='OpenAI' && apiKey) {
         // The original full editorialSystem is several independent channel, experiment and
         // governance instructions; repeating it during repair kept producing contradictory prose.
         // This bounded retry is not an alternate publisher or quality-policy override.
@@ -991,7 +994,8 @@ Deno.serve(async (req) => {
           verified_personal_source:personalSource,
           recommendation:recommendation ? {reason:recommendation.reason,topic_key:recommendation.topic_key,evidence:recommendation.evidence} : null,
           rejected_draft:bodyText,
-          editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
+          editorial_rejection_codes:[...editorialViolations.map((item:any)=>item.code),
+            ...(personalTruthViolation?['PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED']:[])]
         };
         // Editorial revisions need the same bounded truncation recovery as the
         // initial structured artifact. No retry for rejected prose, identity,

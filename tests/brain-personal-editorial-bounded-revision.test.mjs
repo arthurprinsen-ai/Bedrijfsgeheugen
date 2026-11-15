@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
 const code=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
-test('bounded revision is only attempted after personal editorial rejection',()=>{
-  assert.match(code,/if \(editorialViolations\.length && generationProvider==='OpenAI' && apiKey\)/);
-  assert.match(code,/editorial_rejection_codes:editorialViolations\.map/);
+test('bounded revision is permitted after either personal editorial or final truth veto, but never as provider-send bypass',()=>{
+  assert.match(code,/const personalTruthViolation=!personalFinalCopyValid\(bodyText,personalSource\?\.evidence\|\|\{\}\)/);
+ assert.match(code,/if \(\(editorialViolations\.length\|\|personalTruthViolation\) && generationProvider==='OpenAI' && apiKey\)/);
+  assert.match(code,/editorial_rejection_codes:\[\.\.\.editorialViolations\.map/);
+ assert.match(code,/personalTruthViolation\?\['PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED'\]/);
   assert.match(code,/\(budget:number\)=>callAI\(apiKey,gov\.model_id,correctionPrompt,revisionInput,artifactTool,budget,'low'\)/);
   assert.match(code,/retryIncompleteEditorialDraft\(/);
   assert.match(code,/\n\s*2400,\(error:unknown\)=>error instanceof AIProviderIncompleteOutputError/);
