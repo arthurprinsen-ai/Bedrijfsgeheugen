@@ -124,7 +124,7 @@ export function createSupabaseOutcomeObligationStores({
       catch { throw new Error('Supabase outcome obligation store failed: dispatch page response invalid JSON'); }
       if (!Array.isArray(rows)) throw new Error('Supabase outcome obligation store failed: dispatch page response must be an array');
       const contentRange = response.headers?.get?.('content-range') ?? '';
-      const match = /^(\\d+)-(\\d+)\\/(\\d+)$/.exec(contentRange);
+      const match = /^(\d+)-(\d+)\/(\d+)$/.exec(contentRange);
       const empty = contentRange === '*/0';
       if (!match && !empty) throw new Error('Supabase outcome obligation store failed: dispatch exact Content-Range missing');
       const total = empty ? 0 : Number(match[3]);
