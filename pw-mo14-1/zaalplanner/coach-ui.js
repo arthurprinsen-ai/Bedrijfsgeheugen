@@ -114,4 +114,5 @@ el('coachClear').addEventListener('click',()=>{if(!confirm('Wis alle tekeningen 
 el('coachDownloadBoard').addEventListener('click',()=>{paintBoard();board.toBlob(blob=>{if(blob)download(blob,'PW_MO14-1_tactiek_wedstrijd_'+(state.selectedMatch+1)+'.png');},'image/png');});
 
 const baseRender=render;render=function(){baseRender();renderFirst();renderFair();syncNotes();paintBoard();};
+cache={};render();
 window.PWCoachPlus={minuteTotals,render:()=>render(),strong:STRONG};
