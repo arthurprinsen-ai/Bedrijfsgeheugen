@@ -18,3 +18,13 @@
 - De productie-URL `https://pw-mo14-1.netlify.app/zaalplanner/` gaf de verwachte keeperkeuze en PDF-exportcontrole terug. De originele homepage werd byte-voor-byte vergeleken met het vooraf bewaarde exemplaar en bleef gelijk.
 - Geen Make gebruikt; uitsluitend de MO14-specifieke GitHub Actions-release en Netlify-provider. Providerobservatie: https://app.netlify.com/projects/pw-mo14-1.
 - Scopebeperking: de source-PR #5875 blijft los van deze onafhankelijke siteproductie nog niet beschermd gemerged in de brede Bedrijfsgeheugen-repository; ruimere Powerhouse-CI en gebruikers-interactietests zijn dus niet bewezen groen.
+
+## Mobiele app-ervaring v3 — 15 november 2026
+
+- **Release:** onafhankelijke site `pw-mo14-1`, nieuwe provider CURRENT/READY deploy `6af9ebcb463f126a95c7f903`, gepubliceerd op 2026-11-15 17:29:09Z.
+- **Directe uitvoer:** bestaande originele GitHub Actions-route `mo14-zaalplanner-direct-netlify.yml`, succesvolle run [43741276076](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43741276076), zonder Make.
+- **UI:** mobiel app-shell met vier tabs (Opstelling, Selectie, Minuten, Download), vaste navigatie onderaan, bloknavigatie met tikken en vegen, groot veld, zichtbare bank en volgende wissel, lokale opslag, overzicht over 7 wedstrijden.
+- **PWA:** manifest `display: standalone`, service worker met uitsluitend `/zaalplanner/`-scope, PNG-iconen 192 en 512, installatie via Safari Delen > Zet op beginscherm.
+- **QA op lokaal mobiel browserformaat:** keeper wijzigen, Jackie afwezig melden, opstelling regenereert, 6 personen (5+keeper) op veld, 4 op bank bij volledige selectie, 7 verschillende startopstellingen, PNG + PDF werkend gegenereerd, geen JavaScript-paginafouten.
+- **Onafhankelijke productieproef:** providercurrent = nieuw deploy-ID, HTTP `/zaalplanner/` plus manifest, sw.js en beide iconen aanwezig, oorspronkelijke homepage byte-identiek; GitHub Actions `success`.
+- **Restgrens:** interactieve productiebrowser-acceptatietest ontbreekt. De hoofdrepository-PR #5875 is niet beschermd gemerged; dat is geen blocker voor de afzonderlijk aantoonbaar gepubliceerde MO14-site, maar blijft open governance-werk.
