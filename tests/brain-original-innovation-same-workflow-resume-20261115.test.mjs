@@ -22,9 +22,9 @@ test('one original daily scheduler, same workflow and shared concurrency for rec
 
 test('normal daily jobs remain protected by the identical first-run admission contract',()=>{
  for(const id of ['daily-admission','improve','model-freshness']){
-   const job=workflow.match(new RegExp('^  '+id+':\\n([\\s\\S]*?)(?=^  [a-z][a-z0-9-]*:\\n|$)','m'));
+   const job=workflow.split(new RegExp('^  '+id+':\\n','m'))[1]?.split(/^  [a-z][a-z0-9-]*:\n/m)[0];
    assert.ok(job,id+' exists');
-   assert.ok(job[1].includes(dailyCondition),id+' excludes repair-only replay');
+   assert.ok(job.includes(dailyCondition),id+' excludes repair-only replay');
  }
  assert.match(admission,/DUPLICATE_DAILY_RUN_SUPPRESSED/);
  assert.match(admission,/FIRST_DAILY_RUN_ADMITTED/);
