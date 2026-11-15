@@ -1,0 +1,7 @@
+# Native source ACK 873 — original Company Intelligence P0
+
+- Verified source: Supabase production project `adhjwmvyoixzjtmiroln` native provider `supabase_migrations.schema_migrations`: 873 applied, latest exact version/name `20261115235900/company_intelligence_existing_daily_source_receipt_v1`; readback `2026-11-15T17:37:27.655996Z`.
+- Original Git history still 872, preserved. Original repair PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5892 was merged exact SHA `995353f3fef886314339ef98e102fc4a6b69f1c4` and new SQL is already native applied. Do **not** apply again; only append existing provider identity to original immutable lock via protected PR.
+- Original production operational effect: native `company-intelligence-os:2026-11-15` source-attested original event `f846c546-d358-46cb-a9e7-078b70934469` and the original `self-improvement-layer:2026-11-15` source ACK match. No Company OS provider send; native cron #107 active; financial forecasts and realized savings still 0 rows; candidate original innovation intake health `RECOVERY_DUE` (not fake green).
+- Source: `supabase/migration-history.lock.json`. Regression `tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs`. Learning `brain/learning/2026-11-15-native-873-company-os-original-source-lock-parity.json`.
+- Full closure demands actual protected Required/CodeQL/preview source-ACK merge, exact native 873/873 + Git lock final readback, and separate independent financial outcomes and original agent innovation consumer ACK before P0 resolves.
