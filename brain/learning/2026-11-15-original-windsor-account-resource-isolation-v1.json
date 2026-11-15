@@ -1,0 +1,86 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|original177|optional-account-read-rejects-verified-posts|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "ORIGINAL_WINDSOR_ACCOUNT_PROVIDER_FAILURE_DISCARDS_POSTS",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original #177 code used a single Promise.all for mandatory Windsor provider post rows and optional account analytics. Any single rejected request discarded the successful other source read before its original source store; verified production currently shows WINDSOR_PROVIDER_HTTP_403 but has not isolated which underlying resource fails on the Vault key.",
+  "source_evidence": {
+    "original_cron": 177,
+    "original_edge": "bg-social-metrics-sync",
+    "original_failure": "WINDSOR_PROVIDER_HTTP_403",
+    "original_slots_utc": [
+      "2026-11-15T00:18:00Z",
+      "2026-11-15T06:18:00Z",
+      "2026-11-15T12:18:00Z"
+    ],
+    "delegated_windsor_account": "18234216",
+    "delegated_read_only_post_urns": 12,
+    "delegated_account_scope_read": true,
+    "original_vault_scope_not_verified": true
+  },
+  "prevention": {
+    "single_original_provider_reader": true,
+    "post_reader_mandatory": true,
+    "account_failure_safe_partial_post_proof": true,
+    "no_source_loss_on_optional_failure": true,
+    "no_fabricated_account_aggregate": true,
+    "no_new_scheduler_or_writer": true,
+    "original_one_brain_failure_readback": true,
+    "original_health_fail_closed": true,
+    "post_window_exact_proof_required": true,
+    "no_plan_unsupported_forced_public_refresh": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-windsor-company-source-177-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-windsor-company-source-177-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-windsor-177-brain-failure-handoff-20261114.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "OPTIONAL_ACCOUNT_READ_FAILURE_DROPS_MANDATORY_POST_READ",
+    "cause": "promise-all-all-or-nothing",
+    "prevention_rule": "retain source-authenticated post rows while reporting optional account fetch failure to original Brain; preserve RED source health",
+    "regression_guard": "tests/brain-original-windsor-company-source-177-20261114.test.mjs",
+    "next_owner": "existing bg-social-metrics-sync cron177 plus original Data Quality and social-learning/cron171",
+    "effect_proof": "PROTECTED_RELEASE_AND_REAL_ORIGINAL_177_RUN_PENDING"
+  },
+  "release_state": "PROTECTED_CANDIDATE_PENDING_WITH_BASIC_PLAN_REQUEST_GUARD",
+  "verified_business_outcome": false,
+  "evidence": {
+    "original_source_proof": "Original Supabase #177 provider_social_metric_ingest_receipt 2026-11-15 00:18,06:18,12:18 UTC has WINDSOR_PROVIDER_HTTP_403 and WINDSOR_STALE",
+    "parallel_read_failure_risk": "Original #177 source Promise.all rejects both post and account source results if either provider read rejects; isolated by same-original source adapter",
+    "independent_account_connector": "Windsor delegated linkedin_organic account 18234216 returned 12 original company post URNs and account rows read-only on 2026-11-15, no authorization transfer or provider write",
+    "published_provider_id_proof": "12/12 delegated provider post URNs matched existing social_posts; this is not production Vault credential proof or a measurement-window completion",
+    "live_provider_source_fulfilled": false,
+    "original_downstream_learning_proven": false,
+    "plan_authority": "Official Windsor public API docs; original user-linked delegated Windsor account reported BASIC on 2026-11-15, NOT proof of Supabase Vault-key plan ownership",
+    "plan_based_403_remediation_proven": false
+  },
+  "provider_plan_diagnosis": {
+    "status": "REPRODUCTION_PENDING_ORIGINAL_VAULT_PROVIDER_READ",
+    "connected_delegated_windsor_plan": "BASIC",
+    "observed_original_failure": "WINDSOR_PROVIDER_HTTP_403",
+    "original_query_explicit_refresh_interval_before_fix": "6h",
+    "original_query_explicit_refresh_since_before_fix": "3d",
+    "official_api_reference": "https://windsor.ai/api-documentation/",
+    "official_plan_reference": "https://windsor.ai/documentation/pricing-information",
+    "finding": "Windsor documents Basic as daily refresh versus hourly access at Standard and above; forcing public refresh_interval=6h can be incompatible. It is a plausible contributor, not an independently demonstrated root of the 403.",
+    "prevention": "Use same original #177 Vault-key provider reader with original bounded date/account fields and provider-managed refresh/cache, no forced refresh_interval or refresh_since query params",
+    "expected_evidence": "Native original #177 read must return qualified provider rows and independent source receipt without WINDSOR_PROVIDER_HTTP_403; otherwise preserve WAIT_EXTERNAL or explicit permission failure and original ONE BRAIN owner."
+  }
+}
