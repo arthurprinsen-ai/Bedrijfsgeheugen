@@ -7,12 +7,13 @@ import {planOriginalIncidentLearning} from '../_shared/publication-incident-lear
 import {planOwnerActionEscalations} from '../_shared/owner-action-escalation.mjs';
 import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candidate-regeneration.mjs';
 import {planPersonalObservationalReviewRecovery} from '../_shared/personal-observational-review-recovery.mjs';
+import {shouldRepairOriginalGrowthSource,verifyOriginalGrowthSourceRecovery} from '../_shared/original-growth-source-revision-recovery.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
 const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
 const DIRECT_TABLES=new Set(["content_publication_obligations","powerhouse_channel_decisions","brain_records","powerhouse_content_recommendations","powerhouse_instagram_media_jobs_v1","powerhouse_social_publish_capabilities_v1"]);
-const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1","brain_observe_failure"]);
+const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1","brain_observe_failure","powerhouse_capture_growth_source_daily_v1","powerhouse_daily_source_consume_v1","powerhouse_commercial_intelligence_heartbeat_v1"]);
 const DB_JSON_COLUMNS=new Set(['bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload','content_publication_obligations.evidence','content_publication_obligations.metrics','powerhouse_channel_decisions.delivery_evidence','powerhouse_channel_decisions.learning_evidence','powerhouse_content_artifacts.generation_evidence','powerhouse_content_recommendations.evidence','powerhouse_daily_runs.evidence','powerhouse_instagram_daily_winners_v1.selector_evidence','powerhouse_instagram_daily_winners_v1.outcome_evidence','powerhouse_instagram_media_jobs_v1.asset_manifest','powerhouse_instagram_media_jobs_v1.proof_manifest','powerhouse_media_proof_evidence_v1.proof_lineage','powerhouse_sales_actions.evidence']);
 const DB_ARRAY_CASTS=new Map([['powerhouse_channel_decisions.source_recommendation_ids','uuid[]'],['powerhouse_instagram_media_jobs_v1.allowed_providers','text[]'],['brain_records.predecessor_ids','text[]'],['brain_records.evidence_ids','text[]'],['brain_ai_governance_registry.data_categories','text[]'],['brain_ai_governance_registry.prohibited_data_categories','text[]'],['brain_ai_governance_registry.approval_evidence_ids','text[]'],['brain_ai_governance_registry.evidence_ids','text[]'],['brain_ai_governance_registry.subprocessors','text[]'],['brain_ai_governance_registry.provider_evidence_urls','text[]']]);
 const DB_DEFAULT_CONFLICT=new Map([['powerhouse_channel_decisions','run_date,channel'],['brain_records','tenant_id,record_id'],['content_publication_obligations','tenant_id,publication_date,channel'],['powerhouse_content_artifacts','run_date,channel'],['powerhouse_daily_runs','run_date'],['powerhouse_instagram_daily_winners_v1','run_date'],['bg_campaign_links','key'],['powerhouse_instagram_media_jobs_v1','tenant_id,publication_date,channel'],['powerhouse_media_proof_evidence_v1','fingerprint']]);
@@ -267,6 +268,39 @@ Deno.serve(async (req) => {
   const loopStartedAt = Date.now();
 
   try {
+    // Original #140 hourly lease, NOT a new producer/scheduler/owner. The
+    // original #175 producer is retriggered only on exact revision mismatch.
+    // No provider side effect or fabricated CRO experiment is possible here.
+    if (runDate === localDate()) {
+      const initial = await db.rpc('powerhouse_daily_source_consume_v1', {p_day:runDate});
+      if (initial.error) {
+        stepResults.push({name:'original_growth_source_revision_handoff',ok:false,degraded:true,error:'ORIGINAL_CONSUMER_RPC_FAILED'});
+      } else if (initial.data?.contract === 'original-daily-growth-source-one-loop-v1'
+          && initial.data?.source_day === runDate && initial.data?.consumer_accepted === true) {
+        stepResults.push({name:'original_growth_source_revision_handoff',ok:true,repaired:false,consumer_ack:true,
+          effect_proven:false});
+      } else if (shouldRepairOriginalGrowthSource(initial.data,runDate,localDate())) {
+        const capture = await db.rpc('powerhouse_capture_growth_source_daily_v1',{p_day:runDate});
+        if (capture.error || capture.data?.status === 'SKIPPED_OVERLAP') {
+          stepResults.push({name:'original_growth_source_revision_handoff',ok:false,degraded:true,error:'ORIGINAL_175_CAPTURE_FAILED_OR_BUSY'});
+        } else {
+          const consumer = await db.rpc('powerhouse_daily_source_consume_v1',{p_day:runDate});
+          const heartbeat = consumer.error || consumer.data?.consumer_accepted !== true
+            ? {data:null,error:{message:'NO_EXACT_CONSUMER_ACK'}}
+            : await db.rpc('powerhouse_commercial_intelligence_heartbeat_v1',{p_run_date:runDate});
+          const receipt = verifyOriginalGrowthSourceRecovery({
+            capture:capture.data,consume:consumer.data,heartbeat:heartbeat.data,runDate
+          });
+          stepResults.push({name:'original_growth_source_revision_handoff',ok:receipt.ok,
+            repaired:receipt.ok,consumer_ack:receipt.ok,effect_proven:false,
+            degraded:!receipt.ok,error:receipt.ok?null:receipt.reason,
+            source_revision:receipt.ok?receipt.sourceRevision:null});
+        }
+      } else {
+        stepResults.push({name:'original_growth_source_revision_handoff',ok:false,
+          degraded:true,error:'ORIGINAL_140_SOURCE_NOT_ACCEPTED_NO_SAFE_REPLAY'});
+      }
+    }
     const first = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
     // Readback is observational: a readback fault cannot cancel other safe
     // publication lanes or grant any of them additional publishing rights.
