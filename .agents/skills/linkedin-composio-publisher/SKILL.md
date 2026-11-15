@@ -448,3 +448,22 @@ Fingerprint: `powerhouse|linkedin|observation-builder-review-mismatch|20261115-v
 ## 15 November 2026 — persoonlijke eindtekst controle: één gedeeld taalcontract
 
 Fingerprint `powerhouse|linkedin|legacy-substring-personal-final-truth-veto|20261115-v1` (P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198). De originele `powerhouse-content-orchestrator` gaf in de natuurlijke run na de content-loop release `PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED` bij een geverifieerde observerende dagelijkse bron over onlinebestelling en klantenservice. De historische `personalFinalCopyValid` gebruikte een onbegrensde `/klant/`-substring die `klantenservice` als reclame behandelde, in strijd met het onafhankelijke `bg-pre-publish-review` en het gedeelde `personalNonBuilderBusinessSignal`-beleid (standalone-woordgrenzen). **Geen beleidsverlaging:** de oude eindcontrole gebruikt voortaan de bestaande gedeelde classifier; zelfstandige zakelijke woorden, verzonnen eerste-persoonsclaims, ongeverifieerde feiten, slechte bron en ongeldige final-hash blijven verboden. `onlinebestelling` en `klantenservice` zijn alleen geloofwaardige dagelijkse scènes wanneer de geverifieerde bron ze werkelijk bevat. De originele generatie-agent probeert maximaal één source-locked redactieherziening ook bij uitsluitend een final-truth-veto, niet alleen bij een eerste editorial 422, en toetst daarna ALLE oorspronkelijke gates opnieuw. Geen parallelle agent, scheduler, LinkedIn-send of OAuth-omzeiling. Controleer Required+CodeQL, native source SHA, daarna natuurlijke run; claim pas live bij provider-ID/GET, ONE BRAIN `PROCESSED`, Heartbeat-meetbewijs.
+
+
+## 15 November 2026 — exact daily-life observation gate shared with prepublish
+Fingerprint `powerhouse|linkedin|personal-observational-context-lexical-drift|20261115-v1`, parent P0 #4198.
+Production original personal 2026-11-15 BLOCKED: independent final review returned
+`OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED` even though the original personal
+generator accepted the verified online order / customer-service daily-life terms.
+Use the one shared `personalObservationalLifeContextSignal` in BOTH original
+generator and original final reviewer, preserving the existing source-backed
+observation vocabulary including `onlinebestelling`, `klantenservice`, and
+`webwinkel`. The lexical predicate is NOT a provider permit: keep
+`public_theme_source_verified`, source lineage and age, personal topic,
+no false first-person claims, commercial veto, exact final hash, story-family
+uniqueness, capability and OAuth provider gates, and real LinkedIn ID/readback.
+Do not publish the rejected artifact directly; re-enter the EXISTING one daily
+lane only once it has an exact eligible source and valid editorial artifact.
+The original publisher/agent remains the owner, not a second scheduler or sender.
+Do not claim repair complete before protected CI, production edge source parity,
+natural provider publication, ONE BRAIN consumer PROCESSED, and Heartbeat learning.
