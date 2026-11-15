@@ -23,22 +23,31 @@ function compute(index){
  if(!Number.isFinite(step)||step<=0||half%step!==0)return {error:'De bloklengte moet in een helft passen.'};
  const B=total/step,swaps=Math.min(5,n-5),holds=5-swaps;
  const rng=seededRand(42281+index*15241+pool.reduce((a,p)=>a+p.id.length*17,0));
- const base=Object.fromEntries(state.roster.map(p=>[p.id,0]));
+ const baseField=Object.fromEntries(state.roster.map(p=>[p.id,0]));
+ const baseTotal=Object.fromEntries(state.roster.map(p=>[p.id,0]));
  const firstSetHistory=new Set();
  for(let i=0;i<index;i++){
-  const hist=cache[i];if(!hist||hist.error)continue;
-  for(const p of hist.pool)base[p.id]+=(hist.counts[p.id]||0)*hist.step;
-  base[hist.keeper.id]+=hist.total;
-  if(hist.sets&&hist.sets[0])firstSetHistory.add(hist.sets[0].map(p=>p.id).sort().join('|'));
+  const hist=cache[i],prior=state.matches[i];if(!hist||hist.error)continue;
+  const confirmed=Boolean(prior.actualConfirmed&&prior.actualField&&prior.actualGoal);
+  for(const q of state.roster){
+   const plannedField=hist.pool.some(p=>p.id===q.id)?(hist.counts[q.id]||0)*hist.step:0;
+   const plannedGoal=hist.keeper.id===q.id?hist.total:0;
+   const recordedField=Number(prior.actualField?.[q.id]);
+   const recordedGoal=Number(prior.actualGoal?.[q.id]);
+   const field=confirmed&&Number.isFinite(recordedField)?recordedField:plannedField;
+   const goal=confirmed&&Number.isFinite(recordedGoal)?recordedGoal:plannedGoal;
+   baseField[q.id]+=field;
+   baseTotal[q.id]+=field+goal;
+  }
+  if(hist.sets?.[0])firstSetHistory.add(hist.sets[0].map(p=>p.id).sort().join('|'));
  }
- const allIds=state.roster.map(p=>p.id);
  function score(counts,round,firstSet){
-  const totals=allIds.map(id=>(base[id]||0)+(id===keeper.id?total:0)+(counts[id]||0)*step);
+  const totals=allIds.map(id=>(baseTotal[id]||0)+(id===keeper.id?total:0)+(counts[id]||0)*step);
   const current=pool.map(p=>counts[p.id]||0);
   const meanSlots=5*round/n;
   const dispersion=current.reduce((a,x)=>a+(x-meanSlots)*(x-meanSlots),0);
   const sig=firstSet.map(p=>p.id).sort().join('|');
-  const seasonField=pool.map(p=>(base[p.id]||0)+(counts[p.id]||0)*step);
+  const seasonField=pool.map(p=>(baseField[p.id]||0)+(counts[p.id]||0)*step);
   return variance(seasonField)*100+variance(totals)*1.1+dispersion*30+(firstSetHistory.has(sig)?200:0);
  }
  function startOptions(){
