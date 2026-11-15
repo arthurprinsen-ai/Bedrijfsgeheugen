@@ -30,5 +30,25 @@
   "regression": "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
   "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
   "next_action": "Required/BRAIN/CodeQL must pass on exact head; protected main merge and existing GitOps deployment/readback; same original next natural channel run; LinkedIn exact post ID/readback; original ONE BRAIN named PROCESSED receipt and Heartbeat measurement.",
-  "follow_up": "If still blocked due exhausted fresh sources, forbidden provider readback, or no approved identity/permission, retain original OPEN obligation with owner and typed next safe action; no invented publish success."
+  "follow_up": "If still blocked due exhausted fresh sources, forbidden provider readback, or no approved identity/permission, retain original OPEN obligation with owner and typed next safe action; no invented publish success.",
+  "compiler": {
+    "failure_class": "EDITORIAL_MODE_MISMATCH",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "SOURCE_MODE_EDITORIAL_REWRITE_INCONSISTENT_WITH_FINAL_REVIEW",
+    "cause": "Observation-only source reused verified-builder rewrite prompt while final prepublication rejects business terms",
+    "prevention_rule": "Same shared business-language test in local and final personal review; editorial correction prompt derived from verified source mode; never turn observational content into first-person builder story",
+    "regression_guard": "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
+    "next_owner": "Original content editor / social-publisher, Reliability and Data Quality",
+    "effect_proof": "AWAITING_PROTECTED_CI_AND_REAL_PROVIDER_READBACK"
+  }
 }
