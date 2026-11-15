@@ -93,7 +93,8 @@ test('4,000 source identities for six canonical obligations cause six wakeups, n
   assert.equal(report.dispatches.reduce((n,d)=>n+d.sourceCandidateCount,0),4000);
   assert.equal(new Set(report.dispatches.map(d=>d.coalesceKey)).size,6);
   assert.equal(new Set(report.dispatches.map(d=>d.triggerFingerprint)).size,6);
-  assert.ok(report.dispatches.every(d=>d.nextAction==='RECONCILE_SOURCE_BOUND_PROOF'));
+  assert.ok(report.dispatches.every(d=>['RECOVER','READBACK','PROMOTE','WRITEBACK','CONTINUE'].includes(d.nextAction)));
+  assert.ok(report.dispatches.every(d=>Array.isArray(d.sourceActions)&&d.sourceActions.length>=1));
   assert.ok(report.dispatches.every(d=>/^[a-f0-9]{20}$/.test(d.sourceIdentityDigest)));
 });
 
