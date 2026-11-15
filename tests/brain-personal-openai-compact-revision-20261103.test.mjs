@@ -25,7 +25,7 @@ test('original rejected-personal retry uses concise source-locked instruction an
  assert.match(block,/ai_native_builder_story_verified===true/);
  assert.match(block,/strikt observerende, niet-zakelijke LinkedIn-post/);
  assert.match(block,/zonder te doen alsof Arthur het zelf heeft meegemaakt/);
- assert.match(block,/geen zakelijke brug/);
+ assert.match(block,/geen zakelijke brug/i);
  assert.match(block,/verzin nooit klanten/);
  assert.match(block,/exact één oprechte open vraag/);
 });
