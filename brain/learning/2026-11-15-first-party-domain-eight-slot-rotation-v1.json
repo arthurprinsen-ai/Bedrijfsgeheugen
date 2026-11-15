@@ -19,5 +19,15 @@
   "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
   "human_ledger": "docs/development-ledger-events/2026-11-15-first-party-domain-eight-slot-rotation.md",
   "release_status": "PROTECTED_GITHUB_CANDIDATE_NEEDS_TESTS_MERGE_DEPLOY_AND_INDEPENDENT_PRODUCTION_READBACK",
-  "no_false_green": "Do not claim new addresses, delivery, consent, provider messages, replies or revenue from rotation or scheduler success alone."
+  "no_false_green": "Do not claim new addresses, delivery, consent, provider messages, replies or revenue from rotation or scheduler success alone.",
+  "failure_class": "RESEARCH_COHORT_STARVATION",
+  "scope": "SOURCE_SELECTION",
+  "machine_enforceable": true,
+  "repeat_count": 2,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ]
+  }
 }
