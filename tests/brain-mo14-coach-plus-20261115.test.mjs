@@ -19,10 +19,10 @@ function makeGame(fieldCount=9,numGames=12,keeper='coco'){
  vm.runInContext(source,ctx);
  return {ctx,state,cache,plan:i=>{const p=ctx.window.MO14CoachEngine.compute(i);ctx.cache[i]=p;return p;}};
 }
-test('v8 scripts are syntactically valid, linked by the real app and cached offline',()=>{
+test('v9 scripts are syntactically valid, linked by the real app and cached offline',()=>{
  assert.doesNotThrow(()=>new Function(source));assert.doesNotThrow(()=>new Function(ui));
  for(const name of ['coach-core.js','coach-ui.js','coach-plus.css']){assert.ok(html.includes(name),'missing asset '+name);assert.ok(sw.includes(name),'offline not cached: '+name);}
- assert.match(sw,/mo14-zaalcoach-v8-coachboard/);
+ assert.match(sw,/mo14-zaalcoach-v9-actual-minutes-backup/);
  assert.match(css,/touch-action:none/);
  assert.match(ui,/pointerdown/);assert.match(ui,/pointermove/);assert.match(ui,/pointercancel/);
  assert.match(ui,/coachUndo/);assert.match(ui,/coachRedo/);
@@ -66,4 +66,29 @@ test('app supports strong group, per-match notes, drawing, PNG export and fairne
  assert.ok(ui.includes('window.PWCoachPlus'));
  assert.ok(ui.includes('save()'));
  assert.ok(ui.includes('VIEW_IDS.push'));
+});
+
+test('confirmed actual minutes are taken into account before upcoming game forecasts',()=>{
+ const g=makeGame(9,3),first=g.plan(0);
+ const field={},goal={};
+ for(const p of g.state.roster){field[p.id]=first.pool.some(q=>q.id===p.id)?(first.counts[p.id]||0)*10:0;goal[p.id]=p.id==='coco'?40:0;}
+ const hi=Object.keys(field).find(id=>field[id]===30),lo=Object.keys(field).find(id=>field[id]===20);
+ assert.ok(hi&&lo);
+ field[hi]-=10;field[lo]+=10;
+ g.state.matches[0].actualConfirmed=true;g.state.matches[0].actualField=field;g.state.matches[0].actualGoal=goal;
+ const second=g.plan(1),third=g.plan(2);
+ assert.ok(!second.error&& !third.error);
+ assert.equal(Object.values(field).reduce((a,b)=>a+b,0),200);
+ assert.equal(Object.values(goal).reduce((a,b)=>a+b,0),40);
+ const totals=g.state.roster.slice(1).map(p=>field[p.id]+(second.counts[p.id]||0)*10+(third.counts[p.id]||0)*10);
+ assert.ok(Math.max(...totals)-Math.min(...totals)<=10,'future fixtures should recover actual-minute discrepancy within one block');
+});
+test('portable Zaalcoach backup and actual minute registration are wired and validated',()=>{
+ for(const marker of ['coachActualMinutes','coachActualTable','coachConfirmActual','coachActualReset','coachRemoveActual',
+  'm.actualConfirmed=true','m.actualField=field','m.actualGoal=goal','sumField!==5*p.total','sumGoal!==p.total',
+  'coachBackups','coachExportBackup','coachImportBackup','coachBackupFile','PW-MO14-1-ZAALCOACH',
+  'const ids=new Set','const fixtureIds=new Set','new Blob','confirm('])assert.ok(ui.includes(marker),'missing '+marker);
+ assert.ok(source.includes('baseField[q.id]+=field'));
+ assert.ok(source.includes('baseTotal[q.id]+=field+goal'));
+ assert.ok(css.includes('.coach-actual-row'));
 });
