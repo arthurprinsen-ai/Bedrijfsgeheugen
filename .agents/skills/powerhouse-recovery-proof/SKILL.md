@@ -5,6 +5,15 @@ description: Use for original Powerhouse/ONE BRAIN/Heartbeat automatic error, in
 
 # Powerhouse original autonomous recovery proof — 4 November 2026
 
+## 15 november 2026 — evidence insert race mag geen nieuwe of geaccepteerde provideruitkomst claimen
+
+De originele service-only `public.brain_outcome_obligation_evidence` is append-only en gebruikt de samengestelde unieke sleutel `(idempotency_key,evidence_ref)`. `evidenceStore.putIfAbsent()` deed eerder een pre-read, waarna `resolution=ignore-duplicates,return=minimal` een gelijktijdig reeds ingevoegde rij kon negeren, maar de code toch `created:true` retourneerde. De pre-read beschermt niet tegen concurrentie. Eenzelfde `evidence_ref` kan bovendien geen achteraf geüpgradede `independent`, `accepted` of `exactProduction` claim dragen: dit moet een nieuwe, zelfstandig aantoonbare brongebeurtenis krijgen.
+
+De bestaande opslag gebruikt nu `Prefer: resolution=ignore-duplicates,return=representation`: precies één met originele dubbele sleutel/type teruggelezen rij = nieuw; nul = reeds bestaand; onbekende of tegenstrijdige response = fout. Zowel op de pre-read als na de insert moeten originele `ref,type,producer,taskIdentity,candidateIdentity,productionIdentity,independent,accepted,exactProduction` onveranderd overeenkomen. Conflicterende bewijsclaims of een false-upgrade leiden tot `IMMUTABLE_EVIDENCE_IDENTITY_CONFLICT` en blijven bij de originele Reliability-eigenaar, met Data Quality als onafhankelijke testpoort. Niet stilzwijgend sluiten, geen provider resend of automatisch bewijs genereren uit een teller. Bestaande ontvangen claims bewijzen pas effect als de onderliggende echte provider-readback, consument-ACK en Heartbeat-uitkomst aanwezig zijn.
+
+Regressies: `tests/brain-outcome-obligation-supabase-store.test.mjs` (concurrent insert race, verkeerde bewijsidentiteit, ontbreken provider-uitkomst, verboden elevatie), bron `tools/outcome-obligation-supabase-store.mjs`. P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Houd oorspronkelijke #116/#138/#171/#177 en de bestaande completion supervisor actief; geen nieuwe queue, scheduler of migrate-only zijpad.
+
+
 ## 15 november 2026 — volledig historische overdracht, nooit eerste pagina als alles
 
 **Eén bestaande bron en één executor.** De oorspronkelijke `tools/outcome-obligation-completion-supervisor-backfill.mjs` leest met `workStore.list()` en `recoveryStore.list()` de append-only bron `public.brain_outcome_obligation_dispatch`. De eerdere `listDispatch` deed één PostgREST GET zonder pagina- of tellercontrole. De bestaande bron heeft >1.000 AgentWork- en >1.000 RecoveryWork-rijen; PostgREST kan response-rijen begrenzen. Hierdoor kon de backfill de eerste pagina aanzien voor alle historische opdrachten. Dit is een bronvolledigheidslek; niet onafhankelijk bewezen dat specifieke provideracties zijn overgeslagen.
