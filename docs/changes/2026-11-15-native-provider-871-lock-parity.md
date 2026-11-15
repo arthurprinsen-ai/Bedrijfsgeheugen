@@ -1,0 +1,11 @@
+# Supabase native provider 871 — oorspronkelijke migratielock autonoom in dezelfde beschermde keten herstellen
+
+**15 november 2026.** Parent https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+De oorspronkelijke lockreparatie PR #5881 is beschermd gemerged en exact onafhankelijk aangetoond: op dat moment waren GitHub lock en Supabase-provider **870/870** identiek. Daarna is de oorspronkelijke autonome Company Intelligence-migratie uit PR #5882 daadwerkelijk door de **bestaande** Supabase-productieautoriteit toegepast: `20261115170000_outcome_memory_source_readback_truth_v1`. De provider toont nu **871** migraties, terwijl de huidige originele `main`-lock er **870** bevat. De volledige eerste 870 version/name-paren zijn identiek en volgordegelijk; er ontbreekt exact één **al toegepaste** provider-identiteit in het logboek.
+
+Deze **eigen, afzonderlijk beschermde bronlock-PR** voegt uitsluitend die 871e echte versie en naam plus het controle-tijdstip toe aan `supabase/migration-history.lock.json`. Geen bestaande SQL-migratie wordt herschreven. De nog niet toegepaste `20261115235500_sales_action_reexecution_immutable_attempt_lineage_v1.sql` uit de oorspronkelijke PR #5879 wordt **niet** als uitgevoerd gemarkeerd.
+
+De oorspronkelijke migratiecontrole mocht terecht niet versoepeld worden. Regressies: volledige bestaande productie-lock/canonical-history tests en eigen Brain-historie. Na exact-head Required/CodeQL en beschermde merge onafhankelijk volledige oorspronkelijke Supabase-providerhistorie vergelijken (871/871) en pas daarna de originele writer-PR #5879 op actuele main synchroniseren, preview, merge en native oorspronkelijke SQL-voorziening controleren.
+
+Structurele les: elke provider-gemergede migratie moet in de bestaande release-/terminalizer-keten de exacte provider-applied version/name naar één origineel beschermd lockwriter-overdrachtsbewijs doorgeven. Een andere **scheduler, worker, tabel, queue of bypass** lost de oorzaak niet op. Zolang die handoff niet onafhankelijk is aangetoond, blijft dit incident open en moeten de volgende PR's expliciet op providerregistratie worden getest. Niets wordt als omzet of agent-ACK voorgesteld. Alle oorspronkelijke innovatieverplichtingen blijven OPEN.
