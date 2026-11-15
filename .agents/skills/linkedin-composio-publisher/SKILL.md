@@ -510,3 +510,11 @@ Fingerprint: `powerhouse|linkedin|dual-provider-source-context-and-editorial-ris
 - An article about police force, tasering, serious injury, abuse or similar traumatic incident does not become an appropriate casual personal-life story because a topic keyword matched. Quarantine and reject at the original source intake, record a typed reason in ONE BRAIN, and source another safe genuinely dated original event. Do not invent the author's personal experience or rely on a content length gate alone.
 - Source freshness, length and editorial suitability are independent quality contracts; every downstream author, publisher and independent reviewer must fail closed on any missing contract. Preserve original daily-claim idempotency and provider URN/readback safeguards.
 - A GitHub merge or Edge source parity is not a LinkedIn post. Only exact provider publication ID, independent readback, consumer receipt, measurement and subsequent learning prove the terminal chain. Keep the existing executor active when a candidate is unsuitable.
+
+## 15 november 2026 — persoonlijke stem en bronstatus, bindende laatste-meter-check
+
+Fingerprint: `powerhouse|personal-linkedin|true-user-story-vs-company|20261115-v1`.
+- Vóór een nieuwe provider-side-effect: controleer exact persoonlijke `personal_truth_verified` + `first_person_claims_verified` + `arthur_anchor_verified`, expliciet user-fact-bronherkomst, geen journalistieke observatie/AI-builder marketing, een menselijk ik-verhaal en maandag–zaterdag.
+- Lees de originele `powerhouse_content_recommendations` opnieuw op de immutable `recommendation_id`: alleen juiste datum + kanaal, status `suggested/accepted`, hetzelfde `content_id` én exacte `source_text` als de bevroren publieksclaim. Verschil, skipped of quarantined betekent veilig afwijzen; behoud de originele oorzaak/overdracht.
+- Doe de controle opnieuw onmiddellijk vóór `LINKEDIN_CREATE_LINKED_IN_POST`, vóór het consumeren van de autorisatie. Nooit een nieuwe provider-call na bestaande `provider_post_id`, ongeacht readback-403 of redactionele fout achteraf.
+- De bedrijfspagina is exclusief voor brongebonden MKB-problemen, oplossingen en eigen waarde: nooit deze identiteitsbarrière omzeilen. Alle bestaande canonieke Composio-, audit- en dedupe-gates blijven verplicht.
