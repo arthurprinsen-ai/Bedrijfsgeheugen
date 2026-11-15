@@ -15,3 +15,7 @@ Laat exacte kandidaat Required/CodeQL/full BRAIN testen, beschermde merge en oor
 
 **Herstelbewijs:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5825
 **Oorspronkelijke incidentrun:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458
+
+## Correctie na beschermde learning-gate controle
+
+Exact-head Required van deze unieke kandidaat wees terecht een ongeldige evaluatieroute af: `LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/github-delivery-state-machine-terminal-closure.test.mjs`. De originele canonicalisatie vereist `tests/brain-*.test.mjs`; de historische testnaam is niet heimelijk hernoemd en de toelatingscontrole is niet uitgezet. Nieuw uitsluitend testgericht `tests/brain-original-terminal-extended-state-machine-v1.test.mjs` importeert de volledige bestaande `github-delivery-state-machine-terminal-closure.test.mjs` zodat werkelijk dezelfde historische tests worden uitgevoerd en voegt de 206-run/derde-providerpagina plus incomplete-pages negatieve regressie toe. De machine-leerregistratie voert dit geaccepteerde wrapperbestand uit in historische replay, shadow en canary. Deze vijf unieke bestanden vormen de volledige definitieve scope; eerdere vier gecorrigeerde tests en skill van #5825 zijn niet opnieuw gewijzigd.
