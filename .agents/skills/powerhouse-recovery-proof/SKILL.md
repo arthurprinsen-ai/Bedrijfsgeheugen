@@ -5,6 +5,14 @@ description: Use for original Powerhouse/ONE BRAIN/Heartbeat automatic error, in
 
 # Powerhouse original autonomous recovery proof — 4 November 2026
 
+## 15 november 2026 — oorspronkelijke ontvanger moet daadwerkelijk ACK en leerbewijs leveren
+
+Bewezen bronfout #4198: de bestaande `.github/workflows/outcome-obligation-sweep.yml` gaf bij een geslaagde `Production Release Readback` automatisch `--capability-handoff --learning-writeback` mee. Daardoor schreef `tools/completion-supervisor-evidence.mjs` onafhankelijke `CAPABILITY_HANDOFF` / `LEARNING_WRITEBACK` bewijsregels zonder dat de oorspronkelijke ontvangende agent `PROCESSED` had bevestigd of de les daadwerkelijk had toegepast. Native Supabase op 15 november 15:43 UTC: 817+817 historische bewijsrecords, nul met `consumerAckRef`, `learningApplicationRef` of `sourceRevision`.
+
+Correctie: **geen** handoff/leerbewijs uit een boolean of geslaagde deploy. De oorspronkelijke workflow gebruikt uitsluitend echte readback voor `PROTECTED_DELIVERY`, `PRODUCTION_IDENTITY`, `FUNCTIONAL_READBACK`. De oorspronkelijke `platform/agents/completion-supervisor.mjs` vertrouwt oude en nieuwe `CAPABILITY_HANDOFF` uitsluitend bij `independent=true`, `accepted=true`, `exactProduction=true`, exacte `candidateIdentity`/`productionIdentity`, plus `metadata.sourceRevision === candidateIdentity`, `metadata.sourceReceiptRef` en `metadata.consumerAckRef`. Voor `LEARNING_WRITEBACK` is bovendien een eigen `metadata.learningApplicationRef` nodig. Dit zijn minimumvoorwaarden voor werkelijke brongebonden bewijzen, niet vervangingen voor aparte verificatie door de oorspronkelijke consumer/provider.
+
+De bestaande Reliability-agent houdt iedere oorspronkelijke verplichting open, vraagt de originele owner om consumer-ACK en voert de originele veilige herstelroute uit. Data Quality vergelijkt echte provider-/consumer-readback, bronrevisie, tenant en idempotency, en voorkomt dat oude `BG167`/`BG168_BG166` naamplaatjes terminale uitkomsten simuleren. Bij ontbrekende bron blijft `WRITEBACK_REQUIRED`, geen `LIVE_VERIFIED`; geen bulkclose, providerreplay, nieuwe scheduler/agent, RLS-wijziging of vervalste verwerking. Regresstests: `tests/completion-supervisor-evidence.test.mjs` en `tests/completion-supervisor.test.mjs`. Open incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
 ## 15 november 2026 — één terminale waarheid in de bestaande Completion Supervisor
 
 In `tools/outcome-obligation-runtime.mjs` kon `evaluateOutcomeObligation` de status `COMPLETED` teruggeven zodra één onafhankelijk gemarkeerd bewijsrecord voldeed, hoewel de oorspronkelijke Completion Supervisor tegelijk `success=false`, `OBLIGATIONS_COMPLETE` ontbrekend en géén `LIVE_VERIFIED` vaststelde. Dit liet een observatie-status ten onrechte als terminale uitvoering klinken.
