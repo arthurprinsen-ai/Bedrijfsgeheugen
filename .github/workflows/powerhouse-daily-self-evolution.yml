@@ -106,6 +106,14 @@ jobs:
         run: |
           node --test tests/brain-innovation-original-agent-pre-review-20261115.test.mjs
           node scripts/brain/innovation-original-agent-pre-review.mjs --writeback
+      - name: Route original engineering and CRO source decisions into existing Brain operations with native CAS
+        if: always()
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node --test tests/brain-innovation-original-owner-decision-20261115.test.mjs
+          node scripts/brain/innovation-original-owner-decision.mjs --writeback
       - name: Persist exact-run daily agent-learning checkpoint even after a failed step
         if: always()
         env:
@@ -162,6 +170,13 @@ jobs:
           SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/brain/innovation-original-agent-pre-review.mjs --writeback
+      - name: Resume original engineering/CRO source decision on SAME previously registered intakes only
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node --test tests/brain-innovation-original-owner-decision-20261115.test.mjs
+          node scripts/brain/innovation-original-owner-decision.mjs --writeback
       - name: Upload sanitized exact-run review evidence without candidate payload
         if: always()
         uses: actions/upload-artifact@v4
@@ -170,6 +185,7 @@ jobs:
           path: |
             artifacts/quality/original-innovation-owner-readback.json
             artifacts/quality/original-innovation-owner-pre-review.json
+            artifacts/quality/original-innovation-owner-decision.json
           if-no-files-found: warn
           retention-days: 30
 
