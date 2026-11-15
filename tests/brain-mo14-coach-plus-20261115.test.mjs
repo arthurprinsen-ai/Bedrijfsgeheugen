@@ -17,7 +17,7 @@ function makeGame(fieldCount=9,numGames=12,keeper='coco'){
  for(const p of pos)if(!map[p]){const q=members.find(x=>!used.has(x.id));map[p]=q;used.add(q.id);}
  return {map,cost:0};},rotationsFor:()=>{}});
  vm.runInContext(source,ctx);
- return {ctx,state,cache,plan:i=>{const p=ctx.window.MO14CoachEngine.compute(i);cache[i]=p;return p;}};
+ return {ctx,state,cache,plan:i=>{const p=ctx.window.MO14CoachEngine.compute(i);ctx.cache[i]=p;return p;}};
 }
 test('v8 scripts are syntactically valid, linked by the real app and cached offline',()=>{
  assert.doesNotThrow(()=>new Function(source));assert.doesNotThrow(()=>new Function(ui));
@@ -41,7 +41,7 @@ test('keeper plus five field roles, maximally swappable with even block minutes'
    const c=Object.values(p.counts);
    assert.ok(Math.max(...c)-Math.min(...c)<=1,'equal as possible within game');
   }
-  const all=g.state.roster.slice(1).map(person=>g.state.matches.reduce((sum,_,i)=>sum+(g.cache[i].counts[person.id]||0)*10,0));
+  const all=g.state.roster.slice(1).map(person=>g.state.matches.reduce((sum,_,i)=>sum+(g.ctx.cache[i].counts[person.id]||0)*10,0));
   assert.ok(Math.max(...all)-Math.min(...all)<=10,'season field-minute spread <= one 10-minute block for n='+n);
  }
 });
