@@ -5,7 +5,7 @@ import vm from 'node:vm';
 import {assessOfficialBlogDateTruth} from '../supabase/functions/_shared/blog-official-date-truth.mjs';
 
 const source=fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
-const snippet=source.match(/function blogReaderReadyViolations\(artifact:any\):string\[\]\{([\s\S]*?)\n\}\n\nconst PERSONAL_STEERING_STORY/);
+const snippet=source.match(/function blogReaderReadyViolations\(artifact:any\):string\[\]\{([\s\S]*?)\n\}\n/);
 assert.ok(snippet,'the actual generator must expose a deterministic reader-ready verdict');
 const executable='function blogReaderReadyViolations(artifact){'+snippet[1].replace('const errors:string[]=[];','const errors=[];')+'\n}\nblogReaderReadyViolations;';
 const validate=vm.runInNewContext(executable,{assessOfficialBlogDateTruth});
