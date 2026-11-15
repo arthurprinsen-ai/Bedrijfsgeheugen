@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {samePublicCompanyHost,publicCompanyContactLinks,publishedBusinessMailto,firstPartyDailyRotationOffset,firstPartySourceRetryHours} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
+import {samePublicCompanyHost,publicCompanyContactLinks,publishedBusinessMailto,firstPartyDailyRotationOffset,firstPartySourceRetryHours,firstPartySourceRetryDue} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
 
 test('only HTTPS same-company host redirects and discovered links; never off-site URLs',()=>{
  assert.equal(samePublicCompanyHost('https://acmeresearch.com/','https://www.acmeresearch.com/over-ons/'),true);
@@ -43,12 +43,33 @@ test('named public business address remains a non-sendable evidence candidate, n
  assert.equal(found?.send_authority,'NOT_INFERRED');
 });
 
+test('due same-day original source research is not silently starved by daily eight-new-company cap',()=>{
+ const due={public_email_source_checked:false,public_email_next_attempt_at:'2026-11-15T18:05:05.016Z'};
+ const today='relationship-research:public-domain:2026-11-15:contact-a';
+ const yesterday='relationship-research:public-domain:2026-11-14:contact-a';
+ const tomorrow='relationship-research:public-domain:2026-11-16:contact-a';
+ assert.equal(firstPartySourceRetryDue(today,due,'2026-11-15T18:05:06Z'),true,'same-day due must recover with original ID');
+ assert.equal(firstPartySourceRetryDue(today,due,'2026-11-15T18:05:04Z'),false,'never retry before original due');
+ assert.equal(firstPartySourceRetryDue(yesterday,due,'2026-11-15T18:05:06Z'),true,'prior-day due remains recovered');
+ assert.equal(firstPartySourceRetryDue(tomorrow,due,'2026-11-15T18:05:06Z'),false,'future-dated original action must not run early');
+ assert.equal(firstPartySourceRetryDue(today,{...due,public_email_source_checked:true},'2026-11-15T18:05:06Z'),false,'proved source is terminal');
+ assert.equal(firstPartySourceRetryDue(today,{...due,public_email_next_attempt_at:null},'2026-11-15T18:05:06Z'),false,'invalid due is not authority');
+ assert.equal(firstPartySourceRetryDue('relationship-research:outreach-source:fake',due,'2026-11-15T18:05:06Z'),false,'never touch other source lineage');
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
+ assert.match(src,/\.lte\('evidence->>public_email_next_attempt_at',observedAt\)/);
+ assert.match(src,/if\(retried>=2\)break/);
+ assert.match(src,/processOriginalFirstPartyPublicSource\(/);
+ assert.match(src,/original_lineage_reused:true,new_provider_queries:0,external_messages_sent:0/);
+ assert.doesNotMatch(src,/key\.includes\(':'\+today\+':'\)/);
+});
+
 test('Amsterdam midnight never drops prior-day original source attempts or adds a parallel process',()=>{
  const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
  assert.match(src,/async function replayDueHistoricalFirstPartySources/);
  assert.match(src,/evidence->>public_email_next_attempt_at/);
  assert.match(src,/\.lte\('evidence->>public_email_next_attempt_at',observedAt\)/);
- assert.match(src,/key\.includes\(':'\+today\+':'\)/);
+ assert.match(src,/firstPartySourceRetryDue\(key,action\.evidence,observedAt\)/);
+ assert.doesNotMatch(src,/key\.includes\(':'\+today\+':'\)/);
  assert.match(src,/async function processOriginalFirstPartyPublicSource/);
  assert.match(src,/processOriginalFirstPartyPublicSource\(\s*db,action,domain,company,key,observedAt,action\.evidence\)/);
  assert.match(src,/const overdue=await replayDueHistoricalFirstPartySources\(db,observedAt\)/);

@@ -1,0 +1,9 @@
+# 2026-11-15 original public-source same-day due starvation
+
+- P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+- Source: native project `adhjwmvyoixzjtmiroln`, `public.powerhouse_sales_actions` with original `research_enrichment` `public-domain` keys, and `bg_gezondheid` production `relationship-public-research` 18:41 UTC.
+- Count: 10 original unfinished public HTML source obligations, 5 current-day source keys already past their recorded 18:05 UTC due, 5 old-day keys next due in future. Same original Edge worker reported 1 older due retry, no web mailto or candidate, while current-day due IDs were excluded by `key.includes(':'+today+':')`.
+- Cause: business-day partition for **new** daily company intake was wrongly applied as prohibition on same-day **retry**. Once daily cap spent, repeated cron success never revisited current-day due debt; next-day wait prolonged root-cause feedback.
+- Correction: use pure due-and-original-ID predicate in existing original Edge that includes same-day due (not future), preserve maximum two research retries, same rate-limited source parser, privacy/legal send gate, original company action identity and next bounded retry receipt.
+- Regression: original `tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs` now tests real same-day due, before-due, old-day due, future-dated, already-proven and invalid-due cases, preserves source retry cap and no-send guard.
+- Release gating: this ledger and tests prove *candidate source only*. Do not mark LIVE until protected merges and independent native edge readback. Do not mark business done until five original due actions actually progress, four commercial handoff receipts verified and true outcome/learning observed. Provider denial may remain a legitimate source limitation and requires bounded next_due, not arbitrary bypass.
