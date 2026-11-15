@@ -38,3 +38,13 @@
 - Lokale mobiele Chromium-interactietest opnieuw uitgevoerd: schermtabs, keeper wisselen, afwezige speler, 6 veldpersonen inclusief keeper, 4 bankzitters, 7 verschillende beginopstellingen, PNG/PDF-downloads, 0 JavaScript-paginafouten.
 - Op een iPhone kan de gebruiker de site in Safari via Delen > Zet op beginscherm als zelfstandige PWA openen. **Beperking:** er is nog geen geautomatiseerde interactieve productiebrowserproef tegen de echte Netlify-host; alleen provider-HTTP- en lokale browserproeven zijn aantoonbaar.
 - Geen Make gebruikt. De brede repo-PR #5875 blijft open; geslaagde separate sitepublicatie is geen bewijs van een beschermde merge van de hoofdrepository.
+
+## V4 app-menu release — 2026-11-15 17:51 UTC
+
+- Bron: PR #5875, originele website `pw-mo14-1`, site-ID `1c4fa5ce-45ae-45dc-b3e2-11f90587c474`. V4 voegt vijf hoofdtabs, een eigen Start-scherm, zeven wedstrijdkaarten, een werkend menu-/hamburgerdialoog, functionele Downloads-/Instellingenroutes, hash/navigatiegeschiedenis en PWA-snelkoppelingen toe zonder de zaalhockeyberekening te vervangen.
+- Ontwerpgrondslag: Apple HIG Tab Bars, https://developer.apple.com/design/human-interface-guidelines/tab-bars, plus PWA manifest-richtlijnen van https://web.dev/learn/pwa/web-app-manifest.
+- Lokale mobiele browseracceptatie: 390×844, Start en zeven kaarten, wedstrijd 4 openen, menu→Downloads, keeper Nine instellen, Jackie afwezig, instellingen 15 minuten, 5 veld + 1 keeper, drie bankzitters, PNG download en browser-back, **0 JavaScript-paginafouten**.
+- Eerste protected MO14 v4-release `43743265879` faalde fail-closed vóór deploy door ongeldige RegExp in een nieuw regressiebestand. Testregressie zonder policy-bypass gecorrigeerd, volledig herstart.
+- Originele no-Make GitHub→Netlify-run: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43743378235, status **success**; 5 tests passed, back-up en byte-identieke homepage, manifest/shortcuts, iconen, serviceworker `mo14-zaalcoach-v4` en DOM-markers voor de menuroutes gecontroleerd.
+- Provider: Netlify deploy `6af9f10265b3efe1dbbde163` in `CURRENT / READY`, gepubliceerd `2026-11-15T17:51:02.876Z` op https://pw-mo14-1.netlify.app/zaalplanner/. Geen Make of parallelle site gebruikt.
+- Grens: volledige interactieve browsertest **op de productiehost zelf** niet uitgevoerd; lokale browserinteractie plus geautoriseerde HTTP-/bestandsreadback wél bewezen. De bredere Bedrijfsgeheugen-bron-PR #5875 blijft open onafhankelijk van deze aparte Netlify-site-release.
