@@ -1,4 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations} from '../_shared/personal-first-person-story-gate.mjs';
 import {canRecoverExpiredCompanyClaim,canRecoverExpiredPersonalClaim} from '../_shared/social-publish-claim-recovery.mjs';
 import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
@@ -22,6 +23,27 @@ const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedi
 const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
 
 const clean = (value: unknown) => String(value ?? '').trim();
+async function verifyCurrentPersonalStorySource(db:any,row:any,art:any,runDate:string){
+  const original=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{};
+  const id=clean(row.delivery_evidence?.personal_source_recommendation_id
+    ||art.generation_evidence?.personal_source_recommendation_id
+    ||art.generation_evidence?.recommendation_id);
+  if(!/^[a-f0-9-]{36}$/i.test(id))return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_ID_MISSING'};
+  const {data,error}=await db.from('powerhouse_content_recommendations')
+    .select('recommendation_id,target_channel,run_date,status,evidence')
+    .eq('recommendation_id',id).maybeSingle();
+  if(error||!data)return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_READ_FAILED'};
+  if(data.target_channel!=='linkedin_personal'||data.run_date!==runDate
+    ||!['suggested','accepted'].includes(clean(data.status)))
+    return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_REJECTED_OR_STALE'};
+  const sourceCodes=personalFirstPersonSourceViolations(data.evidence||{},runDate);
+  if(sourceCodes.length)return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_TRUTH_FAILED',violations:sourceCodes};
+  if(clean(data.evidence?.content_id)!==clean(original.content_id)
+    ||clean(data.evidence?.source_text)!==clean(original.source_text))
+    return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_REVISION_DRIFT'};
+  return {ok:true,source_recommendation_id:id};
+}
+
 function jsonObject(value:any){
   if(value===null||value===undefined)return {};
   if(typeof value==='string'){
@@ -1488,6 +1510,10 @@ Deno.serve(async (req) => {
     if(row.channel==='linkedin_personal') {
       const editorialEvidence=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{};
       const violations=personalEditorialViolations(art.body,editorialEvidence);
+      const ownStoryViolations=personalFirstPersonCopyViolations(art.body,editorialEvidence,runDate);
+      const currentPersonalSource=await verifyCurrentPersonalStorySource(db,row,art,runDate);
+      if(!currentPersonalSource.ok)ownStoryViolations.push(currentPersonalSource.code,...(currentPersonalSource.violations||[]));
+      for(const code of ownStoryViolations)violations.push({code,message:'Original first-person experience / source status cannot authorize publication.'});
       if(art.generation_evidence?.final_copy_approved!==true ||
          art.generation_evidence?.editorial_policy_version!==PERSONAL_EDITORIAL_POLICY ||
          violations.length>0) {
@@ -1499,7 +1525,7 @@ Deno.serve(async (req) => {
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()})
           .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
         await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,
-          'Repair personal founder editorial contract and re-review in the same canonical lineage. No provider action taken.','PERSONAL_EDITORIAL_CONTRACT_FAILED');
+          'Recover the original, still-approved user-authored personal story with explicit first-person truth; never turn public news into Arthur experience. No provider action taken.','PERSONAL_EDITORIAL_CONTRACT_FAILED');
         results.push({channel:row.channel,status:'blocked_editorial',violations:codes});continue;
       }
     }
@@ -1787,6 +1813,23 @@ Deno.serve(async (req) => {
 
     if (row.channel === 'linkedin_personal') {
       try {
+        // Independent last-metre freshness check: a source skipped or quarantined
+        // between generation and dispatch must never acquire a provider side effect.
+        const lastPersonalSource=await verifyCurrentPersonalStorySource(db,row,art,runDate);
+        if(!lastPersonalSource.ok) {
+          const blocked={...gatePassedEvidence,error:lastPersonalSource.code,
+            violations:lastPersonalSource.violations||[],provider_create_success:false,
+            possible_provider_side_effect:false,republish_forbidden:false,
+            publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
+          await db.from('powerhouse_channel_decisions')
+            .update({state:'blocked',delivery_evidence:blocked,updated_at:new Date().toISOString()})
+            .eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+          await recordObligation(db,runDate,row.channel,'BLOCKED',null,blocked,
+            'Original user-authored personal source was rejected or changed before provider dispatch. Recover with a different genuinely verified source; no provider post created.',
+            lastPersonalSource.code);
+          results.push({channel:row.channel,status:'blocked_source_revision',reason:lastPersonalSource.code});
+          continue;
+        }
         await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
         const direct=await publishLinkedInPersonalViaComposio(db,art);
         const exactReadbackVerified=direct.provider_truth_verified===true;
