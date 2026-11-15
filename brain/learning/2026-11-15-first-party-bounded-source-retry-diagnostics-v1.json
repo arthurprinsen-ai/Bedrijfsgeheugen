@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|public-source|SOURCE_HTML_UNAVAILABLE|bounded-firstparty-retries-20261115",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "failure_class": "FIRST_PARTY_PUBLIC_SOURCE_HTML_FAILURE_WITHOUT_CAUSE_CATEGORY",
+  "scope": "ORIGINAL_PUBLIC_WORK_EMAIL_SOURCE_RETRY",
+  "machine_enforceable": true,
+  "repeat_count": 5,
+  "security_sensitive": false,
+  "observed_at_utc": "2026-11-15T18:13:00Z",
+  "root_cause": "The original public source worker records SOURCE_HTML_UNAVAILABLE and a constant 4h retry even when a source has failed five times; it discards upstream fetch status and redirect/TLS/timeout reasons so existing agents cannot choose an evidence-based next repair. Actual upstream reason remains UNKNOWN until first subsequent diagnostics run.",
+  "evidence": {
+    "native_edge_version_before": 101,
+    "original_company_domain_count": 187,
+    "original_daily_rotation_step": 8,
+    "original_due_retries_latest": 2,
+    "original_due_retries_failed_latest": 2,
+    "original_missing_html_sources": 10,
+    "original_due_now": 8,
+    "canonical_contacts": 23295,
+    "known_canonical_email_addresses": 605,
+    "broken_commercial_handoffs": 4,
+    "actual_new_verified_email_growth_proven": false,
+    "original_legal_provider_send_executed": false
+  },
+  "corrective_action": "Store URL-free/person-free bounded fetch failure codes and deterministic 4/12/24/48 hour due retry directly on same original action. After >=5 failures assign existing source owner alternate lawful first-party source or next safe due retry. Never convert failure into verified address, consent, provider send or consumer ACK.",
+  "prevention_rule": "Classify any SOURCE_HTML_UNAVAILABLE after bounded HTTPS same-host fetch, preserve original source evidence/action, fail closed on missing body, host redirect or timeout. Reduce repeated retries; keep other company domain rotation active. Only natural original executor acts.",
+  "owner": "original-agent:commercial/first-party-source-research; original #116",
+  "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+  "human_documentation": "docs/changes/2026-11-15-first-party-bounded-source-retry-diagnostics.md",
+  "human_ledger": "docs/development-ledger-events/2026-11-15-first-party-bounded-source-retry-diagnostics.md",
+  "release_status": "CANDIDATE_PENDING_PROTECTED_MAIN_DEPLOY_AND_NATIVE_EDGE_READBACK",
+  "compiler": {
+    "failure_class": "FIRST_PARTY_PUBLIC_SOURCE_HTML_FAILURE_WITHOUT_CAUSE_CATEGORY",
+    "scope": "ORIGINAL_PUBLIC_WORK_EMAIL_SOURCE_RETRY",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ]
+  }
+}

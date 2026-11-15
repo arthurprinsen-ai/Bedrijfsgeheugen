@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {samePublicCompanyHost,publicCompanyContactLinks,publishedBusinessMailto,firstPartyDailyRotationOffset} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
+import {samePublicCompanyHost,publicCompanyContactLinks,publishedBusinessMailto,firstPartyDailyRotationOffset,originalPublicSourceRetryHours} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
 
 test('only HTTPS same-company host redirects and discovered links; never off-site URLs',()=>{
  assert.equal(samePublicCompanyHost('https://acmeresearch.com/','https://www.acmeresearch.com/over-ons/'),true);
@@ -17,7 +17,7 @@ test('only HTTPS same-company host redirects and discovered links; never off-sit
 });
 test('original first-party worker derives real contact paths from homepage and uses a bounded same-host redirect',()=>{
  const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
- assert.match(src,/readBoundedPublicPage\(homeUrl\)/);
+ assert.match(src,/readBoundedPublicPage\(homeUrl(?:,failedSourceReads)?\)/);
  assert.match(src,/nextHost!==companyHost/);
  assert.match(src,/publicPages=homeHtml/);
  assert.match(src,/publishedLinks\.length\?\[\]:\[/);
@@ -98,5 +98,25 @@ test('one canonical eight-slot daily cohort visits all 85 candidate companies in
  assert.match(src,/candidate_company_domains:entries\.length/);
  assert.match(src,/eligibleSlots<8/);
  assert.match(src,/new_provider_queries:0/);
+ assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/);
+});
+
+test('first-party HTML failures are source-specific, privacy-safe and move to bounded owner retry',()=>{
+ assert.deepEqual([1,2,3,4,5,7,8,20].map(n=>originalPublicSourceRetryHours(n)),
+   [4,4,12,12,24,24,48,48]);
+ assert.equal(originalPublicSourceRetryHours(0),4);
+ assert.equal(originalPublicSourceRetryHours(Infinity),4);
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
+ for(const code of ['UNSAFE_PUBLIC_SOURCE_URL','CROSS_HOST_OR_UNSAFE_REDIRECT','HTTP_STATUS_',
+   'NON_HTML_RESPONSE','HTML_TOO_LARGE','FETCH_TIMEOUT_2500MS',
+   'FETCH_NETWORK_OR_TLS_FAILURE']){
+   assert.ok(src.includes(code),code);
+ }
+ assert.match(src,/public_email_source_failure_codes:checked\?\[\]:sourceFailureCodes/);
+ assert.match(src,/public_email_source_retry_hours:checked\?null:retryHours/);
+ assert.match(src,/VERIFY_ALTERNATIVE_LAWFUL_FIRST_PARTY_SOURCE_OR_BOUNDED_RETRY/);
+ assert.match(src,/public_email_source_checked:checked/);
+ assert.match(src,/recipient_send_authority_inferred:false,external_send_executed:false/);
+ assert.match(src,/nextHost!==companyHost/);
  assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/);
 });
