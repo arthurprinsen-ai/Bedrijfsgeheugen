@@ -1,0 +1,9 @@
+# 2026-11-15 | immutable ONE BRAIN evidence race / false new ACK
+
+- Parent incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+- Original source: `tools/outcome-obligation-supabase-store.mjs::evidenceStore.putIfAbsent`, original `brain_outcome_obligation_evidence` with unique (idempotency_key,evidence_ref).
+- Root cause: pre-read then POST `resolution=ignore-duplicates,return=minimal` then unconditional `created:true`; ignores racing producer and possible same-ref, different producer/proof identity. Code-proven error condition; no fabricated real-world duplicate provider evidence.
+- Repair: same atomic PostgREST conflict ignore + `return=representation`; 1 exact inserted row = NEW, 0 = REPLAY; reject unknown, ambiguous or foreign provider row. Independent persisted readback validates original immutable evidence type/ref/producer/task/candidate/production identity and proof flags. Never permit same-ref FALSE→TRUE proof elevation.
+- Original Reliability and Data Quality agent roster + recovery skill updated. Regression: `tests/brain-outcome-obligation-supabase-store.test.mjs`. Brain machine learning: `brain/learning/2026-11-15-immutable-evidence-atomic-insert-v1.json`. Human: `docs/changes/2026-11-15-immutable-evidence-atomic-insert.md`.
+- Source snapshot: at 2026-11-15 09:18 UTC, 250 recent non-independent SUPERVISOR_DECISION evidence rows, AgentWork/PENDING 3557, RecoveryWork/RECOVERING 1055; original preexisting source full-history backfill GitHub run 43697572565 IN_PROGRESS. None of these rows were changed or falsely terminally closed here.
+- Protected final Required, CodeQL, exact main merge, Netlify published SHA and original consumer run + independent provider result still required. No database migration, new cron, shadow worker or provider send.
