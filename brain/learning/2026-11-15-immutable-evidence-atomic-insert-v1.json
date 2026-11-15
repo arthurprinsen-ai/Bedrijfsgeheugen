@@ -58,7 +58,7 @@
     "prevention_rule": "Use atomic provider insert representation and exact original immutable proof identity check; existing composite key returns created:false; conflicting or missing provider response fail closed.",
     "regression_guard": "tests/brain-outcome-obligation-supabase-store.test.mjs",
     "next_owner": "Existing Reliability and Data Quality agents under original ONE BRAIN #171",
-    "effect_proof": "PENDING_PROTECTED_RELEASE_AND_NATURAL_EVIDENCE_READBACK"
+    "effect_proof": "PROTECTED_CANARY_REGRESSION_TEST_PENDING_AND_PRODUCTION_READBACK_DUE"
   },
   "evaluation": {
     "historical_replay": [
@@ -67,6 +67,9 @@
       "tests/brain-outcome-obligation-durable-runtime.test.mjs"
     ],
     "shadow": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ],
+    "canary": [
       "tests/brain-outcome-obligation-supabase-store.test.mjs"
     ]
   },
