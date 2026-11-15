@@ -35,7 +35,8 @@ export default async function handler(request){
   // Read-only and deliberately fail closed: SOURCE_READABLE != END_TO_END_VERIFIED.
   const systemIntegration=await readPowerhouseIntegrationReadback({
     baseUrl:globalThis.Netlify?.env?.get?.('SUPABASE_URL')||process.env.SUPABASE_URL||globalThis.Netlify?.env?.get?.('BG_PORTAL_EU_SUPABASE_URL')||process.env.BG_PORTAL_EU_SUPABASE_URL,
-    key:globalThis.Netlify?.env?.get?.('SUPABASE_SERVICE_ROLE_KEY')||process.env.SUPABASE_SERVICE_ROLE_KEY
+    key:globalThis.Netlify?.env?.get?.('SUPABASE_SERVICE_ROLE_KEY')||process.env.SUPABASE_SERVICE_ROLE_KEY,
+    includeSalesExecutionAudit:true
   });
   return json({...body,systemIntegration},200);
 }
