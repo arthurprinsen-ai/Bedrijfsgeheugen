@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
 import { evaluateCompletion } from '../platform/agents/completion-supervisor.mjs';
 import { createSupabaseOutcomeObligationStores } from './outcome-obligation-supabase-store.mjs';
 import { defaultDue, loadCanonicalObligations, runOutcomeObligationCli } from './outcome-obligation-runtime.mjs';
@@ -238,8 +238,48 @@ export function applyOriginalBackfillDuePolicy(report, registeredObligations) {
     deferredNotDue:Object.freeze(deferredNotDue) });
 }
 
-export async function executeCompletionBackfillDispatches(report, { env = process.env, fetchImpl = globalThis.fetch, outputDir = '.artifacts/completion-supervisor-resume' } = {}) {
+export function checkpointCompletionBackfill(report, resumeResults = [], state = 'IN_PROGRESS', at = new Date().toISOString()) {
+  const dispatches = report?.dispatches;
+  if (!Array.isArray(dispatches) || !Array.isArray(resumeResults))
+    throw new TypeError('canonical backfill dispatches and resume results are required');
+  if (state !== 'IN_PROGRESS' && state !== 'COMPLETE')
+    throw new TypeError('unsupported backfill progress state');
+  if (new Set(dispatches.map(d => d?.obligationId)).size !== dispatches.length
+      || dispatches.some(d => !d?.obligationId || !d?.coalesceKey))
+    throw new Error('original backfill invariant failed: more than one wakeup per canonical obligation');
+  if (resumeResults.length > dispatches.length)
+    throw new Error('original backfill invariant failed: more results than canonical wakeups');
+  for (let i = 0; i < resumeResults.length; i += 1) {
+    const expected = dispatches[i];
+    const observed = resumeResults[i]?.dispatch;
+    if (!observed || observed.obligationId !== expected.obligationId
+        || observed.coalesceKey !== expected.coalesceKey
+        || typeof resumeResults[i]?.output !== 'string' || !resumeResults[i].output)
+      throw new Error('original backfill invariant failed: missing exact ordered resume receipt');
+  }
+  if (state === 'COMPLETE' && resumeResults.length !== dispatches.length)
+    throw new Error('original backfill incomplete: no final completion claim without every resume');
+  return Object.freeze({
+    ...report,
+    resumeResults:Object.freeze([...resumeResults]),
+    resumeCheckpoint:Object.freeze({
+      state,
+      sourceCandidates:report.candidateCount,
+      expectedDispatches:dispatches.length,
+      completedDispatches:resumeResults.length,
+      remainingDispatches:dispatches.length - resumeResults.length,
+      checkpointedAt:at,
+      // A COMPLETE checkpoint proves the backfill resumed canonical work;
+      // it never proves those owners performed the underlying provider action.
+      consumerCompletionProven:false,
+      businessOutcomeProven:false
+    })
+  });
+}
+
+export async function executeCompletionBackfillDispatches(report, { env = process.env, fetchImpl = globalThis.fetch, outputDir = '.artifacts/completion-supervisor-resume', onResult = null } = {}) {
   if (report?.mode !== 'active') return Object.freeze([]);
+  if (onResult !== null && typeof onResult !== 'function') throw new TypeError('onResult must be a function');
   const results = [];
   for (let index = 0; index < (report.dispatches ?? []).length; index += 1) {
     const dispatch = report.dispatches[index];
@@ -261,7 +301,9 @@ export async function executeCompletionBackfillDispatches(report, { env = proces
       || artifact.decisions[0]?.status === 'NOT_DUE') {
       throw new Error('Backfill original consumer durable due/readback unverified: '+dispatch.obligationId);
     }
-    results.push(Object.freeze({ dispatch, output, artifact }));
+    const result = Object.freeze({ dispatch, output, artifact });
+    results.push(result);
+    if (onResult) await onResult(result);
   }
   return Object.freeze(results);
 }
@@ -320,11 +362,23 @@ async function main(argv = process.argv.slice(2)) {
   const canonical = await loadCanonicalObligations();
   const proposed = reconcileCompletionBackfill({ ...snapshot, mode, registeredObligationIds:canonical.map(item => item.id) });
   const report = applyOriginalBackfillDuePolicy(proposed, canonical);
-  const resumeResults = await executeCompletionBackfillDispatches(report);
-  const finalReport = Object.freeze({ ...report, resumeResults });
   await mkdir(output.split('/').slice(0, -1).join('/') || '.', { recursive:true });
-  await writeFile(output, `${JSON.stringify(finalReport, null, 2)}\n`, 'utf8');
-  return finalReport;
+  const completed = [];
+  // The same original owner stores an atomic checkpoint before the first
+  // allowed resume; a failed owner step leaves its last truthful progress.
+  const persist = async state => {
+    const checkpoint = checkpointCompletionBackfill(report, completed, state);
+    const tempPath = `${output}.checkpoint-${process.pid}.tmp`;
+    await writeFile(tempPath, `${JSON.stringify(checkpoint, null, 2)}\n`, 'utf8');
+    await rename(tempPath, output);
+    return checkpoint;
+  };
+  await persist('IN_PROGRESS');
+  await executeCompletionBackfillDispatches(report, { onResult: async result => {
+    completed.push(result);
+    await persist('IN_PROGRESS');
+  }});
+  return persist('COMPLETE');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
