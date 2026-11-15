@@ -19,3 +19,9 @@ De enige oorspronkelijke eigenaar, bronrevision, idempotency, actor, lesson JSON
 
 ## Regressie en overname
 Bestaande code-eigenaren `agent-integration-engineer`, `agent-reliability`, `agent-data-quality` en `agent-growth-market` staan in dezelfde `platform/agents/agent-team.mjs`; de bestaande daily source-enrichment skill krijgt de exacte commerciële ACCEPT/OPEN-regel. Regressie `tests/brain-no-premature-closure-contract-20261115.test.mjs` controleert deze contracten; incident #4198 blijft open voor de werkelijk incomplete bedrijfsloop. Na de beveiligde merge is afzonderlijk nodig: GitHub production readback, provider/source/consumer ACK en resultaat-/leereffect. Niet voortijdig 'alles groen' zeggen.
+
+## 15 november — actuele vier overdrachten en veilige opvolgende kandidaat
+
+De drie eerder vermelde handoffs waren de oorspronkelijke snapshot; op 2026-11-15T16:06:17.923315Z is de onafhankelijke scorecard **vier** geworden: 1 `BROKEN_RESEARCH_TO_COMPOSER_EXPIRED`, 1 `BROKEN_RESEARCH_TO_COMPOSER_SLA`, 2 `EXPIRED_WITHOUT_DELIVERY`. Ze blijven onder oorspronkelijke `original-agent:commercial` en #4198 open. Geen zelfcertificering.
+
+PR #5884 kon ondanks code-synchronisatie niet mergen omdat de beschermde migratie-run `CANDIDATE_BASE_SHA=2f301e69633493bc1fa5589ad64c2128cff3cebc` als *onwijzigbare originele basis* gebruikte, terwijl nieuwe elders toegepaste migraties op `main` stonden. Een PR-body-wijziging verandert die oorspronkelijke gecontroleerde basis niet. Herstel: eenmalig vervangen door een nieuwe beschermde PR met `Supersedes: 5884` op de actuele `main`-SHA; dezelfde zeven inhoudelijke bestanden en dezelfde eigenaar, originele PR na vastlegging sluiten. In geen geval de migratievergelijking versoepelen. Beveiligingscontrole en onafhankelijke provider-preview blijven nodig.

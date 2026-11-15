@@ -17,3 +17,7 @@ Guard: tests/brain-no-premature-closure-contract-20261115.test.mjs. Admission, R
 - `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:human_documentation` (tweede Required run): een activity ledger is niet hetzelfde als human documentation. Oorspronkelijke closure-compiler verlangt een extra pad onder `docs/changes/` of `docs/learning/`. Herstel: toegevoegd `docs/changes/2026-11-15-no-premature-closure-agent-contract.md`, oorspronkelijk playbook ongewijzigd behouden binnen scope-budget zeven, regressie test ziet het eigen doc. Security/CI-poort niet versoepeld.
 
 Deze fixes claimen geen volledige bedrijfsuitslag, enkel correct kandidaatbewijs.
+
+## Additional original incident: stale immutable candidate base after concurrent production migration merges
+
+Evidence: original PR #5884 protected Required run 43740657732 preflight failed `PR candidates must not predeclare unapplied migrations as production-applied: UNEXPECTED_PROTECTED_BASE`. Native job environment explicitly used `CANDIDATE_BASE_SHA=2f301e69633493bc1fa5589ad64c2128cff3cebc` although current PR comparison showed seven scoped files and 0 behind main, because the original admission lease had pinned the prior base. Root cause: PR metadata/merge commit sync does not rewrite immutable admission lineage. Fix: close prior PR once superseded, open exactly one original descendant on current main, preserve all source and owner, re-run exact head checks. Avoid two open candidate PRs and any bypass to the migrator. Business four handoffs remain OPEN.
