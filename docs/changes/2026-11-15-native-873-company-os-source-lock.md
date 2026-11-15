@@ -1,0 +1,9 @@
+# Original native Company OS applied migration 873 — source-history acknowledgement
+
+Original P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215. Original protected source PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5892 merged at SHA `995353f3fef886314339ef98e102fc4a6b69f1c4` after Required, native Supabase preview and both CodeQL passed.
+
+Independent native provider SQL readback at `2026-11-15T17:37:27.655996Z` from project `adhjwmvyoixzjtmiroln`: **873** applied migrations, latest exact `20261115235900/company_intelligence_existing_daily_source_receipt_v1`; original source lock was **872**, latest `20261115235500/sales_action_reexecution_immutable_attempt_lineage_v1`.
+
+This is an **immutable source-ACK only**, not a new migration, production deploy, cron or provider call. Append the native provider observed exact version/name and captured_at to the **existing** `supabase/migration-history.lock.json`, preserve all original 872 rows and private service-role-only Company OS functions. Regression `tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs` requires perfect 873/873 source equality.
+
+Original production readback of the actually applied Company OS is independently proven: one same-date `company_intelligence_os_cycle` event `observed/SOURCE_RECEIPT_ONLY`, original commercial verified source event `f846c546-d358-46cb-a9e7-078b70934469`, original daily self-improvement event consumes the same source ID, original cron #107 remains active, Company OS invoked no secondary send. These are source and consumer facts **not realized customer ROI**, forecasts or independently observed cost reductions. Financial tenant actuals are still missing and the original ONE BRAIN financial obligation remains OPEN. Ensure source lock PR passes protected admission, preflight, backend, CodeQL and native provider preview and is merged before considering release history complete.
