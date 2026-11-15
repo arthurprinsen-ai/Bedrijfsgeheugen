@@ -21,6 +21,10 @@ fair.insertAdjacentElement('afterend',actualCard);
 const panel=document.createElement('section');panel.className='view-panel';panel.id='screen-tactics';panel.dataset.viewPanel='tactics';panel.setAttribute('role','tabpanel');panel.setAttribute('aria-label','Tactiek en kladblok');
 panel.innerHTML='<div class="view-head"><div><div class="eyebrow">PW MO14-1</div><h2>Tactiek & kladblok</h2><p class="lead">Notities en veldtekeningen voor jouw wedstrijd. Sleep speelsters, teken looplijnen en download het resultaat.</p><p class="coach-current-fixture" id="coachTacticFixture"></p></div></div><section class="coach-card"><div class="coach-heading"><div><span class="coach-tag">Kladblaadje</span><h3>Jouw wedstrijdaantekeningen</h3><p>Leg opdrachten vast: bijvoorbeeld druk zetten, passing, strafcorners of het sterke blok.</p></div></div><div class="coach-note-row"><div><b>Sterk blok</b>Tess · Cato · Eline · Lidewij · Coco-Mijn, plus een aparte keeper.</div><div><b>Praktische tip</b>Schrijf per blok één aanwijzing. Je kunt de aantekeningen later downloaden.</div></div><label class="fieldlabel" for="coachNotes">Notities</label><textarea id="coachNotes" class="coach-notes" maxlength="5000" placeholder="Tess + Cato achter, Eline midden, Lidewij en Coco voor. Wat doen we bij balverlies?"></textarea><div class="coach-actions" style="margin-top:12px"><button type="button" class="coach-btn" id="coachDownloadNotes">Download notities</button><button type="button" class="coach-btn" id="coachCopyNotes">Kopieer tekst</button></div></section><section class="coach-card"><div class="coach-heading"><div><span class="coach-tag">Zaalveld</span><h3>Teken de spelsituatie</h3><p>Je vinger, stylus en muis werken op hetzelfde veld. Pijlen zijn looplijnen; cirkels zijn zones. Verplaats de pionnen van de opgestelde speelsters.</p></div></div><div class="coach-board-toolbar" role="toolbar" aria-label="Tekengereedschap"><button class="coach-tool is-selected" type="button" data-coach-tool="pen" aria-pressed="true">✎ Pen</button><button class="coach-tool" type="button" data-coach-tool="arrow" aria-pressed="false">➜ Pijl</button><button class="coach-tool" type="button" data-coach-tool="circle" aria-pressed="false">◯ Cirkel</button><button class="coach-tool" type="button" data-coach-tool="move" aria-pressed="false">✥ Verplaats</button><label class="coach-colors"><input type="color" id="coachColor" value="#79283e" aria-label="Penkleur"></label></div><canvas id="coachBoard" class="coach-board-canvas" width="960" height="640" aria-label="Interactief zaalhockeyveld voor tactische tekeningen"></canvas><p class="coach-board-hint">Alles wordt per wedstrijd op dit apparaat bewaard. Kies Verplaats om speelsterpionnen over het veld te schuiven.</p><div class="coach-toolbar-split"><div class="coach-actions"><button class="coach-btn" type="button" id="coachUndo">↶ Ongedaan</button><button class="coach-btn" type="button" id="coachRedo">↷ Opnieuw</button><button class="coach-btn" type="button" id="coachClear">Wis tekening</button></div><button class="coach-btn is-primary" type="button" id="coachDownloadBoard">Download veld als PNG</button></div></section><p class="coach-footnote">Geen gegevens worden gedeeld met een externe dienst. Voor gebruik op een ander apparaat download je de PNG en je notities.</p>';
 plan.parentElement.appendChild(panel);
+const backups=document.createElement('section');backups.id='coachBackups';backups.className='coach-card';
+backups.innerHTML='<div class="coach-heading"><div><span class="coach-tag">Bewaar je werk</span><h3>Back-up & herstel</h3><p>Exporteer je complete Zaalcoach: opstellingen, keeperkeuzes, werkelijk gespeelde minuten, notities en tactiektekeningen. Bewaar het bestand bijvoorbeeld in Bestanden of Google Drive.</p></div></div><div class="coach-actions"><button type="button" id="coachExportBackup" class="coach-btn is-primary">Download volledige back-up</button><button type="button" id="coachImportBackup" class="coach-btn">Herstel vanaf back-up</button><input type="file" id="coachBackupFile" accept="application/json,.json" hidden></div><p class="coach-footnote">De gegevens staan standaard alleen op dit apparaat. Een back-up maakt het mogelijk om ze later op een andere telefoon te herstellen.</p><p id="coachBackupFeedback" class="coach-status" role="status" aria-live="polite"></p>';
+panel.appendChild(backups);
+
 document.querySelector('#screen-more .menu-list')?.insertAdjacentHTML('beforeend','<button class="menu-tile" type="button" data-go="tactics"><span class="menu-tile-icon coach-menu-icon">✎</span><span><b>Tactiek & kladblok</b><small>Spelsituaties tekenen en notities bewaren</small></span><span aria-hidden="true">›</span></button>');
 document.querySelector('#appDrawer .drawer-items')?.insertAdjacentHTML('beforeend','<button type="button" data-go="tactics"><span class="coach-menu-icon">✎</span><span>Tactiek & kladblok</span><span>›</span></button>');
 const mobile=document.querySelector('.bottom-nav [data-view="stats"]');if(mobile){mobile.dataset.view='tactics';mobile.setAttribute('aria-controls','screen-tactics');mobile.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 3h18v18H3zM12 3v18M3 12h18"/><path d="m7 15 2-2 3 1 2-3 3 2"/></svg><span>Tactiek</span>';}
@@ -166,6 +170,38 @@ el('coachUndo').addEventListener('click',()=>{if(!past.length)return;future.push
 el('coachRedo').addEventListener('click',()=>{if(!future.length)return;past.push(JSON.stringify(boardState()));match().coachBoard=JSON.parse(future.pop());save();paintBoard();});
 el('coachClear').addEventListener('click',()=>{if(!confirm('Wis alle tekeningen en verplaatste speelsters voor deze wedstrijd?'))return;remember();match().coachBoard={strokes:[],tokens:{}};save();paintBoard();});
 el('coachDownloadBoard').addEventListener('click',()=>{paintBoard();board.toBlob(blob=>{if(blob)download(blob,'PW_MO14-1_tactiek_wedstrijd_'+(state.selectedMatch+1)+'.png');},'image/png');});
+
+/* Explicit portable offline backup: no external transmission and no silent overwrite. */
+const BACKUP_MAGIC='PW-MO14-1-ZAALCOACH';
+el('coachExportBackup').addEventListener('click',()=>{
+ const data=JSON.stringify({app:BACKUP_MAGIC,version:1,exportedAt:new Date().toISOString(),state},null,2);
+ download(new Blob([data],{type:'application/json'}),'PW_MO14-1_Zaalcoach_backup_'+new Date().toISOString().slice(0,10)+'.json');
+ el('coachBackupFeedback').textContent='Back-up aangemaakt. Bewaar dit bestand op een veilige plek.';
+});
+el('coachImportBackup').addEventListener('click',()=>el('coachBackupFile').click());
+el('coachBackupFile').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ const feedback=el('coachBackupFeedback');
+ try{
+  if(file.size>5*1024*1024)throw Error('De back-up is groter dan 5 MB.');
+  const data=JSON.parse(await file.text()),next=data?.state;
+  if(data.app!==BACKUP_MAGIC||data.version!==1||!next||!Array.isArray(next.roster)||!Array.isArray(next.matches))throw Error('Dit is geen geldige Zaalcoach-back-up.');
+  if(next.roster.length<6||next.roster.length>12||next.matches.length<1||next.matches.length>80)throw Error('Onjuist aantal speelsters of wedstrijden.');
+  const ids=new Set(next.roster.map(q=>q.id));
+  if(ids.size!==next.roster.length||next.roster.some(q=>typeof q.id!=='string'||!/^[a-z0-9_-]{1,60}$/i.test(q.id)||typeof q.name!=='string'||q.name.length>40||!Array.isArray(q.roles)||q.roles.some(x=>!['A','M','V'].includes(x))))throw Error('Ongeldige speelsters of posities.');
+  const fixtureIds=new Set(next.matches.map(m=>m.fixtureId));
+  if(fixtureIds.size!==next.matches.length||next.matches.some(m=>!m||typeof m.fixtureId!=='string'||!ids.has(m.keeper)||!Array.isArray(m.absent)||m.absent.some(id=>!ids.has(id))||typeof m.date!=='string'||m.date.length>10||typeof m.opponent!=='string'||m.opponent.length>80))throw Error('Ongeldige wedstrijdgegevens.');
+  for(const m of next.matches){
+   if(m.firstLineup){const pinned=Object.values(m.firstLineup);if(pinned.some(id=>!ids.has(id))||new Set(pinned).size!==pinned.length)throw Error('Ongeldige vastgezette startopstelling.');}
+   if(m.actualConfirmed){if(!m.actualField||!m.actualGoal)throw Error('Onvolledig gespeelde-minutenoverzicht.');for(const id of ids){const a=Number(m.actualField[id]||0),b=Number(m.actualGoal[id]||0);if(!Number.isFinite(a)||!Number.isFinite(b)||a<0||b<0||a+b>120)throw Error('Ongeldige gespeelde minuten.');}}
+  }
+  if(!confirm('Herstel '+next.matches.length+' wedstrijden en '+next.roster.length+' speelsters uit de back-up? De huidige gegevens op dit apparaat worden vervangen.')){feedback.textContent='Herstellen geannuleerd.';return;}
+  state=next;state.selectedMatch=Math.max(0,Math.min(Number(state.selectedMatch)||0,state.matches.length-1));
+  cache={};save();lastId=null;render();showView('home',false);
+  feedback.textContent='Back-up succesvol hersteld.';
+ }catch(err){feedback.textContent='Herstellen geweigerd: '+err.message;feedback.classList.add('warn');}
+ finally{e.target.value='';}
+});
 
 const baseRender=render;render=function(){baseRender();renderFirst();renderFair();renderActual();syncNotes();paintBoard();};
 cache={};render();
