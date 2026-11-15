@@ -55,5 +55,16 @@
     "canary": [
       "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
     ]
+  },
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+    "provider_post_id": "urn:li:share:7527762350779662336",
+    "provider_url": "https://www.linkedin.com/feed/update/urn:li:share:7527762350779662336/",
+    "rejected_editorial_review_http": 422,
+    "rejected_review_code": "OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED",
+    "review_hash_mismatch": true,
+    "verified_historical_event_order": false,
+    "regression_test": "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs",
+    "production_test_confirmed": false
   }
 }
