@@ -1,0 +1,10 @@
+# 15 November 2026 — original BRAIN post-merge terminal test oracle drift
+
+- **Original canonical incident:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+- **Observed released source:** PR #5821 merged main `ded9ff6a1ace0c39f2520b978bce666342b9c487`, protected Required `43695108633` PASS, CodeQL `43695108559` PASS.
+- **Actual postmerge failure:** terminal run `43695356905` refused `BRAIN` verification `43695381458`; backend `132754808017` 6780 PASS, 4 FAIL, 2 SKIP. Four historical assertions require disallowed truncated `runs?branch=main&event=workflow_dispatch&per_page=100`. No BRAIN green/terminal closure was claimed.
+- **Root cause:** terminal final gate had been correctly upgraded to original complete PR-era provider pagination but unrelated historical source string and mocked GitHub query tests were not updated with it.
+- **Fix scope:** four exact original tests, same original `powerhouse-post-merge-codeql` skill, one new original machine learning event, human change record and this append-only ledger. No production workflow code, RLS, SQL migrations, scheduler, new agent, sender, new queue, secrets or GitHub bypass.
+- **Execution-grade regression:** original terminal workflow complete-pages `gh api --paginate --slurp` and `brain-verification-flight-index.mjs` execute in actual shell test with both positive and negative fixture cases, while older different terminalizer keeps its original fixture.
+- **Prevention:** tests must validate source-bound intent, exact owner/head, full provider pagination, real successful exact BRAIN and trusted main SHA instead of pinning superseded insecure transport string. Missing/failed/skipped/partial evidence never green.
+- **Outstanding:** exact-head Required/CodeQL/Brain, protected merge, terminal proof, independent GitHub/main readback, 14 original innovation intakes still PLANNED and 14 original delivery obligations still OPEN with 0 independent actual agent confirmations. Historical failed BRAIN run never rewritten.
