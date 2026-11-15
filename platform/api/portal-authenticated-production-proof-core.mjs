@@ -333,6 +333,39 @@ export async function runPortalAuthenticatedProductionProof({
   };
 }
 
+/**
+ * Exact immutable-deploy innovation admin proof, never interpreted as an
+ * autonomous agent ACK or commercial provider delivery. Called only when
+ * the protected source/Identity/deploy-proof path changed.
+ */
+export function assertOriginalInnovationProductionReleaseProof(proof){
+  if(proof?.innovation_audit_proof!=='PROVEN'||
+     proof?.innovation_audit_admin_verified!==true||
+     proof?.innovation_audit_nonadmin_denied!==true||
+     proof?.innovation_audit_unauthenticated_denied!==true||
+     proof?.innovation_audit_failure_code!==null||
+     proof?.synthetic_user_cleanup!=='DELETED')
+    throw fail('ORIGINAL_INNOVATION_ADMIN_PROOF_NOT_PROVEN');
+  const c=proof.innovation_audit_counts;
+  if(!c||c.scope!=='FULL_LAST_7D'||
+     !Number.isSafeInteger(c.total)||c.total<1||c.total>500||
+     ![c.historical_writer_backed,c.unsupported,c.missing_actions,c.currently_not_done]
+       .every(x=>Number.isSafeInteger(x)&&x>=0)||
+     c.historical_writer_backed+c.unsupported!==c.total||
+     c.missing_actions>c.unsupported||
+     c.currently_not_done>c.historical_writer_backed||
+     c.external_provider_proven!==false||
+     c.business_outcome_proven!==false)
+    throw fail('ORIGINAL_INNOVATION_SOURCE_COUNTS_INVALID');
+  return Object.freeze({
+    scope:'FULL_LAST_7D',events:c.total,
+    historical_writer_backed:c.historical_writer_backed,
+    unsupported:c.unsupported,currently_not_done:c.currently_not_done,
+    original_admin_verified:true,nonadmin_denied:true,unauthenticated_denied:true,
+    delivery_proven:false,revenue_proven:false
+  });
+}
+
 export const PORTAL_AUTH_PROOF_CONTRACT=CONTRACT;
 
 
