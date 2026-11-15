@@ -13,6 +13,7 @@ on:
         options:
           - daily
           - original_intake_recovery
+          - original_code_recovery
 permissions:
   contents: read
   actions: read
@@ -27,7 +28,7 @@ jobs:
   daily-admission:
     # The one daily fence remains mandatory for the normal daily route.
     # A scoped recovery must never repeat full daily learning/freshness work.
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery' }}
+    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery') && (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_code_recovery') }}
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
@@ -41,7 +42,7 @@ jobs:
         run: node tools/delivery/daily-learning-run-admission.mjs
 
   improve:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery' }}
+    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery') && (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_code_recovery') }}
     needs: daily-admission
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -190,11 +191,37 @@ jobs:
           retention-days: 30
 
 
+  # The catalog remains fail-closed, but a stale supplier receipt must not
+  # suppress independent daily chat/agent/skill/engineering learning tasks.
+  # Both jobs are part of this SAME scheduled workflow: no second scheduler.
+  model-freshness:
+    if: ${{ (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery') && (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_code_recovery') }}
+    needs: daily-admission
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify AI model intelligence contract and source-backed freshness
+        run: |
+          node --test tests/ai-model-intelligence-freshness-v1.test.mjs
+          node scripts/brain/ai-model-intelligence-audit.mjs
+      - name: Preserve AI model freshness failure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-model-freshness-${{ github.run_id }}
+          path: artifacts/quality/ai-model-intelligence-audit.json
+          if-no-files-found: warn
+          retention-days: 30
+
   # One bounded code candidate from the ORIGINAL agent owner decision.
   # This reuses the existing daily workflow and protected GitHub delivery,
   # never creating an independent scheduler, publisher or parallel Brain.
   original-innovation-code-candidate:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery' }}
+    if: ${{ always() && (needs.improve.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.execution_scope == 'original_code_recovery')) }}
     needs: improve
     runs-on: ubuntu-24.04
     timeout-minutes: 25
@@ -323,31 +350,5 @@ jobs:
         with:
           name: original-innovation-code-candidate-${{ github.run_id }}
           path: artifacts/quality/original-innovation-code-pr-receipt.json
-          if-no-files-found: warn
-          retention-days: 30
-
-  # The catalog remains fail-closed, but a stale supplier receipt must not
-  # suppress independent daily chat/agent/skill/engineering learning tasks.
-  # Both jobs are part of this SAME scheduled workflow: no second scheduler.
-  model-freshness:
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery' }}
-    needs: daily-admission
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-      - name: Verify AI model intelligence contract and source-backed freshness
-        run: |
-          node --test tests/ai-model-intelligence-freshness-v1.test.mjs
-          node scripts/brain/ai-model-intelligence-audit.mjs
-      - name: Preserve AI model freshness failure evidence
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: powerhouse-model-freshness-${{ github.run_id }}
-          path: artifacts/quality/ai-model-intelligence-audit.json
           if-no-files-found: warn
           retention-days: 30
