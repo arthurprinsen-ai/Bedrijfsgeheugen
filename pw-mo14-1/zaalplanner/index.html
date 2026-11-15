@@ -69,6 +69,64 @@ dialog{border:0;border-radius:18px;padding:0;max-width:min(420px,90vw);box-shado
 
 /* V6 fixture-first planning: one matchday can have multiple independent fixtures. */
 .fixture-day{margin:18px 0 27px}.fixture-day-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 2px 12px;border-bottom:2px solid #d9c2c9}.fixture-day-header h3{margin:0;color:#59222d;font-size:1rem;text-transform:capitalize}.fixture-day-header small{font-weight:650;color:#80616a}.fixture-day-export{background:#59222d;color:white;border:0;border-radius:12px;padding:10px 12px;min-height:42px;font-weight:800;white-space:nowrap;cursor:pointer}.fixture-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:12px;margin-top:13px}.fixture-card{margin:0;min-width:0;overflow:hidden}.fixture-card .home-round-open{width:100%;display:flex;flex-direction:column;gap:5px;text-align:left;padding:15px;align-items:stretch}.fixture-kickoff{display:flex;align-items:center;gap:10px;color:#59222d}.fixture-kickoff strong{font-size:1.32rem}.fixture-kickoff span{font-size:.69rem;font-weight:900;border-radius:7px;background:#f0e1e5;padding:4px 7px}.fixture-opponent{font-size:1rem;line-height:1.4;color:#24343f}.fixture-edit{border-top:1px solid #ead9de;padding:7px 13px 11px}.fixture-edit summary{font-size:.77rem;cursor:pointer;color:#762e41;font-weight:850;padding:8px 0}.fixture-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:6px 0}.fixture-form label{display:flex;flex-direction:column;gap:5px;font-size:.7rem;font-weight:800;color:#5c3743}.fixture-form input,.fixture-form select{width:100%;min-width:0;padding:9px 7px;border:1px solid #dec9ce;border-radius:9px;background:white;font:inherit;color:#28252b;min-height:42px}.home-section-head{align-items:center;flex-wrap:wrap}.home-section-head #addFixture{flex-shrink:0}@media(max-width:460px){.fixture-day-header h3{font-size:.92rem}.fixture-day-export{font-size:.75rem}.fixture-form{grid-template-columns:1fr 1fr}}
+
+/* V7: adaptive mobile-first matchday layout; one full-width day per row. */
+:root{--pw-burgundy:#59222d;--pw-burgundy-dark:#39181f;--pw-cream:#faf7f8;--pw-line:#e7dbe0}
+html,body{max-width:100%;overflow-x:clip}
+*,*::before,*::after{box-sizing:border-box}
+.app-container,.view-panel,.home-rounds,.fixture-day,.fixture-day-header,.fixture-cards,.fixture-card{min-width:0}
+.home-rounds{display:block!important;width:100%!important;max-width:100%!important;grid-template-columns:none!important}
+.fixture-day{display:block;width:100%;max-width:100%;margin:0 0 26px;padding:0 0 8px}
+.fixture-day+.fixture-day{padding-top:15px;border-top:1px solid var(--pw-line)}
+.fixture-day-header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:15px 0 14px;border-bottom:1px solid #dfcbd1}
+.fixture-day-header>div{min-width:0}
+.fixture-day-header h3{margin:0 0 4px;color:var(--pw-burgundy-dark);font-size:clamp(1.08rem,2.2vw,1.36rem);font-weight:850;line-height:1.25;letter-spacing:-.018em;overflow-wrap:normal;word-break:normal}
+.fixture-day-header small{display:block;color:#826770;font-size:.83rem;line-height:1.4;font-weight:650}
+.fixture-day-export{position:static;flex:0 0 auto;max-width:100%;white-space:normal;line-height:1.2;min-height:44px;padding:10px 12px;border:1px solid #d5bcc4;background:#fff;color:var(--pw-burgundy);border-radius:12px;font-size:.82rem;font-weight:800;box-shadow:none;cursor:pointer}
+.fixture-day-export:active{transform:scale(.99)}
+.fixture-day-export:hover{background:#f6edf0}
+.fixture-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.fixture-card.home-round,.fixture-card.home-round.active{width:100%;min-height:0;padding:0!important;display:block!important;align-items:stretch;justify-content:stretch;border:1px solid #e3d7dd;border-radius:18px;box-shadow:0 4px 18px #59222d0d;overflow:hidden}
+.fixture-card.home-round.active{border:2px solid #8a4156;background:#fbf5f6}
+.fixture-card .home-round-open{display:flex;width:100%;min-width:0;flex-direction:column;gap:8px;align-items:stretch;min-height:170px;padding:16px!important;border:0;text-align:left;cursor:pointer;overflow-wrap:normal}
+.fixture-card .home-round-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#5e2a39}
+.fixture-card .home-round-heading b{font-size:.9rem;line-height:1.25}
+.fixture-card .home-round-heading i{color:#6d3545;background:#f1e5e9;padding:4px 8px;border-radius:8px;white-space:nowrap;font-size:.72rem;font-weight:850}
+.fixture-card .fixture-kickoff{display:flex;align-items:center;gap:12px;margin-top:3px}
+.fixture-card .fixture-kickoff strong{font-variant-numeric:tabular-nums;font-size:1.52rem;letter-spacing:-.045em;color:#59222d}
+.fixture-card .fixture-kickoff span{font-size:.7rem;font-weight:850;letter-spacing:.04em}
+.fixture-card .fixture-opponent{display:block;white-space:normal;overflow-wrap:break-word;word-break:normal;font-size:1.02rem;line-height:1.4;color:#243847}
+.fixture-card .home-round-open small{font-size:.79rem;line-height:1.45;color:#6d7b83}
+.fixture-card .fixture-edit{padding:8px 16px 12px;border-top:1px solid var(--pw-line)}
+.fixture-card .fixture-edit summary{display:block;min-height:44px;padding:11px 0 9px;color:#632a3b;font-weight:750;cursor:pointer}
+.fixture-card .fixture-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fixture-card .fixture-form input,.fixture-card .fixture-form select{font-size:16px!important;min-height:44px}
+.fixture-day-export:focus-visible,.fixture-card button:focus-visible,.fixture-card summary:focus-visible,.navtab:focus-visible{outline:3px solid #b16b82;outline-offset:3px}
+.bottom-nav{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:#fffffff2}
+.bottom-nav .navtab{min-height:54px}
+.bottom-nav .navtab.is-active{background:#f4e8eb!important;color:#6b2838!important}
+.switch-summary{color:#62404b;font-size:.79rem;line-height:1.45;margin:9px 0 1px;font-weight:750;padding:9px 11px;background:#f7eef1;border-radius:10px}
+.next-out,.next-in,.next-stays{display:flex;flex-direction:column;gap:4px;margin-top:10px;line-height:1.5}
+.next-out strong{color:#a03a4b}.next-in strong{color:#177c4a}.next-stays strong{color:#673343}
+.next-minute{color:#59222d;font-size:.94rem;font-weight:900;letter-spacing:.03em}
+@media(max-width:720px){
+  .app-container{padding-left:clamp(12px,4vw,19px);padding-right:clamp(12px,4vw,19px);padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+  .fixture-day-header{grid-template-columns:minmax(0,1fr);gap:10px;align-items:start}
+  .fixture-day-header h3{font-size:clamp(1.12rem,5vw,1.38rem);line-height:1.23}
+  .fixture-day-header small{font-size:.81rem}
+  .fixture-day-export{width:max-content;max-width:100%;justify-self:start;min-height:44px;padding:10px 15px}
+  .fixture-cards{grid-template-columns:minmax(0,1fr)!important;gap:12px}
+  .fixture-card .home-round-open{min-height:0;padding:16px!important;gap:7px}
+  .fixture-card .fixture-form{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .fixture-day{margin-bottom:20px}
+  .home-section-head{gap:12px;align-items:flex-start}
+  .home-section-head #addFixture{min-height:44px}
+  .bottom-nav{padding-bottom:calc(9px + env(safe-area-inset-bottom));z-index:90}
+}
+@media(min-width:721px){.fixture-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.home-rounds{max-width:880px!important;margin-left:auto;margin-right:auto}}
+@media(max-width:350px){.fixture-card .fixture-form{grid-template-columns:minmax(0,1fr)}.fixture-day-header h3{font-size:1.08rem}}
+@media(prefers-reduced-motion:reduce){.view-panel{animation:none!important}.fixture-day-export:active{transform:none}}
+
 </style>
 </head>
 <body>
