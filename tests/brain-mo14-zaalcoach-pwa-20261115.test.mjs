@@ -67,14 +67,14 @@ test('PW Enschede branding and independent editable match dates share the existi
 test('12 screenshot-grounded PW fixtures across six days have separate time, opponent and keepers',()=>{
  const html=readFileSync(base+'index.html','utf8');
  const begin=html.indexOf('const OFFICIAL_FIXTURES=');
- const end=html.indexOf(';\\nconst toMatch=',begin);
+ const end=html.indexOf(';\nconst toMatch=',begin);
  assert.ok(begin>=0,'fixture declaration missing');
  const text=html.slice(begin+'const OFFICIAL_FIXTURES='.length,end);
  const fixtures=JSON.parse(text);
  assert.equal(fixtures.length,12);
  assert.equal(new Set(fixtures.map(x=>x.fixtureId)).size,12);
  const byDay=new Map();
- fixtures.forEach(f=>{byDay.set(f.date,(byDay.get(f.date)||0)+1);assert.match(f.time,/^\\d{2}:\\d{2}$/)});
+ fixtures.forEach(f=>{byDay.set(f.date,(byDay.get(f.date)||0)+1);assert.match(f.time,/^\d{2}:\d{2}$/)});
  assert.deepEqual([...byDay.entries()],[
   ['2026-12-06',2],['2026-12-13',2],['2026-12-19',2],
   ['2027-01-09',2],['2027-01-24',2],['2027-02-13',2]
