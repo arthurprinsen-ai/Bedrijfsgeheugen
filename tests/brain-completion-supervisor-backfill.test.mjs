@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { reconcileCompletionBackfill } from '../tools/outcome-obligation-completion-supervisor-backfill.mjs';
+import { reconcileCompletionBackfill, selectOriginalBackfillTrigger, applyOriginalBackfillDuePolicy } from '../tools/outcome-obligation-completion-supervisor-backfill.mjs';
 
 const productionIdentity = 'deploy:sha-live';
 const liveEvidence = [
@@ -192,4 +192,58 @@ test('successful workflow alone never upgrades an identity to LIVE_VERIFIED', ()
   });
   assert.equal(report.skippedLiveVerified.length, 0);
   assert.ok(report.candidates.some(item => item.identity === 'sha-only-green-workflow'));
+});
+
+test('backfill selects the original trigger: daily work is scheduled, event work is event-only, prewrite is deferred',()=>{
+  assert.equal(selectOriginalBackfillTrigger({
+    id:'cost-policy-10000-monthly',dueAt:'continuous_with_daily_recalculation'
+  }),'scheduled-sweep');
+  assert.equal(selectOriginalBackfillTrigger({
+    id:'cost-ledger-all-scenarios-daily',dueAt:'daily_after_inventory_refresh'
+  }),'event-trigger');
+  assert.equal(selectOriginalBackfillTrigger({
+    id:'material-change-live-verification',dueAt:'after_each_material_production_change'
+  }),'event-trigger');
+  assert.equal(selectOriginalBackfillTrigger({
+    id:'external-mutation-prewrite-obligation',dueAt:'before_each_material_external_mutation'
+  }),null);
+});
+
+test('original 3705-source fanout report remains auditable while genuinely non-due prewrite work is deferred',()=>{
+  const input=reconcileCompletionBackfill({
+    mode:'active',
+    registeredObligationIds:['cost-policy-10000-monthly','cost-ledger-all-scenarios-daily','external-mutation-prewrite-obligation'],
+    obligations:[
+      {id:'cost-policy-10000-monthly',identity:'cost-source',status:'PENDING'},
+      {id:'cost-ledger-all-scenarios-daily',identity:'ledger-source',status:'PENDING'},
+      {id:'external-mutation-prewrite-obligation',identity:'prewrite-source',status:'PENDING'}
+    ]
+  });
+  assert.equal(input.candidateCount,3);
+  const applied=applyOriginalBackfillDuePolicy(input,[
+    {id:'cost-policy-10000-monthly',dueAt:'continuous_with_daily_recalculation'},
+    {id:'cost-ledger-all-scenarios-daily',dueAt:'daily_after_inventory_refresh'},
+    {id:'external-mutation-prewrite-obligation',dueAt:'before_each_material_external_mutation'}
+  ]);
+  assert.equal(applied.candidateCount,3,'every original source still has its own full audit lineage');
+  assert.equal(applied.candidates.length,3);
+  assert.deepEqual(applied.dispatches.map(d=>[d.obligationId,d.triggerType]),[
+    ['cost-ledger-all-scenarios-daily','event-trigger'],
+    ['cost-policy-10000-monthly','scheduled-sweep']
+  ]);
+  assert.equal(applied.deferredNotDue.length,1);
+  assert.equal(applied.deferredNotDue[0].obligationId,'external-mutation-prewrite-obligation');
+  assert.equal(applied.deferredNotDue[0].reason,'NO_ORIGINAL_DUE_TRIGGER_FOR_BACKFILL');
+  assert.equal(applied.deferredNotDue[0].nextSafeAction,'WAIT_FOR_ORIGINAL_SOURCE_TRIGGER');
+  assert.equal(applied.deferredNotDue[0].sourceCandidateCount,1);
+  assert.ok(!applied.dispatches.some(d=>d.obligationId==='external-mutation-prewrite-obligation'));
+  assert.equal(input.dispatches.length,3,'original raw source reconciliation report is not mutated');
+});
+
+test('backfill rejects an unknown registered original obligation instead of silently dropping owner work',()=>{
+  const input=reconcileCompletionBackfill({
+    mode:'active',registeredObligationIds:['original-owner'],
+    obligations:[{id:'original-owner',identity:'origin',status:'PENDING'}]
+  });
+  assert.throws(()=>applyOriginalBackfillDuePolicy(input,[]),/original registered obligation missing/);
 });
