@@ -16,11 +16,16 @@ test('original rejected-personal retry uses concise source-locked instruction an
  const end=source.indexOf('// Editorial revisions need',start);
  assert.ok(start>0&&end>start);
  const block=source.slice(start,end);
- assert.ok(block.length<2200,'bounded revision instruction size');
+ assert.ok(block.length<5500,'bounded total of three distinct source-specific instructions');
  assert.doesNotMatch(block,/correctionPrompt = editorialSystem/);
  assert.match(block,/verified_personal_source:personalSource/);
  assert.match(block,/rejected_draft:bodyText/);
  assert.match(block,/150 tot 175 normale Nederlandse woorden/);
+ assert.match(block,/observational_personal_theme_verified===true/);
+ assert.match(block,/ai_native_builder_story_verified===true/);
+ assert.match(block,/strikt observerende, niet-zakelijke LinkedIn-post/);
+ assert.match(block,/zonder te doen alsof Arthur het zelf heeft meegemaakt/);
+ assert.match(block,/geen zakelijke brug/);
  assert.match(block,/verzin nooit klanten/);
  assert.match(block,/exact één oprechte open vraag/);
 });
