@@ -38,6 +38,8 @@ test('candidate remains quarantined from email promotion, consent or provider se
  assert.match(sql,/'recipient_consent_inferred',false/);
  assert.match(sql,/'external_messages_sent',0/);
  assert.match(sql,/'next_owner','original-agent:commercial'/);
+ assert.match(sql,/revoke execute on function public\.powerhouse_commercial_heartbeat_v1\(timestamptz\)\s+from public, anon, authenticated;/i);
+ assert.match(sql,/grant execute on function public\.powerhouse_commercial_heartbeat_v1\(timestamptz\)\s+to service_role;/i);
  assert.doesNotMatch(sql,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|APOLLO_PEOPLE_ENRICHMENT|HUNTER_EMAIL_FINDER/i);
 });
 test('all existing commercial terminal/outcome, provider and regression gates survive',()=>{
