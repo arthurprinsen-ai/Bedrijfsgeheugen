@@ -61,5 +61,27 @@
       "tests/brain-outcome-obligation-supabase-store.test.mjs"
     ]
   },
-  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evidence": {
+    "original_db_project": "adhjwmvyoixzjtmiroln",
+    "source_tables": [
+      "public.brain_outcome_obligation_dispatch",
+      "public.brain_outcome_obligation_evidence"
+    ],
+    "native_sql_observed_at": "2026-11-15",
+    "independent_source_counts": {
+      "agentwork_pending": 3313,
+      "agentwork_with_any_evidence": 3313,
+      "agentwork_with_independent_accepted_exact_production_evidence_of_any_type": 70,
+      "recoverywork_recovering": 1055,
+      "recoverywork_with_evidence": 0
+    },
+    "discovered_code": "tools/outcome-obligation-supabase-store.mjs putIfAbsent always created:true after ignore-duplicates",
+    "regression": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ],
+    "historical_records_updated": false,
+    "provider_side_effect_claim": "NONE",
+    "consumer_terminal_outcome": "NOT_YET_PROVEN"
+  }
 }
