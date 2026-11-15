@@ -1,3 +1,4 @@
+# MO14 V7 source test retry: documented bug fix in rotation generator after fail-closed CI.
 # MO14 V7: responsive iPhone one-column day cards; four 10-minute blocks; exchange all possible field players; readback, no Make.
 # MO14 fixture-first release v6: 12 separate games, 2 matches per date, same-day PDF, independent readback.
 # ImageMagick/Pillow absence fixed: pinned sharp resizer on GitHub runner; retain fail-closed PNG checks.
