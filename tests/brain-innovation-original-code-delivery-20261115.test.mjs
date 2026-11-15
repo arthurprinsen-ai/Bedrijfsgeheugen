@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {selectOriginalCodeCandidate,checkChangedPaths,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
+import {verifyOriginalCandidateReceipt} from '../scripts/brain/innovation-original-code-pr-receipt.mjs';
 
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const id='2c1ecc77-58aa-4f25-ae68-e2337853fdc7';
@@ -79,4 +80,24 @@ test('bounded diff rejects workflow, destructive paths, tests-only and fake lear
   }
   assert.throws(()=>checkChangedPaths({workorder,changed:okay,deleted:[okay[0]]}),/DELETION_FORBIDDEN/);
   assert.throws(()=>checkChangedPaths({workorder,changed:okay.slice(1)}),/PATH_SCOPE/);
+});
+
+test('PR receipt only records provider-linked candidate and cannot invent verified ACK',()=>{
+  const f=fixture(),workorder=selectOriginalCodeCandidate(f);
+  const pr={baseRefName:'main',state:'OPEN',
+    url:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/999999',
+    headRefOid:'c'.repeat(40),
+    body:'Original-Candidate: '+workorder.candidate_id+'\nOriginal-Source-Revision: '+workorder.source_revision+
+      '\nOriginal-Source-SHA256: '+workorder.source_sha256};
+  const decision=verifyOriginalCandidateReceipt({workorder,pr,operation:f.snapshot.intakes[0]});
+  assert.equal(decision.already_recorded,false);
+  assert.equal(decision.receipt.consumer_ack_verified,false);
+  assert.equal(decision.receipt.terminal_success,false);
+  assert.equal(decision.receipt.production_not_proven,true);
+  assert.throws(()=>verifyOriginalCandidateReceipt({workorder,pr:{...pr,state:'MERGED'},operation:f.snapshot.intakes[0]}),
+    /UNTRUSTED_GITHUB_PR/);
+  assert.throws(()=>verifyOriginalCandidateReceipt({workorder,pr,operation:{...f.snapshot.intakes[0],status:'VERIFIED'}}),
+    /ORIGINAL_SOURCE_CHANGED/);
+  f.snapshot.intakes[0].evidence.original_code_candidate_pr={...decision.receipt,url:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/12345'};
+  assert.throws(()=>verifyOriginalCandidateReceipt({workorder,pr,operation:f.snapshot.intakes[0]}),/CONFLICTING_PRIOR_BUILD/);
 });
