@@ -35,6 +35,9 @@
     ],
     "shadow": [
       "tests/brain-multisector-original-value-lineage-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-multisector-original-value-lineage-20261115.test.mjs"
     ]
   },
   "semantic_learning": {
