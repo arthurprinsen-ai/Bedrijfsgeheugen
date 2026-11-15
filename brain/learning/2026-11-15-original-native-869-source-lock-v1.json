@@ -35,10 +35,10 @@
       "tests/brain-original-native-869-source-lock-20261115.test.mjs"
     ],
     "shadow": [
-      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+      "tests/brain-original-native-869-source-lock-20261115.test.mjs"
     ],
     "canary": [
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-original-native-869-source-lock-20261115.test.mjs"
     ]
   }
 }
