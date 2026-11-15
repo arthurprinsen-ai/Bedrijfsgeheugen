@@ -47,7 +47,7 @@ function compute(index){
   const first=choose(rest,5-pinned.length);
   for(const option of first){const group=[...pinned,...option];const sig=group.map(p=>p.id).sort().join('|');if(seen.has(sig))continue;seen.add(sig);out.push(group);}
   out.sort((a,b)=>score(Object.fromEntries(a.map(p=>[p.id,1])),1,a)-score(Object.fromEntries(b.map(p=>[p.id,1])),1,b));
-  return out.slice(0,26);
+  return out.slice(0,48);
  }
  let best=null;
  for(const first of startOptions()){
@@ -64,7 +64,7 @@ function compute(index){
     }
    }
    candidates.sort((a,b)=>a.rank-b.rank);
-   beams=candidates.slice(0,26);
+   beams=candidates.slice(0,(n<=7?180:n<=9?64:36));
    if(!beams.length)break;
   }
   for(const path of beams){
