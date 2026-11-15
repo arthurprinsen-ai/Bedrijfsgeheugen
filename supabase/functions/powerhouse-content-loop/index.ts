@@ -6,6 +6,7 @@ import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-o
 import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
 import {planOwnerActionEscalations} from '../_shared/owner-action-escalation.mjs';
 import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candidate-regeneration.mjs';
+import {planPersonalObservationalReviewRecovery} from '../_shared/personal-observational-review-recovery.mjs';
 
 
 const DB_REF='adhjwmvyoixzjtmiroln';
@@ -396,6 +397,40 @@ Deno.serve(async (req) => {
           replacement_id:regeneration.selectedAlternativeRecommendationId});
       }
     }
+    // Exact original personal final-review 422, not a provider failure:
+    // one bounded rebootstrap after the shared observation lexicon was fixed.
+    // Both same-day original records and unconsumed authority must agree.
+    let retryablePersonalObservationReview=false;
+    const rejectedPersonalObservation=(initialDecisions||[]).find((d:any)=>
+      clean(d.channel)==='linkedin_personal'&&clean(d.state)==='blocked'&&
+      Number(d.delivery_evidence?.review_status)===422&&
+      d.delivery_evidence?.violations?.some((v:any)=>v?.code==='OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED'));
+    if(rejectedPersonalObservation){
+      const [obligationSource,capabilitySource]=await Promise.all([
+        db.from('content_publication_obligations')
+          .select('channel,status,external_id,evidence,published_at,live_proven_at,recovery_attempts')
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel','linkedin_personal').maybeSingle(),
+        db.from('powerhouse_social_publish_capabilities_v1')
+          .select('channel,consumed_at,revoked_at')
+          .eq('run_date',runDate).eq('channel','linkedin_personal').maybeSingle()
+      ]);
+      if(obligationSource.error||capabilitySource.error){
+        stepResults.push({name:'personal-observation-review-recovery-source',ok:false,degraded:true,
+          error:'PERSONAL_REVIEW_RECOVERY_SOURCE_READ_FAILED'});
+      }else{
+        const consumed=Boolean(capabilitySource.data?.consumed_at&&!capabilitySource.data?.revoked_at);
+        const recovery=planPersonalObservationalReviewRecovery({
+          decision:rejectedPersonalObservation,obligation:obligationSource.data,
+          consumedCapability:consumed,maxAttempts:3
+        });
+        retryablePersonalObservationReview=recovery.eligible;
+        stepResults.push({name:'personal-observation-review-recovery-source',ok:true,
+          skipped:!recovery.eligible,degraded:!recovery.eligible,reason:recovery.reason,
+          source_recommendation_id:recovery.source_recommendation_id,
+          recovery_attempts:recovery.recovery_attempts,max_attempts:recovery.max_attempts});
+      }
+    }
     // The normal duplicate classifier only sees "decision=publish"; however the
     // canonical reconciler can turn a pre-provider duplicate into "hold/blocked"
     // while the ORIGINAL obligation correctly retains the duplicate refusal.
@@ -427,7 +462,7 @@ Deno.serve(async (req) => {
     }
     let bootstrapStillInFlight = false;
     // A completed bootstrap is one of the normal bounded generation rounds.
-    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate || retryableCompanyEditorialBlock) {
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate || retryableCompanyEditorialBlock || retryablePersonalObservationReview) {
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in
