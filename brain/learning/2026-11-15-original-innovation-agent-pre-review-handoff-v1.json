@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|innovation|original-agent-pre-review-handoff|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "The original daily self-evolution job performed complete exact-count innovation source readback and detected 14 original PLANNED intakes, but contained no subsequent source-bound consumer review/writeback. A producer-created INNOVATION_INTAKE was not proof that original Engineering/CRO agents picked up, reviewed or implemented it.",
+  "scope": "Original Powerhouse Daily Self Evolution workflow, original ONE BRAIN brain_operations INNOVATION_INTAKE and original engineering/CRO agent tasks",
+  "evidence": {
+    "observed_date": "2026-11-15",
+    "candidates": 14,
+    "original_engineering": 13,
+    "original_cro": 1,
+    "original_status": "PLANNED",
+    "consumer_acks": 0,
+    "independently_verified_outcomes": 0,
+    "independent_source": "Supabase exact original powerhouse_optimization_candidate_v1 / brain_obligations / brain_operations readback"
+  },
+  "remediation": {
+    "source_bound_pre_review": true,
+    "original_operation_versioned_rpc": true,
+    "independent_operation_readback": true,
+    "retains_planned_until_implementation": true,
+    "strict_approval_and_protected_release": true,
+    "original_workflow_reused": true,
+    "no_new_scheduler": true,
+    "no_parallel_queue": true,
+    "no_fake_owner_ack": true
+  },
+  "regression": "tests/brain-innovation-original-agent-pre-review-20261115.test.mjs",
+  "next_action": "Protected exact-head Required/CodeQL and original daily GitHub workflow; verify actual original pre-review evidence with unchanged source SHA and owner for all eligible PLANNED records, then original agents must build safe reversible candidate via protected CI/CD, obtain independent production outcome, named original consumer ACK and Heartbeat measurement before closure.",
+  "follow_up": "All review_required candidates remain uncompleted until authorized original implementation. A policy review is not independent consumer receipt or effect proof; retain original OPEN obligations. On source conflict use original owner with same correlation, never bulk close.",
+  "compiler": {
+    "failure_class": "REGISTERED_INNOVATION_INTAKE_WITHOUT_CONSUMER_REVIEW",
+    "scope": "INNOVATION",
+    "machine_enforceable": true,
+    "repeat_count": 14,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-agent-pre-review-20261115.test.mjs",
+      "tests/brain-innovation-original-consumer-intake-20261114.test.mjs",
+      "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "ONE_BRAIN_INNOVATION_REGISTERED_BUT_SOURCE_BOUND_PRE_REVIEW_NOT_EXECUTED",
+    "cause": "Original daily agent workflow stopped after a read-only audit without a bounded source/rollback policy action or durable CAS evidence in original intake.",
+    "prevention_rule": "After exact-count original owner intake readback the SAME existing daily workflow runs bounded source-bound original agent pre-review; CAS writes review-only evidence to the SAME PLANNED operation; independent readback before counted, every later stage remains independently gated.",
+    "regression_guard": "tests/brain-innovation-original-agent-pre-review-20261115.test.mjs",
+    "next_owner": "Original Engineering/CRO agent task and Reliability / Data Quality",
+    "effect_proof": "AWAITING_PROTECTED_MAIN_RELEASE_AND_ORIGINAL_DAILY_CONSUMER_JOB"
+  }
+}
