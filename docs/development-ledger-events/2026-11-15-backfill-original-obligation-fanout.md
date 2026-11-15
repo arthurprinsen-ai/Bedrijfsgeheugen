@@ -10,3 +10,10 @@
 - Regression: `tests/brain-completion-supervisor-backfill.test.mjs` replays 1201 histories for one obligation plus independent second obligation; stable idempotency, no lost candidates, no newly invented terminal output.
 - Release status at authoring: CANDIDATE, **not** merged, not live and not historical consumer proof. Required/CodeQL/BRAIN, protected merge, exact production SHA and next original natural-run provider/consumer evidence still required.
 - Prevention: never equate historical source candidates with separate external work commands; dedupe by original owned business obligation for *backfill only*, preserve source revision and individual original records for reconciliation.
+
+## First protected learning admission — rejected and repaired in the SAME PR
+
+- Exact candidate head `e9124f7dea92d31934e78fbdc1f225f5b632827f`, Required run `43699943611`, hygiene job `132768663946`.
+- Native learning gate executed the actual `tests/brain-completion-supervisor-backfill.test.mjs` and rejected an outdated assertion: test previously expected `report.dispatches[0].identity === 'original-work'` while the intentional new canonical dispatch identity is `canonical-obligation:ob-1`.
+- All other six historical test cases passed; the gate correctly failed closed with `LEARNING_EVALUATION_FAILED:historical_replay:exit_1` and blocked the release.
+- Corrected that original test to assert the exact canonical id **and** `sourceCandidateCount === 1`, keeping historical candidate preservation checks. No test was skipped/removed; no bypass, second PR or altered runtime exception. Repeat exact-head Required/CodeQL before any protected merge; do not treat this ledger as release success.
