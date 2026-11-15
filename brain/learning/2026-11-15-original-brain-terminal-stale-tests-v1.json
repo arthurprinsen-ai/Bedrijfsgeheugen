@@ -3,7 +3,7 @@
   "version": "v1",
   "type": "POWERHOUSE_LEARNING",
   "maturity": "OBSERVED",
-  "fingerprint": "powerhouse|terminal|full-brain-backend-stale-literal-after-protected-gate-refactor|20261115-v1",
+  "fingerprint": "powerhouse|terminal|remaining-github-delivery-regression-oracle-first-page-literal|20261115-v1",
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "compiler": {
     "failure_class": "INTEGRATION_REGRESSION_STALE_CONTRACT",
@@ -14,75 +14,52 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
-      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
-      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs",
-      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
     ],
     "shadow": [
-      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
     ],
     "canary": [
-      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+      "tests/github-delivery-state-machine-terminal-closure.test.mjs"
     ]
   },
-  "root_cause": "Original protected terminal source correction #5821 legitimately replaced first-page main-indexed BRAIN run lookup with PR-era complete provider-paginated exact-title flight index. Four older full BRAIN backend assertions still required retired literal runs?branch=main&event=workflow_dispatch&per_page=100 and .display_title==$title; original direct runtime authority bash fixture mocked only the retired GitHub query. Targeted Required passed but full verification_only BRAIN run #43695381458 failed 4 assertions, causing real original terminal #43695356905 to fail closed.",
+  "root_cause": "After protected #5825 independently fixed the four originally failing full-BRAIN backend test contracts, the separate historical test suite tests/github-delivery-state-machine-terminal-closure.test.mjs still contained two exact stale first-page-only selectors and direct .display_title==$title checks. Their static assertions contradict the already-live final native PR-era full-pagination flight index. This last independent regression source can reject the correct workflow in a future extended test path. This is a source/test-drift observation, NOT evidence of a new post-#5825 terminal failure.",
   "production_observation": {
-    "pr": 5821,
-    "merge_sha": "ded9ff6a1ace0c39f2520b978bce666342b9c487",
-    "protected_required_run": 43695108633,
-    "required_state": "SUCCESS",
-    "protected_codeql_run": 43695108559,
-    "codeql_state": "SUCCESS",
-    "original_brain_run": 43695381458,
-    "original_brain_state": "FAILURE",
-    "original_terminal_run": 43695356905,
-    "original_terminal_state": "FAILURE",
-    "original_innovation_intakes_planned": 14,
-    "original_innovation_obligations_open": 14,
+    "original_source_pr": 5821,
+    "original_source_sha": "ded9ff6a1ace0c39f2520b978bce666342b9c487",
+    "fixed_full_brain_pr": 5825,
+    "fixed_full_brain_merge": "06bc3201131191eea4c01588d3701927db04951b",
+    "remaining_test": "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "actual_original_agent_intakes_planned": 14,
+    "actual_open_innovation_delivery": 14,
     "independent_agent_acks": 0
   },
   "change": {
-    "source_control_plane": ".github/workflows/obligation-terminal-closure.yml",
-    "full_original_brain_backend_tests": [
-      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
-      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
-      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs",
-      "tests/brain-terminal-runtime-authority-v1.test.mjs"
-    ],
-    "original_existing_agent_roster": "platform/agents/agent-team.mjs",
-    "existing_skill": ".agents/skills/powerhouse-post-merge-codeql/SKILL.md",
+    "original_runtime_control_plane_unchanged": ".github/workflows/obligation-terminal-closure.yml",
+    "remaining_regression_test": "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "agent_roles_updated_in_existing_roster": "platform/agents/agent-team.mjs",
+    "prior_skill_release_from_original_pr": 5825,
     "new_scheduler": false,
     "new_worker": false,
     "new_queue": false,
     "new_store": false
   },
   "prevention": {
-    "test_contract_uses_complete_original_pr_created_at_and_paginated_flight_index": true,
-    "first_page_only_lookup_rejected_in_final_gate": true,
+    "full_original_native_provider_pagination_required": true,
+    "first_page_only_terminal_literal_rejected": true,
+    "original_workflow_exact_title_required": true,
     "original_protected_main_source_required": true,
-    "negative_incomplete_provider_pages": true,
-    "positive_over_200_original_runs_last_page": true,
-    "verification_only_never_approves_real_agent_output": true,
-    "require_full_brain_not_only_required": true,
-    "original_version_rollback_forbidden": true
+    "original_success_required": true,
+    "original_agent_ack_not_inferred_from_agent_task": true,
+    "avoid_concurrent_duplicate_original_fixed_four_tests": true
   },
-  "remaining_evidence": "Protected exact-head Required + full BRAIN + CodeQL, protected merge, canonical terminal BRAIN success and original readback. Original 14 agent INNOVATION_INTAKE real consumer acknowledgement + implemented outcome + next natural-run measured learning separate and not yet proven. No false-green.",
+  "remaining_evidence": "Release exact-head Required/CodeQL/full BRAIN (when applicable), protected current-main merge and independent original terminal, then separate real source-bound agent/operation consumption/impact/learning; source test alone never proves those.",
   "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
   "evidence": {
-    "original_brain_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458",
-    "original_failure_artifact": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458/artifacts/14154123742",
-    "original_terminal_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695356905",
-    "original_failed_titles": [
-      "terminal closure Brain gate matches executable workflow triggers",
-      "cancelled or skipped exact Brain run remains nonterminal without descendant substitution",
-      "terminal closure requires exact-candidate Brain evidence with executable dispatch triggers",
-      "obligation-terminal-closure.yml requires successful exact candidate BRAIN, never foundation/descendant substitution"
-    ],
-    "source_readback": "GitHub original main and failed exact backend test run; not provider-authentic consumer ACK",
-    "regression": "tests/brain-terminal-runtime-authority-v1.test.mjs",
-    "independent_terminal_success": "NOT_YET_PROVEN"
+    "observed_source": "native repository main 06bc3201131191eea4c01588d3701927db04951b: two remaining old selector assertions in tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "prior_original_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5825",
+    "original_failed_BRAIN": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458",
+    "independent_test_release": "NOT_YET_PROVEN",
+    "independent_innovation_agent_consumer_receipts": "NONE_VERIFIED"
   }
 }
