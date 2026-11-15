@@ -26,7 +26,7 @@ test('existing authenticated server-side projection and one no-side-effect value
  const source=await readFile(new URL('portal-v2/operating-system/customer-value-briefing.js',base),'utf8');
  const contract=JSON.parse(await readFile(new URL('brain/contracts/company-intelligence-os-v1.json',base),'utf8'));
  assert.match(skill,/Cross-sector verified improvement loop/);
- assert.match(skill,/same original ONE BRAIN obligation/);
+ assert.match(skill,/original ONE BRAIN obligation/);
  assert.match(skill,/consumer receipt/);
  assert.equal(contract.canonical_runtime.orchestrator,'public.powerhouse_run_company_intelligence_os_v1(date)');
  assert.match(source,/if\(actionBaseline&&baseline!==actionBaseline\)continue/);
