@@ -64,17 +64,25 @@ async function readBoundedPublicPage(url:string,sourceDiagnostics:string[]=[]):P
       const len=Number(res.headers.get('content-length')||0);
       if(!/^text\/html|^application\/xhtml\+xml/i.test(res.headers.get('content-type')||''))
         return record('SOURCE_NOT_HTML');
-      if(len>160000)return record('SOURCE_HTML_TOO_LARGE');
       if(!res.body)return record('SOURCE_BODY_MISSING');
       const reader=res.body.getReader(),chunks:Uint8Array[]=[];let size=0;
+      let truncated=len>160000;
       for(;;){
         const part=await reader.read();
         if(part.done)break;
+        const room=160000-size;
+        if(part.value.byteLength>room){
+          if(room>0){chunks.push(part.value.subarray(0,room));size+=room;}
+          truncated=true;
+          await reader.cancel();
+          break;
+        }
         size+=part.value.byteLength;
-        if(size>160000){await reader.cancel();return record('SOURCE_HTML_TOO_LARGE');}
         chunks.push(part.value);
       }
       if(!size)return record('SOURCE_BODY_EMPTY');
+      // At most 160KB read. A truncated sample cannot prove NO email exists.
+      if(truncated&&sourceDiagnostics.length<8)sourceDiagnostics.push('SOURCE_HTML_TRUNCATED');
       const buffer=new Uint8Array(size);let offset=0;
       for(const chunk of chunks){buffer.set(chunk,offset);offset+=chunk.byteLength;}
       return new TextDecoder().decode(buffer);
@@ -224,8 +232,11 @@ async function processOriginalFirstPartyPublicSource(db:any,selected:any,
   const result=await ingestPublicWorkEmail(db,selected,publicPages,observedAt,sourceDiagnostics);
   // This original action is terminal only after a real source disposition AND
   // its original evidence receipt. An HTTP/DB error leaves it retriable.
-  const checked=result.sites>0||result.receipts>0||result.status==='SUPPRESSED'||
-    result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION';
+  const truncated=sourceDiagnostics.includes('SOURCE_HTML_TRUNCATED');
+  const checked=result.receipts>0||result.status==='SUPPRESSED'||
+    result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION'||
+    (result.sites>0&&!truncated);
+  const sourceStatus=!checked&&truncated?'SOURCE_HTML_TRUNCATED_UNVERIFIED':result.status;
   const attemptNumber=Number(selected.evidence?.public_email_source_attempts||0)+1;
   // Preserve OPEN source debt while avoiding unbounded four-hour retry loops.
   const retryHours=checked?0:firstPartySourceRetryHours(attemptNumber);
@@ -236,7 +247,7 @@ async function processOriginalFirstPartyPublicSource(db:any,selected:any,
     else sourceFailureCodes[failure]=1;
   }
   const evidence={...(selected.evidence||baseEvidence),
-    public_email_source_checked:checked,public_email_source_status:result.status,
+    public_email_source_checked:checked,public_email_source_status:sourceStatus,
     public_email_source_checked_at:observedAt,public_email_next_attempt_at:nextAttemptAt,
     public_email_ingest_ack:result.receipts>0,
     public_email_source_attempts:attemptNumber,

@@ -143,7 +143,7 @@ test('public website HTML failure codes are safe, bounded, actionable and do not
  for(const classification of [
   'UNSAFE_OR_INVALID_SOURCE_URL','REDIRECT_LIMIT_REACHED','REDIRECT_UNSAFE_OR_CROSS_HOST',
   'SOURCE_ACCESS_DENIED_OR_RATE_LIMITED','SOURCE_HTTP_UPSTREAM_5XX','SOURCE_HTTP_NON_SUCCESS',
-  'SOURCE_NOT_HTML','SOURCE_HTML_TOO_LARGE','SOURCE_FETCH_TIMEOUT','SOURCE_NETWORK_OR_PARSE_FAILURE'
+  'SOURCE_NOT_HTML','SOURCE_HTML_TRUNCATED','SOURCE_HTML_TRUNCATED_UNVERIFIED','SOURCE_FETCH_TIMEOUT','SOURCE_NETWORK_OR_PARSE_FAILURE'
  ])assert.ok(src.includes(classification),classification);
  assert.match(src,/nextHost!==companyHost/);
  assert.match(src,/next\.protocol!=='https:'/);
