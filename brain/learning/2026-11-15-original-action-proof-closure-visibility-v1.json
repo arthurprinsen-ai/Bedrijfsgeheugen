@@ -37,8 +37,7 @@
     "historical_replay": [
       "tests/brain-original-action-proof-closure-visibility-20261115.test.mjs",
       "tests/brain-customer-value-briefing-20261101.test.mjs",
-      "tests/brain-financial-decision-proof-20261115.test.mjs",
-      "tests/portal-v2-executive-cockpit.test.mjs"
+      "tests/brain-financial-decision-proof-20261115.test.mjs"
     ],
     "shadow": [
       "tests/brain-original-action-proof-closure-visibility-20261115.test.mjs"
@@ -63,5 +62,8 @@
     "regression_guard": "tests/brain-original-action-proof-closure-visibility-20261115.test.mjs",
     "next_owner": "Original Company Intelligence OS tenant data producer -> original ONE BRAIN action executor -> Heartbeat outcome and original portal",
     "effect_proof": "PROTECTED_CI_AND_AUTHENTICATED_PRODUCTION_DATA_READBACK_DUE"
-  }
+  },
+  "supporting_legacy_regressions": [
+    "tests/portal-v2-executive-cockpit.test.mjs"
+  ]
 }
