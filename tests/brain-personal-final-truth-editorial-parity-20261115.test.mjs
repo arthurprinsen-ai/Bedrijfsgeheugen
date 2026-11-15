@@ -46,12 +46,12 @@ test('observational everyday lexicon is ONE shared gate for generation and indep
  for(const invalid of ['', 'strategy governance sales', 'alleen een zakelijke propositie']){
    assert.equal(personalObservationalLifeContextSignal(invalid),false,invalid);
  }
- assert.match(source,/const dailyLife=personalObservationalLifeContextSignal\\(body\\)/);
- assert.match(reviewer,/require\\(personalObservationalLifeContextSignal\\(text\\), 'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED'/);
+ assert.ok(source.includes('const dailyLife=personalObservationalLifeContextSignal(body);'));
+ assert.ok(reviewer.includes("require(personalObservationalLifeContextSignal(text), 'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED'"));
  // The shared lexical gate NEVER replaces the independent verified-source,
  // author-identity, first-person, quality or story-uniqueness veto.
  assert.match(reviewer,/body.public_theme_source_verified === true/);
  assert.match(reviewer,/OBSERVATIONAL_MODE_FINAL_TEXT_FIRST_PERSON_FORBIDDEN/);
  assert.match(reviewer,/PERSONAL_LIFE_TOPIC_REQUIRED/);
- assert.match(source,/personalNonBuilderBusinessSignal\\(body/);
+ assert.ok(source.includes('personalNonBuilderBusinessSignal(body'));
 });
