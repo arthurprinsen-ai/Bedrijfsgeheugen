@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|content-loop|unallowlisted-social-capability-lease-read|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original Powerhouse content-loop had db.from('powerhouse_social_publish_capabilities_v1') in the exact existing company 422 correction path, but omitted that source table from its private DIRECT_TABLES allowlist. Adapter threw synchronously, so original daily content-loop returned HTTP 500 even while the outer pg_cron job reported succeeded for its SQL scheduling statement.",
+  "scope": "Original powerhouse-content-loop/one publisher recovery, not original social publish provider mutation",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "observed_date": "2026-11-15",
+    "original_error": "CONTENT_LOOP_ERROR DB_TABLE_REJECTED:powerhouse_social_publish_capabilities_v1",
+    "provider_http_code": 500,
+    "preceding_company_gate_code": "COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT",
+    "provider_publication_proven": false,
+    "consumer_processed_proven": false,
+    "source": "Supabase production function_logs and net._http_response",
+    "scheduler_run_status_not_provider_truth": true
+  },
+  "remediation": {
+    "add_exact_referenced_existing_table_to_allowlist": true,
+    "read_only_original_capability": true,
+    "existing_company_422_rotation_preserved": true,
+    "existing_social_writer_lease_preserved": true,
+    "second_executor_created": false,
+    "schedule_changed": false
+  },
+  "regression": "tests/brain-content-loop-direct-table-allowlist-completeness-20261115.test.mjs",
+  "next_action": "Protected exact-head Required and CodeQL, original GitOps deploy and production exact-source readback; next natural original content-loop run; verify removal of DB_TABLE_REJECTED while distinguishing legitimate source/provider blockers; no false provider publication claim.",
+  "follow_up": "Existing LinkedIn provider, source truth and ONE BRAIN named consumer remain independently gated. Keep same original OPEN obligation with next owner and proof until provider ID/readback and measured outcome are present.",
+  "compiler": {
+    "failure_class": "DIRECT_DB_ALLOWLIST_MISMATCH",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-direct-table-allowlist-completeness-20261115.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "ORIGINAL_CONTENT_LOOP_MISSING_READONLY_CAPABILITY_SOURCE",
+    "cause": "Stale private direct SQL allowed table set diverged from static original recovery source reads",
+    "prevention_rule": "Canonical content-loop static direct tables and all db.from references have exhaustive regression; social writer lease source remains SELECT only",
+    "regression_guard": "tests/brain-content-loop-direct-table-allowlist-completeness-20261115.test.mjs",
+    "next_owner": "Original Powerhouse content-loop owner / Reliability and Data Quality",
+    "effect_proof": "NOT_YET_INDEPENDENTLY_VERIFIED_AFTER_PROTECTED_GITOPS_RELEASE"
+  }
+}
