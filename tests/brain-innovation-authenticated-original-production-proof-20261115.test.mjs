@@ -1,0 +1,139 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {isPowerhouseAdmin} from '../platform/auth/powerhouse-admin.mjs';
+import {
+  runPortalAuthenticatedProductionProof,
+  projectOriginalInnovationAdminProof
+} from '../platform/api/portal-authenticated-production-proof-core.mjs';
+
+const sha='a'.repeat(40),id='original-innovation-release-proof';
+const deploy={id,commitRef:sha,context:'production',
+  permalinkUrl:'https://original-proof--bedrijfsgeheugen.netlify.app'};
+const jwt=payload=>[Buffer.from('{"alg":"HS256","typ":"JWT"}').toString('base64url'),
+  Buffer.from(JSON.stringify(payload)).toString('base64url'),'signature'].join('.');
+const audit=(override={})=>({systemIntegration:{salesExecutionAudit:{
+  state:'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED',
+  totalEvents7d:164,sampledEvents:164,actionBackedSample:164,
+  unsupportedSample:0,missingActionSample:0,currentActionNotDoneSample:1,
+  scope:'FULL_LAST_7D',externalProviderProof:false,paidOutcomeProof:false,readOnly:true,
+  ...override
+}}});
+
+test('original immutable source census is sanitized and rejects fake provider outcomes or missing half the week',()=>{
+  const result=projectOriginalInnovationAdminProof(audit(),'FULL_LAST_7D');
+  assert.deepEqual(result,{
+    scope:'FULL_LAST_7D',total:164,historical_writer_backed:164,
+    unsupported:0,missing_actions:0,currently_not_done:1,
+    external_provider_proven:false,business_outcome_proven:false
+  });
+  for(const altered of [
+    {sampledEvents:100},{totalEvents7d:501},{totalEvents7d:0,sampledEvents:0,actionBackedSample:0},
+    {actionBackedSample:163},{unsupportedSample:1},
+    {currentActionNotDoneSample:165},{externalProviderProof:true},
+    {paidOutcomeProof:true},{readOnly:false},{scope:'LATEST_100_ONLY'},
+    {state:'END_TO_END_VERIFIED'}
+  ])assert.equal(projectOriginalInnovationAdminProof(audit(altered),'FULL_LAST_7D'),null,JSON.stringify(altered));
+  assert.equal(projectOriginalInnovationAdminProof(audit(),'UNKNOWN'),null);
+  assert.equal(projectOriginalInnovationAdminProof({},'FULL_LAST_7D'),null);
+  assert.equal(projectOriginalInnovationAdminProof(audit({
+    state:'SOURCE_EXECUTION_GAP',actionBackedSample:163,unsupportedSample:1,
+    missingActionSample:1,currentActionNotDoneSample:1
+  }),'FULL_LAST_7D').unsupported,1);
+});
+
+test('same signed Identity admin boundary accepts canonical role; nonadmin and user-controlled metadata cannot grant it',()=>{
+  assert.equal(isPowerhouseAdmin({id:'a',app_metadata:{roles:['powerhouse-admin']}}),true);
+  assert.equal(isPowerhouseAdmin({id:'a',appMetadata:{roles:['powerhouse-admin']}}),true);
+  assert.equal(isPowerhouseAdmin({id:'b',app_metadata:{roles:[]}}),false);
+  assert.equal(isPowerhouseAdmin({id:'b',user_metadata:{roles:['powerhouse-admin']}}),false);
+  assert.equal(isPowerhouseAdmin({app_metadata:{roles:['powerhouse-admin']}}),false);
+  const handler=readFileSync('netlify/functions/powerhouse-control-plane.mjs','utf8');
+  assert.match(handler,/isPowerhouseAdmin\(user\)/);
+  assert.match(handler,/if\(!hasAdminRole\(user\)\)return json\(\{error:'FORBIDDEN'\},403\)/);
+  assert.ok(handler.indexOf('if(!hasAdminRole(user))')<handler.indexOf('readPowerhouseIntegrationReadback('));
+  assert.doesNotMatch(handler,/user_metadata\?\.roles/);
+});
+
+test('existing deploySucceeded signed synthetic identities prove original admin source and 403/401 denial, clean both',async()=>{
+  const deleted=[],calls=[],users={};
+  const synthetic={
+    createUser:async input=>{
+      const slot=input.email.includes('-a-')?'a':'b';
+      const uid='proof-user-'+slot;
+      users[uid]={id:uid,appMetadata:input.data.app_metadata};
+      return {id:uid};
+    },
+    getUser:async uid=>users[uid],
+    updateUser:async()=>{throw Error('UNEXPECTED_UPDATE')},
+    deleteUser:async uid=>{deleted.push(uid);delete users[uid]}
+  };
+  const signed={};
+  const fetchImpl=async(url,opts)=>{
+    const path=new URL(url).pathname;
+    calls.push({path,authorized:!!opts.headers?.authorization});
+    if(path.endsWith('/token')){
+      const email=new URLSearchParams(opts.body).get('username');
+      const slot=email.includes('-a-')?'a':'b';
+      const uid='proof-user-'+slot;
+      signed[slot]=jwt({sub:uid,app_metadata:users[uid].appMetadata});
+      return {ok:true,status:200,json:async()=>({access_token:signed[slot]})};
+    }
+    const slot=opts.headers.authorization===`Bearer ${signed.a}`?'a':
+      opts.headers.authorization===`Bearer ${signed.b}`?'b':'anonymous';
+    if(path.endsWith('/api/portal-ondernemersdata'))return {ok:true,status:200,json:async()=>({
+      scope:{authenticatedTenant:'proof:'+id+':'+slot},
+      sources:[],publications:[],signals:[],intelligence:{},
+      stats:{generatedAt:'2026-11-15T12:00:00Z'}
+    })};
+    if(path.endsWith('/api/powerhouse-one-loop-assurance')){
+      if(slot==='anonymous')return {ok:false,status:401,json:async()=>({error:'UNAUTHENTICATED'})};
+      if(slot==='b')return {ok:false,status:403,json:async()=>({error:'POWERHOUSE_ADMIN_REQUIRED'})};
+      return {ok:true,status:200,json:async()=>({
+        contract:'one-brain-original-loop-assurance-readback-v1',
+        status:'READBACK_COMPLETE',source:'public.powerhouse_loop_assurance_state_v1',
+        counts:{total:15,green:8,amber:1,red:6},overallStatus:'RED',
+        loops:Array.from({length:15},(_,i)=>({key:'original-'+i,status:i<6?'RED':'GREEN'}))
+      })};
+    }
+    if(path.endsWith('/api/powerhouse-control-plane')){
+      if(slot==='anonymous')return {ok:false,status:401,json:async()=>({error:'UNAUTHORIZED'})};
+      if(slot==='b')return {ok:false,status:403,json:async()=>({error:'FORBIDDEN'})};
+      return {ok:true,status:200,
+        headers:{get:key=>key==='x-bg-innovation-audit-scope'?'FULL_LAST_7D':null},
+        json:async()=>audit()};
+    }
+    throw Error('UNEXPECTED_URL_PATH:'+path);
+  };
+  const proof=await runPortalAuthenticatedProductionProof({
+    deploy,identityAdmin:synthetic,fetchImpl,
+    getIdentityConfigFn:()=>({url:'https://bedrijfsgeheugen.netlify.app/.netlify/identity'}),
+    randomPassword:()=> 'x'.repeat(40),probeInnovationAudit:true,
+    now:()=> '2026-11-15T12:00:05.000Z'
+  });
+  assert.equal(proof.status,'PROVEN');
+  assert.equal(proof.innovation_audit_proof,'PROVEN');
+  assert.equal(proof.innovation_audit_admin_verified,true);
+  assert.equal(proof.innovation_audit_nonadmin_denied,true);
+  assert.equal(proof.innovation_audit_unauthenticated_denied,true);
+  assert.deepEqual(proof.innovation_audit_counts,{
+    scope:'FULL_LAST_7D',total:164,historical_writer_backed:164,
+    unsupported:0,missing_actions:0,currently_not_done:1,
+    external_provider_proven:false,business_outcome_proven:false
+  });
+  assert.equal(proof.innovation_audit_failure_code,null);
+  assert.equal(proof.one_loop_assurance_proof,'PROVEN');
+  assert.equal(proof.synthetic_user_cleanup,'DELETED');
+  assert.deepEqual(deleted,['proof-user-b','proof-user-a']);
+  assert.equal(Object.keys(users).length,0);
+  assert.equal(calls.filter(x=>x.path.endsWith('/api/powerhouse-control-plane')).length,3);
+  assert.doesNotMatch(JSON.stringify(proof),/proof-user|@proof\.invalid|access_token/);
+});
+
+test('wrong admin counts and missing 403 fail closed without falsifying original two-tenant proof',async()=>{
+  const a=projectOriginalInnovationAdminProof(audit({state:'SOURCE_EXECUTION_GAP'}),'FULL_LAST_7D');
+  assert.equal(a,null,'unsupported state cannot be green when unsupported count is zero');
+  const original=readFileSync('netlify/functions/portal-authenticated-production-proof.mjs','utf8');
+  assert.match(original,/probeInnovationAudit:true/);
+  assert.doesNotMatch(original,/new (?:scheduler|queue|worker)/i);
+});
