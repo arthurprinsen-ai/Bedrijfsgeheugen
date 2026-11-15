@@ -42,5 +42,17 @@
   },
   "prevention_rule": "Only after existing exact protected production release LIVE_VERIFIED can original code delivery be written back to original ONE BRAIN by CAS and independently reread. Require exact GitHub PR metadata, candidate/owner/revision/SHA, protected merge commit, and Netlify release.json identity. Any mismatch is fail-closed. A release never self-certifies original consumer ACK, business benefit, or terminal success.",
   "regression_guard": "tests/brain-innovation-original-code-production-receipt-20261115.test.mjs",
-  "status": "PROTECTED_CANDIDATE_PENDING_INDEPENDENT_RELEASE"
+  "status": "PROTECTED_CANDIDATE_PENDING_INDEPENDENT_RELEASE",
+  "evidence": {
+    "first_actual_agent_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5908",
+    "exact_protected_main_sha": "60c41d4813f3bc0d3a3ef9fcdca095597221a0da",
+    "original_production_readback": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43756362047",
+    "netlify_deploy_id": "6afa1140fce862102329274e",
+    "original_brain_operation_id": "56e16919-6275-4c2e-9208-6ac0c8a29a29",
+    "observed_gap": "Operator-assisted original CAS was needed to attach real exact-SHA production evidence; original code writer only sent PR candidate receipt",
+    "corrected_test": "tests/brain-innovation-original-code-production-receipt-20261115.test.mjs",
+    "after_merge_natural_readback_due": true,
+    "measured_effect": false,
+    "terminal_success": false
+  }
 }
