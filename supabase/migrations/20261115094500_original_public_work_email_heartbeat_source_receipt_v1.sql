@@ -210,7 +210,7 @@ begin
     'executed_at',p_now
   );
 end;
-$function$
+$function$;
 
 -- Same pre-existing production ACL, explicit fail-closed permission proof
 -- for the replacement SECURITY DEFINER body: no browser RPC execution.
