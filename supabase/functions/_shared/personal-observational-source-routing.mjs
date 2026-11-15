@@ -42,9 +42,33 @@ const PATTERNS=Object.freeze({
   'meldingen-en-groepsapps':/groepsapp|groepschat|meldingen|whatsappgroep/i,
   'appstapeling-en-digitale-frictie':/meerdere apps|appstapeling|digitale diensten|in elke app|aparte app/i
 });
+// Do not turn violent incidents or serious human harm into casual personal-life copy.
+// The topic keyword alone is not evidence of editorial suitability.
+const PERSONAL_TRAUMATIC_NEWS_TITLE=/\b(?:taser(?:t|de|en)?|schietpartij(?:en)?|neergeschoten|geweldsincident(?:en)?|dodelijk|mishandel(?:d|ing)?|vermoord|moord(?:zaak)?|aanhouding(?:en)?)\b/i;
+export function isPersonalEditorialSourceSafe({title}={}){
+ return !PERSONAL_TRAUMATIC_NEWS_TITLE.test(String(title||''));
+}
+export function canonicalPersonalSourceUrl(url){
+ try{
+  const u=new URL(String(url||''));
+  if(u.protocol!=='https:'||!u.hostname)return '';
+  return u.hostname.toLowerCase().replace(/^www\./,'')+u.pathname.replace(/\/$/,'');
+ }catch{return ''}
+}
+// Retain the independent dated DataForSEO receipt, but permit the same article's
+// previously retrieved Tavily advanced context when the exact canonical URL matches.
+// No extra provider call, no date invention, no cross-article content borrowing.
+export function reconcileDatedPersonalSourceContext({url,snippet,advancedByUrl}={}){
+ const datedSnippet=String(snippet||'');
+ const key=canonicalPersonalSourceUrl(url);
+ const advanced=key&&advancedByUrl instanceof Map?String(advancedByUrl.get(key)||''):'';
+ return advanced.trim().length>=240&&advanced.length>datedSnippet.length?advanced:datedSnippet;
+}
+
 export function classifyObservationalPersonalSource({topic,title,excerpt}={}){
   const family=String(topic||'');
   const text=String(title||'')+' '+String(excerpt||'');
+  if(!isPersonalEditorialSourceSafe({title,excerpt}))return null;
   // Query-topic must also occur in independently returned provider text.
   if(!PATTERNS[family]?.test(text))return null;
   // Observations only: avoid business stories, fictional founder memories or private anecdotes.
