@@ -3,6 +3,12 @@ name: powerhouse-continuity
 description: Use when materially operating, changing, debugging, recovering, documenting, or handing off Bedrijfsgeheugen Powerhouse work across chats, agents, workflows, repositories, providers, or interrupted execution.
 ---
 
+## 15 november 2026 — dezelfde originele verplichting, één harde grens voor alle bronidentiteiten
+
+Een correctie op de bestaande live coalesced Completion Supervisor Backfill (#5835): `WAIT_EXTERNAL` mag niet alleen voor zijn eigen historische rij worden overgeslagen terwijl een andere oude bron dezelfde `obligationId` weer activeert. Elke onafhankelijk bewezen providerconsent-, security- of financiële hard boundary geldt voor **de hele geregistreerde oorspronkelijke verplichting**. De originele `activeDispatches()` houdt daarom per geregistreerde `obligationId` alle WAIT_EXTERNAL-bronnen apart in een veto-set en creëert voor die verplichting geen nieuwe wakeup, ook als er andere veilige historische bronnen zijn. Alle oorspronkelijke kandidaten en hun bewijzen blijven in `report.candidates`; geen afsluiting, providerreplay, bronverlies of andere owner.
+
+Reliability bewaakt bron-eigenaar, origineel consentbewijs en `resume_when`; Data Quality test beide bronvolgordes en bewijst dat nooit een tweede coalesced dispatch de grens omzeilt. Bestaande test `tests/brain-completion-supervisor-backfill.test.mjs`; P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Alleen de oorspronkelijk bevoegde connector/agent mag na echte providerautorisatie en onafhankelijke readback opnieuw handelen. Geen nieuwe scheduler, queue, proces of bulk-afsluiting.
+
 ## 15 november 2026 — één oorspronkelijke hersteltrigger per verplichting
 
 INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. Het originele `Completion Supervisor Backfill Resume` was geen consumer; het maakte voor iedere historische bronkandidaat een nieuwe event-trigger aan. Bij duizenden bronrecords met dezelfde canonieke verplichting ontstond een groeiende `AgentWork/PENDING`-voorraad zonder nieuwe echte PROCESSED-ACK. Dit is een fan-out bronfout, géén onafhankelijk bewijs van duizenden gemiste provideracties.

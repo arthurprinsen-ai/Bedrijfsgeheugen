@@ -144,6 +144,37 @@ test('active backfill does not invent obligations or resume a hard external boun
   assert.ok(report.candidates.some(item => item.identity === 'blocked-sha' && item.nextAction === 'WAIT_EXTERNAL'));
 });
 
+test('any independently proven hard boundary vetoes the entire owner group, not just its own historical source',()=>{
+  const original={id:'ob-1',identity:'unblocked-history',status:'PENDING'};
+  const blocked={id:'ob-1',identity:'protected-history',status:'BLOCKED_HARD_BOUNDARY',
+    hardBoundary:{
+      present:true,proven:true,evidence:'provider scope not authorized',
+      recovery_packet:{
+        blocker:'missing provider authorization',
+        root_cause:'authorization not granted',
+        evidence_refs:['provider:scope-denied'],
+        attempted_repairs:['verified required connector scope'],
+        safe_remaining_actions:['read back after legitimate consent'],
+        minimum_human_action:'grant provider permission',
+        fix_agent_handoff:'agent-reliability',
+        boundary_fingerprint:'provider-scope-denied-v1',
+        resume_when:{signal:'provider_scope_authorized'}
+      }
+    }};
+  for (const sources of [[original,blocked],[blocked,original]]) {
+    const result=reconcileCompletionBackfill({
+      mode:'active',
+      registeredObligationIds:['ob-1'],
+      obligations:sources
+    });
+    assert.equal(result.candidateCount,2);
+    assert.equal(result.candidates.length,2,'no historical source loses audit lineage');
+    assert.ok(result.candidates.some(c=>c.identity==='protected-history'&&c.nextAction==='WAIT_EXTERNAL'));
+    assert.ok(result.candidates.some(c=>c.identity==='unblocked-history'));
+    assert.equal(result.dispatches.length,0,'another source cannot bypass an original provider hard boundary');
+  }
+});
+
 test('backfill deduplicates multiple partial signals into one identity lineage', () => {
   const report = reconcileCompletionBackfill({
     pullRequests:[{ number:12, headSha:'same-sha', state:'open', claim:'PREVIEW_READY' }],
