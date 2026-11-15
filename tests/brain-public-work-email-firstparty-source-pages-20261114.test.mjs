@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {samePublicCompanyHost,publicCompanyContactLinks,publishedBusinessMailto} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
+import {samePublicCompanyHost,publicCompanyContactLinks,publishedBusinessMailto,firstPartyDailyRotationOffset} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
 
 test('only HTTPS same-company host redirects and discovered links; never off-site URLs',()=>{
  assert.equal(samePublicCompanyHost('https://acmeresearch.com/','https://www.acmeresearch.com/over-ons/'),true);
@@ -73,4 +73,30 @@ test('original #116 differentiates unreadable HTML from genuinely observed no na
  assert.match(src,/replayDueHistoricalFirstPartySources\(db,observedAt\)/);
  assert.match(src,/original_lineage_reused:true,new_provider_queries:0,external_messages_sent:0/);
  assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/i);
+});
+
+// Regression for 15 Nov 2026 P0: historical one-slot/day offset caused the
+// same failing first-party companies to consume most of the next day's quota.
+test('one canonical eight-slot daily cohort visits all 85 candidate companies in eleven days',()=>{
+ const base=Date.parse('2026-11-15T00:00:00Z');
+ const seen=new Set();
+ for(let d=0;d<11;d++){
+  const day=new Date(base+d*86400000).toISOString().slice(0,10);
+  const offset=firstPartyDailyRotationOffset(day,85,8);
+  assert.equal(offset,firstPartyDailyRotationOffset(day,85,8),'same day is stable');
+  if(d<10){
+   for(let i=0;i<8;i++)assert.equal(seen.has((offset+i)%85),false,'first 80 slots must be distinct');
+  }
+  for(let i=0;i<8;i++)seen.add((offset+i)%85);
+ }
+ assert.equal(seen.size,85);
+ assert.equal(firstPartyDailyRotationOffset('bad',85,8),0);
+ assert.equal(firstPartyDailyRotationOffset('2026-11-15',0,8),0);
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
+ assert.match(src,/firstPartyDailyRotationOffset\(day,entries\.length,8\)/);
+ assert.match(src,/rotation_step:8/);
+ assert.match(src,/candidate_company_domains:entries\.length/);
+ assert.match(src,/eligibleSlots<8/);
+ assert.match(src,/new_provider_queries:0/);
+ assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/);
 });
