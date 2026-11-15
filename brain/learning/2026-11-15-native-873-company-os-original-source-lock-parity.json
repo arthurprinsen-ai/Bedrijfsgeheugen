@@ -1,0 +1,70 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|native-migration-lock|source-lock-872-provider-873-company-os-observer|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "NATIVE_PROVIDER_APPLIED_MIGRATION_UNACKNOWLEDGED_IN_ORIGINAL_SOURCE_LOCK",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original native EU project applied the protected Company OS source receipt migration #873 after merged original PR #5892, but the Git executable source lock stayed at #872. The next protected PR preflight would fail immutable source parity until the real version/name from the provider is read back and acknowledged once.",
+  "change": {
+    "original_provider": "Supabase project adhjwmvyoixzjtmiroln",
+    "original_git_source": "supabase/migration-history.lock.json",
+    "old_applied": 872,
+    "new_applied": 873,
+    "append_only": true,
+    "repeat_migration_execute": false,
+    "new_cron": false,
+    "new_table": false,
+    "new_agent": false,
+    "new_queue": false,
+    "original_source_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5892"
+  },
+  "evidence": {
+    "provider_attested_total": 873,
+    "provider_observed_at": "2026-11-15T17:37:27.655996Z",
+    "native_applied_version": "20261115235900",
+    "native_applied_name": "company_intelligence_existing_daily_source_receipt_v1",
+    "source_prefix_872_preserved": true,
+    "original_company_os_event_verified": true,
+    "original_company_os_same_day_source_id": "f846c546-d358-46cb-a9e7-078b70934469",
+    "original_self_improvement_consumer_ack_verified": true,
+    "original_cron_107_active": true,
+    "financial_forecasts_count": 0,
+    "realized_financial_values_count": 0,
+    "customer_net_savings_proven": false,
+    "protected_source_lock_merge_pending": true
+  },
+  "prevention": {
+    "provider_version_name_and_timestamp_must_be_independently_read": true,
+    "original_immutable_prefix_preserved": true,
+    "no_fictitious_applied_migrations": true,
+    "no_repeat_sql_apply": true,
+    "original_company_observer_only": true,
+    "never_equate_source_receipt_to_customer_roi": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "cause": "Native migration provider and original Git immutable history can drift after an otherwise successful protected PR deployment; exact provider readback must close the source-ACK without executing the migration again.",
+    "prevention_rule": "Append only independently applied provider migration ID/version/name to original source lock through protected Required/CodeQL after exact native readback; do not preclaim unapplied SQL or loosen historical parity tests.",
+    "regression_guard": "tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs",
+    "next_owner": "Original Supabase migration history writer + ONE BRAIN P0 #4215",
+    "effect_proof": "NATIVE_EU_873_APPLIED_GIT_873_PROTECTED_RELEASE_AND_INDEPENDENT_FINAL_READBACK_DUE"
+  }
+}
