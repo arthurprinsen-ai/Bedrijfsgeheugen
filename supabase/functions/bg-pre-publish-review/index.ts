@@ -1,4 +1,4 @@
-import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal,personalObservationalLifeContextSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
 const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -80,7 +80,7 @@ function personalViolations(text: string, body: any, finalHash: string) {
     require(body.public_theme_source_verified === true, 'PUBLIC_THEME_SOURCE_UNVERIFIED', 'De publieke bron voor de dagelijkse observatie is niet geverifieerd.');
     require(body.first_person_claims_present === false, 'OBSERVATIONAL_MODE_FIRST_PERSON_FORBIDDEN', 'Observerende fallback mag geen eerste-persoonsclaims bevatten.');
     require(!firstPersonSignal(text), 'OBSERVATIONAL_MODE_FINAL_TEXT_FIRST_PERSON_FORBIDDEN', 'Observerende fallback bevat toch eerste-persoonstaal.');
-    require(personalLifeContextSignal(text), 'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED', 'Observerende fallback moet concreet over dagelijks leven gaan.');
+    require(personalObservationalLifeContextSignal(text), 'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED', 'Observerende fallback moet concreet over dagelijks leven gaan.');
     require(body.personal_life_topic === true, 'PERSONAL_LIFE_TOPIC_REQUIRED', 'Persoonlijk onderwerp is niet bewezen.');
     require(body.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY, 'PERSONAL_LIFE_ONLY_POLICY_REQUIRED', 'Personal-life-only policy ontbreekt of is verouderd.');
     require(body.personal_life_only_verified === true, 'PERSONAL_LIFE_ONLY_UNVERIFIED', 'Tekst is niet als uitsluitend persoonlijk leven geverifieerd.');
