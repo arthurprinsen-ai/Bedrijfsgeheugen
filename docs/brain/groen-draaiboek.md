@@ -6,6 +6,14 @@ Bijgewerkt 2026-11-08. Leesroute per poort: je ziet een rode check of blokkade, 
 
 Autonoom uitvoeren, niet terugvragen. Kies zelf de beste route, voer uit, bewijs en leg vast. Stoppen en vragen mag alleen bij wat een agent niet zelf kan of mag: kosten die bevestiging vragen (bijvoorbeeld een Supabase-preview-branch), providerinstellingen en OAuth die alleen Arthur kan doen, en onomkeerbare dataverwijdering. Beschermde checks, vetopoorten en kwaliteitsgates worden nooit omzeild. Groen komt via de beschermde PR-route. Eindig een sessie niet met "zal ik...?" maar met wat gedaan is, wat bewezen is en wat de volgende agent oppakt.
 
+## Afsluitregel voor alle agents, skills en chats (15 november 2026)
+
+"Groen" is een **eindresultaat met bewijs**, geen synoniem voor "PR gemerged", "cron geslaagd", "HTTP 200", "bron gevonden" of "gedeployed". Rapporteer afzonderlijk: (1) code/regressie geslaagd, (2) beschermd gemerged, (3) exact bijbehorende productieversie en providerbron onafhankelijk gelezen, (4) echte oorspronkelijke consumer heeft `PROCESSED` geantwoord met dezelfde tenant + source_revision + correlation, (5) toegestane provideractie met ID en onafhankelijke readback wanneer van toepassing, (6) werkelijk resultaat en vervolgmeting op de volgende natuurlijke uitvoering, (7) incidentoorzaak, herstel, regressie, preventieregel en toegepaste les aantoonbaar vastgelegd. Niet-toepasselijkheid moet inhoudelijk en herleidbaar onderbouwd worden; UNKNOWN ≠ N/A.
+
+Blijft één vereiste onbewezen, dan is het **onderliggende probleem NIET KLAAR** en blijft zijn oorspronkelijke ONE BRAIN-verplichting OPEN/DEGRADED met bron, foutfingerprint, eigenaar, veilige volgende actie en hercontroletermijn. Technische deelreleases mogen als `TECHNICAL_RELEASE_VERIFIED` worden gerapporteerd, nooit als `BUSINESS_OUTCOME_VERIFIED`. Tijdens herstel: iedere nieuwe fout meteen duurzaam in de bestaande failure-registry en hetzelfde incident, met analyse → correctie → regression → onafhankelijke replay. Repareer automatisch als de bestaande agent bevoegd is; bij onveilige/onbevoegde stappen wacht alleen die actie op de juiste autorisatie. De andere originele executors blijven actief.
+
+Concrete toets 15 november: Powerhouse e-mail heeft drie huidige handoffs `BROKEN_RESEARCH_TO_COMPOSER_EXPIRED` (1) en `EXPIRED_WITHOUT_DELIVERY` (2), plus tien herprobeerbare niet-leesbare bronnen. De oorspronkelijke commerciële eigenaar en Reliability/Data Quality moeten die in dezelfde #116 → #138 → Heartbeat/ONE BRAIN-lus opvolgen, niet wegboeken omdat de Edge-rotatie live is. Providerbewijs, verzendrecht en de echte zakelijke uitkomst worden afzonderlijk gemeten.
+
 ## 1. De vijf minuten vóór je begint
 
 1. Draai `node tools/delivery-preflight.mjs shared --action "<wat je gaat doen>"`. Blokkeert hij op een regel, noem de regel en volg hem. `--ack` is een verklaring, geen bewijs.
