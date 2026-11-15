@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|outcome-memory|nonempty-evidence-false-green|20261115-v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "scope": "ONE_ORIGINAL_COMPANY_INTELLIGENCE_OS",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "original_owner": "Company Intelligence OS / original Powerhouse Outcome Memory / Heartbeat / ONE BRAIN",
+  "failure_class": "METADATA_PRESENT_INFERRED_AS_INDEPENDENT_CUSTOMER_OUTCOME",
+  "measured_source": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "view": "public.powerhouse_outcome_memory_v1",
+    "rows_at_discovery": 11618,
+    "previous_verified_true": 11618,
+    "source_event_ids_with_verified_original_event_readback": 14,
+    "provider_send_receipts_without_customer_outcome_proof": 7,
+    "realized_value_rows": 0,
+    "financial_forecast_rows": 0,
+    "customer_net_savings_proven": false,
+    "company_intelligence_cycle_events": 0
+  },
+  "root_cause": "Original view marks sales outcome verified whenever the evidence JSON is non-empty. 11,560 source rows include synthetic_business_result=false, a NON-synthetic flag, but not independent customer-outcome proof; most are internal no-send or execution records. Original JS mirrors this error and converts missing monetary values to zero. Compound Intelligence treats the inflated verified tally as learning.",
+  "change": {
+    "new_scheduler": false,
+    "new_table": false,
+    "new_provider": false,
+    "new_agent": false,
+    "new_writer": false,
+    "consumer": "existing powerhouse_compound_intelligence_v1",
+    "code_paths": [
+      "supabase/migrations/20261115170000_outcome_memory_source_readback_truth_v1.sql",
+      "brain/company-intelligence/company-intelligence-os.mjs",
+      "tests/brain-company-intelligence-os-v1.test.mjs"
+    ]
+  },
+  "prevention_rule": "Verified true requires source_event_id joined to original verified runtime event with exact event type/dedupe/company/person/causal time, or independently measured amount with source revision/baseline/period. Technical send/no-send/completion is not a customer outcome. Missing amount stays null, measured zero stays zero.",
+  "regression": {
+    "historical": "tests/brain-company-intelligence-os-v1.test.mjs",
+    "shadow": "tests/brain-company-intelligence-os-v1.test.mjs",
+    "canary": "tests/brain-company-intelligence-os-v1.test.mjs",
+    "expected_guarded_existing_source_count": 14
+  },
+  "evidence": {
+    "github_protected_merge": false,
+    "native_preview_verified": false,
+    "production_native_migration_verified": false,
+    "independent_customer_effect_verified": false,
+    "original_owner_execution_receipt": false,
+    "original_one_brain_terminal_close": false
+  },
+  "next_owner": "Original financial source and operational event producers, existing Powerhouse decision/action/Heartbeat outcome lineage; no financial closure until authorized real data and provider/consumer ACK.",
+  "compiler": {
+    "failure_class": "METADATA_PRESENT_INFERRED_AS_INDEPENDENT_CUSTOMER_OUTCOME",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-intelligence-os-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-intelligence-os-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-intelligence-os-v1.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "cause": "Original view marks sales outcome verified whenever the evidence JSON is non-empty. 11,560 source rows include synthetic_business_result=false, a NON-synthetic flag, but not independent customer-outcome proof; most are internal no-send or execution records. Original JS mirrors this error and converts missing monetary values to zero. Compound Intelligence treats the inflated verified tally as learning.",
+    "prevention_rule": "Verified true requires source_event_id joined to original verified runtime event with exact event type/dedupe/company/person/causal time, or independently measured amount with source revision/baseline/period. Technical send/no-send/completion is not a customer outcome. Missing amount stays null, measured zero stays zero.",
+    "regression_guard": "tests/brain-company-intelligence-os-v1.test.mjs",
+    "next_owner": "Original financial source and operational event producers, existing Powerhouse decision/action/Heartbeat outcome lineage; no financial closure until authorized real data and provider/consumer ACK.",
+    "effect_proof": "PROTECTED_REQUIRED_CODEQL_NATIVE_PROVIDER_AND_REAL_CUSTOMER_READBACK_DUE"
+  }
+}
