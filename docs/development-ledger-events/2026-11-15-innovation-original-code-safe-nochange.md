@@ -10,3 +10,10 @@
 - False-success prohibition: original operation PLANNED, 14 innovation obligations OPEN, no consumer ACK, no measured effect
 - Regression: `tests/brain-innovation-original-code-delivery-20261115.test.mjs`
 - Pending: protected release + real source-bound replay + independent native GET and measured business source review
+
+## Protected admission regression found and fixed
+
+- Original PR #5904 exact head `6e2497bdf9bd2f81df3cd1f9d4ac5996d7af69a9` hygiene/admission failed on the NEW historical replay guard, not on application behavior: test attempted to mutate a frozen returned no-change receipt directly (`Cannot assign to read only property 'source_sha256'`).
+- Root cause: negative drift fixture did not clone an immutable source receipt before corrupting it for assertion.
+- Recovery: copy with object spread, corrupt only the isolated test fixture, and re-run original Required/CodeQL; do not weaken immutable production receipts, source gates or learning requirement.
+- Regression: `tests/brain-innovation-original-code-delivery-20261115.test.mjs` now tests mismatch via a copied receipt.
