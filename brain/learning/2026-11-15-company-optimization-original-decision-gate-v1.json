@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|company-intelligence|source-gated-decision-to-verified-outcome|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "AUTONOMOUS_OPTIMIZATION_WITHOUT_SOURCE_POLICY_EXECUTION_OUTCOME_AND_LEARNING_PROOF",
+    "scope": "COMPANY_INTELLIGENCE_ORIGINAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original Company Intelligence model described decide, act, observe and compound states without a source-scoped financial eligibility decision that independently vetoes missing scenario costs, tenant boundary, permission, original owner lease, provider receipt, counterfactual and next-decision learning. Live economic source measurements are absent; behavior must never be treated as proof of realized customer value.",
+  "change": {
+    "source": "brain/company-intelligence/company-intelligence-os.mjs",
+    "original_owner": "Original Company Intelligence OS + Powerhouse executor + ONE BRAIN",
+    "new_scheduler": false,
+    "new_database": false,
+    "new_agent": false,
+    "new_external_action": false,
+    "api_pure_only": true
+  },
+  "prevention": {
+    "tenant_source_revision_correlation_required": true,
+    "no_action_reference_zero_only": true,
+    "nonnegative_downside_positive_base": true,
+    "authorized_original_owner_lease_required": true,
+    "explicit_rollback_and_idempotency": true,
+    "independent_provider_receipt_required": true,
+    "net_cost_counterfactual_required": true,
+    "next_decision_learning_required": true,
+    "original_brain_closure_only": true,
+    "missing_values_never_zero": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-intelligence-os-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-intelligence-os-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-intelligence-os-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_reviewed": true,
+    "repository_candidate": true,
+    "ci_passed": false,
+    "protected_merge": false,
+    "production_live": false,
+    "independent_customer_proof": false,
+    "financial_forecast_rows_at_discovery": 0,
+    "realized_values_at_discovery": 0,
+    "action_economics_rows_at_discovery": 805,
+    "positive_cost_or_time_action_rows_at_discovery": 0
+  },
+  "semantic_learning": {
+    "cause": "A generic loop-state and predicted benefit cannot establish an executable or closed profitable intervention.",
+    "prevention_rule": "Only original tenant-scoped source evidence, permissible reversible owner-leased actions and independent cost/actual/causal/learning receipts can progress to original ONE BRAIN closure.",
+    "regression_guard": "tests/brain-company-intelligence-os-v1.test.mjs",
+    "next_owner": "Original financial data spine/source adapters; original Powerhouse agent fabric; original ONE BRAIN and Heartbeat",
+    "effect_proof": "REQUIRED_CI_PROTECTED_MAIN_PROVIDER_AND_CUSTOMER_READBACK_DUE"
+  }
+}
