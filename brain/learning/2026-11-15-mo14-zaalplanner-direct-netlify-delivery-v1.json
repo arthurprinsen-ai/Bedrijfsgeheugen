@@ -21,6 +21,25 @@
       "github_actions_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43733598207",
       "readback": "HTTP /zaalplanner/ contains keeper and PDF-export inputs; original / index.html byte-equal to predeployment backup",
       "scope_limit": "Source PR remains open and broader Bedrijfsgeheugen CI has independent failure; live browser input interaction not yet independently automated"
+    },
+    "mobile_app_v3": {
+      "status": "LIVE_PROVEN_STATIC_AND_LOCAL_FUNCTIONAL",
+      "provider": "Netlify",
+      "site_id": "1c4fa5ce-45ae-45dc-b3e2-11f90587c474",
+      "deploy_id": "6af9ebcb463f126a95c7f903",
+      "provider_state": "CURRENT_READY",
+      "published_at": "2026-11-15T17:29:09.047Z",
+      "ci_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43741276076",
+      "artifacts": [
+        "index.html",
+        "manifest.webmanifest",
+        "sw.js",
+        "icons/icon-192.png",
+        "icons/icon-512.png"
+      ],
+      "qa": "Playwright local mobile 390x844: all tabs, goalkeeper, absence, 7 distinct starting lineups, PDF+PNG downloads, zero browser page errors",
+      "preservation": "original homepage byte-for-byte equal after production release",
+      "limitations": "full interactive production browser acceptance and broad Bedrijfsgeheugen source PR merge not yet proven"
     }
   },
   "root_cause": "MO14 planner source was added to the business-system repository without its exact delivery-lane ownership, metadata and required one-loop learning artifacts; the independent Netlify site still requires its own authorized deploy and provider readback.",
@@ -30,7 +49,9 @@
     "Require real PR Obligation-ID, Delivery-Lane, Candidate-Type and immutable Base-SHA before PR admission.",
     "Keep the original MO14 static site unchanged unless the deploy includes its existing files and the new planner.",
     "Do not weaken protected GitHub checks or use Make for MO14 production releases.",
-    "Only mark LIVE_PROVEN after a new provider deploy ID, correct site ID, successful HTTP readback of /zaalplanner/ and functional keeper/absent/export verification."
+    "Only mark LIVE_PROVEN after a new provider deploy ID, correct site ID, successful HTTP readback of /zaalplanner/ and functional keeper/absent/export verification.",
+    "MO14 Netlify credentials are short-lived; check actual provider authorization and refuse a 401 rather than marking LIVE, and never use Make.",
+    "A standalone mobile PWA must ship manifest, scoped service worker, icons and cached application shell with actual route readback."
   ],
   "tests": [
     "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs"
@@ -48,5 +69,5 @@
     "security_sensitive": false
   },
   "owner": "original MO14-1 website protected delivery lane",
-  "terminal_rule": "Independent MO14 website deployment and structural HTTP readback are LIVE_PROVEN; separately keep repository merge and full browser interaction as EVIDENCE_DUE, without claiming all Powerhouse checks green."
+  "terminal_rule": "MO14 app v3 is LIVE_PROVEN for exact Netlify provider deploy, static assets and original homepage parity; local UI functional tests passed. Full interactive browser run against the actual production URL and the broader parent repository PR merge remain separately open."
 }
