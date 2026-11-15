@@ -1,4 +1,4 @@
-import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
 const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -29,9 +29,6 @@ const aliases: Record<string, string> = {
   instagram_company: 'instagram_company', instagram: 'instagram_company', [INSTAGRAM_CHANNEL]: 'instagram_company', 'bedrijfsgeheugen.nl': 'instagram_company',
 };
 
-function businessSignal(text: string) {
-  return /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|AI|data|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text);
-}
 function firstPersonSignal(text: string) {
   return /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
 }
@@ -114,9 +111,7 @@ function personalViolations(text: string, body: any, finalHash: string) {
     out.push({ code: 'SENSITIVE_PRIVATE_DETAIL_BLOCK', message: 'Privé/sensitief detail vereist exacte goedkeuring.' });
   }
   if (!builderMode) {
-    const businessBlocked = observationalMode
-      ? /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text)
-      : businessSignal(text);
+    const businessBlocked = personalNonBuilderBusinessSignal(text,{observational:observationalMode});
     if (businessBlocked) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
     if (consultantVoiceSignal(text)) out.push({ code: 'FINAL_TEXT_CONSULTANT_VOICE_BLOCK', message: 'Uiteindelijke tekst klinkt als consultant/thought-leadership of forceert een zakelijke moraal.' });
   }
