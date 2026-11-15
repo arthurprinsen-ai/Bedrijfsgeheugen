@@ -3468,8 +3468,12 @@
     {
       "version": "20261115103000",
       "name": "original_public_work_email_commercial_safe_review_ack_v1"
+    },
+    {
+      "version": "20261115121500",
+      "name": "original_wrapped_serp_source_dispatch_wakeup_v1"
     }
   ],
-  "captured_at": "2026-11-15T10:15:28.626Z",
+  "captured_at": "2026-11-15T11:42:57.174Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
