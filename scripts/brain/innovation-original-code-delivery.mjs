@@ -99,7 +99,9 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
     // A previously implemented source, or a duplicate candidate PR, must be reconciled, not rebuilt.
     if(/\bPR\s*#?\d{3,6}\b/i.test(action)||c.proposed_action.parent_pr){held++;continue;}
     eligible++;
-    if(existingPrFor(c.candidate_id)){existing++;continue;}
+    if(existingPrFor({candidate_id:c.candidate_id,operation_id:op.id,
+      source_revision:obligation.evidence.source_revision,
+      source_sha256:obligation.payload_sha256})){existing++;continue;}
     return Object.freeze({contract:CONTRACT,selected:true,
       candidate_id:c.candidate_id,component_id:c.component_id,
       owner,source_key:c.source_key,source_revision:obligation.evidence.source_revision,
@@ -118,13 +120,35 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
 function git(args){
   return execFileSync('git',args,{encoding:'utf8',timeout:15000,maxBuffer:2000000}).trim();
 }
-function existingPrFor(id){
+// A PR mentioning an innovation in a diagnostic/incident narrative is NOT
+// proof of an implementation PR. Match the exact original source-bound PR
+// contract emitted by this SAME existing workflow, never a substring hit.
+export function isOriginalCodeImplementationPr(pr,{candidate_id,operation_id,source_revision,source_sha256}={}){
+  if(typeof pr?.body!=='string'||pr.baseRefName!=='main'||
+     !(pr.state==='OPEN'||pr.state==='MERGED'||Boolean(pr.mergedAt)))return false;
+  const required=['Candidate-Type','Original-Candidate','Original-Operation',
+    'Original-Source-Revision','Original-Source-SHA256'];
+  const found=new Map();
+  for(const line of pr.body.split(/\r?\n/)){
+    const hit=/^(Candidate-Type|Original-Candidate|Original-Operation|Original-Source-Revision|Original-Source-SHA256):[ \t]*(.*?)[ \t]*$/.exec(line);
+    if(!hit)continue;
+    if(found.has(hit[1]))return false; // ambiguous identity is never an ACK
+    found.set(hit[1],hit[2]);
+  }
+  return found.size===required.length&&
+    found.get('Candidate-Type')==='implementation'&&
+    found.get('Original-Candidate')===candidate_id&&
+    found.get('Original-Operation')===operation_id&&
+    found.get('Original-Source-Revision')===source_revision&&
+    found.get('Original-Source-SHA256')===source_sha256;
+}
+function existingPrFor(identity){
   const data=JSON.parse(execFileSync('gh',
-    ['pr','list','--repo',REPO,'--state','all','--search',id,
-      '--limit','100','--json','number,body'],
+    ['pr','list','--repo',REPO,'--state','all','--search',identity.candidate_id,
+      '--limit','100','--json','number,body,state,mergedAt,baseRefName'],
     {encoding:'utf8',timeout:25000,maxBuffer:4000000}));
   if(!Array.isArray(data))fail('GITHUB_PR_READBACK_INVALID');
-  return data.some(pr=>typeof pr.body==='string'&&pr.body.includes(id));
+  return data.some(pr=>isOriginalCodeImplementationPr(pr,identity));
 }
 export function checkChangedPaths({workorder,changed,deleted=[]}={}){
   if(workorder?.contract!==CONTRACT||workorder.selected!==true||
