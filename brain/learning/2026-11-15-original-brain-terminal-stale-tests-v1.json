@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|terminal|full-brain-backend-stale-literal-after-protected-gate-refactor|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "INTEGRATION_REGRESSION_STALE_CONTRACT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Original protected terminal source correction #5821 legitimately replaced first-page main-indexed BRAIN run lookup with PR-era complete provider-paginated exact-title flight index. Four older full BRAIN backend assertions still required retired literal runs?branch=main&event=workflow_dispatch&per_page=100 and .display_title==$title; original direct runtime authority bash fixture mocked only the retired GitHub query. Targeted Required passed but full verification_only BRAIN run #43695381458 failed 4 assertions, causing real original terminal #43695356905 to fail closed.",
+  "production_observation": {
+    "pr": 5821,
+    "merge_sha": "ded9ff6a1ace0c39f2520b978bce666342b9c487",
+    "protected_required_run": 43695108633,
+    "required_state": "SUCCESS",
+    "protected_codeql_run": 43695108559,
+    "codeql_state": "SUCCESS",
+    "original_brain_run": 43695381458,
+    "original_brain_state": "FAILURE",
+    "original_terminal_run": 43695356905,
+    "original_terminal_state": "FAILURE",
+    "original_innovation_intakes_planned": 14,
+    "original_innovation_obligations_open": 14,
+    "independent_agent_acks": 0
+  },
+  "change": {
+    "source_control_plane": ".github/workflows/obligation-terminal-closure.yml",
+    "full_original_brain_backend_tests": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs",
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs",
+      "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+      "tests/brain-terminal-runtime-authority-v1.test.mjs"
+    ],
+    "original_existing_agent_roster": "platform/agents/agent-team.mjs",
+    "existing_skill": ".agents/skills/powerhouse-post-merge-codeql/SKILL.md",
+    "new_scheduler": false,
+    "new_worker": false,
+    "new_queue": false,
+    "new_store": false
+  },
+  "prevention": {
+    "test_contract_uses_complete_original_pr_created_at_and_paginated_flight_index": true,
+    "first_page_only_lookup_rejected_in_final_gate": true,
+    "original_protected_main_source_required": true,
+    "negative_incomplete_provider_pages": true,
+    "positive_over_200_original_runs_last_page": true,
+    "verification_only_never_approves_real_agent_output": true,
+    "require_full_brain_not_only_required": true,
+    "original_version_rollback_forbidden": true
+  },
+  "remaining_evidence": "Protected exact-head Required + full BRAIN + CodeQL, protected merge, canonical terminal BRAIN success and original readback. Original 14 agent INNOVATION_INTAKE real consumer acknowledgement + implemented outcome + next natural-run measured learning separate and not yet proven. No false-green.",
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evidence": {
+    "original_brain_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458",
+    "original_failure_artifact": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695381458/artifacts/14154123742",
+    "original_terminal_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43695356905",
+    "original_failed_titles": [
+      "terminal closure Brain gate matches executable workflow triggers",
+      "cancelled or skipped exact Brain run remains nonterminal without descendant substitution",
+      "terminal closure requires exact-candidate Brain evidence with executable dispatch triggers",
+      "obligation-terminal-closure.yml requires successful exact candidate BRAIN, never foundation/descendant substitution"
+    ],
+    "source_readback": "GitHub original main and failed exact backend test run; not provider-authentic consumer ACK",
+    "regression": "tests/brain-terminal-runtime-authority-v1.test.mjs",
+    "independent_terminal_success": "NOT_YET_PROVEN"
+  }
+}
