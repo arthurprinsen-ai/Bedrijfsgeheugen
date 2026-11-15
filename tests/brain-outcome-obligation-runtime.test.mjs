@@ -154,18 +154,68 @@ test('trusted exact evidence completes the same durable obligation as LIVE_VERIF
   assert.equal(completed.supervision.normalized_state, 'LIVE_VERIFIED');
 });
 
-test('runtime appends obligations-complete only after all other trusted production evidence is present', async () => {
+test('runtime cannot self-attest independent obligations-complete from empty material context', async () => {
   const workStore = memoryStore();
   const evidence = evidenceStore();
-  const runtime = createOutcomeObligationRuntime({ registry:createDefaultAgentRegistry(), workStore, evidenceStore:evidence, recoveryStore:memoryStore(), clock:() => new Date(NOW) });
+  const runtime = createOutcomeObligationRuntime({
+    registry:createDefaultAgentRegistry(), workStore, evidenceStore:evidence,
+    recoveryStore:memoryStore(), clock:() => new Date(NOW),
+  });
   const trigger = { type:'event-trigger', fingerprint:'readback:prod-live' };
   const coalesceKey = 'candidate:sha-live';
-  const [initial] = await runtime.evaluateSweep({ obligationIds:['supabase-performance-evidence-daily'], trigger, coalesceKey, completionContext:{ claim:'DEPLOYED_UNVERIFIED', candidateIdentity:'sha-live', productionIdentity:'prod-live', materialObligations:[] } });
-  evidence.set(initial.idempotencyKey, trustedCompletionEvidence('supabase-performance-evidence-daily', 'sha-live', 'prod-live').filter(item => item.type !== 'OBLIGATIONS_COMPLETE'));
-  const [completed] = await runtime.evaluateSweep({ obligationIds:['supabase-performance-evidence-daily'], trigger, coalesceKey, completionContext:{ claim:'DEPLOYED_UNVERIFIED', candidateIdentity:'sha-live', productionIdentity:'prod-live', materialObligations:[] } });
-  assert.equal(completed.supervision.normalized_state, 'LIVE_VERIFIED');
+  const context = {
+    claim:'DEPLOYED_UNVERIFIED',candidateIdentity:'sha-live',
+    productionIdentity:'prod-live',materialObligations:[],
+  };
+  const [initial] = await runtime.evaluateSweep({
+    obligationIds:['supabase-performance-evidence-daily'],trigger,coalesceKey,completionContext:context,
+  });
+  const otherEvidence = trustedCompletionEvidence(
+    'supabase-performance-evidence-daily','sha-live','prod-live'
+  ).filter(item => item.type !== 'OBLIGATIONS_COMPLETE');
+  evidence.set(initial.idempotencyKey, otherEvidence);
+  const [result] = await runtime.evaluateSweep({
+    obligationIds:['supabase-performance-evidence-daily'],trigger,coalesceKey,completionContext:context,
+  });
+  assert.equal(result.supervision.success,false);
+  assert.notEqual(result.supervision.normalized_state,'LIVE_VERIFIED');
+  assert.ok(result.supervision.required_evidence.includes('OBLIGATIONS_COMPLETE'));
+  const repeated = await runtime.evaluateSweep({
+    obligationIds:['supabase-performance-evidence-daily'],trigger,coalesceKey,completionContext:context,
+  });
+  assert.equal(repeated[0].supervision.success,false);
   const rows = await evidence.list(initial.idempotencyKey);
-  assert.equal(rows.filter(item => item.type === 'OBLIGATIONS_COMPLETE').length, 1);
+  assert.equal(rows.filter(item => item.type === 'OBLIGATIONS_COMPLETE').length,0);
+  assert.equal(rows.filter(item => item.type === 'SUPERVISOR_DECISION').length,1,
+    'replayed supervision stays idempotent; never invent independent evidence');
+});
+
+test('caller supplied VERIFIED material statuses cannot mint independent closure evidence', async () => {
+  const evidence = evidenceStore();
+  const runtime = createOutcomeObligationRuntime({
+    registry:createDefaultAgentRegistry(),workStore:memoryStore(),
+    evidenceStore:evidence,recoveryStore:memoryStore(),clock:() => new Date(NOW),
+  });
+  const trigger={type:'event-trigger',fingerprint:'readback:prod-claimed'};
+  const initial=await runtime.evaluateSweep({
+    obligationIds:['material-change-live-verification'],trigger,
+    completionContext:{candidateIdentity:'sha-claimed',productionIdentity:'prod-claimed'},
+  });
+  evidence.set(initial[0].idempotencyKey,trustedCompletionEvidence(
+    'material-change-live-verification','sha-claimed','prod-claimed'
+  ).filter(item => item.type !== 'OBLIGATIONS_COMPLETE'));
+  const [result]=await runtime.evaluateSweep({
+    obligationIds:['material-change-live-verification'],trigger,
+    completionContext:{
+      claim:'LIVE_VERIFIED',candidateIdentity:'sha-claimed',
+      productionIdentity:'prod-claimed',
+      materialObligations:[{id:'source-one',status:'VERIFIED'},{id:'source-two',status:'COMPLETED'}],
+    },
+  });
+  assert.equal(result.supervision.success,false);
+  assert.ok(result.supervision.required_evidence.includes('OBLIGATIONS_COMPLETE'));
+  assert.equal((await evidence.list(initial[0].idempotencyKey))
+    .filter(item=>item.type==='OBLIGATIONS_COMPLETE').length,0);
 });
 
 test('identity mismatch requests readback and cannot complete', async () => {

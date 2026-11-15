@@ -83,7 +83,7 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
     }
 
     const materialObligations = completionContext.materialObligations ?? [];
-    let supervision = evaluateCompletion({
+    const supervision = evaluateCompletion({
       obligationId:obligation.id,
       workId:identity.idempotencyKey,
       claim:completionContext.claim ?? decision.status,
@@ -94,35 +94,11 @@ export function createOutcomeObligationRuntime({ registry, workStore, evidenceSt
       hardBoundary:hardBoundary && typeof hardBoundary === 'object' ? hardBoundary : null,
       retry:completionContext.retry ?? null,
     });
-    if (supervision.success !== true
-      && supervision.required_evidence.length === 1
-      && supervision.required_evidence[0] === 'OBLIGATIONS_COMPLETE') {
-      await evidenceStore.putIfAbsent({
-        idempotencyKey:identity.idempotencyKey,
-        ref:`obligations-complete:${completionContext.candidateIdentity}:${completionContext.productionIdentity}`,
-        type:'OBLIGATIONS_COMPLETE',
-        producer:'OUTCOME_OBLIGATION_RUNTIME',
-        taskIdentity:obligation.id,
-        candidateIdentity:completionContext.candidateIdentity ?? null,
-        productionIdentity:completionContext.productionIdentity ?? null,
-        independent:true,
-        accepted:true,
-        exactProduction:true,
-        metadata:{ materialObligations },
-      });
-      evidence = await evidenceStore.list(identity.idempotencyKey);
-      supervision = evaluateCompletion({
-        obligationId:obligation.id,
-        workId:identity.idempotencyKey,
-        claim:completionContext.claim ?? decision.status,
-        candidateIdentity:completionContext.candidateIdentity ?? '',
-        productionIdentity:completionContext.productionIdentity ?? '',
-        materialObligations,
-        evidence,
-        hardBoundary:hardBoundary && typeof hardBoundary === 'object' ? hardBoundary : null,
-        retry:completionContext.retry ?? null,
-      });
-    }
+    // Completion may be attested only by the original independent evidence
+    // authority. The outcome runtime is the claimant and cannot mint an
+    // independent accepted exact-production OBLIGATIONS_COMPLETE receipt from
+    // a caller-supplied (or empty) materialObligations array. Preserve the
+    // missing-evidence decision for the same owner instead of false green.
     await evidenceStore.putIfAbsent({
       idempotencyKey:identity.idempotencyKey,
       ref:`supervisor:${supervision.idempotency_key}`,
