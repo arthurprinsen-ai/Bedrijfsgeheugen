@@ -16,7 +16,7 @@ function trustedEvidence() {
     proof('PROTECTED_DELIVERY', 'BG169', production),
     proof('PRODUCTION_IDENTITY', 'BG169', production),
     proof('FUNCTIONAL_READBACK', 'PRODUCTION_READBACK', production),
-    proof('OBLIGATIONS_COMPLETE', 'OUTCOME_OBLIGATION_RUNTIME', production),
+    proof('OBLIGATIONS_COMPLETE', 'PRODUCTION_READBACK', { ...production, exactProduction:true, metadata:{ materialSourceRef:'material-readback:change-4', materialSourceRevision:'source-rev:candidate-abc' } }),
     proof('CAPABILITY_HANDOFF', 'BG167', production),
     proof('LEARNING_WRITEBACK', 'BG168_BG166', production),
   ];
