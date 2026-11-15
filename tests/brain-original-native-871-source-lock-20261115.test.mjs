@@ -9,12 +9,12 @@ const migration=readFileSync(new URL(migrationPath,import.meta.url),'utf8');
 test('native provider-applied Outcome Memory migration #871 enters original lock once',()=>{
   assert.equal(lock.source,'supabase_migration_history');
   assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
-  assert.equal(lock.applied.length,871);
-  assert.deepEqual(lock.applied.at(-1),{
+  assert.ok(lock.applied.length>=871,'historical native 871 prefix must survive later provider-applied versions');
+  assert.deepEqual(lock.applied[870],{
     version:'20261115170000',name:'outcome_memory_source_readback_truth_v1'
   });
-  assert.equal(new Set(lock.applied.map(x=>x.version)).size,871);
-  assert.equal(lock.applied.at(-2).version,'20261115162500');
+  assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
+  assert.equal(lock.applied[869].version,'20261115162500');
   assert.ok(Date.parse(lock.captured_at)>=Date.parse('2026-11-15T16:13:57.369674Z'));
 });
 
