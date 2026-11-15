@@ -3464,8 +3464,12 @@
     {
       "version": "20261115094500",
       "name": "original_public_work_email_heartbeat_source_receipt_v1"
+    },
+    {
+      "version": "20261115103000",
+      "name": "original_public_work_email_commercial_safe_review_ack_v1"
     }
   ],
-  "captured_at": "2026-11-15T09:39:08.405Z",
+  "captured_at": "2026-11-15T10:15:28.626Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
