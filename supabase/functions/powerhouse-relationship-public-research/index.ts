@@ -401,13 +401,14 @@ async function recoverWrappedOriginalResearchSources(db:any,observedAt:string){
     const evidence={...(a.evidence||{}),relationship_source_candidate:null,
       public_research_execution:{
         ...(a.evidence?.public_research_execution||{}),
-        source_url:null,reason:'NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH',
+        source_url:null,rejected_source_url:source,
+        reason:'NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH',
         source_redirect_rejected:true,no_current_trigger_evidence:true,
         provider:'dataforseo-serp',researched_at:observedAt,
         next_research_at:next,external_outreach_executed:false,evidence_only:true
       }};
     const {data:saved,error:sErr}=await db.from('powerhouse_sales_actions')
-      .update({status:'waiting',due_at:next,source_url:null,evidence,updated_at:observedAt})
+      .update({status:'waiting',due_at:next,source_url:'',evidence,updated_at:observedAt})
       .eq('action_id',a.action_id).eq('status','done')
       .eq('updated_at',a.updated_at).select('action_id').maybeSingle();
     if(sErr)throw new Error('ORIGINAL_WRAPPED_SOURCE_SAFE_RETRY:'+sErr.message);
