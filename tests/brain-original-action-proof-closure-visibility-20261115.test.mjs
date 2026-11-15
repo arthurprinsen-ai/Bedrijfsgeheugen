@@ -96,3 +96,23 @@ test('original server tenant gate remains intact; no sender, new database or cli
  assert.match(projection,/safeEvidence\(source\.action_history,tenantId,now\)/);
  assert.match(projection,/action_history:history/);
 });
+
+
+test('existing tenant-authenticated Powerhouse actions are reused without a new store or cross-tenant leak',()=>{
+ const when='2026-11-15T11:00:00Z';
+ const evidence=(id,tenant)=>({
+  id,tenant_id:tenant,entity_type:'signal',source_refs:['original:tenant:action:1'],
+  provenance:'powerhouse',freshness_at:when,confidence:0.8,model_or_formula_version:'v1',
+  observed_at:when,updated_at:when,status:'DONE',title:'Actie '+id
+ });
+ const state={powerhouse:{executive:{next_best_actions:[]},actions:[
+  evidence('a1','tenant-a'),evidence('a1','tenant-a'),evidence('a2','tenant-b')
+ ]}};
+ const projection=buildExecutiveProjection(state,{tenantId:'tenant-a',now:Date.parse('2026-11-15T11:20:00Z')});
+ assert.equal(projection.available,true);
+ assert.deepEqual(projection.action_history.map(x=>x.id),['a1']);
+ const progress=buildCustomerActionProgress(projection);
+ assert.equal(progress.length,1);
+ assert.equal(progress[0].recordedStatus,'DONE');
+ assert.equal(progress[0].phase,'EXECUTION_RECEIPT_DUE');
+});
