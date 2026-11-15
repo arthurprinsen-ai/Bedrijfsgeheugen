@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback }
+import { projectPowerhouseIntegrationReadback, readPowerhouseIntegrationReadback, readOriginalSalesExecutionAudit }
   from '../platform/portal/powerhouse-existing-integration-read-model.mjs';
 import { powerhouseIntegrationMarkup, controlPlaneCockpitMarkup, mountControlPlaneCockpit }
   from '../portal-v2/control-plane-cockpit.js';
@@ -340,4 +340,84 @@ test('server verifies request bearer and role before any Supabase service-key re
   assert.match(source,/request\.headers\?\.get\('authorization'\)/);
   assert.ok(source.indexOf('getUser(request)')<source.indexOf('if(!hasAdminRole(user))'));
   assert.ok(source.indexOf('if(!hasAdminRole(user))')<source.indexOf("const baseUrl="));
+});
+
+test('original innovation consumer audits real sales actions by event identity without false provider proof',async()=>{
+  const id1='11111111-1111-4111-8111-111111111111';
+  const id2='22222222-2222-4222-8222-222222222222';
+  const seen=[];
+  const at='2026-11-15T12:00:00Z';
+  const result=await readOriginalSalesExecutionAudit({
+    baseUrl:'https://project.supabase.co',key:'service-secret',at,
+    fetchImpl:async(url,options)=>{
+      seen.push({url,options});
+      assert.equal(options.headers.authorization,'Bearer service-secret');
+      assert.equal(options.method,undefined);
+      const name=new URL(url).pathname.split('/').at(-1);
+      if(name==='powerhouse_cycle_events'){
+        assert.equal(options.headers.prefer,'count=exact');
+        assert.match(url,/entity_type=eq.sales_action/);
+        assert.match(url,/stage=eq.execution/);
+        return {ok:true,headers:{get:()=> '0-1/2'},json:async()=>[
+          {entity_id:id1,occurred_at:'2026-11-15T09:30:00Z'},
+          {entity_id:id2,occurred_at:'2026-11-15T09:15:00Z'}
+        ]};
+      }
+      assert.equal(name,'powerhouse_sales_actions');
+      assert.match(url,/select=action_id%2Cstatus%2Cexecuted_at/);
+      assert.ok(url.includes(id1)&&url.includes(id2));
+      return {ok:true,json:async()=>[
+        {action_id:id1,status:'done',executed_at:'2026-11-15T09:29:00Z'},
+        {action_id:id2,status:'expired',executed_at:null}
+      ]};
+    }
+  });
+  assert.equal(seen.length,2);
+  assert.equal(result.totalEvents7d,2);
+  assert.equal(result.actionBackedSample,1);
+  assert.equal(result.unsupportedSample,1);
+  assert.equal(result.missingActionSample,0);
+  assert.equal(result.scope,'FULL_LAST_7D');
+  assert.equal(result.state,'SOURCE_EXECUTION_GAP');
+  assert.equal(result.externalProviderProof,false);
+  assert.equal(result.paidOutcomeProof,false);
+  assert.doesNotMatch(JSON.stringify(result),/service-secret|11111111-1111|22222222-2222/);
+  const projected=projectPowerhouseIntegrationReadback({
+    datasets,readStates:states,salesExecutionAudit:result});
+  assert.ok(projected.gapCodes.includes('SALES_EXECUTION_EVENTS_WITHOUT_CURRENT_ACTION_PROOF'));
+  assert.match(powerhouseIntegrationMarkup(projected),/Innovatie · verkoopuitvoering bronbewijs/);
+  assert.match(powerhouseIntegrationMarkup(projected),/niet ondersteund 1/);
+});
+
+test('original innovation execution audit fails closed on missing provider count and invalid action identity',async()=>{
+  let calls=0;
+  const request=(headers,events)=>readOriginalSalesExecutionAudit({
+    baseUrl:'https://project.supabase.co',key:'secret',at:'2026-11-15T12:00:00Z',
+    fetchImpl:async()=>{
+      calls++;
+      return {ok:true,headers:{get:()=>headers},json:async()=>events};
+    }
+  });
+  const id='11111111-1111-4111-8111-111111111111';
+  const event={entity_id:id,occurred_at:'2026-11-15T11:00:00Z'};
+  assert.equal((await request(null,[event])).state,'SOURCE_UNAVAILABLE');
+  assert.equal((await request('0-3/5',[event])).state,'SOURCE_UNAVAILABLE');
+  assert.equal((await request('0-0/1',[{...event,entity_id:'not-an-uuid'}])).state,'SOURCE_UNAVAILABLE');
+  assert.equal(calls,3);
+  const missingAuth=await readOriginalSalesExecutionAudit({
+    baseUrl:'http://project.supabase.co',key:'secret',fetchImpl:async()=>{throw Error('MUST_NOT_READ')}});
+  assert.equal(missingAuth.state,'SOURCE_UNAVAILABLE');
+});
+
+test('zero native execution events is not green and does not claim a dispatched action',async()=>{
+  const output=await readOriginalSalesExecutionAudit({
+    baseUrl:'https://project.supabase.co',key:'secret',at:'2026-11-15T12:00:00Z',
+    fetchImpl:async()=>({ok:true,headers:{get:()=> '*/0'},json:async()=>[]})
+  });
+  assert.equal(output.state,'NO_EXECUTION_EVENTS_OBSERVED');
+  assert.equal(output.totalEvents7d,0);
+  assert.equal(output.externalProviderProof,false);
+  const root=readFileSync('netlify/functions/powerhouse-control-plane.mjs','utf8');
+  assert.match(root,/includeSalesExecutionAudit:true/);
+  assert.ok(root.indexOf('if(!hasAdminRole(user))')<root.indexOf('readPowerhouseIntegrationReadback('));
 });
