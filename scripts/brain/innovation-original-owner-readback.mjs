@@ -156,6 +156,26 @@ export async function runOriginalInnovationOwnerAudit({env=process.env,fetchImpl
   return evaluateOriginalOwnerHandoff(snapshot,{now});
 }
 
+export function summarizeOriginalOwnerAudit(report){
+  // GitHub Actions artifacts may be readable by users of this public repo.
+  // Detailed canonical candidate and Brain operation IDs must remain server-only.
+  // Never persist the internal source packet into a GitHub build artifact.
+  return Object.freeze({
+    contract:report?.contract??CONTRACT,
+    observed_at:report?.observed_at??null,
+    health:report?.health??'SOURCE_UNAVAILABLE',
+    counts:report?.counts??null,
+    assigned_original_agents:report?.assigned_original_agents??null,
+    owner_ack_due:report?.counts?.owner_ack_pending??null,
+    original_owner_packet_redacted:true,
+    source_identity_details:'CANONICAL_SUPABASE_ONLY',
+    terminal_innovation_success:false,
+    read_only:true,no_new_scheduler:true,no_new_queue:true,
+    error_code:report?.health==='SOURCE_UNAVAILABLE'?
+      String(report?.error_code||'UNKNOWN').slice(0,120):null,
+  });
+}
+
 async function main(){
   let report;
   try{
@@ -172,7 +192,7 @@ async function main(){
     process.exitCode=1;
   }finally{
     await mkdir('artifacts/quality',{recursive:true});
-    await writeFile(AUDIT_FILE,JSON.stringify(report,null,2)+'\n');
+    await writeFile(AUDIT_FILE,JSON.stringify(summarizeOriginalOwnerAudit(report),null,2)+'\n');
   }
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1])await main();
