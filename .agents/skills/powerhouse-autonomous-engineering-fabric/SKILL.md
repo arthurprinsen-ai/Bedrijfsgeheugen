@@ -3,6 +3,11 @@ name: powerhouse-autonomous-engineering-fabric
 description: Use for all material software development where multiple chats/agents can work in parallel, impact-scoped tests are preferred, one integrated candidate must be produced, and daily engineering tuning should improve speed without weakening protected delivery.
 ---
 
+## 15 november 2026 — oorspronkelijke innovatie-PR-identity, voorkom vals duplicate en verlies
+
+Een provider-PR die alleen het UUID van een innovatie **noemt** is nooit bewijs dat de oorspronkelijke engineering-agent de innovatie heeft gebouwd. Eerste originele herstelrun na beschermde merge van #5904 gaf `NO_NEW_SOURCE_BOUND_SAFE_CODE_CANDIDATE` met nul nieuwe originele ONE BRAIN no-change/code PR-receipts; `existingPrFor` gebruikte onterecht `pr.body.includes(candidate_id)` en zag het incidentrapport #5904 als implementatie. Dit is een P0 handoff-/duplicate-fout, niet een groene innovatie. Gebruik alleen exacte, unieke GitHub-PR-contractvelden `Candidate-Type: implementation`, `Original-Candidate`, `Original-Operation`, `Original-Source-Revision` en `Original-Source-SHA256` van dezelfde oorspronkelijke workorder. Alleen OPEN en MERGED naar main zijn bruikbare provider-pr-sporen. CLOSED zonder merge en diagnose-PR's nooit als implementatie registreren. Native oorspronkelijke operatie blijft PLANNED en verplichting OPEN zonder onafhankelijk provider-/effectbewijs. Hervat via exact dezelfde Powerhouse Daily Self Evolution, geen parallelle executor. Regression `tests/brain-innovation-pr-identity-20261115.test.mjs`; incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+
 ## 15 november 2026 — oorspronkelijke innovation-code writer: geen nepcode bij no-op
 
 De bestaande Powerhouse Daily Self Evolution engineering-uitvoerder is via beschermd GitHub PR #5903 en Netlify exact SHA `b7c019bc1b06e711ae11f928278b6f0bbd51c08c` geactiveerd. Eerste originele `original_code_recovery`-run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43752164113 selecteerde brongebonden innovatie `7ae7a817-5900-41df-bf7c-d127e8336b13`; de engineering-Codex ontdekte dat de composerkoppeling al in source bestond, voerde twee bestaande regressies succesvol uit en maakte terecht **nul wijzigingen**. De oude validator faalde echter op `PATH_SCOPE_OR_EVIDENCE_MISSING` en voorkwam voortgang.
