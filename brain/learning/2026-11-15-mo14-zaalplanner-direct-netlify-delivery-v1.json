@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-15",
+  "status": "CANDIDATE",
+  "obligation_id": "mo14-zaalplanner-netlify-release-20261115",
+  "fingerprint": "mo14|zaalplanner|independent-site-delivery-gate-and-provider-proof|20261115-v1",
+  "failure_class": "MO14_INDEPENDENT_SITE_DELIVERY_UNVERIFIED",
+  "observed_evidence": {
+    "source_paths": [
+      "pw-mo14-1/zaalplanner/index.html",
+      "config/brain-delivery-system.json"
+    ],
+    "observation": "PR #5875 initially failed Required hygiene due to missing machine PR metadata; after repair it failed on unclassified path pw-mo14-1/zaalplanner/index.html. After registering only the owned planner prefix, hygiene admitted the candidate but rejected the missing activity ledger, human change documentation and structured Brain learning. The existing pw-mo14-1 Netlify site continued to report the August 2026 production deploy.",
+    "proof_limits": "Code in GitHub and successful previews of the Bedrijfsgeheugen repo are not evidence that the independent MO14 Netlify site has been updated."
+  },
+  "root_cause": "MO14 planner source was added to the business-system repository without its exact delivery-lane ownership, metadata and required one-loop learning artifacts; the independent Netlify site still requires its own authorized deploy and provider readback.",
+  "fix": "Register only pw-mo14-1/zaalplanner/ under the canonical website delivery lane, add pure regression and full machine/ledger/human learning records to the same PR, retain GitHub branch protection, and publish the existing MO14 Netlify project using direct GitHub/Netlify authority only (never Make).",
+  "prevention_rules": [
+    "Register new separately hosted UI source paths in the canonical delivery planner and assert exact ownership before first PR CI.",
+    "Require real PR Obligation-ID, Delivery-Lane, Candidate-Type and immutable Base-SHA before PR admission.",
+    "Keep the original MO14 static site unchanged unless the deploy includes its existing files and the new planner.",
+    "Do not weaken protected GitHub checks or use Make for MO14 production releases.",
+    "Only mark LIVE_PROVEN after a new provider deploy ID, correct site ID, successful HTTP readback of /zaalplanner/ and functional keeper/absent/export verification."
+  ],
+  "tests": [
+    "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "MO14_INDEPENDENT_SITE_DELIVERY_UNVERIFIED",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "owner": "original MO14-1 website protected delivery lane",
+  "terminal_rule": "Candidate remains UNVERIFIED until protected checks, authorized independent Netlify production release and explicit runtime readback succeed."
+}
