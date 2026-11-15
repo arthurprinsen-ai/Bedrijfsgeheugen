@@ -21,7 +21,8 @@ test('original final-truth validator uses the same exact word-boundary predicate
  const block=source.slice(source.indexOf('function personalFinalCopyValid('),source.indexOf('function hardBoundary('));
  assert.ok(block.length>200,'must inspect actual truth validator');
  assert.doesNotMatch(block,/noBusinessBridge=!\//,'cannot retain legacy unbounded-substring marketing veto');
- assert.match(block,/onlinebestelling\|klantenservice\|webwinkel/);
+ assert.match(block,/const dailyLife=personalObservationalLifeContextSignal\(body\);/);
+ assert.equal(personalObservationalLifeContextSignal('onlinebestelling klantenservice webwinkel'),true);
  assert.match(block,/!hasFirstPerson && dailyLife && noBusinessBridge/);
 });
 
