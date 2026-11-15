@@ -53,7 +53,9 @@
     ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
     "brain/learning/2026-11-15-immutable-execution-requeue-v1.json",
     "docs/changes/2026-11-15-immutable-execution-requeue.md",
-    "docs/development-ledger-events/2026-11-15-immutable-execution-requeue.md"
+    "docs/development-ledger-events/2026-11-15-immutable-execution-requeue.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "portal-v2/index.html"
   ],
   "implementation_state": "PROTECTED_PR_PENDING_PRODUCTION",
   "no_new_scheduler": true,
@@ -69,6 +71,7 @@
     "provider_delivery_verified": false,
     "realized_revenue_verified": false,
     "regression": "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
-    "release_proof": "PENDING_PROTECTED_PR_REQUIRED_CODEQL_NETLIFY_EXACT_SHA_AND_ADMIN_READBACK"
+    "release_proof": "PENDING_PROTECTED_PR_REQUIRED_CODEQL_NETLIFY_EXACT_SHA_AND_ADMIN_READBACK",
+    "generated_portal_explanation_hash": "835c79a0968795dc8f31cc2d6c5ab239cd5bcf757bd6e8bb9d60df0a0419cf6d"
   }
 }
