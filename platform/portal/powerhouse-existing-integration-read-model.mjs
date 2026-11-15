@@ -123,7 +123,7 @@ export function projectOriginalInnovationHandoff({candidates=[],obligations=[],i
 }
 
 
-export function projectPowerhouseIntegrationReadback({datasets={},readStates={},at=new Date().toISOString()}={}){
+export function projectPowerhouseIntegrationReadback({datasets={},readStates={},at=new Date().toISOString(),salesExecutionAudit=null}={}){
   const healthRows=usable(readStates,'health')?rows(datasets.health):[];
   const capabilities=usable(readStates,'capabilities')?rows(datasets.capabilities):[];
   const layers=usable(readStates,'layers')?rows(datasets.layers):[];
@@ -183,6 +183,10 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
     if(innovation.awaitingAgentAck>0)gaps.push('INNOVATION_CONSUMER_ACK_DUE');
     gaps.push('INNOVATION_INDEPENDENT_OUTCOME_PROOF_REQUIRED');
   }
+  if(salesExecutionAudit?.state==='SOURCE_UNAVAILABLE')
+    gaps.push('SALES_EXECUTION_SOURCE_AUDIT_UNAVAILABLE');
+  if(Number(salesExecutionAudit?.unsupportedSample)>0)
+    gaps.push('SALES_EXECUTION_EVENTS_WITHOUT_CURRENT_ACTION_PROOF');
   return {
     contract:'POWERHOUSE_EXISTING_SYSTEMS_ADMIN_READBACK_V1',
     observedAt:at,
@@ -261,12 +265,95 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
       readAt:at
     }:null,
     innovationHandoff:innovation,
+    salesExecutionAudit,
     agentDispatch,
     gapCodes:gaps
   };
 }
 
-export async function readPowerhouseIntegrationReadback({baseUrl,key,fetchImpl=globalThis.fetch,at}={}){
+
+/**
+ * First bounded, source-joined execution audit for the original engineering
+ * innovation candidate 55bb0754-355b-4940-aaea-aed7123e7e57.
+ * Browser receives counts only. A recorded action is NOT an external send,
+ * paid order, independently verified consumer ACK or full 7-day census.
+ */
+export async function readOriginalSalesExecutionAudit({
+  baseUrl,key,fetchImpl=globalThis.fetch,at=new Date().toISOString()
+}={}){
+  const unknown={state:'SOURCE_UNAVAILABLE',totalEvents7d:null,sampledEvents:null,
+    actionBackedSample:null,unsupportedSample:null,missingActionSample:null,
+    scope:'UNKNOWN',externalProviderProof:false,readOnly:true};
+  const observed=Date.parse(at);
+  if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(String(baseUrl||''))||
+     !key||typeof fetchImpl!=='function'||!Number.isFinite(observed))return unknown;
+  const base=String(baseUrl).replace(/\/$/,'');
+  const uuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const headers={accept:'application/json',apikey:key,authorization:'Bearer '+key};
+  try{
+    const from=new Date(observed-7*86400000).toISOString();
+    const p=new URLSearchParams({select:'entity_id,occurred_at',tenant_id:'eq.canonical',
+      entity_type:'eq.sales_action',stage:'eq.execution',
+      occurred_at:'gte.'+from,order:'occurred_at.desc',limit:'100'});
+    const response=await fetchImpl(base+'/rest/v1/powerhouse_cycle_events?'+p,{
+      headers:{...headers,prefer:'count=exact'},signal:AbortSignal.timeout(4000)
+    });
+    if(!response?.ok) return unknown;
+    const events=await response.json();
+    if(!Array.isArray(events)||events.length>100)return unknown;
+    const contentRange=response.headers?.get?.('content-range');
+    let total;
+    if(contentRange==='*/0'&&events.length===0) total=0;
+    else {
+      const match=/^(\d+)-(\d+)\/(\d+)$/.exec(contentRange??'');
+      if(!match)return unknown;
+      const first=Number(match[1]),last=Number(match[2]),count=Number(match[3]);
+      if(first!==0||last+1!==events.length||!Number.isSafeInteger(count)||
+         count<events.length)return unknown;
+      total=count;
+    }
+    if(total===0)return {...unknown,state:'NO_EXECUTION_EVENTS_OBSERVED',
+      totalEvents7d:0,sampledEvents:0,actionBackedSample:0,unsupportedSample:0,
+      missingActionSample:0,scope:'FULL_LAST_7D',observedAt:at};
+    const ids=[];
+    for(const event of events){
+      if(!uuid.test(event?.entity_id)||!Number.isFinite(Date.parse(event.occurred_at))||
+        Date.parse(event.occurred_at)<Date.parse(from))return unknown;
+      ids.push(event.entity_id);
+    }
+    const idsUnique=[...new Set(ids)];
+    const actionsQuery=new URLSearchParams({select:'action_id,status,executed_at',
+      action_id:'in.('+idsUnique.join(',')+')',limit:String(idsUnique.length+1)});
+    const actionsResponse=await fetchImpl(base+'/rest/v1/powerhouse_sales_actions?'+actionsQuery,{
+      headers,signal:AbortSignal.timeout(4000)
+    });
+    if(!actionsResponse?.ok)return unknown;
+    const actions=await actionsResponse.json();
+    if(!Array.isArray(actions)||actions.length>idsUnique.length)return unknown;
+    const byId=new Map();
+    for(const a of actions){
+      if(!uuid.test(a?.action_id)||!idsUnique.includes(a.action_id)||byId.has(a.action_id))
+        return unknown;
+      byId.set(a.action_id,a);
+    }
+    let supported=0,missing=0;
+    for(const event of events){
+      const action=byId.get(event.entity_id);
+      if(!action){missing++;continue;}
+      const executed=Date.parse(action.executed_at);
+      if(action.status==='done'&&Number.isFinite(executed)&&
+        executed<=Date.parse(event.occurred_at)+300000)supported++;
+    }
+    const unsupported=events.length-supported;
+    return {state:unsupported>0?'SOURCE_EXECUTION_GAP':'ACTION_RECORDS_MATCH_IN_SAMPLE_PROVIDER_UNVERIFIED',
+      totalEvents7d:total,sampledEvents:events.length,actionBackedSample:supported,
+      unsupportedSample:unsupported,missingActionSample:missing,
+      scope:total===events.length?'FULL_LAST_7D':'LATEST_100_ONLY',observedAt:at,
+      externalProviderProof:false,paidOutcomeProof:false,readOnly:true};
+  }catch{return unknown;}
+}
+
+export async function readPowerhouseIntegrationReadback({baseUrl,key,fetchImpl=globalThis.fetch,at,includeSalesExecutionAudit=false}={}){
   if(!/^https:\/\//.test(String(baseUrl||'')) || !key || typeof fetchImpl!=='function')
     return projectPowerhouseIntegrationReadback({readStates:Object.fromEntries(SOURCES.map(s=>[s.name,'CONFIG_UNAVAILABLE'])),at});
   const base=String(baseUrl).replace(/\/$/,'');
@@ -297,5 +384,7 @@ export async function readPowerhouseIntegrationReadback({baseUrl,key,fetchImpl=g
     readStates[source.name]=good?'LIVE':Array.isArray(value)&&value.length>source.max?'TRUNCATED':'UNAVAILABLE';
     datasets[source.name]=good?value:[];
   });
-  return projectPowerhouseIntegrationReadback({datasets,readStates,at});
+  const salesExecutionAudit=includeSalesExecutionAudit?
+    await readOriginalSalesExecutionAudit({baseUrl:base,key,fetchImpl,at:at||new Date().toISOString()}):null;
+  return projectPowerhouseIntegrationReadback({datasets,readStates,at,salesExecutionAudit});
 }
