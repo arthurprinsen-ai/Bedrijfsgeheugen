@@ -1,3 +1,4 @@
+# MO14 fixture-first release v6: 12 separate games, 2 matches per date, same-day PDF, independent readback.
 # ImageMagick/Pillow absence fixed: pinned sharp resizer on GitHub runner; retain fail-closed PNG checks.
 # PW Enschede bordeaux crest, seven editable dates; direct independent Netlify site, no Make.
 # PR #5875 app-menu v4: repeat canonical release after correcting test regex (no Make).
@@ -120,14 +121,19 @@ jobs:
           grep -q 'id="appDrawer"' /tmp/mo14-new.html
           grep -q 'data-go="settings"' /tmp/mo14-new.html
           grep -q 'Clublogo PW Hockey Enschede' /tmp/mo14-new.html
-          grep -q 'data-match-date=' /tmp/mo14-new.html
+          grep -q 'data-fixture-field=' /tmp/mo14-new.html
+          grep -q 'data-day-pdf=' /tmp/mo14-new.html
+          grep -q 'OFFICIAL_FIXTURES' /tmp/mo14-new.html
+          grep -q '2027-02-13' /tmp/mo14-new.html
+          grep -q 'id="pdfDay"' /tmp/mo14-new.html
+          node -e "const html=require('fs').readFileSync('/tmp/mo14-new.html','utf8');const m=html.match(/const OFFICIAL_FIXTURES=(\\[[\\s\\S]*?\\]);\\nconst toMatch/);if(!m||JSON.parse(m[1]).length!==12)process.exit(1)"
           grep -q 'formatMatchDate(i)' /tmp/mo14-new.html && grep -q 'id="pdfAll"' /tmp/mo14-new.html; then break; fi
             sleep 10
           done
           grep -q 'id="keeper"' /tmp/mo14-new.html
           curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/manifest.webmanifest?sha=${GITHUB_SHA}" -o /tmp/mo14-manifest.json
           node -e "const m=require('/tmp/mo14-manifest.json'); if(m.display!=='standalone'||m.scope!=='./'||m.icons.length<2||m.shortcuts?.length<3||m.theme_color!=='#59222d')process.exit(1)"
-          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/sw.js?sha=${GITHUB_SHA}" | grep -q 'mo14-zaalcoach-v5-pw'
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/sw.js?sha=${GITHUB_SHA}" | grep -q 'mo14-zaalcoach-v6-fixtures'
           curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/pw-logo.png?sha=${GITHUB_SHA}" -o /tmp/mo14-pw-crest.png
           file /tmp/mo14-pw-crest.png | grep -q 'PNG image data'
           cmp -s .mo14-stage/zaalplanner/pw-logo.png /tmp/mo14-pw-crest.png || { echo 'PW crest differs on production' >&2; exit 1; }
