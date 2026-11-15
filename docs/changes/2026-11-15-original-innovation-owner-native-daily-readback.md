@@ -14,6 +14,8 @@ De bestaande GitHub-workflow leest nu in een `if: always()` stap na de eigen ver
 
 Voor elk origineel bronrecord moeten kandidaat-ID, originele bronrevisie, source_key, agent-eigenaar, obligation SHA256, operation correlation-id, idempotency-key en original operation-id aantoonbaar overeenkomen. Iedere `VERIFIED`-claim vereist ook een echte `remote_ref`, exact dezelfde `consumer_owner`, dezelfde `source_revision` en `independent_consumer_readback=true`. Zonder dat wordt de broncontrole zelf rood in plaats van toch een ontvanger of bewezen innovatie te verzinnen.
 
+De read-only controle verwerkt de brongebonden operation-ID's uitsluitend in beschermd runnergeheugen; het artifact **redigeert alle kandidaat-ID's, source keys, revisies, operation-ID's en detailtaken**, omdat een GitHub Actions-artifact in een publieke repository openbaar leesbaar kan zijn. Het bevat alleen status, totalen en oorspronkelijke agentverdeling.
+
 De read-only controle maakt een audit-artifact onder het **bestaande** `artifacts/quality/`, dat door dezelfde bestaande GitHub-upload wordt bewaard. Hij creëert géén queue, scheduler, database, provideractie, agentworker, klantcontact, extra modeluitvoerder of autonoom deploypad. Alle overige dagelijkse stappen blijven bij een fout doorgaan; een ontbrekende of onvolledige bron is expliciet `SOURCE_UNAVAILABLE` en een echte open intake `OWNER_ACK_PENDING`. Ook nadat 14 consumer-ACK's later onafhankelijk zijn vastgesteld, blijft echte bedrijfsimpact `INNOVATION_OUTCOME_UNVERIFIED` tot de daaropvolgende Heartbeat/ONE BRAIN-effectmeting.
 
 ## Gerichte negatieve regressie en veiligheid
