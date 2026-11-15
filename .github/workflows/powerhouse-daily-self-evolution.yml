@@ -79,6 +79,12 @@ jobs:
         run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
       - name: Verify autonomous engineering fabric v3
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
+      - name: Read all original innovation owner intakes from ONE BRAIN without fake ACK
+        if: always()
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/brain/innovation-original-owner-readback.mjs
       - name: Persist exact-run daily agent-learning checkpoint even after a failed step
         if: always()
         env:
