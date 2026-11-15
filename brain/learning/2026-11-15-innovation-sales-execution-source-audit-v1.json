@@ -46,5 +46,21 @@
     "canary": [
       "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "verified_original_production_source": "public.powerhouse_cycle_events joined to public.powerhouse_sales_actions",
+    "candidate": "55bb0754-355b-4940-aaea-aed7123e7e57",
+    "source_audit": "LAST_100_EVENTS_ONLY_UNTIL_PRODUCTION_READBACK",
+    "test_evidence": "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
+    "release_evidence": "PROTECTED_REQUIRED_CODEQL_AND_MAIN_MERGE_DUE",
+    "independent_effect": "NOT_PROVEN",
+    "ack": "NOT_PROVEN"
   }
 }
