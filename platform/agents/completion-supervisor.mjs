@@ -99,6 +99,23 @@ function acceptedEvidence(evidence, obligationId, candidateIdentity, productionI
       || !text(item?.metadata?.materialSourceRef)
       || !text(item?.metadata?.materialSourceRevision)
     )) continue;
+    // The release-readback workflow historically minted 817 "BG167" and 817
+    // "BG168_BG166" rows from boolean flags, without reading original
+    // consumer ACK or learning application. Keep those rows for audit only.
+    // A terminal handoff/learning receipt requires source-bound evidence,
+    // not a producer string or a successful deploy alone.
+    if (type === 'CAPABILITY_HANDOFF' && (
+      item?.exactProduction !== true
+      || text(item?.metadata?.sourceRevision) !== candidateIdentity
+      || !text(item?.metadata?.sourceReceiptRef)
+      || !text(item?.metadata?.consumerAckRef)
+    )) continue;
+    if (type === 'LEARNING_WRITEBACK' && (
+      item?.exactProduction !== true
+      || text(item?.metadata?.sourceRevision) !== candidateIdentity
+      || !text(item?.metadata?.sourceReceiptRef)
+      || !text(item?.metadata?.learningApplicationRef)
+    )) continue;
     if (text(item?.taskIdentity) !== obligationId || text(item?.candidateIdentity) !== candidateIdentity) {
       identityMismatch = true;
       continue;
