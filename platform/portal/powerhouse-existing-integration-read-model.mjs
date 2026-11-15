@@ -296,12 +296,16 @@ export async function readOriginalSalesExecutionAudit({
   try{
     const from=new Date(observed-7*86400000).toISOString();
     const cutoff=new Date(observed).toISOString();
-    const eventQuery=offset=>new URLSearchParams({
-      select:'event_id,entity_id,occurred_at',tenant_id:'eq.canonical',
-      entity_type:'eq.sales_action',stage:'eq.execution',
-      occurred_at:'gte.'+from,order:'occurred_at.desc,event_id.desc',
-      limit:String(PAGE_SIZE),offset:String(offset)
-    });
+    const eventQuery=offset=>{
+      const p=new URLSearchParams({
+        select:'event_id,entity_id,occurred_at',tenant_id:'eq.canonical',
+        entity_type:'eq.sales_action',stage:'eq.execution',
+        occurred_at:'gte.'+from,order:'occurred_at.desc,event_id.desc',
+        limit:String(PAGE_SIZE),offset:String(offset)
+      });
+      p.append('occurred_at','lte.'+cutoff);
+      return p;
+    };
     async function readEventPage(offset,expectedTotal=null){
       const response=await fetchImpl(base+'/rest/v1/powerhouse_cycle_events?'+eventQuery(offset),{
         headers:{...headers,prefer:'count=exact'},signal:AbortSignal.timeout(4000)
