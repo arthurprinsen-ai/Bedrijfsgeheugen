@@ -1,0 +1,74 @@
+name: MO14-1 zaalplanner direct Netlify deploy
+on:
+  push:
+    branches: ['feature/mo14-zaalplanner-20261115']
+    paths: ['.github/workflows/mo14-zaalplanner-direct-netlify.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mo14-zaalplanner-direct-netlify-production
+  cancel-in-progress: false
+jobs:
+  deploy-mo14:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy-mo14]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      MO14_SITE_ID: 1c4fa5ce-45ae-45dc-b3e2-11f90587c474
+      MO14_DOMAIN: https://pw-mo14-1.netlify.app
+      MO14_NETLIFY_PROXY_PATH: ${{ secrets.MO14_NETLIFY_PROXY_TEMP }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify planner and independent website source
+        run: |
+          set -euo pipefail
+          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs
+          test -s pw-mo14-1/zaalplanner/index.html
+      - name: Preserve existing MO14 homepage and assets before deploy
+        run: |
+          set -euo pipefail
+          mkdir -p .mo14-stage/zaalplanner .mo14-backup
+          for f in index.html style.css data.js player.js team.js sync.js; do
+            curl -fLsS --retry 3 --connect-timeout 10 --max-time 40 "${MO14_DOMAIN}/${f}?preserve=${GITHUB_SHA}" -o ".mo14-stage/${f}"
+            test -s ".mo14-stage/${f}"
+            if grep -Eiq '<!doctype html>|<html[ >]' ".mo14-stage/${f}" && test "${f}" != index.html; then
+              echo "Old site asset ${f} returned HTML; abort." >&2
+              exit 1
+            fi
+            cp ".mo14-stage/${f}" ".mo14-backup/${f}"
+          done
+          test "$(wc -c < .mo14-stage/index.html)" -gt 300
+          cp pw-mo14-1/zaalplanner/index.html .mo14-stage/zaalplanner/index.html
+          sha256sum .mo14-stage/index.html .mo14-stage/zaalplanner/index.html > .mo14-backup/manifest.sha256
+          echo "Original files backed up and planner staged."
+      - name: Save original MO14 site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mo14-predeploy-${{ github.sha }}
+          path: .mo14-backup/
+          retention-days: 30
+          if-no-files-found: error
+      - name: Direct Netlify production upload (no Make)
+        run: |
+          set -euo pipefail
+          if [[ -z "${MO14_NETLIFY_PROXY_PATH}" || "${MO14_NETLIFY_PROXY_PATH}" != https://netlify-mcp.netlify.app/proxy/* ]]; then
+            echo 'MO14 Netlify credential absent or invalid; no upload.' >&2
+            exit 1
+          fi
+          cd .mo14-stage
+          npx -y @netlify/mcp@latest --site-id "${MO14_SITE_ID}" --proxy-path "${MO14_NETLIFY_PROXY_PATH}"
+      - name: Independent live readback of planner and preserved homepage
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/?sha=${GITHUB_SHA}" -o /tmp/mo14-new.html && grep -q 'id="keeper"' /tmp/mo14-new.html && grep -q 'id="pdfAll"' /tmp/mo14-new.html; then break; fi
+            sleep 10
+          done
+          grep -q 'id="keeper"' /tmp/mo14-new.html
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/?sha=${GITHUB_SHA}" -o /tmp/mo14-home.html
+          cmp -s .mo14-backup/index.html /tmp/mo14-home.html || { echo 'Original homepage not preserved' >&2; exit 1; }
+          echo "MO14 production planner verified at ${MO14_DOMAIN}/zaalplanner/"
