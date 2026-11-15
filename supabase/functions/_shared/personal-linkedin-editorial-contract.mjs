@@ -3,6 +3,15 @@
 // This is a deterministic delivery veto, NOT a substitute for source verification.
 export const PERSONAL_EDITORIAL_POLICY = 'personal-linkedin-founder-editorial-v4';
 
+// Shared source of truth: pre-publication and generator use the same personal
+// business-language veto. AI/data are allowed only in the observational submode
+// when the original policy permits them; verified builder mode uses separate gates.
+export function personalNonBuilderBusinessSignal(value,{observational=false}={}) {
+  const text=String(value??'');
+  const common=/\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text);
+  return common || (!observational && /\b(AI|data)\b/i.test(text));
+}
+
 export function personalEditorialViolations(value, evidence={}) {
   const text=String(value??'').trim();
   const out=[];
@@ -10,6 +19,8 @@ export function personalEditorialViolations(value, evidence={}) {
   const words=text ? text.split(/\s+/u).filter(Boolean).length : 0;
   const builder=evidence?.ai_native_builder_story_verified===true;
   const observation=evidence?.observational_personal_theme_verified===true&&!builder;
+  if(!builder&&personalNonBuilderBusinessSignal(text,{observational:observation}))
+    fail('PERSONAL_EDITORIAL_PREPUBLISH_BUSINESS_SIGNAL','Niet-bouwverhaal bevat zakelijke taal die de definitieve LinkedIn-controle afkeurt.');
   if(words<130||words>200)
     fail('PERSONAL_EDITORIAL_WORD_COUNT','Persoonlijke LinkedIn-tekst: 130–200 woorden, geen intern rapport. Aangetroffen: '+words);
   if(/(?:\*\*|__|(^|\n)\s*#{1,6}\s|(^|\n)\s*(?:-{3,}|\*{3,}|_{3,})\s*(?=\n|$)|(^|\n)\s*[-•]\s|\x60{3,}|\*(?=\S))/u.test(text))
