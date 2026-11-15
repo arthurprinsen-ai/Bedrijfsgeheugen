@@ -60,5 +60,58 @@ el('coachNotes').addEventListener('input',e=>{match().coachNotes=e.target.value;
 el('coachDownloadNotes').addEventListener('click',()=>download(new Blob([match().coachNotes||''],{type:'text/plain;charset=utf-8'}),'PW_MO14-1_notities_wedstrijd_'+(state.selectedMatch+1)+'.txt'));
 el('coachCopyNotes').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(match().coachNotes||'');el('coachCopyNotes').textContent='Gekopieerd ✓';}catch(e){el('coachNotes').select();document.execCommand?.('copy');}});
 let lastId=null,past=[],future=[];
+/* Tactiekbord — pointer-based canvas with saved strokes and player tokens. */
+const board=el('coachBoard'),ctx=board.getContext('2d'),W=960,H=640;
+let tool='pen',color='#79283e',drag=null;
+function boardState(){const m=match();if(!m.coachBoard)m.coachBoard={strokes:[],tokens:{}};if(!Array.isArray(m.coachBoard.strokes))m.coachBoard.strokes=[];if(!m.coachBoard.tokens)m.coachBoard.tokens={};return m.coachBoard;}
+function pieces(){const p=getPlan(state.selectedMatch);if(p.error)return [];
+ const pts={AL:[.31,.72],AR:[.69,.72],M:[.5,.51],VL:[.31,.27],VR:[.69,.27],K:[.5,.91]},b=boardState(),out=[];
+ for(const pos of [...POS,'K']){const q=pos==='K'?p.keeper:p.blocks[0].map[pos];if(!q)continue;let xy=b.tokens[q.id]||pts[pos];out.push({id:q.id,name:q.name,pos,x:xy[0],y:xy[1]});}
+ return out;
+}
+function xyToCanvas(p){return [p[0]*W,p[1]*H];}
+function markStroke(st){
+ const pts=(st.points||[]).map(xyToCanvas);if(!pts.length)return;
+ ctx.save();ctx.strokeStyle=st.color||'#79283e';ctx.fillStyle=ctx.strokeStyle;ctx.lineWidth=st.width||6;ctx.lineCap='round';ctx.lineJoin='round';
+ if(st.tool==='circle'&&pts.length>=2){const a=pts[0],b=pts[pts.length-1];ctx.beginPath();ctx.ellipse((a[0]+b[0])/2,(a[1]+b[1])/2,Math.max(2,Math.abs(a[0]-b[0])/2),Math.max(2,Math.abs(a[1]-b[1])/2),0,0,Math.PI*2);ctx.stroke();}
+ else{ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);pts.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));ctx.stroke();
+ if(st.tool==='arrow'&&pts.length>=2){const a=pts[0],b=pts[pts.length-1],angle=Math.atan2(b[1]-a[1],b[0]-a[0]);ctx.beginPath();ctx.moveTo(...b);ctx.lineTo(b[0]-23*Math.cos(angle-.55),b[1]-23*Math.sin(angle-.55));ctx.lineTo(b[0]-23*Math.cos(angle+.55),b[1]-23*Math.sin(angle+.55));ctx.fill();}}
+ ctx.restore();
+}
+function paintBoard(){
+ if(!ctx)return;ctx.clearRect(0,0,W,H);ctx.fillStyle='#f4f9f5';ctx.fillRect(0,0,W,H);ctx.fillStyle='#dceee3';ctx.fillRect(52,38,856,564);
+ ctx.lineWidth=6;ctx.strokeStyle='#6b9a7a';ctx.strokeRect(52,38,856,564);
+ ctx.lineWidth=4;ctx.strokeStyle='white';ctx.beginPath();ctx.moveTo(52,320);ctx.lineTo(908,320);ctx.stroke();
+ ctx.beginPath();ctx.ellipse(480,320,82,82,0,0,Math.PI*2);ctx.stroke();
+ ctx.strokeStyle='#7bb696';ctx.lineWidth=5;ctx.beginPath();ctx.ellipse(480,90,150,108,0,0,Math.PI);ctx.stroke();ctx.beginPath();ctx.ellipse(480,550,150,108,0,Math.PI,Math.PI*2);ctx.stroke();
+ ctx.fillStyle='#4c8264';ctx.font='bold 21px system-ui';ctx.fillText('AANVAL',70,75);ctx.fillText('VERDEDIGING',70,585);
+ boardState().strokes.forEach(markStroke);if(drag?.draft)markStroke(drag.draft);
+ for(const p of pieces()){const x=p.x*W,y=p.y*H;ctx.beginPath();ctx.arc(x,y,24,0,Math.PI*2);ctx.fillStyle=p.pos==='K'?'#202d54':'#71263d';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=4;ctx.stroke();ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillStyle='white';ctx.fillText(p.pos,x,y+5);ctx.fillStyle='#26372d';ctx.fillText(p.name,x,y+44);ctx.textAlign='start';}
+}
+function boardXY(e){const r=board.getBoundingClientRect();return [Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))];}
+function remember(){past.push(JSON.stringify(boardState()));if(past.length>40)past.shift();future=[];}
+board.addEventListener('pointerdown',e=>{
+ if(e.button!==undefined&&e.button!==0)return;e.preventDefault();const pt=boardXY(e);board.setPointerCapture?.(e.pointerId);
+ if(tool==='move'){const hit=pieces().find(p=>Math.hypot(p.x-pt[0],p.y-pt[1])<.06);if(!hit)return;remember();drag={id:e.pointerId,move:hit.id};}
+ else{remember();drag={id:e.pointerId,draft:{tool,color,points:[pt],width:tool==='pen'?6:7}};}paintBoard();
+});
+board.addEventListener('pointermove',e=>{
+ if(!drag||e.pointerId!==drag.id)return;e.preventDefault();const pt=boardXY(e);
+ if(drag.move)boardState().tokens[drag.move]=pt;
+ else if(drag.draft.tool==='pen')drag.draft.points.push(pt);
+ else drag.draft.points=[drag.draft.points[0],pt];
+ paintBoard();
+});
+function finishPointer(e){if(!drag||e.pointerId!==drag.id)return;e.preventDefault();if(drag.draft)boardState().strokes.push(drag.draft);drag=null;save();paintBoard();}
+board.addEventListener('pointerup',finishPointer);board.addEventListener('pointercancel',finishPointer);
+document.querySelectorAll('[data-coach-tool]').forEach(b=>b.addEventListener('click',()=>{
+ tool=b.dataset.coachTool;document.querySelectorAll('[data-coach-tool]').forEach(q=>{q.classList.toggle('is-selected',q===b);q.setAttribute('aria-pressed',String(q===b));});board.style.cursor=tool==='move'?'grab':'crosshair';
+}));
+el('coachColor').addEventListener('input',e=>color=e.target.value);
+el('coachUndo').addEventListener('click',()=>{if(!past.length)return;future.push(JSON.stringify(boardState()));match().coachBoard=JSON.parse(past.pop());save();paintBoard();});
+el('coachRedo').addEventListener('click',()=>{if(!future.length)return;past.push(JSON.stringify(boardState()));match().coachBoard=JSON.parse(future.pop());save();paintBoard();});
+el('coachClear').addEventListener('click',()=>{if(!confirm('Wis alle tekeningen en verplaatste speelsters voor deze wedstrijd?'))return;remember();match().coachBoard={strokes:[],tokens:{}};save();paintBoard();});
+el('coachDownloadBoard').addEventListener('click',()=>{paintBoard();board.toBlob(blob=>{if(blob)download(blob,'PW_MO14-1_tactiek_wedstrijd_'+(state.selectedMatch+1)+'.png');},'image/png');});
+
 const baseRender=render;render=function(){baseRender();renderFirst();renderFair();syncNotes();paintBoard();};
 window.PWCoachPlus={minuteTotals,render:()=>render(),strong:STRONG};
