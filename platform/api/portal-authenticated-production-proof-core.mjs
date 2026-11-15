@@ -29,6 +29,37 @@ export function decodeJwtPayload(token){
   }
 }
 
+/**
+ * Inspect ONLY a signed-admin, immutable-deploy readback from the existing
+ * Powerhouse control-plane. No input identifiers or credentials are persisted.
+ * This proves internal source coverage, NEVER external delivery or outcomes.
+ */
+export function projectOriginalInnovationAdminProof(body,headerScope){
+  const audit=body?.systemIntegration?.salesExecutionAudit;
+  const integer=value=>Number.isSafeInteger(value)&&value>=0;
+  if(headerScope!=='FULL_LAST_7D'||audit?.scope!=='FULL_LAST_7D'||
+     !integer(audit?.totalEvents7d)||audit.totalEvents7d===0||
+     audit.totalEvents7d>500||audit.sampledEvents!==audit.totalEvents7d||
+     !integer(audit.actionBackedSample)||!integer(audit.unsupportedSample)||
+     !integer(audit.missingActionSample)||!integer(audit.currentActionNotDoneSample)||
+     audit.actionBackedSample+audit.unsupportedSample!==audit.totalEvents7d||
+     audit.missingActionSample>audit.unsupportedSample||
+     audit.currentActionNotDoneSample>audit.actionBackedSample||
+     audit.externalProviderProof!==false||audit.paidOutcomeProof!==false||
+     audit.readOnly!==true) return null;
+  const validState=audit.unsupportedSample===0?
+    'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED':'SOURCE_EXECUTION_GAP';
+  if(audit.state!==validState)return null;
+  return Object.freeze({
+    scope:'FULL_LAST_7D',total:audit.totalEvents7d,
+    historical_writer_backed:audit.actionBackedSample,
+    unsupported:audit.unsupportedSample,
+    missing_actions:audit.missingActionSample,
+    currently_not_done:audit.currentActionNotDoneSample,
+    external_provider_proven:false,business_outcome_proven:false
+  });
+}
+
 export async function runPortalAuthenticatedProductionProof({
   deploy,
   identityAdmin,
@@ -36,6 +67,7 @@ export async function runPortalAuthenticatedProductionProof({
   fetchImpl=fetch,
   now=()=>new Date().toISOString(),
   randomPassword,
+  probeInnovationAudit=false,
 }={}){
   const commitRef=clean(deploy?.commitRef).toLowerCase();
   const deployId=clean(deploy?.id);
@@ -60,6 +92,12 @@ export async function runPortalAuthenticatedProductionProof({
     one_loop_assurance_unauthenticated_denied:false,
     one_loop_assurance_counts:null,
     one_loop_assurance_failure_code:'NOT_EXECUTED',
+    innovation_audit_proof:'UNVERIFIED',
+    innovation_audit_admin_verified:false,
+    innovation_audit_nonadmin_denied:false,
+    innovation_audit_unauthenticated_denied:false,
+    innovation_audit_counts:null,
+    innovation_audit_failure_code:'NOT_EXECUTED',
   };
   if(!/^[0-9a-f]{40}$/.test(commitRef))return {...base,failure_code:'INVALID_COMMIT_REF'};
   if(!deployId)return {...base,failure_code:'DEPLOY_ID_MISSING'};
@@ -78,6 +116,8 @@ export async function runPortalAuthenticatedProductionProof({
   // Never serialize Identity tokens, private forecasts or raw loop rows.
   const assurance={admin:false,nonadmin:false,anonymous:false,counts:null,failure:'NOT_EXECUTED'};
   const oneLoopUrl=`${immutableUrl}/api/powerhouse-one-loop-assurance`;
+  const innovationUrl=`${immutableUrl}/api/powerhouse-control-plane`;
+  const innovation={admin:false,nonadmin:false,anonymous:false,counts:null,failure:'NOT_EXECUTED'};
 
   try{
     const identity=getIdentityConfigFn();
@@ -203,6 +243,27 @@ export async function runPortalAuthenticatedProductionProof({
       }catch{
         assurance.failure='ORIGINAL_ASSURANCE_ROUTE_HTTP_UNVERIFIED';
       }
+      if(probeInnovationAudit){
+        // Same ephemeral, signed admin and distinct non-admin used by the
+        // existing two-tenant proof. Never create a second identity workflow.
+        try{
+          const response=await fetchImpl(innovationUrl,{
+            method:'GET',headers:{accept:'application/json',
+              authorization:`Bearer ${accessToken}`,'cache-control':'no-cache'}
+          });
+          if(slot==='a'){
+            const projection=response?.status===200?await response.json().catch(()=>null):null;
+            const header=response?.headers?.get?.('x-bg-innovation-audit-scope')??null;
+            const counts=projectOriginalInnovationAdminProof(projection,header);
+            if(counts){innovation.admin=true;innovation.counts=counts;innovation.failure=null;}
+            else innovation.failure='ORIGINAL_INNOVATION_ADMIN_SOURCE_READBACK_UNVERIFIED';
+          }else{
+            const denied=response?.status===403?await response.json().catch(()=>null):null;
+            innovation.nonadmin=response?.status===403&&denied?.error==='FORBIDDEN';
+            if(!innovation.nonadmin)innovation.failure='ORIGINAL_INNOVATION_NONADMIN_NOT_DENIED';
+          }
+        }catch{innovation.failure='ORIGINAL_INNOVATION_ROUTE_HTTP_UNVERIFIED';}
+      }
     }
     crossTenantScopeVerified=
       observations.length===2&&
@@ -215,6 +276,15 @@ export async function runPortalAuthenticatedProductionProof({
       assurance.anonymous=response?.status===401&&body?.error==='UNAUTHENTICATED';
       if(!assurance.anonymous)assurance.failure='ORIGINAL_ASSURANCE_ANONYMOUS_NOT_DENIED';
     }catch{assurance.failure='ORIGINAL_ASSURANCE_ANONYMOUS_HTTP_UNVERIFIED';}
+    if(probeInnovationAudit){
+      try{
+        const response=await fetchImpl(innovationUrl,{method:'GET',
+          headers:{accept:'application/json','cache-control':'no-cache'}});
+        const denied=response?.status===401?await response.json().catch(()=>null):null;
+        innovation.anonymous=response?.status===401&&denied?.error==='UNAUTHORIZED';
+        if(!innovation.anonymous)innovation.failure='ORIGINAL_INNOVATION_ANONYMOUS_NOT_DENIED';
+      }catch{innovation.failure='ORIGINAL_INNOVATION_ANONYMOUS_HTTP_UNVERIFIED';}
+    }
   }catch(error){
     failureCode=safeCode(error);
   }finally{
@@ -251,6 +321,15 @@ export async function runPortalAuthenticatedProductionProof({
     one_loop_assurance_counts:assurance.admin&&cleanup==='DELETED'?assurance.counts:null,
     one_loop_assurance_failure_code:assurance.admin&&assurance.nonadmin&&assurance.anonymous&&
       cleanup==='DELETED'&&!failureCode?null:assurance.failure||failureCode||'PROOF_INCOMPLETE',
+    innovation_audit_proof:probeInnovationAudit&&!failureCode&&cleanup==='DELETED'&&
+      innovation.admin&&innovation.nonadmin&&innovation.anonymous?'PROVEN':'UNVERIFIED',
+    innovation_audit_admin_verified:probeInnovationAudit&&innovation.admin&&cleanup==='DELETED',
+    innovation_audit_nonadmin_denied:probeInnovationAudit&&innovation.nonadmin,
+    innovation_audit_unauthenticated_denied:probeInnovationAudit&&innovation.anonymous,
+    innovation_audit_counts:probeInnovationAudit&&innovation.admin&&cleanup==='DELETED'?innovation.counts:null,
+    innovation_audit_failure_code:probeInnovationAudit&&innovation.admin&&innovation.nonadmin&&
+      innovation.anonymous&&cleanup==='DELETED'&&!failureCode?null:
+      innovation.failure||failureCode||'PROOF_INCOMPLETE',
   };
 }
 
