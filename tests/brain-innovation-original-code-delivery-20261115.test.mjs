@@ -5,6 +5,7 @@ import {readFileSync} from 'node:fs';
 import {selectOriginalCodeCandidate,isExactOriginalInnovationImplementationPr,checkChangedPaths,classifyOriginalCodeDiff,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
 import {evaluateOriginalNochangeReview} from '../scripts/brain/innovation-original-code-nochange-review.mjs';
 import {verifyOriginalCandidateReceipt} from '../scripts/brain/innovation-original-code-pr-receipt.mjs';
+import {compileLearningEvaluationPlan,validateEvaluationContract} from '../scripts/brain/learning-canonicalization-gate.mjs';
 
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const id='2c1ecc77-58aa-4f25-ae68-e2337853fdc7';
@@ -73,7 +74,9 @@ test('bounded diff rejects workflow, destructive paths, tests-only and fake lear
   const okay=[
     'platform/portal/powerhouse-existing-integration-read-model.mjs',
     'tests/brain-innovation-autonomous-build-20261115.test.mjs',
-    'brain/learning/2026-11-15-innovation-engineering-code-v1.json'
+    'brain/learning/2026-11-15-innovation-engineering-code-v1.json',
+    'docs/changes/2026-11-15-innovation-engineering-code-v1.md',
+    'docs/development-ledger-events/2026-11-15-innovation-engineering-code-v1.md'
   ];
   assert.equal(checkChangedPaths({workorder,changed:okay}).source.length,1);
   for(const bad of ['.github/workflows/powerhouse-daily-self-evolution.yml',
@@ -177,4 +180,51 @@ test('one canonical candidate selector passes exact immutable source identity in
   assert.deepEqual(call,{id:w.candidate_id,sha:w.source_sha256,rev:w.source_revision});
   assert.equal(result.selected,false);
   assert.equal(result.existing,1);
+});
+
+
+test('original agent PR must include both human-readable change and original development ledger',()=>{
+  const w=selectOriginalCodeCandidate(fixture());
+  const paths=[
+    'platform/portal/powerhouse-existing-integration-read-model.mjs',
+    'tests/brain-innovation-canonical-evidence-20261115.test.mjs',
+    'brain/learning/2026-11-15-innovation-canonical-evidence-v1.json',
+    'docs/changes/2026-11-15-innovation-canonical-evidence-v1.md',
+    'docs/development-ledger-events/2026-11-15-innovation-canonical-evidence-v1.md'
+  ];
+  assert.equal(checkChangedPaths({workorder:w,changed:paths}).docs.length,2);
+  for(const missing of [paths[3],paths[4]]){
+    assert.throws(()=>checkChangedPaths({workorder:w,changed:paths.filter(p=>p!==missing)}),
+      /PATH_SCOPE_OR_EVIDENCE_MISSING/);
+  }
+  assert.throws(()=>checkChangedPaths({workorder:w,changed:[...paths,
+    'docs/changes/2026-11-15-innovation-extra-v1.md']}),/PATH_SCOPE_OR_EVIDENCE_MISSING/);
+});
+
+test('original engineer derives runtime false-green canary and security shadow without false evidence',()=>{
+  const runtime={compiler:{failure_class:'FALSE_GREEN',scope:'RUNTIME',machine_enforceable:true}};
+  const runtimePlan=compileLearningEvaluationPlan(runtime);
+  assert.equal(runtimePlan.canary_required,true);
+  assert.equal(runtimePlan.shadow_required,false);
+  const path='tests/brain-innovation-original-code-delivery-20261115.test.mjs';
+  assert.throws(()=>validateEvaluationContract({evaluation:{historical_replay:[path]}},runtimePlan),
+    /LEARNING_EVALUATION_TESTS_REQUIRED:canary/);
+  const valid=validateEvaluationContract({evaluation:{historical_replay:[path],canary:[path]}},runtimePlan);
+  assert.deepEqual(valid.required_modes,['historical_replay','canary']);
+  const securityPlan=compileLearningEvaluationPlan({compiler:{failure_class:'SECURITY',scope:'RUNTIME',machine_enforceable:true}});
+  assert.throws(()=>validateEvaluationContract({evaluation:{historical_replay:[path],canary:[path]}},securityPlan),
+    /LEARNING_EVALUATION_TESTS_REQUIRED:shadow/);
+  assert.deepEqual(validateEvaluationContract({evaluation:{historical_replay:[path],canary:[path],shadow:[path]}},securityPlan).required_modes,
+    ['historical_replay','shadow','canary']);
+});
+
+test('same original workflow requires canonical evaluation and both original docs before PR creation',()=>{
+  const workflow=readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+  const src=readFileSync('scripts/brain/innovation-original-code-delivery.mjs','utf8');
+  assert.match(workflow,/MUST also create ONE NEW docs\/changes/);
+  assert.match(workflow,/docs\/development-ledger-events\/2026-11-\*-innovation/);
+  assert.match(workflow,/test "\$\{#paths\[@\]\}" -ge 5/);
+  assert.match(src,/validateEvaluationContract\(lesson,plan\)/);
+  assert.match(src,/compileLearningEvaluationPlan\(lesson\)/);
+  assert.match(src,/ORIGINAL_DOC_SOURCE_OR_CONTENT_MISSING/);
 });
