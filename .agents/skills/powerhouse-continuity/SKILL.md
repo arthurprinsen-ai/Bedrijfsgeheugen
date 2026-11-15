@@ -3,6 +3,14 @@ name: powerhouse-continuity
 description: Use when materially operating, changing, debugging, recovering, documenting, or handing off Bedrijfsgeheugen Powerhouse work across chats, agents, workflows, repositories, providers, or interrupted execution.
 ---
 
+## 15 november 2026 — één oorspronkelijke hersteltrigger per verplichting
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. Het originele `Completion Supervisor Backfill Resume` was geen consumer; het maakte voor iedere historische bronkandidaat een nieuwe event-trigger aan. Bij duizenden bronrecords met dezelfde canonieke verplichting ontstond een groeiende `AgentWork/PENDING`-voorraad zonder nieuwe echte PROCESSED-ACK. Dit is een fan-out bronfout, géén onafhankelijk bewijs van duizenden gemiste provideracties.
+
+**Contract voor ALLE bestaande Reliability-, Data Quality- en Completion Supervisor-agents:** behoud elke bronkandidaat onveranderd in de originele `brain_outcome_obligation_dispatch` en het backfill-rapport. Maak maximaal één duurzame, atomair gededupliceerde backfill-trigger per geregistreerde `obligation_id`, met stabiele `coalesceKey` en `triggerFingerprint`; de rest telt mee als `sourceCandidateCount` + onvervalsbare `sourceIdentityDigest`, niet als extra werk. Laat `WAIT_EXTERNAL` buiten veilige hertriggering en behoud de originele eigenaar en zijn veilige vervolgactie. Geen tweede workflow/queue/sender, geen tijdgebaseerde nieuwe sleutel of bulkclosure. Herhaald uitvoeren met dezelfde verplichting moet exact dezelfde dispatch-identiteit opleveren.
+
+**Bron- en ontvangbewijs:** een succesvol GitHub-job, sourceDigest, bestaande dispatch, code-merge of Netlify-deploy is géén verwerking. Bestaande agent moet werkelijk uitvoeren met originele bronrevisie, onafhankelijke `PROCESSED` en doel-/providerbewijs. Zonder bewijs blijft werk `OPEN/PENDING`, mét exact eigenaar, foutfingerprint en next safe action in het bestaande ONE BRAIN. Doel: groei van unieke nieuwe pending handoffs stoppen zonder historisch bewijs weg te gooien; laat de normale executor actief. Test `tests/brain-completion-supervisor-backfill.test.mjs` met 1201 verschillende histories voor één oorspronkelijke verplichting. Incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198; change `docs/changes/2026-11-15-backfill-original-obligation-fanout.md`. Alleen protected Required + CodeQL, merge, exact live-SHA en eerstvolgende natuurlijke consumer-readback maken de bronreparatie bewezen live.
+
 ## 6 november 2026 — onafhankelijke agent-recall-beoordeling (#5510)
 
 **Bewijsplicht:** de originele `whole-brain-canonical-loop-v2` reconcilieert iedere bestaande run de werkelijke `PLANNED_ACTION_GUARD_OBSERVATION_V1`-records via alleen de oorspronkelijke BRAIN-tabel. Gebruik de bronrun en exacte broncommit om de **daadwerkelijke handeling** te beoordelen; een HMAC of de uitkomst van de oorspronkelijke guard is géén onafhankelijk label.
