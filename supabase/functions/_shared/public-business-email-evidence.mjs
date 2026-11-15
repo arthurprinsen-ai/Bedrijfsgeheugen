@@ -128,3 +128,11 @@ export function firstPartyDailyRotationOffset(isoDay, companyCount, dailySlots=8
      !Number.isSafeInteger(dailySlots)||dailySlots<=0)return 0;
   return (Math.floor(at/86400000)*dailySlots)%companyCount;
 }
+
+/** Bounded first-party fetch retry: avoids repeated 4h hammering of inaccessible
+ * official websites, but never drops an original action or authorizes outbound.
+ * Attempts refer to completed original source reads, not new queues or schedulers. */
+export function originalPublicSourceRetryHours(completedAttempts=1){
+ const n=Math.max(1,Math.floor(Number(completedAttempts)||1));
+ return n>=8?48:n>=5?24:n>=3?12:4;
+}
