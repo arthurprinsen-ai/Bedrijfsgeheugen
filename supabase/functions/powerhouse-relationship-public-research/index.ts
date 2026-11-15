@@ -343,6 +343,64 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
   return {companies,sites,candidates,ingest_acks:ingestAcks,html_unavailable:htmlUnavailable,no_named_work_mailto:noNamedMailto,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
 }
 
+
+/** Replay an original wrapped SERP source as safe research, not delivery. */
+async function recoverWrappedOriginalResearchSources(db:any,observedAt:string){
+  const cutoff=new Date(Date.parse(observedAt)-7*86400000).toISOString();
+  const {data:records,error}=await db.from('powerhouse_sales_actions')
+    .select('action_id,dedupe_key,person_key,company_key,evidence,source_url,status,updated_at')
+    .eq('action_type','research_enrichment').eq('channel','internal')
+    .eq('status','done').like('dedupe_key','relationship-research:outreach-source:%')
+    .gte('created_at',cutoff).order('updated_at',{ascending:false}).limit(40);
+  if(error)throw new Error('ORIGINAL_WRAPPED_SOURCE_READ:'+error.message);
+  let recovered=0,ownerAcks=0,held=0;
+  for(const a of records||[]){
+    if(recovered>=5)break;
+    const source=clean(a.evidence?.public_research_execution?.source_url||a.source_url);
+    if(!/^https:\/\/(?:www\.)?google\.[a-z.]+\/(?:goto|url|aclk)(?:[/?#]|$)/i.test(source)||
+      directResearchSourceUrl(source))continue;
+    const id=clean(a.evidence?.original_outreach_action_id);
+    if(!/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id)){held++;continue}
+    const {data:owner,error:ownerError}=await db.from('powerhouse_sales_actions')
+      .select('action_id,person_key,company_key,status,evidence,updated_at')
+      .eq('action_id',id).eq('person_key',a.person_key).eq('company_key',a.company_key)
+      .in('status',['prepared','waiting']).maybeSingle();
+    if(ownerError)throw new Error('ORIGINAL_WRAPPED_SOURCE_OWNER_READ:'+ownerError.message);
+    const next=researchRetryAt(observedAt,24);
+    const feedback=researchNoSourceFeedback(a,owner,observedAt,next);
+    if(!feedback){held++;continue}
+    const evidence={...(a.evidence||{}),relationship_source_candidate:null,
+      public_research_execution:{
+        ...(a.evidence?.public_research_execution||{}),
+        source_url:null,reason:'NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH',
+        source_redirect_rejected:true,no_current_trigger_evidence:true,
+        provider:'dataforseo-serp',researched_at:observedAt,
+        next_research_at:next,external_outreach_executed:false,evidence_only:true
+      }};
+    const {data:saved,error:sErr}=await db.from('powerhouse_sales_actions')
+      .update({status:'waiting',due_at:next,source_url:null,evidence,updated_at:observedAt})
+      .eq('action_id',a.action_id).eq('status','done')
+      .eq('updated_at',a.updated_at).select('action_id').maybeSingle();
+    if(sErr)throw new Error('ORIGINAL_WRAPPED_SOURCE_SAFE_RETRY:'+sErr.message);
+    if(!saved){held++;continue}
+    recovered++;
+    const stale=owner.evidence?.relationship_source_candidate||{};
+    const {data:ack,error:ackErr}=await db.from('powerhouse_sales_actions')
+      .update({evidence:{...(owner.evidence||{}),
+        relationship_source_candidate:{
+          ...stale,status:'SOURCE_REDIRECT_REJECTED_NOT_VERIFIED',
+          source_page_independently_read:false,freshness_verified:false,
+          message_quality_approved:false,provider_send_authorized:false
+        },relationship_research_feedback:feedback},updated_at:observedAt})
+      .eq('action_id',owner.action_id).eq('updated_at',owner.updated_at)
+      .in('status',['prepared','waiting']).select('action_id').maybeSingle();
+    if(ackErr)throw new Error('ORIGINAL_WRAPPED_SOURCE_OWNER_ACK:'+ackErr.message);
+    if(ack)ownerAcks++;else held++;
+  }
+  return {recovered,owner_acks:ownerAcks,held,original_action_ids_reused:true,
+    external_outreach_executed:false,new_scheduler:false,new_provider_queries:0};
+}
+
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST') return json({ok:false,error:'POST_ONLY'},405);
   const url=Deno.env.get('SUPABASE_URL')||'', service=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
@@ -353,6 +411,7 @@ Deno.serve(async(req:Request)=>{
 
   const observedAt=new Date().toISOString();
   try{
+    const wrappedRecovery=await recoverWrappedOriginalResearchSources(db,observedAt);
     const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions')
       .select('action_id,dedupe_key,person_key,company_key,company_name,person_name,role,priority,evidence')
       .eq('action_type','research_enrichment').eq('channel','internal').in('status',['suggested','prepared','waiting'])
@@ -525,10 +584,10 @@ Deno.serve(async(req:Request)=>{
     const pendingPublicSource=Number(unresolvedPublicSource||0);
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',
-      status:freeDomainFailure?'fout':(freeDomain.html_unavailable>0||pendingPublicSource>0||trackedRedirectsRejected>0?'waarschuwing':'ok'),detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}; public_email_html_unavailable=${freeDomain.html_unavailable||0}`,
-      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,free_domain_research:freeDomain,original_public_email_source_retry_backlog:pendingPublicSource,free_domain_error:freeDomainFailure,tracked_serp_redirects_rejected:trackedRedirectsRejected,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false}
+      status:freeDomainFailure?'fout':(freeDomain.html_unavailable>0||pendingPublicSource>0||trackedRedirectsRejected>0||wrappedRecovery.recovered>0?'waarschuwing':'ok'),detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}; public_email_html_unavailable=${freeDomain.html_unavailable||0}`,
+      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,free_domain_research:freeDomain,original_public_email_source_retry_backlog:pendingPublicSource,free_domain_error:freeDomainFailure,tracked_serp_redirects_rejected:trackedRedirectsRejected,wrapped_original_source_recovered:wrappedRecovery,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false}
     });
-    return json({ok:!freeDomainFailure,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,original_public_email_source_retry_backlog:pendingPublicSource,tracked_serp_redirects_rejected:trackedRedirectsRejected,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
+    return json({ok:!freeDomainFailure,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,original_public_email_source_retry_backlog:pendingPublicSource,tracked_serp_redirects_rejected:trackedRedirectsRejected,wrapped_original_source_recovered:wrappedRecovery,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     try { await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT}}); } catch { /* best-effort failure telemetry */ }
