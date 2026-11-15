@@ -1,3 +1,4 @@
+# Renewed Netlify deployment authority for MO14 app experience, 2026-11-15
 name: MO14-1 zaalplanner direct Netlify deploy
 on:
   push:
