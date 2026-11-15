@@ -16,7 +16,7 @@ for(const name of workflows) test(name+' requires successful exact candidate BRA
   assert.doesNotMatch(source,/require_brain_evidence|TERMINAL_BRAIN_(FOUNDATION|DESCENDANT)_PROVEN/);
   const gate=source.match(/          require_workflow\(\) \{[\s\S]*?\n          \}/)?.[0];
   assert.ok(gate);
-  const run=payload=>{
+  const run=(payload,reportedTotal=payload.length)=>{
     const sourceIsOriginalClosure=name==='obligation-terminal-closure.yml';
     const trustedSha='c'.repeat(40);
     const originalNativeMock=[
@@ -44,7 +44,9 @@ for(const name of workflows) test(name+' requires successful exact candidate BRA
       '  esac',
       '}'
     ].join('\n');
-    const fixturePages=[{total_count:payload.length,workflow_runs:payload}];
+    const fixturePages=Array.from({length:Math.max(1,Math.ceil(payload.length/100))},(_,i)=>({
+      total_count:reportedTotal,workflow_runs:payload.slice(i*100,(i+1)*100)
+    }));
     const shell=['set -euo pipefail',sourceIsOriginalClosure?originalNativeMock:legacyTerminalizerMock,
       "seq(){ printf '1\\n'; }",'sleep(){ :; }',gate,
       'require_workflow "unified-brain-delivery.yml" "BRAIN"'].join('\n');
@@ -55,6 +57,16 @@ for(const name of workflows) test(name+' requires successful exact candidate BRA
   };
   const row={id:1,head_sha:'c'.repeat(40),head_branch:'main',event:'workflow_dispatch',display_title:`BRAIN delivery PR #1 ${sha}`,status:'completed',conclusion:'success',created_at:'2026-10-26T00:00:00Z'};
   assert.equal(run([row]).status,0);
+  if(name==='obligation-terminal-closure.yml'){
+    const other=Array.from({length:205},(_,i)=>({
+      ...row,id:100+i,display_title:`BRAIN delivery PR #9999 ${'f'.repeat(40)}`,
+      created_at:'2026-10-26T00:00:00Z'
+    }));
+    assert.equal(run([...other,row]).status,0,
+      'real final gate must locate original exact candidate beyond first 100 native runs');
+    assert.equal(run([row],2).status,78,
+      'provider reports more runs than all returned pages: fail closed');
+  }
   for(const payload of [[],[{...row,display_title:`BRAIN delivery PR #1 ${'d'.repeat(40)}`}],[{...row,head_sha:'d'.repeat(40)}],[{...row,head_branch:'feature'}],[{...row,event:'push'}],[{...row,conclusion:'failure'}],[{...row,conclusion:'skipped'}],[{...row,status:'in_progress',conclusion:null}]]) assert.equal(run(payload).status,78);
 });
 
