@@ -85,6 +85,14 @@ jobs:
           SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/brain/innovation-original-owner-readback.mjs
+      - name: Existing original agents source-bound reversible pre-review with native CAS and independent readback
+        if: always()
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node --test tests/brain-innovation-original-agent-pre-review-20261115.test.mjs
+          node scripts/brain/innovation-original-agent-pre-review.mjs --writeback
       - name: Persist exact-run daily agent-learning checkpoint even after a failed step
         if: always()
         env:
