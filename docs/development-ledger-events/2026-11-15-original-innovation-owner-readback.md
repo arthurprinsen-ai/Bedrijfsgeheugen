@@ -7,3 +7,5 @@
 - **Safety:** legitimate `OWNER_ACK_PENDING` is a truthful business-state observation; a missing or malformed source fails the audit with an explicit record but does not disable previous daily tasks. Original Review Required, protected merge, user consent and provider readback stay mandatory.
 - **Remaining proof:** protected GitHub exact-head Required/CodeQL/full-BRAIN; protected merge; next *natural* original daily provider readback and same run artifact; then real original agent claim, action, independent consumer receipt and Heartbeat measured effect for each of 14. P0 remains OPEN until end-to-end business effect and learning, independent of code release.
 
+
+- **Security pre-merge prevention:** read-only original source rows are held in trusted runner memory only; GitHub artifact includes aggregate counts/status and explicitly redacts every original candidate/operation ID, source key and revision. Added regression assertions for every forbidden identifier. This follows the same public-repo trust boundary, does not weaken BRAIN's private evidence store or create a new queue.
