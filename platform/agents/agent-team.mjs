@@ -7,7 +7,7 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     id:'agent-integration-engineer',
     domains:['Operations','Product','Website','Data'],
     capabilities:['analyze','integrate','verify','optimize'],
-    tasks:['own-original-terminal-full-history-gate-regression-under-protected-single-writer','review-original-pending-agentwork-with-exact-source-correlation-owner-and-independent-result-receipt','consume-original-innovation-intake-with-source-bound-correlation-and-real-review','triage-original-innovation-planned-intake-by-exact-source-rollback-and-native-brain-cas-before-protected-implementation','prove-original-innovation-agent-consumer-receipt-against-canonical-source-and-obligation-before-closure','integrate-specialist-patches','resolve-safe-conflicts','assemble-single-candidate','verify-candidate-coherence'],
+    tasks:['own-original-terminal-full-history-gate-regression-under-protected-single-writer','review-original-pending-agentwork-with-exact-source-correlation-owner-and-independent-result-receipt','consume-original-innovation-intake-with-source-bound-correlation-and-real-review','triage-original-innovation-planned-intake-by-exact-source-rollback-and-native-brain-cas-before-protected-implementation','resume-original-source-bound-innovation-review-within-same-daily-workflow-never-replay-full-daily-run','prove-original-innovation-agent-consumer-receipt-against-canonical-source-and-obligation-before-closure','integrate-specialist-patches','resolve-safe-conflicts','assemble-single-candidate','verify-candidate-coherence'],
     playbooks:['one-writer-candidate-integration','late-bound-closure','critical-path-batching'],
     learningContracts:[...sharedLearning,'engineering.v1','delivery.v1'],
   }),
