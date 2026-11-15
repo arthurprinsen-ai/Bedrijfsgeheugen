@@ -62,5 +62,13 @@
   "original_14_operations_remaining_open": true,
   "original_consumer_ack": false,
   "rollback": "Protected source-only revert, no immutable event or action data rewrite",
-  "production_verification": "Required/CodeQL; protected main SHA; independent Netlify exact SHA READY; authenticated admin source run; original ONE BRAIN evidence readback; measured outcome NOT PROVEN"
+  "production_verification": "Required/CodeQL; protected main SHA; independent Netlify exact SHA READY; authenticated admin source run; original ONE BRAIN evidence readback; measured outcome NOT PROVEN",
+  "evidence": {
+    "original_production_baseline": "2026-11-15 14:20 UTC: canonical immutable sales_action execution events 164/164 writer/status/time/reference backed; 163 current done and one current waiting.",
+    "original_brain_readback": "public.brain_operations edebcb32-335b-49f0-b527-eb4289f95c5c version 7 source-bound, status PLANNED with immutable historical audit; no owner ACK",
+    "provider_delivery_verified": false,
+    "realized_revenue_verified": false,
+    "regression": "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+    "release_proof": "PENDING_PROTECTED_PR_REQUIRED_CODEQL_NETLIFY_EXACT_SHA_AND_ADMIN_READBACK"
+  }
 }
