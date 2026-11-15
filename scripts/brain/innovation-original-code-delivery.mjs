@@ -99,7 +99,7 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
     // A previously implemented source, or a duplicate candidate PR, must be reconciled, not rebuilt.
     if(/\bPR\s*#?\d{3,6}\b/i.test(action)||c.proposed_action.parent_pr){held++;continue;}
     eligible++;
-    if(existingPrFor({candidate_id:c.candidate_id,operation_id:op.id,
+    if(existingPrFor(c.candidate_id,{operation_id:op.id,
       source_revision:obligation.evidence.source_revision,
       source_sha256:obligation.payload_sha256})){existing++;continue;}
     return Object.freeze({contract:CONTRACT,selected:true,
@@ -142,7 +142,8 @@ export function isOriginalCodeImplementationPr(pr,{candidate_id,operation_id,sou
     found.get('Original-Source-Revision')===source_revision&&
     found.get('Original-Source-SHA256')===source_sha256;
 }
-function existingPrFor(identity){
+function existingPrFor(id,sourceIdentity){
+  const identity={candidate_id:id,...sourceIdentity};
   const data=JSON.parse(execFileSync('gh',
     ['pr','list','--repo',REPO,'--state','all','--search',identity.candidate_id,
       '--limit','100','--json','number,body,state,mergedAt,baseRefName'],
