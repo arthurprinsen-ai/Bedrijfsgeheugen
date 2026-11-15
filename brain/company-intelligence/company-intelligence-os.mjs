@@ -86,34 +86,73 @@ export function compileSystemOfContext({companyKey,companyName,graph={},evidence
   });
 }
 
+const observedAmount=value=>{
+  if(value===null||value===undefined||value==='')return null;
+  const numeric=Number(value);
+  return Number.isFinite(numeric)?numeric:null;
+};
+
+// The original SQL Outcome Memory joins the immutable runtime event by exact
+// source event ID. Pure JS callers must supply that readback explicitly;
+// metadata-only evidence is never an independent observation.
+const independentlyObservedSalesOutcome=o=>{
+  const e=o?.evidence||{},read=o?.source_event_readback||o?.sourceEventReadback||{};
+  const nonEmpty=x=>txt(x).length>0;
+  const observedAt=Date.parse(txt(o?.occurred_at||o?.created_at));
+  const originAt=Date.parse(txt(read.occurred_at));
+  return !['sent','not_executed','execution_completed'].includes(txt(o?.outcome_type))
+    && e.synthetic_business_result!==true
+    && e.source_data_quality==='VERIFIED'
+    && nonEmpty(e.source_event_id)&&nonEmpty(e.source_event_type)
+    && nonEmpty(e.source_dedupe_key)
+    && read.independently_verified===true&&read.data_quality==='VERIFIED'
+    && txt(read.event_id)===txt(e.source_event_id)
+    && txt(read.event_type)===txt(e.source_event_type)
+    && txt(read.dedupe_key)===txt(e.source_dedupe_key)
+    && norm(read.company_key)===norm(o.company_key)
+    && txt(read.person_key)===txt(o.person_key)
+    && Number.isFinite(observedAt)&&Number.isFinite(originAt)&&originAt<=observedAt
+    && read.evidence&&typeof read.evidence==='object'
+    && Object.keys(read.evidence).length>0;
+};
+
 export function buildOutcomeMemory({salesOutcomes=[],realizedValues=[],decisionCycles=[]}={}){
   const cycleById=new Map(arr(decisionCycles).map(x=>[txt(x.cycle_id||x.cycleId),x]));
   const items=[];
   for(const o of arr(salesOutcomes)){
+    const evidence=o?.evidence&&typeof o.evidence==='object'?o.evidence:{};
     items.push(freeze({
       memoryKey:'sales_outcome:'+txt(o.outcome_id||o.dedupe_key),
       kind:'sales_outcome',subjectKey:o.subject_key||null,personKey:o.person_key||null,
       companyKey:norm(o.company_key),outcomeType:o.outcome_type||null,
-      realizedValue:Number(o.revenue_eur||0),unit:'EUR',observedAt:o.occurred_at||o.created_at||null,
+      realizedValue:observedAmount(o.revenue_eur),unit:'EUR',
+      observedAt:o.occurred_at||o.created_at||null,
       canonicalRef:'powerhouse_sales_outcomes:'+txt(o.outcome_id||o.dedupe_key),
-      evidence:freeze({...o.evidence}),verified:Boolean(o.evidence&&Object.keys(o.evidence).length)
+      evidence:freeze({...evidence}),
+      verified:independentlyObservedSalesOutcome(o)
     }));
   }
   for(const r of arr(realizedValues)){
     const cycle=cycleById.get(txt(r.cycle_id))||{};
+    const provenance=r?.provenance&&typeof r.provenance==='object'?r.provenance:{};
+    const verified=Boolean(
+      txt(r.evidence_ref)&&observedAmount(r.numeric_value)!==null
+      &&provenance.independent_readback_verified===true
+      &&txt(provenance.source_revision)&&txt(provenance.baseline_id)
+      &&txt(provenance.period_id)
+    );
     items.push(freeze({
       memoryKey:'realized_value:'+txt(r.observation_id),
       kind:'realized_value',subjectKey:cycle.subject_key||null,personKey:null,companyKey:'',
-      outcomeType:r.value_type||null,realizedValue:Number(r.numeric_value||0),
+      outcomeType:r.value_type||null,realizedValue:observedAmount(r.numeric_value),
       unit:r.currency||r.unit||null,observedAt:r.observed_at||null,
       canonicalRef:'powerhouse_realized_values:'+txt(r.observation_id),
-      evidence:freeze({evidenceRef:r.evidence_ref||null,provenance:r.provenance||{}}),
-      verified:Boolean(r.evidence_ref)
+      evidence:freeze({evidenceRef:r.evidence_ref||null,provenance:{...provenance}}),
+      verified
     }));
   }
   return freeze({schemaVersion:'outcome-memory.v1',items:freeze(items),verifiedCount:items.filter(x=>x.verified).length});
 }
-
 export function classifyExecutionBoundary(action={}){
   const status=txt(action.status).toLowerCase();
   const gate=action?.evidence?.execution_gate||{};
