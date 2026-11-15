@@ -113,6 +113,9 @@ function activeDispatches(candidates, registeredObligationIds = null) {
     if (originals.some(candidate => candidate.nextAction === 'WAIT_EXTERNAL')) continue;
     const sourceIdentities = [...new Set(originals.map(candidate => candidate.identity))].sort();
     const sourceIdentityDigest = stableKey(sourceIdentities.join('\n'));
+    const nextAction = ['RECOVER','READBACK','PROMOTE','WRITEBACK','CONTINUE']
+      .find(action => originals.some(candidate => candidate.nextAction === action))
+      ?? originals[0].nextAction;
     const key = stableKey(obligationId);
     dispatches.push(Object.freeze({
       obligationId,
