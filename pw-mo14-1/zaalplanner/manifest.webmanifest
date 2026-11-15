@@ -1,12 +1,12 @@
 {
-  "name": "MO14-1 Zaalcoach",
-  "short_name": "Zaalcoach",
-  "description": "Opstellingen en wissels voor zeven zaalhockeywedstrijden.",
+  "name": "PW Enschede · MO14-1 Zaalcoach",
+  "short_name": "PW Zaalcoach",
+  "description": "PW Enschede MO14-1: keeper, zaalhockey-opstellingen, wissels en zeven wedstrijden met datum.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f4f7fa",
-  "theme_color": "#0a1d39",
+  "background_color": "#f9f6f6",
+  "theme_color": "#59222d",
   "lang": "nl-NL",
   "orientation": "portrait-primary",
   "icons": [
