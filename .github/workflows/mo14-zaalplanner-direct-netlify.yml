@@ -1,3 +1,4 @@
+# ImageMagick/Pillow absence fixed: pinned sharp resizer on GitHub runner; retain fail-closed PNG checks.
 # PW Enschede bordeaux crest, seven editable dates; direct independent Netlify site, no Make.
 # PR #5875 app-menu v4: repeat canonical release after correcting test regex (no Make).
 # V4 app-style menus, five real tabs and native startup hub; release rechecked on exact MO14 site.
@@ -76,8 +77,17 @@ jobs:
               bg.convert('RGB').save(f'.mo14-stage/zaalplanner/icons/icon-{size}.png')
           PYICON
           else
-            echo 'No PNG icon resizer available, aborting production upload' >&2
-            exit 1
+            # Pinned image renderer: never assume ImageMagick or Pillow is preinstalled.
+            npm install --silent --no-audit --no-fund --prefix /tmp/mo14-pw-icon sharp@0.34.5
+            node - <<'JSPNG'
+          const sharp=require('/tmp/mo14-pw-icon/node_modules/sharp');
+          const source='.mo14-stage/zaalplanner/pw-logo.png';
+          (async()=>{
+            for (const size of [192,512]){
+              await sharp(source).resize(size,size,{fit:'contain',background:'#ffffff'}).png().toFile('.mo14-stage/zaalplanner/icons/icon-'+size+'.png');
+            }
+          })().catch(error=>{console.error(error);process.exit(1)});
+          JSPNG
           fi
           for size in 192 512; do
             file ".mo14-stage/zaalplanner/icons/icon-${size}.png" | grep -q 'PNG image data'
