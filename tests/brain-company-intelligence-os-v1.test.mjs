@@ -42,7 +42,7 @@ test('Outcome Memory only verifies evidence-backed outcomes',()=>{
     {outcome_id:'2',company_key:'Acme BV',outcome_type:'reply',revenue_eur:0,evidence:{}}
   ]});
   assert.equal(memory.items.length,2);
-  assert.equal(memory.verifiedCount,1);
+  assert.equal(memory.verifiedCount,0); // Provider name alone is not independent outcome proof.
 });
 
 test('Autonomous action layer preserves human authorization',()=>{
@@ -214,4 +214,65 @@ test('duplicate candidate IDs and mismatched receipt lineage cannot become indep
     next_decision_id:'next',source_refs:['brain:lesson']};
   assert.equal(decideCompanyOptimization(optimizationExample({execution,effect,learning})).status,
     'NEXT_DECISION_LEARNING_DUE');
+});
+
+
+test('Outcome Memory requires immutable cross-source event identity, not metadata or provider send receipts',()=>{
+  const raw={outcome_id:'o-1',company_key:'ACME BV',person_key:'p-1',
+    outcome_type:'linkedin_engagement',revenue_eur:null,
+    occurred_at:'2026-11-15T14:05:00Z',
+    evidence:{source_event_id:'event-1',source_event_type:'linkedin_inbound_engagement',
+      source_dedupe_key:'engagement:1',source_data_quality:'VERIFIED',
+      synthetic_business_result:false}};
+  const source_event_readback={event_id:'event-1',event_type:'linkedin_inbound_engagement',
+    dedupe_key:'engagement:1',data_quality:'VERIFIED',independently_verified:true,
+    company_key:'acme bv',person_key:'p-1',occurred_at:'2026-11-15T14:04:00Z',
+    evidence:{provider:'linked-event'}};
+  const good=buildOutcomeMemory({salesOutcomes:[{...raw,source_event_readback}]});
+  assert.equal(good.verifiedCount,1);
+  assert.equal(good.items[0].realizedValue,null,'absent revenue is unknown, never synthetic €0');
+  assert.equal(buildOutcomeMemory({salesOutcomes:[{...raw,
+    source_event_readback:{...source_event_readback,company_key:'other tenant'}}]}).verifiedCount,0);
+  assert.equal(buildOutcomeMemory({salesOutcomes:[{...raw,
+    source_event_readback:{...source_event_readback,event_id:'other-event'}}]}).verifiedCount,0);
+  assert.equal(buildOutcomeMemory({salesOutcomes:[{...raw,
+    evidence:{...raw.evidence,synthetic_business_result:true},source_event_readback}]}).verifiedCount,0);
+  assert.equal(buildOutcomeMemory({salesOutcomes:[{...raw,
+    outcome_type:'sent',source_event_readback}]}).verifiedCount,0);
+  assert.equal(buildOutcomeMemory({salesOutcomes:[{...raw,
+    source_event_readback:{...source_event_readback,occurred_at:'2026-11-16T14:04:00Z'}}]}).verifiedCount,0);
+});
+
+test('Realized value needs independent receipt, measurement period and baseline; a zero can be observed',()=>{
+  const original={observation_id:'v1',cycle_id:'c1',numeric_value:0,
+    evidence_ref:'provider:independent:observation',currency:'EUR',observed_at:'2026-11-15T15:00:00Z'};
+  assert.equal(buildOutcomeMemory({realizedValues:[original]}).verifiedCount,0);
+  assert.equal(buildOutcomeMemory({realizedValues:[{...original,numeric_value:null,
+    provenance:{independent_readback_verified:true,source_revision:'r1',baseline_id:'b1',period_id:'p1'}}]}).items[0].realizedValue,null);
+  const valid={...original,provenance:{independent_readback_verified:true,source_revision:'r1',baseline_id:'b1',period_id:'p1'}};
+  const memory=buildOutcomeMemory({realizedValues:[valid]});
+  assert.equal(memory.verifiedCount,1);
+  assert.equal(memory.items[0].realizedValue,0,'measured zero is a valid observed amount');
+  assert.equal(buildOutcomeMemory({realizedValues:[{
+    ...valid,provenance:{...valid.provenance,period_id:''}
+  }]}).verifiedCount,0);
+});
+
+test('Native original Outcome Memory keeps private tenant authority and checks source-event readback',()=>{
+  const sql=readFileSync(new URL('../supabase/migrations/20261115170000_outcome_memory_source_readback_truth_v1.sql',import.meta.url),'utf8');
+  for(const predicate of [
+    'CREATE OR REPLACE VIEW public.powerhouse_outcome_memory_v1',
+    'security_invoker=true',
+    "e.event_id::text = o.evidence->>'source_event_id'",
+    "e.dedupe_key = o.evidence->>'source_dedupe_key'",
+    "e.event_type = o.evidence->>'source_event_type'",
+    "e.data_quality = 'VERIFIED'",
+    'e.company_key IS NOT DISTINCT FROM o.company_key',
+    'e.person_key IS NOT DISTINCT FROM o.person_key',
+    "o.outcome_type NOT IN ('sent','not_executed','execution_completed')",
+    "r.provenance->>'independent_readback_verified'='true'",
+    'REVOKE ALL ON public.powerhouse_outcome_memory_v1 FROM public, anon, authenticated',
+    'GRANT SELECT ON public.powerhouse_outcome_memory_v1 TO service_role'
+  ]) assert.ok(sql.includes(predicate),'missing immutable source/ACL gate: '+predicate);
+  assert.doesNotMatch(sql,/create\s+table|cron\.schedule|grant\s+select\s+on\s+public\.powerhouse_outcome_memory_v1\s+to\s+authenticated/i);
 });
