@@ -176,6 +176,38 @@ test('any independently proven hard boundary vetoes the entire owner group, not 
   }
 });
 
+test('a hard boundary cannot disappear when two observations share the same original identity', () => {
+  const pending={ id:'ob-1', identity:'same-source-revision', status:'PENDING' };
+  const blocked={ id:'ob-1', identity:'same-source-revision', status:'BLOCKED_HARD_BOUNDARY',
+    hardBoundary:{
+      present:true, proven:true, evidence:'original provider readback denied this consent',
+      recovery_packet:{
+        blocker:'external consent required',
+        root_cause:'provider has not authorized the original operation',
+        evidence_refs:['provider:denied-consent'],
+        attempted_repairs:['read current provider permissions'],
+        safe_remaining_actions:['read back after legitimate reauthorization'],
+        minimum_human_action:'authorize original provider scope',
+        fix_agent_handoff:'agent-reliability',
+        boundary_fingerprint:'provider-consent-denied-v1',
+        resume_when:{ signal:'provider_scope_authorized' }
+      }
+    }
+  };
+  for(const observations of [[pending,blocked],[blocked,pending]]) {
+    const report=reconcileCompletionBackfill({
+      mode:'active',
+      registeredObligationIds:['ob-1'],
+      obligations:observations,
+    });
+    assert.equal(report.candidateCount,1,'same source identity must be grouped');
+    assert.equal(report.candidates[0].sourceIds.length,2,'both original observations remain in audit');
+    assert.equal(report.candidates[0].nextAction,'WAIT_EXTERNAL');
+    assert.equal(report.candidates[0].normalizedState,'WAIT_EXTERNAL');
+    assert.equal(report.dispatches.length,0,'no new wake may bypass any original proven boundary');
+  }
+});
+
 test('backfill deduplicates multiple partial signals into one identity lineage', () => {
   const report = reconcileCompletionBackfill({
     pullRequests:[{ number:12, headSha:'same-sha', state:'open', claim:'PREVIEW_READY' }],

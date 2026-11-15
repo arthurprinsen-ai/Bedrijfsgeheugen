@@ -281,9 +281,12 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
 export async function readOriginalSalesExecutionAudit({
   baseUrl,key,fetchImpl=globalThis.fetch,at=new Date().toISOString()
 }={}){
+  // Original ONE BRAIN engineering candidate 55bb0754. A sample is never
+  // a full-week census. Bound network work and fail closed beyond that bound.
+  const MAX_EVENTS=500,PAGE_SIZE=100;
   const unknown={state:'SOURCE_UNAVAILABLE',totalEvents7d:null,sampledEvents:null,
     actionBackedSample:null,unsupportedSample:null,missingActionSample:null,
-    scope:'UNKNOWN',externalProviderProof:false,readOnly:true};
+    scope:'UNKNOWN',externalProviderProof:false,paidOutcomeProof:false,readOnly:true};
   const observed=Date.parse(at);
   if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(String(baseUrl||''))||
      !key||typeof fetchImpl!=='function'||!Number.isFinite(observed))return unknown;
@@ -292,49 +295,82 @@ export async function readOriginalSalesExecutionAudit({
   const headers={accept:'application/json',apikey:key,authorization:'Bearer '+key};
   try{
     const from=new Date(observed-7*86400000).toISOString();
-    const p=new URLSearchParams({select:'entity_id,occurred_at',tenant_id:'eq.canonical',
-      entity_type:'eq.sales_action',stage:'eq.execution',
-      occurred_at:'gte.'+from,order:'occurred_at.desc',limit:'100'});
-    const response=await fetchImpl(base+'/rest/v1/powerhouse_cycle_events?'+p,{
-      headers:{...headers,prefer:'count=exact'},signal:AbortSignal.timeout(4000)
-    });
-    if(!response?.ok) return unknown;
-    const events=await response.json();
-    if(!Array.isArray(events)||events.length>100)return unknown;
-    const contentRange=response.headers?.get?.('content-range');
-    let total;
-    if(contentRange==='*/0'&&events.length===0) total=0;
-    else {
-      const match=/^(\d+)-(\d+)\/(\d+)$/.exec(contentRange??'');
-      if(!match)return unknown;
-      const first=Number(match[1]),last=Number(match[2]),count=Number(match[3]);
-      if(first!==0||last+1!==events.length||!Number.isSafeInteger(count)||
-         count<events.length)return unknown;
-      total=count;
+    const cutoff=new Date(observed).toISOString();
+    const eventQuery=offset=>{
+      const p=new URLSearchParams({
+        select:'event_id,entity_id,occurred_at',tenant_id:'eq.canonical',
+        entity_type:'eq.sales_action',stage:'eq.execution',
+        occurred_at:'gte.'+from,order:'occurred_at.desc,event_id.desc',
+        limit:String(PAGE_SIZE),offset:String(offset)
+      });
+      p.append('occurred_at','lte.'+cutoff);
+      return p;
+    };
+    async function readEventPage(offset,expectedTotal=null){
+      const response=await fetchImpl(base+'/rest/v1/powerhouse_cycle_events?'+eventQuery(offset),{
+        headers:{...headers,prefer:'count=exact'},signal:AbortSignal.timeout(4000)
+      });
+      if(!response?.ok)throw new Error('EVENTS_HTTP_NOT_OK');
+      const rows=await response.json();
+      if(!Array.isArray(rows)||rows.length>PAGE_SIZE)throw new Error('INVALID_EVENT_PAGE');
+      const range=response.headers?.get?.('content-range');
+      if(range==='*/0'&&offset===0&&rows.length===0)
+        return {rows,total:0};
+      const match=/^(\d+)-(\d+)\/(\d+)$/.exec(range??'');
+      if(!match)throw new Error('NO_EXACT_PROVIDER_COUNT');
+      const first=Number(match[1]),last=Number(match[2]),total=Number(match[3]);
+      if(first!==offset||last-first+1!==rows.length||!rows.length||
+        !Number.isSafeInteger(total)||total<offset+rows.length||
+        (expectedTotal!==null&&total!==expectedTotal))
+        throw new Error('INCONSISTENT_PROVIDER_PAGE');
+      return {rows,total};
     }
-    if(total===0)return {...unknown,state:'NO_EXECUTION_EVENTS_OBSERVED',
+    const first=await readEventPage(0);
+    if(first.total===0)return {...unknown,state:'NO_EXECUTION_EVENTS_OBSERVED',
       totalEvents7d:0,sampledEvents:0,actionBackedSample:0,unsupportedSample:0,
       missingActionSample:0,scope:'FULL_LAST_7D',observedAt:at};
-    const ids=[];
+    if(first.total>MAX_EVENTS)return {...unknown,
+      state:'SOURCE_SCOPE_EXCEEDS_SAFE_CAP',totalEvents7d:first.total,
+      scope:'ABOVE_500_FAIL_CLOSED',observedAt:at};
+    const additional=await Promise.all(
+      Array.from({length:Math.ceil(first.total/PAGE_SIZE)-1},
+        (_,n)=>readEventPage((n+1)*PAGE_SIZE,first.total))
+    );
+    const events=[...first.rows,...additional.flatMap(p=>p.rows)];
+    if(events.length!==first.total)throw new Error('INCOMPLETE_WEEK');
+    const eventIds=new Set(),actionIds=new Set();
     for(const event of events){
-      if(!uuid.test(event?.entity_id)||!Number.isFinite(Date.parse(event.occurred_at))||
-        Date.parse(event.occurred_at)<Date.parse(from))return unknown;
-      ids.push(event.entity_id);
+      const when=Date.parse(event?.occurred_at);
+      if(!uuid.test(event?.event_id)||eventIds.has(event.event_id)||
+        !uuid.test(event?.entity_id)||!Number.isFinite(when)||
+        when<Date.parse(from)||when>observed)
+        throw new Error('EVENT_IDENTITY_OR_TIME_DRIFT');
+      eventIds.add(event.event_id);
+      actionIds.add(event.entity_id);
     }
-    const idsUnique=[...new Set(ids)];
-    const actionsQuery=new URLSearchParams({select:'action_id,status,executed_at',
-      action_id:'in.('+idsUnique.join(',')+')',limit:String(idsUnique.length+1)});
-    const actionsResponse=await fetchImpl(base+'/rest/v1/powerhouse_sales_actions?'+actionsQuery,{
-      headers,signal:AbortSignal.timeout(4000)
-    });
-    if(!actionsResponse?.ok)return unknown;
-    const actions=await actionsResponse.json();
-    if(!Array.isArray(actions)||actions.length>idsUnique.length)return unknown;
-    const byId=new Map();
-    for(const a of actions){
-      if(!uuid.test(a?.action_id)||!idsUnique.includes(a.action_id)||byId.has(a.action_id))
-        return unknown;
-      byId.set(a.action_id,a);
+    const idsUnique=[...actionIds],byId=new Map();
+    const actionBatches=Array.from({length:Math.ceil(idsUnique.length/PAGE_SIZE)},
+      (_,n)=>idsUnique.slice(n*PAGE_SIZE,(n+1)*PAGE_SIZE));
+    const responses=await Promise.all(actionBatches.map(ids=>{
+      const query=new URLSearchParams({select:'action_id,status,executed_at',
+        action_id:'in.('+ids.join(',')+')',limit:String(ids.length+1)});
+      return fetchImpl(base+'/rest/v1/powerhouse_sales_actions?'+query,{
+        headers,signal:AbortSignal.timeout(4000)
+      });
+    }));
+    for(let i=0;i<responses.length;i++){
+      const response=responses[i];
+      if(!response?.ok)throw new Error('ACTION_SOURCE_HTTP_NOT_OK');
+      const actions=await response.json();
+      const ids=actionBatches[i];
+      if(!Array.isArray(actions)||actions.length>ids.length)
+        throw new Error('ACTION_SOURCE_CARDINALITY');
+      for(const action of actions){
+        if(!uuid.test(action?.action_id)||!ids.includes(action.action_id)||
+          byId.has(action.action_id))
+          throw new Error('ACTION_SOURCE_IDENTITY');
+        byId.set(action.action_id,action);
+      }
     }
     let supported=0,missing=0;
     for(const event of events){
@@ -345,11 +381,13 @@ export async function readOriginalSalesExecutionAudit({
         executed<=Date.parse(event.occurred_at)+300000)supported++;
     }
     const unsupported=events.length-supported;
-    return {state:unsupported>0?'SOURCE_EXECUTION_GAP':'ACTION_RECORDS_MATCH_IN_SAMPLE_PROVIDER_UNVERIFIED',
-      totalEvents7d:total,sampledEvents:events.length,actionBackedSample:supported,
-      unsupportedSample:unsupported,missingActionSample:missing,
-      scope:total===events.length?'FULL_LAST_7D':'LATEST_100_ONLY',observedAt:at,
-      externalProviderProof:false,paidOutcomeProof:false,readOnly:true};
+    return {
+      state:unsupported>0?'SOURCE_EXECUTION_GAP':'ACTION_RECORDS_MATCH_IN_SAMPLE_PROVIDER_UNVERIFIED',
+      totalEvents7d:first.total,sampledEvents:events.length,
+      actionBackedSample:supported,unsupportedSample:unsupported,missingActionSample:missing,
+      scope:'FULL_LAST_7D',observedAt:at,externalProviderProof:false,
+      paidOutcomeProof:false,readOnly:true
+    };
   }catch{return unknown;}
 }
 

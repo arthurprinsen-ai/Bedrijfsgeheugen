@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|linkedin|personal-observational-context-lexical-drift|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "SOURCE_CANDIDATE",
+  "owner": "original Powerhouse personal LinkedIn editorial / powerhouse-content-orchestrator and bg-pre-publish-review",
+  "production_observation": {
+    "date": "2026-11-15",
+    "channel": "linkedin_personal",
+    "status": "BLOCKED",
+    "failure": "OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED",
+    "external_provider_id": null
+  },
+  "root_cause": "Independent final reviewer did not recognize onlinebestelling/klantenservice/webwinkel which original generator accepted as grounded daily-life terms.",
+  "safe_fix": "One shared positive lexical predicate for original generator and final reviewer; all source, identity, commercial, anti-duplication, authorization and provider-proof gates remain mandatory.",
+  "acceptance": [
+    "Exact-head Required and CodeQL PASS",
+    "Protected merge",
+    "Supabase Edge deployed source equality",
+    "Genuine original lane run with unique verified source",
+    "LinkedIn original provider URN and independent GET",
+    "ONE BRAIN exact named consumer PROCESSED",
+    "Heartbeat outcome and learning"
+  ],
+  "false_green_forbidden": true,
+  "new_scheduler": false,
+  "new_publisher": false,
+  "failure_class": "CLASSIFIER_GAP",
+  "scope": "CONTENT",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-final-truth-editorial-parity-20261115.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "Both original LinkedIn personal editor and independent final review MUST import and call the identical shared personalObservationalLifeContextSignal; retain independent source, identity, nonbusiness, uniqueness and provider gates.",
+  "evidence": {
+    "kind": "production-observed-and-source-regression",
+    "production_obligation_date": "2026-11-15",
+    "channel": "linkedin_personal",
+    "production_status": "BLOCKED",
+    "rejection": "OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED",
+    "provider_id": null,
+    "regression_test": "tests/brain-personal-final-truth-editorial-parity-20261115.test.mjs",
+    "provider_readback_verified": false
+  }
+}

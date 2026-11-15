@@ -12,6 +12,15 @@ export function personalNonBuilderBusinessSignal(value,{observational=false}={})
   return common || (!observational && /\b(AI|data)\b/i.test(text));
 }
 
+// The original personal generator and independent final reviewer MUST use one
+// exact daily-life lexical gate. A verified observational online-order source
+// may legitimately say 'onlinebestelling', 'klantenservice' or 'webwinkel'.
+// This predicate alone does NOT authorize a source, text or publication.
+export function personalObservationalLifeContextSignal(value) {
+  const text=String(value??'');
+  return /\b(thuis|telefoon|app|wandeling|winkel|boodschappen|supermarkt|auto|fiets|trein|school|sport|weekend|vakantie|keuken|straat|buurt|regen|pakket|bezorging|scherm|offline|onlinebestelling|klantenservice|webwinkel)\b/i.test(text);
+}
+
 export function personalEditorialViolations(value, evidence={}) {
   const text=String(value??'').trim();
   const out=[];
