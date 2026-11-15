@@ -4,7 +4,8 @@ import {readFileSync} from 'node:fs';
 import {isPowerhouseAdmin} from '../platform/auth/powerhouse-admin.mjs';
 import {
   runPortalAuthenticatedProductionProof,
-  projectOriginalInnovationAdminProof
+  projectOriginalInnovationAdminProof,
+  assertOriginalInnovationProductionReleaseProof
 } from '../platform/api/portal-authenticated-production-proof-core.mjs';
 
 const sha='a'.repeat(40),id='original-innovation-release-proof';
@@ -122,6 +123,8 @@ test('existing deploySucceeded signed synthetic identities prove original admin 
     external_provider_proven:false,business_outcome_proven:false
   });
   assert.equal(proof.innovation_audit_failure_code,null);
+  assert.equal(assertOriginalInnovationProductionReleaseProof(proof).events,164);
+  assert.equal(assertOriginalInnovationProductionReleaseProof(proof).delivery_proven,false);
   assert.equal(proof.one_loop_assurance_proof,'PROVEN');
   assert.equal(proof.synthetic_user_cleanup,'DELETED');
   assert.deepEqual(deleted,['proof-user-b','proof-user-a']);
@@ -136,4 +139,44 @@ test('wrong admin counts and missing 403 fail closed without falsifying original
   const original=readFileSync('netlify/functions/portal-authenticated-production-proof.mjs','utf8');
   assert.match(original,/probeInnovationAudit:true/);
   assert.doesNotMatch(original,/new (?:scheduler|queue|worker)/i);
+});
+
+test('canonical original release gate rejects fake-green auth, wrong cardinality and leaked outcomes',()=>{
+  const proof={
+    innovation_audit_proof:'PROVEN',innovation_audit_admin_verified:true,
+    innovation_audit_nonadmin_denied:true,
+    innovation_audit_unauthenticated_denied:true,
+    innovation_audit_failure_code:null,synthetic_user_cleanup:'DELETED',
+    innovation_audit_counts:{
+      scope:'FULL_LAST_7D',total:164,historical_writer_backed:164,
+      unsupported:0,missing_actions:0,currently_not_done:1,
+      external_provider_proven:false,business_outcome_proven:false
+    }
+  };
+  assert.equal(assertOriginalInnovationProductionReleaseProof(proof).events,164);
+  for(const wrong of [
+    {...proof,innovation_audit_proof:'UNVERIFIED'},
+    {...proof,innovation_audit_nonadmin_denied:false},
+    {...proof,innovation_audit_unauthenticated_denied:false},
+    {...proof,synthetic_user_cleanup:'FAILED'},
+    {...proof,innovation_audit_counts:{...proof.innovation_audit_counts,total:165}},
+    {...proof,innovation_audit_counts:{...proof.innovation_audit_counts,
+      external_provider_proven:true}},
+    {...proof,innovation_audit_counts:{...proof.innovation_audit_counts,
+      currently_not_done:165}}
+  ])assert.throws(()=>assertOriginalInnovationProductionReleaseProof(wrong));
+});
+
+test('existing protected production verifier requires exact same signed admin proof only for affected routes',()=>{
+  const workflow=readFileSync('.github/workflows/production-release-readback.yml','utf8');
+  const event=readFileSync('netlify/functions/portal-authenticated-production-proof.mjs','utf8');
+  assert.match(workflow,/innovation_admin_proof_required/);
+  assert.match(workflow,/platform\/portal\/powerhouse-existing-integration-read-model\.mjs/);
+  assert.match(workflow,/netlify\/functions\/powerhouse-control-plane\.mjs/);
+  assert.match(workflow,/assertOriginalInnovationProductionReleaseProof\(proof\)/);
+  assert.match(workflow,/INNOVATION_ADMIN_PROOF_REQUIRED/);
+  assert.match(workflow,/original_agent_consumer_ack_proven:false/);
+  assert.match(event,/probeInnovationAudit:true/);
+  assert.match(event,/deploySucceeded/);
+  assert.match(event,/portalAuthProofKey\(deploy\.commitRef\)/);
 });
