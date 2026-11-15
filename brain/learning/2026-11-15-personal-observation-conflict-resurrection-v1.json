@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|linkedin|observational-source-conflict-resurrection|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original powerhouse_ensure_personal_source_rotation_v2 / Powerhouse radar",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "Source rotator v2 ON CONFLICT DO UPDATE resurrected rejected/skipped original source with original 143-character truncated old URL excerpt and falsely returned created.",
+  "prevention_rule": "Same original protected v2 SQL function excludes quarantined and truncated signals, dedupes immutable original source ID in addition to URL, NEVER updates an existing dedupe key, and reports honest insert rowcount without changing service-role grant.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-observation-rotation-no-resurrection-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_signal_id": "0deb2bad-4ad1-459f-bffa-ca30584bb226",
+    "recommendation_id": "6418326b-bded-487d-b1dd-1ec22ea0af66",
+    "verified_source_url": "https://www.rd.nl/artikel/kan-ik-een-ai-klantenservice-wel-vertrouwen",
+    "observed_truncated_source_length": 143,
+    "signal_quarantined": true,
+    "recommendation_skipped": true,
+    "personal_provider_id": null,
+    "regression_test": "tests/brain-personal-observation-rotation-no-resurrection-20261115.test.mjs"
+  },
+  "false_green_forbidden": true,
+  "acceptance": [
+    "Protected Required + CodeQL",
+    "Original migration applied and read back",
+    "Same function privilege unchanged",
+    "Provider URN and independent GET",
+    "ONE BRAIN named consumer PROCESSED and Heartbeat effect"
+  ]
+}
