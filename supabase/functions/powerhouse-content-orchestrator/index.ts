@@ -2,7 +2,7 @@ import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} f
 import {assessOfficialBlogDateTruth} from '../_shared/blog-official-date-truth.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure,normalizeBlogQualityReview} from '../_shared/blog-quality-recovery.mjs';
-import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal,personalObservationalLifeContextSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
 import {buildVerifiedFounderReserve as buildVerifiedFounderReserve_raw,isStalePersonalSource,personalSourceEventTypes} from '../_shared/personal-founder-source-reserve.mjs';
 import {normalizeRecommendationEvidence} from '../_shared/recommendation-evidence-normalization.mjs';
 const buildVerifiedFounderReserve:(...args:any[])=>any=buildVerifiedFounderReserve_raw;
@@ -388,7 +388,7 @@ function personalFinalCopyValid(body:string, evidence:any) {
   // everyday source event) with the standalone sales claim 'klant'.
   const noBusinessBridge=!personalNonBuilderBusinessSignal(body,{observational:evidence?.observational_personal_theme_verified===true});
   if (evidence?.observational_personal_theme_verified === true) {
-    const dailyLife=/\b(thuis|telefoon|app|wandeling|winkel|boodschappen|supermarkt|auto|fiets|trein|school|sport|weekend|vakantie|keuken|straat|buurt|regen|pakket|bezorging|scherm|offline|onlinebestelling|klantenservice|webwinkel)\b/i.test(body);
+    const dailyLife=personalObservationalLifeContextSignal(body);
     return !hasFirstPerson && dailyLife && noBusinessBridge;
   }
   const anchors=['printer','08:07','08:10','cyaan'].filter(x=>source.includes(x));
