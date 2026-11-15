@@ -1,5 +1,5 @@
 import {researchSourceCandidate,researchRetryAt,researchNoSourceFeedback,directResearchSourceUrl} from '../_shared/relationship-research-feedback.mjs';
-import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks,firstPartyDailyRotationOffset} from '../_shared/public-business-email-evidence.mjs';
+import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks,firstPartyDailyRotationOffset,firstPartySourceRetryHours} from '../_shared/public-business-email-evidence.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-relationship-public-research-v1';
@@ -24,17 +24,19 @@ const TRIGGERS=[
 
 
 const isTrue=(v:unknown)=>v===true||v==='true';
-async function readBoundedPublicPage(url:string):Promise<string|null>{
-  // Same public company host (optionally www): allow up to two HTTPS-only,
-  // same-domain redirects; never follow arbitrary cross-host, IP, auth or
-  // insecure redirects. 2.5s per bounded request and 160kB HTML cap.
+async function readBoundedPublicPage(url:string,sourceDiagnostics:string[]=[]):Promise<string|null>{
+  // Same original bounded public HTTPS source reader. Record only stable
+  // failure CATEGORIES (no personal data, URL, credentials or response body).
+  // Never weaken SSRF/redirect restrictions or turn a failed source into proof.
+  const record=(code:string):null=>{if(sourceDiagnostics.length<8)sourceDiagnostics.push(code);return null;};
   try{
     const original=new URL(url);
     const companyHost=original.hostname.toLowerCase().replace(/^www\./,'');
     if(original.protocol!=='https:'||!companyHost.includes('.')||
       original.username||original.password||original.port&&original.port!=='443'||
       /^(?:\d{1,3}\.){3}\d{1,3}$/.test(companyHost)||
-      companyHost.endsWith('.local')||companyHost.endsWith('.internal'))return null;
+      companyHost.endsWith('.local')||companyHost.endsWith('.internal'))
+      return record('UNSAFE_OR_INVALID_SOURCE_URL');
     let current=original;
     for(let redirects=0;redirects<=2;redirects++){
       const res=await fetch(current.toString(),{
@@ -42,34 +44,46 @@ async function readBoundedPublicPage(url:string):Promise<string|null>{
         headers:{accept:'text/html,application/xhtml+xml'}
       });
       if([301,302,303,307,308].includes(res.status)){
-        if(redirects>=2)return null;
+        if(redirects>=2)return record('REDIRECT_LIMIT_REACHED');
         const location=res.headers.get('location');
-        if(!location)return null;
+        if(!location)return record('REDIRECT_LOCATION_MISSING');
         const next=new URL(location,current);
         const nextHost=next.hostname.toLowerCase().replace(/^www\./,'');
         if(next.protocol!=='https:'||nextHost!==companyHost||
           next.username||next.password||next.port&&next.port!=='443'||
-          next.toString().length>2500)return null;
+          next.toString().length>2500)
+          return record('REDIRECT_UNSAFE_OR_CROSS_HOST');
         current=next;
         continue;
       }
+      if(!res.ok){
+        if(res.status===403||res.status===401||res.status===429)
+          return record('SOURCE_ACCESS_DENIED_OR_RATE_LIMITED');
+        return record(res.status>=500?'SOURCE_HTTP_UPSTREAM_5XX':'SOURCE_HTTP_NON_SUCCESS');
+      }
       const len=Number(res.headers.get('content-length')||0);
-      if(!res.ok||!/^text\/html|^application\/xhtml\+xml/i.test(res.headers.get('content-type')||'')||
-        len>160000||!res.body)return null;
+      if(!/^text\/html|^application\/xhtml\+xml/i.test(res.headers.get('content-type')||''))
+        return record('SOURCE_NOT_HTML');
+      if(len>160000)return record('SOURCE_HTML_TOO_LARGE');
+      if(!res.body)return record('SOURCE_BODY_MISSING');
       const reader=res.body.getReader(),chunks:Uint8Array[]=[];let size=0;
       for(;;){
         const part=await reader.read();
         if(part.done)break;
         size+=part.value.byteLength;
-        if(size>160000){await reader.cancel();return null;}
+        if(size>160000){await reader.cancel();return record('SOURCE_HTML_TOO_LARGE');}
         chunks.push(part.value);
       }
+      if(!size)return record('SOURCE_BODY_EMPTY');
       const buffer=new Uint8Array(size);let offset=0;
       for(const chunk of chunks){buffer.set(chunk,offset);offset+=chunk.byteLength;}
       return new TextDecoder().decode(buffer);
     }
-    return null;
-  }catch{return null}
+    return record('REDIRECT_LIMIT_REACHED');
+  }catch(error:any){
+    return record(error?.name==='TimeoutError'||error?.name==='AbortError'
+      ?'SOURCE_FETCH_TIMEOUT':'SOURCE_NETWORK_OR_PARSE_FAILURE');
+  }
 }
 async function writePublicBusinessSourceReceipt(db:any,action:any,source:any,observedAt:string,recovered=false){
   // Producer INGEST receipt only. An existing named consumer PROCESSED receipt
@@ -110,7 +124,7 @@ async function writePublicBusinessSourceReceipt(db:any,action:any,source:any,obs
   return verified.event_id;
 }
 
-async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:string){
+async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:string,sourceDiagnostics:string[]=[]){
   // Source research may stage only public B2B evidence; recipient authorization remains independent.
   // STAGE ONLY: unverified public address is never promoted to the canonical contact delivery field.
   let q=await db.from('bg_connecties')
@@ -143,7 +157,7 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
     eligiblePublicCompanyPage(item?.url,contact.bedrijf)).slice(0,3);
   let checked=0;
   for(const item of sites){
-    const page=typeof item.html==='string'&&item.html.length<=160000?item.html:await readBoundedPublicPage(clean(item.url));
+    const page=typeof item.html==='string'&&item.html.length<=160000?item.html:await readBoundedPublicPage(clean(item.url),sourceDiagnostics);
     if(!page)continue;
     checked++;
     const evidence=publishedBusinessMailto({html:page,sourceUrl:item.url,
@@ -196,7 +210,8 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
 async function processOriginalFirstPartyPublicSource(db:any,selected:any,
   domain:string,company:string,key:string,observedAt:string,baseEvidence:any={}){
   const homeUrl='https://'+domain+'/';
-  const homeHtml=await readBoundedPublicPage(homeUrl);
+  const sourceDiagnostics:string[]=[];
+  const homeHtml=await readBoundedPublicPage(homeUrl,sourceDiagnostics);
   const publishedLinks=homeHtml?publicCompanyContactLinks(homeHtml,homeUrl,company,1):[];
   const publicPages=homeHtml
     ?[{type:'first_party_company_domain',url:'https://'+domain+'/',html:homeHtml},
@@ -205,17 +220,28 @@ async function processOriginalFirstPartyPublicSource(db:any,selected:any,
     :[{type:'first_party_company_domain',url:'https://www.'+domain+'/'},
     {type:'first_party_company_domain',url:'https://'+domain+'/contact'},
     {type:'first_party_company_domain',url:'https://'+domain+'/team'}];
-  const result=await ingestPublicWorkEmail(db,selected,publicPages,observedAt);
+  const result=await ingestPublicWorkEmail(db,selected,publicPages,observedAt,sourceDiagnostics);
   // This original action is terminal only after a real source disposition AND
   // its original evidence receipt. An HTTP/DB error leaves it retriable.
   const checked=result.sites>0||result.receipts>0||result.status==='SUPPRESSED'||
     result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION';
-  const nextAttemptAt=checked?null:new Date(Date.parse(observedAt)+4*3600000).toISOString();
+  const attemptNumber=Number(selected.evidence?.public_email_source_attempts||0)+1;
+  // Preserve OPEN source debt while avoiding unbounded four-hour retry loops.
+  const retryHours=checked?0:firstPartySourceRetryHours(attemptNumber);
+  const nextAttemptAt=checked?null:new Date(Date.parse(observedAt)+retryHours*3600000).toISOString();
+  const sourceFailureCodes:Record<string,number>={};
+  for(const failure of sourceDiagnostics){
+    if(failure in sourceFailureCodes)sourceFailureCodes[failure]++;
+    else sourceFailureCodes[failure]=1;
+  }
   const evidence={...(selected.evidence||baseEvidence),
     public_email_source_checked:checked,public_email_source_status:result.status,
     public_email_source_checked_at:observedAt,public_email_next_attempt_at:nextAttemptAt,
     public_email_ingest_ack:result.receipts>0,
-    public_email_source_attempts:Number(selected.evidence?.public_email_source_attempts||0)+1,
+    public_email_source_attempts:attemptNumber,
+    public_email_source_failure_codes:sourceFailureCodes,
+    public_email_source_retry_hours:retryHours,
+    public_email_source_diagnostics_recorded_at:observedAt,
     recipient_send_authority_inferred:false,external_send_executed:false};
   const {data:updated,error:uErr}=await db.from('powerhouse_sales_actions')
     .update({evidence}).eq('action_id',selected.action_id).eq('dedupe_key',key)

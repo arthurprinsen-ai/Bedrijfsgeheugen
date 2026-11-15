@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {samePublicCompanyHost,publicCompanyContactLinks,publishedBusinessMailto,firstPartyDailyRotationOffset} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
+import {samePublicCompanyHost,publicCompanyContactLinks,publishedBusinessMailto,firstPartyDailyRotationOffset,firstPartySourceRetryHours} from '../supabase/functions/_shared/public-business-email-evidence.mjs';
 
 test('only HTTPS same-company host redirects and discovered links; never off-site URLs',()=>{
  assert.equal(samePublicCompanyHost('https://acmeresearch.com/','https://www.acmeresearch.com/over-ons/'),true);
@@ -99,4 +99,36 @@ test('one canonical eight-slot daily cohort visits all 85 candidate companies in
  assert.match(src,/eligibleSlots<8/);
  assert.match(src,/new_provider_queries:0/);
  assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|HUNTER_EMAIL_FINDER|APOLLO_PEOPLE_ENRICHMENT/);
+});
+
+test('same original public research attempts use bounded backoff and never disappear from debt',()=>{
+ assert.deepEqual([1,2,3,4,5,6,12].map(firstPartySourceRetryHours),[4,8,16,32,48,48,48]);
+ assert.equal(firstPartySourceRetryHours(0),4);
+ assert.equal(firstPartySourceRetryHours(NaN),4);
+ assert.equal(firstPartySourceRetryHours(-3),4);
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
+ assert.match(src,/firstPartySourceRetryHours\(attemptNumber\)/);
+ assert.match(src,/sourceDiagnostics:string\[\]=\[\]/);
+ assert.match(src,/public_email_source_failure_codes:sourceFailureCodes/);
+ assert.match(src,/public_email_source_retry_hours:retryHours/);
+ assert.match(src,/public_email_source_checked:checked/);
+ assert.match(src,/public_email_next_attempt_at:nextAttemptAt/);
+ assert.match(src,/original_lineage_reused:true,new_provider_queries:0,external_messages_sent:0/);
+ assert.doesNotMatch(src,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|APOLLO_PEOPLE_ENRICHMENT/);
+});
+
+test('public website HTML failure codes are safe, bounded, actionable and do not permit arbitrary redirect',()=>{
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-relationship-public-research/index.ts',import.meta.url),'utf8');
+ for(const classification of [
+  'UNSAFE_OR_INVALID_SOURCE_URL','REDIRECT_LIMIT_REACHED','REDIRECT_UNSAFE_OR_CROSS_HOST',
+  'SOURCE_ACCESS_DENIED_OR_RATE_LIMITED','SOURCE_HTTP_UPSTREAM_5XX','SOURCE_HTTP_NON_SUCCESS',
+  'SOURCE_NOT_HTML','SOURCE_HTML_TOO_LARGE','SOURCE_FETCH_TIMEOUT','SOURCE_NETWORK_OR_PARSE_FAILURE'
+ ])assert.ok(src.includes(classification),classification);
+ assert.match(src,/nextHost!==companyHost/);
+ assert.match(src,/next\.protocol!=='https:'/);
+ assert.match(src,/signal:AbortSignal\.timeout\(2500\)/);
+ assert.match(src,/sourceDiagnostics\.length<8/);
+ assert.match(src,/public_email_source_diagnostics_recorded_at:observedAt/);
+ assert.doesNotMatch(src,/res\.text\(/);
+ assert.doesNotMatch(src,/headers:\s*\{[^}]*authorization/i);
 });

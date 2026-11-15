@@ -128,3 +128,11 @@ export function firstPartyDailyRotationOffset(isoDay, companyCount, dailySlots=8
      !Number.isSafeInteger(dailySlots)||dailySlots<=0)return 0;
   return (Math.floor(at/86400000)*dailySlots)%companyCount;
 }
+
+// Backoff for the SAME original incomplete public-page research action. Never
+// close its open source obligation, create a new worker, or infer deliverability.
+// Attempts: 1→4h, 2→8h, 3→16h, 4→32h, >=5→48h.
+export function firstPartySourceRetryHours(attemptNumber){
+ const n=Number.isSafeInteger(attemptNumber)&&attemptNumber>0?attemptNumber:1;
+ return Math.min(48,4*2**Math.min(4,n-1));
+}
