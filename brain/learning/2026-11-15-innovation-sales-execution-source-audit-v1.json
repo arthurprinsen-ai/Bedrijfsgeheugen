@@ -15,7 +15,8 @@
     ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
     "brain/learning/2026-11-15-innovation-sales-execution-source-audit-v1.json",
     "docs/changes/2026-11-15-innovation-sales-execution-source-audit.md",
-    "docs/development-ledger-events/2026-11-15-innovation-sales-execution-source-audit.md"
+    "docs/development-ledger-events/2026-11-15-innovation-sales-execution-source-audit.md",
+    "platform/system-map/canonical-system-map.mjs"
   ],
   "controls": [
     "admin-jwt-before-service-read",
@@ -61,6 +62,8 @@
     "test_evidence": "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
     "release_evidence": "PROTECTED_REQUIRED_CODEQL_AND_MAIN_MERGE_DUE",
     "independent_effect": "NOT_PROVEN",
-    "ack": "NOT_PROVEN"
+    "ack": "NOT_PROVEN",
+    "system_map_sha_from_original_required_generator": "dc19a4084ff42cae46ed459d3e30e9ac32f9f1dff59a60b5ba836f64f88da7fd",
+    "system_map_regression": "Original Required run 43706130090 preflight rejected stale generated inventory; exact generator-produced hash synced, no guard bypass"
   }
 }
