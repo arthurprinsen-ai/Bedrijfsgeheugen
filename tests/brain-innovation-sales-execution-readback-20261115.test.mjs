@@ -176,3 +176,66 @@ test('existing Powerhouse admin cockpit shows historical event and current mutab
   assert.match(html,/externe provider-uitvoering niet bewezen/);
   assert.match(html,/NIET BEWEZEN/);
 });
+
+test('a later execution timestamp is NOT a fake historical gap but MUST flag its missing new event',async()=>{
+  const sample=events(1);
+  const result=await readOriginalSalesExecutionAudit({...options,
+    fetchImpl:async(url)=>{
+      const u=new URL(url);
+      if(u.pathname.endsWith('/powerhouse_cycle_events'))
+        return {ok:true,headers:{get:()=> '0-0/1'},json:async()=>sample};
+      return {ok:true,json:async()=>[{action_id:uuid(1),status:'done',
+        executed_at:'2026-11-15T10:01:00Z'}]};
+    }
+  });
+  assert.equal(result.state,'CURRENT_EXECUTION_EVENT_MISSING');
+  assert.equal(result.actionBackedSample,1,
+    'immutable earlier SQL writer record remains valid');
+  assert.equal(result.unsupportedSample,0);
+  assert.equal(result.currentExecutionWithoutEventSample,1);
+  assert.equal(result.externalProviderProof,false);
+  const projected=projectPowerhouseIntegrationReadback({salesExecutionAudit:result});
+  assert.ok(projected.gapCodes.includes('CURRENT_SALES_ACTION_EXECUTION_NOT_IMMUTABLY_LOGGED'));
+  const html=powerhouseIntegrationMarkup(projected);
+  assert.match(html,/nieuwste uitvoering zonder onveranderlijk event 1/);
+  assert.match(html,/NIET BEWEZEN/);
+});
+
+test('a distinct new attempt event in the SAME original source closes only the missing immutable writer gap',async()=>{
+  const sample=events(2);
+  sample[1].entity_id=sample[0].entity_id;
+  sample[1].evidence_ref=sample[0].evidence_ref;
+  sample[1].payload.executed_at='2026-11-15T10:01:00Z';
+  sample[1].occurred_at='2026-11-15T10:02:00Z';
+  const result=await readOriginalSalesExecutionAudit({...options,
+    fetchImpl:async(url)=>{
+      const u=new URL(url);
+      if(u.pathname.endsWith('/powerhouse_cycle_events'))
+        return {ok:true,headers:{get:()=> '0-1/2'},json:async()=>sample};
+      return {ok:true,json:async()=>[{action_id:uuid(1),status:'done',
+        executed_at:'2026-11-15T10:01:00Z'}]};
+    }
+  });
+  assert.equal(result.state,'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED');
+  assert.equal(result.totalEvents7d,2);
+  assert.equal(result.sampledEvents,2);
+  assert.equal(result.actionBackedSample,2);
+  assert.equal(result.unsupportedSample,0);
+  assert.equal(result.currentExecutionWithoutEventSample,0);
+  assert.equal(result.externalProviderProof,false);
+  assert.equal(result.paidOutcomeProof,false);
+});
+
+test('an earlier current action timestamp cannot rewrite an immutable later event',async()=>{
+  const sample=events(1);
+  sample[0].payload.executed_at='2026-11-15T09:59:55Z';
+  const result=await readOriginalSalesExecutionAudit({...options,
+    fetchImpl:async(url)=>new URL(url).pathname.endsWith('/powerhouse_cycle_events')
+      ? {ok:true,headers:{get:()=> '0-0/1'},json:async()=>sample}
+      : {ok:true,json:async()=>[{action_id:uuid(1),status:'done',
+        executed_at:'2026-11-15T09:58:00Z'}]}
+  });
+  assert.equal(result.state,'SOURCE_EXECUTION_GAP');
+  assert.equal(result.unsupportedSample,1);
+  assert.equal(result.actionBackedSample,0);
+});
