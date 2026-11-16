@@ -81,7 +81,7 @@ test('opportunity ranking can reward category-entry-point fit, proof and frictio
 test('calendar rotates behavioral-science experiments and preserves ethical guardrails', () => {
   const calendar = buildExperimentCalendar({ start:'2026-09-12', end:'2026-09-25' });
   assert.ok(calendar.some(x => ['category_entry_point','mental_availability','social_proof','loss_framing','friction_reduction','distinctive_asset'].includes(x.experimentFamily)));
-  assert.ok(calendar.every(x => x.personal.awarenessStage && x.company.behavioralLever && x.blog.persuasionGuardrails.includes('no_deceptive_dark_patterns')));
+  assert.ok(calendar.every(x => x.personal.sourceContract === 'personal-linkedin-personal-life-only-v1' && x.company.behavioralLever && x.blog.persuasionGuardrails.includes('no_deceptive_dark_patterns')));
 });
 
 test('calendar never manufactures personal posts from B2B experiment families', () => {
