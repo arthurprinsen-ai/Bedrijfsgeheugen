@@ -66,7 +66,28 @@
         "humor",
         "ending"
       ],
-      "repeatedPatternOutcome": "REWRITE_NOT_PUBLISH"
+      "repeatedPatternOutcome": "REWRITE_NOT_PUBLISH",
+      "researchEvidenceLastReviewedAt": "2026-11-16",
+      "automatedCommentsForbidden": true,
+      "engagementPodsForbidden": true,
+      "unauthorizedProfileScrapingForbidden": true,
+      "imageUse": "optional_only_with_source_and_media_rights",
+      "recentPublishedPatternCheck": "original_independent_reviewer_history_45_days",
+      "learningWindowsHours": [
+        24,
+        48,
+        72
+      ],
+      "metricSource": "original_linkedin_authorized_post_analytics_only",
+      "noMetricsOrNoTruth": "OPEN_NOT_MEASURED_OR_SOURCE_REQUIRED",
+      "outcomePriority": [
+        "authentic_replies",
+        "meaningful_comments",
+        "saves_if_authorized",
+        "profile_visits_if_authorized",
+        "impressions_if_authorized",
+        "reactions"
+      ]
     },
     "companyLinkedIn": {
       "preferredFormats": [
