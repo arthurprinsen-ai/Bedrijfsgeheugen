@@ -95,9 +95,9 @@ export function personalNarrativePatternViolations(candidate,recentPosts=[]){
   const text=String(candidate??'').trim();
   if(!text)return [];
   const normalize=value=>String(value??'').toLowerCase().normalize('NFKC')
-    .replace(/[^\\p{L}\\p{N}\\s]/gu,' ').replace(/\\s+/gu,' ').trim();
-  const lead=value=>normalize(value.split(/[.!?\\n]/u).find(Boolean)||value).split(/\\s+/u).slice(0,6).join(' ');
-  const ending=value=>normalize(value.split(/\\n+/u).filter(Boolean).at(-1)||value);
+    .replace(/[^\p{L}\p{N}\s]/gu,' ').replace(/\s+/gu,' ').trim();
+  const lead=value=>normalize(value.split(/[.!?\n]/u).find(Boolean)||value).split(/\s+/u).slice(0,6).join(' ');
+  const ending=value=>normalize(value.split(/\n+/u).filter(Boolean).at(-1)||value);
   const markers=value=>['ik dacht dat ik gewoon','totdat ik','blijkt dat','en het mooiste','herkenbaar','ben ik de enige','ik wilde gewoon','klinkt eenvoudig'].filter(p=>normalize(value).includes(p));
   const currentLead=lead(text), currentEnding=ending(text), currentMarkers=markers(text);
   for(const p of Array.isArray(recentPosts)?recentPosts:[]){
@@ -109,7 +109,7 @@ export function personalNarrativePatternViolations(candidate,recentPosts=[]){
     if(currentEnding.split(' ').length>=6&&currentEnding===prevEnding)
       return ['PERSONAL_EDITORIAL_REPEATED_ENDING'];
     const overlap=currentMarkers.filter(marker=>markers(previous).includes(marker));
-    if(overlap.length>=2&&/\\?\\s*$/u.test(text)&&/\\?\\s*$/u.test(previous))
+    if(overlap.length>=2&&/\?\s*$/u.test(text)&&/\?\s*$/u.test(previous))
       return ['PERSONAL_EDITORIAL_REPEATED_STORY_TEMPLATE'];
   }
   return [];
