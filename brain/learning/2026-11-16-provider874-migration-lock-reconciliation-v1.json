@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|migration-history|provider874-applied-lock873|20261116-v1",
+  "status": "SOURCE_CANDIDATE_PROTECTED_RELEASE_PENDING",
+  "observed_at": "2026-11-16T10:07:54.646910Z",
+  "owner": "original Supabase migration-history source-lock writer",
+  "project": "adhjwmvyoixzjtmiroln",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Already applied 20261116105000 original runtime mux migration had been protected merged and independently reported in native supabase_migrations.schema_migrations, but original tracked supabase/migration-history.lock.json remained at 873, causing global Required preflight to reject unrelated legal/LinkedIn PRs.",
+  "evidence": {
+    "original_protected_ci": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43845430541",
+    "applied_provider_rows": 874,
+    "provider_max_version": "20261116105000",
+    "verified_unique_version_name": {
+      "version": "20261116105000",
+      "name": "original_infinity_missing_signal_isolated_mux_v3"
+    },
+    "previous_lock_count": 873,
+    "previous_lock_max_version": "20261115235900",
+    "direct_native_sql_readback": true,
+    "native_provider_observed_at": "2026-11-16T10:07:54.646910Z",
+    "source_file": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/main/supabase/migrations/20261116105000_original_infinity_missing_signal_isolated_mux_v3.sql",
+    "postmerge_live_evidence": "PENDING_REQUIRED_AND_EXACT_MAIN",
+    "provider_schema_mutation_by_this_candidate": false
+  },
+  "prevention": [
+    "Protect prod migration lock as exact native version/name source only, never predeclare proposed migrations applied.",
+    "After original native migration owner actually applied an immutable version, reconcile exact provider catalog count, version and name on the canonical original source lock using protected CI.",
+    "No migration DDL, no synthetic provider row, no date-only fix or bypass of original immutable test admission.",
+    "Keep previous locked migration identities unchanged; do not change privileges or scheduler."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider874-lock-reconcile-20261116.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-original-provider874-lock-reconcile-20261116.test.mjs"
+  ]
+}
