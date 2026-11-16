@@ -286,6 +286,6 @@ Deno.serve(async (req) => {
     build_event_verified: channel === 'linkedin_personal' ? body.build_event_verified === true : null,
     personal_life_only_policy: channel === 'linkedin_personal' && body.ai_native_builder_story_verified !== true ? PERSONAL_LIFE_ONLY_POLICY : null,
     personal_life_only_verified: channel === 'linkedin_personal' ? body.personal_life_only_verified === true : null,
-    rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel === 'linkedin_company' },
+    rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel === 'linkedin_company', personal_recent_published_compared: channel === 'linkedin_personal' ? personalHistory.length : null },
   }, pass ? 200 : 422);
 });
