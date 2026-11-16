@@ -55,7 +55,7 @@ export function personalEditorialViolations(value, evidence={}) {
     fail('PERSONAL_EDITORIAL_BUYER_RELEVANT_OPENING','Maak het praktische probleem voor een ondernemer zichtbaar in de eerste regels.');
   if(/\b(?:blog (?:stond|staat) live|e-?mail (?:werd|is) (?:verstuurd|verzonden)|informatie ging uit|verzonden,? bewezen|acties zijn uitgegaan)\b/iu.test(text))
     fail('PERSONAL_EDITORIAL_DELIVERY_REPORT','Interne verzending en publicatiestatus zijn geen persoonlijk verhaal.');
-  if(/\b(?:boek nu|vraag je scan aan|meld je aan|koop nu|download nu|plan een afspraak|gratis scan|dm me)\b/iu.test(text))
+  if(/\b(?:boek nu|vraag je scan aan|meld je aan|koop nu|download nu|plan een afspraak|gratis scan|dm me|ontdek onze diensten)\b/iu.test(text))
     fail('PERSONAL_EDITORIAL_PROMOTION','Geen directe commerciële oproep in de persoonlijke ondernemersreis.');
   // Quantified public claims need an EXACT, independently checked factual source,
   // not an unrelated health metric or source_backed=true metadata.
