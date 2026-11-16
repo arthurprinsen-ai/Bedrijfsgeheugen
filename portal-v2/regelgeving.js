@@ -135,7 +135,7 @@ export const REGELGEVING = Object.freeze([
     raakt: 'Opdrachtgevers en zelfstandigen met een laag uurtarief; het rechtsvermoeden kan door de werkende worden ingeroepen.',
     status: STATUS.VERWACHT,
     mijlpalen: [{ datum: '2026-12-31', wat: 'Vastgestelde inwerkingtreding volgens Staatsblad 2026, 207 (koninklijk besluit van 13 juli 2026).' }],
-    letop: 'De wet is op 18 juni 2026 vastgesteld en gepubliceerd in Staatsblad 2026, 158; de ingangsdatum is niet langer onzeker of 1 januari 2027, maar bij koninklijk besluit vastgesteld op 31 december 2026. De Eerste Kamer noemt minder dan 38 euro per uur als peilbedrag op 1 januari 2026; het eerste toepasselijke bedrag wordt volgens de wet bij ministeriële regeling bepaald. Dit is een civielrechtelijk bewijsvermoeden voor de werkende, geen zelfstandige handhavingsnorm voor de Belastingdienst.',
+    letop: 'De wet is op 18 juni 2026 vastgesteld en gepubliceerd in Staatsblad 2026, 158; de ingangsdatum is niet langer onzeker of 1 januari 2027, maar bij koninklijk besluit (Staatsblad 2026, 207) vastgesteld op 31 december 2026. De Eerste Kamer noemt minder dan 38 euro per uur als peilbedrag op 1 januari 2026; het eerste toepasselijke bedrag wordt volgens de wet bij ministeriële regeling bepaald. Dit is een civielrechtelijk bewijsvermoeden voor de werkende, geen zelfstandige handhavingsnorm voor de Belastingdienst.',
     bron: 'Staatsblad 2026, 207 en Eerste Kamer dossier 36.783', url: 'https://zoek.officielebekendmakingen.nl/stb-2026-207.html',
     peildatum: '2026-11-16', herzienUiterlijk: '2026-12-15'
   }),
