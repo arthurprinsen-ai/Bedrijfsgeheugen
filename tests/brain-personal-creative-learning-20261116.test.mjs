@@ -70,7 +70,7 @@ test('repeated distinctive personal opener or same ending is vetoed; different s
 
 test('the original production reviewer compares real published personal history before final PASS and fails closed on read errors',()=>{
   const reviewer=readFileSync('supabase/functions/bg-pre-publish-review/index.ts','utf8');
-  assert.ok(reviewer.includes(".eq('channel','linkedin_personal').eq('status','published')"));
+  assert.ok(reviewer.includes(".eq('channel','linkedin_personal')"));
   assert.ok(reviewer.includes("error:'PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE'"));
   assert.ok(reviewer.includes("personalViolations(text, {...body,recentPersonalPosts:personalHistory}, finalHash)"));
   const policy=config.creativePolicy.personalLinkedIn;
@@ -89,7 +89,7 @@ test('personal editorial check refuses engagement bait and never writes auto com
 
 test('generating original personal copy reads the same published history and automatically rewrites repeated style',()=>{
   const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
-  assert.ok(gen.includes(".eq('channel','linkedin_personal').eq('status','published')"));
+  assert.ok(gen.includes(".eq('channel','linkedin_personal')"));
   assert.ok(gen.includes("if(historyError)throw new Error('PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE:'"));
   assert.ok(gen.includes("personalEditorialViolations(bodyText,{...(personalSource?.evidence||{}),recentPersonalPosts})"));
   assert.ok(gen.includes("personalEditorialViolations(revisedText,{...(personalSource?.evidence||{}),recentPersonalPosts})"));
@@ -103,4 +103,18 @@ test('generating original personal copy reads the same published history and aut
   const correction=gen.match(/const PERSONAL_LIFE_CORRECTION_PROMPT=([^;]+);/u)?.[1]||'';
   assert.ok(correction.includes('zonder vaste lengte'));
   assert.ok(correction.includes('zonder vaste lengte, alinea-aantal, grap'));
+});
+
+
+test('original published personal history requires provider-backed decision when the artifact is still content_ready',()=>{
+  const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+  const rev=readFileSync('supabase/functions/bg-pre-publish-review/index.ts','utf8');
+  for(const src of [gen,rev]){
+    assert.ok(src.includes(".in('status',['published','content_ready'])"));
+    assert.ok(src.includes(".eq('state','published')"));
+    assert.ok(src.includes("select('run_date,state,delivery_ref')"));
+    assert.match(src,/urn:li:\(\?:share\|ugcPost\):\[0-9\]\+/);
+    assert.ok(src.includes("p.status==='published'||actualPublishedDates.has(clean(p.run_date))"));
+    assert.ok(src.includes('PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE'));
+  }
 });
