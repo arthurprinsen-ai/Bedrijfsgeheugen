@@ -65,7 +65,7 @@ test('preventive preflight identifies a personal source failure before deadline'
    decisions:[personalDecision('PERSONAL_TRUTH_SOURCE_UNVERIFIED')],isTerminal:()=>false
  });
  const item=out.atRisk.find(x=>x.channel==='linkedin_personal');
- assert.equal(item.code,'PERSONAL_VERIFIED_STORY_REQUIRED');
+ assert.equal(item.code,'SOURCE_EDITORIAL_REVISION_REQUIRED');
  assert.equal(item.nextStep,'ORIGINAL_PERSONAL_SOURCE_OWNER_VERIFY_USER_FACT');
 });
 test('already provider-created personal post is readback-only, never a fresh create',()=>{
