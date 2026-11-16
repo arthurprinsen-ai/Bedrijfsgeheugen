@@ -42,7 +42,7 @@ test('today missing user-authored personal truth is SOURCE, not LinkedIn OAuth',
  assert.equal(action.code,'PERSONAL_SOURCE_PROOF_REQUIRED');
  assert.equal(action.action_url,null);
  assert.match(action.human_action,/echte gebeurtenis/);
- assert.doesNotMatch(action.human_action,/OAuth aanvragen/);
+ assert.match(action.human_action,/Niet opnieuw OAuth aanvragen/);
  assert.equal(action.notification_sent,false);
 });
 test('all missing verified first-person source variants retain original editor owner',()=>{
