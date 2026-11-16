@@ -29,7 +29,7 @@ test('original rejected-personal retry uses concise source-locked instruction an
  assert.match(block,/PERSONAL_LIFE_CORRECTION_PROMPT/);
  assert.match(source,/const PERSONAL_LIFE_CORRECTION_PROMPT=.*Schrijf nooit over bedrijven/);
  assert.match(block,/verzin nooit klanten/);
- assert.match(source,/const PERSONAL_LIFE_CORRECTION_PROMPT=.*geen vaste lengte, alinea-aantal, grap/);
+ assert.match(source,/const PERSONAL_LIFE_CORRECTION_PROMPT=.*zonder vaste lengte, alinea-aantal, grap/);
  assert.match(block,/recent_personal_post_patterns:/);
 });
 test('original publisher authority, duplicate and truth gates remain enabled',()=>{
