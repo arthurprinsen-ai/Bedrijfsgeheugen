@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {buildCreativeRecipe,buildExperimentCalendar} from '../brain/creative/revenue-content-intelligence.mjs';
+import {personalEditorialViolations,personalNarrativePatternViolations} from '../supabase/functions/_shared/personal-linkedin-editorial-contract.mjs';
 
 const config=JSON.parse(readFileSync(new URL('../config/social-learning-engine.json',import.meta.url),'utf8'));
 
@@ -49,4 +50,38 @@ test('declutter complexity: personal story shape and ending come from the verifi
   assert.ok(!policy.requiredDimensions.includes('natural_twist'));
   assert.equal(policy.mandatoryQuestion,false);
   assert.equal(config.creativePolicy.companyLinkedIn.objective,'qualified_demand');
+});
+
+test('source-led short personal story is allowed without mandatory 130-200 words or ending question',()=>{
+  const text='Ik stond langs het veld. Het begon zachtjes te regenen en langzaam werd het kouder. Iedereen keek naar de wedstrijd. Ik bleef toch staan, want ik had geen zin om ook maar één moment van dat spel te missen.';
+  const codes=personalEditorialViolations(text,{recentPersonalPosts:[]}).map(v=>v.code);
+  assert.ok(!codes.includes('PERSONAL_EDITORIAL_WORD_COUNT'),codes.join(','));
+  assert.ok(!codes.includes('PERSONAL_EDITORIAL_OPEN_QUESTION'),codes.join(','));
+  assert.deepEqual(codes,[]);
+});
+
+test('repeated distinctive personal opener or same ending is vetoed; different story can use different shape',()=>{
+  const prior='Ik dacht dat ik gewoon een auto ging kopen. Het bleek ingewikkelder dan verwacht. Uiteindelijk had ik nog niets gekocht. Herkenbaar?';
+  const tooSimilar='Ik dacht dat ik gewoon een dweilrobot ging kopen. Het bleek ingewikkelder dan verwacht. Uiteindelijk had ik nog niets gekocht. Herkenbaar?';
+  assert.ok(personalNarrativePatternViolations(tooSimilar,[prior]).includes('PERSONAL_EDITORIAL_REPEATED_OPENING'));
+  const distinct='Drie teams op zaterdag. Ik stond langs het veld en merkte dat ik het koude weer ineens vergat. Ik wilde gewoon blijven kijken.';
+  assert.deepEqual(personalNarrativePatternViolations(distinct,[prior]),[]);
+});
+
+test('the original production reviewer compares real published personal history before final PASS and fails closed on read errors',()=>{
+  const reviewer=readFileSync('supabase/functions/bg-pre-publish-review/index.ts','utf8');
+  assert.ok(reviewer.includes(".eq('channel','linkedin_personal').eq('status','published')"));
+  assert.ok(reviewer.includes("error:'PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE'"));
+  assert.ok(reviewer.includes("personalViolations(text, {...body,recentPersonalPosts:personalHistory}, finalHash)"));
+  const policy=config.creativePolicy.personalLinkedIn;
+  assert.equal(policy.sourceDeterminesNarrativeShape,true);
+  assert.equal(policy.mandatoryQuestion,false);
+  assert.equal(policy.repeatedPatternOutcome,'REWRITE_NOT_PUBLISH');
+});
+
+test('personal editorial check refuses engagement bait and never writes auto comments',()=>{
+  const bait='Ik liep gisteren thuis door de gang. Reageer met JA in de reacties als jij dat ook doet.';
+  assert.ok(personalEditorialViolations(bait).some(x=>x.code==='PERSONAL_EDITORIAL_ENGAGEMENT_BAIT'));
+  const policy=config.creativePolicy.personalLinkedIn;
+  assert.equal(policy.automatedCommentsForbidden,true);
 });
