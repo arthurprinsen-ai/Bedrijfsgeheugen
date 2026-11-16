@@ -85,3 +85,22 @@ test('personal editorial check refuses engagement bait and never writes auto com
   const policy=config.creativePolicy.personalLinkedIn;
   assert.equal(policy.automatedCommentsForbidden,true);
 });
+
+
+test('generating original personal copy reads the same published history and automatically rewrites repeated style',()=>{
+  const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+  assert.ok(gen.includes(".eq('channel','linkedin_personal').eq('status','published')"));
+  assert.ok(gen.includes("if(historyError)throw new Error('PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE:'"));
+  assert.ok(gen.includes("personalEditorialViolations(bodyText,{...(personalSource?.evidence||{}),recentPersonalPosts})"));
+  assert.ok(gen.includes("personalEditorialViolations(revisedText,{...(personalSource?.evidence||{}),recentPersonalPosts})"));
+  assert.ok(gen.includes("recent_personal_post_patterns:pending.channel==='linkedin_personal'"));
+  const start=gen.indexOf("editorialSystem='AUTHENTIEK PERSOONLIJK LINKEDIN");
+  const end=gen.indexOf("stage = 'artifact-ai'",start);
+  assert.ok(start>=0&&end>start);
+  const actualPersonalPrompt=gen.slice(start,end);
+  assert.doesNotMatch(actualPersonalPrompt,/130[–-]200|vier tot zes|verplichte.*vraag|eindig met.*vraag/iu);
+  assert.ok(actualPersonalPrompt.includes('Dwing geen wending, humor, les of vraag af'));
+  const correction=gen.match(/const PERSONAL_LIFE_CORRECTION_PROMPT=([^;]+);/u)?.[1]||'';
+  assert.ok(correction.includes('zonder vaste lengte'));
+  assert.ok(correction.includes('zonder vaste lengte, alinea-aantal, grap'));
+});
