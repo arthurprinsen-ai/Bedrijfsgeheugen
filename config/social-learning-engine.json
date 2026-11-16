@@ -34,12 +34,11 @@
       "requiredDimensions": [
         "verified_personal_event",
         "human_detail",
-        "natural_twist",
         "authentic_first_person_voice",
         "story_family_uniqueness",
         "privacy_clearance"
       ],
-      "ctaMode": "natural_noncommercial_question_optional",
+      "ctaMode": "not_required_only_when_natural",
       "objective": "authentic_personal_conversation",
       "separateFromCompanyLearning": true,
       "commercialConversionOptimizationForbidden": true,
@@ -52,7 +51,22 @@
         "reactions",
         "profile_visits"
       ],
-      "insufficientMetricsOutcome": "NOT_MEASURED"
+      "insufficientMetricsOutcome": "NOT_MEASURED",
+      "declutterComplexity": true,
+      "sourceDeterminesNarrativeShape": true,
+      "mandatoryHook": false,
+      "mandatoryTwist": false,
+      "mandatoryHumor": false,
+      "mandatoryQuestion": false,
+      "mandatoryMoral": false,
+      "patternDiversityDimensions": [
+        "opening",
+        "narrative_arc",
+        "length",
+        "humor",
+        "ending"
+      ],
+      "repeatedPatternOutcome": "REWRITE_NOT_PUBLISH"
     },
     "companyLinkedIn": {
       "preferredFormats": [
