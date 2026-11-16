@@ -90,7 +90,7 @@ test('personal editorial check refuses engagement bait and never writes auto com
 test('generating original personal copy reads the same published history and automatically rewrites repeated style',()=>{
   const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
   assert.ok(gen.includes(".eq('channel','linkedin_personal')"));
-  assert.ok(gen.includes("if(historyError)throw new Error('PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE:'"));
+  assert.ok(gen.includes("if(historyError||decisionError)"));
   assert.ok(gen.includes("personalEditorialViolations(bodyText,{...(personalSource?.evidence||{}),recentPersonalPosts})"));
   assert.ok(gen.includes("personalEditorialViolations(revisedText,{...(personalSource?.evidence||{}),recentPersonalPosts})"));
   assert.ok(gen.includes("recent_personal_post_patterns:pending.channel==='linkedin_personal'"));
