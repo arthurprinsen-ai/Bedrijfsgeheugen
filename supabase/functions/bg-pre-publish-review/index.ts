@@ -221,7 +221,24 @@ Deno.serve(async (req) => {
   const finalHash = await digest(text);
   if (!text) return json({ ok: true, can_generate: true, can_publish: false, identity_gate_decision: 'BLOCKED_IDENTITY_GATE', channel, final_text_hash: finalHash }, 200);
 
-  const identityBlockers = channel === 'linkedin_personal' ? personalViolations(text, body, finalHash) : otherIdentityViolations(channel, text, body);
+  // Independent prior-publication readback: source-proven history, not model
+  // guesses or caller-supplied pattern labels. Existing original reviewer only.
+  let personalHistory: string[] = [];
+  if(channel==='linkedin_personal'){
+    const {data:previous,error:historyError}=await db.from('powerhouse_content_artifacts')
+      .select('run_date,body').eq('channel','linkedin_personal').eq('status','published')
+      .order('run_date',{ascending:false}).limit(20);
+    if(historyError)return json({ok:false,can_generate:false,can_publish:false,error:'PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE',channel},503);
+    const currentDate=Date.parse(clean(body.calendar_date)+'T00:00:00Z');
+    personalHistory=(previous||[]).filter((p:any)=>{
+      const posted=Date.parse(clean(p.run_date)+'T00:00:00Z');
+      const age=(currentDate-posted)/86400000;
+      return Number.isFinite(age)&&age>=0&&age<=45;
+    }).map((p:any)=>clean(p.body)).filter(Boolean);
+  }
+  const identityBlockers = channel === 'linkedin_personal'
+    ? personalViolations(text, {...body,recentPersonalPosts:personalHistory}, finalHash)
+    : otherIdentityViolations(channel, text, body);
   let genericBlockers: any[] = [];
   if (channel === 'linkedin_company') {
     const { data: violations, error: ruleError } = await db.rpc('bg_brein_regels_check', {
