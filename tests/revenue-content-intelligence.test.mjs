@@ -35,7 +35,9 @@ test('personal creative recipe cannot turn a commercial opportunity into an Arth
   assert.equal(recipe.requiresVerifiedUserFact, true);
   assert.equal(recipe.topic, null);
   assert.equal(recipe.objective, 'authentic_personal_conversation');
-  assert.equal(recipe.ctaType, 'natural_noncommercial_question_optional');
+  assert.equal(recipe.narrativeShape, 'source_determined');
+  assert.equal(recipe.mandatoryQuestion, false);
+  assert.equal('ctaType' in recipe, false);
   assert.equal('offerType' in recipe, false);
   assert.equal('discoveryQuestion' in recipe, false);
   assert.equal('fomoTrigger' in recipe, false);
