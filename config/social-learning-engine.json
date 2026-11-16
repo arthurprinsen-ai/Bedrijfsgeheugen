@@ -26,16 +26,33 @@
   ],
   "creativePolicy": {
     "personalLinkedIn": {
-      "defaultTextType": "observational_business_standup",
+      "defaultTextType": "verified_first_person_personal_life_story",
+      "sourceContract": "personal-linkedin-personal-life-only-v1",
+      "verifiedUnusedUserFactRequired": true,
+      "publishAuthority": "original_personal_source_final_review_and_provider_gate_only",
+      "allowedDays": "monday_to_saturday",
       "requiredDimensions": [
-        "emotion",
-        "comedy_device",
-        "pain_trigger",
-        "cta_type",
-        "commercial_hypothesis"
+        "verified_personal_event",
+        "human_detail",
+        "natural_twist",
+        "authentic_first_person_voice",
+        "story_family_uniqueness",
+        "privacy_clearance"
       ],
-      "ctaMode": "conversation_first",
-      "objective": "commercial_conversation"
+      "ctaMode": "natural_noncommercial_question_optional",
+      "objective": "authentic_personal_conversation",
+      "separateFromCompanyLearning": true,
+      "commercialConversionOptimizationForbidden": true,
+      "externalNewsOrBusinessFallbackForbidden": true,
+      "promoteWinnerOnlyWithIndependentPersonalMetrics": true,
+      "personalMetricPriority": [
+        "substantive_interactions",
+        "comments",
+        "shares",
+        "reactions",
+        "profile_visits"
+      ],
+      "insufficientMetricsOutcome": "NOT_MEASURED"
     },
     "companyLinkedIn": {
       "preferredFormats": [
