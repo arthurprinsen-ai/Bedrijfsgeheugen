@@ -241,7 +241,7 @@ export function assessPreventivePublicationReadiness({
        &&['PERSONAL_SOURCE_UNVERIFIED','PERSONAL_TRUTH_SOURCE_UNVERIFIED',
            'NO_UNIQUE_VERIFIED_PERSONAL_SOURCE','PERSONAL_USER_EXPERIENCE_NOT_VERIFIED']
          .some(reason=>[error,str(ed.error),str(ed.capability_reason)].includes(reason)))
-       code='PERSONAL_VERIFIED_STORY_REQUIRED';
+       code='SOURCE_EDITORIAL_REVISION_REQUIRED';
      else if(ed.artifact_generation_failure||str(ed.error).startsWith('PERSONAL_EDITORIAL_CONTRACT_FAILED'))
        code='SOURCE_EDITORIAL_REVISION_REQUIRED';
      else if(['decided','blocked'].includes(state)||['BLOCKED','FAILED'].includes(str(ob?.status)))
@@ -279,7 +279,7 @@ export function assessPreventivePublicationReadiness({
      phase:remainingMs!==null&&remainingMs<0?'PAST_DUE':'BEFORE_DUE',
      requiresAuthorization:humanOnly,
      // No fake blocker, provider receipt, new scheduling or account link.
-     nextStep:code==='PERSONAL_VERIFIED_STORY_REQUIRED'
+     nextStep:channel==='linkedin_personal' && code==='SOURCE_EDITORIAL_REVISION_REQUIRED'
        ?'ORIGINAL_PERSONAL_SOURCE_OWNER_VERIFY_USER_FACT'
        :'ORIGINAL_CHANNEL_OWNER_SELF_REPAIR',
      scope:'READ_ONLY_EXISTING_CONTENT_LOOP'
