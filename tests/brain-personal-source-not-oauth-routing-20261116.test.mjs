@@ -41,7 +41,7 @@ test('today missing user-authored personal truth is SOURCE, not LinkedIn OAuth',
  assert.ok(action);
  assert.equal(action.code,'PERSONAL_SOURCE_PROOF_REQUIRED');
  assert.equal(action.action_url,null);
- assert.match(action.human_action,/echte gebeurtenis/);
+ assert.match(action.human_action,/concrete eigen gebeurtenis/);
  assert.match(action.human_action,/Niet opnieuw OAuth aanvragen/);
  assert.equal(action.notification_sent,false);
 });
