@@ -35,3 +35,18 @@ test('experiment calendar never invents personal story from business experiments
   assert.ok(cal.every(day=>day.personal.requiresVerifiedUserFact&&day.personal.topic===null));
   assert.ok(cal.every(day=>!('offerType' in day.personal)));
 });
+
+test('declutter complexity: personal story shape and ending come from the verified source, not a fixed entertainment template',()=>{
+  const personal=buildCreativeRecipe({channel:'linkedin_personal',opportunity:{topic:'Commercial audit',pain:'revenue'},seed:'2026-11-16'});
+  assert.equal(personal.styleContract,'declutter_complexity_source_led_non_template');
+  assert.equal(personal.narrativeShape,'source_determined');
+  for(const k of ['mandatoryHook','mandatoryTwist','mandatoryHumor','mandatoryQuestion','mandatoryMoral'])assert.equal(personal[k],false,k);
+  for(const k of ['comedyDevice','emotion','ctaType','awarenessStage','offerType'])assert.equal(k in personal,false,k);
+  assert.deepEqual(personal.compareRecentPostsFor,['opening','narrative_arc','length','humor','ending']);
+  const policy=config.creativePolicy.personalLinkedIn;
+  assert.equal(policy.declutterComplexity,true);
+  assert.equal(policy.repeatedPatternOutcome,'REWRITE_NOT_PUBLISH');
+  assert.ok(!policy.requiredDimensions.includes('natural_twist'));
+  assert.equal(policy.mandatoryQuestion,false);
+  assert.equal(config.creativePolicy.companyLinkedIn.objective,'qualified_demand');
+});
