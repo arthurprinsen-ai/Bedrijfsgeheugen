@@ -16,7 +16,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/revenue-content-intelligence.test.mjs",
+      "tests/brain-personal-creative-learning-20261116.test.mjs",
       "tests/brain-personal-life-only-editorial-producer-20261116.test.mjs"
     ]
   },
@@ -24,7 +24,8 @@
     "brain/creative/revenue-content-intelligence.mjs",
     "config/social-learning-engine.json",
     "2026-11-16 production: source rules migrated, but creative config and JavaScript recipe remained commercial",
-    "2026-11-16 provider LinkedIn personal metrics for 12-14 November were reactions-only; no independent pattern winning proof"
+    "2026-11-16 provider LinkedIn personal metrics for 12-14 November were reactions-only; no independent pattern winning proof",
+    "tests/brain-personal-creative-learning-20261116.test.mjs"
   ],
   "skill_targets": [
     "personal-linkedin-life-only"
