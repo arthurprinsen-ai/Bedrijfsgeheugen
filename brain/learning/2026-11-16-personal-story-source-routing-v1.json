@@ -29,5 +29,17 @@
     "provider ID and independent readback, ONE BRAIN PROCESSED, measurement"
   ],
   "never_claim": "No post and no production fix has been verified from this source candidate.",
-  "incident_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913"
+  "incident_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-source-not-oauth-routing-20261116.test.mjs"
+    ]
+  }
 }
