@@ -119,23 +119,32 @@ export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=
   const identity=`${seed}:${opportunity.topic||''}:${opportunity.pain||''}:${mode}`;
   const discovery=needDiscoveryLayer(opportunity);
   if(channel==='linkedin_personal'){
+    // Editorial recipe is never a provider permit. Only the original personal
+    // source + last-metre gates may authorize a genuine, user-confirmed event.
+    // Never recycle a commercial opportunity into Arthur's personal story.
     return {
       channel,
       mode,
-      ...discovery,
-      ...buildActivationLayer(identity,opportunity,channel),
-      textType:'observational_business_standup',
+      textType:'verified_first_person_personal_life_story',
       format:'text_story',
+      sourceContract:'personal-linkedin-personal-life-only-v1',
+      sourceStatus:'VERIFIED_UNUSED_USER_FACT_REQUIRED',
+      requiresVerifiedUserFact:true,
+      requiresUserApprovalForPrivateDetails:true,
+      requiresIndependentFinalReview:true,
+      semanticStoryFamilyUniquenessRequired:true,
+      publicationDays:'monday_to_saturday',
       comedyDevice:COMEDY_DEVICES[stableIndex(identity,COMEDY_DEVICES.length)],
       emotion:EMOTIONS[stableIndex(`${identity}:emotion`,EMOTIONS.length)],
-      painTrigger:opportunity.pain||'hidden_operational_friction',
-      fomoTrigger:'hidden_cost_of_waiting',
-      proofType:'lived_observation',
-      ctaType:'conversation_question',
-      offerType:'conversation_to_diagnostic',
-      objective:'commercial_conversation',
-      topic:opportunity.topic||null,
-      guardrails:['no_fabricated_story','no_manufactured_outrage','no_generic_ai_slogan','no_repetitive_cta']
+      ctaType:'natural_noncommercial_question_optional',
+      objective:'authentic_personal_conversation',
+      // Business radar opportunities are not evidence of Arthur's life.
+      topic:null,
+      guardrails:[
+        'no_fabricated_story','no_public_news_fallback','no_business_bridge',
+        'no_recycled_story_family','no_private_chat_as_public_permission',
+        'no_sales_cta','no_unverified_personal_details'
+      ]
     };
   }
   if(channel==='blog'){
