@@ -25,13 +25,11 @@ export function personalEditorialViolations(value, evidence={}) {
   const text=String(value??'').trim();
   const out=[];
   const fail=(code,reason)=>out.push({code,message:reason});
-  const words=text ? text.split(/\s+/u).filter(Boolean).length : 0;
   const builder=evidence?.ai_native_builder_story_verified===true;
   const observation=evidence?.observational_personal_theme_verified===true&&!builder;
   if(!builder&&personalNonBuilderBusinessSignal(text,{observational:observation}))
     fail('PERSONAL_EDITORIAL_PREPUBLISH_BUSINESS_SIGNAL','Niet-bouwverhaal bevat zakelijke taal die de definitieve LinkedIn-controle afkeurt.');
-  if(words<130||words>200)
-    fail('PERSONAL_EDITORIAL_WORD_COUNT','Persoonlijke LinkedIn-tekst: 130–200 woorden, geen intern rapport. Aangetroffen: '+words);
+  // No fixed word target. Source-led personal stories may be short or long.
   if(/(?:\*\*|__|(^|\n)\s*#{1,6}\s|(^|\n)\s*(?:-{3,}|\*{3,}|_{3,})\s*(?=\n|$)|(^|\n)\s*[-•]\s|\x60{3,}|\*(?=\S))/u.test(text))
     fail('PERSONAL_EDITORIAL_MARKDOWN','Verwijder zichtbare Markdown- en documentopmaak. LinkedIn-tekst is platte tekst.');
   if(/https?:\/\/|www\./i.test(text))
@@ -74,10 +72,45 @@ export function personalEditorialViolations(value, evidence={}) {
   if(!observation) {
     if(!/\b(?:ik|mijn|mij|me)\b/iu.test(text.slice(0,260)))
       fail('PERSONAL_EDITORIAL_AUTHENTIC_VOICE','Begin vanuit een eigen overtuiging, echt moment of geverifieerde oprichtersfrictie.');
-    if(!/\?\s*$/u.test(text))
-      fail('PERSONAL_EDITORIAL_OPEN_QUESTION','Sluit af met een oprechte open vraag voor een persoonlijk gesprek.');
   }
   if(builder&&!/\b(?:ondernemers?|bedrijven|organisaties?|strategie|keuzes?|risico|klanten?|mensen)\b/iu.test(text))
     fail('PERSONAL_EDITORIAL_ENTREPRENEUR_RELEVANCE','Een oprichtersverhaal moet een herkenbaar menselijk ondernemersprobleem raken.');
+  // Compare ORIGINAL published personal posts, never a caller-supplied winner label.
+  // This remains an editorial veto, not a new publication authorization.
+  for(const code of personalNarrativePatternViolations(text,evidence?.recentPersonalPosts||[]))
+    fail(code,'De nieuwe persoonlijke tekst gebruikt te veel dezelfde opening, afsluiting of verhaalsjabloon. Herschrijf alleen de vorm met dezelfde geverifieerde feiten.');
+  if(/\b(?:reageer met|comment met|like als|tag iemand|zet ja in de reacties)\b/iu.test(text))
+    fail('PERSONAL_EDITORIAL_ENGAGEMENT_BAIT','Geen opzettelijke reacties lokken of engagement-uitlokking.');
   return out;
+}
+
+
+/**
+ * High-precision style-pattern veto; semantic incident/story-family dedupe remains
+ * the authority for topics. False positives are more damaging than ambiguity:
+ * we only block repeated distinctive sentence frames or multi-marker templates.
+ * Inputs are actual published personal prose from the original database reader.
+ */
+export function personalNarrativePatternViolations(candidate,recentPosts=[]){
+  const text=String(candidate??'').trim();
+  if(!text)return [];
+  const normalize=value=>String(value??'').toLowerCase().normalize('NFKC')
+    .replace(/[^\\p{L}\\p{N}\\s]/gu,' ').replace(/\\s+/gu,' ').trim();
+  const lead=value=>normalize(value.split(/[.!?\\n]/u).find(Boolean)||value).split(/\\s+/u).slice(0,6).join(' ');
+  const ending=value=>normalize(value.split(/\\n+/u).filter(Boolean).at(-1)||value);
+  const markers=value=>['ik dacht dat ik gewoon','totdat ik','blijkt dat','en het mooiste','herkenbaar','ben ik de enige','ik wilde gewoon','klinkt eenvoudig'].filter(p=>normalize(value).includes(p));
+  const currentLead=lead(text), currentEnding=ending(text), currentMarkers=markers(text);
+  for(const p of Array.isArray(recentPosts)?recentPosts:[]){
+    const previous=typeof p==='string'?p:String(p?.body||'');
+    if(!previous.trim())continue;
+    const prevLead=lead(previous),prevEnding=ending(previous);
+    if(currentLead.split(' ').length>=6&&currentLead===prevLead)
+      return ['PERSONAL_EDITORIAL_REPEATED_OPENING'];
+    if(currentEnding.split(' ').length>=6&&currentEnding===prevEnding)
+      return ['PERSONAL_EDITORIAL_REPEATED_ENDING'];
+    const overlap=currentMarkers.filter(marker=>markers(previous).includes(marker));
+    if(overlap.length>=2&&/\\?\\s*$/u.test(text)&&/\\?\\s*$/u.test(previous))
+      return ['PERSONAL_EDITORIAL_REPEATED_STORY_TEMPLATE'];
+  }
+  return [];
 }
