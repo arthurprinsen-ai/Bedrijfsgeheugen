@@ -1,0 +1,55 @@
+{
+  "fingerprint": "powerhouse|legal-source|expired-primary-review-false-outdated-20261116-v1",
+  "date": "2026-11-16",
+  "status": "SOURCE_CANDIDATE_NOT_DEPLOYED",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5920",
+  "owner": "existing portal-v2/legal-regulation source editor and protected CI writer",
+  "compiler": {
+    "failure_class": "REGULATORY_SOURCE_DRIFT",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": {
+    "observation": "Original portal-v2/regelgeving.js contained three 2026-11-15 expired review deadlines while actual rights-vermoeden publication had official 2026-12-31 commencement, not old 2027-01-01 estimate.",
+    "violation": "The original strict Required CI correctly rejected expiry; only changing date without source is forbidden.",
+    "bad_state": "Three expired rules, one incorrect milestone, two legislative draft states requiring contemporary review."
+  },
+  "evidence": {
+    "previous_failing_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43842981950",
+    "official_law_commencement": "https://zoek.officielebekendmakingen.nl/stb-2026-207.html",
+    "official_proposal_progress": "https://wetgevingskalender.overheid.nl/Regeling/WGK029502",
+    "official_consultation": "https://www.internetconsultatie.nl/verduidelijkingzelfstandigenwet/b1",
+    "official_recent_parliament": "https://www.tweedekamer.nl/kamerstukken/kamervragen/detail?did=2026D56524&id=2026Z22529",
+    "official_salary_plans": "https://www.rijksoverheid.nl/themas/werk/gelijke-behandeling-op-het-werk/plannen-kabinet-meer-openheid-over-loonkloof-tussen-mannen-en-vrouwen",
+    "verified_as_of": "2026-11-16",
+    "legal_current_source_verified": true,
+    "historical_run_failed_due_review_expiry": true,
+    "new_provider_live_website_status": "UNVERIFIED",
+    "public_report_without_release_forbidden": true
+  },
+  "prevention": [
+    "Keep all previous review gates and review date comparison untouched.",
+    "Future legislative proposal dates are never recorded as effective law.",
+    "On real review only, update exact current source, status, milestone, and audit date together.",
+    "Recheck source at or before 2026-12-15; fail CI and notify original legal source owner if overdue.",
+    "Never force green CI by only advancing a date."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-legal-primary-source-reverification-20261116.test.mjs"
+    ]
+  },
+  "acceptance": [
+    "protected Required/CodeQL exact-head GREEN",
+    "protected merge",
+    "current main/production Netlify revision matches",
+    "production legal portal actual content readback",
+    "original One Brain current learning registration"
+  ],
+  "tests": [
+    "tests/brain-legal-primary-source-reverification-20261116.test.mjs",
+    "tests/delivery-regelgeving-actueel.test.mjs"
+  ]
+}
