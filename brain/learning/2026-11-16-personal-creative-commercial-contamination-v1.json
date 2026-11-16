@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|linkedin-personal|creative-commercial-contamination|20261116-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+  "compiler": {
+    "failure_class": "PERSONAL_CREATIVE_BUSINESS_RECIPE_ESCAPE"
+  },
+  "root_cause": "The retired marketing-oriented personal rules still existed in the original revenue content recipe and social learning config: observational_business_standup, commercial_conversation, business discovery and offer CTAs. This can contaminate personal briefs even after the source-level migration.",
+  "prevention": [
+    "Creative recipes for linkedin_personal never derive a supposed user event from commercial opportunity or public sources.",
+    "Personal creative policy requires verified unused user-authored fact and independent original publication guards; company creative remains commercial.",
+    "Personal format promotion requires independent comparable personal engagement evidence; limited reaction-only data is NOT_MEASURED, not success.",
+    "Any unapproved private chat facts and consumed stories are forbidden as personal content."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/revenue-content-intelligence.test.mjs",
+      "tests/brain-personal-life-only-editorial-producer-20261116.test.mjs"
+    ]
+  },
+  "evidence": [
+    "brain/creative/revenue-content-intelligence.mjs",
+    "config/social-learning-engine.json",
+    "2026-11-16 production: source rules migrated, but creative config and JavaScript recipe remained commercial",
+    "2026-11-16 provider LinkedIn personal metrics for 12-14 November were reactions-only; no independent pattern winning proof"
+  ],
+  "skill_targets": [
+    "personal-linkedin-life-only"
+  ],
+  "publication_claim": "NONE",
+  "acceptance": "Protected exact-head tests, merge, real downstream recipe use or natural owner readback, actual user-fact source review, provider readback and measurable learning required before live/closed-loop claims."
+}
