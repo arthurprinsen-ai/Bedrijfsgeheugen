@@ -41,5 +41,21 @@
     "historical_replay": [
       "tests/brain-personal-source-not-oauth-routing-20261116.test.mjs"
     ]
+  },
+  "evidence": {
+    "observed_original_day": "2026-11-16",
+    "native_obligation_status": "PLANNED",
+    "original_decision": "hold/blocked",
+    "actual_capability_reason": "PERSONAL_TRUTH_SOURCE_UNVERIFIED",
+    "misrouted_recovery_action": "CHANNEL_CAPABILITY_PROOF_REQUIRED",
+    "new_provider_post_id": null,
+    "source_recommendation_id": "bda1d533-81b7-4874-a481-2f6c2b20825e",
+    "source_recommendation_disposition": "INELIGIBLE_BUSINESS_BUILDER_FOR_PERSONAL_AUTHORED_LIVED_EVENT_POLICY",
+    "historical_replay": "tests/brain-personal-source-not-oauth-routing-20261116.test.mjs",
+    "prior_ci_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43841641142",
+    "prior_ci_result": "six historical tests and canonical learning PASSED, semantic closure correctly failed without machine-readable evidence field",
+    "real_provider_publication_proven": false,
+    "original_consumer_processed": false,
+    "next_natural_run_proven": false
   }
 }
