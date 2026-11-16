@@ -803,14 +803,27 @@ Deno.serve(async (req) => {
     // bounded automatic rewriting. Historical prose is NOT a source of new life facts.
     let recentPersonalPosts:string[]=[];
     if(pending.channel==='linkedin_personal'){
-      const {data:publishedHistory,error:historyError}=await db.from('powerhouse_content_artifacts')
-        .select('run_date,body').eq('channel','linkedin_personal').eq('status','published')
-        .order('run_date',{ascending:false}).limit(20);
-      if(historyError)throw new Error('PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE:'+historyError.message);
+      const [{data:publishedHistory,error:historyError},{data:publishedDecisions,error:decisionError}]=await Promise.all([
+        db.from('powerhouse_content_artifacts')
+          .select('run_date,body,status').eq('channel','linkedin_personal')
+          .in('status',['published','content_ready'])
+          .order('run_date',{ascending:false}).limit(30),
+        db.from('powerhouse_channel_decisions')
+          .select('run_date,state,delivery_ref').eq('channel','linkedin_personal')
+          .eq('state','published').order('run_date',{ascending:false}).limit(30)
+      ]);
+      if(historyError||decisionError)
+        throw new Error('PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE:'+(historyError||decisionError)?.message);
+      const actualPublishedDates=new Set((publishedDecisions||[])
+        .filter((d:any)=>/^urn:li:(?:share|ugcPost):[0-9]+$/i.test(clean(d.delivery_ref)))
+        .map((d:any)=>clean(d.run_date)));
       const current=Date.parse(runDate+'T00:00:00Z');
       recentPersonalPosts=(publishedHistory||[])
-        .filter((p:any)=>{const days=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;return days>=0&&days<=45;})
-        .map((p:any)=>clean(p.body)).filter(Boolean);
+        .filter((p:any)=>{
+          const days=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;
+          return days>=0&&days<=45
+            &&(p.status==='published'||actualPublishedDates.has(clean(p.run_date)));
+        }).map((p:any)=>clean(p.body)).filter(Boolean);
     }
     let recentCompanyPosts:string[]=[];
     if(pending.channel==='linkedin_company'){
