@@ -167,3 +167,13 @@ De oudere `brain/creative/revenue-content-intelligence.mjs` en `config/social-le
 Bij persoonlijke experimenten: gebruik uitsluitend een echte, nog niet gebruikte en expliciet vrijgegeven ik-gebeurtenis met concrete menselijke details. Zakelijke kansen, bronnen, marketingfunnels, privéchats zonder publicatietoestemming en nieuws vormen geen vervangende bron. Zonder geschikte persoonlijke bron: bestaande verplichting OPEN met bronactie, geen gekunstelde 130–200 woorden, geen herhaling, geen tweede sender en geen fictie.
 
 Meet per persoonlijke post inhoudelijke reacties, gesprekken, delen en profielbetrokkenheid binnen daadwerkelijk beschikbare onafhankelijke providerdata. Scheid dit strikt van bedrijfsleads/omzet; een paar reacties zonder impressies, comments of vergelijkbare historie is **geen** bewijs voor een winnend format. Alleen bewezen leereffect in de volgende originele contentkeuze geeft `LEARNING_APPLIED`. Deze leerengine maakt alleen conceptrecepten; bron-, identiteits-, privacy-, exacte SHA- en provider-gates blijven de enige publicatieautoriteit.
+
+## 16 november 2026 — declutter complexity: inhoud bepaalt de vorm
+
+Fingerprint: `personal-linkedin|source-first-style-variation|20261116-v1`.
+
+Bindend en boven oudere verplichtingen tot een onverwachte wending, humor, een vast aantal woorden, een opener of slotvraag: **een echt persoonlijk voorval bepaalt zelf de vorm**. Een persoonlijk verhaal hoeft niet grappig, leerzaam, ontroerend of interactief te zijn. Schrijf normaal, vanuit Arthur, kort waar mogelijk; schrap alle woorden die geen nieuwe gebeurtenis, menselijke nuance of herkenbare gedachte toevoegen. Geen management- of AI-toon, verkoop of geforceerde engagement-vraag.
+
+Vóór de bestaande onafhankelijke eindredactie moet de redactie de laatste persoonlijke posts vergelijken op **openingsvorm, vertelstructuur, lengte, emotie/humor en afsluiting**, naast de bestaande feitelijke source- en story-family-dedupe. Niet twee keer dezelfde formule met andere objecten: bij mechanische gelijkenis `REWRITE_NOT_PUBLISH`, met dezelfde geverifieerde feiten, zonder nieuwe privéclaims of het opnieuw publiceren van reeds verbruikte gebeurtenissen. Variatie is bron-gedreven, nooit willekeurige afwisseling van voorgeschreven comedy-, emotie- of CTA-sjablonen.
+
+Dit is een redactionele norm voor de bestaande keten en **geen zelfstandige publish-authorisatie**. Alleen de originele providerwriter na exacte bron-/hash-/privacy-/weekdagcontrole mag posten. Bron ontbreekt of gate faalt: oorspronkelijke verplichting OPEN en herstel/terugkoppeling; niet automatisch groen verklaren. Test: `tests/brain-personal-creative-learning-20261116.test.mjs`.
