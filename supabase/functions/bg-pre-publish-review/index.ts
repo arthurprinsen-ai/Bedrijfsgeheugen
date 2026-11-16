@@ -225,15 +225,28 @@ Deno.serve(async (req) => {
   // guesses or caller-supplied pattern labels. Existing original reviewer only.
   let personalHistory: string[] = [];
   if(channel==='linkedin_personal'){
-    const {data:previous,error:historyError}=await db.from('powerhouse_content_artifacts')
-      .select('run_date,body').eq('channel','linkedin_personal').eq('status','published')
-      .order('run_date',{ascending:false}).limit(20);
-    if(historyError)return json({ok:false,can_generate:false,can_publish:false,error:'PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE',channel},503);
+    const [{data:previous,error:historyError},{data:publishedDecisions,error:decisionError}]=await Promise.all([
+      db.from('powerhouse_content_artifacts')
+        .select('run_date,body,status').eq('channel','linkedin_personal')
+        .in('status',['published','content_ready'])
+        .order('run_date',{ascending:false}).limit(30),
+      db.from('powerhouse_channel_decisions')
+        .select('run_date,state,delivery_ref').eq('channel','linkedin_personal')
+        .eq('state','published').order('run_date',{ascending:false}).limit(30)
+    ]);
+    if(historyError||decisionError)return json({ok:false,can_generate:false,can_publish:false,error:'PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE',channel},503);
+    // The original artifact can remain content_ready after a provider-backed
+    // published decision. A real URN then proves eligibility as NEGATIVE style
+    // context; an unpublished draft never becomes published by inference.
+    const actualPublishedDates=new Set((publishedDecisions||[])
+      .filter((d:any)=>/^urn:li:(?:share|ugcPost):[0-9]+$/i.test(clean(d.delivery_ref)))
+      .map((d:any)=>clean(d.run_date)));
     const currentDate=Date.parse(clean(body.calendar_date)+'T00:00:00Z');
     personalHistory=(previous||[]).filter((p:any)=>{
       const posted=Date.parse(clean(p.run_date)+'T00:00:00Z');
       const age=(currentDate-posted)/86400000;
-      return Number.isFinite(age)&&age>=0&&age<=45;
+      return Number.isFinite(age)&&age>=0&&age<=45
+        &&(p.status==='published'||actualPublishedDates.has(clean(p.run_date)));
     }).map((p:any)=>clean(p.body)).filter(Boolean);
   }
   const identityBlockers = channel === 'linkedin_personal'
