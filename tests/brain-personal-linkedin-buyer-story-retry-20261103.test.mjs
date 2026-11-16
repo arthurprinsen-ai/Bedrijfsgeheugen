@@ -19,11 +19,12 @@ test('the original strict uniqueness, personal source, protected rights and edit
   assert.match(source,/PERSONAL_EDITORIAL_POLICY/);
   assert.doesNotMatch(source,/DISABLE_DUPLICATE_GATE|IGNORE_PERSONAL_EDITORIAL/);
 });
-test('real personal editorial veto rejects statusdump, non-buyer opening and excessive draft',()=>{
+test('real personal editorial veto rejects statusdump and generic AI opening without forcing word count',()=>{
   const bad='Ik wil dat AI meer doet. Vandaag 273 pagina’s, 30 bronnen en 280 acties. Wij sturen statusrapporten. Hoe kijk jij hiernaar?';
   const violations=personalEditorialViolations(bad,{ai_native_builder_story_verified:true});
   const codes=violations.map(x=>x.code);
-  assert.ok(codes.includes('PERSONAL_EDITORIAL_WORD_COUNT'));
+  assert.ok(!codes.includes('PERSONAL_EDITORIAL_WORD_COUNT'));
+  assert.ok(codes.includes('PERSONAL_EDITORIAL_PREPUBLISH_BUSINESS_SIGNAL')===false || codes.includes('PERSONAL_EDITORIAL_GENERIC_AI_HOOK'));
   assert.ok(codes.includes('PERSONAL_EDITORIAL_GENERIC_AI_HOOK'));
   assert.ok(codes.includes('PERSONAL_EDITORIAL_INTERNAL_METRICS_REPORT'));
 });

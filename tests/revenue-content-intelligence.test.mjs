@@ -28,13 +28,22 @@ test('keeps exploration near the configured twenty percent target', () => {
   assert.equal(chooseDecisionMode(['EXPLORE','EXPLOIT','EXPLOIT','EXPLOIT','EXPLOIT'], 0.2), 'EXPLOIT');
 });
 
-test('builds personal LinkedIn observational business stand-up recipe with emotion and conversation CTA', () => {
+test('personal creative recipe cannot turn a commercial opportunity into an Arthur story', () => {
   const recipe = buildCreativeRecipe({ channel:'linkedin_personal', opportunity:{ topic:'Excel dependency', pain:'single point of knowledge' }, mode:'EXPLORE' });
-  assert.equal(recipe.textType, 'observational_business_standup');
-  assert.ok(recipe.comedyDevice);
-  assert.ok(recipe.emotion);
-  assert.equal(recipe.ctaType, 'conversation_question');
-  assert.equal(recipe.objective, 'commercial_conversation');
+  assert.equal(recipe.textType, 'verified_first_person_personal_life_story');
+  assert.equal(recipe.sourceContract, 'personal-linkedin-personal-life-only-v1');
+  assert.equal(recipe.requiresVerifiedUserFact, true);
+  assert.equal(recipe.topic, null);
+  assert.equal(recipe.objective, 'authentic_personal_conversation');
+  assert.equal(recipe.narrativeShape, 'source_determined');
+  assert.equal(recipe.mandatoryQuestion, false);
+  assert.equal('ctaType' in recipe, false);
+  assert.equal('offerType' in recipe, false);
+  assert.equal('discoveryQuestion' in recipe, false);
+  assert.equal('fomoTrigger' in recipe, false);
+  assert.equal('behavioralLever' in recipe, false);
+  assert.ok(recipe.guardrails.includes('no_business_bridge'));
+  assert.ok(recipe.guardrails.includes('no_private_chat_as_public_permission'));
 });
 
 test('builds company recipe around proof, carousel/education and offer ladder', () => {
@@ -54,8 +63,8 @@ test('calendar covers every date from 12 September through 31 December without f
 });
 
 
-test('adds ethical awareness-stage and behavioral activation mechanics to recipes', () => {
-  const recipe = buildCreativeRecipe({ channel:'linkedin_personal', opportunity:{ topic:'kennisverlies', buyingSituation:'sleutelmedewerker vertrekt' }, mode:'EXPLORE', seed:'activation' });
+test('commercial activation psychology remains exclusive to company recipes', () => {
+  const recipe = buildCreativeRecipe({ channel:'linkedin_company', opportunity:{ topic:'kennisverlies', buyingSituation:'sleutelmedewerker vertrekt' }, mode:'EXPLORE', seed:'activation' });
   assert.equal(recipe.awarenessStage, 'UNAWARE');
   assert.ok(recipe.behavioralLever);
   assert.equal(recipe.categoryEntryPoint, 'sleutelmedewerker vertrekt');
@@ -74,5 +83,25 @@ test('opportunity ranking can reward category-entry-point fit, proof and frictio
 test('calendar rotates behavioral-science experiments and preserves ethical guardrails', () => {
   const calendar = buildExperimentCalendar({ start:'2026-09-12', end:'2026-09-25' });
   assert.ok(calendar.some(x => ['category_entry_point','mental_availability','social_proof','loss_framing','friction_reduction','distinctive_asset'].includes(x.experimentFamily)));
-  assert.ok(calendar.every(x => x.personal.awarenessStage && x.company.behavioralLever && x.blog.persuasionGuardrails.includes('no_deceptive_dark_patterns')));
+  assert.ok(calendar.every(x => x.personal.sourceContract === 'personal-linkedin-personal-life-only-v1' && x.company.behavioralLever && x.blog.persuasionGuardrails.includes('no_deceptive_dark_patterns')));
+});
+
+test('calendar never manufactures personal posts from B2B experiment families', () => {
+  const calendar = buildExperimentCalendar({ start:'2026-11-16', end:'2026-11-22' });
+  assert.equal(calendar.length, 7);
+  assert.ok(calendar.every(row => row.personal.topic === null));
+  assert.ok(calendar.every(row => row.personal.requiresVerifiedUserFact === true));
+  assert.ok(calendar.every(row => !('offerType' in row.personal)));
+});
+
+test('personal learning configuration rejects commercial objectives and unproven winner claims', async () => {
+  const {readFileSync} = await import('node:fs');
+  const cfg = JSON.parse(readFileSync(new URL('../config/social-learning-engine.json',import.meta.url),'utf8'));
+  const personal = cfg.creativePolicy.personalLinkedIn;
+  assert.equal(personal.defaultTextType, 'verified_first_person_personal_life_story');
+  assert.equal(personal.verifiedUnusedUserFactRequired, true);
+  assert.equal(personal.commercialConversionOptimizationForbidden, true);
+  assert.equal(personal.promoteWinnerOnlyWithIndependentPersonalMetrics, true);
+  assert.equal(personal.insufficientMetricsOutcome, 'NOT_MEASURED');
+  assert.equal(cfg.creativePolicy.companyLinkedIn.objective, 'qualified_demand');
 });
