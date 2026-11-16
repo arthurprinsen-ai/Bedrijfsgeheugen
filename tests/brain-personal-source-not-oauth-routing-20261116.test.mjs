@@ -30,7 +30,7 @@ test('today missing user-authored personal truth is SOURCE, not LinkedIn OAuth',
  const personal=result.overdue.find(x=>x.channel==='linkedin_personal');
  assert.ok(personal);
  assert.equal(personal.code,'PERSONAL_SOURCE_PROOF_REQUIRED');
- assert.equal(personal.repairHandoff,'VERIFY_CURRENT_USER_AUTHORED_FIRST_PERSON_SOURCE_THEN_REGENERATE');
+ assert.equal(personal.repairHandoff,'VERIFY_ORIGINAL_FOUNDER_SOURCE_THEN_REGENERATE');
  assert.equal(personal.requiresAuthorization,true);
  assert.match(personal.action,/Arthur/);
  assert.doesNotMatch(personal.action,/Op(en|nieuw).*OAuth/i);
