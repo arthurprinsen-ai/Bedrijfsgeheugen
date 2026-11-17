@@ -111,8 +111,22 @@ test('original 14-count/candidate identity must never be silently dropped',()=>{
    report:{...report,counts:{candidates:1,obligations:1,intakes:0}}}),/ORPHAN_ORIGINAL/);
 });
 
-test('even source-backed receipt cannot silently turn a terminal original operation into a new deployment',()=>{
+test('unproven VERIFIED status remains forbidden even with an existing GitHub receipt',()=>{
  const f=fixture({pr:true});
  f.operation.status='VERIFIED';
  assert.throws(()=>examineOriginalDelivery(f),/UNSUPPORTED_ORIGINAL_OPERATION_STATE/);
+});
+test('independently proven original consumer ACK is not downgraded and still requires effect readback',()=>{
+ const f=fixture({pr:true});
+ f.operation.status='VERIFIED';
+ f.operation.remote_ref='provider-proof-original-verified-123';
+ f.operation.evidence.consumer_owner=f.operation.capability_id;
+ f.operation.evidence.source_revision=rev;
+ f.operation.evidence.independent_consumer_readback=true;
+ const a=examineOriginalDelivery(f);
+ assert.equal(a.stage,'ORIGINAL_CONSUMER_ACK_VERIFIED_IMPACT_READBACK_DUE');
+ assert.equal(a.consumer_ack_verified,true);
+ assert.equal(a.original_state_remains,'VERIFIED');
+ assert.equal(a.independent_impact_verified,false);
+ assert.equal(a.terminal_success,false);
 });
