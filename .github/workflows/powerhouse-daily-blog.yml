@@ -409,6 +409,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           BUSINESS_DATE: ${{ steps.day.outputs.date }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
           set -euo pipefail
           node --test tests/brain-blog-stale-branch-recovery-20261117.test.mjs
