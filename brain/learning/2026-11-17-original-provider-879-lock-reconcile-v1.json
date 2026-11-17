@@ -16,9 +16,20 @@
   "fix": "Reconcile only the exact independently provider-applied migration identity as a separate protected lock-only PR. Never predeclare the pending Guardian v3 version; run its own protected PR after source lock parity is restored.",
   "prevention_rule": "Canonical deployment must reconcile provider migration history to Git source via a separately protected accurate change before releasing a new pending migration. Keep original source and exact ref; never waive checks or forge production-applied IDs.",
   "tests": [
-    "tests/supabase-migration-history-integrity.test.mjs"
+    "tests/brain-original-provider-879-lock-reconciliation-20261117.test.mjs"
   ],
   "owner": "existing-powerhouse-reliability",
   "release_status": "CANDIDATE_NOT_MERGED",
-  "provider_sent_claim": false
+  "provider_sent_claim": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-879-lock-reconciliation-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-879-lock-reconciliation-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-879-lock-reconciliation-20261117.test.mjs"
+    ]
+  }
 }
