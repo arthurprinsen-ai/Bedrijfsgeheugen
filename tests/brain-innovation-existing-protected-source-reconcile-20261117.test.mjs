@@ -124,3 +124,32 @@ test('same original 1:1 source-owner-brain packet accepts existing implementatio
  assert.equal(result[0].assessment.internal_source_readback.writer_action_joined,165);
  assert.equal(result[0].assessment.original_state_remains,'PLANNED');
 });
+
+test('a later exact-source NO_CHANGE code attempt must not erase earlier independently protected implementation',()=>{
+ const f=sourceFixture();
+ f.operation.evidence.original_code_nochange_review={
+  contract:'ORIGINAL_INNOVATION_NO_CODE_CHANGE_REVIEW_V1',
+  candidate_id:id,source_sha256:digest,source_revision:revision,
+  original_owner:owner,result:'NO_SOURCE_CHANGE_REQUIRES_INDEPENDENT_REVIEW',
+  implementation_verified:false,consumer_ack_verified:false,
+  terminal_success:false
+ };
+ const a=examineOriginalDelivery({...f,legacyPr:legacy(),sourceAudit:measured(),checkedAt:clock});
+ assert.equal(a.stage,'PREEXISTING_SOURCE_CURRENTLY_MEASURED_CAUSAL_OUTCOME_DUE');
+ assert.equal(a.existing_protected_source_pr_verified,true);
+ assert.equal(a.internal_source_readback.writer_action_joined,165);
+ assert.equal(a.independent_impact_verified,false);
+ assert.equal(a.consumer_ack_verified,false);
+ assert.equal(a.terminal_success,false);
+ assert.equal(a.original_state_remains,'PLANNED');
+});
+test('invalid nochange source identity remains fail-closed even if genuine older PR is linked',()=>{
+ const f=sourceFixture();
+ f.operation.evidence.original_code_nochange_review={
+  contract:'ORIGINAL_INNOVATION_NO_CODE_CHANGE_REVIEW_V1',
+  candidate_id:id,source_sha256:'e'.repeat(64),source_revision:revision,
+  original_owner:owner,implementation_verified:false,consumer_ack_verified:false
+ };
+ assert.throws(()=>examineOriginalDelivery({...f,legacyPr:legacy(),sourceAudit:measured(),checkedAt:clock}),
+  /NOCHANGE_SOURCE_CONFLICT/);
+});
