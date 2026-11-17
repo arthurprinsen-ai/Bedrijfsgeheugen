@@ -65,3 +65,27 @@ test('original one-radar source/date/score/URL gates and personal lane remain un
  const helper=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/business-friction-signals.mjs',import.meta.url),'utf8');
  assert.doesNotMatch(helper,/fetch\(|cron\.schedule|MEDIA_PUBLISH|GMAIL_SEND_EMAIL|supabase\.rpc/);
 });
+
+
+test('genuine 16 Nov 2026 Dutch invoice-processing harm is detectable without inventing a customer case',()=>{
+ for(const [headline,excerpt] of [
+  ['Bedrijven zetten klanten onder druk door eigen factuurfouten','Onjuiste factuur leidt tot betalingsachterstand.'],
+  ['Onjuiste facturen veroorzaken foutieve betaalverzoeken','De administratie moet worden gecorrigeerd.'],
+  ['Krappe marges en onzekerheid remmen investeringen bij mkb-maakbedrijven','Personeelstekort belemmert de planning.']
+ ]){
+  const x=score(headline,excerpt);
+  assert.equal(x.admissible,true,headline);
+  assert.equal(x.frictionScore,1,headline);
+ }
+ for(const headline of [
+  'Leverancier lanceert nieuw factuurfouten-preventieplatform',
+  'Softwarebedrijf introduceert AI-oplossing voor krappe marges'
+ ]){
+  assert.equal(score(headline,'Innovatie voor ondernemers').admissible,false,headline);
+ }
+ const src=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/index.ts',import.meta.url),'utf8');
+ assert.match(src,/factuurfout\|foutieve factu\(\?:u\)\?r\|onjuiste factu\(\?:u\)\?r/);
+ assert.match(src,/krappe marges\|marges\? onder druk/);
+ assert.match(src,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(src,/businessEvidence\?\.admissible!==false/);
+});

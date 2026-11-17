@@ -23,9 +23,9 @@ const topic=(text:string)=>{
  if(isSpreadsheetBusinessContext(t)||/verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
  if(/dubbel.*invoe|handmatig.*overzet|crm.*erp|erp.*crm|overtypen/.test(t))return'dubbele-invoer';
  if(/projectmarge|projectbudget|meerwerk/.test(t))return'projectmarge';
- if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
+ if(/groei.*winst|omzet.*marge|krappe marges|marges? onder druk/.test(t))return'groei-zonder-winst';
  if(/personeelstekort|capaciteitsplann|backlog|planning.*vol/.test(t))return'capaciteitsplanning';
- if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling/.test(t))return'debiteuren';
+ if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling|factuurfout|foutieve factu(?:u)?r|onjuiste factu(?:u)?r/.test(t))return'debiteuren';
  if(/late factur|facturatie.*vertraging|facturering.*te laat|werk.*niet gefactureerd/.test(t))return'late-facturering';
  if(/klantconcentratie|klantafhankelijk|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
  if(/klantverlies|churn|klant.*minder bestell/.test(t))return'klantverlies';
