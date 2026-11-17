@@ -40,12 +40,12 @@ test('original one-radar source/date/score/URL gates and personal lane remain un
  const materializer=readFileSync(new URL('../supabase/migrations/20261027190000_mira_entrepreneur_signal_materializer_v1.sql',import.meta.url),'utf8');
  assert.match(code,/classifyMiraBusinessFriction/);
  assert.match(code,/channel==='instagram_company'/);
- assert.match(code,/eligible:total>=0\\.72&&publication\\.eligible/);
- assert.match(code,/classifyMiraSourceUrl\\(sourceUrl\\)\\.ok/);
+ assert.match(code,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(code,/classifyMiraSourceUrl\(sourceUrl\)\.ok/);
  assert.match(code,/MAX_AGE_DAYS=45/);
- assert.match(code,/rotateDistinctMiraQueries\\(runDate,selectCanonicalRadarSourceQueries\\(runDate\\)\\)/);
+ assert.match(code,/rotateDistinctMiraQueries\(runDate,selectCanonicalRadarSourceQueries\(runDate\)\)/);
  assert.match(materializer,/p_date-90/);
  assert.match(materializer,/p_date-3/);
  const helper=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/business-friction-signals.mjs',import.meta.url),'utf8');
- assert.doesNotMatch(helper,/fetch\\(|cron\\.schedule|MEDIA_PUBLISH|GMAIL_SEND_EMAIL|supabase\\.rpc/);
+ assert.doesNotMatch(helper,/fetch\(|cron\.schedule|MEDIA_PUBLISH|GMAIL_SEND_EMAIL|supabase\.rpc/);
 });
