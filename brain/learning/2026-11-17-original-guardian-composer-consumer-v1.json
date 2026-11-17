@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|original-guardian|composer-dispatch-not-consumer|20261117-v1",
+  "obligation_id": "powerhouse|original-guardian|composer-dispatch-not-consumer|20261117-v1",
+  "failure_class": "ORIGINAL_COMPOSER_DISPATCH_FALSE_GREEN_WHILE_HTTP_503",
+  "compiler": {
+    "failure_class": "ORIGINAL_COMPOSER_DISPATCH_FALSE_GREEN_WHILE_HTTP_503",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 32,
+    "security_sensitive": true
+  },
+  "root_cause": "Original #116 Heartbeat only persisted pg_net dispatched=true/request_id, not the independently observed HTTP result from the same request. 503 SQL timeout was therefore unobserved in original ONE BRAIN Result Guardian.",
+  "observed_evidence": {
+    "date": "2026-11-17",
+    "prior_original_request_id": 34064,
+    "prior_original_http_status": 503,
+    "prior_error": "PLAN_READ:canceling statement due to statement timeout",
+    "post_original_natural_request_id": 34067,
+    "post_original_http_status": 200,
+    "post_original_processed": 5,
+    "post_original_quality_passed": 0,
+    "commercial_sends_proven_today": 0
+  },
+  "fix": "Only same original #171 result_guardian function: correlate original #116 commercial_heartbeat composer.request_id with exact net._http_response.id, classify HTTP 503 and other non-2xx as DEGRADED, HTTP200 processed as consumer-only proof; never infer Gmail delivery.",
+  "prevention_rule": "All agents must reconcile scheduler enqueue -> original provider HTTP -> processed original action IDs -> quality/source/legal gate -> Gmail immutable provider-ID -> outcomes. Zero false greens and no parallel executors.",
+  "tests": [
+    "tests/brain-original-guardian-composer-provider-readback-20261117.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-guardian-composer-provider-readback-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-guardian-composer-provider-readback-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-guardian-composer-provider-readback-20261117.test.mjs"
+    ]
+  },
+  "owner": "existing-powerhouse-reliability",
+  "release_status": "CANDIDATE_NATIVE_PROOF_PENDING",
+  "provider_sent_claim": false,
+  "financial_outcome_claim": false
+}
