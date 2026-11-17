@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|original-composer|plan-read-503-over-50s|20261117-v1",
+  "obligation_id": "powerhouse|original-composer|plan-read-503-over-50s|20261117-v1",
+  "failure_class": "ORIGINAL_COMPOSER_SQL_PLAN_READ_TIMEOUT",
+  "compiler": {
+    "failure_class": "ORIGINAL_COMPOSER_SQL_PLAN_READ_TIMEOUT",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": true
+  },
+  "root_cause": "Original fairness CTE materialized the full expensive commercial view before LIMIT and subsequently joined that same expensive view again; original composer edge returns 503 PLAN_READ timeout while Heartbeat only reports dispatch=true.",
+  "observed_evidence": {
+    "date": "2026-11-17",
+    "original_rpc_explain_ms": 52221.953,
+    "original_rpc_shared_hits": 5953293,
+    "shadow_same_result_ms": 16.103,
+    "shadow_shared_hits": 1521,
+    "original_slot_count": 5,
+    "composer_http_status": 503,
+    "composer_error": "PLAN_READ:canceling statement due to statement timeout",
+    "last_proven_commercial_sends_today": 0
+  },
+  "fix": "Same original RPC first selects eligible bounded action IDs from indexed powerhouse_sales_actions, then hydrates correlated commercial plan via LATERAL OFFSET 0, retaining protected email-slot fairness and legal send/provider gates.",
+  "prevention_rule": "A successful scheduler/pg_net dispatch is NOT a processed composer response. Require actual HTTP result, exact provider consumer processed action IDs and independent Gmail provider ID for SENT. On SQL timeout fix original query and code/skill, not global timeout or a parallel sender.",
+  "tests": [
+    "tests/brain-original-composer-bounded-fair-selection-20261117.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-composer-bounded-fair-selection-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-composer-bounded-fair-selection-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-composer-bounded-fair-selection-20261117.test.mjs"
+    ]
+  },
+  "owner": "existing-powerhouse-reliability",
+  "canonical_composer_owner": "powerhouse-human-commercial-message-composer-v2",
+  "release_status": "CANDIDATE_NOT_PRODUCTION_PROVEN",
+  "provider_sent_claim": false
+}
