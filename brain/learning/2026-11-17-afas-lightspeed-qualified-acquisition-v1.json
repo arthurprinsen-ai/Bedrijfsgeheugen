@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-17",
+  "fingerprint": "seo|organic-search-query-intent-not-linked-to-canonical-afas-landing-and-distribution|20261117-v1",
+  "owner": "existing Powerhouse SEO Order Engine / BG169",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918",
+  "status": "SOURCE_CHANGE_PENDING_PROTECTED_RELEASE",
+  "root_cause": "Google Search Console 28 complete days through 2026-11-14 showed AFAS Lightspeed specific terms and 137 AFAS landing page impressions but 0 clicks, average page position 68.7. Existing AFAS product text mentions Lightspeed but its heading remains generic, and systems-koppelen pillar has no descriptive contextual link to the canonical AFAS Lightspeed intent. Existing social and email acquisition paths were not explicitly bound to this exact existing canonical owner. Search rankings and traffic growth are not established by onpage scores or content publication.",
+  "hypothesis": "A clearer descriptive high-intent AFAS-Lightspeed subheading and contextual in-site links improve discovery and user relevance; independently authorized distribution through existing social/email owners can drive additional identifiable non-bot attributed visits. Results require prospective measurement; no uplift guarantee.",
+  "change": [
+    "afas-koppeling.html: buyer-intent h3 and contextual /webshop-koppeling internal link",
+    "systemen-koppelen.html: inline crawlable contextual link to existing canonical AFAS money owner",
+    "sitemap.xml: lastmod only for the two genuinely changed source pages",
+    "config/seo-growth-loop.json: original-owner multichannel content distribution, consent and measurement contract",
+    "English cache/skill and independent-regression tests"
+  ],
+  "compiler": {
+    "failure_class": "SEARCH_INTENT_MESSAGE_MATCH_AND_INTERNAL_LINK_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-afas-lightspeed-qualified-growth-20261117.test.mjs"
+    ],
+    "metrics": [
+      "GSC_organic_nonbrand_query_page_impressions",
+      "GSC_query_page_clicks",
+      "GA4_consented_org_and_attributed_sessions",
+      "CTA_clicks",
+      "qualified_leads",
+      "verified_orders"
+    ],
+    "windows_days": [
+      7,
+      14,
+      28
+    ]
+  },
+  "evidence": {
+    "gsc_observation_period": "2026-10-18/2026-11-14",
+    "search_console_observed_28d_impressions": 249,
+    "search_console_observed_28d_clicks": 0,
+    "afas_canonical": "https://www.bedrijfsgeheugen.nl/afas-koppeling",
+    "afas_page_28d_impressions": 137,
+    "afas_page_28d_clicks": 0,
+    "afas_page_weighted_position": 68.7,
+    "search_cluster": "afas lightspeed koppeling",
+    "gsc_last_provider_observed_at": "2026-11-17T05:16:01.343Z",
+    "sitewide_ga4_campaign_batch_on_run_date": "MISSING",
+    "verified_organic_visitor_uplift": false,
+    "verified_leads_or_orders_from_change": false,
+    "provider_verified_email_or_post_dispatch_from_this_change": false,
+    "original_post_or_email_already_sent_must_not_be_duplicated": true,
+    "original_site_to_cro_handoff_receipt": "OPEN_ORIGINAL_SOURCE_RELEASE_READBACK_GAP"
+  },
+  "post_release": "Protected Required+BRAIN+CodeQL, exact current main Netlify READY, independent public crawl of changed pages & full i18n, original ONE BRAIN source and owner consumer ACK; actual email/social provider ID and URLs before mark sent; 7/14/28 day observed effects and CRO learning. Never mark claimed website ranking/visitor improvement from this source change alone.",
+  "prevention": [
+    "Original SEO BG169 must reconcile genuine GSC query-to-page observations before changing content; preserve one original intent owner and exclude provider-navigational generic terms from commercial priority.",
+    "Original commercial landings must contain descriptive, useful buyer-intent headings and a crawlable contextual pillar-to-money link, with truthful commercial CTA, no doorway copy, sitewide NL/EN translation and only accurate modified sitemap lastmod.",
+    "Promote source-backed SEO campaigns through existing authorized LinkedIn, Mira and email owners only; require unique content, genuine authorization and independent provider ID/URL readback before marking dispatched.",
+    "One original Source #175→ONE BRAIN #140→Heartbeat revised consumer SHA plus real GSC/GA4 human visit attribution, CTA, qualified lead, verified order and revenue is needed for measured effect; missing data or stale 175 original site release proof remains OPEN, never false green."
+  ]
+}
