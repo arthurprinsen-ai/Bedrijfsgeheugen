@@ -281,8 +281,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Verify original implementation selection and path guards
-        run: node --test tests/brain-innovation-original-code-delivery-20261115.test.mjs
+      - name: Verify original implementation selection, proof-bound parent and path guards
+        run: |
+          node --test tests/brain-innovation-original-code-delivery-20261115.test.mjs
+          node --test tests/brain-innovation-proven-parent-child-source-20261117.test.mjs
       - name: Select at most one source-bound original engineering work order
         id: candidate
         env:
@@ -375,6 +377,11 @@ jobs:
             'Original-Source-Revision: '+w.source_revision,
             'Original-Source-SHA256: '+w.source_sha256,
             'Original-Correlation: '+w.correlation_id,
+            ...(w.verified_parent_pr?[
+              'Original-Verified-Parent-PR: '+w.verified_parent_pr.parent_url,
+              'Original-Verified-Parent-Merge-SHA: '+w.verified_parent_pr.merge_sha,
+              'Original-Parent-Is-Not-Child-Implementation: true'
+            ]:[]),
             'Review-Required: true',
             'Candidate only. Native original remains PLANNED until actual',
             'consumer ACK, Required/CodeQL, protected merge, exact production',
