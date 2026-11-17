@@ -31,7 +31,13 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
     obligation.owner==='original-agent:'+candidate.owner_agent&&
     string(obligation.evidence?.source_revision).length>0,'SOURCE_OWNER_IDENTITY_DRIFT');
   assert(['OPEN','READY','RUNNING','FULFILLED'].includes(obligation.state),'OBLIGATION_STATE_INVALID');
-  assert(operation.status==='PLANNED'&&!operation.remote_ref,'UNSUPPORTED_ORIGINAL_OPERATION_STATE');
+  const alreadyVerified=operation.status==='VERIFIED'&&
+    string(operation.remote_ref).length>0&&
+    operation.evidence?.consumer_owner===operation.capability_id&&
+    operation.evidence?.source_revision===obligation.evidence.source_revision&&
+    operation.evidence?.independent_consumer_readback===true;
+  assert((operation.status==='PLANNED'&&!operation.remote_ref)||alreadyVerified,
+    'UNSUPPORTED_ORIGINAL_OPERATION_STATE');
   const decision=operation.evidence?.original_owner_decision;
   const owner=operation.capability_id;
   assert(decision?.original_owner===owner&&
@@ -43,8 +49,9 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
   let stage='BASELINE_OR_SAFE_SCOPE_DUE';
   let prNumber=null,mergeSha=null,deployedSha=null,deployId=null,codeInProduction=false;
   if(statusKind(decision.decision)==='CRO_HOLDOUT')stage='CRO_CONSENT_BASELINE_AND_HOLDOUT_DUE';
-  if(statusKind(decision.decision)==='PROTECTED_ENGINEERING')stage='PROTECTED_BUILD_DUE';
-  if(noop){
+  if(alreadyVerified)stage='ORIGINAL_CONSUMER_ACK_VERIFIED_IMPACT_READBACK_DUE';
+  if(!alreadyVerified&&statusKind(decision.decision)==='PROTECTED_ENGINEERING')stage='PROTECTED_BUILD_DUE';
+  if(noop&&!alreadyVerified){
     assert(!prior&&noop.candidate_id===candidate.candidate_id&&
       noop.source_sha256===operation.payload_sha256&&
       noop.source_revision===obligation.evidence.source_revision&&
@@ -52,7 +59,7 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
       'NOCHANGE_SOURCE_CONFLICT');
     stage='NO_CHANGE_INDEPENDENT_OWNER_REVIEW_DUE';
   }
-  if(prior){
+  if(prior&&!alreadyVerified){
     assert(!noop&&prior.candidate_id===candidate.candidate_id&&
       prior.source_sha256===operation.payload_sha256&&
       prior.source_revision===obligation.evidence.source_revision&&
@@ -107,9 +114,9 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
     production_deploy_id:deployId,production_sha:deployedSha,
     verified_code_in_production:codeInProduction,
     expected_impact:null,actual_impact:null,holdout_impact:null,
-    independent_impact_verified:false,consumer_ack_verified:false,
+    independent_impact_verified:false,consumer_ack_verified:alreadyVerified,
     independent_heartbeat_learning_verified:false,terminal_success:false,
-    original_state_remains:'PLANNED',obligation_state_remains:obligation.state,
+    original_state_remains:operation.status,obligation_state_remains:obligation.state,
     checked_at:checkedAt};
   const {checked_at,...stable}=assessment;
   return Object.freeze({...assessment,assessment_fingerprint:fingerprint(stable)});
@@ -160,6 +167,9 @@ async function originalGet(config,id){
   return rows[0];
 }
 async function persistOriginal(config,{operation,assessment}){
+  // An externally proven owner ACK is immutable evidence, not a new CAS write.
+  // Keep the effect stage visible but never reset VERIFIED back to PLANNED.
+  if(operation.status==='VERIFIED'&&assessment.consumer_ack_verified===true)return false;
   const fresh=await originalGet(config,operation.id);
   assert(fresh.operation_type==='INNOVATION_INTAKE'&&fresh.status==='PLANNED'&&
     !fresh.remote_ref&&fresh.capability_id===operation.capability_id&&
