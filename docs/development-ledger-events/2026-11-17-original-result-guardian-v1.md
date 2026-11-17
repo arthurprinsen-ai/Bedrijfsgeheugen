@@ -25,3 +25,6 @@ Contract test is `tests/brain-original-result-guardian-existing-watchdog-2026111
 An initial PR #5939 Required admission failed with `PR_MACHINE_METADATA_INVALID` because machine-readable Obligation-ID, Delivery-Lane, Candidate-Type and Base-SHA were omitted. Repair PR body **without weakening the gate** and record that metadata must be completed before future PR creation.
 
 Rollback through protected PR of trigger only. Do not turn off crons or modify original providers.
+
+## 09:02 UTC — Admission recovery
+The first candidate head events captured the PR body before required machine metadata was present. The PR body is now repaired with immutable original base, existing obligation, backend/recovery lane, exclusive writer lease and exact six-file Change-Scope. This new commit triggers a fresh protected PR event and keeps the failed admission history visible. No database hotpatch or provider action was used.
