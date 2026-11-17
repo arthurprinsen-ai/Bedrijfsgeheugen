@@ -199,8 +199,10 @@ test('one original daily engineering job owns nine-quality reconciliation and ha
   const publish=codeJob.indexOf('Publish only the validated code candidate');
   assert.ok(verify>=0&&record>verify&&select>record&&validate>select);
   assert.ok(failVisible>publish,'reconciliation source problems must not starve safe original PR work');
-  assert.match(codeJob,/continue-on-error: true/);
-  assert.match(codeJob,/steps\.original_quality_reconcile\.outcome == 'failure'/);
+  assert.match(codeJob,/if node scripts\/brain\/innovation-original-evidence-reconciliation\.mjs --writeback/);
+  assert.match(codeJob,/reconciled=false/);
+  assert.match(codeJob,/steps\.original_quality_reconcile\.outputs\.reconciled == 'false'/);
+  assert.doesNotMatch(codeJob,/continue-on-error:|\|\| true|exit 0/,'provider freshness failures stay visible in original workflow');
   assert.match(codeJob,/ORIGINAL_14_QUALITY_RECONCILIATION_FAILED/);
   assert.equal((yaml.match(/^\s+- cron:/gm)||[]).length,1,'only original one daily schedule');
   assert.equal((yaml.match(/^  original-innovation-code-candidate:/gm)||[]).length,1,'no second code executor');
