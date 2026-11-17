@@ -33,6 +33,8 @@ test('original final money-page prerender preserves aligned visible H1',async()=
  assert.deepEqual(h1(built),['Twinfield API-koppeling laten maken.']);
  assert.match(built,/<link rel="canonical" href="https:\/\/www\.bedrijfsgeheugen\.nl\/twinfield-koppeling">/);
  assert.match(built,/href="\/frisse-blik"/);
+ const en=JSON.parse(await read('config/bg-static-i18n-en.d/2026-11-17-seo-twinfield-intent-h1-v1.json'));
+ assert.equal(en['Twinfield API-koppeling laten maken.'],'Have a Twinfield API integration built.');
 });
 
 test('one original SEO owner receives exact existing recommendation and no fabricated growth conclusion',async()=>{
