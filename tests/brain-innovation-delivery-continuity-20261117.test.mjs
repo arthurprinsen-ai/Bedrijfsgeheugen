@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {examineOriginalDelivery,planOriginalContinuity,CONTRACT} from '../scripts/brain/innovation-original-delivery-continuity.mjs';
 const id='2c1ecc77-58aa-4f25-ae68-e2337853fdc7';
 const opId='56e16919-6275-4c2e-9208-6ac0c8a29a29';
@@ -173,4 +174,16 @@ test('historical protected release recorded by original Brain is reconciled acro
  assert.equal(now.stage,'PRODUCTION_CODE_PRESENT_EFFECT_MEASUREMENT_DUE');
  assert.equal(now.verified_code_in_production,true);
  assert.equal(now.terminal_success,false);
+});
+
+test('daily candidate execution survives unrelated improve failure but never bypasses canonical daily admission',()=>{
+ const workflow=readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+ const job=workflow.slice(workflow.indexOf('  original-innovation-code-candidate:'));
+ assert.match(job,/needs: \[improve, daily-admission\]/);
+ assert.match(job,/needs\.daily-admission\.result == 'success'/);
+ assert.match(job,/needs\.improve\.result == 'failure'/);
+ assert.match(job,/execution_scope == 'original_code_recovery'/);
+ assert.match(job,/node scripts\/brain\/innovation-original-code-delivery\.mjs --prepare/);
+ assert.match(job,/gh pr merge "\$PR_URL" --auto --squash/);
+ assert.doesNotMatch(job,/force-push|--admin|--bypass|workflow_dispatch.*\n\s+- cron:/);
 });
