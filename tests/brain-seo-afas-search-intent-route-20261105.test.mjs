@@ -16,7 +16,8 @@ test('AFAS service owns its transactional keyword, not the pricing query', () =>
 
 test('search intent from AFAS pricing guides prospects to the canonical service', () => {
   assert.match(service, /<link rel="canonical" href="https:\/\/www\.bedrijfsgeheugen\.nl\/afas-koppeling">/);
-  assert.match(service, /<h3>AFAS webshop koppeling: bestellingen zonder overtypen<\/h3>/);
+  assert.match(service, /<h3>AFAS Lightspeed koppeling: webshoporders zonder overtypen<\/h3>/);
+  assert.match(service, /href="\/webshop-koppeling">webshop koppelen aan je boekhouding<\/a>/);
   assert.match(service, /Lightspeed koppelen aan AFAS Profit/);
   assert.match(cost, new RegExp('<a href="' + canonical.replaceAll('.', '\\.') + '">AFAS webshop koppeling laten maken<\\/a>'));
   assert.match(cost, /<link rel="canonical" href="https:\/\/www\.bedrijfsgeheugen\.nl\/blog\/wat-kost-een-afas-koppeling\/">/);
