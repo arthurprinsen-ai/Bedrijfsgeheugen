@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "github|janitor|native-actions-observer-freshness-gap|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "NATIVE_GITHUB_FAILURE_OBSERVER_SCANS_ALL_WINDOWS_BEFORE_ANY_DURABLE_BRAIN_RECEIPT"
+  },
+  "observed": {
+    "native_provider": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44053428979",
+    "native_conclusion": "failure",
+    "exact_original_occurrence": "github-actions:workflow:347590495:run:44053428979:attempt:1:failure",
+    "original_observer_last_before_independent_backfill_utc": "2026-11-17T04:32:48.961129Z",
+    "independent_backfill_observed_utc": "2026-11-17T09:40:05.797558Z",
+    "observed_run_native_hash": "295faf8a438e5713725693171949f84f2538048d17a985a8f0874b933b030556",
+    "scope_limit": "The independent gap and source code all-or-nothing write pattern are real. Actual Janitor failing job logs were not available, so failure mechanism is a proven risk but not independently established root cause of this five-hour coverage gap."
+  },
+  "root_cause": "Original scanNativeFailures collected all 12 remote GitHub Actions 4-hour windows before its FIRST canonical brain_observe_failure write. Any page source/integrity error in any window caused fail-closed before persisting earlier windows. Source code confirms this loss-of-progress failure mode; exact cause of current Janitor liveness gap requires native job logs.",
+  "repair": "In the original hourly Repository Janitor only, scan older completed native windows first and write each window's exact deduped immutable GitHub run/attempt failures to existing original Brain RPC with read-after-write BEFORE inspecting the next window. Preserve completed_windows and source-only partial_checkpoint on failure; no false readback_complete. Repeat source windows use same occurrence IDs and original readback to dedupe.",
+  "prevention": [
+    "NO_ALL_OR_NOTHING_NATIVE_ACTIONS_SCAN_BEFORE_BRAIN_WRITEBACK",
+    "PERSIST_VERIFIED_WINDOW_OCCURRENCES_BEFORE_NEXT_PROVIDER_SOURCE_CALL",
+    "ORIGINAL_FAILURE_OCCURRENCE_ID_AND_PAYLOAD_SHA_MUST_MATCH_ACROSS_RETRY",
+    "LATER_PROVIDER_SOURCE_FAILURE_RETURNS_NONZERO_WITH_VISIBLE_PARTIAL_CHECKPOINT",
+    "NO_PARTIAL_COVERAGE_REPORTED_AS_GREEN",
+    "ORIGINAL_HOURLY_JANITOR_ONE_EXECUTOR_ONLY"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-actions-observer-durable-window-20261117.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44053428979",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "2026-11-17 Supabase original brain_failure_occurrences independent exact hash readback",
+    "2026-11-17 original existing tools/delivery/github-actions-failure-observer.mjs previously emitted after complete 12-window scan"
+  ],
+  "acceptance": "Exact-head Required/CodeQL with original tests, protected merge, natural original Janitor run, independent original ONE BRAIN receipt freshness on new failed run, original partial failure artifact on controlled read-error without false green and second natural run confirming idempotency. Source gap OPEN until those proofs."
+}
