@@ -117,61 +117,98 @@ export async function observeNativeFailureBatch(items,{authority,fetchImpl=globa
 export async function scanNativeFailures({env=process.env,api,now=new Date(),
  observe=observeNativeFailure,authority}={}){
  if(env.GITHUB_REPOSITORY!==REPO)throw Error('NATIVE_REPOSITORY_IDENTITY_MISMATCH');
- // Overlapping 48h and 4-hour buckets handle GitHub's documented 1,000-result
- // search limit. An incomplete bucket MUST fail closed rather than silently lose runs.
+ // Scan the older complete windows before the recent active window. A transient
+ // failure in the newest source window must never erase older verified work.
  const earliest=now.getTime()-48*3600000;
- const failed=[];
- let scanned=0,pages=0;
- for(let slot=0;slot<12;slot++){
-  const endMs=now.getTime()-slot*4*3600000;
-  const startMs=endMs-4*3600000;
-  const range=encodeURIComponent(new Date(startMs).toISOString()+'..'+
-    new Date(endMs-1).toISOString());
-  let total=null,seen=0,complete=false;
-  for(let page=1;page<=10;page++){
-   const path='repos/'+REPO+'/actions/runs?status=completed&per_page=100&page='+page+
-     '&created='+range;
-   const response=await api(path);
-   const count=Number(response?.total_count);
-   if(!Array.isArray(response?.workflow_runs)||!Number.isSafeInteger(count)||count<0)
-    throw Error('GITHUB_RUNS_SOURCE_UNAVAILABLE');
-   if(count>1000)throw Error('GITHUB_RUNS_WINDOW_OVERFLOW');
-   if(total!==null&&total!==count)throw Error('GITHUB_RUNS_WINDOW_CHANGED_RETRY_REQUIRED');
-   total=count;pages++;seen+=response.workflow_runs.length;
-   scanned+=response.workflow_runs.length;
-   for(const run of response.workflow_runs){
-    const verdict=classifyActionsRun(run);
-    if(verdict.state==='SOURCE_RUN_INVALID')throw Error('GITHUB_RUN_SOURCE_IDENTITY_UNVERIFIED');
-    if(verdict.state==='NATIVE_FAILURE')failed.push(verdict);
-   }
-   if(response.workflow_runs.length<100){complete=true;break;}
-  }
-  if(!complete||seen!==total)throw Error('GITHUB_RUNS_PAGINATION_INCOMPLETE');
- }
- const unique=new Map(failed.map(x=>[x.occurrenceId,x]));
+ const unique=new Map();
  const result={schema:'github-actions-native-failure-observer-v1',
-  window_start_date:new Date(earliest).toISOString(),windows:12,pages,scanned,failures:unique.size,
-  recorded:0,already_verified:0,readback_complete:false,
-  source:'original-hourly-janitor',global_green:false};
- const auth=authority||resolveBrainAuthority(env);
- if(observe===observeNativeFailure){
-  const items=[...unique.values()];
-  for(let start=0;start<items.length;start+=40){
-   const batch=await observeNativeFailureBatch(items.slice(start,start+40),{authority:auth});
-   result.recorded+=batch.recorded;
-   result.already_verified+=batch.already_verified;
+  window_start_date:new Date(earliest).toISOString(),windows:12,pages:0,scanned:0,
+  failures:0,recorded:0,already_verified:0,completed_windows:0,
+  readback_complete:false,source:'original-hourly-janitor',global_green:false};
+ let auth=authority;
+ const observeWindow=async items=>{
+  if(!items.length)return;
+  auth=auth||resolveBrainAuthority(env);
+  if(observe===observeNativeFailure){
+   for(let start=0;start<items.length;start+=40){
+    const batch=await observeNativeFailureBatch(items.slice(start,start+40),{authority:auth});
+    result.recorded+=batch.recorded;
+    result.already_verified+=batch.already_verified;
+   }
+  }else{
+   for(const item of items){
+    const state=await observe(item,{authority:auth});
+    if(state==='RECORDED_AND_VERIFIED')result.recorded++;
+    else if(state==='ALREADY_VERIFIED')result.already_verified++;
+    else throw Error('BRAIN_FAILURE_RECEIPT_NOT_PROVEN');
+   }
   }
- }else{
-  for(const item of unique.values()){
-   const state=await observe(item,{authority:auth});
-   if(state==='RECORDED_AND_VERIFIED')result.recorded++;
-   else if(state==='ALREADY_VERIFIED')result.already_verified++;
-   else throw Error('BRAIN_FAILURE_RECEIPT_NOT_PROVEN');
+ };
+ try{
+  // Every fully scanned window gets durable ORIGINAL BRAIN readback before
+  // the next source API call; never defer all writes to the last 48h page.
+  for(let slot=11;slot>=0;slot--){
+   const endMs=now.getTime()-slot*4*3600000;
+   const startMs=endMs-4*3600000;
+   const range=encodeURIComponent(new Date(startMs).toISOString()+'..'+
+     new Date(endMs-1).toISOString());
+   let total=null,seen=0,complete=false;
+   const windowFailures=new Map();
+   for(let page=1;page<=10;page++){
+    const path='repos/'+REPO+'/actions/runs?status=completed&per_page=100&page='+page+
+      '&created='+range;
+    const response=await api(path);
+    const count=Number(response?.total_count);
+    if(!Array.isArray(response?.workflow_runs)||!Number.isSafeInteger(count)||count<0)
+     throw Error('GITHUB_RUNS_SOURCE_UNAVAILABLE');
+    if(count>1000)throw Error('GITHUB_RUNS_WINDOW_OVERFLOW');
+    if(total!==null&&total!==count)throw Error('GITHUB_RUNS_WINDOW_CHANGED_RETRY_REQUIRED');
+    total=count;result.pages++;seen+=response.workflow_runs.length;
+    result.scanned+=response.workflow_runs.length;
+    for(const run of response.workflow_runs){
+     const verdict=classifyActionsRun(run);
+     if(verdict.state==='SOURCE_RUN_INVALID')throw Error('GITHUB_RUN_SOURCE_IDENTITY_UNVERIFIED');
+     if(verdict.state==='NATIVE_FAILURE'){
+      const previous=windowFailures.get(verdict.occurrenceId);
+      if(previous&&previous.payloadSha256!==verdict.payloadSha256)
+       throw Error('GITHUB_RUN_SOURCE_EVIDENCE_CONFLICT');
+      windowFailures.set(verdict.occurrenceId,verdict);
+     }
+    }
+    if(response.workflow_runs.length<100){complete=true;break;}
+   }
+   if(!complete||seen!==total)throw Error('GITHUB_RUNS_PAGINATION_INCOMPLETE');
+   const fresh=[];
+   for(const item of windowFailures.values()){
+    const previous=unique.get(item.occurrenceId);
+    if(previous&&previous.payloadSha256!==item.payloadSha256)
+     throw Error('GITHUB_RUN_CROSS_WINDOW_SOURCE_CONFLICT');
+    if(!previous)fresh.push(item);
+   }
+   // Use the same source-verified idempotent brain_observe_failure RPC.
+   // A source error later cannot roll back already proven occurrences.
+   await observeWindow(fresh);
+   for(const item of fresh)unique.set(item.occurrenceId,item);
+   result.completed_windows++;
+   result.failures=unique.size;
   }
+  // Retain the original authority check even for an all-success empty scan.
+  auth=auth||resolveBrainAuthority(env);
+  result.readback_complete=true;
+  return result;
+ }catch(error){
+  // Operator audit has the original bounded proof counters, never raw secrets
+  // or a false full-coverage success on a failed source window.
+  if(error&&typeof error==='object')error.partial_checkpoint=Object.freeze({
+   completed_windows:result.completed_windows,scanned:result.scanned,
+   pages:result.pages,verified_failures:result.failures,
+   recorded:result.recorded,already_verified:result.already_verified,
+   readback_complete:false,global_green:false
+  });
+  throw error;
  }
- result.readback_complete=true;
- return result;
 }
+
 const api=path=>JSON.parse(execFileSync('gh',['api',path],{
  encoding:'utf8',timeout:20000,maxBuffer:10_000_000,stdio:['ignore','pipe','pipe']}));
 if(process.argv[1]?.endsWith('github-actions-failure-observer.mjs')&&
@@ -185,7 +222,9 @@ if(process.argv[1]?.endsWith('github-actions-failure-observer.mjs')&&
   await mkdir('.artifacts',{recursive:true});
   await writeFile('.artifacts/github-actions-failure-observer.json',
     JSON.stringify({schema:'github-actions-native-failure-observer-v1',
-      readback_complete:false,global_green:false,error:clean(error?.message)},null,2)+'\n');
+      readback_complete:false,global_green:false,
+      partial_checkpoint:error?.partial_checkpoint||null,
+      error:clean(error?.message)},null,2)+'\n');
   console.error('GITHUB_ACTIONS_INCIDENT_COVERAGE_UNVERIFIED:'+clean(error?.message));
   process.exitCode=1;
  }
