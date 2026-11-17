@@ -105,3 +105,57 @@ REVOKE ALL ON public.powerhouse_cro_post_signal_v1 FROM PUBLIC,anon,authenticate
 GRANT SELECT ON public.powerhouse_cro_post_signal_v1 TO service_role;
 COMMENT ON VIEW public.powerhouse_cro_post_signal_v1 IS
  'Provider observed post diagnostics, no synthetic impressions, causal lift, paid orders or exact-age claim. Server only.';
+
+-- Email CRO remains inside the original Powerhouse sales/reply/learning lineage.
+-- Historical aggregate counts are not conflated with independent provider proof.
+CREATE OR REPLACE VIEW public.powerhouse_cro_email_signal_v1 WITH (security_invoker=true) AS
+WITH historical AS (
+ SELECT coalesce(nullif(persuasion_strategy,''),'unknown') AS persuasion_strategy,
+ count(*) AS cohort_rows,
+ coalesce(sum(greatest(coalesce(sent_count,0),0)),0)::bigint AS reported_sends,
+ coalesce(sum(greatest(coalesce(reply_count,0),0)),0)::bigint AS reported_replies,
+ coalesce(sum(greatest(coalesce(positive_reply_count,0),0)),0)::bigint AS reported_positive_replies,
+ coalesce(sum(greatest(coalesce(unsubscribe_count,0),0)),0)::bigint AS reported_unsubscribes,
+ coalesce(sum(greatest(coalesce(order_count,0),0)),0)::bigint AS reported_orders,
+ max(last_recomputed_at) AS stats_updated_at
+ FROM public.powerhouse_email_learning_stats GROUP BY 1
+), provider AS (
+ SELECT count(*) FILTER (WHERE executed_at>=now()-interval '7 days') AS recorded_executions_7d,
+ count(*) FILTER (WHERE executed_at>=now()-interval '7 days'
+   AND evidence->>'provider_send_ack_verified'='true'
+   AND evidence->>'provider_readback_verified'='true') AS verified_send_readbacks_7d,
+ max(executed_at) FILTER (
+   WHERE evidence->>'provider_send_ack_verified'='true'
+   AND evidence->>'provider_readback_verified'='true') AS latest_verified_send_readback_at
+ FROM public.powerhouse_sales_actions
+ WHERE channel='email' AND action_type IN ('autonomous_email','reply_followup','email_followup')
+), replies AS (
+ SELECT max(occurred_at) AS last_reply_event_at FROM public.powerhouse_email_reply_events
+), suppressions AS (
+ SELECT count(*) AS active_suppressions
+ FROM public.powerhouse_email_contact_suppressions WHERE active IS TRUE
+)
+SELECT 'email'::text AS source_channel,h.persuasion_strategy AS content_key,
+ h.cohort_rows,h.reported_sends,h.reported_replies,h.reported_positive_replies,
+ h.reported_unsubscribes,h.reported_orders,h.stats_updated_at,
+ p.recorded_executions_7d,p.verified_send_readbacks_7d,p.latest_verified_send_readback_at,
+ r.last_reply_event_at,s.active_suppressions,
+ CASE
+ WHEN p.verified_send_readbacks_7d=0 THEN 'NO_RECENT_VERIFIED_EMAIL_SEND'
+ WHEN h.stats_updated_at IS NULL OR h.stats_updated_at<now()-interval '48 hours' THEN 'EMAIL_LEARNING_STALE'
+ WHEN h.reported_sends<30 THEN 'LOW_REPORTED_SAMPLE'
+ ELSE 'OBSERVATIONAL_ONLY_CONTROLLED_EXPERIMENT_REQUIRED'
+ END AS evidence_status,
+ CASE
+ WHEN p.verified_send_readbacks_7d=0 THEN 'REPAIR_ORIGINAL_AUTHORIZED_SEND_AND_PROVIDER_READBACK'
+ WHEN h.stats_updated_at IS NULL OR h.stats_updated_at<now()-interval '48 hours' THEN 'RECOMPUTE_ORIGINAL_LEARNING_FROM_PROVIDER_EVIDENCE'
+ WHEN h.reported_sends<30 THEN 'HOLD_PROMOTION_UNTIL_COMPARABLE_SAMPLE_AND_SUPPRESSION_CHECK'
+ ELSE 'DESIGN_CONSENT_AWARE_EMAIL_CONTROLLED_TEST'
+ END AS suggested_action,
+ CASE WHEN h.stats_updated_at>=now()-interval '48 hours' AND h.reported_sends>=30
+ THEN round(100.0*h.reported_replies/nullif(h.reported_sends,0),2) END AS eligible_observed_reply_pct
+FROM historical h CROSS JOIN provider p CROSS JOIN replies r CROSS JOIN suppressions s;
+REVOKE ALL ON public.powerhouse_cro_email_signal_v1 FROM PUBLIC,anon,authenticated;
+GRANT SELECT ON public.powerhouse_cro_email_signal_v1 TO service_role;
+COMMENT ON VIEW public.powerhouse_cro_email_signal_v1 IS
+ 'Server-only privacy-minimal email diagnostic: recorded execution and explicit send+readback proof separate from historical reported learning; no person/address/body, no causal or paid outcome claim.';
