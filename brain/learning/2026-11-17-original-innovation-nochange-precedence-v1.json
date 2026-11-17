@@ -1,0 +1,53 @@
+{
+  "contract": "ORIGINAL_INNOVATION_NOCHANGE_PRECEDENCE_LEARNING_V1",
+  "fingerprint": "powerhouse|innovation|later-nochange-shadowed-older-protected-release|20261117-v1",
+  "root_cause": "The existing universal original innovation continuity guarded historical protected source processing with !noop. A later source-bound Codex NO_CHANGE (zero workspace source/test diff) on the same original candidate caused the real independently protected historical implementation to be skipped, reverting original delivery stage from PROTECTED_BUILD_DUE to NO_CHANGE_INDEPENDENT_OWNER_REVIEW_DUE, despite genuine protected PR #5857 and current full-week source evidence.",
+  "prevention_rule": "Never allow a newer zero-diff/nochange attempt to hide an earlier valid protected release on the identical original candidate, owner, source revision and payload. Validate nochange receipt strictly, then independently verify original merged PR and fresh canonical PostgREST source audit; never convert this to a terminal innovation or fabricate provider sends, external sales or financial effect.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+    "original_operation_id": "edebcb32-335b-49f0-b527-eb4289f95c5c",
+    "original_owner": "agent:agent-integration-engineer",
+    "production_before": {
+      "operation_status": "PLANNED",
+      "obligation_state": "OPEN",
+      "original_stage": "NO_CHANGE_INDEPENDENT_OWNER_REVIEW_DUE",
+      "has_older_protected_implementation": true,
+      "has_later_nochange_review": true,
+      "internal_source_readback": null,
+      "operation_version": 15,
+      "observed_at": "2026-11-17T20:40:41Z"
+    },
+    "source_nochange_observed_at": "2026-11-17T20:30:48.717Z",
+    "prior_native_protected_implementation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857",
+    "prior_current_source_implementation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5983",
+    "original_successful_but_wrong_stage_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44171758002",
+    "replay_tests": "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs",
+    "scope": "same canonical existing Powerhouse Daily Self Evolution, no new worker, schedule, table or writer",
+    "postrelease_native_run": "NOT_YET_VERIFIED",
+    "measured_business_effect": "NOT_PROVEN",
+    "external_provider_delivery": "NOT_PROVEN",
+    "original_heartbeat_learning": "NOT_PROVEN"
+  },
+  "terminal_success": false,
+  "rollback": "Protected revert of conditional and two negative tests; preserve all original proof and 14 original obligations.",
+  "source_refs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5983"
+  ]
+}
