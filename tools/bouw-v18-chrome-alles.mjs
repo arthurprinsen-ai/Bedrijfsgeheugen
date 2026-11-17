@@ -240,6 +240,38 @@ if (fouten.length) {
   if (voet) await writeFile('.github/canoniek/voet.html', voet[0], 'utf8');
 }
 
+// Rituals-richting stap 6 (besluit Arthur 17 nov 2026: rust en exclusieve begeerte
+// voor site en portaal; energie en humor blijven voor social). Eén stille laag
+// over alle binnenpagina's: lichtere kop, kleine hoofdletter-labels, haarlijnen
+// in plaats van schaduwen, trage overgangen. Alleen vorm, ritme en toon; geen
+// tekst, route of gedrag verandert. Pagina's zonder .inhoud-kop blijven ongemoeid.
+{
+  const ritualsBinnen = `<style id="v18-binnen-rituals">
+.inhoud-kop{padding:clamp(104px,12vw,132px) 0 clamp(48px,6vw,68px)!important}
+.inhoud-kop::after{background:linear-gradient(180deg,rgba(7,26,60,.5),rgba(7,26,60,.86))!important}
+.inhoud-kop h1{font-size:clamp(2rem,4.2vw,3.1rem)!important;font-weight:600!important;line-height:1.12!important;letter-spacing:-.02em!important;max-width:24ch!important;margin:12px 0 16px!important}
+.inhoud-kop .intro{font-size:clamp(1rem,1.5vw,1.1rem)!important;line-height:1.7!important;color:rgba(255,255,255,.74)!important;max-width:58ch!important}
+.inhoud-kop .hero-kicker{font-size:11px!important;font-weight:500!important;letter-spacing:.22em!important;text-transform:uppercase;color:rgba(255,255,255,.7)!important}
+.inhoud-kop .hero-kicker span{box-shadow:none!important;opacity:.7}
+.inhoud-kop video{filter:brightness(.5) saturate(.8)!important}
+.inhoud-kruim{border-bottom:1px solid rgba(15,23,42,.08)!important}
+.inhoud-kruim nav{font-size:12.5px;letter-spacing:.02em}
+.inhoud-body .bgx-vraagbalk,.inhoud-body .bgx-bereik,.inhoud-body .kaart,.inhoud-body .tegel{box-shadow:none!important;border:1px solid rgba(15,23,42,.1)!important;transition:border-color .5s ease,background-color .5s ease!important}
+.inhoud-body .kaart:hover,.inhoud-body .tegel:hover{border-color:rgba(15,23,42,.28)!important;transform:none!important}
+.inhoud-body .bgx-kop{font-weight:500!important;letter-spacing:.2em!important}
+.inhoud-body h2{font-weight:600!important;letter-spacing:-.015em!important}
+.inhoud-body .knop,.inhoud-body .btn{transition:background-color .5s ease,border-color .5s ease,color .5s ease!important;box-shadow:none!important}
+@media(max-width:700px){.inhoud-kop h1{font-size:clamp(1.75rem,8vw,2.1rem)!important}}
+@media(prefers-reduced-motion:reduce){.inhoud-body *{transition:none!important}}
+</style>`;
+  for (const pad of await allePaginas()) {
+    let h = await readFile(pad, 'utf8');
+    if (!h.includes('inhoud-kop') || h.includes('v18-binnen-rituals')) continue;
+    h = h.replace('</head>', ritualsBinnen + '\n</head>');
+    await writeFile(pad, h, 'utf8');
+  }
+}
+
 // De losse bouwstenen onder components/ zijn fragmenten, geen pagina's. Ze
 // horen niet in Google: dunne inhoud die met echte pagina's concurreert.
 for await (const p of glob('components/*/*.html')) {
