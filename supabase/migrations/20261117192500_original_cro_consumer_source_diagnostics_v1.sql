@@ -181,3 +181,7 @@ BEGIN
 END;
 $function$
 ;
+
+-- Preserve production's service-role-only contract for this SECURITY DEFINER.
+REVOKE EXECUTE ON FUNCTION public.powerhouse_daily_source_consume_v1(date) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_daily_source_consume_v1(date) TO service_role;
