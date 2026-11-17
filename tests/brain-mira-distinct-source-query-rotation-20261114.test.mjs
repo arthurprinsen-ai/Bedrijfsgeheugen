@@ -144,3 +144,27 @@ test('18 Nov same eight slots discover real invoice-processing failures instead 
  assert.match(materializer,/p_date-90/);
  assert.match(materializer,/p_date-3/);
 });
+
+
+test('Nov 18 keeps exactly the original six business and two personal source searches, using shorter independently researchable MKB problems',()=>{
+ const date='2026-11-18';
+ const original=selectCanonicalRadarSourceQueries(date);
+ const rotated=rotateDistinctMiraQueries(date,original);
+ assert.equal(rotated.length,8);
+ const business=rotated.filter(x=>x.channel==='instagram_company');
+ assert.equal(business.length,6);
+ assert.equal(rotated.filter(x=>x.channel==='linkedin_personal').length,2);
+ assert.deepEqual(business.map(x=>x.query),[
+  'Excel administratie fouten','dubbele invoer administratie','bouw meerwerk kosten',
+  'krappe marges mkb','bedrijven personeelstekort',
+  'bedrijven factuurfouten betalingsachterstanden'
+ ]);
+ assert.deepEqual(rotated.filter(x=>x.channel==='linkedin_personal'),
+   original.filter(x=>x.channel==='linkedin_personal'));
+ const local=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/distinct-source-queries.mjs',import.meta.url),'utf8');
+ assert.doesNotMatch(local,/fetch\(|cron\.schedule|net\.http_post|GMAIL_SEND_EMAIL|MEDIA_PUBLISH/);
+ assert.match(radar,/businessEvidence\?\.admissible!==false/);
+ assert.match(radar,/source_published_at:publication\.publishedAt/);
+ assert.match(materializer,/p_date-90/);
+ assert.match(materializer,/p_date-3/);
+});
