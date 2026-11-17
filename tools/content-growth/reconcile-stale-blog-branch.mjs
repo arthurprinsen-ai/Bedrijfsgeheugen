@@ -36,10 +36,17 @@ function readCanonicalBlogApproval(date){
  const url='https://adhjwmvyoixzjtmiroln.supabase.co/rest/v1/content_publication_obligations'
   +'?tenant_id=eq.canonical&channel=eq.blog&publication_date=eq.'+date
   +'&select=status,approved_at,published_at,live_proven_at,external_id&limit=1';
- const result=execFileSync('curl',['--fail','--silent','--show-error','--max-time','15',
-  '--header','apikey: '+key,'--header','Authorization: Bearer '+key,url],
-  {encoding:'utf8',timeout:25000,maxBuffer:65536});
- const rows=JSON.parse(result);
+ let result;
+ try {
+  result=execFileSync('curl',['--fail','--silent','--show-error','--max-time','15',
+   '--header','apikey: '+key,'--header','Authorization: Bearer '+key,url],
+   {encoding:'utf8',timeout:25000,maxBuffer:65536});
+ } catch {
+  // Never expose a privileged request's command arguments in public Actions logs.
+  throw Error('BLOG_RECOVERY_CANONICAL_READ_FAILED');
+ }
+ let rows;
+ try { rows=JSON.parse(result); } catch {throw Error('BLOG_RECOVERY_CANONICAL_PARSE_FAILED');}
  if(!Array.isArray(rows)||rows.length!==1)throw Error('BLOG_RECOVERY_CANONICAL_STATUS_UNVERIFIED');
  return canonicalBlogApprovalState(rows[0]);
 }
