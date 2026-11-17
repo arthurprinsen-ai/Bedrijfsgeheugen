@@ -1,0 +1,31 @@
+{
+  "fingerprint": "website|rituals-direction|lek-only-frisse-blik-calm-kop|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "original v18 generators (tools/bouw-v18-views.mjs, tools/bouw-v18-chrome.mjs) and assets/kop.css",
+  "obligation_id": "website|rituals-direction|lek-only-frisse-blik-calm-kop|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "DESIGN_DECISION_DRIFT",
+    "scope": "RUNTIME",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A merkbesluit (17 nov 2026: rust en exclusieve begeerte voor website en portaal) herzag het besluit van 3 sep dat de gele LEK-teller op elke pagina staat; de teller werd door de generatoren overal geplaatst.",
+  "correction": "LEK alleen op /frisse-blik via de generatoren; kop-overgangen trager en uit bij prefers-reduced-motion. Geen inhoud, kleur of navigatie gewijzigd; homepage-payload ongemoeid.",
+  "prevention": [
+    "Wijzig site-opmaak in de generatoren, nooit in gegenereerde HTML.",
+    "Leg een herzien ontwerpbesluit vast in Notion en in docs/changes voordat het wordt gebouwd.",
+    "Claim geen gedragseffect zonder voor/na-meting (scrolldiepte home, klik op Frisse blik, portaalaanmelding)."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs"],
+    "canary": ["tests/seo-homepage-context-slider-readability.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs", "tests/seo-homepage-context-slider-readability.test.mjs"],
+    "source": ["tools/bouw-v18-views.mjs", "tools/bouw-v18-chrome.mjs", "assets/kop.css"],
+    "outcome": "Lokaal: LEK 1x op frisse-blik, 0x op product/cases/over-ons; productie-readback nog open."
+  }
+}
