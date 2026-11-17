@@ -14,3 +14,8 @@
 - Status tijdens schrijven: kandidaat; niet onafhankelijk live, niet bewezen tot commercieel effect.
 - Regels: geen PII, geen bruto formulierinhoud, geen omzeiling van toestemming, geen fictieve paid orders, geen missend bewijs als nul, geen tweede meet-/leerlus.
 - Volgende verificatie: exacte head CI Required/CodeQL, migratie-lock, beschermde merge, Supabase productiereadback van service-only views en originele CRO/Heartbeat-effectobservatie.
+
+## Scoped CI failure and recovery — 17 November 2026
+- Exact rejected head `653c54ee9d4d9dae49219d5e6ba38cd6d7762698`: Required preflight failure `SCOPE_CONTAMINATED` because PR metadata `Change-Scope: 5 files` was a placeholder; `Scope-Budget: 5 files` was also not parseable as an integer.
+- Repaired the **same** PR #5964 metadata to four explicit non-verification paths with `Scope-Budget: 4`. The existing `tests/` file remains a verification artifact, not a new product file; existing fail-closed hygiene code was not altered.
+- The prior failed run stays as evidence. Only a new exact-head Required + CodeQL pass, preview migration replay and post-merge provider readback may establish release completion. No assertion of paid conversion or live site improvement from this documentation step.
