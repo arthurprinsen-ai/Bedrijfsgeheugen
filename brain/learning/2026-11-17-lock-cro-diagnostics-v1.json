@@ -1,0 +1,24 @@
+{
+  "fingerprint": "supabase|migration-lock|cro-diagnostics-migration-without-lock|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "agent-reliability",
+  "obligation_id": "supabase|migration-lock|cro-diagnostics-migration-without-lock|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "MIGRATION_LOCK_DRIFT", "scope": "CI", "machine_enforceable": true, "repeat_count": 4, "security_sensitive": false},
+  "root_cause": "Een CRO-PR voegde een migratie toe die op de provider is toegepast zonder de lock in dezelfde wijziging bij te werken; main werd rood op de lock-tests.",
+  "correction": "Eén regel toegevoegd aan de lock na providerreadback; geen test aangepast.",
+  "prevention": [
+    "Werk supabase/migration-history.lock.json in dezelfde PR bij als de migratie, met providerreadback.",
+    "Lees voor een lockwijziging altijd eerst de providergeschiedenis; voeg nooit een versie toe die daar niet staat."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-cro-production-migration-lock-20261029.test.mjs"],
+    "canary": ["tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-cro-production-migration-lock-20261029.test.mjs", "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"],
+    "source": ["supabase/migration-history.lock.json"],
+    "outcome": "Lokaal: lock 880 = bestanden 880; provider bevat de versie. PR-checks en productie-readback open."
+  }
+}
