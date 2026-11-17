@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|instagram|mira-source-vendor-news-instead-of-concrete-friction|20261117-v1",
+  "obligation_id": "powerhouse|instagram|mira-source-real-friction|20261117-v1",
+  "owner": "original powerhouse-mira-problem-radar-v1",
+  "source_revision": "PR #5931",
+  "observed": "2026-11-16 20:02 UTC: 7 original signals, 0 eligible for original 17-Nov due Instagram",
+  "root_cause": "Broader quote-followup searches mostly returned neutral software/vendor launches, not evidence of a specific stuck quote; original source score stayed below 0.72.",
+  "correction": "Use two distinct original-radar-only quote customer-friction phrases without changing eight-slot provider budget or eligibility/identity gates.",
+  "prevention": "Require real dated source URL and >=0.72 with 90d URL and 3d topic originality before any original winner, media claim or Meta write.",
+  "test": "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs",
+  "proof_status": "SOURCE_CODE_CANDIDATE_ONLY",
+  "production_post": "NOT_PROVEN",
+  "next_safe_owner_action": "Protected merge, exact Supabase production source parity, then next natural original radar source-intake result and original producer/media/provider consumer receipts.",
+  "do_not_create_new_scheduler": true,
+  "failure_class": "SOURCE_RELEVANCE",
+  "scope": "CONTENT",
+  "machine_enforceable": true,
+  "repeat_count": 2,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SOURCE_RELEVANCE",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "tests": [
+    "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+  ],
+  "evidence": {
+    "canonical_obligation": "instagram:2026-11-17",
+    "last_radar": "2026-11-16T20:02:00Z",
+    "eligible_source_count": 0,
+    "facebook_instagram_media_id": null,
+    "source_scores_business_candidates": [
+      0.661,
+      0.69
+    ],
+    "provider_outcome": "NOT_PUBLISHED"
+  }
+}
