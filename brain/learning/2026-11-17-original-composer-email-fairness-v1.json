@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|commercial|composer-email-fairness|20261117-v1",
+  "obligation_id": "powerhouse|commercial|composer-email-fairness|20261117-v1",
+  "failure_class": "COMPOSER_CHANNEL_PRIORITY_STARVATION",
+  "compiler": {
+    "failure_class": "COMPOSER_CHANNEL_PRIORITY_STARVATION",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Existing original composer dispatches only five candidates every five minutes. Legacy higher-priority LinkedIn-DM actions occupy all top-five slots; newly approved prepared email is excluded despite a successful Result Guardian fallback.",
+  "observed_evidence": {
+    "date": "2026-11-17",
+    "original_dispatch_limit": 5,
+    "top_5_dm": 5,
+    "top_5_email": 0,
+    "original_candidate_count": 14,
+    "original_email_candidates": 3,
+    "original_prepared_email": 2,
+    "new_guardian_email_priority": 66.38,
+    "last_email_delivery_proven_today": 0
+  },
+  "fix": "Restore bounded fair slots inside same original SQL candidate RPC. Reserve at most two existing batch slots for original email candidates while preserving existing eligibility, composer source/quality and provider consent gates.",
+  "prevention_rule": "Every canonical composer batch with pending prepared emails must offer at least one original email candidate for independent source/quality evaluation when capacity exists; internal pending or dispatched never means provider send. Preserve other channel slots and exact identity/consent and no-resend gates.",
+  "tests": [
+    "tests/brain-original-commercial-composer-email-fairness-20261117.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-commercial-composer-email-fairness-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-commercial-composer-email-fairness-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-commercial-composer-email-fairness-20261117.test.mjs"
+    ]
+  },
+  "owner": "existing-powerhouse-reliability",
+  "release_status": "CANDIDATE_PREVIEW_AND_PRODUCTION_PENDING",
+  "provider_sent_claim": false,
+  "customer_outcome_claim": false,
+  "ci_failures": [
+    {
+      "stage": "Supabase Preview / Required",
+      "reason": "ORIGINAL_HISTORICAL_ROWTYPE_MISSING_IN_PREVIEW",
+      "error": "SQLSTATE 42704: type public.powerhouse_commercial_message_plan_v1 does not exist",
+      "observed_at": "2026-11-17T09:33:05Z",
+      "remediation": "Explicit historical-type dependency check in same migration; no preview stub. Exact original production readback and native composer action evidence required."
+    }
+  ],
+  "preview_truth_boundary": "A preview lacking original archived rowtype skips schema replacement with an explicit NOTICE. This is NOT a behavior test; original production SQL and native composer provider outcome remain required."
+}
