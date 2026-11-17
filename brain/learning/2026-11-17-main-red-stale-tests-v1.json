@@ -1,0 +1,17 @@
+{
+  "fingerprint": "ci|tests|stale-count-and-literal-source-assertions|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "agent-reliability",
+  "obligation_id": "ci|main-red|stale-count-and-literal-source-assertions|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "TESTS_ASSERT_LITERAL_SOURCE_OR_COUNT", "scope": "CI", "machine_enforceable": false, "repeat_count": 2, "security_sensitive": false},
+  "root_cause": "Een historische lock-test pinde het aantal migraties en een workflowtest zocht een letterlijke bronvorm; de lock groeide en de workflow werd herschreven, waardoor main rood werd zonder echte regressie.",
+  "correction": "Tests asserteren positie, uniekheid en volgorde in plaats van aantal, en accepteren beide semantisch gelijke workflowvormen. Lock en workflow ongemoeid.",
+  "prevention": [
+    "Pin in historische locktests de positie van de eigen migratie, nooit het totale aantal.",
+    "Assert uitkomsten, niet letterlijke bronvormen, in workflowtests."
+  ],
+  "evaluation": {"historical_replay": ["tests/brain-original-provider874-lock-reconcile-20261116.test.mjs"], "canary": ["tests/brain-merge-group-admission-authority-v1.test.mjs"]},
+  "evidence": {"tests": ["tests/brain-original-provider874-lock-reconcile-20261116.test.mjs", "tests/brain-merge-group-admission-authority-v1.test.mjs"], "source": ["tests/brain-original-provider874-lock-reconcile-20261116.test.mjs", "tests/brain-merge-group-admission-authority-v1.test.mjs"], "outcome": "Lokaal: 3/3 en 3/3; backend-lane op exact-head nog open."}
+}
