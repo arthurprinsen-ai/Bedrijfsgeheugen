@@ -13,7 +13,7 @@ const isObject=value=>value!==null&&typeof value==='object'&&!Array.isArray(valu
 const hash=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const requireTrue=(ok,code)=>{if(!ok)throw new Error('ORIGINAL_INNOVATION_EVIDENCE_'+code);};
 
-const QUALITY_NEXT=Object.freeze({
+export const QUALITY_NEXT=Object.freeze({
   instagram_media_production:'ORIGINAL_MEDIA_ROUTER_PROVIDER_PROOF_AND_FACE_QA',
   'powerhouse-delivery-control-loop':'ORIGINAL_RECOVERABLE_EXECUTION_FAULT_REPLAY',
   'portal-v2':'ORIGINAL_MOBILE_VISUAL_DENSITY_EXACT_PRODUCTION_RECHECK',
