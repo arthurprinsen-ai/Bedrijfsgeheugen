@@ -13,9 +13,9 @@ export function classifyMiraBusinessFriction({title='',excerpt=''}={}){
  // A vendor's product announcement is not evidence that the claimed problem
  // actually happened to an SME. Do not promote one to an original Mira source.
  if(launch.test(t))
-  return Object.freeze({frictionScore:0.55,reason:'VENDOR_ANNOUNCEMENT_NOT_OBSERVED_OPERATIONAL_FRICTION',contract:MIRA_BUSINESS_FRICTION_CONTRACT});
+  return Object.freeze({frictionScore:0.55,admissible:false,reason:'VENDOR_ANNOUNCEMENT_NOT_OBSERVED_OPERATIONAL_FRICTION',contract:MIRA_BUSINESS_FRICTION_CONTRACT});
  if(direct.test(all))
-  return Object.freeze({frictionScore:1,reason:'CONCRETE_MKB_OPERATIONAL_FRICTION',contract:MIRA_BUSINESS_FRICTION_CONTRACT});
- return Object.freeze({frictionScore:legacy.test(all)?1:0.55,
+  return Object.freeze({frictionScore:1,admissible:true,reason:'CONCRETE_MKB_OPERATIONAL_FRICTION',contract:MIRA_BUSINESS_FRICTION_CONTRACT});
+ return Object.freeze({frictionScore:legacy.test(all)?1:0.55,admissible:true,
    reason:legacy.test(all)?'DIRECT_HUMAN_FRUSTRATION':'NO_OBSERVED_MKB_FRICTION',contract:MIRA_BUSINESS_FRICTION_CONTRACT});
 }
