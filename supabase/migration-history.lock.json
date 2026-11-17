@@ -3516,8 +3516,12 @@
     {
       "version": "20261117123000",
       "name": "original_composer_bounded_fair_candidate_v2"
+    },
+    {
+      "version": "20261117162500",
+      "name": "powerhouse_cro_site_social_diagnostics_v1"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-17T13:38:19.095Z"
+  "captured_at": "2026-11-17T17:13:07.000Z"
 }
