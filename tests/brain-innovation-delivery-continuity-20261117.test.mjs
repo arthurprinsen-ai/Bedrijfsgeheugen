@@ -187,3 +187,18 @@ test('daily candidate execution survives unrelated improve failure but never byp
  assert.match(job,/gh pr merge "\$PR_URL" --auto --squash/);
  assert.doesNotMatch(job,/force-push|--admin|--bypass|workflow_dispatch.*\n\s+- cron:/);
 });
+
+test('manual delivery recovery uses the SAME original workflow and daily admission is fenced',()=>{
+ const workflow=readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+ assert.match(workflow,/^\s+- original_delivery_recovery$/m);
+ assert.equal((workflow.match(/inputs\.execution_scope != 'original_delivery_recovery'/g)||[]).length,3);
+ assert.equal((workflow.match(/^\s+- cron:/gm)||[]).length,1,'no extra scheduler');
+ const start=workflow.indexOf('  original-delivery-recovery:');
+ assert.ok(start>0);
+ const recovery=workflow.slice(start,workflow.indexOf('  model-freshness:',start));
+ assert.match(recovery,/execution_scope == 'original_delivery_recovery'/);
+ assert.match(recovery,/permissions:\s*\n\s+contents: read\s*\n\s+actions: read\s*\n\s+pull-requests: read/);
+ assert.match(recovery,/node --test tests\/brain-innovation-delivery-continuity-20261117\.test\.mjs/);
+ assert.match(recovery,/node scripts\/brain\/innovation-original-delivery-continuity\.mjs --reconcile/);
+ assert.doesNotMatch(recovery,/codex-action|gh pr create|gh pr merge|NETLIFY_AUTH_TOKEN|NETLIFY_SITE_ID|contents: write|pull-requests: write/);
+});
