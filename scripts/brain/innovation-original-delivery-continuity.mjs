@@ -48,6 +48,7 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
   const noop=operation.evidence?.original_code_nochange_review;
   let stage='BASELINE_OR_SAFE_SCOPE_DUE';
   let prNumber=null,mergeSha=null,deployedSha=null,deployId=null,codeInProduction=false;
+  let previouslyVerifiedCodeRelease=false;
   if(statusKind(decision.decision)==='CRO_HOLDOUT')stage='CRO_CONSENT_BASELINE_AND_HOLDOUT_DUE';
   if(alreadyVerified)stage='ORIGINAL_CONSUMER_ACK_VERIFIED_IMPACT_READBACK_DUE';
   if(!alreadyVerified&&statusKind(decision.decision)==='PROTECTED_ENGINEERING')stage='PROTECTED_BUILD_DUE';
@@ -82,21 +83,56 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
         lines.includes('Original-Operation: '+operation.id)&&
         lines.includes('Writer-Lease-Owner: '+owner),
         'GITHUB_PR_LINEAGE_CONFLICT');
-      if(githubPr.headRefOid!==prior.head_sha){
+      const historical=operation.evidence?.original_code_candidate_release;
+      const pastProvider=operation.evidence?.original_code_production_readback;
+      const historicalReleaseProven=historical?.contract==='ORIGINAL_INNOVATION_PROTECTED_RELEASE_READBACK_V1'&&
+        pastProvider?.contract==='ORIGINAL_INNOVATION_CODE_RELEASE_INDEPENDENT_READBACK_V1'&&
+        historical.original_candidate_id===candidate.candidate_id&&
+        historical.original_pr_url===prior.url&&
+        historical.initial_pr_head_sha===prior.head_sha&&
+        historical.final_protected_pr_head_sha===githubPr.headRefOid&&
+        historical.merge_sha===githubPr.mergeCommit?.oid&&
+        historical.github_merged===true&&historical.protected_ci==='PASSED'&&
+        historical.independent_release_readback_result==='SUCCESS'&&
+        historical.implementation_technical_release_verified===true&&
+        historical.netlify_state==='READY_CURRENT_PRODUCTION'&&
+        SHA.test(historical.netlify_commit_sha)&&string(historical.netlify_deploy_id)&&
+        pastProvider.candidate_id===candidate.candidate_id&&
+        pastProvider.original_operation_id===operation.id&&
+        pastProvider.original_owner===owner&&
+        pastProvider.source_revision===obligation.evidence.source_revision&&
+        pastProvider.source_sha256===operation.payload_sha256&&
+        pastProvider.github_pr_final_head===githubPr.headRefOid&&
+        pastProvider.github_merge_commit_sha===historical.merge_sha&&
+        pastProvider.netlify_deploy_id===historical.netlify_deploy_id&&
+        pastProvider.netlify_deploy_commit_sha===historical.netlify_commit_sha&&
+        pastProvider.netlify_context==='production'&&
+        pastProvider.netlify_deploy_status==='ready'&&
+        pastProvider.independently_verified_provider_release===true&&
+        pastProvider.original_innovation_fully_delivered===false&&
+        pastProvider.independent_business_effect_verified===false;
+      if(githubPr.headRefOid!==prior.head_sha&&!historicalReleaseProven){
         stage='ORIGINAL_PR_HEAD_CHANGED_REVIEW_DUE';
       }else if(githubPr.state==='OPEN'){
         stage='PROTECTED_PR_CHECKS_OR_REVIEW_DUE';
       }else if(githubPr.state==='MERGED'&&SHA.test(githubPr.mergeCommit?.oid)){
         mergeSha=githubPr.mergeCommit.oid;
         stage='PRODUCTION_PROVIDER_READBACK_DUE';
+        if(historicalReleaseProven){
+          previouslyVerifiedCodeRelease=true;
+          deployId=historical.netlify_deploy_id;
+          deployedSha=historical.netlify_commit_sha;
+          stage='HISTORICAL_NATIVE_CODE_RELEASE_VERIFIED_EFFECT_MEASUREMENT_DUE';
+        }
+        // New provider truth upgrades historical release to current deployment
+        // only if the SAME latest READY commit contains the protected merge.
         if(production?.state==='ready'&&production.context==='production'&&
-          SHA.test(production.commit_ref)&&string(production.id)){
+          SHA.test(production.commit_ref)&&string(production.id)&&
+          production.current_contains_merge===true){
           deployedSha=production.commit_ref;
           deployId=production.id;
-          if(production.current_contains_merge===true){
-            codeInProduction=true;
-            stage='PRODUCTION_CODE_PRESENT_EFFECT_MEASUREMENT_DUE';
-          }
+          codeInProduction=true;
+          stage='PRODUCTION_CODE_PRESENT_EFFECT_MEASUREMENT_DUE';
         }
       }else if(githubPr.state==='CLOSED'){
         stage='PR_CLOSED_WITHOUT_PROTECTED_MERGE_REVIEW_DUE';
@@ -113,6 +149,7 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
     stage,pr_number:prNumber,merge_sha:mergeSha,
     production_deploy_id:deployId,production_sha:deployedSha,
     verified_code_in_production:codeInProduction,
+    historically_verified_code_release:previouslyVerifiedCodeRelease,
     expected_impact:null,actual_impact:null,holdout_impact:null,
     independent_impact_verified:false,consumer_ack_verified:alreadyVerified,
     independent_heartbeat_learning_verified:false,terminal_success:false,
