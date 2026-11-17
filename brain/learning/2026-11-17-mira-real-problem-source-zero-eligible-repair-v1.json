@@ -21,5 +21,26 @@
   },
   "prevention": "Update only original local radar alternate wording on fixed six-business/two-personal query slots, retaining existing original global shared rotation. Recognize factuurfouten/onjuiste facturen and krappe marges as source-verified operational friction when independently dated original article actually supports them; never treat an article discovered by external assistant web search as injected provider observation. Preserve original URL, source age <=45 days, topic PH-P match, score >=0.72, vendor-announcement hard veto, 90-day article/hash dedupe and 3-day topic dedupe. After legitimate native original radar acceptance, original frozen winner->original media job CAS->single OpenArt only->Meta GET->Brain processed and Heartbeat measured must be independently checked.",
   "next_proof": "Existing cron #120 2026-11-17 20:02 UTC native provider run; independently read response, source candidate count, eligible original business signal, source content, original day winner and job. If none, record exact provider result failure and recover same original owner, no false green. Never spend paid OpenArt without genuine source + CAS.",
-  "status": "IMPLEMENTATION_CANDIDATE_NOT_SOURCE_DELIVERY_PROOF"
+  "status": "IMPLEMENTATION_CANDIDATE_NOT_SOURCE_DELIVERY_PROOF",
+  "compiler": {
+    "failure_class": "MIRA_REAL_BUSINESS_NEWS_SOURCE_NO_ELIGIBLE_PROVIDER_RESULTS",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-real-business-friction-20261117.test.mjs",
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-real-business-friction-20261117.test.mjs",
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-mira-real-business-friction-20261117.test.mjs",
+    "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+  ]
 }
