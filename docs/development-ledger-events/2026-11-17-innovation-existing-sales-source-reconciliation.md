@@ -16,3 +16,10 @@
 - The first protected admission for PR #5983, https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44168209008 , correctly rejected `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning`, although the earlier canonical learning historical replay and canary tests both passed.
 - Root cause: the learning JSON documented preventive and historical proof context under descriptive keys but omitted mandatory machine-readable `prevention_rule` and `evidence` keys required by the existing material writeback closure guard.
 - Fixed in the **same original PR** without relaxing or modifying admission: explicit nonempty prevention rule plus source references, exact regression, protected historical PRs and conservative business-outcome NOT_PROVEN fields. Original technical release and live source-effect readback remain to be verified after protected merge.
+
+## 17 November — protected historical predecessor branch advanced concurrently
+
+- Protected native original PR #5981 merged while current continuity PR #5983 was in Required CI. It verifies merged historical PR #5109 and would otherwise admit the already-protected sales source candidate as a fresh code work order. No source overlap with #5983; GitHub's original branch synchronization preserved all source changes.
+- Add original code selector guard for `evidence.protected_implementation_source_evidence` with exact original candidate/owner/revision and protected release URL; do not regenerate PR #5857 or overrule the previous parent's native provider verification.
+- Add negative test for five tampered original implementation facts; embed the new regression in original Brain learning historical replay and canary. Existing application owner/operation remains original.
+- Release validation remains exact-head Required, CodeQL, original native main merge, and post-merge original recovery readback. No live claim or changed original terminal status before verified.
