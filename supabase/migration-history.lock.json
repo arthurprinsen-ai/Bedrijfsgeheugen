@@ -3508,8 +3508,12 @@
     {
       "version": "20261117102500",
       "name": "original_composer_email_channel_fairness_v1"
+    },
+    {
+      "version": "20261117110000",
+      "name": "original_guardian_news_source_provider_truth_v2"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-17T09:48:47.020Z"
+  "captured_at": "2026-11-17T10:18:40.655Z"
 }
