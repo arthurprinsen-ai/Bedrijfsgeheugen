@@ -1,0 +1,11 @@
+/* Rituals-richting stap 3 (besluit Arthur 17 nov 2026): het portaal ademt rust en exclusieve begeerte.
+   Alleen ritme, ruimte en hiërarchie van het welkomstscherm; geen nieuwe kleur, geen inhoud- of routewijziging. */
+body .main .topbar{margin-bottom:clamp(22px,3vw,34px)!important;gap:clamp(16px,2vw,28px)!important}
+body .main .topbar .welcome h1{font-size:clamp(1.55rem,2.4vw,2.1rem)!important;font-weight:600!important;line-height:1.14!important;letter-spacing:-.03em!important;color:var(--saas-navy,#0e2148)!important}
+body .main .topbar .welcome p{margin-top:10px!important;max-width:34rem;font-size:.95rem!important;line-height:1.65!important;font-weight:400!important;color:var(--muted,#7280a2)!important}
+body .main .daily-steering-eyebrow,body .main .eh-eyebrow{font-weight:600!important;letter-spacing:.14em!important;opacity:.8}
+body .main .eh-title{font-weight:600!important;letter-spacing:-.03em!important;line-height:1.14!important}
+body .sidebar .nav button{transition:background-color .45s ease,color .45s ease!important}
+body .main .daily-steering,body .main .eh-card{box-shadow:none!important}
+@media(max-width:760px){body .main .topbar .welcome h1{font-size:clamp(1.45rem,6.4vw,1.8rem)!important}}
+@media(prefers-reduced-motion:reduce){body .sidebar .nav button{transition:none!important}}
