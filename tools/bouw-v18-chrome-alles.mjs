@@ -186,7 +186,33 @@ for (const p of v18Paginas) {
   background:radial-gradient(120% 90% at 12% 0%,rgba(80,120,255,.34),transparent 60%),
              linear-gradient(180deg,rgba(7,26,60,.66),rgba(7,26,60,.92))!important}
 </style>`;
-    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n' + BEWEGING_CSS + '\n' + blauw + '\n</head>');
+    // Rituals-richting stap 2 (besluit Arthur 17 nov 2026): de hero ademt rust en
+    // exclusieve begeerte. Alleen ritme, ruimte en hiërarchie: geen nieuwe kleur,
+    // geen inhouds- of routewijziging. De gele woordmarkering stond alleen in de
+    // mobiele media-query; op desktop werd .mark als logo-blokje getekend.
+    const rituals = `<style id="v18-home-rituals">
+section.hero-video.hero-inspiration .hero-video-content{padding:clamp(64px,10vh,112px) 0 clamp(48px,8vh,88px)!important}
+section.hero-video.hero-inspiration .hero-copy{max-width:40rem}
+section.hero-video.hero-inspiration h1{font-size:clamp(2.2rem,4vw,3.5rem)!important;line-height:1.12!important;letter-spacing:-.03em!important;font-weight:600!important;max-width:15em!important;text-wrap:balance}
+section.hero-video.hero-inspiration h1 .mark{display:inline!important;width:auto!important;height:auto!important;min-width:0!important;background:none!important;background-image:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;margin:0!important;color:#FFE86B!important;transform:none!important;position:static!important}
+section.hero-video.hero-inspiration h1 .mark::before,section.hero-video.hero-inspiration h1 .mark::after{content:none!important;display:none!important}
+section.hero-video.hero-inspiration .hero-kicker{background:none!important;border-color:rgba(255,255,255,.22)!important;margin-bottom:1.6rem!important}
+section.hero-video.hero-inspiration .handline{font-family:inherit!important;font-size:.82rem!important;font-weight:600!important;letter-spacing:.14em!important;text-transform:uppercase;opacity:.78;margin:1.2rem 0 1.4rem!important}
+section.hero-video.hero-inspiration .handline::after{display:none!important}
+section.hero-video.hero-inspiration .hero-sub{max-width:34rem!important;font-size:1.04rem!important;line-height:1.7!important;color:rgba(255,255,255,.84)!important}
+section.hero-video.hero-inspiration .hero-sub strong{font-weight:600!important;color:inherit!important}
+section.hero-video.hero-inspiration .hero-video-actions{gap:1.4rem 1.6rem!important;align-items:center!important}
+section.hero-video.hero-inspiration .hero-secondary{background:none!important;border:0!important;box-shadow:none!important;padding:.4rem 0!important;min-height:0!important;color:rgba(255,255,255,.88)!important;text-decoration:underline;text-underline-offset:.3em;text-decoration-thickness:1px}
+section.hero-video.hero-inspiration .hero-video-actions>p{flex:0 0 100%;max-width:34rem;margin:.4rem 0 0!important;font-size:.86rem!important;line-height:1.6!important;color:rgba(255,255,255,.7)!important}
+section.hero-video.hero-inspiration .hero-video-actions>p strong{font-weight:600!important}
+section.hero-video.hero-inspiration .hero-note,section.hero-video.hero-inspiration .hero-example-switch{opacity:.7}
+section.hero-video.hero-inspiration .hero-scroll-cue{opacity:.6}
+section.hero-video.hero-inspiration .hero-economics .hero-metric{background:none!important;border:0!important;border-left:1px solid rgba(255,255,255,.16)!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important}
+section.hero-video.hero-inspiration .hero-economics .hero-metric strong{font-weight:600!important}
+section.hero-video.hero-inspiration .magnetic{transition:transform .6s cubic-bezier(.2,.6,.2,1),background-color .45s,color .45s,opacity .45s!important}
+@media(prefers-reduced-motion:reduce){section.hero-video.hero-inspiration .magnetic{transition:none!important;transform:none!important}}
+</style>`;
+    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n' + BEWEGING_CSS + '\n' + blauw + '\n' + rituals + '\n</head>');
     home = home.replace('</body>', RING + '\n' + VRAAG_JS + '\n' + CONTEXT_JS + '\n' + BEWEGING_JS + '\n</body>');
     home = maakBeweeglijk(home);
   }
