@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|mira|vendor-release-can-pass-072-through-high-provider-score|20261117-v1",
+  "obligation_id": "powerhouse|instagram|vendor-hard-veto-and-personal-source-lane|20261117-v1",
+  "owner": "original powerhouse-mira-problem-radar-v1",
+  "compiler": {
+    "failure_class": "SOURCE_FALSE_POSITIVE",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-real-business-friction-20261117.test.mjs"
+    ]
+  },
+  "root_cause": "PR #5933 improved business-friction recognition but only reduced a vendor announcement's friction score; other weighted factors and a 1.0 provider score could still push it above the unchanged 0.72 floor. The two personal news slots could also be reclassified as business PH-P signals when the personal source classifier rejected the life-context category.",
+  "prevention": "Explicit independent launch-veto admissible=false as well as existing weighted quality and date gates; personal news rows lacking a classified personal theme must be rejected rather than inserted into the Mira source corpus. No new searches, source fabrication, cron, provider changes or publisher.",
+  "tests": [
+    "tests/brain-mira-real-business-friction-20261117.test.mjs"
+  ],
+  "evidence": {
+    "actual_meta_latest_post": "2026-10-03",
+    "source_daily_winner_20261117": false,
+    "source_feed_paid_daily_slots": 8,
+    "source_score_floor": 0.72,
+    "news_publisher_press_rejected_regardless_provider_rank": true,
+    "source_target": "original 6 business + 2 personal queries"
+  },
+  "outcome": "CODE_CANDIDATE_NOT_META_LIVE_PROOF",
+  "next_action": "Protect and merge source fix, independent native Supabase Edge parity, original next natural 8-search intake, same winner->exclusive producer->Meta GET->Brain PROCESSED."
+}
