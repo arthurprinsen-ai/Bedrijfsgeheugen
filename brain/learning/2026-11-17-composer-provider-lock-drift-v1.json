@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|supabase|applied-composer-migration-unregistered-in-provider-lock|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "The original composer migration 20261117123000_original_composer_bounded_fair_candidate_v2.sql was committed and genuinely applied in the canonical Supabase provider, but the repository's supabase/migration-history.lock.json retained only 878 historic applied identities, omitting the actual 879th. Protected blog PR #5960 consequently fails Required migration parity, despite its six-file publication diff being unrelated to Supabase.",
+  "prevention": [
+    "Always reconcile the migration-history lock against the actual canonical provider schema_migrations version+name list in the SAME protected release that applies a migration.",
+    "Every provider-applied executable migration must have an exact nonempty repository SQL source and matching version/name identity; never fake, delete, or mark pending to bypass provider parity.",
+    "On provider-to-lock mismatch, preserve existing publisher PR and auto-merge; create a scoped protected metadata correction and rerun Required/CodeQL on its exact commit before attempting publication.",
+    "No duplicate blog, second scheduler, direct main push, synthetic source status, or false-green from a Netlify preview."
+  ],
+  "evaluation": {
+    "existing_regressions": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "expected_provider_count": 879,
+    "prior_committed_lock_count": 878,
+    "added_exact_identity": {
+      "version": "20261117123000",
+      "name": "original_composer_bounded_fair_candidate_v2"
+    },
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44091266904",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44093772404",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5960",
+    "Supabase provider schema_migrations count 879 and original exact version/name/3 statements read back 2026-11-17T13:34Z"
+  ],
+  "acceptance": "Candidate becomes released only after Required + CodeQL pass on exact head, protected merge, original blog #5960 passes its own exact-head gates, native protected merge, matching Netlify production deploy, public article and original Supabase LIVE_PROVEN + ONE BRAIN readback. Do not call entire system green.",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_MIGRATION_LOCK_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false,
+    "scope_note": "Migration metadata parity integrity without auth, RLS, secret or sensitive schema changes; original Required gate remains fail-closed."
+  }
+}
