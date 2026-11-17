@@ -23,7 +23,10 @@
       "tests/supabase-migration-history-integrity.test.mjs"
     ],
     "dependent_pr": 5975,
-    "initial_blocked_run": 44156831371
+    "initial_blocked_run": 44156831371,
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
   },
   "evidence": [
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5973",
