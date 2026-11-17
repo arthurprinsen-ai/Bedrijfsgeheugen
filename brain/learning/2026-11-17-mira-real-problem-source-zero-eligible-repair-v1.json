@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-17",
+  "fingerprint": "powerhouse|mira|news-query-no-eligible-verified-mkb-friction|20261117-v1",
+  "scope": "ORIGINAL_SOURCE_RANKER",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "existing single powerhouse-mira-problem-radar-v1/#120; original selector and content-orchestrator/#140",
+  "root_cause": "Original #120 16-Nov source run for 17-Nov observed only two company vendor-announcement records and zero eligible business cases; 15-Nov for 16-Nov had also zero eligible business cases. Existing narrow business source queries often generate no news results, return vendor product announcements or English Excel school results. Verified 16-Nov Dutch news has direct operational invoice mistakes but original canonical topic classifier and real-friction detector omit factuurfout and onjuiste factuur, while dated contemporary reports show krappe marges / personeelstekort that can be recognized without assuming customer sales.",
+  "real_production_evidence": {
+    "canonical_project": "adhjwmvyoixzjtmiroln",
+    "business_source_20261117_eligible": 0,
+    "business_source_20261116_eligible": 0,
+    "original_source_day_nov17_observed_at": "2026-11-16T20:02:36Z",
+    "original_failure_occurrence": "mira-radar:source-supply:2026-11-17:NO_FRESH_PUBLIC_PROBLEM_SIGNAL",
+    "original_winner_20261117": null,
+    "original_media_job_20261117": null,
+    "original_meta_post_20261117": null,
+    "article_used_to_refine_query_not_as_native_provider_authorization": "https://www.ictmagazine.nl/nieuws/bedrijven-zetten-klanten-onder-druk-door-eigen-factuurfouten/",
+    "other_research": "https://www.cbs.nl/nl-nl/nieuws/2026/45/bijna-kwart-bedrijven-heeft-investeringen-uitgesteld-of-geschrapt-in-laatste-12-maanden"
+  },
+  "prevention": "Update only original local radar alternate wording on fixed six-business/two-personal query slots, retaining existing original global shared rotation. Recognize factuurfouten/onjuiste facturen and krappe marges as source-verified operational friction when independently dated original article actually supports them; never treat an article discovered by external assistant web search as injected provider observation. Preserve original URL, source age <=45 days, topic PH-P match, score >=0.72, vendor-announcement hard veto, 90-day article/hash dedupe and 3-day topic dedupe. After legitimate native original radar acceptance, original frozen winner->original media job CAS->single OpenArt only->Meta GET->Brain processed and Heartbeat measured must be independently checked.",
+  "next_proof": "Existing cron #120 2026-11-17 20:02 UTC native provider run; independently read response, source candidate count, eligible original business signal, source content, original day winner and job. If none, record exact provider result failure and recover same original owner, no false green. Never spend paid OpenArt without genuine source + CAS.",
+  "status": "IMPLEMENTATION_CANDIDATE_NOT_SOURCE_DELIVERY_PROOF",
+  "compiler": {
+    "failure_class": "MIRA_REAL_BUSINESS_NEWS_SOURCE_NO_ELIGIBLE_PROVIDER_RESULTS",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-real-business-friction-20261117.test.mjs",
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-real-business-friction-20261117.test.mjs",
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-mira-real-business-friction-20261117.test.mjs",
+    "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+  ]
+}
