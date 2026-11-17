@@ -867,7 +867,7 @@ Deno.serve(async (req) => {
     if(['linkedin_company','instagram_company'].includes(pending.channel)){
       try{
         let postQuery=db.from('social_posts')
-          .select('tenant_id,post_id,platform,channel_kind,published_at')
+          .select('tenant_id,post_id,external_post_id,platform,channel_kind,published_at')
           .eq('tenant_id','bedrijfsgeheugen')
           .eq('platform',pending.channel==='instagram_company'?'instagram':'linkedin');
         postQuery=pending.channel==='instagram_company'
@@ -881,7 +881,7 @@ Deno.serve(async (req) => {
         let sourceSnapshots:any[]=[];
         if(postIds.length){
           const {data, error:snapshotError}=await db.from('social_metric_snapshots')
-            .select('tenant_id,post_id,data_quality,observed_at,metrics')
+            .select('tenant_id,post_id,source,source_event_id,data_quality,observed_at,metrics')
             .eq('tenant_id','bedrijfsgeheugen').in('post_id',postIds)
             .gte('observed_at',new Date(Date.now()-72*3600000).toISOString())
             .order('observed_at',{ascending:false}).limit(100);
