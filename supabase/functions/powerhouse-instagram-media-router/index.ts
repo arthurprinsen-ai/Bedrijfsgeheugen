@@ -9,6 +9,7 @@ import {planMiraPreventiveRecovery,assessMiraProviderBeforeSpend} from '../_shar
 import {MIRA_APPROVED_DERIVED_INPUT,validatePinnedMiraDerivedInput} from '../_shared/mira-approved-derived-video-input.mjs';
 import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,checkHistoricalMiraHistoryRejection,reconcileHistoricalRejectedGeneratingJob} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
+import {assessMiraOriginalGenerationReceipt,MIRA_ORIGINAL_GENERATION_RECEIPT_CONTRACT} from './pin-generation-history.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -89,6 +90,53 @@ Deno.serve(async req=>{
  const miraBusinessProblem=winnerContract.problem||null;
  const expectedScene=sourceLed?winnerContract.scene:miraBusinessProblem.scene;
  const expectedProblemId=sourceLed?null:miraBusinessProblem.id;
+
+ // Persist the actual provider-created async history immediately after the
+ // ORIGINAL atomic job claim and OpenArt submission. Previous task runs could
+ // lose this receipt, leaving a CLAIMED job with no resumable provider ID.
+ // This does not invoke OpenArt, create another worker or approve a Reel.
+ if(action==='pin_generation'){
+  const receipt=assessMiraOriginalGenerationReceipt({
+    runDate,localDate:today(),job,ob,winner,lineage,resolved:winnerContract,
+    input,postType
+  });
+  if(!receipt.ok)return json({...receipt,ready:false,runDate},422);
+  if(receipt.idempotent)return json({ok:true,ready:false,state:'GENERATING',
+    idempotent:true,runDate,job_id:receipt.job_id,
+    openart_history_id:receipt.history_id,
+    approved_for_publish:false,actual_media_verified:false,
+    next_action:receipt.next_action},200);
+  const updatedAt=new Date().toISOString();
+  const newManifest={...(job?.asset_manifest||{}),
+    openart_history_id:receipt.history_id,
+    openart_project_id:clean(input.openart_project_id),
+    openart_reference_id:MIRA_MASTER_REFERENCE_ID,
+    openart_reference_url:MIRA_MASTER_REFERENCE_URL,
+    generation_mode:'element2video',
+    openart_model:'wan3-0',
+    openart_quoted_credits:receipt.quoted_credits,
+    original_async_generation_contract:MIRA_ORIGINAL_GENERATION_RECEIPT_CONTRACT,
+    original_async_generation_receipt_at:updatedAt,
+    provider_generation_status:'PENDING',
+    exact_final_media_proven:false
+  };
+  const write=await db.from('powerhouse_instagram_media_jobs_v1')
+   .update({status:'GENERATING',asset_manifest:newManifest,
+     next_action:'Resume this exact OpenArt history via authenticated original producer. On completion submit real video to original independent verifier; never request duplicate generation.',
+     updated_at:updatedAt})
+   .eq('id',job.id).eq('tenant_id','canonical').eq('publication_date',runDate)
+   .eq('status','CLAIMED').eq('attempts',1).eq('updated_at',job.updated_at)
+   .is('last_error',null).eq('republish_forbidden',false)
+   .select('id').maybeSingle();
+  if(write.error)return json({ok:false,error:'ORIGINAL_OPENART_RECEIPT_CAS_WRITE_FAILED',
+    code:clean(write.error.code),ready:false},503);
+  if(!write.data)return json({ok:false,error:'ORIGINAL_GENERATION_CAS_CONFLICT_REREAD',
+    ready:false,next_action:'Reread canonical media job and exact provider history; never regenerate or republish.'},409);
+  return json({ok:true,ready:false,state:'GENERATING',runDate,job_id:job.id,
+    openart_history_id:receipt.history_id,original_owner:receipt.claimed_by,
+    approved_for_publish:false,actual_media_verified:false,
+    next_action:receipt.next_action},200);
+ }
 
  // The original producer may still be marked GENERATING after its OpenArt
  // history was independently rejected. Recover from immutable ONE BRAIN once,
