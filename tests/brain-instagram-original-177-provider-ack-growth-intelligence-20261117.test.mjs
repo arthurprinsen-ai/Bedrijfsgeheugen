@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {identifyOriginalPublicationHandoff,reconcileOriginalPublicationMeasurement}
   from '../supabase/functions/_shared/original-publication-metric-handoff.mjs';
-import {selectMeasuredNextPostTest} from '../supabase/functions/_shared/measured-next-post-challenger.mjs';
+import {selectMeasuredNextPostTest,proposeBoundedCreativeExploration} from '../supabase/functions/_shared/measured-next-post-challenger.mjs';
 
 const today='2026-11-17T10:45:00.000Z',published='2026-11-15T07:30:00.000Z';
 const ref='17992107825115789',postId='instagram:'+ref;
@@ -109,4 +109,28 @@ test('Instagram remains within existing original cron 177 and measured decisions
  assert.match(orchestrator,/measured_next_post_test:measuredNextPostTest/);
  assert.match(orchestrator,/editorial_experiment_owner:editorialExperiment.owner/);
  assert.doesNotMatch(sync,/cron\.schedule\(|INSTAGRAM_MEDIA_PUBLISH|GMAIL_SEND_EMAIL/);
+});
+
+
+test('without enough fresh posts, original daily Mira still tests only ONE safe copy variable and real outcome metric',()=>{
+ const seen=new Map();
+ for(let delta=0;delta<16;delta++){
+  const date=new Date(Date.UTC(2026,10,18+delta)).toISOString().slice(0,10);
+  const idea=proposeBoundedCreativeExploration({runDate:date,channel:'instagram_company',
+   recommendation:{recommendation_id:'8e8708d1-a4c4-4f9a-ad58-22ed62802e6b',
+    reason:'Source-backed debtor owner/action research',evidence:{source_backed:true,source_url:'https://example.com/independent-news'}},
+   freshness:{ok:true},measured:{state:'WAIT_FOR_COMPARABLE_PROVIDER_METRICS'}});
+  assert.equal(idea.state,'ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS');
+  assert.equal(idea.causal_lift_proven,false);
+  assert.equal(idea.additional_publications,0);
+  assert.equal(idea.format_policy,'MIRA_REEL_ONLY_UNTIL_INDEPENDENT_CAROUSEL_ASSET_AUTHORITY');
+  assert.equal(idea.primary_business_metric,'attributed_verified_paid_orders');
+  assert.match(idea.lead_metric,/^(provider_observed_(shares|saves|comments)_per_reach|verified_utm_qualified_lead_progression)$/);
+  seen.set(idea.hypothesis_id.split(':')[1],idea.lead_metric);
+ }
+ assert.equal(seen.size,4,'single daily exploration rotates share/save/discussion/qualified CTA');
+ const blocked=proposeBoundedCreativeExploration({runDate:'2026-11-18',channel:'instagram_company',
+  recommendation:{reason:'source',evidence:{source_backed:true}},freshness:{ok:false}});
+ assert.equal(blocked.state,'NO_EXPLORATION');
+ assert.equal(blocked.reason,'SOURCE_NOT_CURRENT_OR_VERIFIED');
 });
