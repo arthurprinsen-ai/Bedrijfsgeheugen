@@ -27,7 +27,7 @@ test('unresolved Google redirects remain strictly rejected; no invented news or 
   assert.match(source,/source_publication_date_evidence:publication\.publishedAt\?'DATED':'UNVERIFIED'/);
   assert.match(source,/priorContract && priorContract!==row\.metadata\.contract/);
   assert.match(source,/brain_observe_failure/);
-  assert.match(source,/classifyMiraRadarHttpStatus\(\{sourceReady:allSourceReady,errors\}\)/);
+  assert.match(source,/classifyMiraRadarHttpStatus\(\{sourceReady:miraBusinessSourceReady,errors\}\)/);
   assert.match(source,/sendsAuthorized:false/);
   assert.doesNotMatch(source,/cron\.schedule\(|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/i);
 });
