@@ -1,0 +1,70 @@
+{
+  "fingerprint": "powerhouse|runtime171|infinity-source-required-rollbacks-other-tasks|20261116-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "date": "2026-11-16",
+  "owner": "original ONE BRAIN/Powerhouse runtime scheduler mux #171 owner",
+  "failure_class": "RUNTIME",
+  "root_cause": "The existing public.powerhouse_runtime_scheduler_mux_v3() calls Infinity at 07:41 Europe/Amsterdam without isolating the known missing-current-signal precondition. The uncaught RAISE EXCEPTION aborts the SQL transaction, potentially rolling back earlier independent stages. The absent current provider signal must remain explicitly unproven.",
+  "source_truth": {
+    "job_id": 171,
+    "observed_at_utc": "2026-11-16T06:41:00Z",
+    "sql_error": "POWERHOUSE_INFINITY_CURRENT_SIGNAL_REQUIRED",
+    "original_function": "public.powerhouse_runtime_scheduler_mux_v3(timestamptz)",
+    "provider_signal_inferred": false
+  },
+  "corrective_action": "Catch only the exact known source precondition in nested PL/pgSQL block; retain v2 task results, record a failed Infinity task receipt in the original mux task array and healthy=false; propagate all other exceptions. Do not replay ambiguous external side effects, bypass source validation or create another executor.",
+  "prevention_rule": "Source-dependent substeps must be failure-isolated without making a healthy parent or fabricating provider events. Existing canonical cron #171 and original task receipts are the only execution authority.",
+  "regression": "tests/brain-infinity-original-mux-source-isolation-20261116.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-infinity-original-mux-source-isolation-20261116.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-infinity-original-mux-source-isolation-20261116.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-infinity-original-mux-source-isolation-20261116.test.mjs"
+    ],
+    "technical_result": "CANDIDATE_NOT_YET_PRODUCTION_VERIFIED",
+    "business_outcome_status": "OPEN_NOT_PROVEN"
+  },
+  "compiler": {
+    "failure_class": "RUNTIME",
+    "scope": "backend",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "change_scope": [
+    "supabase/migrations/20261116105000_original_infinity_missing_signal_isolated_mux_v3.sql",
+    "tests/brain-infinity-original-mux-source-isolation-20261116.test.mjs"
+  ],
+  "rollout": {
+    "release_status": "PROTECTED_PR_AND_SUPABASE_PREVIEW_DUE",
+    "tenant": "canonical",
+    "no_new_cron": true,
+    "no_fake_outcome": true,
+    "rollback": "Revert only original v3 function to preceding identical definition from 20261020080000_restore_external_intelligence_existing_mux_v3.sql after protected checks; preserve cron #171 and all original evidence."
+  },
+  "evidence": {
+    "production_error": {
+      "source": "cron.job_run_details",
+      "job_id": 171,
+      "observed_at_utc": "2026-11-16T06:41:00Z",
+      "status": "failed",
+      "error": "POWERHOUSE_INFINITY_CURRENT_SIGNAL_REQUIRED",
+      "independent_database_readback": true
+    },
+    "production_function": {
+      "source": "pg_get_functiondef",
+      "identity": "public.powerhouse_runtime_scheduler_mux_v3(timestamptz)",
+      "observed_direct_unisolated_call": true
+    },
+    "historical_regression": {
+      "test_file": "tests/brain-infinity-original-mux-source-isolation-20261116.test.mjs",
+      "passed_in_github_admission": true,
+      "run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43842732841"
+    },
+    "native_production_and_provider_outcome_after_repair": "NOT_YET_PROVEN"
+  }
+}

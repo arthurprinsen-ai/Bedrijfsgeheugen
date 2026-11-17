@@ -13,7 +13,7 @@ test('bounded revision is permitted after either personal editorial or final tru
   assert.match(code,/\n\s*2400,\(error:unknown\)=>error instanceof AIProviderIncompleteOutputError/);
 });
 test('rewrite must satisfy the original editorial and factual gates',()=>{
-  assert.match(code,/personalEditorialViolations\(revisedText,personalSource\?\.evidence\|\|\{\}\)\.length===0/);
+  assert.match(code,/personalEditorialViolations\(revisedText,\{\.\.\.\(personalSource\?\.evidence\|\|\{\}\),recentPersonalPosts\}\)\.length===0/);
   assert.match(code,/personalFinalCopyValid\(revisedText,personalSource\?\.evidence\|\|\{\}\)/);
   assert.match(code,/if\(editorialViolations\.length\) throw new Error\('PERSONAL_EDITORIAL_CONTRACT_FAILED:/);
   assert.match(code,/PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED/);
@@ -24,5 +24,6 @@ test('no additional sender, no false publication results',()=>{
   const fragment=code.slice(start,end);
   assert.ok(start>0 && end>start);
   assert.doesNotMatch(fragment,/powerhouse-social-publisher|LIVE_PROVEN|net\.http_post|sendMessage/i);
-  assert.match(fragment,/met 150 tot 175 normale Nederlandse woorden/);
+  assert.match(fragment,/PERSONAL_LIFE_CORRECTION_PROMPT/);
+  assert.match(code,/const PERSONAL_LIFE_CORRECTION_PROMPT=.*zonder vaste lengte/);
 });

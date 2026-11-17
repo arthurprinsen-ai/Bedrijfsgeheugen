@@ -131,24 +131,23 @@ export const REGELGEVING = Object.freeze([
   }),
   regel({
     id: 'rechtsvermoeden-uurtarief', categorie: 'arbeid', naam: 'Wet invoering rechtsvermoeden van arbeidsovereenkomst op basis van uurtarief (36.783)',
-    wat: 'Onder een bepaald uurtarief geldt een rechtsvermoeden van werknemerschap. De opdrachtgever moet dan aannemelijk maken dat er géén dienstverband is.',
-    raakt: 'Opdrachtgevers die met zelfstandigen werken tegen een laag uurtarief.',
-    status: STATUS.GEFASEERD,
-    mijlpalen: [{ datum: '2026-04-21', wat: 'Aangenomen door de Tweede Kamer.' },
-                { datum: '2026-06-16', wat: 'Aangenomen door de Eerste Kamer.' },
-                { datum: '2027-01-01', wat: 'Beoogd minimumtarief van 38 euro per uur volgens de huidige plannen.' }],
-    letop: 'Let op: dit is niet de Wet Vbar. Het verduidelijkingsdeel van de Vbar is bij nota van wijziging geschrapt en gaat als apart wetsvoorstel verder onder de naam Zelfstandigenwet. Het rechtsvermoeden werkt alleen civielrechtelijk tussen opdrachtgever en zelfstandige; de Belastingdienst kan er geen beroep op doen en toetst met het eigen holistische kader. De datum van inwerkingtreding volgt bij koninklijk besluit.',
-    bron: 'Eerste Kamer, dossier 36.783', url: 'https://www.eerstekamer.nl/wetsvoorstel/36783_wet_invoering',
-    peildatum: '2026-09-10', herzienUiterlijk: '2026-11-15'
+    wat: 'Het wettelijk rechtsvermoeden bij een laag uurtarief helpt zelfstandigen civielrechtelijk een arbeidsovereenkomst te laten beoordelen; de opdrachtgever kan het vermoeden weerleggen.',
+    raakt: 'Opdrachtgevers en zelfstandigen met een laag uurtarief; het rechtsvermoeden kan door de werkende worden ingeroepen.',
+    status: STATUS.VERWACHT,
+    mijlpalen: [{ datum: '2026-12-31', wat: 'Vastgestelde inwerkingtreding volgens Staatsblad 2026, 207 (koninklijk besluit van 13 juli 2026).' }],
+    letop: 'De wet is op 18 juni 2026 vastgesteld en gepubliceerd in Staatsblad 2026, 158; de ingangsdatum is niet langer onzeker of 1 januari 2027, maar bij koninklijk besluit (Staatsblad 2026, 207) vastgesteld op 31 december 2026. De Eerste Kamer noemt minder dan 38 euro per uur als peilbedrag op 1 januari 2026; het eerste toepasselijke bedrag wordt volgens de wet bij ministeriële regeling bepaald. Dit is een civielrechtelijk bewijsvermoeden voor de werkende, geen zelfstandige handhavingsnorm voor de Belastingdienst.',
+    bron: 'Staatsblad 2026, 207 en Eerste Kamer dossier 36.783', url: 'https://zoek.officielebekendmakingen.nl/stb-2026-207.html',
+    peildatum: '2026-11-16', herzienUiterlijk: '2026-12-15'
   }),
   regel({
-    id: 'zelfstandigenwet', categorie: 'arbeid', naam: 'Zelfstandigenwet (opvolger van de Vbar-verduidelijking)',
-    wat: 'Nieuw wetsvoorstel dat moet verduidelijken wanneer iemand zelfstandige is en wanneer werknemer.',
-    raakt: 'Elke opdrachtgever die met zelfstandigen werkt.',
+    id: 'zelfstandigenwet', categorie: 'arbeid', naam: 'Zelfstandigenwet (voorstel voor meer duidelijkheid over zelfstandigheid)',
+    wat: 'Nog niet aangenomen wetsvoorstel met een zelfstandigentoets en een werkrelatietoets om vooraf duidelijker te maken wanneer geen gezagsverhouding bestaat.',
+    raakt: 'Zelfstandigen, opdrachtgevers en intermediairs; de beoogde toetscriteria kunnen nog veranderen.',
     status: STATUS.VOORSTEL,
-    letop: 'Wetsvoorstel in wording: er ligt nog geen aangenomen tekst en geen datum. De Wet Vbar zoals die tot maart 2026 werd aangekondigd wordt niet ingevoerd; wie daar nog naar verwijst, verwijst naar een gepasseerd station.',
-    bron: 'Eerste Kamer, dossier 36.783 (toelichting nota van wijziging)', url: 'https://www.eerstekamer.nl/wetsvoorstel/36783_wet_invoering',
-    peildatum: '2026-09-10', herzienUiterlijk: '2026-11-15'
+    mijlpalen: [{ datum: '2028-01-01', wat: 'Uitsluitend beoogde, niet vastgestelde invoeringsdatum; parlementaire behandeling is voorzien in 2027.' }],
+    letop: 'De officiële internetconsultatie liep van 1 tot en met 29 oktober 2026 en is gesloten. De minister bevestigde op 9 november 2026 dat de inhoud nog niet definitief is en consultatie-inbreng wordt verwerkt. Dit voorstel is niet hetzelfde als de reeds vastgestelde afzonderlijke Wet rechtsvermoeden uurtarief. Inwerkingtreding in 2028 is een streven, geen verplichting en niet bij KB vastgesteld.',
+    bron: 'Overheid.nl wetgevingskalender WGK029502 en Tweede Kamer 2026Z22529 (9 november 2026)', url: 'https://wetgevingskalender.overheid.nl/Regeling/WGK029502',
+    peildatum: '2026-11-16', herzienUiterlijk: '2026-12-15'
   }),
   regel({
     id: 'wtta', categorie: 'arbeid', naam: 'Wet toelating terbeschikkingstelling arbeidskrachten (Wtta)',
@@ -161,15 +160,15 @@ export const REGELGEVING = Object.freeze([
     peildatum: '2026-09-10', herzienUiterlijk: '2026-12-15'
   }),
   regel({
-    id: 'loontransparantie', categorie: 'arbeid', naam: 'Loontransparantie (EU-richtlijn 2023/970)',
-    wat: 'Inzicht in beloning, verbod op vragen naar het huidige salaris, en rapportage over de beloningskloof tussen mannen en vrouwen.',
-    raakt: 'Werkgevers; rapportageplicht schaalt mee met de omvang.',
-    status: STATUS.GEFASEERD,
-    mijlpalen: [{ datum: '2026-06-07', wat: 'Uiterste datum waarop lidstaten de richtlijn moesten omzetten; die termijn is verstreken.' },
-                { datum: '2027-01-01', wat: 'Verwachte inwerkingtreding van de Nederlandse implementatie.' }],
-    letop: 'De Nederlandse omzetting loopt achter op de Europese termijn. Een richtlijn die te laat is omgezet kan onder omstandigheden al rechtstreekse werking hebben richting de overheid. Controleer de actuele stand voordat je hier iets over toezegt.',
-    bron: 'AWVN, overzicht wet- en regelgeving', url: 'https://www.awvn.nl/publicaties/veranderende-wet-en-regelgeving-2026/',
-    peildatum: '2026-09-10', herzienUiterlijk: '2026-11-15'
+    id: 'loontransparantie', categorie: 'arbeid', naam: 'Loontransparantie (EU-richtlijn 2023/970; Nederlandse implementatie nog voorstel)',
+    wat: 'Voorgestelde Nederlandse regels over transparante salarisschalen bij werving, inzicht in beloning en rapportage van beloningsverschillen tussen mannen en vrouwen.',
+    raakt: 'Werkgevers; voorgestelde rapportageverplichtingen verschillen naar personeelsomvang en zijn nog afhankelijk van de nationale wet.',
+    status: STATUS.VOORSTEL,
+    mijlpalen: [{ datum: '2027-01-01', wat: 'Beoogde Nederlandse inwerkingtreding, alleen indien Tweede en Eerste Kamer het wetsvoorstel tijdig aannemen.' },
+                { datum: '2028-06-07', wat: 'Volgens het voorstel eerste rapportage uiterlijk deze datum voor werkgevers met ten minste 150 werknemers, over 2027.' }],
+    letop: 'De omzettingstermijn van de Europese richtlijn verstreek op 7 juni 2026. De Nederlandse implementatie is op 16 november 2026 nog niet definitief aangenomen, aldus Rijksoverheid. Een voorstel is geen geldende Nederlandse plicht; bij te late omzetting kan verticale directe werking in specifieke situaties relevant zijn. Voor werkgevers met 100 tot 149 werknemers is de eerste rapportage volgens de plannen voorzien in 2031.',
+    bron: 'Rijksoverheid, plannen kabinet loontransparantie en nieuwsbericht 21 mei 2026', url: 'https://www.rijksoverheid.nl/themas/werk/gelijke-behandeling-op-het-werk/plannen-kabinet-meer-openheid-over-loonkloof-tussen-mannen-en-vrouwen',
+    peildatum: '2026-11-16', herzienUiterlijk: '2026-12-15'
   }),
   regel({
     id: 'flexwerkers', categorie: 'arbeid', naam: 'Wet meer zekerheid flexwerkers',

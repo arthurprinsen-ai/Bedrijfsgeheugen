@@ -136,3 +136,54 @@ Observed 2026-11-15: external news about a tasered package courier was generated
 **Effective rule superseding every older observational fallback above:** no editorial or transport route may publish public news, trend/source-radar observations, a business-style founder status update, a synthetic Arthur anecdote, or unconfirmed private details as personal content. Only original, accepted and still-current user-authored first-person lived-event sources can qualify. The final actual commentary must have an independent reviewer HTTP 200/PASS against the **same SHA-256** and current source revision, then pass the separate last-metre `personalLastMilePublicationViolations` check within the sole original Composio sender immediately before the provider write. Missing proof, HTTP 422, source mismatch, Sunday, stale approval and text mutation all mean **no provider write**, but an open original obligation with owner/next action. Do not disable the executor or start a backup scheduler; do not duplicate an existing provider URN.
 
 Company content stays on the company page. Engagement is a measurement, not permission to violate identity. Persist root cause, failure chronology, test/commit/release/readback evidence and the preventive rule in ONE BRAIN and the original incident lineage. Test authority: `tests/brain-personal-first-person-voice-and-source-20261115.test.mjs`. The change is not called LIVE or GREEN until protected tests, actual production release, source parity and a negative production review are verified.
+
+
+## 16 november 2026 — bronfout niet als OAuth-fout behandelen
+
+Fingerprint: `powerhouse|linkedin-personal|truth-source-misrouted-as-oauth|20261116-v1`.
+
+Bij een persoonlijke `hold/blocked`-beslissing met `capability_reason=PERSONAL_TRUTH_SOURCE_UNVERIFIED`, `NO_UNIQUE_VERIFIED_PERSONAL_SOURCE`, `PERSONAL_SOURCE_UNVERIFIED` of `PERSONAL_USER_EXPERIENCE_NOT_VERIFIED` is de oorzaak **niet** automatisch providerautorisatie. De enige originele bron-/redactie-eigenaar controleert eerst of een ongebruikte, door Arthur zelf aangeleverde of expliciet bevestigde echte eigen gebeurtenis bestaat; zo niet, blijft dezelfde dagverplichting OPEN en is een concrete feitelijke bronbevestiging noodzakelijk. Geen fictieve eigen ervaring, gescrapet nieuws, observerende fallback, automatisch gebouwd founder-dashboardverhaal, zakelijke content, zondagspost of het omzeilen van de reviewer.
+
+De bestaande `powerhouse-content-loop` routeert dit uitsluitend als `PERSONAL_SOURCE_PROOF_REQUIRED` met `VERIFY_ORIGINAL_FOUNDER_SOURCE_THEN_REGENERATE`. OAuth mag alleen als probleem worden genoemd wanneer onafhankelijke actuele connectorbewijsvoering dat werkelijk aantoont. Dezelfde originele providerwriter en unieke dagclaim blijven leidend; behoud de originele eigenaar, bronrevisie, quality PASS op exact finale teksthash en provider-ID. Geen tweede sender, cron of retry bij onzekere provider-side-effecten. De preflight meldt `SOURCE_EDITORIAL_REVISION_REQUIRED` vóór de deadline. Een geslaagde classificatie is geen gepubliceerde post.
+
+Regressie: `tests/brain-personal-source-not-oauth-routing-20261116.test.mjs`. Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913. Een volledig groene status vereist release-pariteit en de eerstvolgende daadwerkelijke origineel-uitgevoerde proef inclusief providerbewijs en ONE BRAIN PROCESSED; ontbrekende verifieerbare gebeurtenis betekent niet gepubliceerd, niet groen.
+
+
+## 16 november 2026 — ook de bronproducent mag nooit zakelijk zijn
+
+Fingerprint: `personal-linkedin|old-founder-source-producer-conflicts-with-lifestyle-only|20261116-v1`.
+
+De oorspronkelijke productie-readback toonde twaalf **actieve** persoonlijke `bg_schrijfregels` uit 7 oktober die nog een dagelijkse Bedrijfsgeheugen-/AI-founder-reis voorschreven. De native `powerhouse_materialize_source_backed_channel_candidates_v2` genereerde opnieuw een `daily-dream-journey` met `business_topic=true`, `personal_life_topic=false`, terwijl er nul geverifieerde persoonlijke bronnen waren. De verplichte regel is uitsluitend persoonlijke gebeurtenissen; zakelijke inhoud moet naar de bestaande bedrijfsredactie, niet in het persoonlijke dagrecord.
+
+De beschermde bronwijziging `supabase/migrations/20261116110100_personal_linkedin_life_only_producer_v1.sql` zet exact deze 12 oude tegenstrijdige regels op `vervallen`, stelt één moderne persoonlijke leven-/ik-bronregel `actief` en stopt de AI-native-business-kandidaat in de oorspronkelijke v2-materializer; resterende oude suggesties worden `skipped` met `PERSONAL_BUSINESS_SOURCE_FORBIDDEN`. De oorspronkelijke v1 materialisatie voor alle kanalen, autorisatie en aparte bedrijfspost blijven intact. Het woord 'persoonlijk' is geen toestemming om willekeurige gebeurtenissen uit gesprekken, privépersonen of gezondheids-/familiegegevens te publiceren. Alleen exact traceerbare door Arthur zelf vertelde of bevestigde niet-gevoelige feiten, met privétoestemming indien nodig, kunnen na ongebruikte story-family-controle tot een concept leiden. Geen bron betekent OPEN en de bestaande bronagent draagt het voort; geen fictieve `ik`, ongefundeerde observatiefallback, verborgen zakelijke les, provider-retry of dubbele verzending.
+
+Regression: `tests/brain-personal-life-only-editorial-producer-20261116.test.mjs`. Audit: `docs/changes/2026-11-16-personal-life-only-editorial-source-repair.md` en oorspronkelijke incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913. Technisch geen LIVE vóór protected Required+CodeQL+Supabase Preview, beschermde merge, native statuscontrole op `bg_schrijfregels`, origineel provider/source-ID readback. Persoonlijke post blijft niet-gepubliceerd tot een echte persoonlijke bron en onafhankelijke eindtekst-PASS aantoonbaar zijn.
+
+## 16 november 2026 — creatieve leerengine mag geen B2B-recepten voor persoonlijk maken
+
+Fingerprint: `powerhouse|linkedin-personal|creative-commercial-contamination|20261116-v1`.
+De oudere `brain/creative/revenue-content-intelligence.mjs` en `config/social-learning-engine.json` droegen nog een `observational_business_standup` met `commercial_conversation`, lead-discovery, FOMO en offertebrug als standaard voor `linkedin_personal`. Deze oude marketing-instructies zijn **niet** bruikbaar als persoonlijke copy en verliezen altijd van `personal-linkedin-personal-life-only-v1`.
+
+Bij persoonlijke experimenten: gebruik uitsluitend een echte, nog niet gebruikte en expliciet vrijgegeven ik-gebeurtenis met concrete menselijke details. Zakelijke kansen, bronnen, marketingfunnels, privéchats zonder publicatietoestemming en nieuws vormen geen vervangende bron. Zonder geschikte persoonlijke bron: bestaande verplichting OPEN met bronactie, geen gekunstelde 130–200 woorden, geen herhaling, geen tweede sender en geen fictie.
+
+Meet per persoonlijke post inhoudelijke reacties, gesprekken, delen en profielbetrokkenheid binnen daadwerkelijk beschikbare onafhankelijke providerdata. Scheid dit strikt van bedrijfsleads/omzet; een paar reacties zonder impressies, comments of vergelijkbare historie is **geen** bewijs voor een winnend format. Alleen bewezen leereffect in de volgende originele contentkeuze geeft `LEARNING_APPLIED`. Deze leerengine maakt alleen conceptrecepten; bron-, identiteits-, privacy-, exacte SHA- en provider-gates blijven de enige publicatieautoriteit.
+
+## 16 november 2026 — declutter complexity: inhoud bepaalt de vorm
+
+Fingerprint: `personal-linkedin|source-first-style-variation|20261116-v1`.
+
+Bindend en boven oudere verplichtingen tot een onverwachte wending, humor, een vast aantal woorden, een opener of slotvraag: **een echt persoonlijk voorval bepaalt zelf de vorm**. Een persoonlijk verhaal hoeft niet grappig, leerzaam, ontroerend of interactief te zijn. Schrijf normaal, vanuit Arthur, kort waar mogelijk; schrap alle woorden die geen nieuwe gebeurtenis, menselijke nuance of herkenbare gedachte toevoegen. Geen management- of AI-toon, verkoop of geforceerde engagement-vraag.
+
+Vóór de bestaande onafhankelijke eindredactie moet de redactie de laatste persoonlijke posts vergelijken op **openingsvorm, vertelstructuur, lengte, emotie/humor en afsluiting**, naast de bestaande feitelijke source- en story-family-dedupe. Niet twee keer dezelfde formule met andere objecten: bij mechanische gelijkenis `REWRITE_NOT_PUBLISH`, met dezelfde geverifieerde feiten, zonder nieuwe privéclaims of het opnieuw publiceren van reeds verbruikte gebeurtenissen. Variatie is bron-gedreven, nooit willekeurige afwisseling van voorgeschreven comedy-, emotie- of CTA-sjablonen.
+
+Dit is een redactionele norm voor de bestaande keten en **geen zelfstandige publish-authorisatie**. Alleen de originele providerwriter na exacte bron-/hash-/privacy-/weekdagcontrole mag posten. Bron ontbreekt of gate faalt: oorspronkelijke verplichting OPEN en herstel/terugkoppeling; niet automatisch groen verklaren. Test: `tests/brain-personal-creative-learning-20261116.test.mjs`.
+
+## Extern onderbouwde individuele redactie — 16 november 2026
+
+Fingerprint: `personal-linkedin|real-story-research-guard-v1`.
+
+Evidence: LinkedIn zelf (https://news.linkedin.com/2026/ImprovingTheFeed en https://news.linkedin.com/2026/authentic-content-and-conversations), Flypost-vergelijking van 116.000+ posts (13 okt 2026; https://www.flypost.io/learn/linkedin-algorithm-study-data) en Metricool (14 apr 2026; https://metricool.com/linkedin-trends-study/). Dit zijn geen Arthur-specifieke causale feiten. De onafhankelijke onderzoeken spreken elkaar over vragen soms tegen: daarom **NOOIT** een vaste vraag-, openings-, lengte-, grap-, foto- of frequentieformule invoeren.
+
+De bestaande originele redactie beslist autonoom op basis van bron en kwaliteit. Dezelfde originele prepublish-review haalt relevante echte eerdere persoonlijke post-teksten op, controleert laatste 45 dagen op herhaalde herkenbare openingsframes, identieke slotgedachten en repetitieve vertelmarkers, en geeft bij overlap een duidelijke herformuleringsreden. Herformuleer uitsluitend met al geverifieerde feiten, geen kunstmatig nieuw voorval of zakelijke brug; story-family semantische dedupe blijft strenger. Zonder actuele database-readback blijft de review dicht: `PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE`.
+
+De oorspronkelijke persoonlijke bron, privacy, bronrevisie, exacte eindteksthash, zondagrule, reviewer PASS en bestaande providerwriter zijn ongewijzigde verplichte gates. Een echte foto mag alleen met bron-/beeldrechten en privacyvrijgave, niet als contenttruc. Nooit geautomatiseerde comments, scraping, pods of kunstmatige interactie. Lees eigen persoonlijkprofiel-metrics alleen via geautoriseerde providerreadback, geen schatting van impressies uit likes. Leer na 24/48/72 uur waar echte metingen beschikbaar zijn; geen winnende vorm afkondigen zonder vergelijkbare gegevens en voldoende voorbeelden. Geen nieuwe scheduling, geen duplicaatpost.

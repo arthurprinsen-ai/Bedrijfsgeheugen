@@ -1,0 +1,60 @@
+{
+  "fingerprint": "powerhouse|runtime171|agent-skill-prevention-and-source-truth|20261116-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "date": "2026-11-16",
+  "original_owner": "agent-reliability / original Powerhouse runtime scheduler #171, with agent-data-quality + original provider source owner",
+  "failure_class": "RUNTIME",
+  "root_cause": "Original #171 Infinity at 07:41 Europe/Amsterdam raised on absent current eligible signal. Unisolated exception rolled back original mux transaction. The technical source fix from PR #5919 was production-verified, but existing agent/skill policy still needed binding to exact outcomes and the remaining zero-eligible-source gap.",
+  "prevention_rule": "All existing agents distinguish process liveness and code deployment from original source eligibility, per-task actual execution, independent provider and consumer readback, measured effect and applied learning; exactly known Infinity missing-source failure is isolated within the existing mux with a failed task receipt and healthy=false; no new executor or fake signal.",
+  "change_summary": "Update existing global AGENTS.md, recovery skill, source skill, and four existing agent duty lists with proof-based safety; add executable regression and immutable learning/doc/ledger; no production code, cron, source gate, database, provider or publication change.",
+  "evidence": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5919",
+    "source_main_sha": "03a317c10f4d66eae9fc143a3f7b0f13f06389c8",
+    "native_prod_migration": "20261116105000",
+    "original_jobid": 171,
+    "original_failed_runid": 169000,
+    "original_postdeploy_normal_runid": 169268,
+    "original_incident_fingerprint": "powerhouse|runtime171|infinity-source-required-rollbacks-other-tasks|20261116-v1",
+    "source_gap_fingerprint": "powerhouse|source-universe|zero-current-eligible-signal|20261116-v1",
+    "canonical_project": "adhjwmvyoixzjtmiroln",
+    "fresh_eligible_signal_count_at_audit": 0,
+    "projected_signals_at_audit": 258,
+    "raw_fetched_24h_at_audit": 72,
+    "raw_allowed_24h_at_audit": 0,
+    "target_daily_0741_run_proven": false,
+    "customer_outcome_proven": false,
+    "skill_and_agent_release_proven": false,
+    "readback": "read original native migration + failure registry and original cron #171; snapshots must be refreshed"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-infinity-original-171-agent-skill-contract-20261116.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-infinity-original-171-agent-skill-contract-20261116.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-infinity-original-171-agent-skill-contract-20261116.test.mjs"
+    ],
+    "technical_result": "CANDIDATE_NOT_YET_PROTECTED_RELEASED",
+    "business_outcome_status": "OPEN_NOT_PROVEN"
+  },
+  "compiler": {
+    "failure_class": "RUNTIME",
+    "scope": "backend",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "regression": "tests/brain-infinity-original-171-agent-skill-contract-20261116.test.mjs",
+  "human_documentation": "docs/changes/2026-11-16-infinity-agent-skill-hardening.md",
+  "human_ledger": "docs/development-ledger-events/2026-11-16-infinity-agent-skill-hardening.md",
+  "rollout": {
+    "production_verified": false,
+    "status": "CANDIDATE_REQUIRED_CODEQL_SUPABASE_PREVIEW_AND_PROTECTED_MERGE",
+    "no_new_scheduler": true,
+    "no_new_sender": true,
+    "no_provider_side_effect": true,
+    "rollback": "Protected revert of AGENTS.md, two original skill additions, agent-team duty additions and this companion regression/learning/documentation; preserve native PR #5919 production fix."
+  }
+}

@@ -3492,8 +3492,16 @@
     {
       "version": "20261115235900",
       "name": "company_intelligence_existing_daily_source_receipt_v1"
+    },
+    {
+      "version": "20261116105000",
+      "name": "original_infinity_missing_signal_isolated_mux_v3"
+    },
+    {
+      "version": "20261116110100",
+      "name": "personal_linkedin_life_only_producer_v1"
     }
   ],
-  "captured_at": "2026-11-15T17:38:12.470160Z",
+  "captured_at": "2026-11-16T10:07:54.646910Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }

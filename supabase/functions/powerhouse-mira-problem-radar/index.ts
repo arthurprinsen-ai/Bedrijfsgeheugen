@@ -10,6 +10,7 @@ import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-r
 import { classifyMiraRadarHttpStatus } from '../_shared/mira-radar-http-status.mjs';
 import { isSpreadsheetBusinessContext } from '../_shared/mira-business-spreadsheet-context.mjs';
 import { classifyMiraSourceUrl } from '../_shared/mira-source-url-quality.mjs';
+import { classifyMiraBusinessFriction } from './business-friction-signals.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -173,7 +174,9 @@ Deno.serve(async(req:Request)=>{
    // Do not leak unsupported public signals to the Instagram winner or personal publisher.
    if(!problemTopic||(!personalTopic&&!portalProblemId)){reject('NO_CANONICAL_TOPIC_MATCH',q,sourceUrl,title);continue}
    const all=(title+' '+excerpt).toLowerCase();
-   const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
+   const complaint=channel==='instagram_company'
+     ?classifyMiraBusinessFriction({title,excerpt}).frictionScore
+     :/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
    // Recognition is validated differently per lane: a real matched daily-life
    // source should not need entrepreneur vocabulary to reach the SAME 0.72 floor.
    const personal=personalTopic?1:(/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|proces|klant)/.test(all)||isSpreadsheetBusinessContext(all))?1:0.6;
