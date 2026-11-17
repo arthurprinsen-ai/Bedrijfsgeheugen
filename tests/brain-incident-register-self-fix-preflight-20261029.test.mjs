@@ -139,10 +139,29 @@ const recovery={
   owner:'original-delivery-owner',obligation_id:'original-incident-obligation',
   fix_attempted:true,status:'VERIFIED',verified_at:'2026-11-03T06:05:00Z',
   regression_passed:true,independent_provider_readback:true,prevention_applied:true,
-  skill_version:'skill-v2',release_sha:'b'.repeat(40)
+  skill_version:'skill-v2',release_sha:'b'.repeat(40),
+  root_cause_ref:'brain:root-cause:20261103',regression_ref:'brain:test:recurrence',
+  prevention_rule_ref:'brain:rule:original-retry-v2',
+  documentation_ref:'docs:incident:verified-recovery',
+  source_revision:'source:20261103:rev2',
+  learning_application_ref:'brain:learning:applied:rev2',
+  consumer_processed_ref:'brain:consumer:processed:rev2',
+  next_natural_run_ref:'github:run:41546047090',
+  next_natural_run_at:'2026-11-03T06:10:00Z',
+  learning_applied:true,original_consumer_processed:true,recurrence_checked:true
+};
+const learningReceipt={
+  provider_event_id:observed.provider_event_id,fingerprint,
+  source_revision:recovery.source_revision,
+  learning_application_ref:recovery.learning_application_ref,
+  consumer_processed_ref:recovery.consumer_processed_ref,
+  consumer_state:'PROCESSED',readback_confirmed:true,
+  consumer_owner:'original-learning-consumer',
+  applied_at:'2026-11-03T06:07:00Z'
 };
 const auditable=extra=>({
   observations:[observed],receipts:[receipt],recoveries:[recovery],
+  learningReceipts:[learningReceipt],
   sourceReadbackComplete:true,registryReadbackComplete:true,...extra
 });
 

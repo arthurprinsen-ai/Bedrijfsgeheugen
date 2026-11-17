@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|all-agents|repaired-incident-without-independent-learning-application|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "REPAIR_SELF_ATTESTED_WITHOUT_NEXT_AGENT_APPLIED_LEARNING"
+  },
+  "root_cause": "The original read-only reconcileIncidentObligations preflight counted a recovery with status VERIFIED, regression_passed, prevention_applied, skill_version and independent_provider_readback as proven even when the original receiving agent did not have an exact source-bound PROCESSED receipt or applied learning on a later natural run. This is an audit admission gap, not proof all historical incidents were incorrectly closed. Existing fourteen specialist definitions had incident handling fragmented into role-specific tasks rather than one inherited explicit duty contract.",
+  "prevention": [
+    "Every current and future original DEFAULT_AGENT_TEAM member inherits the same five deduplicated original-owner incident duties and incident-recovery.v1 learning contract from the original canonical roster; no fifteenth agent, worker, scheduler, parallel store or sender.",
+    "Original ONE BRAIN incident closure requires exact provider event+fingerprint+source revision+learning application+consumer processed reference of a DIFFERENT verified consumer and an applied timestamp; self flags alone are insufficient.",
+    "The same original read-only incident-obligation auditor fails closed with missing_proof and keeps open every incident without actual root cause, regression ref, prevention ref, documentation ref, skill version, protected release/provider readback, canonical receiving consumer and next natural run evidence.",
+    "Repetition after proved repair reopens the same source fingerprint, preserving original immutable occurrences; do not reset the cause or hide report, preserve hard boundaries and safe unrelated work."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-incident-learning-all-agent-closure-20261117.test.mjs",
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ]
+  },
+  "evidence": [
+    "2026-11-17 source inspection brain/observability/incident-obligation-assurance.mjs original fullyVerified lacked independent learning receipt",
+    "2026-11-17 original brain_obligations still 422 OPEN CONTENT_HANDOFF and 14 OPEN INNOVATION_DELIVERY; these counts are distinct pending tasks, not proof of 422 failed provider writes",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://sre.google/resources/practices-and-processes/incident-management-guide/",
+    "https://sre.google/workbook/postmortem-culture/"
+  ],
+  "validation_limits": "This is a read-only preflight and roster parity hardening. It does NOT prove every external agent emits an occurrence, 100% of provider incidents are known, 422 handoffs executed, or future incidents impossible. Original runtime owner integrations, actual NEXT native run, tenant-safe provider verification, independent readback and original consumer proof remain separate acceptance gates.",
+  "acceptance": "Local regression and original Required+CodeQL PASS on exact head, protected source merge, exact production agent registry parity, next original BRAIN preflight and source-provided consumer receipt, natural run recurrence check and original independent production/ONE BRAIN readback. Before those proofs status CANDIDATE, never FULL_GREEN."
+}
