@@ -149,10 +149,14 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
   // through an earlier protected portal PR, before the bounded Codex selector
   // existed. Its original intake has no new exact-purpose PR receipt; that must
   // NOT reset a real historical implementation back to "build missing".
+  // A later source-scoped NO_CHANGE review means the latest Codex attempt
+  // produced no diff. It is NOT a veto of an earlier native protected merge.
+  // Validate the nochange receipt separately above, then independently read
+  // back the real pre-existing native PR and current source before stage advance.
   // Historical source text alone is not live provider, customer or impact proof.
   const existingSource=operation.evidence?.protected_implementation_source_evidence;
   if(candidate.component_id==='powerhouse-sales-cycle-execution-read-model'&&
-    !prior&&!noop&&!alreadyVerified&&existingSource){
+    !prior&&!alreadyVerified&&existingSource){
     assert(existingSource.contract==='ORIGINAL_ENGINEERING_IMPLEMENTATION_EVIDENCE_V1'&&
       existingSource.candidate_id===candidate.candidate_id&&
       existingSource.original_owner===owner&&
