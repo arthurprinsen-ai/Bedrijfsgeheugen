@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-17",
+  "fingerprint": "seo|v18-generated-integrations-page-overwrites-checked-in-source-link|20261117-v1",
+  "owner": "original BG169 Powerhouse SEO Order Engine + canonical V18 build owner",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918",
+  "preceding_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5972",
+  "status": "SOURCE_GENERATOR_FIX_PENDING_PROTECTED_RELEASE",
+  "root_cause": "PR #5972 safely amended checked-in systemen-koppelen.html, but original Netlify build tools/bouw-v18-views.mjs regenerates systemen-koppelen.html from the V18 homepage view after those edits. Independent 2026-11-17 18:38:13Z DataForSEO public crawl showed canonical OK and generic AFAS link, but exact intended 'Lightspeed-webshop naar AFAS' anchor was absent. Original AFAS money-page H3 and /webshop-koppeling link were independently proven live. Prior source-only regression read stale HTML instead of actual produced artifact.",
+  "prevention": [
+    "Update the canonical V18 view registry and generator, not the overwritten static systems HTML, for SEO contextual links on generated pages.",
+    "Make generated-view linking semantic, visible, localized, canonical route-owned, unique and restricted to internal URLs.",
+    "Require exact production builder assertion that the final output HTML contains the expected anchor BEFORE writing; existing protected Required/CodeQL/browser tests remain mandatory.",
+    "Independently crawl the final public generated /systemen-koppelen page after immutable Netlify READY exact SHA; absent anchor means not delivered.",
+    "Do not conflate public page HTTP200, keyword rank, source-only HTML or a post/email intent with human organic visitor uplift. Keep GA4/GSC and original #175 site-to-CRO source-receipt gap open until verified."
+  ],
+  "compiler": {
+    "failure_class": "V18_GENERATED_PAGE_SOURCE_OF_TRUTH_MISMATCH",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-v18-generated-pillar-link-20261117.test.mjs"
+    ],
+    "regression_target": "tools/bouw-v18-views.mjs generated HTML; original SEO owner contract"
+  },
+  "evidence": {
+    "original_pr_5972_merge_sha": "8e36bec964a32a16e1d71facbc4a79175ebea321",
+    "original_netlify_production_deploy_id": "6afc9e8be81d6f20b617fb91",
+    "original_netlify_exact_sha_ready": true,
+    "provider": "DataForSEO on_page_instant_pages, on_page_content_parsing",
+    "afas_provider_request_id": "11171838-2222-0275-0000-781a5a573815",
+    "integrations_provider_request_id": "11171838-2222-0275-0000-041a08e6b394",
+    "observed_public_generated_h1": "Koppelingen",
+    "observed_generated_page_missing_contextual_link": true,
+    "canonical_owner": "https://www.bedrijfsgeheugen.nl/afas-koppeling",
+    "extra_organic_visitors_proven": false,
+    "post_or_email_proven_by_this_release": false,
+    "existing_site_to_cro_handoff_proven": false
+  },
+  "after_release": {
+    "required": "protected original Required/CodeQL + exact main Netlify READY + independent generated page anchor/canonical/CTA readback + ONE BRAIN/source + subsequent 7d/14d/28d verified GSC human and sales outcomes",
+    "no_parallel_worker": true
+  }
+}
