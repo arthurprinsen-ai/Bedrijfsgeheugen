@@ -19,8 +19,7 @@
       "tests/brain-cro-production-migration-lock-20261029.test.mjs",
       "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs",
       "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
-      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
     ]
   },
   "evidence": [
@@ -28,7 +27,8 @@
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
     "Original native Supabase management list_migrations 878, exact latest pair 20261117110000/original_guardian_news_source_provider_truth_v2 at 2026-11-17T10:18Z",
     "Original protected GitHub source migration-history.lock.json previous 877 entries: all 877 exact ordered prefix matches native production",
-    "Original source SQL file supabase/migrations/20261117110000_original_guardian_news_source_provider_truth_v2.sql blob SHA 74b006ec743a93487b91d02fbb12d8913edeb077"
+    "Original source SQL file supabase/migrations/20261117110000_original_guardian_news_source_provider_truth_v2.sql blob SHA 74b006ec743a93487b91d02fbb12d8913edeb077",
+    "tests/supabase-migration-history-integrity.test.mjs is a secondary original protected release test, not a brain-prefixed dependency-free learning replay"
   ],
   "validation_limits": "This is protected GitOps source identity restoration for already-applied SQL. A current migration lock is not proof that Result Guardian business outcomes, e-mails or all agent repairs are successful. Subsequent main migration could move the source again, requiring same protected original reconciliation.",
   "acceptance": "Exact-head Required + CodeQL, protected merge, read final current main canonical lock and native Supabase version/name 878 exact ordered match; original blocked PR #5949 can then be revalidated on refreshed original main without weakened gates."
