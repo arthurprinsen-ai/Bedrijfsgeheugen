@@ -1,0 +1,40 @@
+{
+  "fingerprint": "website|rituals-direction|homepage-hero-calm-css-layer|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "original v18 generator tools/bouw-v18-chrome-alles.mjs",
+  "obligation_id": "website|rituals-direction|homepage-hero-calm-css-layer|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "DESIGN_DECISION_DRIFT",
+    "scope": "RUNTIME",
+    "machine_enforceable": false,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "De homepage-hero kwam uit de pinned V18-payload met drukke, energieke opmaak en een .mark-botsing met het logoblok op desktop; dat past niet bij het merkbesluit van 17 nov 2026 (rust en exclusieve begeerte).",
+  "correction": "Extra CSS-laag v18-home-rituals na v18-home-blauw: rustiger kop en ritme, .mark op alle breedtes als woordmarkering. Geen DOM-, tekst-, kleur- of routewijziging; payload ongemoeid.",
+  "prevention": [
+    "Wijzig de homepage alleen via de generatoren, nooit in gegenereerde HTML of de pinned payload.",
+    "Scoped selectors onder section.hero-video.hero-inspiration, omdat de CSS gelaagd is met !important.",
+    "Controleer schermafbeeldingen desktop en mobiel voor en na; claim geen gedragseffect zonder voor/na-meting."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Lokaal: hero rustiger op 1440x900 en 390x844; productie-readback nog open."
+  }
+}
