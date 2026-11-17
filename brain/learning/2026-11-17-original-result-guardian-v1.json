@@ -30,5 +30,28 @@
     "original composer disposition",
     "independent Gmail provider message ID/readback for any send",
     "ONE BRAIN exact consumer PROCESSED"
-  ]
+  ],
+  "failure_class": "COMMERCIAL_RESULT_WATCHDOG_GAP",
+  "compiler": {
+    "failure_class": "COMMERCIAL_RESULT_WATCHDOG_GAP",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "tests": [
+    "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs"
+    ]
+  },
+  "fix": "Bind bounded, safe candidate selection and failure observability to original #171 watchdog, preserve exact provider and contact authority; no new scheduler."
 }
