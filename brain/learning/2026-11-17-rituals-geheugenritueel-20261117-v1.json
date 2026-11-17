@@ -1,0 +1,42 @@
+{
+  "fingerprint": "site|rituals|geheugenritueel|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|geheugenritueel|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": false,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "root_cause": "Een losse ademknop geeft nog geen eigen merkervaring: Rituals-richting zonder signatuur voelt als kopie. Daarnaast verborg een CSS-regel met display:flex het hidden-attribuut van de keuzeknoppen tijdens het ademen.",
+  "correction": "Eén gedeeld ritueel (kies, adem, slotzin met één vervolgstap) met een vaste merkzin, identiek op elke site- en portaalpagina via pil en rustband; hidden-regels expliciet afgedwongen.",
+  "prevention": [
+    "Een element dat met het hidden-attribuut wordt verborgen en zelf display instelt, heeft een expliciete [hidden]{display:none}-regel nodig; test de zichtbaarheid per fase in een echte browser.",
+    "Nieuwe merkinteractie alleen als presentatie: vervolgstappen verwijzen naar bestaande pagina's, geen nieuwe routes of tekstwijziging aan bestaande pagina's.",
+    "Geen gedragseffect claimen zonder voor/na-meting."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-beleving.js",
+      "tools/bouw-v18-chrome-alles.mjs",
+      "portal-v2/index.html"
+    ],
+    "outcome": "Lokaal: browsertest site en portaal desktop en mobiel. Live-readback open."
+  }
+}

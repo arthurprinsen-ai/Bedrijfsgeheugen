@@ -2,7 +2,7 @@
    Alleen presentatie en interactie, geen inhoud of logica. Werkt op website en portaal.
    - Langzame onthulling bij het scrollen (site)
    - Haarlijn-voortgang, zachte overgang tussen pagina's (site)
-   - Ademmoment: een rustig scherm met een ademcirkel (site + portaal)
+   - Geheugenritueel: kies wat je hoofd bezet houdt, adem drie rondes, krijg een rustige slotzin en vervolgstap (site + portaal, zelfde op elke pagina)
    - Begroeting naar tijdstip en zachte weergavewissel (portaal)
    Respecteert prefers-reduced-motion en werkt zonder JS gewoon door. */
 (function () {
@@ -24,7 +24,7 @@
     '@keyframes rb-binnen{from{opacity:0}to{opacity:1}}',
     '.rb-adem-knop{background:none;border:0;padding:6px 0;margin:14px 0 0;font:inherit;font-size:.92rem;letter-spacing:.02em;color:inherit;opacity:.72;cursor:pointer;border-bottom:1px solid currentColor;transition:opacity .5s ease}',
     '.rb-adem-knop:hover,.rb-adem-knop:focus-visible{opacity:1}',
-    '.rb-adem{position:fixed;inset:0;z-index:2147483200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;background:rgba(251,250,247,.97);color:#14171A;font-family:"Instrument Sans R","Instrument Sans",system-ui,sans-serif;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s linear .9s}',
+    '.rb-adem{position:fixed;inset:0;z-index:2147483200;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px;background:rgba(251,250,247,.99);color:#14171A;font-family:"Instrument Sans R","Instrument Sans",system-ui,sans-serif;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility 0s linear .9s}',
     '.rb-adem.rb-open{opacity:1;visibility:visible;transition:opacity .9s ease}',
     '.rb-adem-cirkel{width:min(46vmin,260px);height:min(46vmin,260px);border-radius:50%;border:1px solid rgba(20,23,26,.22);background:radial-gradient(circle at 50% 42%,rgba(255,232,107,.55),rgba(255,232,107,.12) 62%,rgba(255,232,107,0) 74%);transform:scale(.62);transition:transform 4s cubic-bezier(.45,.05,.35,1)}',
     '.rb-adem-tekst{font-family:"Fraunces R",Georgia,serif;font-weight:400;font-size:clamp(1.5rem,4vw,2.1rem);letter-spacing:.01em;min-height:1.4em;text-align:center;margin:0}',
@@ -36,52 +36,132 @@
     '.rb-wissel{animation:rb-wissel .65s cubic-bezier(.22,.61,.36,1) both}',
     '@keyframes rb-ademhaal{0%,100%{opacity:.35}50%{opacity:1}}',
     '.rb-ademt{animation:rb-ademhaal 6s ease-in-out infinite}',
-    '@media (prefers-reduced-motion:reduce){.rb-js .rb-reveal{opacity:1;transform:none;transition:none}.rb-js body{animation:none}.rb-adem,.rb-adem.rb-open{transition:none}.rb-adem-cirkel{transition:none;transform:scale(.8)}.rb-wissel,.rb-ademt{animation:none}html.rb-uit body{opacity:1;transition:none}.rb-voortgang{display:none}}'
+    '.rb-adem[data-fase="kies"] .rb-adem-cirkel,.rb-adem[data-fase="kies"] .rb-adem-bewaard{display:none}',
+    '.rb-adem-keuzes{display:flex;flex-direction:column;gap:10px;width:min(440px,86vw);margin-top:-6px}',
+    '.rb-adem-keuzes[hidden],.rb-adem-link[hidden]{display:none}',
+    '.rb-adem-keuze{background:none;border:1px solid rgba(20,23,26,.2);border-radius:999px;padding:13px 22px;font:inherit;font-size:.98rem;color:inherit;cursor:pointer;text-align:center;transition:background .6s ease,border-color .6s ease}',
+    '.rb-adem-keuze:hover,.rb-adem-keuze:focus-visible{background:rgba(255,232,107,.3);border-color:rgba(20,23,26,.5)}',
+    '.rb-adem-bewaard{margin:-14px 0 0;font-family:"Fraunces R",Georgia,serif;font-style:italic;font-size:1rem;color:rgba(20,23,26,.55);text-align:center;max-width:min(440px,86vw);min-height:1.4em;opacity:0;transition:opacity 1.6s ease}',
+    '.rb-adem-bewaard.rb-zichtbaar{opacity:1}',
+    '.rb-adem-link{color:#14171A;text-decoration:none;border-bottom:1px solid #14171A;padding-bottom:2px;font-size:.98rem}',
+    '.rb-adem-link:hover,.rb-adem-link:focus-visible{border-bottom-color:#FFE86B;box-shadow:0 1px 0 #FFE86B}',
+    '.rb-moment{position:fixed;left:50%;transform:translateX(-50%);bottom:18px;z-index:2147482000;display:inline-flex;align-items:center;gap:9px;background:rgba(251,250,247,.94);color:#14171A;border:1px solid rgba(20,23,26,.16);border-radius:999px;padding:9px 16px 9px 13px;font:inherit;font-family:"Instrument Sans R","Instrument Sans",system-ui,sans-serif;font-size:.84rem;letter-spacing:.03em;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);transition:border-color .5s ease,box-shadow .5s ease}',
+    '.rb-moment:hover,.rb-moment:focus-visible{border-color:rgba(20,23,26,.5);box-shadow:0 0 0 3px rgba(255,232,107,.45)}',
+    '.rb-moment i{display:block;width:9px;height:9px;border-radius:50%;background:#FFE86B;box-shadow:0 0 0 1px rgba(20,23,26,.25);animation:rb-ademhaal 6s ease-in-out infinite}',
+    '@media (max-width:760px){.rb-moment{bottom:92px}}',
+    '@media print{.rb-moment,.rb-band{display:none}}',
+    '.rb-band{background:#FBFAF7;color:#14171A;border-top:1px solid rgba(20,23,26,.1);text-align:center;padding:64px 24px 60px;font-family:"Instrument Sans R","Instrument Sans",system-ui,sans-serif}',
+    '.rb-band small{display:block;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:rgba(20,23,26,.55);margin-bottom:14px}',
+    '.rb-band p{font-family:"Fraunces R",Georgia,serif;font-weight:400;font-size:clamp(1.5rem,3.4vw,2.2rem);line-height:1.25;margin:0 auto 22px;max-width:22ch;letter-spacing:.005em}',
+    '.rb-band button{background:none;border:0;padding:6px 0;font:inherit;font-size:.95rem;color:#14171A;cursor:pointer;border-bottom:1px solid #14171A;transition:box-shadow .5s ease,border-color .5s ease}',
+    '.rb-band button:hover,.rb-band button:focus-visible{box-shadow:0 1px 0 #FFE86B;border-bottom-color:#FFE86B}',
+    '@media (prefers-reduced-motion:reduce){.rb-js .rb-reveal{opacity:1;transform:none;transition:none}.rb-js body{animation:none}.rb-adem,.rb-adem.rb-open{transition:none}.rb-adem-cirkel{transition:none;transform:scale(.8)}.rb-wissel,.rb-ademt,.rb-moment i{animation:none}.rb-adem-bewaard{transition:none}html.rb-uit body{opacity:1;transition:none}.rb-voortgang{display:none}}'
   ].join('\n');
   var st = doc.createElement('style');
   st.setAttribute('data-rb', '1');
   st.textContent = css;
   doc.head.appendChild(st);
 
-  /* ---------- ademmoment ---------- */
-  var overlay = null, timers = [], vorigeFocus = null;
+  /* ---------- geheugenritueel ---------- */
+  var KEUZES = [
+    { t: 'Kennis die alleen in hoofden zit', z: 'Wat alleen in hoofden zit, leggen wij voor je vast.', h: '/bedrijfsgeheugen', l: 'Zie hoe wij dat bewaren' },
+    { t: 'Losse mails, bestanden en systemen', z: 'Wat verspreid ligt, brengen wij rustig samen.', h: '/systemen-koppelen', l: 'Zie hoe systemen samenkomen' },
+    { t: 'Werk dat zich steeds herhaalt', z: 'Wat zich herhaalt, hoeft jou niet langer te kosten.', h: '/hoe-het-werkt', l: 'Zie hoe het werkt' },
+    { t: 'Beslissingen die nergens staan', z: 'Wat besloten is, blijft voortaan vindbaar.', h: '/frisse-blik', l: 'Doe de Frisse blik' },
+    { t: 'Ik wil alleen even rust', z: 'Dan is dit precies genoeg. Neem de tijd.', h: '', l: '' }
+  ];
+  var overlay = null, timers = [], vorigeFocus = null, gekozen = null;
   function wis() { timers.forEach(clearTimeout); timers = []; }
   function na(ms, fn) { timers.push(setTimeout(fn, ms)); }
+  function q(sel) { return overlay.querySelector(sel); }
 
   function bouwOverlay() {
     overlay = doc.createElement('div');
     overlay.className = 'rb-adem';
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-label', 'Ademmoment');
+    overlay.setAttribute('aria-label', 'Geheugenritueel');
     overlay.innerHTML =
       '<div class="rb-adem-cirkel" aria-hidden="true"></div>' +
       '<p class="rb-adem-tekst" aria-live="polite"></p>' +
       '<p class="rb-adem-sub"></p>' +
+      '<div class="rb-adem-keuzes" role="group" aria-label="Wat houdt je hoofd bezet?"></div>' +
+      '<p class="rb-adem-bewaard" aria-hidden="true"></p>' +
+      '<a class="rb-adem-link" hidden></a>' +
       '<button type="button" class="rb-adem-sluit">Verder</button>';
     doc.body.appendChild(overlay);
-    overlay.querySelector('.rb-adem-sluit').addEventListener('click', sluit);
+    var lijst = q('.rb-adem-keuzes');
+    KEUZES.forEach(function (k, i) {
+      var b = doc.createElement('button');
+      b.type = 'button';
+      b.className = 'rb-adem-keuze';
+      b.textContent = k.t;
+      b.addEventListener('click', function () { kies(i); });
+      lijst.appendChild(b);
+    });
+    q('.rb-adem-sluit').addEventListener('click', sluit);
     overlay.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') sluit();
-      if (e.key === 'Tab') { e.preventDefault(); overlay.querySelector('.rb-adem-sluit').focus(); }
+      if (e.key === 'Escape') { sluit(); return; }
+      if (e.key !== 'Tab') return;
+      var f = Array.prototype.filter.call(overlay.querySelectorAll('button,a[href]'), function (el) { return !el.hidden && el.offsetParent !== null; });
+      if (!f.length) return;
+      var eerste = f[0], laatste = f[f.length - 1];
+      if (e.shiftKey && doc.activeElement === eerste) { e.preventDefault(); laatste.focus(); }
+      else if (!e.shiftKey && doc.activeElement === laatste) { e.preventDefault(); eerste.focus(); }
     });
   }
 
+  function fase(naam) { overlay.setAttribute('data-fase', naam); }
+
+  function toonKeuze() {
+    fase('kies');
+    gekozen = null;
+    q('.rb-adem-tekst').textContent = 'Wat houdt je hoofd bezet?';
+    q('.rb-adem-sub').textContent = 'Kies wat nu het zwaarst weegt. Wij onthouden het.';
+    q('.rb-adem-keuzes').hidden = false;
+    q('.rb-adem-link').hidden = true;
+    q('.rb-adem-bewaard').classList.remove('rb-zichtbaar');
+    q('.rb-adem-sluit').textContent = 'Liever niet nu';
+    var eerste = q('.rb-adem-keuze');
+    if (eerste) eerste.focus();
+  }
+
+  function kies(i) {
+    gekozen = KEUZES[i];
+    fase('adem');
+    q('.rb-adem-keuzes').hidden = true;
+    q('.rb-adem-sluit').textContent = 'Verder';
+    var b = q('.rb-adem-bewaard');
+    b.textContent = i === KEUZES.length - 1 ? 'Er hoeft nu niets.' : gekozen.t + ' — wij onthouden het.';
+    var c = q('.rb-adem-cirkel');
+    c.style.transitionDuration = '0s';
+    c.style.transform = 'scale(.62)';
+    q('.rb-adem-sluit').focus();
+    wis();
+    na(60, function () { ronde(0); });
+    na(2500, function () { b.classList.add('rb-zichtbaar'); });
+  }
+
   function ronde(n) {
-    var c = overlay.querySelector('.rb-adem-cirkel');
-    var t = overlay.querySelector('.rb-adem-tekst');
-    var s = overlay.querySelector('.rb-adem-sub');
+    var c = q('.rb-adem-cirkel'), t = q('.rb-adem-tekst'), s = q('.rb-adem-sub');
     if (n >= 3) {
-      t.textContent = 'Fijn. Ga rustig verder.';
-      s.textContent = '';
+      fase('klaar');
+      t.textContent = 'Het ligt veilig. Jij kunt verder.';
+      s.textContent = gekozen ? gekozen.z : '';
       c.style.transitionDuration = '2.5s';
       c.style.transform = 'scale(.8)';
+      var a = q('.rb-adem-link');
+      if (gekozen && gekozen.h && !isPortaal) {
+        a.href = gekozen.h;
+        a.textContent = gekozen.l;
+        a.hidden = false;
+      }
       return;
     }
     t.textContent = 'Adem in';
     s.textContent = 'Vier tellen · ronde ' + (n + 1) + ' van 3';
     c.style.transitionDuration = rustig ? '0s' : '4s';
-    c.style.transform = rustig ? 'scale(1)' : 'scale(1)';
+    c.style.transform = 'scale(1)';
     na(4000, function () {
       t.textContent = 'Adem uit';
       s.textContent = 'Zes tellen · ronde ' + (n + 1) + ' van 3';
@@ -95,13 +175,9 @@
     if (!overlay) bouwOverlay();
     vorigeFocus = doc.activeElement;
     root.style.overflow = 'hidden';
-    overlay.classList.add('rb-open');
-    overlay.querySelector('.rb-adem-sluit').focus();
     wis();
-    var c = overlay.querySelector('.rb-adem-cirkel');
-    c.style.transitionDuration = '0s';
-    c.style.transform = 'scale(.62)';
-    na(60, function () { ronde(0); });
+    overlay.classList.add('rb-open');
+    toonKeuze();
   }
   function sluit() {
     if (!overlay) return;
@@ -121,6 +197,17 @@
     return b;
   }
 
+  function momentPil() {
+    if (doc.querySelector('.rb-moment')) return;
+    var pil = doc.createElement('button');
+    pil.type = 'button';
+    pil.className = 'rb-moment';
+    pil.setAttribute('aria-label', 'Neem je moment: het geheugenritueel');
+    pil.innerHTML = '<i aria-hidden="true"></i>Neem je moment';
+    pil.addEventListener('click', open);
+    doc.body.appendChild(pil);
+  }
+
   /* ---------- website ---------- */
   function site() {
     root.classList.add('rb-js');
@@ -129,12 +216,24 @@
     var kop = doc.querySelector('section.hero-video .hero-copy');
     if (kop && !kop.querySelector('.rb-adem-knop')) {
       var acties = kop.querySelector('.hero-video-actions');
-      var knop = ademKnop('Neem een ademmoment');
+      var knop = ademKnop('Neem je moment');
       knop.style.margin = '6px 0 0';
       var eerstePara = acties && acties.querySelector('p');
       if (eerstePara) acties.insertBefore(knop, eerstePara);
       else if (acties) acties.appendChild(knop);
       else kop.appendChild(knop);
+    }
+
+    // Zelfde ritueel op elke pagina: een stille pil en een rustband boven de voettekst.
+    momentPil();
+    var voet = doc.querySelector('body > footer, footer');
+    if (voet && !doc.querySelector('.rb-band')) {
+      var band = doc.createElement('section');
+      band.className = 'rb-band';
+      band.setAttribute('aria-label', 'Een moment voor jezelf');
+      band.innerHTML = '<small>Het geheugenritueel</small><p>Wij onthouden. Jij ademt.</p><button type="button">Neem je moment</button>';
+      band.querySelector('button').addEventListener('click', open);
+      voet.parentNode.insertBefore(band, voet);
     }
 
     // Onthulling: alleen elementen onder de eerste schermhoogte, en niet in kop, hero of voettekst.
@@ -206,6 +305,7 @@
 
   /* ---------- portaal ---------- */
   function portaal() {
+    momentPil();
     // Begroeting naar tijdstip, boven de welkomsttekst.
     var welkom = doc.querySelector('.welcome');
     if (welkom && !welkom.querySelector('.rb-groet')) {
@@ -220,7 +320,7 @@
     // Ademknop onderin de zijbalk.
     var zij = doc.querySelector('aside.sidebar');
     if (zij && !zij.querySelector('.rb-adem-knop')) {
-      var b = ademKnop('Adem even');
+      var b = ademKnop('Neem je moment');
       b.style.color = '#fff';
       b.style.margin = '16px 18px';
       b.style.alignSelf = 'flex-start';
