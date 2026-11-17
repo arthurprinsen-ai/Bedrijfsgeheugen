@@ -187,3 +187,9 @@ Permanent agentgedrag:
 7. Een codewijziging uit een foutanalyse verloopt via de bestaande beschermde GitHub Required/CodeQL-keten, de passende originele Edge/SQL-deploy en onafhankelijke productie-readback. Tot dat bewijs blijft P0 #4198 OPEN/DEGRADED.
 
 Regressie: `tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs`; migratie `20261117094500_original_result_guardian_existing_watchdog_v1.sql`. Definieer `GREEN` nooit op basis van alleen deze code, een PREPARED email of een geslaagde cron.
+
+
+## 17 november 2026 — bewaak daadwerkelijke bedrijfsnieuwsbron, niet alleen cron
+De oorspronkelijke Bedrijfsnieuws #20 had SQL-status `succeeded` terwijl het originele `net._http_response` HTTP 500 met `TAVILY_432` (abonnementslimiet overschreden) bevestigde. Laatste `bg_bedrijfsnieuws` feitelijke opslag is 8 november en losse nieuwsprovider-`bg_gezondheid` laatst groen 3 november; de SQL-cron bleef onterecht OK ogen. De bestaande #171 Result Guardian controleert daarom binnen zijn eigen health tick de daadwerkelijke providerfout, nieuws-ingest en providergezondheid. `TAVILY_PLAN_LIMIT_EXCEEDED` en `PROVIDER_NEWS_INGEST_STALE` zijn afzonderlijke expliciete statuses. Leg owner #20, bronherstel, P0 #4198, onvervulde bron-evidence en volgende onafhankelijke readback vast.
+
+HTTP 432 is GEEN herhaalbare 429: geen eindeloze betaalde retries, verhoging van abonnement, ongeautoriseerde nieuwe vendor, verzinnen van bedrijfsnieuws of een tweede onderzoeksketen. Bestaande reeds rechtmatig ingeladen betrouwbare bronnen mogen op de natuurlijke #116 lopen, maar persoonlijke e-mail blijft hold zonder actuele specifieke bron, recipient authority, suppressions, kwaliteit en immutable externe provider-ACK. Een nieuwe originele daily bron en externe resultaatcontrole zijn vereist voordat het brondeel groen kan worden. Regressie `tests/brain-guardian-news-provider-truth-20261117.test.mjs`.
