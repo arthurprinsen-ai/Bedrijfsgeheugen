@@ -35,9 +35,10 @@
   "acceptance": "Candidate becomes released only after Required + CodeQL pass on exact head, protected merge, original blog #5960 passes its own exact-head gates, native protected merge, matching Netlify production deploy, public article and original Supabase LIVE_PROVEN + ONE BRAIN readback. Do not call entire system green.",
   "compiler": {
     "failure_class": "PROVIDER_APPLIED_MIGRATION_LOCK_DRIFT",
-    "scope": "SUPABASE_RELEASE",
+    "scope": "DATABASE",
     "machine_enforceable": true,
     "repeat_count": 1,
-    "security_sensitive": true
+    "security_sensitive": false,
+    "scope_note": "Migration metadata parity integrity without auth, RLS, secret or sensitive schema changes; original Required gate remains fail-closed."
   }
 }
