@@ -234,8 +234,11 @@ jobs:
   # This reuses the existing daily workflow and protected GitHub delivery,
   # never creating an independent scheduler, publisher or parallel Brain.
   original-innovation-code-candidate:
-    if: ${{ always() && (needs.improve.result == 'success' || (github.event_name == 'workflow_dispatch' && inputs.execution_scope == 'original_code_recovery')) }}
-    needs: improve
+    # Daily admission must have passed: never start a second candidate on a
+    # denied duplicate run. Unrelated improve-step failures may not starve
+    # the original bounded, source-validated engineering agent.
+    if: ${{ always() && ((needs.daily-admission.result == 'success' && (needs.improve.result == 'success' || needs.improve.result == 'failure')) || (github.event_name == 'workflow_dispatch' && inputs.execution_scope == 'original_code_recovery')) }}
+    needs: [improve, daily-admission]
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions:
