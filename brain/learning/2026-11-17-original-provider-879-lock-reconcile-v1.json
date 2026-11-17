@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|delivery|native-provider-879-lock-one-behind|20261117-v1",
+  "obligation_id": "powerhouse|delivery|native-provider-879-lock-one-behind|20261117-v1",
+  "failure_class": "PROTECTED_MIGRATION_LOCK_BEHIND_REAL_ORIGINAL_PROVIDER",
+  "compiler": {
+    "failure_class": "PROTECTED_MIGRATION_LOCK_BEHIND_REAL_ORIGINAL_PROVIDER",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Protected source SQL migration 20261117123000 applied to native original production by the canonical delivery workflow, while main supabase/migration-history.lock.json still recorded only 878 provider entries. Adding a new pending migration while editing the lock in same PR violated fail-closed native history review.",
+  "fix": "Reconcile only the exact independently provider-applied migration identity as a separate protected lock-only PR. Never predeclare the pending Guardian v3 version; run its own protected PR after source lock parity is restored.",
+  "prevention_rule": "Canonical deployment must reconcile provider migration history to Git source via a separately protected accurate change before releasing a new pending migration. Keep original source and exact ref; never waive checks or forge production-applied IDs.",
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "owner": "existing-powerhouse-reliability",
+  "release_status": "CANDIDATE_NOT_MERGED",
+  "provider_sent_claim": false
+}
