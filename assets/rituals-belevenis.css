@@ -99,3 +99,8 @@ html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:tra
 html body :focus-visible{outline:2px solid #14171A;outline-offset:3px;border-radius:4px}
 ::selection{background:#FFE86B;color:#14171A}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:none}}
+
+/* Megamenu-contract (V18): koppen en menulinks blijven zwart en vet, ook in de Rituals-kop. */
+html body header.v17-header :is(h1,h2,h3,h4,h5,h6,[role="heading"]),
+html body header.v17-header a[data-bg-megamenu-link][href],
+html body header.v17-header a[data-bg-megamenu-link][href] *{color:#000!important;font-weight:700!important}
