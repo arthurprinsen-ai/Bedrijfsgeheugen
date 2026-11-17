@@ -1,0 +1,60 @@
+/* Rituals-richting stap 4 (besluit Arthur 17 nov 2026): het hele portaal ademt rust en exclusieve begeerte.
+   Alleen vorm, ritme en toon van de bestaande componenten: geen inhoud-, route- of logicawijziging.
+   Principes: warme achtergrond, haarfijne lijnen in plaats van schaduwen, kleine hoofdletter-labels,
+   trage overgangen, één rustige actie per blok. Scopen onder `body` met !important omdat de
+   bestaande lagen (saas-theme, polish, living-interface) elkaar ook overschrijven. */
+:root{--rt-ink:#0f1b3d;--rt-line:rgba(15,27,61,.10);--rt-line-strong:rgba(15,27,61,.22);--rt-warm:#faf8f5;--rt-sand:#f3ede4;--rt-ease:cubic-bezier(.22,.61,.36,1)}
+html body{background:var(--rt-warm)!important;font-feature-settings:"kern","liga";-webkit-font-smoothing:antialiased}
+body .main{padding-inline:clamp(18px,3vw,40px)!important}
+body .main :where(h1,h2,h3,h4){font-weight:600!important;letter-spacing:-.022em!important}
+body .main :where(p,li,td,small){line-height:1.62}
+
+/* Vlakken: lijn in plaats van schaduw */
+body .main :where(.card,.kpi,.legacy-card,.legacy-insight-card,.eh-card,.daily-steering,.owner-os,.company-state,.adoption-card,.blockers-card,.brainnode,.portal-overview-depth){box-shadow:none!important;border:1px solid var(--rt-line)!important;border-radius:14px!important;background-image:none!important;background-color:#fff!important;transition:border-color .5s var(--rt-ease),background-color .5s var(--rt-ease)!important}
+body .main :where(.card,.kpi,.legacy-card,.legacy-insight-card,.eh-card):hover{border-color:var(--rt-line-strong)!important;transform:none!important}
+body .main .braincard{background-color:#fff!important}
+
+/* Kleine hoofdletter-labels */
+body .main :where(.owner-eyebrow,.legacy-kicker,.eh-eyebrow,.daily-steering-eyebrow,.kpihead span,.sectiontitle a){text-transform:uppercase;letter-spacing:.14em!important;font-weight:600!important;font-size:.68rem!important;opacity:.78}
+
+/* Knoppen en bediening: stil, niet schreeuwend */
+body .topbar :where(.smallbtn,.topaction-icon,.period-control,.portal-hamburger),body .topbar .search{box-shadow:none!important;border:1px solid var(--rt-line)!important;border-radius:10px!important;background:#fff!important;transition:border-color .5s var(--rt-ease),background-color .5s var(--rt-ease)!important}
+body .topbar :where(.smallbtn,.topaction-icon,.period-control,.portal-hamburger):hover{border-color:var(--rt-line-strong)!important;background:var(--rt-warm)!important;transform:none!important}
+body .topbar .smallbtn{text-transform:uppercase;letter-spacing:.08em;font-size:.68rem!important;font-weight:600!important;color:var(--rt-ink)!important}
+body .topbar .ai,body .main .eh-main-action{box-shadow:none!important;border-radius:10px!important;text-transform:uppercase;letter-spacing:.09em;font-size:.72rem!important;font-weight:600!important;transition:background-color .5s var(--rt-ease),color .5s var(--rt-ease)!important}
+body .main .eh-main-action{background:var(--rt-ink)!important;color:#fff!important;border:1px solid var(--rt-ink)!important}
+body .main .eh-main-action:hover{background:transparent!important;color:var(--rt-ink)!important}
+body .main :where(.owner-link,.legacy-next a){border-radius:10px!important;box-shadow:none!important;border:1px solid var(--rt-line)!important}
+
+/* Statusbadges en pillen: zachter */
+body .main :where(.livepill,.eh-status,.v2globalstatus,.pill){box-shadow:none!important;border:1px solid var(--rt-line)!important;font-weight:600!important;letter-spacing:.04em}
+
+/* Frisse Blik Scan: warm zand in plaats van felgeel */
+body .sidebar .scan{background:var(--rt-sand)!important;border:1px solid rgba(15,27,61,.08)!important;box-shadow:none!important;border-radius:14px!important;color:var(--rt-ink)!important}
+body .sidebar .scan strong{color:var(--rt-ink)!important;font-weight:600!important;letter-spacing:-.01em}
+body .sidebar .scan p{color:rgba(15,27,61,.72)!important;line-height:1.55}
+body .sidebar .scan button{background:var(--rt-ink)!important;color:#fff!important;box-shadow:none!important;border-radius:10px!important;text-transform:uppercase;letter-spacing:.09em;font-size:.68rem!important;font-weight:600!important;transition:background-color .5s var(--rt-ease)!important}
+body .sidebar .scan button:hover{background:#1c2c5c!important}
+
+/* Navigatie: rustiger ritme */
+body .sidebar .nav button{border-radius:10px!important;letter-spacing:.005em}
+body .sidebar :where(.nav-title,.nav-group-title,.nav-section){letter-spacing:.14em;text-transform:uppercase}
+
+/* Invoer */
+body .main :where(input,select,textarea){border-radius:10px!important;border:1px solid var(--rt-line)!important;box-shadow:none!important;transition:border-color .5s var(--rt-ease)!important}
+body .main :where(input,select,textarea):focus{border-color:var(--rt-ink)!important;outline:none!important;box-shadow:0 0 0 3px rgba(15,27,61,.08)!important}
+body :where(a,button,[tabindex]):focus-visible{outline:2px solid var(--rt-ink)!important;outline-offset:2px!important}
+
+/* Tabellen en lijsten: haarlijnen */
+body .main table{border-collapse:collapse}
+body .main :where(th,td){border-color:var(--rt-line)!important}
+body .main th{text-transform:uppercase;letter-spacing:.1em;font-size:.68rem;font-weight:600}
+
+@media(max-width:760px){body .main{padding-inline:14px!important}}
+@media(prefers-reduced-motion:reduce){body *{transition:none!important;animation-duration:.01ms!important}}
+
+/* Correcties na schermcontrole */
+body .topbar{background:transparent!important;border-bottom:1px solid var(--rt-line)!important;box-shadow:none!important}
+body .topbar .ai{background:var(--rt-ink)!important;color:#fff!important;border:1px solid var(--rt-ink)!important}
+body .topbar .ai:hover{background:transparent!important;color:var(--rt-ink)!important}
+body .topbar .period-control :where(select,input){border:0!important;box-shadow:none!important;background:transparent!important}
