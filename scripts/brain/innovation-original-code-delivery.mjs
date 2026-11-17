@@ -31,7 +31,32 @@ const priority=['powerhouse-decision-cycle-evidence',
 const text=value=>typeof value==='string'?value.trim():'';
 const obj=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 
-export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>false}={}){
+// A historical parent PR is a lineage reference, not necessarily duplicate code.
+// Before allowing the original writer to create an independent follow-up,
+// require exact provider MERGED/main ancestry, an older date and disjoint paths.
+export function isVerifiedMergedHistoricalParentPr({pr,parentPr,candidate,allowedSourcePaths}={}){
+  const number=Number(parentPr),merged=Date.parse(pr?.mergedAt??''),
+    created=Date.parse(candidate?.created_at??'');
+  if(!Number.isInteger(number)||number<100||number>999999||
+     pr?.number!==number||pr?.state!=='MERGED'||pr?.baseRefName!=='main'||
+     !Number.isFinite(merged)||!Number.isFinite(created)||merged>created||
+     !/^[a-f0-9]{40}$/i.test(pr?.mergeCommit?.oid??'')||
+     !Array.isArray(pr?.files)||pr.files.length<1||!Array.isArray(allowedSourcePaths)||
+     allowedSourcePaths.length<1)return false;
+  if(typeof pr.body==='string'&&pr.body.split(/\r?\n/).some(line=>
+     line.trim()==='Original-Candidate: '+candidate.candidate_id))return false;
+  return pr.files.every(file=>typeof file?.path==='string'&&
+     file.path.length>0&&!allowedSourcePaths.includes(file.path));
+}
+function verifiedHistoricalParentFor(number,candidate,allowedSourcePaths){
+  const pr=JSON.parse(execFileSync('gh',
+    ['pr','view',String(number),'--repo',REPO,
+      '--json','number,state,mergedAt,mergeCommit,baseRefName,files,body'],
+    {encoding:'utf8',timeout:25000,maxBuffer:4000000}));
+  return isVerifiedMergedHistoricalParentPr({pr,parentPr:number,candidate,allowedSourcePaths});
+}
+
+export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>false,historicalParentFor=()=>false}={}){
   if(report?.contract!=='ORIGINAL_INNOVATION_AGENT_OWNER_READBACK_V1')fail('SOURCE_REPORT_REQUIRED');
   if(![snapshot?.candidates,snapshot?.obligations,snapshot?.intakes].every(Array.isArray))fail('SOURCE_ARRAYS_REQUIRED');
   if(snapshot.candidates.length!==report.counts?.candidates||
@@ -98,7 +123,16 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
       held++;continue;
     }
     // A previously implemented source, or a duplicate candidate PR, must be reconciled, not rebuilt.
-    if(/\bPR\s*#?\d{3,6}\b/i.test(action)||c.proposed_action.parent_pr){held++;continue;}
+    if(/\bPR\s*#?\d{3,6}\b/i.test(action)){held++;continue;}
+    // A linked old PR is never sufficient. The actual GitHub merged parent
+    // must be older and disjoint, and the existing candidate dedupe still runs.
+    const parent=c.proposed_action.parent_pr;
+    if(parent!==undefined&&parent!==null){
+      if(!/^[1-9][0-9]{2,5}$/.test(String(parent))||
+         !historicalParentFor(Number(parent),c,scopes[c.component_id])){
+        held++;continue;
+      }
+    }
     eligible++;
     if(existingPrFor(c.candidate_id,obligation.payload_sha256,obligation.evidence.source_revision)){existing++;continue;}
     return Object.freeze({contract:CONTRACT,selected:true,
@@ -178,7 +212,7 @@ async function main(){
   if(mode==='--prepare'){
     const snapshot=await readCanonicalRows({config:trustedBrainReadConfig(process.env)});
     const report=evaluateOriginalOwnerHandoff(snapshot);
-    const selected=selectOriginalCodeCandidate({snapshot,report,existingPrFor});
+    const selected=selectOriginalCodeCandidate({snapshot,report,existingPrFor,historicalParentFor:verifiedHistoricalParentFor});
     mkdirSync('artifacts/quality',{recursive:true});
     writeFileSync(WORK_ORDER,JSON.stringify(selected,null,2)+'\n');
     recordOutput('selected',selected.selected?'true':'false');
