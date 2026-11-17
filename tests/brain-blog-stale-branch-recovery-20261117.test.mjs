@@ -8,11 +8,11 @@ const pr=(number,date,extras={})=>({
  head:{ref:'automation/powerhouse-blog-'+date,sha:'a'.repeat(40),repo:{full_name:repo}},
  mergeable_state:'behind',...extras
 });
-test('only recent prior-day original GitHub branches are eligible; newest first',()=>{
+test('only recent prior-day original GitHub branches are eligible; oldest first for fairness',()=>{
  const other=pr(4,'2026-11-16',{head:{ref:'other-blog',sha:'a'.repeat(40),repo:{full_name:repo}}});
  const foreign=pr(5,'2026-11-16',{head:{ref:'automation/powerhouse-blog-2026-11-16',sha:'a'.repeat(40),repo:{full_name:'other/repo'}}});
  const candidates=eligibleStaleBlogPrs([pr(1,'2026-11-15'),pr(2,'2026-11-16'),pr(3,'2026-11-17'),other,foreign,pr(6,'2026-11-01')],'2026-11-17',repo);
- assert.deepEqual(candidates.map(x=>x.number),[2,1]);
+ assert.deepEqual(candidates.map(x=>x.number),[1,2]);
 });
 test('only exact same original PR behind main qualifies for native update',()=>{
  const item=pr(7,'2026-11-16');
