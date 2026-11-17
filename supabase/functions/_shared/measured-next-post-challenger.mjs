@@ -140,9 +140,14 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
   {name:'READERS_NEXT_STEP',change:'Maak één optionele, brongetrouwe vervolgstap concreter zonder conversiedruk.'}
  ];
  const instagram=[
-  {name:'SCENE_HOOK',change:'Verduidelijk alleen de opening van de bestaande fictieve Mira-scène.'},
-  {name:'CONSEQUENCE',change:'Verhelder uitsluitend één mogelijk zakelijk gevolg zonder claims over echte klanten.'},
-  {name:'RELEVANT_QUESTION',change:'Stel een nuttige vraag bij de bestaande vrijwillige vervolgstap zonder engagementbait.'}
+  {name:'SHAREABLE_FRICTION_HOOK',metric:'provider_observed_shares_per_reach',
+   change:'Maak uitsluitend de openingszin concreter: één herkenbare, daadwerkelijk uit de actuele bron afleidbare ondernemersfrictie. Geen verzonnen case, clickbait of gevraagd nepdelen.'},
+  {name:'SAVEABLE_OWNER_CHECK',metric:'provider_observed_saves_per_reach',
+   change:'Verhelder uitsluitend één praktische eigenaar/controlehandeling voor het ondernemersprobleem, bruikbaar om op te slaan; behoud dezelfde bron en Mira-scène.'},
+  {name:'DISCUSSION_QUESTION',metric:'provider_observed_comments_per_reach',
+   change:'Stel precies één natuurlijke open vraag bij de concrete scène, geen engagementbait of gefingeerd ondernemersverhaal.'},
+  {name:'VOLUNTARY_NEXT_STEP',metric:'verified_utm_qualified_lead_progression',
+   change:'Verduidelijk uitsluitend één vrijwillige vervolgstap met aantoonbaar werkende trackingbestemming, zonder persoonsgegevens of onbewezen orderclaim.'}
  ];
  const variants=channel==='blog'?blog:channel==='instagram_company'?instagram:company;
  const choice=variants[Math.floor(stamp/86400000)%variants.length];
@@ -153,9 +158,12 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
    other_components:'UNCHANGED',experiment_type:'OBSERVATIONAL_SINGLE_CANDIDATE_NOT_RANDOMIZED_AB',
    compare_to:'prior channel-native editorial baseline; no causal inference',
    measure_after_days:[1,3,7,30],
-   lead_metric:channel==='blog'?'verified_qualified_cta_progression':channel==='instagram_company'?'provider_observed_comments_per_verified_exposure':'verified_clicks_and_substantive_comments',
+   lead_metric:channel==='blog'?'verified_qualified_cta_progression':channel==='instagram_company'?choice.metric:'verified_clicks_and_substantive_comments',
    primary_business_metric:'attributed_verified_paid_orders',
-   requires_readback:true,control:'never promote a winner from unknown denominators'};
+   requires_readback:true,control:'never promote a winner from unknown denominators',
+   ...(channel==='instagram_company'?{format_policy:'MIRA_REEL_ONLY_UNTIL_INDEPENDENT_CAROUSEL_ASSET_AUTHORITY',
+     format_learning_note:'Third-party 2026 comparisons suggest carousels may earn more saves, but the existing exact Mira Reel visual gate is not bypassed and no extra post is permitted.',
+     provider_metrics_only:true,causal_effect_proven:false}: {})};
 }
 
 
