@@ -73,7 +73,7 @@ test('original Mira source, exclusive publisher, native Meta, and Heartbeat sour
  assert.match(ledger,/\#140/);
  assert.match(ledger,/\#171/);
  assert.match(ledger,/\#177/);
- assert.match(ledger,/Meta-ID/);
+ assert.match(ledger,/Meta-(?:media-)?ID/);
  assert.match(ledger,/PROCESSED/);
  assert.match(ledger,/OPEN/);
  const team=read('platform/agents/agent-team.mjs');
