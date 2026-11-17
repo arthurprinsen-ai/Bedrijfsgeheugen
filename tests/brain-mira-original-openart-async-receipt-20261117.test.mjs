@@ -113,7 +113,7 @@ test('the original authenticated router inserts the receipt before any publish, 
  const router=readFileSync(new URL('../supabase/functions/powerhouse-instagram-media-router/index.ts',import.meta.url),'utf8');
  const helper=readFileSync(new URL('../supabase/functions/powerhouse-instagram-media-router/pin-generation-history.mjs',import.meta.url),'utf8');
  const receipt=router.indexOf("if(action==='pin_generation')");
- const verify=router.indexOf("if(action==='submit_asset')");
+ const verify=router.indexOf("if(action==='submit_asset'){",receipt);
  assert.ok(receipt>0&&verify>receipt);
  assert.match(router,/assessMiraOriginalGenerationReceipt\(/);
  assert.match(router,/\.eq\('status','CLAIMED'\)\.eq\('attempts',1\)\.eq\('updated_at',job.updated_at\)/);
