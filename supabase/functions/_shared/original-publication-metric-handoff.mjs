@@ -5,25 +5,38 @@ const clean=v=>String(v??'').trim();
 const millis=v=>Date.parse(clean(v));
 const validNumber=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0;
 const URN=/^urn:li:(?:share|ugcPost):[0-9]+$/;
+const IG_MEDIA_ID=/^[0-9]{10,25}$/;
 function accept(ob,post,snapshot,now){
  const ref=clean(ob?.external_id),nowMs=millis(now),published=millis(ob?.published_at),
   live=millis(ob?.live_proven_at),postPublished=millis(post?.published_at),seen=millis(snapshot?.observed_at);
  if(ob?.tenant_id!=='canonical'||ob?.status!=='LIVE_PROVEN'||
-    !['linkedin_personal','linkedin_company'].includes(ob.channel)||
-    !URN.test(ref)||!Number.isFinite(nowMs)||!Number.isFinite(published)||
+    !['linkedin_personal','linkedin_company','instagram'].includes(ob.channel)||
+    !(ob.channel==='instagram'?IG_MEDIA_ID.test(ref):URN.test(ref))||!Number.isFinite(nowMs)||!Number.isFinite(published)||
     !Number.isFinite(live)||!Number.isFinite(postPublished)||!Number.isFinite(seen)||
     Math.abs(postPublished-published)>300_000||
     seen<published+86_400_000||seen>nowMs+300_000||
     published>nowMs||live>nowMs||live<published-300_000||
-    post?.external_post_id!==ref||post?.channel_kind!==ob.channel||
+    post?.external_post_id!==ref||
+    !(ob.channel==='instagram'?['instagram_business','instagram_company'].includes(post?.channel_kind):post?.channel_kind===ob.channel)||
     !clean(post?.post_id)||snapshot?.post_id!==post?.post_id||
     snapshot?.tenant_id!==post?.tenant_id||
     !clean(snapshot?.source_event_id))return null;
  const isPersonal=ob.channel==='linkedin_personal';
+ const isInstagram=ob.channel==='instagram';
  if(post?.tenant_id!==(isPersonal?'canonical':'bedrijfsgeheugen'))return null;
  const m=snapshot?.metrics||{};
  let observed={};
- if(isPersonal){
+ if(isInstagram){
+   // Original #177 source from exact Meta-owned provider media, never a Buffer
+   // aggregate or unlinked asset; views/reach missing are UNKNOWN, not zero.
+   if(post?.platform!=='instagram'||snapshot?.source!=='composio-instagram'
+      ||snapshot?.data_quality!=='OBSERVED'
+      ||!clean(snapshot.source_event_id).startsWith('composio:instagram:'+ref+':')
+      ||snapshot?.post_id!==post?.post_id||
+      !validNumber(m.views)&&!validNumber(m.reach))return null;
+   for(const field of ['views','reach','likes','comments','saved','shares'])
+     if(validNumber(m[field]))observed[field]=m[field];
+ } else if(isPersonal){
    if(snapshot?.source!=='composio-linkedin'||
       snapshot?.data_quality!=='OBSERVED_PARTIAL_SCOPE'||
       !clean(snapshot.source_event_id).startsWith('composio:linkedin:'+ref+':')||
@@ -47,10 +60,12 @@ function accept(ob,post,snapshot,now){
    source_event_id:clean(snapshot.source_event_id),post_id:post.post_id,
    provider_post_id:ref,observed_at:new Date(seen).toISOString(),
    source:snapshot.source,data_quality:snapshot.data_quality,
-   measurement_scope:isPersonal?'reactions_only':'company_post_analytics',
+   measurement_scope:isInstagram?'owned_instagram_media_insights':isPersonal?'reactions_only':'company_post_analytics',
    observed_metrics:observed,post_age_hours:Math.round((seen-published)/360000)/10,
-   impression_source_available:!isPersonal,provider_post_verified:true,
+   impression_source_available:!isPersonal&&!isInstagram,reach_source_available:isInstagram&&validNumber(m.reach),
+   views_source_available:isInstagram&&validNumber(m.views),provider_post_verified:true,
    enough_for_commercial_or_causal_learning:false,blog_or_instagram_inferred:false,
+   actual_sales_attributed:false,customer_leads_inferred:false,
    learning_application_verified:false};
 }
 export function reconcileOriginalPublicationMeasurement(ob,post,snapshot,now){
@@ -70,7 +85,9 @@ export function reconcileOriginalPublicationMeasurement(ob,post,snapshot,now){
 export function identifyOriginalPublicationHandoff(ob,posts,snapshots,now){
  if(ob?.status!=='LIVE_PROVEN'||!ob?.external_id)return {reason:'ORIGINAL_NOT_LIVE_PROVEN'};
  const expectedTenant=ob.channel==='linkedin_personal'?'canonical':'bedrijfsgeheugen';
- const exact=(posts||[]).filter(p=>p.tenant_id===expectedTenant&&p.channel_kind===ob.channel&&p.external_post_id===ob.external_id);
+ const exact=(posts||[]).filter(p=>p.tenant_id===expectedTenant&&
+  (ob.channel==='instagram'?['instagram_business','instagram_company'].includes(p.channel_kind):p.channel_kind===ob.channel)
+  &&p.external_post_id===ob.external_id);
  if(exact.length!==1)return {reason:exact.length?'AMBIGUOUS_POST_IDENTITY':'OWNED_POST_MISSING'};
  const s=(snapshots||[]).filter(s=>s.tenant_id===expectedTenant&&s.post_id===exact[0].post_id)
    .sort((a,b)=>millis(b.observed_at)-millis(a.observed_at));
