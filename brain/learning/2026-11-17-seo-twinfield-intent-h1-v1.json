@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-17",
+  "fingerprint": "seo|twinfield-buyer-intent-h1-gap|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918",
+  "obligation_id": "seo-owner-update:2026-11-17:twinfield-koppeling",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "original Powerhouse SEO Order Engine / BG169 and original protected website writer",
+  "status": "SOURCE_CHANGE_PENDING_PROTECTED_RELEASE",
+  "root_cause": "Original provider-crawled Twinfield money page matched the indexed buyer-intent title 'Twinfield API-koppeling laten maken' but visible H1 'Twinfield koppelen aan de rest van je bedrijf' did not express that buyer's API-koppeling search task. The ongoing 17-Nov source-observed canonical recommendation remains suggested; previous on-page score 100 masks message-match gap. Primary provider organic acquisition evidence GA4 MISSING, GSC AWAITING_PROVIDER.",
+  "prevention": "Before original money-page SEO delivery, verify canonical single-owner search intent is expressed clearly in rendered title, single H1, helpful intro and honest CTA. Keep exact original recommendation ID and lease; never create overlapping keyword pages. Do not call SEO score, HTTP 200, keyword volume, cron success, source-ACK or a deployed H1 real visitors/Google rankings. Complete current GSC/GA4 source proof, protected release, Netlify exact current SHA, public on-page readback and subsequent 7/14/28d engagement, qualified leads, orders and consumer learning before declaring a growth outcome.",
+  "compiler": {
+    "failure_class": "SEO_MONEY_PAGE_INTENT_MISMATCH",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-twinfield-intent-h1-20261117.test.mjs"
+    ],
+    "existing_regressions": [
+      "tests/brain-seo-money-page-trust-20261112.test.mjs",
+      "tests/seo-order-estate.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_provider": "DataForSEO OnPage instant_pages",
+    "provider_checked_at": "2026-11-17 17:33:59 UTC",
+    "provider_http_status": 200,
+    "provider_onpage_score": 100,
+    "previous_h1": "Twinfield koppelen aan de rest van je bedrijf.",
+    "source_title": "Twinfield API-koppeling laten maken | Bedrijfsgeheugen",
+    "canonical_url": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
+    "source_revision": "2026-11-16T06:00:08.872Z",
+    "seo_keyword": "twinfield api",
+    "observed_source_weekly_keyword_rows": 18,
+    "ga4_gsc_current_source_status": "MISSING_OR_AWAITING_PROVIDER",
+    "organic_visitor_growth_proven": false,
+    "lead_or_revenue_growth_proven": false,
+    "existing_recommendation_state": "suggested",
+    "protected_merge": "PENDING",
+    "netlify_exact_current_sha_proven": false,
+    "public_updated_h1_readback_proven": false
+  },
+  "after_release": {
+    "measure_windows_days": [
+      7,
+      14,
+      28
+    ],
+    "original_ones": "ONE BRAIN + Powerhouse + Heartbeat + Portal",
+    "measuring_owner": "existing GA4/GSC data spine and commercial CRO owner",
+    "no_parallel_scheduler": true
+  }
+}
