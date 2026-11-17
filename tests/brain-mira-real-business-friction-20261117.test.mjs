@@ -32,9 +32,25 @@ test('vendor/software announcements are not promoted into claims of experienced 
  for(const [title,excerpt] of vendor){
   const result=score(title,excerpt);
   assert.equal(result.frictionScore,0.55,title);
+  assert.equal(result.admissible,false,'release must never be an observed MKB harm source');
   assert.equal(result.reason,'VENDOR_ANNOUNCEMENT_NOT_OBSERVED_OPERATIONAL_FRICTION');
  }
 });
+test('the business launch veto is a real score-independent eligibility gate in the source writer',()=>{
+ const source=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/index.ts',import.meta.url),'utf8');
+ assert.match(source,/businessEvidence\?\.admissible!==false/);
+ assert.match(source,/business_source_admissible:businessEvidence\?\.admissible\?\?null/);
+ assert.match(source,/business_source_admission_reason:businessEvidence\?\.reason\|\|null/);
+ assert.match(source,/VENDOR_ANNOUNCEMENT_NOT_OBSERVED_OPERATIONAL_FRICTION/);
+ assert.match(source,/channel==='linkedin_personal'&&!personalTopic/);
+ assert.match(source,/PERSONAL_SOURCE_NOT_OBSERVATIONAL_CONTEXT/);
+ // No single source from two LinkedIn personal search slots may become Mira.
+ assert.ok(source.indexOf("if(channel==='linkedin_personal'&&!personalTopic)")<
+  source.indexOf('const problemTopic=personalTopic||topic(title'));
+ // The original real-source hard floor is still in force.
+ assert.match(source,/eligible:total>=0\.72&&publication\.eligible/);
+});
+
 test('original one-radar source/date/score/URL gates and personal lane remain unchanged',()=>{
  const code=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/index.ts',import.meta.url),'utf8');
  const materializer=readFileSync(new URL('../supabase/migrations/20261027190000_mira_entrepreneur_signal_materializer_v1.sql',import.meta.url),'utf8');
