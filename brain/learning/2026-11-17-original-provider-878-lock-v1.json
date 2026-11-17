@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "github|gitops|provider-878-applied-with-missing-lock|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "ORIGINAL_NATIVE_SUPABASE_PROVIDER_IDENTITY_EXCEEDS_GITOPS_SOURCE_LOCK"
+  },
+  "root_cause": "Original protected main had executable Supabase source 20261117110000_original_guardian_news_source_provider_truth_v2.sql and Supabase native provider list returned 878 applied migrations, while canonical source migration-history.lock.json held 877. Original Required test on independent Janitor attempt-history PR #5949 failed six existing migration integrity tests before admission. The original GitOps writer must record the independently applied native version/name exactly, without reexecuting SQL or deleting history.",
+  "prevention": [
+    "Before accepting the next original non-migration PR, require exact independently read native provider version/name ordered parity with the one canonical GitOps migration-history.lock.json; never silence the existing Required suite.",
+    "Keep migration implementation and native apply in one canonical protected GitOps handoff and append only AFTER authoritative provider apply/readback; no parallel writer.",
+    "When main advances by a migration while other PRs are testing, classify exact native provider drift as independently observed SOURCE_LOCK_PARITY_DUE and retain each original PR open; do not expand or fake its scope or alter historical applied SQL.",
+    "No SQL or privilege changes in this repair; append only the original native provider 878 version/name and original owner evidence, then prove current main lock vs provider 878 ordered parity."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs",
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44063305193",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "Original native Supabase management list_migrations 878, exact latest pair 20261117110000/original_guardian_news_source_provider_truth_v2 at 2026-11-17T10:18Z",
+    "Original protected GitHub source migration-history.lock.json previous 877 entries: all 877 exact ordered prefix matches native production",
+    "Original source SQL file supabase/migrations/20261117110000_original_guardian_news_source_provider_truth_v2.sql blob SHA 74b006ec743a93487b91d02fbb12d8913edeb077",
+    "tests/supabase-migration-history-integrity.test.mjs is a secondary original protected release test, not a brain-prefixed dependency-free learning replay"
+  ],
+  "validation_limits": "This is protected GitOps source identity restoration for already-applied SQL. A current migration lock is not proof that Result Guardian business outcomes, e-mails or all agent repairs are successful. Subsequent main migration could move the source again, requiring same protected original reconciliation.",
+  "acceptance": "Exact-head Required + CodeQL, protected merge, read final current main canonical lock and native Supabase version/name 878 exact ordered match; original blocked PR #5949 can then be revalidated on refreshed original main without weakened gates."
+}
