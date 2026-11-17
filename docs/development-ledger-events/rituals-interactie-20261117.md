@@ -10,3 +10,8 @@
 - Herstel in dezelfde ontwerp-PR: assets/rituals-belevenis.css gebruikt enkel data-bg-megamenu-root="true" met afzonderlijk data-bg-megamenu-heading/link; geen route, inhoud of promo-kaartkleur gewijzigd.
 - Test: bestaande echte tools/site-shell/v18-megamenu-browser-check.mjs, Required + CodeQL op nieuwe HEAD, geen uitzondering.
 - Opleverstatus: bronkandidaat tot beschermd gemerged, exacte Netlify/productie en publieke mobile/desktop-readback; conversie-effect blijft onbekend.
+
+## 17 nov — daadwerkelijke dark promo contrast regressie
+- In originele browser: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44171286227, 12 pogingen met exact twee onvoldoende contrasterende H3 koppen op donker: oplossingen (zwart op rgb(20,23,26), 1,17:1) en Meer (zwart op rgb(7,31,85), 1,34:1).
+- Herstel in dezelfde oorspronkelijke generator: gewone data-bg-megamenu-link + inhoud zwart/vet behouden op wit; de expliciet niet-gemarkeerde promo H3 in echt mega-paneel wit/vet forceren met hogere specificiteit.
+- Geen verlaging van bestaande 3:1-browsercheck; geen publicatie tot exact-head Required/CodeQL, merge en Netlify/live-readback.
