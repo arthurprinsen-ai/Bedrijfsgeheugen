@@ -32,9 +32,9 @@ test('normal daily jobs remain protected by the identical first-run admission co
 });
 
 test('recovery is a bounded manual branch of one original workflow, not a second learning run',()=>{
- const job=workflow.match(/^  original-intake-recovery:\n([\s\S]*?)(?=^  model-freshness:\n)/m);
+ const job=workflow.split(/^  original-intake-recovery:\n/m)[1]?.split(/^  [a-z][a-z0-9-]*:\n/m)[0];
  assert.ok(job,'one original scoped repair job');
- const t=job[1];
+ const t=job;
  assert.ok(t.includes(recoveryCondition));
  assert.match(t,/node --test tests\/brain-innovation-original-agent-pre-review-20261115\.test\.mjs/);
  assert.match(t,/node scripts\/brain\/innovation-original-owner-readback\.mjs/);
