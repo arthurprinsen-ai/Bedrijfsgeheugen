@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-import {eligibleStaleBlogPrs,branchRecoveryDecision,recoverOneStaleBlogBranch} from '../tools/content-growth/reconcile-stale-blog-branch.mjs';
+import {eligibleStaleBlogPrs,branchRecoveryDecision,recoverOneStaleBlogBranch,canonicalBlogApprovalState} from '../tools/content-growth/reconcile-stale-blog-branch.mjs';
 const repo='arthurprinsen-ai/Bedrijfsgeheugen';
 const pr=(number,date,extras={})=>({
  number,state:'open',base:{ref:'main'},
@@ -28,6 +28,7 @@ test('one provider-native compare-and-swap branch update per run, no bypass or p
  const result=recoverOneStaleBlogBranch({
   repo,today:'2026-11-17',
   fetchPage:path=>path.includes('/pulls/17')?item:path.includes('page=1')?[item]:[],
+  verifyDue:date=>date==='2026-11-16',
   updateBranch:args=>writes.push(args)
  });
  assert.equal(result.action,'UPDATE_REQUESTED');
@@ -43,6 +44,7 @@ test('head drift cannot trigger a blind update',()=>{
  const result=recoverOneStaleBlogBranch({
   repo,today:'2026-11-17',
   fetchPage:path=>path.includes('/pulls/17')?moved:path.includes('page=1')?[original]:[],
+  verifyDue:date=>date==='2026-11-16',
   updateBranch:args=>writes.push(args)
  });
  assert.equal(result.action,'NO_SAFE_UPDATE');
@@ -54,4 +56,24 @@ test('same original hourly publisher and immutable public-proof stage remain',()
  assert.match(yml,/Reconcile merged daily blog only after production HTTP and immutable release proof/);
  assert.match(yml,/reconcile-stale-blog-branch\.mjs/);
  assert.doesNotMatch(yml,/continue-on-error: true/);
+});
+
+test('canonical source must be exactly APPROVED and not already published',()=>{
+ const approved={status:'APPROVED',approved_at:'2026-11-16T09:00:00Z',published_at:null,live_proven_at:null,external_id:null};
+ assert.equal(canonicalBlogApprovalState(approved),true);
+ for(const variation of [{status:'GENERATED'},{approved_at:null},{published_at:'2026-11-16T10:00:00Z'},{live_proven_at:'2026-11-16T10:00:00Z'},{external_id:'external-provider-id'}]){
+  assert.equal(canonicalBlogApprovalState({...approved,...variation}),false);
+ }
+});
+test('unapproved and already live originals never update GitHub branches',()=>{
+ const item=pr(18,'2026-11-16');
+ const writes=[];
+ const result=recoverOneStaleBlogBranch({
+  repo,today:'2026-11-17',
+  fetchPage:path=>path.includes('/pulls/18')?item:path.includes('page=1')?[item]:[],
+  verifyDue:date=>false,
+  updateBranch:args=>writes.push(args)
+ });
+ assert.equal(result.action,'NO_SAFE_UPDATE');
+ assert.equal(writes.length,0);
 });
