@@ -9,6 +9,16 @@ INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
 
 Fingerprint: `delivery|merge-epoch|optimistic-cas|v1`.
 
+## 17 november 2026 — bewaak iedere GitHub-runpoging, óók na succesvolle herstart
+
+Incident `github|janitor|rerun-history-failure-disappears-after-green|20261117-v1`, oorspronkelijke P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+
+Een `workflow_run` kan meerdere `run_attempt`-versies hebben. De gewone GitHub-workflowlijst bevat de actuele poging: een mislukte poging 1 kan uit die projectie verdwijnen zodra poging 2 slaagt. **Dat is geen verdwenen incident.** De bestaande Repository Janitor (zelfde `cron: 17 * * * *`, geen tweede monitor) moet bij iedere volledig uitgelezen workflow-run met `run_attempt > 1` ook de afzonderlijke door GitHub bewaarde oorspronkelijke pogingen via het native `/actions/runs/{run_id}/attempts/{number}` ophalen. Registreer elke werkelijk mislukte oude poging met dezelfde ongewijzigde provider-run-ID + pogingnummer + classificatie + bronhash in `public.brain_observe_failure`. Reageer niet op synthetische of succesvol afgeronde pogingen alsof ze fouten zijn.
+
+Een ontbrekende poging, afwijkende oorspronkelijke workflow-ID of source SHA, onvolledige bron of overschreden **beperkte** aanvraagcapaciteit veroorzaakt `SOURCE_COVERAGE_UNVERIFIED` en een bewijsbaar partial checkpoint; niets vals sluiten. De bestaande Janitor schrijft alleen volledig gecontroleerde vensters, met native Supabase read-after-write en idempotency; hij begint nooit een tweede job of verzendt nooit extra berichten. Een handmatig bevestigd incident met exact dezelfde evidence-hash telt als `ALREADY_VERIFIED`; een andere hash is een conflict dat eerst door de oorspronkelijke eigenaar moet worden herleid.
+
+**Herstel betekent meer dan opnieuw een groene CI-run:** originele eigenaar, bronoorzaak, regressie, versie van deze skill, beschermd herstelrelease-SHA, exact herstelde workflow-run, en op een volgende natuurlijke oorspronkelijke Janitor-run een independently confirmed ONE BRAIN occurrence voor oude en nieuwe fouten. Houd originele incidenten open zonder bewijs. Gerichte regressies: `tests/brain-github-actions-rerun-attempt-history-20261117.test.mjs`, `tests/brain-github-actions-observer-durable-window-20261117.test.mjs`, `tests/brain-github-actions-failure-observer-20261104.test.mjs`.
+
 ## Goal
 
 Keep development parallel, but make terminal landing deterministic. Main may move at any time. A green gate on an older main epoch is never enough by itself to authorize a protected merge.
