@@ -125,10 +125,10 @@ test('without enough fresh posts, original daily Mira still tests only ONE safe 
   assert.equal(idea.additional_publications,0);
   assert.equal(idea.format_policy,'MIRA_REEL_ONLY_UNTIL_INDEPENDENT_CAROUSEL_ASSET_AUTHORITY');
   assert.equal(idea.primary_business_metric,'attributed_verified_paid_orders');
-  assert.match(idea.lead_metric,/^(provider_observed_(shares|saves|comments)_per_reach|verified_utm_qualified_lead_progression)$/);
+  assert.match(idea.lead_metric,/^provider_observed_(shares|saves|comments)_per_reach$/);
   seen.set(idea.hypothesis_id.split(':')[1],idea.lead_metric);
  }
- assert.equal(seen.size,4,'single daily exploration rotates share/save/discussion/qualified CTA');
+ assert.equal(seen.size,3,'single daily exploration retains exactly three canonical publisher caption variants');
  const blocked=proposeBoundedCreativeExploration({runDate:'2026-11-18',channel:'instagram_company',
   recommendation:{reason:'source',evidence:{source_backed:true}},freshness:{ok:false}});
  assert.equal(blocked.state,'NO_EXPLORATION');
