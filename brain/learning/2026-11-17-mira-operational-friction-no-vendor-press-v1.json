@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|instagram|mira-source-operational-problem-missed-by-consumer-language-scoring|20261117-v1",
+  "obligation_id": "powerhouse|instagram|source-actual-mkb-friction|20261117-v1",
+  "owner": "original powerhouse-mira-problem-radar-v1",
+  "compiler": {
+    "failure_class": "CONTENT_SOURCE_FALSE_NEGATIVE",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 8,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-real-business-friction-20261117.test.mjs"
+    ]
+  },
+  "root_cause": "The original Mira source scorer only recognizes consumer-language complaints (klacht/frustratie/probleem), ignoring verifiable Dutch operational harm (personnel shortage, late invoices, stale offers, manual data entry, cost overrun). Product launches may mimic customer problems and should remain unapproved.",
+  "prevention": "Use precise business-specific operational friction recognition only inside the same original six-company/two-personal source slots and do not promote launch headlines. Preserve >=0.72, actual dated article, 45 day freshness, 90 day URL/hash novelty, 3 day topic novelty and master/Meta proof.",
+  "tests": [
+    "tests/brain-mira-real-business-friction-20261117.test.mjs"
+  ],
+  "evidence": {
+    "observed_mira_source_candidates_today": 7,
+    "eligible_today": 0,
+    "observed_vendor_scores": [
+      0.661,
+      0.69
+    ],
+    "original_17nov_winner": false,
+    "affected_source_component": "powerhouse-mira-problem-radar",
+    "next_due_date": "2026-11-18",
+    "no_extra_paid_provider_calls": true,
+    "external_Meta_post": "NOT_PROVEN"
+  },
+  "outcome": "CANDIDATE_ONLY_UNTIL_PROTECTED_MERGE_AND_REAL_NEW_SOURCE",
+  "next_action": "Run protected Required/CodeQL, exact native Supabase Edge-source parity, next original natural eight-slot radar result, source/winner/producer/Meta/Brain receipts."
+}
