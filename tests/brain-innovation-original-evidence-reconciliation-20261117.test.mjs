@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
 import {
   CONTRACT,planOriginalInnovationEvidence,readOriginalQualityRows,
   persistOriginalInnovationEvidence
@@ -184,4 +185,23 @@ test('native original CAS receipt plus independent GET keeps PLANNED; version co
   const conflict=await persistOriginalInnovationEvidence({plan:p,config,fetchImpl});
   assert.equal(conflict.failed,1);
   assert.equal(writes,1);
+});
+
+test('one original daily engineering job owns nine-quality reconciliation and has no extra cron or silent failure',()=>{
+  const yaml=readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+  const codeJob=yaml.split(/^  original-innovation-code-candidate:\n/m)[1];
+  assert.ok(codeJob,'original engineering job must exist');
+  const verify=codeJob.indexOf('Verify exact original quality-source reconciliation and CAS invariants');
+  const record=codeJob.indexOf('Reconcile 14 original source-quality receipts using original version-CAS');
+  const select=codeJob.indexOf('Select at most one source-bound original engineering work order');
+  const validate=codeJob.indexOf('Enforce exact scoped implementation');
+  const failVisible=codeJob.indexOf('Fail visibly when original quality reconciliation did not complete');
+  const publish=codeJob.indexOf('Publish only the validated code candidate');
+  assert.ok(verify>=0&&record>verify&&select>record&&validate>select);
+  assert.ok(failVisible>publish,'reconciliation source problems must not starve safe original PR work');
+  assert.match(codeJob,/continue-on-error: true/);
+  assert.match(codeJob,/steps\.original_quality_reconcile\.outcome == 'failure'/);
+  assert.match(codeJob,/ORIGINAL_14_QUALITY_RECONCILIATION_FAILED/);
+  assert.equal((yaml.match(/^\s+- cron:/gm)||[]).length,1,'only original one daily schedule');
+  assert.equal((yaml.match(/^  original-innovation-code-candidate:/gm)||[]).length,1,'no second code executor');
 });
