@@ -19,10 +19,12 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs"
+      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs",
+      "tests/brain-innovation-merged-parent-safebuild-20261117.test.mjs"
     ],
     "canary": [
-      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs"
+      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs",
+      "tests/brain-innovation-merged-parent-safebuild-20261117.test.mjs"
     ]
   },
   "terminal_success": false,
@@ -32,7 +34,7 @@
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857"
   ],
   "unverified": "Independent business effect, customer value, Heartbeat consumer ACK, provider delivered external transaction and full implementation of other 13 original obligations remain OPEN.",
-  "prevention_rule": "For every original innovation with protected historic source evidence and no new Codex-generated PR receipt: resolve the original native merged GitHub PR and run a fresh bounded independent source readback; publish only nonterminal versioned original Brain evidence, NEVER duplicate an already-implemented change or substitute internal events for verified delivery, causal value or Heartbeat ACK.",
+  "prevention_rule": "For every original innovation with protected historic source evidence and no new Codex-generated PR receipt: resolve the original native merged GitHub PR and run a fresh bounded independent source readback; publish only nonterminal versioned original Brain evidence, NEVER duplicate an already-implemented change or substitute internal events for verified delivery, causal value or Heartbeat ACK. A prior linked historical parent can unlock a NEW candidate only where the original ONE BRAIN operation has no independently recorded protected implementation for that SAME candidate/revision. Preserve duplicate guard and require source-bound evidence or fail closed.",
   "evidence": {
     "original_source_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
     "historical_implementation_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857",
@@ -47,6 +49,9 @@
     "first_required_red_reason": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning due missing machine prevention/evidence semantic keys; root cause and regression already present; no guard waived",
     "native_new_release": "NOT_YET_MERGED",
     "new_live_source_effect": "NOT_YET_PROVEN",
-    "business_outcome": "NOT_PROVEN"
+    "business_outcome": "NOT_PROVEN",
+    "protected_parent_selector": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5981",
+    "no_duplicate_followup_guard": "original original_code_candidate_pr or protected_implementation_source_evidence must hold before inspecting previous historical parent PR, with exact source owner/revision and native PR URL contract",
+    "new_regression": "tests/brain-innovation-merged-parent-safebuild-20261117.test.mjs"
   }
 }
