@@ -167,7 +167,7 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
         legacyPr.number===Number(existingSource.pr_url.split('/').at(-1))&&
         legacyPr.baseRefName==='main'&&
         typeof legacyPr.body==='string'&&
-        legacyPr.body.includes('Original candidate '+candidate.candidate_id)&&
+        legacyPr.body.includes('Original candidate `'+candidate.candidate_id+'`')&&
         legacyPr.body.includes('Candidate-Type: implementation')&&
         legacyPr.body.includes('Writer-Lease-Owner: original agent:agent-integration-engineer'),
         'LEGACY_GITHUB_PR_LINEAGE_CONFLICT');
