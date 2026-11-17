@@ -7,7 +7,7 @@
 - Native response: `runDate=2026-11-18`, `materialized.ok=true`, business score `0.913`, `sourceRecovery=null`; `personalSourceRecovery.reason=PERSONAL_USER_EXPERIENCE_NOT_VERIFIED`
 - Original bug: combined readiness value used for *business* transport ACK; cascade blocked an otherwise viable source
 - Proposed code: separate business source ACK from personal readiness; preserve independent personal BRAIN obligation, first-person source gate and `sendsAuthorized=false`
-- Regression baseline: 4 existing tests updated + new cross-channel independence test; main skill updated
+- Regression baseline: 6 existing tests updated + new cross-channel independence test; main skill updated
 - No new scheduled jobs, provider sends, fabricated media, direct main write, direct production auth changes, or downgraded face/source gates
 - Pending acceptance: Required + CodeQL, protected merge, exact Supabase Edge deploy and live request readback
 - Still unproven: Meta Instagram POST/GET, personal LinkedIn post, named BRAIN PROCESSED, Heartbeat effect, applied learning, customer/revenue outcomes
