@@ -10,6 +10,7 @@ export const CONTRACT='ORIGINAL_INNOVATION_BOUNDED_CODE_CANDIDATE_V1';
 export const WORK_ORDER='artifacts/quality/original-innovation-code-workorder.json';
 const REPO='arthurprinsen-ai/Bedrijfsgeheugen';
 const SHA=/^[a-f0-9]{64}$/i;
+const GIT_SHA=/^[a-f0-9]{40}$/i;
 const UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const digest=value=>createHash('sha256').update(JSON.stringify(value)).digest('hex');
 const fail=code=>{throw new Error('ORIGINAL_INNOVATION_CODE_'+code);};
@@ -31,7 +32,58 @@ const priority=['powerhouse-decision-cycle-evidence',
 const text=value=>typeof value==='string'?value.trim():'';
 const obj=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
 
-export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>false}={}){
+// A named parent PR is an immutable prerequisite, NOT automatically a duplicate
+// of the child's different, source-bound read-model implementation. Fail closed
+// until native GitHub independently proves an exact protected main ancestor,
+// an implementation PR, and NO overlapping child source paths.
+export function classifyVerifiedOriginalParentPr({parentPr,pr,mainSha,compare,childId,childAllowedSourcePaths}={}){
+  if(!Number.isSafeInteger(parentPr)||parentPr<1||parentPr>999999||
+     !UUID.test(childId)||!Array.isArray(childAllowedSourcePaths)||
+     !childAllowedSourcePaths.length||new Set(childAllowedSourcePaths).size!==childAllowedSourcePaths.length||
+     !GIT_SHA.test(mainSha)||pr?.number!==parentPr||
+     pr?.url!=='https://github.com/'+REPO+'/pull/'+parentPr||
+     pr?.state!=='MERGED'||pr?.baseRefName!=='main'||
+     !GIT_SHA.test(pr?.mergeCommit?.oid)||!Array.isArray(pr?.files)||
+     !pr.files.length||!pr.files.every(f=>typeof f?.path==='string'&&f.path.length>0)||
+     pr.files.some(f=>childAllowedSourcePaths.includes(f.path))||
+     !['ahead','identical'].includes(compare?.status)||
+     compare?.merge_base_commit?.sha!==pr.mergeCommit.oid)return null;
+  const lines=String(pr.body??'').split(/\r?\n/).map(s=>s.trim());
+  if(!lines.includes('Candidate-Type: implementation')||
+     lines.includes('Original-Candidate: '+childId)||
+     lines.includes('Original-Operation: '+childId))return null;
+  return Object.freeze({
+    contract:'ORIGINAL_INNOVATION_DISTINCT_PARENT_PROTECTED_SOURCE_V1',
+    parent_pr:parentPr,parent_url:pr.url,merge_sha:pr.mergeCommit.oid,
+    original_candidate_id:childId,verified_against_main_sha:mainSha,
+    protected_main_ancestor:true,source_paths_disjoint:true,
+    parent_is_not_child_implementation:true,
+    child_implementation_proven:false,child_consumer_ack_verified:false
+  });
+}
+function verifiedOriginalParentFor(parentPr,{candidateId,allowedSourcePaths}={}){
+  if(!Number.isSafeInteger(parentPr)||parentPr<1||parentPr>999999||
+     !UUID.test(candidateId)||!Array.isArray(allowedSourcePaths))return null;
+  try{
+    const pr=JSON.parse(execFileSync('gh',
+      ['pr','view',String(parentPr),'--repo',REPO,'--json',
+        'number,url,state,baseRefName,mergeCommit,body,files'],
+      {encoding:'utf8',timeout:25000,maxBuffer:4000000}));
+    if(pr?.state!=='MERGED'||!GIT_SHA.test(pr?.mergeCommit?.oid))return null;
+    const main=JSON.parse(execFileSync('gh',['api','repos/'+REPO+'/branches/main'],
+      {encoding:'utf8',timeout:25000,maxBuffer:3000000}));
+    if(!GIT_SHA.test(main?.commit?.sha))return null;
+    const comparison=JSON.parse(execFileSync('gh',
+      ['api','repos/'+REPO+'/compare/'+pr.mergeCommit.oid+'...'+main.commit.sha],
+      {encoding:'utf8',timeout:25000,maxBuffer:3000000}));
+    return classifyVerifiedOriginalParentPr({
+      parentPr,pr,mainSha:main.commit.sha,compare:comparison,
+      childId:candidateId,childAllowedSourcePaths:allowedSourcePaths
+    });
+  }catch{return null;}
+}
+
+export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>false,verifiedParentFor=()=>null}={}){
   if(report?.contract!=='ORIGINAL_INNOVATION_AGENT_OWNER_READBACK_V1')fail('SOURCE_REPORT_REQUIRED');
   if(![snapshot?.candidates,snapshot?.obligations,snapshot?.intakes].every(Array.isArray))fail('SOURCE_ARRAYS_REQUIRED');
   if(snapshot.candidates.length!==report.counts?.candidates||
@@ -97,8 +149,25 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
          priorNoChange.consumer_ack_verified!==false)fail('ORIGINAL_NOCHANGE_REVIEW_CONFLICT');
       held++;continue;
     }
-    // A previously implemented source, or a duplicate candidate PR, must be reconciled, not rebuilt.
-    if(/\bPR\s*#?\d{3,6}\b/i.test(action)||c.proposed_action.parent_pr){held++;continue;}
+    // A PR mentioned *as the action itself* is not a fresh implementation workorder.
+    // A separate child read-model correction may instead reference one exact parent.
+    if(/\bPR\s*#?\d{3,6}\b/i.test(action)){held++;continue;}
+    const parentPr=c.proposed_action?.parent_pr;
+    let provenParent=null;
+    if(parentPr!==undefined&&parentPr!==null){
+      // First scoped recovery: never apply parent exceptions to arbitrary components.
+      if(c.component_id!=='powerhouse-sales-cycle-execution-read-model'){held++;continue;}
+      provenParent=verifiedParentFor(parentPr,{
+        candidateId:c.candidate_id,allowedSourcePaths:scopes[c.component_id]
+      });
+      if(provenParent?.parent_pr!==parentPr||
+         provenParent?.original_candidate_id!==c.candidate_id||
+         provenParent?.protected_main_ancestor!==true||
+         provenParent?.source_paths_disjoint!==true||
+         provenParent?.parent_is_not_child_implementation!==true||
+         provenParent?.child_implementation_proven!==false||
+         !GIT_SHA.test(provenParent?.merge_sha)){held++;continue;}
+    }
     eligible++;
     if(existingPrFor(c.candidate_id,obligation.payload_sha256,obligation.evidence.source_revision)){existing++;continue;}
     return Object.freeze({contract:CONTRACT,selected:true,
@@ -110,6 +179,7 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
       decision_fingerprint:decision.fingerprint,
       proposed_action:action,rollback:JSON.stringify(c.rollback_plan).slice(0,1200),
       allowed_source_paths:scopes[c.component_id],
+      verified_parent_pr:provenParent,
       protected_review_required:true,automatic_production_mutation:false,
       candidate_pr_only:true,consumer_ack_verified:false});
   }
@@ -178,7 +248,7 @@ async function main(){
   if(mode==='--prepare'){
     const snapshot=await readCanonicalRows({config:trustedBrainReadConfig(process.env)});
     const report=evaluateOriginalOwnerHandoff(snapshot);
-    const selected=selectOriginalCodeCandidate({snapshot,report,existingPrFor});
+    const selected=selectOriginalCodeCandidate({snapshot,report,existingPrFor,verifiedParentFor:verifiedOriginalParentFor});
     mkdirSync('artifacts/quality',{recursive:true});
     writeFileSync(WORK_ORDER,JSON.stringify(selected,null,2)+'\n');
     recordOutput('selected',selected.selected?'true':'false');
