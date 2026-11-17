@@ -1,0 +1,38 @@
+{
+  "contract": "ORIGINAL_INNOVATION_HISTORICAL_PARENT_SAFE_BUILD_LEARNING_V1",
+  "observed_on": "2026-11-17",
+  "fingerprint": "powerhouse|innovation|protected-build-due-but-all-source-candidates-held-by-parent-pr|20261117-v1",
+  "root_cause": "Original engineering selector forbids every source-bound candidate with parent_pr regardless of independently verified historic GitHub state. Native run 44166050762 reports selected=false NO_NEW_SOURCE_BOUND_SAFE_CODE_CANDIDATE although ONE BRAIN has two PROTECTED_BUILD_DUE operations. New admin-only read-model candidate 55bb0754 depends on prior protected #5109, genuinely merged before candidate creation, with disjoint changed source files.",
+  "correction": "Keep default parent-linked proposals blocked. Original writer can select a genuinely new safe follow-up only if actual GitHub API proves parent PR MERGED into main with valid merge SHA before candidate creation, no shared files with candidate allowed source paths, not same original candidate and no existing exact source-bound candidate PR. No production authorization.",
+  "prevention_rule": "Historical parent lineage differs from duplicate implementation. Verify provider parent ancestry, source disjointness and exact original Brain version/owner/correlation/lease. Never accept textual PR references or unverified prior PR as authority. Preserve protected CI and measured-effect closure.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-merged-parent-safebuild-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-merged-parent-safebuild-20261117.test.mjs"
+    ]
+  },
+  "evidence": {
+    "before": "14 original Brain operations classified: 2 PROTECTED_BUILD_DUE but native code run 44166050762 selected=false, no code PR.",
+    "parent": "GitHub PR #5109 merged 2026-10-29T12:39:27Z SHA 722468c45cd3646755d79188a06dfb187468a946; candidate 55bb0754 created 12:43:19Z; original PR changed SQL, tests, docs, not the two read-model scopes.",
+    "test": "New historical/canary tests reject unmerged, overlapping, same-candidate, future, incorrect-base/SHA and duplicate candidates.",
+    "limits": "Candidate selection only, no external send, no newly deployed code, no measured effect."
+  },
+  "review_required": true,
+  "automatic_external_side_effect": false,
+  "terminal_success": false,
+  "next_safe_action": "Exact-head Required and CodeQL followed by protected merge; then one existing original_code_recovery run with same protected source and no duplicate active run; check original actual code PR, readback, effect and learning.",
+  "source_refs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5109",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44166050762"
+  ]
+}
