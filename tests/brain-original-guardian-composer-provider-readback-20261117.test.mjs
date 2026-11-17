@@ -51,3 +51,12 @@ test('original source quota, consent gate, dedupe and non-red failure fallback a
   assert.match(sql,/ON CONFLICT \(dedupe_key\) DO NOTHING/);
   assert.match(sql,/EXCEPTION WHEN OTHERS THEN/);
 });
+
+
+test('migration must contain exactly one balanced original PL/pgSQL function body',()=>{
+  const tags=[...sql.matchAll(/\$function\$/g)].map(x=>x.index);
+  assert.equal(tags.length,2,'extra dollar quote delimiter must never pass admission');
+  assert.ok(sql.indexOf("v_event_key := 'original-result-guardian:'") < tags[1]);
+  assert.ok(sql.indexOf("v_composer_result:=CASE") < tags[1]);
+  assert.ok(sql.indexOf("REVOKE ALL ON FUNCTION") > tags[1]);
+});
