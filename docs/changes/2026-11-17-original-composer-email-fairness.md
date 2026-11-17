@@ -21,3 +21,8 @@ De reserved slots betekenen **niet** verzendgerechtigd of bron-verified. De best
 5. Pas claimen dat mail is verstuurd bij onafhankelijke Gmail message-ID/thread-ID en koppeling met origineel action/outcome; alleen kwaliteitsbeoordeling of dispatch bewijst geen verzending.
 
 Rollback uitsluitend via bestaande beschermde PR die de vorige functie-ordering herstelt. Geen handmatige bulkprovideractie en geen heropenen van verlopen leads.
+
+## Herstel van werkelijke Supabase-previewfout
+De eerste protected PR #5945 preview meldt `ERROR: type "public.powerhouse_commercial_message_plan_v1" does not exist (SQLSTATE 42704)`. Die **oorspronkelijke** view staat wél in originele productie, maar de provider-gegenereerde clean-room preview bouwt de gearchiveerde historische basis niet op. De eerste Required/Preview is terecht rood, niet weggerapporteerd.
+
+Dezelfde migratie is aangepast: wanneer de originele rowtype ontbreekt, geeft zij `ORIGINAL_COMPOSER_PREVIEW_DEPENDENCY_MISSING` als expliciete **niet-uitgevoerde** previewmelding. Waar het originele type wél bestaat, voert exact dezelfde CREATE OR REPLACE FUNCTION plus COMMENT uit. De preview-successtatus alleen mag daarom nadrukkelijk **niet** gelden als runtime-composerbewijs. Na beschermde merge is onafhankelijke originele productie-readback vereist op de SQL-functie en eerste natuurlijke composer-consumptie van een bestaande e-mail. Geen dummy-type, omzeiling van provider-/consentchecks of rechtstreekse productiehotpatch.
