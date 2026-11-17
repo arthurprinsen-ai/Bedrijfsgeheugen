@@ -29,5 +29,12 @@
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5960",
     "Supabase provider schema_migrations count 879 and original exact version/name/3 statements read back 2026-11-17T13:34Z"
   ],
-  "acceptance": "Candidate becomes released only after Required + CodeQL pass on exact head, protected merge, original blog #5960 passes its own exact-head gates, native protected merge, matching Netlify production deploy, public article and original Supabase LIVE_PROVEN + ONE BRAIN readback. Do not call entire system green."
+  "acceptance": "Candidate becomes released only after Required + CodeQL pass on exact head, protected merge, original blog #5960 passes its own exact-head gates, native protected merge, matching Netlify production deploy, public article and original Supabase LIVE_PROVEN + ONE BRAIN readback. Do not call entire system green.",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_MIGRATION_LOCK_DRIFT",
+    "scope": "SUPABASE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
 }
