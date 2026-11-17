@@ -42,5 +42,6 @@ test('fail-closed health of original guardian is preserved and browser roles unc
  assert.match(sql,/SECURITY DEFINER/i);
  assert.match(sql,/NEW\.status := 'fout'/);
  assert.match(sql,/EXCEPTION WHEN OTHERS THEN/);
- assert.doesNotMatch(sql,/GRANT\s+EXECUTE/i);
+ assert.match(sql,/REVOKE ALL ON FUNCTION public\.powerhouse_original_result_guardian_v1\(\)\s+FROM PUBLIC, anon, authenticated/i);
+ assert.match(sql,/GRANT EXECUTE ON FUNCTION public\.powerhouse_original_result_guardian_v1\(\)\s+TO service_role/i);
 });
