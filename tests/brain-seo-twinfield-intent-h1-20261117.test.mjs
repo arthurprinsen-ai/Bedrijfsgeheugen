@@ -5,17 +5,17 @@ import {prerenderMoney} from '../tools/site-shell/money-prerender.mjs';
 
 const read=path=>readFile(new URL('../'+path,import.meta.url),'utf8');
 const canonical='https://www.bedrijfsgeheugen.nl/twinfield-koppeling';
-const text=html=>String(html).replace(/<[^>]*>/g,' ').replace(/\\s+/g,' ').trim();
-const h1=html=>[...html.matchAll(/<h1\\b[^>]*>([\\s\\S]*?)<\\/h1>/gi)].map(m=>text(m[1]));
+const text=html=>String(html).replace(/<[^>]*>/g,' ').replace(/\s+/g,' ').trim();
+const h1=html=>[...html.matchAll(/<h1\b[^>]*>([\s\S]*?)<\/h1>/gi)].map(m=>text(m[1]));
 
 test('original Twinfield canonical money source has ONE buyer-intent aligned H1 and unchanged conversion',async()=>{
  const html=await read('twinfield-koppeling.html');
- const title=html.match(/<title>([^<]+)<\\/title>/i)?.[1]||'';
+ const title=html.match(/<title>([^<]+)<\/title>/i)?.[1]||'';
  const headings=h1(html);
  assert.equal(headings.length,1,'one clear page H1');
  assert.equal(headings[0],'Twinfield API-koppeling laten maken.');
  assert.match(title,/Twinfield API-koppeling laten maken/);
- assert.match(html,/<link rel="canonical" href="https:\/\/www\\.bedrijfsgeheugen\\.nl\/twinfield-koppeling">/);
+ assert.match(html,/<link rel="canonical" href="https:\/\/www\.bedrijfsgeheugen\.nl\/twinfield-koppeling">/);
  assert.match(html,/<a class="knop" data-money-primary href="\/frisse-blik">/);
  assert.match(html,/Twinfield-koppelingen die dat overnemen/);
  assert.doesNotMatch(headings[0],/aan de rest van je bedrijf/);
@@ -31,7 +31,7 @@ test('original final money-page prerender preserves aligned visible H1',async()=
  const style=await read('assets/stijl.js');
  const built=prerenderMoney(html,'/twinfield-koppeling',style);
  assert.deepEqual(h1(built),['Twinfield API-koppeling laten maken.']);
- assert.match(built,/<link rel="canonical" href="https:\/\/www\\.bedrijfsgeheugen\\.nl\/twinfield-koppeling">/);
+ assert.match(built,/<link rel="canonical" href="https:\/\/www\.bedrijfsgeheugen\.nl\/twinfield-koppeling">/);
  assert.match(built,/href="\/frisse-blik"/);
 });
 
@@ -41,6 +41,6 @@ test('one original SEO owner receives exact existing recommendation and no fabri
  assert.equal(learning.obligation_id,'seo-owner-update:2026-11-17:twinfield-koppeling');
  assert.equal(learning.evidence.organic_visitor_growth_proven,false);
  assert.equal(learning.evidence.ga4_gsc_current_source_status,'MISSING_OR_AWAITING_PROVIDER');
- assert.match(skill,/seo\\|twinfield-buyer-intent-h1-gap\\|20261117-v1/);
- assert.match(skill,/zonder.*(nieuwe keyword-owner|dubbele zoekwoord)/s);
+ assert.match(skill,/seo\|twinfield-buyer-intent-h1-gap\|20261117-v1/);
+ assert.match(skill,/Geen nieuwe keyword-owner/);
 });
