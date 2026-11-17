@@ -19,6 +19,13 @@ export function planDraftBlogRefresh({date,repository,expectedHead,pr,artifact,p
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
  const [prFile,artifactFile,proofFile,date,repository,expectedHead]=process.argv.slice(2);
  const pr=JSON.parse(fs.readFileSync(prFile,'utf8')),artifact=JSON.parse(fs.readFileSync(artifactFile,'utf8'));
- const proof=JSON.parse(fs.readFileSync(proofFile,'utf8'));
- console.log(planDraftBlogRefresh({date,repository,expectedHead,pr,artifact,previous:proof.observed_evidence}).eligible?'AUTHORIZED':'PRESERVE');
+ // An absent ORIGINAL review proof is not authority for a quality refresh.
+ // Preserve the existing protected candidate; never fabricate or silently backfill proof.
+ if(!fs.existsSync(proofFile)){
+  console.error('::warning::BLOG_REFRESH_ORIGINAL_PROOF_MISSING_PRESERVE_CANDIDATE:'+date);
+  console.log('PRESERVE');
+ } else {
+  const proof=JSON.parse(fs.readFileSync(proofFile,'utf8'));
+  console.log(planDraftBlogRefresh({date,repository,expectedHead,pr,artifact,previous:proof.observed_evidence}).eligible?'AUTHORIZED':'PRESERVE');
+ }
 }
