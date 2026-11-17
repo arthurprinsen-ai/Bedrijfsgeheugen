@@ -283,6 +283,22 @@ jobs:
           node-version: '22'
       - name: Verify original implementation selection and path guards
         run: node --test tests/brain-innovation-original-code-delivery-20261115.test.mjs
+      # First-party quality history is evidence, NOT current provider/consumer proof.
+      # Preserve the same original ONE BRAIN operation and avoid another scheduler.
+      - name: Verify exact original quality-source reconciliation and CAS invariants
+        run: node --test tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs
+      - name: Reconcile 14 original source-quality receipts using original version-CAS and independent GET
+        id: original_quality_reconcile
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if node scripts/brain/innovation-original-evidence-reconciliation.mjs --writeback; then
+            echo "reconciled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::ORIGINAL_14_QUALITY_RECONCILIATION_WRITEBACK_FAILED"
+            echo "reconciled=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Select at most one source-bound original engineering work order
         id: candidate
         env:
@@ -403,3 +419,8 @@ jobs:
           if ! gh pr merge "$PR_URL" --auto --squash; then
             echo "::warning::PROTECTED_AUTO_MERGE_NOT_ENABLED: candidate remains open; no green claim."
           fi
+      - name: Fail visibly when original quality reconciliation did not complete
+        if: ${{ always() && steps.original_quality_reconcile.outputs.reconciled == 'false' }}
+        run: |
+          echo "::error::ORIGINAL_14_QUALITY_RECONCILIATION_FAILED: original ONE BRAIN readback/CAS unresolved. Do not mark operation complete."
+          exit 1
