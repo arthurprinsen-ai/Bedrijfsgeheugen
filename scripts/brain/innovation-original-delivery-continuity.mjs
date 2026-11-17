@@ -46,6 +46,10 @@ export function sourceQualityNextAction({candidate,obligation,operation,decision
     /^[a-f0-9]{64}$/i.test(quality.source_evidence_sha256)&&
     /^[a-f0-9]{64}$/i.test(receipt.fingerprint)&&
     receipt.next_action===expected&&typeof expected==='string'&&
+    receipt.disposition===(quality.status==='verified'?
+      'HISTORICAL_VERIFIED_QUALITY_SOURCE_CURRENT_EFFECT_DUE':
+      'HISTORICAL_GUARDED_QUALITY_SOURCE_CURRENT_PROOF_DUE')&&
+    receipt.evidence_type==='HISTORICAL_FIRST_PARTY_QUALITY_EVENT_UNCONFIRMED_AS_CURRENT_PRODUCTION'&&
     receipt.independently_verified_current_effect===false&&
     receipt.consumer_ack_verified===false&&receipt.terminal_success===false&&
     receipt.historical_baseline_not_current_effect===true&&
