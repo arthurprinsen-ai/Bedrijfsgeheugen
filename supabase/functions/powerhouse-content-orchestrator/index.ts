@@ -867,7 +867,7 @@ Deno.serve(async (req) => {
     if(['linkedin_company','instagram_company'].includes(pending.channel)){
       try{
         let postQuery=db.from('social_posts')
-          .select('tenant_id,post_id,platform,channel_kind,published_at')
+          .select('tenant_id,post_id,external_post_id,platform,channel_kind,published_at')
           .eq('tenant_id','bedrijfsgeheugen')
           .eq('platform',pending.channel==='instagram_company'?'instagram':'linkedin');
         postQuery=pending.channel==='instagram_company'
