@@ -130,3 +130,43 @@ test('old textual PR action, out-of-scope component, or prior Brain build stays 
   };
   assert.equal(selectOriginalCodeCandidate({...f,historicalParentFor:()=>true}).selected,false);
 });
+
+
+test('same original candidate protected source proof prevents historical-parent rebuild',()=>{
+  const f=originalSource();
+  const op=f.snapshot.intakes[0];
+  op.evidence.protected_implementation_source_evidence={
+    contract:'ORIGINAL_ENGINEERING_IMPLEMENTATION_EVIDENCE_V1',
+    candidate_id:id,
+    original_owner:'agent:agent-integration-engineer',
+    source_revision:'actual-immutable-revision',
+    pr_url:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857',
+    protected_release_verified:true
+  };
+  const result=selectOriginalCodeCandidate({...f,
+    historicalParentFor:()=>{throw new Error('CANNOT_BUILD_ALREADY_IMPLEMENTED');}
+  });
+  assert.equal(result.selected,false);
+  assert.equal(result.held,1);
+  assert.equal(result.reason,'NO_NEW_SOURCE_BOUND_SAFE_CODE_CANDIDATE');
+  for(const bad of [
+    {source_revision:'wrong-revision'},
+    {original_owner:'agent:some-other-agent'},
+    {candidate_id:'f'.repeat(36)},
+    {protected_release_verified:false},
+    {pr_url:'https://evil.example/pull/5857'}
+  ]){
+    op.evidence.protected_implementation_source_evidence={
+      ...op.evidence.protected_implementation_source_evidence,...bad
+    };
+    assert.throws(()=>selectOriginalCodeCandidate({...f,historicalParentFor:()=>true}),
+      /ORIGINAL_PRIOR_PROTECTED_IMPLEMENTATION_CONFLICT/);
+    op.evidence.protected_implementation_source_evidence={
+      contract:'ORIGINAL_ENGINEERING_IMPLEMENTATION_EVIDENCE_V1',
+      candidate_id:id,original_owner:'agent:agent-integration-engineer',
+      source_revision:'actual-immutable-revision',
+      pr_url:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857',
+      protected_release_verified:true
+    };
+  }
+});
