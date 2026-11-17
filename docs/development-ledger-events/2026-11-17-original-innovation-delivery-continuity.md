@@ -1,0 +1,16 @@
+# 2026-11-17 — Original innovation continuity agent readback
+
+- Original incident and owner: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198; existing ONE BRAIN + Engineering/CRO, not another executor.
+- Fingerprint: `powerhouse|innovation|built-code-unreconciled-original-brain-after-merge|20261117-v1`
+- Verified before source: 14 OPEN original INNOVATION_DELIVERY; 14 PLANNED INNOVATION_INTAKE; 13 Engineering / 1 CRO; decisions nine baseline, four protected engineering and one CRO holdout.
+- Primary discrepancy: official protected PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5908 merged, original operation still PLANNED. BRAIN terminal close gate failed and cannot be bypassed.
+- Implementation: same original daily self-evolution job obtains exact original source count and PR/deploy status, stores idempotent source-bound nonterminal stage via original CAS + independent GET, even after an unrelated improve-step failure.
+- Failure classes explicitly covered: orphan source; revision/hash/owner drift; spoofed GitHub PR; head drift; preview mistaken for production; ready deploy missing protected merge ancestry; no-code-change incorrectly treated as success; unmeasured effect incorrectly treated as delivery.
+- Test: `tests/brain-innovation-delivery-continuity-20261117.test.mjs` 11 local scenarios passed pre-PR; protected Required and exact natural production run needed.
+- Security: original service-role-only Brain access; no browser tokens, new tables, payments, sends, scheduler or permissions bypass. GitHub read permission only.
+- Outcomes: **no** completed innovations or realized savings claimed by this change. Postmerge original consumer receipt and independent Heartbeat comparison remain future proof gates; do not close the 14 until real evidence exists.
+- Rollback: protected revert, preserve all immutable source and incident records.
+
+- 2026-11-17 19:31Z source reconciliation: independent production provider listed 881 actual migrations; original Git lock was 880 in the initial PR preflight. The original lock was appended only after exact 880/880 provider prefix match. While this protected candidate was open, `main` independently advanced to the same 881st version/name and exact identical lock blob. Current PR diff now has **zero `supabase/` paths** and preserves the already-correct main source history without an additional migration or billable preview. Original egress regression exposed `NETLIFY_AUTH_TOKEN` and `NETLIFY_SITE_ID` outside the existing strict GitHub workflow secret allowlist; the workflow no longer imports either and missing native Netlify deploy credentials produce a **nonterminal production-proof-due** state. Never claim production READY from absence of credentials.
+
+- Added safe operator recovery input `original_delivery_recovery` to the existing daily Self Evolution workflow. One and only one existing schedule; normal daily admission excludes the scoped recovery; original recovery job reads providers and only original versioned Brain CAS evidence. Additional regression confirms no Codex, GitHub PR promotion or unauthorized Netlify secrets in recovery. After protected merge manually dispatch this existing workflow to independently verify all 14 original source-bound receipts.
