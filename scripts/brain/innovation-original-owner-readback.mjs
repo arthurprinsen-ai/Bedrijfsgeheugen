@@ -10,7 +10,7 @@ const PAGE_SIZE=250;
 const SOURCES=Object.freeze([
   Object.freeze({
     name:'candidates',table:'powerhouse_optimization_candidate_v1',
-    select:'candidate_id,source_key,owner_agent,safety_class,status,created_at,component_id,proposed_action,rollback_plan',
+    select:'candidate_id,source_key,owner_agent,safety_class,status,created_at,component_id,proposed_action,rollback_plan,baseline,expected_impact',
     filters:{tenant_id:'eq.canonical'},order:'created_at.asc,candidate_id.asc',
     id:'candidate_id'
   }),
