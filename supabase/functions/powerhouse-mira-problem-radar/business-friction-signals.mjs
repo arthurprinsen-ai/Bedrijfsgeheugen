@@ -7,13 +7,12 @@ export const MIRA_BUSINESS_FRICTION_CONTRACT='mira-original-real-operational-fri
 const direct=/(?:personeels?tekort|capaciteits?tekort|kennistekort|kennisverlies|onbetaalde? factur(?:en)?|achterstallige? betaling(?:en)?|betalingsachterstand|factur(?:en|atie)? (?:te )?laat|te laat betaald|niet betaald|openstaande? factur(?:en)?|offertes? (?:blijft|blijven|liggen|onbeantwoord|vergeten)|offertes? zonder opvolging|geen (?:reactie|opvolging) op (?:de )?offerte|dubbel(?:e)? invoer|dubbel overtypen|handmatig overtypen|fout(?:en)? in (?:excel|administratie|cijfers)|verschillende cijfers|uitlop(?:end|en|ende) (?:project|planning)|meerwerk(?:kosten)? (?:loopt|lopen|stijgt|stijgen)|marges? (?:onder druk|daalt|dalen|verdwijnt)|klanten? (?:haken af|vertrekken|verloren)|klantverlies|winst (?:daalt|dalen|blijft achter)|omzetverlies|teveel (?:werk|taken|handwerk)|belemmer(?:en|t|d)|stagn(?:eert|eren)|knelpunt(?:en)?|vertraging(?:en)?|loopt vast|lopen vast|stilgevallen|achterstand(?:en)?)/iu;
 const legacy=/(?:klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/iu;
 const launch=/(?:lanceert|introduceert|brengt .* op de markt|nieuwe (?:ai[- ]?assistent|software|tool|app|oplossing)|presenteert (?:software|platform|tool)|productlancering|kondigt .* aan)/iu;
-const commercialTech=/(?:software|platform|ai[- ]?assistent|ai-tool|app|saa[sS]|digitale oplossing|tool)/iu;
 
 export function classifyMiraBusinessFriction({title='',excerpt=''}={}){
  const t=String(title||''),body=String(excerpt||''),all=t+' '+body;
  // A vendor's product announcement is not evidence that the claimed problem
  // actually happened to an SME. Do not promote one to an original Mira source.
- if(launch.test(t)&&commercialTech.test(t))
+ if(launch.test(t))
   return Object.freeze({frictionScore:0.55,reason:'VENDOR_ANNOUNCEMENT_NOT_OBSERVED_OPERATIONAL_FRICTION',contract:MIRA_BUSINESS_FRICTION_CONTRACT});
  if(direct.test(all))
   return Object.freeze({frictionScore:1,reason:'CONCRETE_MKB_OPERATIONAL_FRICTION',contract:MIRA_BUSINESS_FRICTION_CONTRACT});
