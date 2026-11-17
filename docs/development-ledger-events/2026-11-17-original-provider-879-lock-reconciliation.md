@@ -1,0 +1,11 @@
+# Original provider-migration lock reconciliation ledger
+
+Date: 17 November 2026. Incident #4198: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+**Independent fact:** Protected original PR #5957 merged main; native original provider `adhjwmvyoixzjtmiroln` applied exactly once `20261117123000_original_composer_bounded_fair_candidate_v2`. The original native SQL explain readback 52.55ms and next natural composer callback HTTP200 processed=5. At the same instant the ORIGINAL Git migration-history lock at main still had 878 entries, last `20261117110000`, whereas provider had 879. The following separate Guardian-v3 PR #5958 failed strict protected parity because it tried to update lock and propose a new migration in one candidate, which is prohibited.
+
+**This isolated protected candidate:** adds only the native-confirmed existing provider migration identity as entry #879 in the same original `supabase/migration-history.lock.json`; no SQL migration, no provider writes, no action replay, no OAuth/sender/cost. ONE BRAIN learning plus repeated regression validate that unmerged `20261117124500` is not claimed applied. Exact owner, PR and proof in existing incident #4198.
+
+**CI failures and lessons:** First head with learning missing evaluation suites was rejected, then corrected with explicit historical_replay/shadow/canary test. Second head CI correctly rejected INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger; this ledger supplies that immutable development activity trail. Hosted Supabase clean-room preview for this LOCK-ONLY candidate reported an unrelated archived schema replay duplicate version 20260916194336 (SQLSTATE 23505); this does not mean canonical provider migration 879 failed in production, but preview cannot be declared green. No gate bypass. Keep protected review and delivery status honest; never claim current unmerged Guardian-v3 live.
+
+**Remaining goal:** once lock has been provider-authenticated and protected merged, original PR #5958 (no lock edit, only six source/test/learning/skill files) can run normal source/migration tests against canonical main, then original #171 native guardian HTTP->processed readback. Source-specific no-send and Tavily quota boundary stay open.
