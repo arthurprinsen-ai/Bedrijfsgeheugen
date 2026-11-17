@@ -1,0 +1,30 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|daily-blog|old-candidate-behind-main-no-recovery|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "compiler": {
+    "failure_class": "BLOG_PR_BEHIND_MAIN_NOT_RECOVERED"
+  },
+  "root_cause": "The original hourly GitHub blog writer reconciles the current business day only. Earlier approved candidates #5833 and #5918 remained OPEN behind main with auto-merge enabled but not promoted; the stale test head of #5918 also failed on legal review dates, corrected in current main by its original legal owner.",
+  "prevention": [
+    "Use the existing hourly blog owner to request at most ONE GitHub-native expected_head_sha CAS update of a qualifying previous-day original-author PR within 14 days.",
+    "Never create another blog writer, change current owner or schedule, bypass Required/CodeQL/approval, force-push a reviewed PR, or claim a live page without exact provider proof.",
+    "Check same-repository original branch/date and exact current head identity before any update; for conflicts or missing evidence retain original open obligation.",
+    "Require original protected merge, exact Netlify production parity, public HTML proof, and named ONE BRAIN consumer PROCESSED to close only the relevant original work."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-stale-branch-recovery-20261117.test.mjs"
+    ]
+  },
+  "evidence": [
+    "2026-11-17 original Supabase 15 and 16 November blog obligations APPROVED, without LIVE_PROVEN",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5833",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5918",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5920",
+    "https://docs.github.com/en/rest/pulls/pulls#update-a-pull-request-branch"
+  ],
+  "acceptance": "Only a protected exact-head Required/CodeQL success, merge and actual original hourly run with GitHub CAS readback, then independent Netlify/public page readback, Supabase LIVE_PROVEN and processed ONE BRAIN receipt establish production delivery. This candidate is not that proof."
+}
