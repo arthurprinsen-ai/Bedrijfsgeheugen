@@ -124,3 +124,31 @@ test('same original 1:1 source-owner-brain packet accepts existing implementatio
  assert.equal(result[0].assessment.internal_source_readback.writer_action_joined,165);
  assert.equal(result[0].assessment.original_state_remains,'PLANNED');
 });
+
+
+test('real original no-change Codex receipt never erases a historically protected implementation and fresh source measurement',()=>{
+ const f=sourceFixture();
+ f.operation.evidence.original_code_nochange_review={
+   result:'NO_SOURCE_CHANGE_REQUIRES_INDEPENDENT_REVIEW',
+   contract:'ORIGINAL_INNOVATION_NO_CODE_CHANGE_REVIEW_V1',
+   observed_at:'2026-11-17T20:30:48Z',candidate_id:id,
+   source_revision:revision,source_sha256:digest,
+   original_owner:owner,implementation_verified:false,
+   consumer_ack_verified:false,terminal_success:false
+ };
+ const withNative=examineOriginalDelivery({...f,legacyPr:legacy(),
+   sourceAudit:measured(),checkedAt:clock});
+ assert.equal(withNative.stage,'PREEXISTING_SOURCE_CURRENTLY_MEASURED_CAUSAL_OUTCOME_DUE');
+ assert.equal(withNative.internal_source_readback.writer_action_joined,165);
+ assert.equal(withNative.existing_protected_source_pr_verified,true);
+ assert.equal(withNative.terminal_success,false);
+ assert.equal(withNative.consumer_ack_verified,false);
+ assert.equal(withNative.actual_impact,null);
+ // Keep immutable original nochange evidence; never manufacture another build.
+ assert.equal(f.operation.evidence.original_code_nochange_review.result,'NO_SOURCE_CHANGE_REQUIRES_INDEPENDENT_REVIEW');
+ const noNative=examineOriginalDelivery({...f,checkedAt:clock});
+ assert.equal(noNative.stage,'PREEXISTING_PROTECTED_SOURCE_NATIVE_PR_READBACK_DUE');
+ f.operation.evidence.original_code_nochange_review.source_revision='CORRUPT';
+ assert.throws(()=>examineOriginalDelivery({...f,legacyPr:legacy(),
+   sourceAudit:measured(),checkedAt:clock}),/NOCHANGE_SOURCE_CONFLICT/);
+});
