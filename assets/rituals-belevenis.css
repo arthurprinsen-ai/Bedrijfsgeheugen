@@ -1,0 +1,92 @@
+/* Rituals-belevenis (besluit Arthur 17 nov 2026: website en portaal voelen exclusief, rustig en begeerlijk;
+   energie en humor blijven voor social). Papier en inkt, een serif voor koppen, één gouden detail per scherm,
+   blauw alleen voor de primaire actie. Alleen vorm, ritme en toon; geen tekst, route of gedrag verandert.
+   Zelf gehost: Fraunces en Instrument Sans (SIL Open Font License, zie assets/fonts). */
+
+@font-face{font-family:"Fraunces R";src:url("/assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Fraunces R";src:url("/assets/fonts/fraunces-latin-wght-italic.woff2") format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:"Instrument Sans R";src:url("/assets/fonts/instrument-sans-latin-wght-normal.woff2") format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
+
+:root{
+  --rit-papier:#FBFAF7;--rit-inkt:#14171A;--rit-blauw:#2742D6;--rit-goud:#FFE86B;
+  --rit-lijn:rgba(20,23,26,.12);--rit-zacht:rgba(20,23,26,.66);
+  --rit-serif:"Fraunces R","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --rit-sans:"Instrument Sans R","Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --rit-tempo:.55s cubic-bezier(.22,.61,.36,1);
+}
+
+/* ---------- Typografie: serif voor koppen, rustige sans voor tekst ---------- */
+html body{font-family:var(--rit-sans)!important;background:var(--rit-papier)}
+html body :is(h1,h2,h3){font-family:var(--rit-serif)!important;font-weight:420!important;letter-spacing:-.012em!important;font-variation-settings:"opsz" 96}
+html body :is(h1,h2){line-height:1.1!important}
+
+/* ---------- Kop: geen tickers, papier, stil ---------- */
+html body .announcement.rich-announcement{display:none!important}
+html body .bg-uniform-trust{background:var(--rit-papier)!important;border-bottom:1px solid var(--rit-lijn)!important;color:var(--rit-zacht)!important}
+html body .bg-uniform-trust *{color:var(--rit-zacht)!important;font-size:12px!important;letter-spacing:.06em}
+html body header.v17-header{background:rgba(251,250,247,.92)!important;backdrop-filter:saturate(1.2) blur(14px);-webkit-backdrop-filter:saturate(1.2) blur(14px);border-bottom:1px solid var(--rit-lijn)!important;box-shadow:none!important;color:var(--rit-inkt)!important}
+html body header.v17-header :is(a,button,.navitem>a,.navitem>button,.v17-navitem>a){color:var(--rit-inkt)!important;font-family:var(--rit-sans)!important;font-weight:500!important;font-size:14px!important;letter-spacing:.01em;transition:opacity var(--rit-tempo)}
+html body header.v17-header :is(a,button):hover{opacity:.62}
+html body header.v17-header .logo,html body header.v17-header [class*="brand"]{color:var(--rit-inkt)!important}
+html body header.v17-header a[href*="login"],html body header.v17-header a[href*="inloggen"]{border:0!important;background:transparent!important;text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--rit-lijn)}
+html body header.v17-header a[href*="aanmelden"],html body header.v17-header a.btn.blauw,html body header.v17-header .v17-cta{background:var(--rit-blauw)!important;color:#fff!important;border-radius:999px!important;padding:11px 22px!important;box-shadow:none!important;font-weight:600!important}
+html body header.v17-header a[href*="aanmelden"]:hover{opacity:.9}
+
+html body header.v17-header :is(.logo,.brand,[class*="logo"]) :is(span,strong,b){font-family:var(--rit-serif)!important;font-weight:500!important;font-size:1.1rem!important;letter-spacing:-.01em}
+
+/* ---------- Homepage-hero: papier, serif, de video als boogvormig raam ---------- */
+html body section.hero-video.hero-inspiration{background:var(--rit-papier)!important;color:var(--rit-inkt)!important;min-height:min(86vh,820px)!important;overflow:hidden}
+html body section.hero-video.hero-inspiration .hero-video-shade{display:none!important}
+html body section.hero-video.hero-inspiration::before,html body section.hero-video.hero-inspiration::after{display:none!important}
+html body section.hero-video.hero-inspiration video.hero-bg-video{min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;position:absolute!important;inset:auto!important;top:50%!important;right:max(5vw,calc((100vw - 1200px)/2))!important;left:auto!important;transform:translateY(-50%)!important;width:min(34vw,430px)!important;height:min(70vh,600px)!important;border-radius:999px 999px 0 0!important;object-fit:cover!important;filter:sepia(.32) saturate(.75) brightness(.97) contrast(.98)!important;opacity:1!important;box-shadow:0 0 0 1px var(--rit-lijn)}
+html body section.hero-video.hero-inspiration .hero-video-content{position:relative;z-index:2}
+html body section.hero-video.hero-inspiration .hero-copy{max-width:min(620px,58vw)!important}
+html body section.hero-video.hero-inspiration .hero-kicker{background:transparent!important;border:0!important;padding:0!important;color:var(--rit-zacht)!important;font-size:11.5px!important;font-weight:500!important;letter-spacing:.24em!important;text-transform:uppercase}
+html body section.hero-video.hero-inspiration .hero-kicker span{background:var(--rit-goud)!important;box-shadow:none!important}
+html body section.hero-video.hero-inspiration h1{color:var(--rit-inkt)!important;font-size:clamp(2.2rem,3.9vw,3.5rem)!important;font-weight:400!important;line-height:1.08!important;letter-spacing:-.022em!important;max-width:17ch!important;text-shadow:none!important}
+html body section.hero-video.hero-inspiration h1 .accent,html body section.hero-video.hero-inspiration h1 .mark{color:var(--rit-inkt)!important;font-style:italic;font-weight:400!important;background:linear-gradient(transparent 68%,var(--rit-goud) 68%,var(--rit-goud) 92%,transparent 92%)!important;-webkit-text-fill-color:currentColor}
+html body section.hero-video.hero-inspiration .handline{color:var(--rit-zacht)!important;font-size:11.5px!important;font-weight:500!important;letter-spacing:.22em!important;text-transform:uppercase}
+html body section.hero-video.hero-inspiration .hero-sub,html body section.hero-video.hero-inspiration p{color:var(--rit-zacht)!important;font-size:1rem!important;line-height:1.7!important;max-width:32rem!important;text-shadow:none!important}
+html body section.hero-video.hero-inspiration p b,html body section.hero-video.hero-inspiration p strong{color:var(--rit-inkt)!important;font-weight:600}
+html body section.hero-video.hero-inspiration .hero-primary{background:var(--rit-blauw)!important;color:#fff!important;border:0!important;border-radius:999px!important;padding:16px 30px!important;font-weight:600!important;box-shadow:none!important;transition:transform var(--rit-tempo),opacity var(--rit-tempo)!important}
+html body section.hero-video.hero-inspiration .hero-primary:hover{transform:translateY(-2px);opacity:.92}
+html body section.hero-video.hero-inspiration .hero-secondary{background:transparent!important;color:var(--rit-inkt)!important;border:0!important;box-shadow:none!important;text-decoration:underline;text-underline-offset:6px;text-decoration-color:var(--rit-lijn);font-weight:500!important}
+html body section.hero-video.hero-inspiration .hero-note,html body section.hero-video.hero-inspiration .hero-note *{color:var(--rit-zacht)!important;font-size:12.5px!important}
+html body section.hero-video.hero-inspiration .hero-example-switch{background:transparent!important;border:0!important;color:var(--rit-zacht)!important}
+html body section.hero-video.hero-inspiration .hero-example-btn{background:transparent!important;color:var(--rit-inkt)!important;border:1px solid var(--rit-lijn)!important;border-radius:999px!important;box-shadow:none!important}
+html body section.hero-video.hero-inspiration .hero-example-btn.active{background:var(--rit-inkt)!important;color:var(--rit-papier)!important;border-color:var(--rit-inkt)!important}
+html body section.hero-video.hero-inspiration .hero-video-bottom{background:transparent!important;border-top:1px solid var(--rit-lijn)!important;box-shadow:none!important}
+html body section.hero-video.hero-inspiration .hero-video-bottom *{color:var(--rit-inkt)!important;text-shadow:none!important;border-color:var(--rit-lijn)!important}
+html body section.hero-video.hero-inspiration .hero-copy :is(span,small,li,em,a:not(.hero-primary)):not(.accent):not(.mark){color:inherit}
+html body section.hero-video.hero-inspiration .hero-copy{color:var(--rit-zacht)!important}
+html body section.hero-video.hero-inspiration .hero-scroll-cue{display:none!important}
+
+/* ---------- Binnenpagina's: papier-kop met hetzelfde boograam ---------- */
+html body .inhoud-kop{background:var(--rit-papier)!important;color:var(--rit-inkt)!important;padding:clamp(72px,9vw,112px) 0 clamp(48px,6vw,80px)!important;border-bottom:1px solid var(--rit-lijn)}
+html body .inhoud-kop::after{display:none!important}
+html body .inhoud-kop video{position:absolute!important;inset:auto!important;top:50%!important;right:max(5vw,calc((100vw - 1120px)/2))!important;left:auto!important;transform:translateY(-50%)!important;width:clamp(170px,18vw,250px)!important;height:calc(100% - 56px)!important;border-radius:999px 999px 0 0!important;object-fit:cover!important;filter:sepia(.32) saturate(.75) brightness(.97)!important}
+html body .inhoud-kop h1{color:var(--rit-inkt)!important;font-weight:400!important;font-size:clamp(2.2rem,4.4vw,3.6rem)!important;line-height:1.08!important;letter-spacing:-.02em!important;max-width:18ch!important}
+html body .inhoud-kop .intro{color:var(--rit-zacht)!important;max-width:44ch!important;font-size:1.08rem!important}
+html body .inhoud-kop .hero-kicker{color:var(--rit-zacht)!important;font-weight:500!important;letter-spacing:.24em!important;text-transform:uppercase}
+html body .inhoud-kop .hero-kicker span{background:var(--rit-goud)!important;box-shadow:none!important;opacity:1}
+html body .inhoud-kruim{background:var(--rit-papier)!important}
+
+/* ---------- Cookiekaart: klein, onderin, rustig ---------- */
+html body #bgCookie{left:20px!important;right:auto!important;bottom:20px!important;top:auto!important;transform:none!important;width:min(380px,calc(100vw - 40px))!important;max-width:380px!important;background:var(--rit-papier)!important;color:var(--rit-inkt)!important;border:1px solid var(--rit-lijn)!important;border-radius:20px!important;box-shadow:0 18px 48px -24px rgba(20,23,26,.35)!important;padding:20px 22px!important}
+html body #bgCookie :is(h2,h3,strong,b):first-child{font-family:var(--rit-serif)!important;font-weight:450!important;font-size:1.05rem!important}
+html body #bgCookie p,html body #bgCookie div{font-size:13px!important;line-height:1.6!important;color:var(--rit-zacht)!important}
+html body #bgCookie button{border-radius:999px!important;box-shadow:none!important;font-size:13px!important;font-weight:600!important;padding:10px 18px!important}
+html body #bgCookie button:last-of-type{background:var(--rit-inkt)!important;color:var(--rit-papier)!important;border:1px solid var(--rit-inkt)!important}
+html body #bgCookie button:first-of-type{background:transparent!important;color:var(--rit-inkt)!important;border:1px solid var(--rit-lijn)!important}
+html body .bg-whatsapp-contact{background:var(--rit-inkt)!important;box-shadow:none!important;width:48px!important;height:48px!important}
+html body:has(#bgCookie.bgShow) .bg-whatsapp-contact{bottom:20px!important}
+
+/* ---------- Rust op pagina's: ruimte en trage overgangen ---------- */
+html body :is(.kaart,.tegel,.blok,[class*="card"]){transition:border-color var(--rit-tempo),background-color var(--rit-tempo),transform var(--rit-tempo)}
+html body .wrap :is(h2){margin-bottom:.6em}
+@media(max-width:860px){
+  html body section.hero-video.hero-inspiration video.hero-bg-video{position:relative!important;transform:none!important;right:auto!important;top:auto!important;display:block;margin:28px auto 0;width:min(70vw,300px)!important;height:300px!important}
+  html body section.hero-video.hero-inspiration .hero-copy{max-width:100%!important}
+  html body .inhoud-kop video{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){html body *{transition:none!important}}
