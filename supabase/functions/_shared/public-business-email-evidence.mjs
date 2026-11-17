@@ -117,3 +117,38 @@ export function publishedBusinessMailto({html,sourceUrl,personName,companyName,o
  }
  return null;
 }
+
+// Rotate the SAME eight original first-party company research slots by a full
+// daily cohort, not by one company/day. This is discovery scheduling only:
+// it cannot create an email address, a provider query, or send authority.
+export function firstPartyDailyRotationOffset(isoDay, companyCount, dailySlots=8){
+  const at=typeof isoDay==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(isoDay)
+    ?Date.parse(isoDay+'T00:00:00Z'):NaN;
+  if(!Number.isFinite(at)||!Number.isSafeInteger(companyCount)||companyCount<=0||
+     !Number.isSafeInteger(dailySlots)||dailySlots<=0)return 0;
+  return (Math.floor(at/86400000)*dailySlots)%companyCount;
+}
+
+// Backoff for the SAME original incomplete public-page research action. Never
+// close its open source obligation, create a new worker, or infer deliverability.
+// Attempts: 1→4h, 2→8h, 3→16h, 4→32h, >=5→48h.
+export function firstPartySourceRetryHours(attemptNumber){
+ const n=Number.isSafeInteger(attemptNumber)&&attemptNumber>0?attemptNumber:1;
+ return Math.min(48,4*2**Math.min(4,n-1));
+}
+
+// Same canonical original first-party action is retryable on its OWN due day as
+// well as after Amsterdam midnight. No extra company slots or sends created.
+// A due timestamp is authority for research only, never for message delivery.
+export function firstPartySourceRetryDue(key,evidence,observedAt){
+ const identity=String(key??'');
+ if(!/^relationship-research:public-domain:\d{4}-\d{2}-\d{2}:[^:]+$/.test(identity)||
+    evidence?.public_email_source_checked!==false)return false;
+ const due=Date.parse(String(evidence?.public_email_next_attempt_at??''));
+ const now=Date.parse(String(observedAt??''));
+ if(!Number.isFinite(due)||!Number.isFinite(now)||due>now)return false;
+ const originalDay=identity.split(':')[2];
+ const currentDay=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',
+  year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(now));
+ return originalDay<=currentDay;
+}

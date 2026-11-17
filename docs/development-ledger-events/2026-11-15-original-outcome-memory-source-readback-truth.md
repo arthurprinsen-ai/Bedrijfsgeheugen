@@ -1,0 +1,9 @@
+# 2026-11-15 — Source-attested Outcome Memory, original Company Intelligence OS
+
+- Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215. Original ONE BRAIN financial DATA_GAP: `8a0a5a8d-595f-4bb1-8522-14a9507cb7f7`.
+- Observed root cause: private `powerhouse_outcome_memory_v1.verified` was `evidence <> '{}'`; 11,618/11,618 were flagged verified, including 10,764 no-execution and 796 internal completed states; none was positive observed revenue.
+- Independently source-reconciled at discovery: 14 original `linkedin_engagement` events joined exact verified `powerhouse_runtime_events` provider event ID/type/dedupe/company/person/time. Other evidence containers cannot prove customer outcomes. The flag `synthetic_business_result=false` on 11,560 records does **not** declare them synthetic, nor provide independent proof.
+- Repair: original `public.powerhouse_outcome_memory_v1` same view + security-invoker/service-role access with original event join and explicit independent financial provenance; matching pure Company Intelligence JS result and null-preserving value semantics.
+- Original consumer: `public.powerhouse_compound_intelligence_v1`; original active daily self-improvement and resource jobs stay unchanged. No new cron, queue, agent, datastore, paid provider call, estimated savings or speculative customer data.
+- Required original close: migration identity, native preview, Required/CodeQL, protected main, exact native source readback, original owner consumer and autonomous execution + observed cost/baseline/counterfactual, learning and ONE BRAIN closure. Until then `SOURCE_EVIDENCE_DUE` is truthful, not GREEN.
+- Regression: `tests/brain-company-intelligence-os-v1.test.mjs`. Learning: `brain/learning/2026-11-15-original-outcome-memory-source-readback-truth-v1.json`.

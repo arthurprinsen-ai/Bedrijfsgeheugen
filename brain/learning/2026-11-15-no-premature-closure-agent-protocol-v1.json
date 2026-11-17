@@ -1,0 +1,66 @@
+{
+  "fingerprint": "powerhouse|agents|premature-closure-on-technical-release-despite-open-commercial-handoffs|20261115-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "observed_at_utc": "2026-11-15T15:44:31Z",
+  "failure_class": "PREMATURE_BUSINESS_CLOSURE_FROM_TECHNICAL_PROOF",
+  "scope": "AGENT_COMPLETION_AND_HANDOFF",
+  "machine_enforceable": true,
+  "repeat_count": 2,
+  "security_sensitive": false,
+  "root_cause": "Existing chats and agents have frequently reported that a technical merge, successful job or deployment was done while canonical commercial obligations still had three originally recorded, later four independently measured, broken/unproven handoffs and zero new verified email addresses. The root AGENTS contract described honesty but did not consistently make the user-facing definition of complete unambiguous for all specialist agents.",
+  "evidence": {
+    "original_handoff_health": "DEGRADED",
+    "handoff_states": {
+      "BROKEN_RESEARCH_TO_COMPOSER_EXPIRED": 1,
+      "EXPIRED_WITHOUT_DELIVERY": 2,
+      "BROKEN_RESEARCH_TO_COMPOSER_SLA": 1
+    },
+    "missing_source_html_retries": 10,
+    "existing_contact_count": 23295,
+    "canonical_email_count": 605,
+    "new_verified_email_growth_proven": false,
+    "technical_rotation_release": "PR #5863 merged + Edge v85 provider parity verified; latest Edge v89 active",
+    "independent_business_terminal_proof": false,
+    "current_observation_utc": "2026-11-15T16:06:17.923315Z",
+    "current_broken_or_unproven_handoffs": 4,
+    "snapshot_at_initial_diagnosis_three_handoffs_was_historical": true
+  },
+  "owner": "Original ONE BRAIN commercial obligation, existing agent-integration-engineer, agent-reliability, agent-data-quality and agent-growth-market; P0 #4198",
+  "corrective_action": "Declare an agent/chat-wide no-premature-closure rule; preserve separate release, consumer, real provider side-effect, measured business outcome and learning gates; route the four currently failed/unproven handoffs and source debts to original owners without rewriting evidence or adding duplicate schedulers.",
+  "prevention_rule": "No terminal 'klaar/groen/sluitend' for an underlying business obligation solely from PR, merge, CI, deploy, cron or HTTP success. Require exact original producer→consumer ACK, protected production readback, actual outcome and applied learning; unknown dependencies remain OPEN with root cause, owner, next due action and durable intermediate error record.",
+  "regression": "tests/brain-no-premature-closure-contract-20261115.test.mjs",
+  "human_ledger": "docs/development-ledger-events/2026-11-15-no-premature-closure-agent-contract.md",
+  "release_status": "CANDIDATE_NEEDS_PROTECTED_GATES_MERGE_AND_POSTMERGE_CHECK",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-no-premature-closure-contract-20261115.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PREMATURE_BUSINESS_CLOSURE_FROM_TECHNICAL_PROOF",
+    "scope": "AGENT_COMPLETION_AND_HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "human_documentation": "docs/changes/2026-11-15-no-premature-closure-agent-contract.md",
+  "candidate_failures_observed": [
+    {
+      "code": "PR_MACHINE_METADATA_INVALID:OBLIGATION_ID_MISSING",
+      "cause": "PR field mislabeled Fingerprint",
+      "fix": "Use exact Obligation-ID and path-scoped Change-Scope"
+    },
+    {
+      "code": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:human_documentation",
+      "cause": "Ledger and learning present but no docs/changes human artifact",
+      "fix": "Add docs/changes artifact within same 7-file budget, preserve existing canonical playbook unchanged"
+    },
+    {
+      "code": "STALE_IMMUTABLE_PR_BASE_WITH_NEW_MAIN_MIGRATIONS",
+      "cause": "Original protected PR #5884 immutable candidate base SHA 2f301e... remained pinned after unrelated original migrations 870→872 landed on protected main, so migration admission saw different immutable locks despite exact main/head parity.",
+      "fix": "Supersede once via original protected PR relation; start fresh immutable candidate base at exact current main 19b266..., preserve same seven files and original owner. Do not weaken migration preview or delete another PR preview."
+    }
+  ],
+  "supercedes_original_pr": 5884,
+  "current_release_status": "NEW_EXACT_MAIN_PROTECTED_CANDIDATE_PENDING_CI_PROVIDER_PREVIEW_PROOF"
+}

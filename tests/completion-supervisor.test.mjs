@@ -33,9 +33,9 @@ function liveVerifiedFixture(overrides = {}) {
       proof('PROTECTED_DELIVERY', 'BG169', { productionIdentity:PRODUCTION }),
       proof('PRODUCTION_IDENTITY', 'BG169', { productionIdentity:PRODUCTION }),
       proof('FUNCTIONAL_READBACK', 'PRODUCTION_READBACK', { productionIdentity:PRODUCTION }),
-      proof('OBLIGATIONS_COMPLETE', 'OUTCOME_OBLIGATION_RUNTIME', { productionIdentity:PRODUCTION }),
-      proof('CAPABILITY_HANDOFF', 'BG167', { productionIdentity:PRODUCTION }),
-      proof('LEARNING_WRITEBACK', 'BG168_BG166', { productionIdentity:PRODUCTION }),
+      proof('OBLIGATIONS_COMPLETE', 'PRODUCTION_READBACK', { productionIdentity:PRODUCTION, exactProduction:true, metadata:{ materialSourceRef:'material-readback:O1', materialSourceRevision:'source-rev:candidate-abc123' } }),
+      proof('CAPABILITY_HANDOFF', 'BG167', { productionIdentity:PRODUCTION, exactProduction:true, metadata:{sourceRevision:CANDIDATE,sourceReceiptRef:'original:handoff-readback',consumerAckRef:'original:consumer-processed-ack'} }),
+      proof('LEARNING_WRITEBACK', 'BG168_BG166', { productionIdentity:PRODUCTION, exactProduction:true, metadata:{sourceRevision:CANDIDATE,sourceReceiptRef:'original:learning-readback',learningApplicationRef:'original:verified-learning-application'} }),
     ],
     ...overrides,
   };
@@ -75,6 +75,29 @@ test('only a complete identity-bound trusted evidence bundle becomes LIVE_VERIFI
   assert.equal(result.canWait, false);
   assert.equal(result.candidateIdentity, CANDIDATE);
   assert.equal(result.productionIdentity, PRODUCTION);
+});
+
+test('historical self-certified handoff and learning flags cannot close the original work', () => {
+  const base=liveVerifiedFixture();
+  for (const kind of ['CAPABILITY_HANDOFF','LEARNING_WRITEBACK']) {
+    const old=liveVerifiedFixture();
+    old.evidence=old.evidence.map(item=>item.type===kind
+      ? {...item,metadata:{},exactProduction:true}
+      : item);
+    const assessed=evaluateCompletion(old);
+    assert.equal(assessed.success,false,kind);
+    assert.equal(assessed.next_action,'WRITEBACK',kind);
+    assert.ok(assessed.required_evidence.includes(kind),kind);
+    assert.notEqual(assessed.normalized_state,'LIVE_VERIFIED');
+    const mismatched=liveVerifiedFixture();
+    mismatched.evidence=mismatched.evidence.map(item=>item.type===kind
+      ? {...item,metadata:{...item.metadata,sourceRevision:'old-source-revision'}}
+      : item);
+    const drift=evaluateCompletion(mismatched);
+    assert.equal(drift.success,false,kind+' wrong revision');
+    assert.ok(drift.required_evidence.includes(kind));
+  }
+  assert.equal(evaluateCompletion(base).success,true,'source-bound receipts still allow legitimate terminal proof');
 });
 
 test('identity mismatch stays active and requests readback', () => {

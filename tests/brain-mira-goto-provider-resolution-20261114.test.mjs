@@ -12,7 +12,7 @@ test('the canonical existing eight DataForSEO Google News requests explicitly re
   assert.equal(queries.length,RADAR_TOTAL_EXTERNAL_QUERIES);
   assert.equal(queries.filter(x=>x.channel==='instagram_company').length,6);
   assert.equal(queries.filter(x=>x.channel==='linkedin_personal').length,2);
-  assert.match(source,/Promise\.all\(queries\.map\(async \(\{query:q\}\)=>/);
+  assert.match(source,/Promise\.all\(queries\.map\(async \(\{query:q,channel\}\)=>/);
   assert.match(source,/const returned=sourceResponses\[sourceResponseIndex\+\+\]/);
   assert.match(source,/if\(returned\.error\)\{errors\.push\(q\+':'\+returned\.error\);continue\}/);
   assert.match(source,/const sr:any=returned\.result/);
@@ -27,7 +27,7 @@ test('unresolved Google redirects remain strictly rejected; no invented news or 
   assert.match(source,/source_publication_date_evidence:publication\.publishedAt\?'DATED':'UNVERIFIED'/);
   assert.match(source,/priorContract && priorContract!==row\.metadata\.contract/);
   assert.match(source,/brain_observe_failure/);
-  assert.match(source,/classifyMiraRadarHttpStatus\(\{sourceReady:supply\.ok,errors\}\)/);
+  assert.match(source,/classifyMiraRadarHttpStatus\(\{sourceReady:allSourceReady,errors\}\)/);
   assert.match(source,/sendsAuthorized:false/);
   assert.doesNotMatch(source,/cron\.schedule\(|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/i);
 });

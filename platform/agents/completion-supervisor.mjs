@@ -15,7 +15,10 @@ const TRUSTED_PRODUCERS = Object.freeze({
   PROTECTED_DELIVERY:new Set(['BG169','PRODUCTION_READBACK']),
   PRODUCTION_IDENTITY:new Set(['BG169','PRODUCTION_READBACK']),
   FUNCTIONAL_READBACK:new Set(['PRODUCTION_READBACK']),
-  OBLIGATIONS_COMPLETE:new Set(['OUTCOME_OBLIGATION_RUNTIME']),
+  // The outcome runtime is the claimant, never an independent material-proof authority.
+  // Historical self-certified receipts remain in the append-only audit, but
+  // must not satisfy a new or replayed LIVE_VERIFIED decision.
+  OBLIGATIONS_COMPLETE:new Set(['PRODUCTION_READBACK']),
   CAPABILITY_HANDOFF:new Set(['BG167']),
   LEARNING_WRITEBACK:new Set(['BG168_BG166']),
   CHANNEL_POLICY_AUTHORIZATION:new Set(['SOCIAL_PUBLICATION_AUTHORITY']),
@@ -88,6 +91,31 @@ function acceptedEvidence(evidence, obligationId, candidateIdentity, productionI
     const trusted = TRUSTED_PRODUCERS[type];
     if (!trusted || !trusted.has(text(item?.producer).toUpperCase())) continue;
     if (item?.accepted !== true || item?.independent !== true) continue;
+    // A material-completion receipt needs a separate native readback and an
+    // exact source revision, not only a claimant's VERIFIED label. Merely
+    // changing the historic producer string cannot elevate legacy evidence.
+    if (type === 'OBLIGATIONS_COMPLETE' && (
+      item?.exactProduction !== true
+      || !text(item?.metadata?.materialSourceRef)
+      || !text(item?.metadata?.materialSourceRevision)
+    )) continue;
+    // The release-readback workflow historically minted 817 "BG167" and 817
+    // "BG168_BG166" rows from boolean flags, without reading original
+    // consumer ACK or learning application. Keep those rows for audit only.
+    // A terminal handoff/learning receipt requires source-bound evidence,
+    // not a producer string or a successful deploy alone.
+    if (type === 'CAPABILITY_HANDOFF' && (
+      item?.exactProduction !== true
+      || text(item?.metadata?.sourceRevision) !== candidateIdentity
+      || !text(item?.metadata?.sourceReceiptRef)
+      || !text(item?.metadata?.consumerAckRef)
+    )) continue;
+    if (type === 'LEARNING_WRITEBACK' && (
+      item?.exactProduction !== true
+      || text(item?.metadata?.sourceRevision) !== candidateIdentity
+      || !text(item?.metadata?.sourceReceiptRef)
+      || !text(item?.metadata?.learningApplicationRef)
+    )) continue;
     if (text(item?.taskIdentity) !== obligationId || text(item?.candidateIdentity) !== candidateIdentity) {
       identityMismatch = true;
       continue;

@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "IMPLEMENTATION_CANDIDATE_CI_AND_LIVE_NOT_YET_PROVEN",
+  "fingerprint": "powerhouse|innovation|original-source-decision-without-protected-code-writer|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "14 native INNOVATION_INTAKE operations have safe pre-reviews and owner decisions, but the original daily Self Evolution workflow had no source-bound protected code writer; read-only probing and decision CAS were mistaken for actual implementation.",
+  "compiler": {
+    "failure_class": "ORIGINAL_INNOVATION_DECISION_WITHOUT_BOUNDED_CODE_WRITER",
+    "severity": "P0_AGENT_EXECUTION_GAP",
+    "machine_enforceable": true,
+    "forbidden_false_success": true
+  },
+  "change": {
+    "same_original_workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "original_source": "public.brain_operations.INNOVATION_INTAKE",
+    "original_owner": "agent:agent-integration-engineer",
+    "selectors": [
+      "scripts/brain/innovation-original-code-delivery.mjs"
+    ],
+    "receipt": "scripts/brain/innovation-original-code-pr-receipt.mjs",
+    "candidate_only": true,
+    "original_operation_remains_planned": true,
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_table": false,
+    "new_agent": false
+  },
+  "evidence": {
+    "original_candidates": 14,
+    "original_pre_reviews": 14,
+    "original_owner_decisions": 14,
+    "original_verified_acks": 0,
+    "original_measured_innovation_outcomes": 0,
+    "protected_pr_not_yet_created": true,
+    "production_not_proven": true
+  },
+  "prevention": {
+    "one_current_original_work_order_at_a_time": true,
+    "existing_pr_deduplication": true,
+    "source_revision_owner_sha_fingerprint_required": true,
+    "original_operation_CAS_readback": true,
+    "forbid_unapproved_paths_and_deletion": true,
+    "require_new_regression_test_and_learning_record": true,
+    "never_claim_auto_deploy_before_protected_checks": true,
+    "never_claim_business_effect_without_independent_measurement": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "next_natural_run_required": true
+  },
+  "semantic_learning": {
+    "cause": "An original source decision has no effect without an authorized code writer. Generating a PR is a new, testable engineering stage but not deployment or user benefit.",
+    "prevention_rule": "Only the existing ONE BRAIN owner may construct a source-bound one-at-a-time engineering work order; pinned model runs with workspace sandbox and no Git credentials, deterministic path and regression checks precede a protected PR; independent GitHub PR identity is stored by native CAS without false ACK.",
+    "regression_guard": "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
+    "next_owner": "Original protected CI/CD and provider release controller plus Heartbeat outcome owner",
+    "effect_proof": "EXACT_HEAD_REQUIRED_CODEQL_AND_PRODUCTION_CUSTOMER_OUTCOME_DUE"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|native-migration-lock|source-lock-868-provider-869-mismatch|20261115-v1",
+  "root_cause": "Protected PR #5874 applied original SQL migration 20261115162000 personal_observation_source_no_resurrection_v1 to native EU Supabase but Git immutable source lock remained at 868 entries and captured_at 2026-11-15 11:42 UTC. An independent original non-migration PR #5872 failed protected preflight because the native source inventory has 869 executable migrations while Git lock contains 868.",
+  "scope": "SAME_ORIGINAL_SUPABASE_MIGRATION_SOURCE_LOCK_CONSUMER_ACK",
+  "owner": "Original Git/Supabase migration history lock owner and independent Data Quality, original P0 #4198",
+  "prevention_rule": "Native production supabase_migrations.schema_migrations is the sole source of actually applied version/name. After protected GitOps migration, read back exact provider 869 and append solely its version/name to the existing immutable Git lock, preserving all prior identities and captured_at from real UTC observation. Never invent an applied migration, disable lock parity tests, autoexecute SQL again, directly overwrite protected main, or create another scheduler.",
+  "regression": [
+    "tests/brain-original-native-869-source-lock-20261115.test.mjs",
+    "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "native_observed_at_utc": "2026-11-15T15:27:58.083020Z",
+    "native_applied_count": 869,
+    "native_exact_version": "20261115162000",
+    "native_exact_name": "personal_observation_source_no_resurrection_v1",
+    "original_git_source_lock_count": 868,
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5874",
+    "dependent_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5872",
+    "blocked_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43729797175",
+    "no_new_database_mutation": true,
+    "release_state": "CANDIDATE_AWAITING_PROTECTED_CI_AND_NATIVE_PARITY"
+  },
+  "learning_state": "ORIGINAL_NATIVE_SOURCE_ACK_DUE_PROTECTED_CANDIDATE",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_EXECUTABLE_MIGRATION_NOT_CAPTURED_IN_ORIGINAL_GIT_LOCK",
+    "scope": "MIGRATION_LOCK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-869-source-lock-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-869-source-lock-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-869-source-lock-20261115.test.mjs"
+    ]
+  }
+}

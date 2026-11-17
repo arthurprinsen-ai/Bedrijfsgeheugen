@@ -1,0 +1,61 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|truth-source-misrouted-as-oauth|20261116-v1",
+  "status": "CANDIDATE_UNVERIFIED_PRODUCTION",
+  "date": "2026-11-16",
+  "owner": "original-powerhouse-content-orchestrator/personalsource",
+  "source": {
+    "table": "content_publication_obligations + powerhouse_channel_decisions",
+    "date": "2026-11-16",
+    "channel": "linkedin_personal",
+    "decision_state": "blocked",
+    "capability_reason": "PERSONAL_TRUTH_SOURCE_UNVERIFIED",
+    "wrong_next_action": "CHANNEL_CAPABILITY_PROOF_REQUIRED",
+    "provider_post_id": null
+  },
+  "cause": "Shared classifier ignored personal-source capability_reason and treated every hard-boundary capability_reason as OAuth missing.",
+  "corrective_rule": "Classify current personal source truth codes before any generic provider capability or OAuth fallback. Search unused Arthur-confirmed first-person lived-event sources only. Never generate synthetic personal events, scraped news or business founder posts. Genuine OAuth failures retain their independent path.",
+  "implementation": [
+    "supabase/functions/_shared/daily-publication-recovery.mjs",
+    "supabase/functions/_shared/owner-action-escalation.mjs",
+    ".agents/skills/personal-linkedin-life-only/SKILL.md"
+  ],
+  "regression": "tests/brain-personal-source-not-oauth-routing-20261116.test.mjs",
+  "rollout_acceptance": [
+    "protected PR Required+CodeQL green",
+    "protected merge",
+    "deployed native Supabase source/readback",
+    "next original natural run emits PERSONAL_SOURCE_PROOF_REQUIRED",
+    "actual user-fact source and exact personal reviewer PASS before provider write",
+    "provider ID and independent readback, ONE BRAIN PROCESSED, measurement"
+  ],
+  "never_claim": "No post and no production fix has been verified from this source candidate.",
+  "incident_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-source-not-oauth-routing-20261116.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_original_day": "2026-11-16",
+    "native_obligation_status": "PLANNED",
+    "original_decision": "hold/blocked",
+    "actual_capability_reason": "PERSONAL_TRUTH_SOURCE_UNVERIFIED",
+    "misrouted_recovery_action": "CHANNEL_CAPABILITY_PROOF_REQUIRED",
+    "new_provider_post_id": null,
+    "source_recommendation_id": "bda1d533-81b7-4874-a481-2f6c2b20825e",
+    "source_recommendation_disposition": "INELIGIBLE_BUSINESS_BUILDER_FOR_PERSONAL_AUTHORED_LIVED_EVENT_POLICY",
+    "historical_replay": "tests/brain-personal-source-not-oauth-routing-20261116.test.mjs",
+    "prior_ci_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43841641142",
+    "prior_ci_result": "six historical tests and canonical learning PASSED, semantic closure correctly failed without machine-readable evidence field",
+    "real_provider_publication_proven": false,
+    "original_consumer_processed": false,
+    "next_natural_run_proven": false
+  }
+}

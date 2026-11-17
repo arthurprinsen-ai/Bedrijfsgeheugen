@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|financial-intelligence|forecast-versus-net-realized-proof-gap|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "FINANCIAL_FORECAST_ACTUAL_AND_CLOSURE_EVIDENCE_GAP",
+    "scope": "PORTAL_VALUE_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Read-only native production found 0 portal financial forecasts, 0 canonical realized values, 14,732 action business-value rows all with no_resource_evidence and 829 done without proven net value. The old impact projection coerced absent financial fields to EUR 0 and customer-value briefing did not explain sourced scenario assumptions, theories, frictions, implementation or net savings vs model forecast. Actual financial provider measurements are still absent.",
+  "change": {
+    "original_portal": "portal-v2/operating-system/customer-value-briefing.js",
+    "original_impact": "portal-v2/operating-system/operating-system-ui.js",
+    "existing_skill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_database": false,
+    "new_sender": false,
+    "new_production_mutation": false
+  },
+  "prevention": {
+    "four_sourced_scenarios_or_unknown": true,
+    "model_assumptions_frictions_from_existing_tenant_proof": true,
+    "no_undefined_to_EUR0": true,
+    "exact_action_tenant_baseline_period_metric": true,
+    "independent_execution_before_savings": true,
+    "gross_minus_investment_minus_operating_equals_net": true,
+    "forecast_backtest_only_when_comparable": true,
+    "existing_one_brain_closure_only": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-customer-value-briefing-20261101.test.mjs",
+      "tests/brain-multisector-original-value-lineage-20261115.test.mjs",
+      "tests/brain-financial-decision-proof-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-financial-decision-proof-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-financial-decision-proof-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_data_checked_at": "2026-11-15",
+    "portal_financial_forecasts_v1": 0,
+    "powerhouse_realized_values": 0,
+    "action_value_rows": 14732,
+    "all_rows_no_resource_evidence": true,
+    "done_action_rows": 829,
+    "verified_net_savings_claim": false,
+    "production_live": false
+  },
+  "semantic_learning": {
+    "cause": "Source-backed modeled estimates and action completion were not consistently separated from independently measured financial results in original customer UI.",
+    "prevention_rule": "Use exact source/baseline/period/metric/tenant across scenario, execution and verified net savings; never show or close a financial result with missing cost or owner readback.",
+    "regression_guard": "tests/brain-financial-decision-proof-20261115.test.mjs",
+    "next_owner": "Original financial data spine + Company Intelligence OS / ONE BRAIN / Heartbeat",
+    "effect_proof": "PROTECTED_CI_AND_NATIVE_PRODUCTION_READBACK_DUE"
+  }
+}

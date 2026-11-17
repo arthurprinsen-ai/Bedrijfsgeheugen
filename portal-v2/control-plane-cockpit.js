@@ -35,6 +35,7 @@ export function powerhouseIntegrationMarkup(snapshot){
     loops=snapshot?.loopAssurance||null, terminal=snapshot?.terminalControl||null,
     handoff=snapshot?.commercialHandoff||null, incidents=snapshot?.commercialIncidents||null,
     innovation=snapshot?.innovationHandoff||null,
+    salesAudit=snapshot?.salesExecutionAudit||null,
     agentDispatch=snapshot?.agentDispatch||null;
   const sourceState=snapshot?.sourceState||'UNAVAILABLE';
   const sourceNames=Object.keys(source);
@@ -53,6 +54,15 @@ export function powerhouseIntegrationMarkup(snapshot){
     ['CRO / experimenten',experiments?esc(experiments.readiness||'UNKNOWN'):'GEEN BRON',experiments?'Toewijzingen '+knownNum(experiments.assignments)+' · controlegroep '+knownNum(experiments.holdoutAssignments):'Geen experimenteerbewijs'],
     ['Innovatie · oorspronkelijke agents',innovation?esc(innovation.state):'GEEN BRON',
       innovation?'Bronnen '+knownNum(innovation.sourceBound)+' / '+knownNum(innovation.candidates)+' · ACK bewezen '+knownNum(innovation.verifiedConsumerAcks)+' · nog op te pakken '+knownNum(innovation.awaitingAgentAck)+' · engineering '+knownNum(innovation.ownerEngineering)+' · CRO '+knownNum(innovation.ownerCro):'Geen live bron- en agentintake-readback; nooit impliciet groen'],
+    ['Innovatie · verkoopuitvoering bronbewijs',salesAudit?esc(salesAudit.state):'GEEN BRON',
+      salesAudit?'Uitvoerings-events 7d '+knownNum(salesAudit.totalEvents7d)+
+        ' · gecontroleerd '+knownNum(salesAudit.sampledEvents)+
+        ' · historisch writer+actie bevestigd '+knownNum(salesAudit.actionBackedSample)+
+        ' · historisch niet ondersteund '+knownNum(salesAudit.unsupportedSample)+
+        ' · actuele actiestatus niet done '+knownNum(salesAudit.currentActionNotDoneSample)+
+        ' · nieuwste uitvoering zonder onveranderlijk event '+knownNum(salesAudit.currentExecutionWithoutEventSample)+
+        ' · dekking '+esc(salesAudit.scope||'ONBEKEND')+
+        ' · externe provider-uitvoering niet bewezen':'Geen recente brongekoppelde uitvoeringscontrole'],
     ['Growth / Revenue',commercial?'BRON UITGELEZEN':'GEEN BRON',commercial?'Prospects '+knownNum(commercial.prospects)+' · acties '+knownNum(commercial.nextBestActions)+' · bron-omzet '+esc(knownMoney(commercial.realizedRevenueEur)):'Geen betrouwbaar omzetoverzicht'],
     ['Commerciële provider-overdracht',handoff?esc(handoff.state||'ONBEKEND'):'GEEN BRON',
       handoff?'Bewezen '+knownNum(handoff.providerProven7d)+' · onbewezen/verlopen '+knownNum(handoff.brokenOrUnproven7d)+' · A/B-behandelingen '+knownNum(handoff.linkedTreatments7d):'Geen onafhankelijke oorspronkelijke commercial-scorecard'],

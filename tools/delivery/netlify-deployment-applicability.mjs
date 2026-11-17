@@ -58,6 +58,9 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
   // Imported by Netlify _cost-projection-store and _powerhouse-compound-improvement-proof.
   // A change to the canonical agent roster affects live server code, not only governance.
   'platform/agents/agent-team.mjs',
+  // Imported by the authenticated /api/powerhouse-control-plane Netlify function.
+  // The admin source-read model is live bundled server code, not governance-only.
+  'platform/portal/powerhouse-existing-integration-read-model.mjs',
   // Server-bundled by netlify/functions/powerhouse-observability.mjs.
   // It changes the authenticated portal API even though it lives under brain/.
   'brain/observability/publication-evidence-readback.mjs',

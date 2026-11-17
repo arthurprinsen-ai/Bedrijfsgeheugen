@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|instagram|mira-producer-no-approved-model|20261117-v1",
+  "obligation_id": "powerhouse|instagram|mira-producer-model-controlled-test|20261117-v1",
+  "owner": "original Powerhouse Mira producer / original media router",
+  "compiler": {
+    "failure_class": "PRODUCER_PRESPEND_DEADLOCK",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ]
+  },
+  "root_cause": "Veo3.1 failed canonical 0.940 Mira face, Wan2.7 output 1292x1604 with audio, all other models lacked admitted preflight; no native Supabase OpenArt API key even though ChatGPT has OAuth credits.",
+  "prevention": "Only one exact-source CAS claim after verified daily winner, original master, model form and <=640-credit quote, independent native MP4, Mira frames >=0.940 and temporal >=0.900, provider Meta GET and ONE BRAIN processed ACK.",
+  "tests": [
+    "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+  ],
+  "evidence": {
+    "OpenArt_connected_balance": 37000,
+    "canonical_project": "rUF5anXD47gVokckYjf9",
+    "model": "wan3-0",
+    "mode": "element2video",
+    "settings": {
+      "resolution": "1080p",
+      "aspectRatio": "9:16",
+      "duration": 8,
+      "videoCount": 1,
+      "audio": false
+    },
+    "cost_quote_credits": 640,
+    "meta_post_proven": false,
+    "model_form_not_actual_output_proof": true,
+    "original_source_winner_today": false
+  },
+  "outcome": "CODE_CANDIDATE_NOT_A_POST",
+  "next_action": "Protected tests and deploy parity, next genuine source, exclusive original producer single budgeted generation, independent exact media and Meta proof."
+}

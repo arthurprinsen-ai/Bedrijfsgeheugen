@@ -2,7 +2,8 @@ import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} f
 import {assessOfficialBlogDateTruth} from '../_shared/blog-official-date-truth.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
 import {reopenRejectedBlog,persistRepairedBlog,includeOwnedBlogRepair,persistBlogRepairFailure,normalizeBlogQualityReview} from '../_shared/blog-quality-recovery.mjs';
-import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal,personalObservationalLifeContextSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {PERSONAL_FIRST_PERSON_STORY_CONTRACT,personalFirstPersonSourceViolations,personalFirstPersonCopyViolations} from '../_shared/personal-first-person-story-gate.mjs';
 import {buildVerifiedFounderReserve as buildVerifiedFounderReserve_raw,isStalePersonalSource,personalSourceEventTypes} from '../_shared/personal-founder-source-reserve.mjs';
 import {normalizeRecommendationEvidence} from '../_shared/recommendation-evidence-normalization.mjs';
 const buildVerifiedFounderReserve:(...args:any[])=>any=buildVerifiedFounderReserve_raw;
@@ -55,6 +56,8 @@ function blogReaderReadyViolations(artifact:any):string[]{
 }
 
 const PERSONAL_STEERING_STORY='In een geverifieerd ondernemersbouwverhaal is AI het technische middel, niet de propositie. Mijn overtuiging gaat over bedrijven die continu veranderen en daarom iedere dag beter moeten kunnen anticiperen, besluiten, uitvoeren en leren. Alleen bronbevestigde persoonlijke ervaringen; geen reclame, jargon of ongevraagde salespitch.';
+const OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT="Je bent eindredacteur van een strikt observerende, niet-zakelijke LinkedIn-post in natuurlijk Nederlands. Lever uitsluitend hetzelfde JSON-artifact. Schrijf 150 tot 175 woorden in vier korte alinea's. Gebruik uitsluitend de feiten uit verified_personal_source en source_text; beschrijf een herkenbaar alledaags voorval, de oorzaak en het concrete gevolg, zonder te doen alsof Arthur het zelf heeft meegemaakt. Geen ik/mijn/mij/me, geen eigen ervaringen, geen ondernemerschap, bedrijf, klant, Bedrijfsgeheugen, consultancy, zakelijke moraal, strategie, omzet, verkoop of oproep tot actie. Geen interne technische systemen of ongecontroleerde cijfers. Gebruik een alledaags kernwoord uit de bron letterlijk, zoals onlinebestelling of klantenservice wanneer die woorden daadwerkelijk in source_text staan; geen willekeurige dagelijkse situatie toevoegen. Verzin niets; als de bron onvoldoende is, blijft publicatie afgekeurd. De vorige afgekeurde tekst is uitsluitend negatieve context. Controleer voordat je afrondt of de tekst geen zakelijke signalen bevat.";
+const PERSONAL_LIFE_CORRECTION_PROMPT="Je bent eindredacteur van Arthurs persoonlijke LinkedIn-verhaal. Lever hetzelfde JSON-artifact. Volg alleen het geverifieerde eerstehands persoonlijke voorval in verified_personal_source, zonder nieuwe feiten, privégegevens, emoties, dialogen of uitkomsten te bedenken. Geef een natuurlijk Nederlands verhaal zonder vaste lengte, alinea-aantal, grap, dramatische wending, les of slotvraag. Snijd overbodige zinnen weg. Schrijf nooit over bedrijven, klanten, AI, Bedrijfsgeheugen of verkoop. Zie recent_personal_post_patterns uitsluitend als negatieve stijlvoorbeelden: herhaal de openingsstructuur, afsluiting of template niet, gebruik hun feiten NOOIT als bewijs. Geen links, hashtags, emoji of engagementbait. Als er geen geldig nieuw feit is, laat de bestaande bron- en publicatiegate afkeuren.";
 
 function compactLinkedInCommentary(value:string,maxLength=2800):string{
   const original=clean(value);
@@ -304,10 +307,25 @@ function composioFallbackEligible(error:any){
 
 function validPersonalSource(row:any) {
   const e = row?.evidence || {};
+  // New personal channel rule: only Arthur-authored lived facts, not public-news observation
+  // or a company-style founder builder update; no Sunday personal publishing.
+  if(personalFirstPersonSourceViolations(e,clean(row?.run_date||e.calendar_date)).length)return false;
   const lineage = Array.isArray(e.source_lineage) ? e.source_lineage.length > 0 : !!e.source_lineage;
   const eligibleStatus = ['suggested','accepted'].includes(clean(row?.status));
   const truthMode = e.personal_truth_verified === true && e.arthur_anchor_verified === true && e.first_person_claims_verified === true;
   const observationalMode = e.observational_personal_theme_verified === true && e.public_theme_source_verified === true && e.first_person_claims_present === false;
+  // Independently observed 2026-11-15 source arrived as 143-character text
+  // ending in "..." and repeatedly failed the final truth contract.
+  // Do not let a verified URL disguise an insufficient article excerpt.
+  // Source collection must provide a complete dated observation FIRST.
+  const observedText = clean(e.source_text);
+  const observationalSourceReady = !observationalMode || (
+    observedText.length >= 240
+    && !/(?:\.{3}|…)\s*$/u.test(observedText)
+    && /^https:\/\/\S+/i.test(clean(e.public_theme_source_url))
+    && Number.isFinite(Date.parse(clean(e.public_theme_source_published_at)))
+    && Number.isFinite(Date.parse(clean(e.public_theme_source_observed_at)))
+  );
   const builderMode = e.ai_native_builder_story_verified === true
     && e.ai_native_builder_policy === PERSONAL_AI_NATIVE_POLICY
     && e.build_event_verified === true
@@ -322,6 +340,7 @@ function validPersonalSource(row:any) {
   return eligibleStatus && row?.target_channel === 'linkedin_personal'
     && e.identity_contract === PERSONAL_CONTRACT && e.identity_gate_version === PERSONAL_GATE
     && !!clean(e.content_id) && lineage && (builderMode || legacyPersonal)
+    && observationalSourceReady
     && e.corporate_voice === false && e.company_page_interchangeable === false && e.forced_business_moral === false
     && (e.sensitive_private_detail !== true || e.sensitive_private_approval === true);
 }
@@ -382,9 +401,11 @@ function personalFinalCopyValid(body:string, evidence:any) {
     const technicalJargon=/\b(runtime|heartbeat|workflow|pipeline|orchestration|readback|materializer|supabase|github|netlify|postgres(?:ql)?|database|sql|endpoint|deploy|commit|sha|idempotenc(?:y|ie)|lineage|source[_ -]?health|recovery[_ -]?due|evidence[_ -]?gap|architecture[_ -]?state|learning[_ -]?state|content[_ -]?loop)\b|\b[a-z][a-z0-9]*_[a-z0-9_]+\b/i.test(body);
     return hasFirstPerson && buildSignal && !technicalJargon && !salesPitch && clean(body).length >= 280;
   }
-  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|bedrijven|management|ondernemer|organisatie|proces|digitalisering|consultancy|consultant|klant|opdrachtgever|mkb|sales|lead|omzet|offerte|strategie|business|propositie|dienstverlening|dashboard|governance|roadmap|stakeholder|data-platform|datawarehouse/i.test(body);
+  // One exact lexical truth policy: do not confuse 'klantenservice' (an
+  // everyday source event) with the standalone sales claim 'klant'.
+  const noBusinessBridge=!personalNonBuilderBusinessSignal(body,{observational:evidence?.observational_personal_theme_verified===true});
   if (evidence?.observational_personal_theme_verified === true) {
-    const dailyLife=/\b(thuis|telefoon|app|wandeling|winkel|boodschappen|supermarkt|auto|fiets|trein|school|sport|weekend|vakantie|keuken|straat|buurt|regen|pakket|bezorging|scherm|offline)\b/i.test(body);
+    const dailyLife=personalObservationalLifeContextSignal(body);
     return !hasFirstPerson && dailyLife && noBusinessBridge;
   }
   const anchors=['printer','08:07','08:10','cyaan'].filter(x=>source.includes(x));
@@ -778,6 +799,32 @@ Deno.serve(async (req) => {
         ||clean(instagramProof?.mira_winner_recommendation_id)!==clean(resolvedMira.winner_recommendation_id))
         throw new Error('MIRA_FROZEN_SOURCE_MEDIA_PROOF_REQUIRED');
     }
+    // Reuse the ORIGINAL personal channel's published history for style-veto and
+    // bounded automatic rewriting. Historical prose is NOT a source of new life facts.
+    let recentPersonalPosts:string[]=[];
+    if(pending.channel==='linkedin_personal'){
+      const [{data:publishedHistory,error:historyError},{data:publishedDecisions,error:decisionError}]=await Promise.all([
+        db.from('powerhouse_content_artifacts')
+          .select('run_date,body,status').eq('channel','linkedin_personal')
+          .in('status',['published','content_ready'])
+          .order('run_date',{ascending:false}).limit(30),
+        db.from('powerhouse_channel_decisions')
+          .select('run_date,state,delivery_ref').eq('channel','linkedin_personal')
+          .eq('state','published').order('run_date',{ascending:false}).limit(30)
+      ]);
+      if(historyError||decisionError)
+        throw new Error('PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE:'+(historyError||decisionError)?.message);
+      const actualPublishedDates=new Set((publishedDecisions||[])
+        .filter((d:any)=>/^urn:li:(?:share|ugcPost):[0-9]+$/i.test(clean(d.delivery_ref)))
+        .map((d:any)=>clean(d.run_date)));
+      const current=Date.parse(runDate+'T00:00:00Z');
+      recentPersonalPosts=(publishedHistory||[])
+        .filter((p:any)=>{
+          const days=(current-Date.parse(clean(p.run_date)+'T00:00:00Z'))/86400000;
+          return days>=0&&days<=45
+            &&(p.status==='published'||actualPublishedDates.has(clean(p.run_date)));
+        }).map((p:any)=>clean(p.body)).filter(Boolean);
+    }
     let recentCompanyPosts:string[]=[];
     if(pending.channel==='linkedin_company'){
       const {data:publishedHistory,error:historyError}=await db.from('powerhouse_content_artifacts')
@@ -908,11 +955,26 @@ Deno.serve(async (req) => {
     if(pending.channel==='linkedin_personal' && personalBuilder) {
       editorialSystem += ' P0 OPRICHTERSVERHAAL — FINAL CHECK VOOR GENERATIE: Schrijf 150–175 gewone Nederlandse woorden in precies vier korte alinea’s (geen kopjes, bullets, links, cijfers of emoji). Begin direct met een herkenbaar probleem bij een ondernemer of bedrijf en schrijf al in de eerste 260 tekens ook vanuit IK of MIJN. Vertel uitsluitend ÉÉN aantoonbaar eigen bouwmoment uit verified_personal_source: welke klantfrictie ontdekte ik, wat ging aantoonbaar niet goed, wat heb ik veranderd en wat betekent dat voor een ondernemer. Verzonnen klantgesprekken, emoties, successen en cijfers zijn verboden. Behoud AI als nuchtere hulp, nooit als hoofdonderwerp. Eindig met exact één oprechte open vraag met vraagteken. Geen generieke missieopening, geen interne meetcijfers, geen promotie. Laat brondata intern en houd het persoonlijk en vanzelfsprekend voor iedere ondernemer. Dit is belangrijker dan de voorgestelde lange journey-opsomming; als geen geloofwaardig eigen nieuw feit bestaat, verzin niets en behoud de afkeuring.';
     }
+    if(pending.channel==='linkedin_personal'){
+      editorialSystem='AUTHENTIEK PERSOONLIJK LINKEDIN — '+PERSONAL_FIRST_PERSON_STORY_CONTRACT
+      + '. Schrijf uitsluitend een nieuw, controleerbaar ik-verhaal vanuit Arthurs EIGEN ervaring in verified_personal_source.source_text. '
+      + 'Laat het echte voorval zelf de vorm bepalen: een stille observatie, herinnering, grappig detail of ongemakkelijk moment mogen allemaal. Dwing geen wending, humor, les of vraag af. '
+      + 'Schrijf zo kort of lang als dit ene voorval verdient; gebruik natuurlijke alinea’s, geen tekstsjabloon. Begin bij Arthurs geverifieerde IK-ervaring. Geen onbevestigde dialoog, naam, locatie, tijd, gezinsdetail, mening, gevoel of uitkomst. '
+      + 'Lees recent_personal_post_patterns uitsluitend om herhaalde openingsframes, vertelstructuur en afsluiting te vermijden; kopieer NIET hun gebeurtenissen of details. '
+      + 'Geen publicatie over een publiek nieuwsfeit alsof ik erbij was; gebruik geen fictieve ik, AI-bouwnieuws, ondernemerstips, consultancy, Bedrijfsgeheugen, salespitch, link, hashtag, emoji of zakelijke moraal. '
+      + 'De bedrijfspagina publiceert zakelijke analyse. Dit persoonlijke verhaal mag gewoon menselijk blijven, zonder zakelijke overgang. '
+      + 'Als verified_personal_source geen door Arthur aangeleverde feitelijke gebeurtenis met geldige status en bronherkomst is, verzin niets; de originele redactie- en publicatiecontrole moet dan blokkeren.';
+    }
     // Original editor owns the brief; source guidance never overrides hard gates or issues a delivery claim.
     stage = 'artifact-ai';
     const miraContext=resolvedMira?miraResolvedEvidence(resolvedMira):null;
     const artifactInput={channel:pending.channel,editorial_quality_review:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.quality_review||null:null,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraContext?{...miraContext,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
-      editorial_council:editorialCouncil,commercial_feedback:commercialFeedback,verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+      editorial_council:editorialCouncil,commercial_feedback:commercialFeedback,verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,recent_personal_post_patterns:pending.channel==='linkedin_personal'?recentPersonalPosts.map(x=>({opening:x.slice(0,180),ending:x.slice(-180)})).slice(0,12):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+    if(pending.channel==='linkedin_personal'){
+      // Prevent commercial and brand intelligence from contaminating a verified life story.
+      for(const field of ['commercial_feedback','verified_brand_content_learnings','measured_next_post_test','linkedin_loop','tracking_url','recent_company_posts','editorial_council','editorial_exploration','editorial_experiment_owner'])
+        (artifactInput as any)[field]=null;
+    }
     let artifact:any;
     let generationProvider='OpenAI';
     let generationModel=gov.model_id;
@@ -960,14 +1022,19 @@ Deno.serve(async (req) => {
       if(!sceneValid||!candidateValid)throw new Error('MIRA_VISUAL_STORY_MISMATCH_REQUIRE_NEW_MATCHED_MEDIA');
     }
     if (pending.channel==='linkedin_personal') {
-      let editorialViolations=personalEditorialViolations(bodyText,personalSource?.evidence||{});
+      let editorialViolations=personalEditorialViolations(bodyText,{...(personalSource?.evidence||{}),recentPersonalPosts});
       // One source-grounded editorial rewrite is allowed before final rejection.
       // This is not a publication bypass: all existing hard gates run again.
-      if (editorialViolations.length && generationProvider==='OpenAI' && apiKey) {
+      const personalTruthViolation=!personalFinalCopyValid(bodyText,personalSource?.evidence||{});
+      if ((editorialViolations.length||personalTruthViolation) && generationProvider==='OpenAI' && apiKey) {
         // The original full editorialSystem is several independent channel, experiment and
         // governance instructions; repeating it during repair kept producing contradictory prose.
         // This bounded retry is not an alternate publisher or quality-policy override.
-        const correctionPrompt = 'Je bent eindredacteur voor een authentieke Nederlandstalige LinkedIn-post van een ondernemer. '
+        const correctionPrompt = personalSource?.evidence?.observational_personal_theme_verified===true
+          && personalSource?.evidence?.ai_native_builder_story_verified!==true
+          ? OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT
+          : personalSource?.evidence?.ai_native_builder_story_verified===true
+            ? ('Je bent eindredacteur voor een authentieke Nederlandstalige LinkedIn-post van een ondernemer. '
           + 'Antwoord uitsluitend via het verplichte JSON-artifact met exact dezelfde velden. Schrijf de body '
           + 'met 150 tot 175 normale Nederlandse woorden, precies vier natuurlijke alinea’s. '
           + 'De eerste 140 tekens bevatten een herkenbaar, feitelijk ondernemersprobleem. '
@@ -978,13 +1045,16 @@ Deno.serve(async (req) => {
           + 'Eindig met exact één oprechte open vraag met vraagteken. '
           + 'De vorige afgekeurde tekst is alleen foutcontext, geen feitelijke bron. '
           + 'Bij onvoldoende geverifieerde nieuwe feiten: verzin niets; de bestaande redactiecontrole wijst dan af. '
-          + 'Controleer de woordtelling voor afronden.';
+          + 'Controleer de woordtelling voor afronden.')
+            : PERSONAL_LIFE_CORRECTION_PROMPT;
         const revisionInput={
           channel:'linkedin_personal',
           verified_personal_source:personalSource,
           recommendation:recommendation ? {reason:recommendation.reason,topic_key:recommendation.topic_key,evidence:recommendation.evidence} : null,
           rejected_draft:bodyText,
-          editorial_rejection_codes:editorialViolations.map((item:any)=>item.code)
+          recent_personal_post_patterns:recentPersonalPosts.map(x=>({opening:x.slice(0,180),ending:x.slice(-180)})).slice(0,12),
+          editorial_rejection_codes:[...editorialViolations.map((item:any)=>item.code),
+            ...(personalTruthViolation?['PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED']:[])]
         };
         // Editorial revisions need the same bounded truncation recovery as the
         // initial structured artifact. No retry for rejected prose, identity,
@@ -997,13 +1067,15 @@ Deno.serve(async (req) => {
         );
         const revisedText=compactLinkedInCommentary(clean(revision?.body));
         if (revisedText
-          && personalEditorialViolations(revisedText,personalSource?.evidence||{}).length===0
+          && personalEditorialViolations(revisedText,{...(personalSource?.evidence||{}),recentPersonalPosts}).length===0
           && personalFinalCopyValid(revisedText,personalSource?.evidence||{})) {
           bodyText=revisedText;
           artifact={...artifact,...revision,body:revisedText};
           editorialViolations=[];
         }
       }
+      const firstPersonViolations=personalFirstPersonCopyViolations(bodyText,personalSource?.evidence||{},runDate);
+      if(firstPersonViolations.length)throw new Error('PERSONAL_VERIFIED_OWN_STORY_REQUIRED:'+firstPersonViolations.join(','));
       if(editorialViolations.length) throw new Error('PERSONAL_EDITORIAL_CONTRACT_FAILED:'+editorialViolations.map(x=>x.code).join(','));
       if(!personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     }

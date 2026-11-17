@@ -28,7 +28,7 @@ function items(title,list=[],body=item=>esc(item.title||item.label||item.id)){re
 
 function renderImpact(state){
  const raw=state?.powerhouse?.impact||[];if(!Array.isArray(raw)||!raw.length)return empty('Impact','Er is nog geen canonieke impactprojectie beschikbaar. Geschatte waarde wordt niet verzonnen.');
- const cards=raw.map(item=>{let impact;try{impact=normalizeImpact(item);}catch{return `<article><strong>${esc(item.title||item.id)}</strong><p>Impactgegevens onvolledig.</p></article>`;}const ranked=rankImpact(item.ranking||{});return `<article><strong>${esc(item.title||item.id)}</strong><b>${euro(impact.revenue_upside?.amount||impact.cost_capacity_reduction?.amount||0)}</b><small>${esc(impact.revenue_upside?.kind||impact.cost_capacity_reduction?.kind||'onbekend')} · confidence ${Math.round(impact.confidence*100)}% · score ${ranked.score}</small></article>`;});
+ const cards=raw.map(item=>{let impact;try{impact=normalizeImpact(item);}catch{return `<article><strong>${esc(item.title||item.id)}</strong><p>Impactgegevens onvolledig.</p></article>`;}const ranked=rankImpact(item.ranking||{});return `<article><strong>${esc(item.title||item.id)}</strong><b>${(impact.revenue_upside||impact.cost_capacity_reduction?euro((impact.revenue_upside??impact.cost_capacity_reduction).amount):'Nog niet gekwantificeerd')}</b><small>${esc(impact.revenue_upside?.kind||impact.cost_capacity_reduction?.kind||'onbekend')} · confidence ${Math.round(impact.confidence*100)}% · score ${ranked.score}</small></article>`;});
  return `${renderCompanyIntelligenceContext(state,'impact-engine')}${renderProblemContext(state,'impact-engine')}<section class="os-page-card"><h3>€ Impact Engine</h3><div class="os-impact-grid">${cards.join('')}</div></section>`;
 }
 

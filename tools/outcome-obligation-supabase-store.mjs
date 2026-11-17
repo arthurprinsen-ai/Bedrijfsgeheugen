@@ -15,17 +15,32 @@ function metadataFromRecord(record) {
   return metadata;
 }
 
+const DISPATCH_IDENTITY_FIELDS = Object.freeze(['type','idempotencyKey','obligationId','ownerAgent','traceId','state']);
+
 function normalizeDispatchRow(row) {
   if (!row) return null;
-  return Object.freeze({
+  // The append-only SQL columns are the ONLY identity, owner and lifecycle
+  // authority. JSONB record is untrusted supplemental metadata: spreading it
+  // last silently allowed a forged owner/state to shadow immutable columns.
+  if (row.record !== null && row.record !== undefined
+      && (typeof row.record !== 'object' || Array.isArray(row.record))) {
+    throw new Error('Supabase outcome obligation store failed: dispatch metadata is not an object');
+  }
+  const metadata = row.record ?? {};
+  const canonical = {
     type:row.record_type,
     idempotencyKey:row.idempotency_key,
     obligationId:row.obligation_id,
     ownerAgent:row.owner_agent,
     traceId:row.trace_id,
     state:row.state,
-    ...(row.record && typeof row.record === 'object' ? row.record : {}),
-  });
+  };
+  for (const key of DISPATCH_IDENTITY_FIELDS) {
+    if (Object.hasOwn(metadata,key) && metadata[key] !== canonical[key]) {
+      throw new Error(`Supabase outcome obligation store failed: dispatch metadata identity conflict (${key})`);
+    }
+  }
+  return Object.freeze({ ...metadata, ...canonical });
 }
 
 function assertCanonicalDispatchIdentity(input, persisted) {
@@ -55,6 +70,19 @@ function normalizeEvidenceRow(row) {
     exactProduction:row.exact_production === true,
     metadata,
   });
+}
+
+function assertCanonicalEvidenceIdentity(input, persisted) {
+  if (!persisted) throw new Error('Supabase outcome obligation store failed: persisted evidence record not found');
+  // An immutable evidence_ref cannot be reused to upgrade or replace the proof
+  // type, independent readback, owner or original production identity.
+  for (const field of ['ref','type','producer','taskIdentity','candidateIdentity','productionIdentity',
+    'independent','accepted','exactProduction']) {
+    if (persisted[field] !== input[field]) {
+      throw new Error(`Supabase outcome obligation store failed: immutable evidence identity conflict (${field})`);
+    }
+  }
+  return persisted;
 }
 
 export function createSupabaseOutcomeObligationStores({
@@ -221,34 +249,54 @@ export function createSupabaseOutcomeObligationStores({
       if (!record || typeof record !== 'object') throw new TypeError('evidence record is required');
       const idempotencyKey = requireText(record.idempotencyKey, 'record.idempotencyKey');
       const ref = requireText(record.ref, 'record.ref');
-      const existing = await this.get(idempotencyKey, ref);
-      if (existing) return Object.freeze({ created:false, record:existing });
-      const metadata = {
-        ...(record.metadata && typeof record.metadata === 'object' ? record.metadata : {}),
-        producer:record.producer ?? null,
-        taskIdentity:record.taskIdentity ?? null,
-        candidateIdentity:record.candidateIdentity ?? null,
-        productionIdentity:record.productionIdentity ?? null,
+      const row = {
+        idempotency_key:idempotencyKey,
+        evidence_ref:ref,
+        evidence_type:requireText(record.type, 'record.type'),
+        independent:record.independent === true,
+        accepted:record.accepted === true,
+        exact_production:record.exactProduction === true,
+        metadata:{
+          ...(record.metadata && typeof record.metadata === 'object' ? record.metadata : {}),
+          producer:record.producer ?? null,
+          taskIdentity:record.taskIdentity ?? null,
+          candidateIdentity:record.candidateIdentity ?? null,
+          productionIdentity:record.productionIdentity ?? null,
+        },
       };
-      await request(evidenceEndpoint, {
+      const expected = {
+        ref, type:row.evidence_type, producer:row.metadata.producer,
+        taskIdentity:row.metadata.taskIdentity, candidateIdentity:row.metadata.candidateIdentity,
+        productionIdentity:row.metadata.productionIdentity,
+        independent:row.independent, accepted:row.accepted, exactProduction:row.exact_production,
+      };
+      const existing = await this.get(idempotencyKey, ref);
+      if (existing) {
+        return Object.freeze({ created:false, record:assertCanonicalEvidenceIdentity(expected, existing) });
+      }
+      // The earlier read is only a hint. A concurrent original writer can
+      // insert the same composite key between GET and POST. The provider's
+      // atomic ignore-duplicates result determines whether it was new.
+      const inserted = await request(evidenceEndpoint, {
         method:'POST',
         headers:headers({
           'content-type':'application/json',
-          Prefer:'resolution=ignore-duplicates,return=minimal',
+          Prefer:'resolution=ignore-duplicates,return=representation',
         }),
-        body:JSON.stringify({
-          idempotency_key:idempotencyKey,
-          evidence_ref:ref,
-          evidence_type:requireText(record.type, 'record.type'),
-          independent:record.independent === true,
-          accepted:record.accepted === true,
-          exact_production:record.exactProduction === true,
-          metadata,
-        }),
+        body:JSON.stringify(row),
       });
-      const persisted = await this.get(idempotencyKey, ref);
-      if (!persisted) throw new Error('Supabase outcome obligation store failed: persisted evidence record not found');
-      return Object.freeze({ created:true, record:persisted });
+      if (!Array.isArray(inserted) || inserted.length > 1) {
+        throw new Error('Supabase outcome obligation store failed: evidence insert outcome unverified');
+      }
+      if (inserted.length === 1 && (
+          inserted[0]?.idempotency_key !== idempotencyKey
+          || inserted[0]?.evidence_ref !== ref
+          || inserted[0]?.evidence_type !== row.evidence_type
+      )) {
+        throw new Error('Supabase outcome obligation store failed: inserted evidence identity unverified');
+      }
+      const persisted = assertCanonicalEvidenceIdentity(expected, await this.get(idempotencyKey, ref));
+      return Object.freeze({ created:inserted.length === 1, record:persisted });
     },
   });
 

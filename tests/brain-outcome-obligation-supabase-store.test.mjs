@@ -88,6 +88,65 @@ test('immutable idempotency key cannot silently transfer ownership on duplicate 
   );
 });
 
+test('immutable SQL dispatch columns always own identity and state; matching optional metadata stays supplemental',async()=>{
+  const canonical={idempotency_key:'obligation|truth',record_type:'AgentWork',
+    obligation_id:'canonical-original',owner_agent:'agent-reliability',
+    trace_id:'trace-original',state:'PENDING',record:{
+      ownerAgent:'agent-reliability',state:'PENDING',requestedOutcome:'original-outcome'
+    }};
+  const fetchImpl=async(url,init={})=>init.method==='POST'
+    ?jsonResponse(201,[]):jsonResponse(200,[canonical]);
+  const store=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  const r=await store.workStore.get('obligation|truth');
+  assert.equal(r.ownerAgent,'agent-reliability');
+  assert.equal(r.state,'PENDING');
+  assert.equal(r.requestedOutcome,'original-outcome');
+  assert.equal(Object.isFrozen(r),true);
+});
+
+test('a forged JSONB owner, obligation, state or idempotency key cannot shadow original SQL columns',async()=>{
+  const canonical={idempotency_key:'obligation|truth',record_type:'AgentWork',
+    obligation_id:'original-1',owner_agent:'agent-reliability',
+    trace_id:'trace-1',state:'PENDING',record:{}};
+  const variants=[
+    ['ownerAgent','agent-cost'],['obligationId','another-obligation'],
+    ['state','COMPLETED'],['idempotencyKey','obligation|forged'],
+    ['traceId','trace-forged'],['type','RecoveryWork']
+  ];
+  for(const [field,value] of variants){
+    const forged={...canonical,record:{requestedOutcome:'original', [field]:value}};
+    const store=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,
+      fetchImpl:async()=>jsonResponse(200,[forged])});
+    await assert.rejects(store.workStore.get('obligation|truth'),
+      new RegExp('dispatch metadata identity conflict \\(' + field + '\\)'));
+  }
+});
+
+test('a conflicting SQL owner cannot be concealed by matching metadata on a duplicate replay',async()=>{
+  const forged={idempotency_key:'obligation|truth',record_type:'AgentWork',
+    obligation_id:'original-1',owner_agent:'agent-security',trace_id:'trace-1',
+    state:'PENDING',record:{ownerAgent:'agent-reliability'}};
+  const store=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,
+    fetchImpl:async(url,init={})=>init.method==='POST'
+      ?jsonResponse(201,[]):jsonResponse(200,[forged])});
+  await assert.rejects(store.workStore.putIfAbsent({
+    type:'AgentWork',idempotencyKey:'obligation|truth',obligationId:'original-1',
+    ownerAgent:'agent-reliability',traceId:'trace-1',state:'PENDING',
+  }),/dispatch metadata identity conflict \(ownerAgent\)/);
+});
+
+test('a corrupted historical page fails closed instead of silently misrouting the next agent',async()=>{
+  const canonical={idempotency_key:'obligation|truth',record_type:'RecoveryWork',
+    obligation_id:'original-1',owner_agent:'agent-reliability',trace_id:'trace-1',
+    state:'RECOVERING',record:{state:'COMPLETED'}};
+  const store=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,
+    fetchImpl:async()=>new Response(JSON.stringify([canonical]),{
+      status:206,headers:{'content-type':'application/json','Content-Range':'0-0/1'}
+    })});
+  await assert.rejects(store.recoveryStore.list(),
+    /dispatch metadata identity conflict \(state\)/);
+});
+
 test('provider fails to report insert outcome: no fabricated new durable dispatch',async()=>{
   const fetchImpl=async(url,init={})=>init.method==='POST'
     ?new Response(null,{status:204}):jsonResponse(200,[]);
@@ -234,7 +293,7 @@ test('evidence putIfAbsent writes one canonical row and coalesces an exact repla
     calls.push({ url:String(url), init });
     if (init.method === 'POST') {
       persisted = JSON.parse(init.body);
-      return jsonResponse(201, []);
+      return jsonResponse(201, [persisted]);
     }
     return jsonResponse(200, persisted ? [persisted] : []);
   };
@@ -247,6 +306,78 @@ test('evidence putIfAbsent writes one canonical row and coalesces an exact repla
   assert.equal(calls.filter(call => call.init.method === 'POST').length, 1);
   assert.equal(persisted.evidence_ref, record.ref);
   assert.equal(persisted.metadata.producer, 'COMPLETION_SUPERVISOR');
+});
+
+test('concurrent evidence writer wins after stale GET: duplicate is not newly created',async()=>{
+  const canonical={
+    idempotency_key:'obligation|race',evidence_ref:'proof:race',evidence_type:'FUNCTIONAL_READBACK',
+    independent:true,accepted:true,exact_production:true,
+    metadata:{producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',productionIdentity:'P1'}
+  };
+  let reads=0;const posts=[];
+  const fetchImpl=async(url,init={})=>{
+    if(init.method==='POST'){posts.push(JSON.parse(init.body));return jsonResponse(201,[]);}
+    reads++;
+    return jsonResponse(200,reads===1?[]:[canonical]);
+  };
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  const r=await stores.evidenceStore.putIfAbsent({
+    idempotencyKey:'obligation|race',ref:'proof:race',type:'FUNCTIONAL_READBACK',
+    producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',
+    productionIdentity:'P1',independent:true,accepted:true,exactProduction:true
+  });
+  assert.equal(posts.length,1);
+  assert.equal(reads,2);
+  assert.equal(r.created,false,'a competing existing proof is not a newly written proof');
+  assert.equal(r.record.productionIdentity,'P1');
+});
+
+test('same evidence ref cannot silently elevate nonindependent proof to accepted production proof',async()=>{
+  const existing={
+    evidence_ref:'proof:immutable',evidence_type:'FUNCTIONAL_READBACK',
+    independent:false,accepted:false,exact_production:false,
+    metadata:{producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',productionIdentity:'P1'}
+  };
+  let postCalled=false;
+  const fetchImpl=async(url,init={})=>{
+    if(init.method==='POST'){postCalled=true;return jsonResponse(201,[]);}
+    return jsonResponse(200,[existing]);
+  };
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  await assert.rejects(stores.evidenceStore.putIfAbsent({
+    idempotencyKey:'obligation|proof',ref:'proof:immutable',type:'FUNCTIONAL_READBACK',
+    producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',
+    productionIdentity:'P1',independent:true,accepted:true,exactProduction:true
+  }),/immutable evidence identity conflict \(independent\)/);
+  assert.equal(postCalled,false,'do not submit conflicting proof to the provider');
+});
+
+test('evidence provider result must prove exact immutable composite key',async()=>{
+  const req={idempotencyKey:'obligation|proof',ref:'proof:real',type:'FUNCTIONAL_READBACK',
+    producer:'PRODUCTION_READBACK',taskIdentity:'O1',candidateIdentity:'C1',
+    productionIdentity:'P1',independent:true,accepted:true,exactProduction:true};
+  const fetchImpl=async(url,init={})=>{
+    if(init.method==='POST')return jsonResponse(201,[{...JSON.parse(init.body),evidence_ref:'proof:other'}]);
+    return jsonResponse(200,[]);
+  };
+  await assert.rejects(
+    createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl}).evidenceStore.putIfAbsent(req),
+    /inserted evidence identity unverified/
+  );
+});
+
+test('unknown evidence insert response cannot fabricate independent proof',async()=>{
+  let reads=0;
+  const fetchImpl=async(url,init={})=>{
+    if(init.method==='POST')return new Response(null,{status:204});
+    reads++;return jsonResponse(200,[]);
+  };
+  const stores=createSupabaseOutcomeObligationStores({url:URL,token:TOKEN,fetchImpl});
+  await assert.rejects(stores.evidenceStore.putIfAbsent({
+    idempotencyKey:'obligation|proof',ref:'proof:unverified',type:'FUNCTIONAL_READBACK',
+    independent:true,accepted:true,exactProduction:true
+  }),/evidence insert outcome unverified/);
+  assert.equal(reads,1);
 });
 
 test('remote auth or validation errors fail closed instead of degrading to empty state', async () => {

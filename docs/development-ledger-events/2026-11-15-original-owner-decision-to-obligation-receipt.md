@@ -1,0 +1,17 @@
+# 2026-11-15 — Original owner decision existed, original obligation did not receive it
+
+**Incident** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Original previous protected merged release: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5897 and exact existing scoped live GitHub run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43746595228.
+
+**Native evidence:** 14/14 original agent `INNOVATION_INTAKE` source-bound decisions independently persisted, no errors. Exactly 9 generic engineering baseline due, 4 concrete engineering protected implementation proposals and 1 original CRO holdout plan. All 14 original `INNOVATION_DELIVERY` obligations stayed OPEN; **zero** direct downstream `original_owner_decision_handoff` receipts. This is a genuine unacknowledged producer→consumer transfer inside the one original Brain, not a reason to declare implementation done.
+
+**Cause:** previous original daily source-decision stage persisted only `brain_operations.evidence.original_owner_decision`, but original obligation owner/consumer uses `brain_obligations` as actionable source; its next-decision receipt was missing.
+
+**Recovery:** extend SAME original script `scripts/brain/innovation-original-owner-decision.mjs`. Reread current canonical source after decision CAS, validate original owner/correlation/revision/SHA/rollback fingerprint, PUT minimal `original_owner_decision_handoff` in ORIGINAL obligation via existing `brain_transition_obligation` expected-version CAS; independent native exact GET readback, no parallel queue, no new scheduler, no fabricated remote/ACK, preserve `OPEN`. Same workflow and original recovery mode, same protected GitHub gates; no SQL migration.
+
+**Prevention:** reject stale decision fingerprint, policy bypass, unauthorized external write, changed owner or source identity. Stable fingerprint means idempotent no-op on replay; record typed conflicts and retry via original owner only. Keep 14 true implementation/economic effect obligations OPEN until independent protected release and actual Heartbeat/ONE BRAIN applied learning, not just source receipt.
+
+**Proof due:** native executable tests plus protected Required/CodeQL exact commit merge, one same-original bounded recovery run, actual 14/14 `brain_obligations` handoff receipts and no new `VERIFIED` status. Learning `brain/learning/2026-11-15-original-owner-decision-obligation-consumer-v1.json`.
+
+## Protected CI incident — failed original historical replay caught before merge
+
+The first protected PR #5901 exact-head admission failed in `tests/brain-innovation-original-owner-decision-20261115.test.mjs` tests 9–13 with JavaScript `TypeError: undefined is not a function`. Root cause was a one-token typo in new native decision→obligation source-array gate: `[candidates,obligations,intakes].every(Array.is)` mistakenly passed `undefined` as the `every` predicate. The intended fail-closed type proof is `.every(Array.isArray)`. Corrected the predicate **without disabling any tests or weakening source validation**, with exact changed-head Required and CodeQL rerun required. No new code was merged to production while the guard was broken. Failed run: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43747901748. Preventive rule: all collection shape guards must execute dependency-free native regression in the protected admission stage; never trust syntactically plausible but runtime-undefined built-in method names.

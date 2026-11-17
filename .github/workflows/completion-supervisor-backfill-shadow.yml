@@ -57,9 +57,11 @@ jobs:
           set -euo pipefail
           mkdir -p .artifacts
           node tools/outcome-obligation-completion-supervisor-backfill.mjs --collect --mode active --output .artifacts/completion-supervisor-backfill-report.json
-          node -e "const r=require('./.artifacts/completion-supervisor-backfill-report.json'); if(r.productionMutation!==false||r.mode!=='active'||r.durableResumeEnabled!==true) process.exit(1); const bad=(r.dispatches||[]).filter(d=>!(r.resumeResults||[]).some(x=>x.dispatch?.obligationId===d.obligationId&&x.dispatch?.coalesceKey===d.coalesceKey)); if(bad.length) process.exit(1); console.log(JSON.stringify({candidateCount:r.candidateCount, dispatchCount:r.dispatches.length, resumed:r.resumeResults.length, skippedLiveVerified:r.skippedLiveVerified.length}))"
+          node -e "const r=require('./.artifacts/completion-supervisor-backfill-report.json'); if(r.productionMutation!==false||r.mode!=='active'||r.durableResumeEnabled!==true) process.exit(1); const bad=(r.dispatches||[]).filter(d=>!(r.resumeResults||[]).some(x=>x.dispatch?.obligationId===d.obligationId&&x.dispatch?.coalesceKey===d.coalesceKey&&x.dispatch?.triggerType===d.triggerType)); if(bad.length) process.exit(1); const unproven=(r.resumeResults||[]).filter(x=>x.artifact?.mode!=='durable-supabase'||x.artifact?.decisions?.length!==1||x.artifact.decisions[0]?.obligationId!==x.dispatch?.obligationId||x.artifact.decisions[0]?.status==='NOT_DUE'); if(unproven.length||(r.resumeResults||[]).length!==(r.dispatches||[]).length) process.exit(1); const deferred=(r.deferredNotDue||[]); if(deferred.some(d=>d.reason!=='NO_ORIGINAL_DUE_TRIGGER_FOR_BACKFILL'||(r.dispatches||[]).some(x=>x.obligationId===d.obligationId))) process.exit(1); console.log(JSON.stringify({candidateCount:r.candidateCount, dispatchCount:r.dispatches.length, durableResumed:r.resumeResults.length, deferredNotDue:deferred.length, skippedLiveVerified:r.skippedLiveVerified.length}))"
 
       - name: Upload immutable reconciliation and resume evidence
+        if: always()
+        # Preserve the same original checkpoint after an incomplete owner run.
         uses: actions/upload-artifact@v4
         with:
           name: completion-supervisor-backfill-resume-${{ github.run_id }}

@@ -1,5 +1,5 @@
-import {researchSourceCandidate,researchRetryAt,researchNoSourceFeedback} from '../_shared/relationship-research-feedback.mjs';
-import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks} from '../_shared/public-business-email-evidence.mjs';
+import {researchSourceCandidate,researchRetryAt,researchNoSourceFeedback,directResearchSourceUrl} from '../_shared/relationship-research-feedback.mjs';
+import {eligiblePublicCompanyPage,publishedBusinessMailto,publicCompanyContactLinks,firstPartyDailyRotationOffset,firstPartySourceRetryHours,firstPartySourceRetryDue} from '../_shared/public-business-email-evidence.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT='powerhouse-relationship-public-research-v1';
@@ -24,17 +24,19 @@ const TRIGGERS=[
 
 
 const isTrue=(v:unknown)=>v===true||v==='true';
-async function readBoundedPublicPage(url:string):Promise<string|null>{
-  // Same public company host (optionally www): allow up to two HTTPS-only,
-  // same-domain redirects; never follow arbitrary cross-host, IP, auth or
-  // insecure redirects. 2.5s per bounded request and 160kB HTML cap.
+async function readBoundedPublicPage(url:string,sourceDiagnostics:string[]=[]):Promise<string|null>{
+  // Same original bounded public HTTPS source reader. Record only stable
+  // failure CATEGORIES (no personal data, URL, credentials or response body).
+  // Never weaken SSRF/redirect restrictions or turn a failed source into proof.
+  const record=(code:string):null=>{if(sourceDiagnostics.length<8)sourceDiagnostics.push(code);return null;};
   try{
     const original=new URL(url);
     const companyHost=original.hostname.toLowerCase().replace(/^www\./,'');
     if(original.protocol!=='https:'||!companyHost.includes('.')||
       original.username||original.password||original.port&&original.port!=='443'||
       /^(?:\d{1,3}\.){3}\d{1,3}$/.test(companyHost)||
-      companyHost.endsWith('.local')||companyHost.endsWith('.internal'))return null;
+      companyHost.endsWith('.local')||companyHost.endsWith('.internal'))
+      return record('UNSAFE_OR_INVALID_SOURCE_URL');
     let current=original;
     for(let redirects=0;redirects<=2;redirects++){
       const res=await fetch(current.toString(),{
@@ -42,34 +44,55 @@ async function readBoundedPublicPage(url:string):Promise<string|null>{
         headers:{accept:'text/html,application/xhtml+xml'}
       });
       if([301,302,303,307,308].includes(res.status)){
-        if(redirects>=2)return null;
+        if(redirects>=2)return record('REDIRECT_LIMIT_REACHED');
         const location=res.headers.get('location');
-        if(!location)return null;
+        if(!location)return record('REDIRECT_LOCATION_MISSING');
         const next=new URL(location,current);
         const nextHost=next.hostname.toLowerCase().replace(/^www\./,'');
         if(next.protocol!=='https:'||nextHost!==companyHost||
           next.username||next.password||next.port&&next.port!=='443'||
-          next.toString().length>2500)return null;
+          next.toString().length>2500)
+          return record('REDIRECT_UNSAFE_OR_CROSS_HOST');
         current=next;
         continue;
       }
+      if(!res.ok){
+        if(res.status===403||res.status===401||res.status===429)
+          return record('SOURCE_ACCESS_DENIED_OR_RATE_LIMITED');
+        return record(res.status>=500?'SOURCE_HTTP_UPSTREAM_5XX':'SOURCE_HTTP_NON_SUCCESS');
+      }
       const len=Number(res.headers.get('content-length')||0);
-      if(!res.ok||!/^text\/html|^application\/xhtml\+xml/i.test(res.headers.get('content-type')||'')||
-        len>160000||!res.body)return null;
+      if(!/^text\/html|^application\/xhtml\+xml/i.test(res.headers.get('content-type')||''))
+        return record('SOURCE_NOT_HTML');
+      if(!res.body)return record('SOURCE_BODY_MISSING');
       const reader=res.body.getReader(),chunks:Uint8Array[]=[];let size=0;
+      let truncated=len>160000;
       for(;;){
         const part=await reader.read();
         if(part.done)break;
+        const room=160000-size;
+        if(part.value.byteLength>room){
+          if(room>0){chunks.push(part.value.subarray(0,room));size+=room;}
+          truncated=true;
+          await reader.cancel();
+          break;
+        }
         size+=part.value.byteLength;
-        if(size>160000){await reader.cancel();return null;}
         chunks.push(part.value);
       }
+      if(!size)return record('SOURCE_BODY_EMPTY');
+      // At most 160KB read. A truncated sample cannot prove NO email exists.
+      if(truncated&&sourceDiagnostics.length<8)sourceDiagnostics.push('SOURCE_HTML_TRUNCATED');
       const buffer=new Uint8Array(size);let offset=0;
       for(const chunk of chunks){buffer.set(chunk,offset);offset+=chunk.byteLength;}
       return new TextDecoder().decode(buffer);
     }
-    return null;
-  }catch{return null}
+    return record('REDIRECT_LIMIT_REACHED');
+  }catch(error){
+    const name=error instanceof Error ? error.name : '';
+    return record(name==='TimeoutError'||name==='AbortError'
+      ?'SOURCE_FETCH_TIMEOUT':'SOURCE_NETWORK_OR_PARSE_FAILURE');
+  }
 }
 async function writePublicBusinessSourceReceipt(db:any,action:any,source:any,observedAt:string,recovered=false){
   // Producer INGEST receipt only. An existing named consumer PROCESSED receipt
@@ -110,7 +133,7 @@ async function writePublicBusinessSourceReceipt(db:any,action:any,source:any,obs
   return verified.event_id;
 }
 
-async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:string){
+async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:string,sourceDiagnostics:string[]=[]){
   // Source research may stage only public B2B evidence; recipient authorization remains independent.
   // STAGE ONLY: unverified public address is never promoted to the canonical contact delivery field.
   let q=await db.from('bg_connecties')
@@ -143,7 +166,7 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
     eligiblePublicCompanyPage(item?.url,contact.bedrijf)).slice(0,3);
   let checked=0;
   for(const item of sites){
-    const page=typeof item.html==='string'&&item.html.length<=160000?item.html:await readBoundedPublicPage(clean(item.url));
+    const page=typeof item.html==='string'&&item.html.length<=160000?item.html:await readBoundedPublicPage(clean(item.url),sourceDiagnostics);
     if(!page)continue;
     checked++;
     const evidence=publishedBusinessMailto({html:page,sourceUrl:item.url,
@@ -196,7 +219,8 @@ async function ingestPublicWorkEmail(db:any,action:any,organic:any[],observedAt:
 async function processOriginalFirstPartyPublicSource(db:any,selected:any,
   domain:string,company:string,key:string,observedAt:string,baseEvidence:any={}){
   const homeUrl='https://'+domain+'/';
-  const homeHtml=await readBoundedPublicPage(homeUrl);
+  const sourceDiagnostics:string[]=[];
+  const homeHtml=await readBoundedPublicPage(homeUrl,sourceDiagnostics);
   const publishedLinks=homeHtml?publicCompanyContactLinks(homeHtml,homeUrl,company,1):[];
   const publicPages=homeHtml
     ?[{type:'first_party_company_domain',url:'https://'+domain+'/',html:homeHtml},
@@ -205,17 +229,31 @@ async function processOriginalFirstPartyPublicSource(db:any,selected:any,
     :[{type:'first_party_company_domain',url:'https://www.'+domain+'/'},
     {type:'first_party_company_domain',url:'https://'+domain+'/contact'},
     {type:'first_party_company_domain',url:'https://'+domain+'/team'}];
-  const result=await ingestPublicWorkEmail(db,selected,publicPages,observedAt);
+  const result=await ingestPublicWorkEmail(db,selected,publicPages,observedAt,sourceDiagnostics);
   // This original action is terminal only after a real source disposition AND
   // its original evidence receipt. An HTTP/DB error leaves it retriable.
-  const checked=result.sites>0||result.receipts>0||result.status==='SUPPRESSED'||
-    result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION';
-  const nextAttemptAt=checked?null:new Date(Date.parse(observedAt)+4*3600000).toISOString();
+  const truncated=sourceDiagnostics.includes('SOURCE_HTML_TRUNCATED');
+  const checked=result.receipts>0||result.status==='SUPPRESSED'||
+    result.status==='EXISTING_CANDIDATE_AWAITS_VERIFICATION'||
+    (result.sites>0&&!truncated);
+  const sourceStatus=!checked&&truncated?'SOURCE_HTML_TRUNCATED_UNVERIFIED':result.status;
+  const attemptNumber=Number(selected.evidence?.public_email_source_attempts||0)+1;
+  // Preserve OPEN source debt while avoiding unbounded four-hour retry loops.
+  const retryHours=checked?0:firstPartySourceRetryHours(attemptNumber);
+  const nextAttemptAt=checked?null:new Date(Date.parse(observedAt)+retryHours*3600000).toISOString();
+  const sourceFailureCodes:Record<string,number>={};
+  for(const failure of sourceDiagnostics){
+    if(failure in sourceFailureCodes)sourceFailureCodes[failure]++;
+    else sourceFailureCodes[failure]=1;
+  }
   const evidence={...(selected.evidence||baseEvidence),
-    public_email_source_checked:checked,public_email_source_status:result.status,
+    public_email_source_checked:checked,public_email_source_status:sourceStatus,
     public_email_source_checked_at:observedAt,public_email_next_attempt_at:nextAttemptAt,
     public_email_ingest_ack:result.receipts>0,
-    public_email_source_attempts:Number(selected.evidence?.public_email_source_attempts||0)+1,
+    public_email_source_attempts:attemptNumber,
+    public_email_source_failure_codes:sourceFailureCodes,
+    public_email_source_retry_hours:retryHours,
+    public_email_source_diagnostics_recorded_at:observedAt,
     recipient_send_authority_inferred:false,external_send_executed:false};
   const {data:updated,error:uErr}=await db.from('powerhouse_sales_actions')
     .update({evidence}).eq('action_id',selected.action_id).eq('dedupe_key',key)
@@ -228,8 +266,9 @@ async function processOriginalFirstPartyPublicSource(db:any,selected:any,
 async function replayDueHistoricalFirstPartySources(db:any,observedAt:string){
   // Query ORIGINAL completed internal research records with a persisted due time.
   // Do not create another action/queue/cron; same key, same person and company.
-  const today=new Intl.DateTimeFormat('sv-SE',{timeZone:'Europe/Amsterdam',
-    year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date(observedAt));
+  // Due source debt is eligible on its own Amsterdam day too. The daily
+  // eight-new-company cap controls creation, not recovery of an existing ID.
+  // A strict due-time predicate and at-most-two retry budget prevent storms.
   const {data:due,error:dErr}=await db.from('powerhouse_sales_actions')
     .select('action_id,dedupe_key,person_key,person_name,company_key,company_name,role,evidence,updated_at')
     .eq('action_type','research_enrichment').eq('channel','internal').eq('status','done')
@@ -242,11 +281,7 @@ async function replayDueHistoricalFirstPartySources(db:any,observedAt:string){
   for(const action of due||[]){
     if(retried>=2)break;
     const key=String(action.dedupe_key||'');
-    if(!/^relationship-research:public-domain:\d{4}-\d{2}-\d{2}:[^:]+$/.test(key)||
-       key.includes(':'+today+':')||
-       action.evidence?.public_email_source_checked!==false||
-       !Number.isFinite(Date.parse(action.evidence?.public_email_next_attempt_at||''))||
-       Date.parse(action.evidence.public_email_next_attempt_at)>Date.parse(observedAt))continue;
+    if(!firstPartySourceRetryDue(key,action.evidence,observedAt))continue;
     const domain=clean(action.evidence?.first_party_domain).toLowerCase();
     const company=clean(action.company_name);
     if(!eligiblePublicCompanyPage('https://'+domain+'/',company)||
@@ -280,7 +315,9 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
   }
   const entries=[...domains.values()].sort((a,b)=>a.company.localeCompare(b.company));
   if(!entries.length)return {companies:0,sites:0,candidates:0,ingest_acks:0,reason:'NO_SOURCE_DOMAIN'};
-  const offset=Math.floor(Date.parse(day+'T00:00:00Z')/86400000)%entries.length;
+  // Rotate all eight original daily slots together; one-slot/day caused repeated
+   // unreachable company domains and starved otherwise eligible companies.
+   const offset=firstPartyDailyRotationOffset(day,entries.length,8);
   const {count:already,error:countErr}=await db.from('powerhouse_sales_actions')
     .select('action_id',{count:'exact',head:true})
     .like('dedupe_key','relationship-research:public-domain:'+day+':%');
@@ -340,7 +377,95 @@ async function originalFirstPartyDomainCandidatePass(db:any,observedAt:string){
     if(result.status==='SOURCE_HTML_UNAVAILABLE')htmlUnavailable++;
     if(result.status==='NO_EXPLICIT_NAMED_OFFICIAL_MAILTO')noNamedMailto++;
   }
-  return {companies,sites,candidates,ingest_acks:ingestAcks,html_unavailable:htmlUnavailable,no_named_work_mailto:noNamedMailto,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
+  return {companies,sites,candidates,ingest_acks:ingestAcks,html_unavailable:htmlUnavailable,no_named_work_mailto:noNamedMailto,candidate_company_domains:entries.length,rotation_offset:offset,rotation_step:8,source:'ORIGINAL_FIRST_PARTY_COMPANY_GRAPH',new_provider_queries:0};
+}
+
+
+/** Replay an original wrapped SERP source as safe research, not delivery. */
+async function recoverWrappedOriginalResearchSources(db:any,observedAt:string){
+  const cutoff=new Date(Date.parse(observedAt)-7*86400000).toISOString();
+  const {data:records,error}=await db.from('powerhouse_sales_actions')
+    .select('action_id,dedupe_key,person_key,company_key,evidence,source_url,status,updated_at')
+    .eq('action_type','research_enrichment').eq('channel','internal')
+    .eq('status','done').like('dedupe_key','relationship-research:outreach-source:%')
+    .gte('created_at',cutoff).order('updated_at',{ascending:false}).limit(40);
+  if(error)throw new Error('ORIGINAL_WRAPPED_SOURCE_READ:'+error.message);
+  let recovered=0,ownerAcks=0,held=0;
+  for(const a of records||[]){
+    if(recovered>=5)break;
+    const source=clean(a.evidence?.public_research_execution?.source_url||a.source_url);
+    if(!/^https:\/\/(?:www\.)?google\.[a-z.]+\/(?:goto|url|aclk)(?:[/?#]|$)/i.test(source)||
+      directResearchSourceUrl(source))continue;
+    const id=clean(a.evidence?.original_outreach_action_id);
+    if(!/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(id)){held++;continue}
+    const {data:owner,error:ownerError}=await db.from('powerhouse_sales_actions')
+      .select('action_id,person_key,company_key,status,evidence,updated_at')
+      .eq('action_id',id).eq('person_key',a.person_key).eq('company_key',a.company_key)
+      .in('status',['prepared','waiting']).maybeSingle();
+    if(ownerError)throw new Error('ORIGINAL_WRAPPED_SOURCE_OWNER_READ:'+ownerError.message);
+    const next=researchRetryAt(observedAt,24);
+    const feedback=researchNoSourceFeedback(a,owner,observedAt,next);
+    if(!feedback){held++;continue}
+    // Quarantine the exact old false-VERIFIED source event FIRST. An internal
+    // SERP tracking redirect was never a publisher page; its past quality
+    // assertion must not continue to feed intelligence/agents as verified.
+    // Preserve immutable event identity and original evidence for audit.
+    const {data:staleEvents,error:sourceEventErr}=await db.from('powerhouse_runtime_events')
+      .select('event_id,dedupe_key,data_quality,evidence,updated_at')
+      .eq('event_type','relationship_public_research_evidence')
+      .eq('source',CONTRACT)
+      .like('dedupe_key','relationship-public-research:'+a.action_id+':%')
+      .eq('evidence->>source_url',source).limit(5);
+    if(sourceEventErr)throw new Error('ORIGINAL_WRAPPED_SOURCE_EVENT_READ:'+sourceEventErr.message);
+    for(const prior of staleEvents||[]){
+      if(prior.data_quality==='REJECTED_TRACKING_REDIRECT')continue;
+      const {data:rejected,error:eventErr}=await db.from('powerhouse_runtime_events')
+        .update({state:'error',data_quality:'REJECTED_TRACKING_REDIRECT',
+          evidence:{...(prior.evidence||{}),original_source_quality_correction:{
+            contract:'ORIGINAL_SERP_REDIRECT_SOURCE_REVIEW_V1',
+            original_research_action_id:a.action_id,corrected_at:observedAt,
+            prior_quality:prior.data_quality,
+            reason:'TRACKING_REDIRECT_NOT_PUBLISHER_SOURCE',
+            source_page_independently_read:false,
+            provider_send_authorized:false,external_send_executed:false}},
+          updated_at:observedAt})
+        .eq('event_id',prior.event_id).eq('updated_at',prior.updated_at)
+        .eq('data_quality',prior.data_quality)
+        .select('event_id').maybeSingle();
+      if(eventErr||!rejected)throw new Error('ORIGINAL_WRAPPED_SOURCE_EVENT_QUARANTINE:'+
+        (eventErr?.message||'CONCURRENT_REVISION'));
+    }
+    const evidence={...(a.evidence||{}),relationship_source_candidate:null,
+      public_research_execution:{
+        ...(a.evidence?.public_research_execution||{}),
+        source_url:null,rejected_source_url:source,
+        reason:'NO_VERIFIED_SOURCE_IN_BOUNDED_ORIGINAL_SEARCH',
+        source_redirect_rejected:true,no_current_trigger_evidence:true,
+        provider:'dataforseo-serp',researched_at:observedAt,
+        next_research_at:next,external_outreach_executed:false,evidence_only:true
+      }};
+    const {data:saved,error:sErr}=await db.from('powerhouse_sales_actions')
+      .update({status:'waiting',due_at:next,source_url:'',evidence,updated_at:observedAt})
+      .eq('action_id',a.action_id).eq('status','done')
+      .eq('updated_at',a.updated_at).select('action_id').maybeSingle();
+    if(sErr)throw new Error('ORIGINAL_WRAPPED_SOURCE_SAFE_RETRY:'+sErr.message);
+    if(!saved){held++;continue}
+    recovered++;
+    const stale=owner.evidence?.relationship_source_candidate||{};
+    const {data:ack,error:ackErr}=await db.from('powerhouse_sales_actions')
+      .update({evidence:{...(owner.evidence||{}),
+        relationship_source_candidate:{
+          ...stale,status:'SOURCE_REDIRECT_REJECTED_NOT_VERIFIED',
+          source_page_independently_read:false,freshness_verified:false,
+          message_quality_approved:false,provider_send_authorized:false
+        },relationship_research_feedback:feedback},updated_at:observedAt})
+      .eq('action_id',owner.action_id).eq('updated_at',owner.updated_at)
+      .in('status',['prepared','waiting']).select('action_id').maybeSingle();
+    if(ackErr)throw new Error('ORIGINAL_WRAPPED_SOURCE_OWNER_ACK:'+ackErr.message);
+    if(ack)ownerAcks++;else held++;
+  }
+  return {recovered,owner_acks:ownerAcks,held,original_action_ids_reused:true,
+    external_outreach_executed:false,new_scheduler:false,new_provider_queries:0};
 }
 
 Deno.serve(async(req:Request)=>{
@@ -353,6 +478,7 @@ Deno.serve(async(req:Request)=>{
 
   const observedAt=new Date().toISOString();
   try{
+    const wrappedRecovery=await recoverWrappedOriginalResearchSources(db,observedAt);
     const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions')
       .select('action_id,dedupe_key,person_key,company_key,company_name,person_name,role,priority,evidence')
       .eq('action_type','research_enrichment').eq('channel','internal').in('status',['suggested','prepared','waiting'])
@@ -393,6 +519,7 @@ Deno.serve(async(req:Request)=>{
     }
 
     let researched=0,matched=0,events=0,noEvidence=0,sourceCandidatesReadback=0,noSourceFeedbackReadback=0,deferredOwnerAcks=0;
+    let trackedRedirectsRejected=0;
     let publicEmailSites=freeDomain.sites,publicWorkEmailCandidatesStaged=freeDomain.candidates,publicWorkEmailIngestAcks=freeDomain.ingest_acks,publicEmailSourceUnavailable=0;
     const auth='Basic '+btoa(user+':'+pass);
 
@@ -410,9 +537,11 @@ Deno.serve(async(req:Request)=>{
       if(!res.ok||Number(body?.status_code||0)!==20000) throw new Error('DATAFORSEO_HTTP_'+res.status);
       const items=Array.isArray(body?.tasks?.[0]?.result?.[0]?.items)?body.tasks[0].result[0].items:[];
       const organic=items.filter((x:any)=>x?.type==='organic').slice(0,10);
+      const directOrganic=organic.filter((x:any)=>Boolean(directResearchSourceUrl(x?.url)));
+      trackedRedirectsRejected+=organic.length-directOrganic.length;
       // Reuse the SAME already paid-for SERP result; do not buy extra searches,
       // run a parallel contact harvester or grant outbound permission.
-      const publicEmail=await ingestPublicWorkEmail(db,action,organic,observedAt);
+      const publicEmail=await ingestPublicWorkEmail(db,action,directOrganic,observedAt);
       publicEmailSites+=publicEmail.sites;
       publicWorkEmailCandidatesStaged+=publicEmail.stored;
       publicWorkEmailIngestAcks+=publicEmail.receipts;
@@ -420,7 +549,7 @@ Deno.serve(async(req:Request)=>{
       if(publicEmail.status==='NO_EXPLICIT_NAMED_OFFICIAL_MAILTO')publicEmailSourceUnavailable++;
 
       let best:any=null;
-      for(const item of organic){
+      for(const item of directOrganic){
         const title=clean(item?.title),desc=clean(item?.description),link=clean(item?.url);
         const text=[title,desc].join(' ');
         const companyNorm=company.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); const textNorm=[title,desc,link].join(' ').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); if(!companyNorm||!textNorm.includes(companyNorm)) continue;
@@ -457,9 +586,9 @@ Deno.serve(async(req:Request)=>{
           dedupe_key:dedupe,event_type:'relationship_public_research_evidence',source:CONTRACT,
           subject_key:'relationship:'+action.person_key,person_key:action.person_key,company_key:action.company_key,
           occurred_at:observedAt,
-          evidence:{contract:CONTRACT,trigger_type:best.trigger_type,trigger:best.title,headline:best.title,summary:best.summary,source_url:best.url,provider:'dataforseo-serp',vendor_enrichment:false,evidence_only:true},
+          evidence:{contract:CONTRACT,trigger_type:best.trigger_type,trigger:best.title,headline:best.title,summary:best.summary,source_url:best.url,provider:'dataforseo-serp',vendor_enrichment:false,evidence_only:true,source_page_independently_read:false,provider_send_authorized:false},
           context:{person_name:action.person_name,company_name:action.company_name,role:action.role,research_action_id:action.action_id,external_side_effects:false},
-          state:'observed',data_quality:'VERIFIED',confidence
+          state:'observed',data_quality:'UNVERIFIED_SERP_SNIPPET',confidence
         },{onConflict:'dedupe_key'});
         if(eErr) throw new Error('EVENT:'+eErr.message);
         events++;
@@ -522,10 +651,10 @@ Deno.serve(async(req:Request)=>{
     const pendingPublicSource=Number(unresolvedPublicSource||0);
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',
-      status:freeDomainFailure?'fout':(freeDomain.html_unavailable>0||pendingPublicSource>0?'waarschuwing':'ok'),detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}; public_email_html_unavailable=${freeDomain.html_unavailable||0}`,
-      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,free_domain_research:freeDomain,original_public_email_source_retry_backlog:pendingPublicSource,free_domain_error:freeDomainFailure,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false}
+      status:freeDomainFailure?'fout':(freeDomain.html_unavailable>0||pendingPublicSource>0||trackedRedirectsRejected>0||wrappedRecovery.recovered>0?'waarschuwing':'ok'),detail:`researched=${researched}; matched=${matched}; events=${events}; no_evidence=${noEvidence}; public_email_html_unavailable=${freeDomain.html_unavailable||0}`,
+      gegevens:{contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,free_domain_research:freeDomain,original_public_email_source_retry_backlog:pendingPublicSource,free_domain_error:freeDomainFailure,tracked_serp_redirects_rejected:trackedRedirectsRejected,wrapped_original_source_recovered:wrappedRecovery,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false}
     });
-    return json({ok:!freeDomainFailure,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,original_public_email_source_retry_backlog:pendingPublicSource,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
+    return json({ok:!freeDomainFailure,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,source_candidates_writeback:sourceCandidatesReadback,no_source_owner_acks:noSourceFeedbackReadback,deferred_owner_acks:deferredOwnerAcks,public_email_sites_checked:publicEmailSites,public_work_email_candidates_staged:publicWorkEmailCandidatesStaged,public_email_source_ingest_acks:publicWorkEmailIngestAcks,public_email_unavailable:publicEmailSourceUnavailable,original_public_email_source_retry_backlog:pendingPublicSource,tracked_serp_redirects_rejected:trackedRedirectsRejected,wrapped_original_source_recovered:wrappedRecovery,public_email_consumer_processed:'NOT_PROVEN',vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
     try { await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT}}); } catch { /* best-effort failure telemetry */ }

@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|innovation|same-workflow-idempotent-intake-recovery|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original protected daily learning workflow has a correct one-run-per-UTC-day admission fence. An original source-bound agent intake pre-review repair merged after the day's first run, so a normal workflow_dispatch would be suppressed; a full second run would duplicate unrelated learning work and violates original daily-executor exclusivity.",
+  "scope": "Exactly same original .github/workflows/powerhouse-daily-self-evolution.yml GitHub Actions definition, original Brain source audit and original pre-review CAS script.",
+  "evidence": {
+    "original_run_id": 43706613811,
+    "observed_date": "2026-11-15",
+    "original_daily_run_created_utc": "2026-11-15T10:58:17Z",
+    "original_pr_merged": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5847",
+    "original_postmerge_sha": "d91da1088ed4827d0ec9489c7a6120f8b1802126",
+    "original_candidate_total": 14,
+    "consumer_acks_verified": 0,
+    "delivery_complete": false
+  },
+  "remediation": {
+    "scoped_existing_workflow_dispatch": true,
+    "normal_admission_fence_preserved": true,
+    "original_scripts_reused": true,
+    "same_concurrency_group": true,
+    "manual_only": true,
+    "no_new_scheduler": true,
+    "no_parallel_publisher": true,
+    "only_review_writeback": true,
+    "no_fake_consumer_ack": true
+  },
+  "regression": "tests/brain-original-innovation-same-workflow-resume-20261115.test.mjs",
+  "next_action": "Protected Required/CodeQL/Netlify pass on exact PR head, merge via original protected main, dispatch exactly one original existing Powerhouse Daily Self Evolution workflow with execution_scope=original_intake_recovery. Independently verify provider run ID, original source-bound review CAS receipts and same source owner/SHA. Leave 14 obligations open until real authorized Engineering/CRO implementation, independent production effect and Heartbeat receipt.",
+  "follow_up": "Do not use recovery scope for standard daily scheduling; blocked sources or version conflicts must leave existing original operations unchanged. Never assert full innovation success from review-only evidence.",
+  "compiler": {
+    "failure_class": "ORIGINAL_DAILY_ADMISSION_REPLAY_BARRIER",
+    "scope": "INNOVATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-innovation-same-workflow-resume-20261115.test.mjs",
+      "tests/brain-innovation-original-agent-pre-review-20261115.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "POST_MERGE_ORIGINAL_INTAKE_REVIEW_NOT_RUN_DUE_TO_DAILY_FENCE",
+    "cause": "Correct single daily-run admission suppresses another full daily run; original source-bound post-merge pre-review requires an explicitly scoped one-time resume without replaying other daily work",
+    "prevention_rule": "Original workflow supports manual recovery scope while preserving standard admission, original concurrency and native source-bound CAS; only existing original review source executes with independent readback",
+    "regression_guard": "tests/brain-original-innovation-same-workflow-resume-20261115.test.mjs",
+    "next_owner": "Original Powerhouse Daily Self Evolution / Reliability and original Engineering/CRO owner",
+    "effect_proof": "SOURCE_CANDIDATE_AWAITING_EXACT_CI_AND_ORIGINAL_WORKFLOW_RUN"
+  }
+}

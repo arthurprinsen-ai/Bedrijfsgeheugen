@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|linkedin|personal-observation-truncated-source-spinning|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original Powerhouse personal source materializer / content orchestrator",
+  "status": "SOURCE_CANDIDATE",
+  "failure_class": "CLASSIFIER_GAP",
+  "scope": "CONTENT",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 6,
+    "security_sensitive": false
+  },
+  "root_cause": "An externally verified personal observational source can contain only a 143-character trailing-ellipsis excerpt. validPersonalSource checked identity and link metadata, but not completeness; generation is asked for 130–200 grounded words and repeatedly fails final truth.",
+  "prevention_rule": "Fail closed before AI generation for observational sources with <240 characters or trailing ellipsis, missing HTTPS direct source, or unparseable published/observed timestamps. Keep same original source owner and obligation, select only an independently complete alternate; do not bypass provider/identity/uniqueness.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_recommendation_id": "6418326b-bded-487d-b1dd-1ec22ea0af66",
+    "source_length": 143,
+    "ends_with_ellipsis": true,
+    "original_obligation_date": "2026-11-15",
+    "channel": "linkedin_personal",
+    "observed_generation_attempts": 6,
+    "generation_failure": "PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED",
+    "provider_post_id": null,
+    "regression_test": "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
+  },
+  "acceptance": [
+    "Exact-head GitHub Required+CodeQL",
+    "Protected merge and original Supabase GitOps source attestation",
+    "Original agent only source-complete selection and quality review",
+    "Independent LinkedIn post id + GET",
+    "ONE BRAIN named consumer PROCESSED",
+    "Heartbeat measured learning"
+  ],
+  "false_green_forbidden": true,
+  "new_executor": false
+}

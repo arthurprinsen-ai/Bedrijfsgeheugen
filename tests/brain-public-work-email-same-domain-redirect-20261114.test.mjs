@@ -7,7 +7,8 @@ function publicPageReader(fakeFetch){
  const begin=source.indexOf('async function readBoundedPublicPage(');
  const end=source.indexOf('async function writePublicBusinessSourceReceipt(',begin);
  assert.ok(begin>=0&&end>begin,'original existing worker remains source owner');
- const js=source.slice(begin,end).replace('url:string):Promise<string|null>','url)')
+ const js=source.slice(begin,end).replace('url:string,sourceDiagnostics:string[]=[]):Promise<string|null>','url,sourceDiagnostics=[])')
+   .replace('const record=(code:string):null=>','const record=code=>')
    .replace('chunks:Uint8Array[]=[]','chunks=[]');
  return new Function('fetch','AbortSignal','URL','TextDecoder','Uint8Array',
    js+'\nreturn readBoundedPublicPage;')(fakeFetch,AbortSignal,URL,TextDecoder,Uint8Array);
@@ -51,9 +52,27 @@ test('source worker uses Amsterdam business day and three capped first-party URL
  assert.match(source,/url:'https:\/\/'\+domain\+'\/team'/);
  assert.match(source,/url:'https:\/\/'\+domain\+'\/contact'/);
  assert.match(source,/url:'https:\/\/'\+domain\+'\/'/);
- assert.match(source,/public_email_source_status:result\.status/);
+ assert.match(source,/public_email_source_status:sourceStatus/);
+ assert.match(source,/SOURCE_HTML_TRUNCATED_UNVERIFIED/);
  assert.match(source,/public_email_next_attempt_at/);
  assert.match(source,/FIRST_PARTY_RESEARCH_DISPOSITION_ACK/);
  assert.match(source,/originalFirstPartyDomainCandidatePass\(db,observedAt\)/);
  assert.doesNotMatch(source,/cron\.schedule\s*\(|GMAIL_SEND_EMAIL|APOLLO_PEOPLE_ENRICHMENT|HUNTER_EMAIL_FINDER/i);
+});
+
+test('failed official public fetch exposes only bounded diagnostic category, never follows unsafe host',async()=>{
+ const seen=[],diagnostics=[];
+ const reader=publicPageReader(async url=>{
+  seen.push(String(url));
+  return new Response(null,{status:403});
+ });
+ assert.equal(await reader('https://acmeresearch.com/team',diagnostics),null);
+ assert.deepEqual(diagnostics,['SOURCE_ACCESS_DENIED_OR_RATE_LIMITED']);
+ assert.equal(seen.length,1);
+ const bad=[];
+ const safeReader=publicPageReader(async()=>new Response(null,{status:301,headers:{location:'https://attacker.example/secret'}}));
+ assert.equal(await safeReader('https://acmeresearch.com/team',bad),null);
+ assert.deepEqual(bad,['REDIRECT_UNSAFE_OR_CROSS_HOST']);
+ const sourceReader=source.slice(source.indexOf('async function readBoundedPublicPage('),source.indexOf('async function writePublicBusinessSourceReceipt'));
+ assert.doesNotMatch(sourceReader,/catch\(error:any\)/);
 });

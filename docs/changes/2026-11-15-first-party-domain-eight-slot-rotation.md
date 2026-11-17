@@ -1,0 +1,17 @@
+# P0 #4198 — eight-slot first-party source rotation (15 November 2026)
+
+## Production evidence / cause
+The existing Powerhouse graph held 23,295 contacts and 605 already-known email addresses; 22,690 did not have a canonical address. A source-bound candidate and #138/ONE BRAIN/Heartbeat safe-review handoff existed, but was explicitly not verified for deliverability/permission. Ten historic first-party page actions remained `SOURCE_HTML_UNAVAILABLE` under the original #116 research owner. Of known corporate address domains, at least 85 companies had one or more other contacts with missing email addresses.
+
+The original `powerhouse-relationship-public-research` first-party selection reserved eight new research slots/day but started from `(UTC day number) % number of companies`. That moves the cohort **only one company per day**; at stable membership, seven of eight company positions repeat the next day. Repeated inaccessible HTML therefore consumed most of the next day's research slots; other eligible domains were not attempted promptly. A technical daily graph refresh is not source acquisition.
+
+## One original producer, no parallel side effects
+The original Edge imports the pure `firstPartyDailyRotationOffset` from its existing public-source evidence module. The offset advances **8 positions per Amsterdam calendar date**, subject to the unchanged maximum eight original first-party actions/day, original person/company/daily dedupe and existing due-only replay. Candidate list and attempt selection are stable and bounded. Existing retries/records are never deleted, silently greened or rewritten to new identities. Readback telemetry on original `bg_gezondheid` gains candidate company count, rotation step and offset, alongside actual source status. Nothing changes to existing paid SERP calls, provider identities, approval/suppression, `bg_connecties.email`, email-sender or scheduling.
+
+With a stable list of 85 candidate companies, 80 different positions are tested across ten successive dates and all 85 within eleven; if source pages are inaccessible or contain no explicitly named work mailto, zero newly verified emails remains the **correct measured outcome**. No scraping, fabricated addresses, email consent, automatic outbound or false FULL_GREEN.
+
+## Assurance & acceptance
+- Regression: `tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs` proves 8-slot cohort rotation, same-day determinism, 85/11-day coverage and preserved source/no-send gates.
+- Release: protected exact-head Required, backend/BRAIN as applicable, CodeQL and native provider preview; merge via existing main CI/CD only, deploy the existing Edge (no second worker).
+- Production readback: original Edge version and source SHA match protected main; observe next natural #116 output with `candidate_company_domains`, `rotation_step=8`, `rotation_offset`, nonduplicate original action IDs and unchanged opt-out safeguards. Old ten unreadable-source retries remain explicitly tracked with next due or terminal reason. Verify source → #138 → ONE BRAIN → commercial Heartbeat/owner, never infer it from HTTP 200.
+- Closure: actual independently sourced and verified new contact email, lawful contact assessment, independent provider-ID/readback for any authorized send, outcome, and learning. Keep original commercial issue [#4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198) OPEN until demonstrated; rotation is one performance repair only.

@@ -76,6 +76,14 @@ jobs:
           const brainRuntimeAuthProofRequired=requiresBrainRuntimeAuthenticatedProof(changedPaths);
           const readbackControlPlaneOnly=changedPaths.length>0 && runtimeChangedPaths.length===0;
           const readbackWorkflowChanged=changedPaths.includes('.github/workflows/production-release-readback.yml');
+          // Same original deploySucceeded signed Identity proof; enforce its
+          // bounded innovation admin readback only for relevant live changes.
+          const innovationAdminProofRequired=changedPaths.some(path=>[
+            'platform/portal/powerhouse-existing-integration-read-model.mjs',
+            'netlify/functions/powerhouse-control-plane.mjs',
+            'platform/api/portal-authenticated-production-proof-core.mjs',
+            'netlify/functions/portal-authenticated-production-proof.mjs',
+          ].includes(path));
 
           let routes=[];
           let riskLane='not-applicable';
@@ -94,6 +102,7 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`website_required=${websiteRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`portal_required=${portalRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`brain_runtime_auth_proof_required=${brainRuntimeAuthProofRequired}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`innovation_admin_proof_required=${innovationAdminProofRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`browser_required=${browserRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
           const deployEvidence=classifyNetlifyDeploymentEvidence({applicability,headSha:process.env.GITHUB_SHA});
@@ -189,6 +198,7 @@ jobs:
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
           EXPECTED_DEPLOY_ID: ${{ steps.deploy.outputs.deploy_id }}
+          INNOVATION_ADMIN_PROOF_REQUIRED: ${{ steps.scope.outputs.innovation_admin_proof_required }}
         run: |
           set -euo pipefail
           proof_url="https://www.bedrijfsgeheugen.nl/api/portal-authenticated-production-proof?sha=${EXPECTED_COMMIT}"
@@ -201,7 +211,7 @@ jobs:
               -o live-portal-authenticated-proof.json; then
               if EXPECTED_COMMIT="${EXPECTED_COMMIT}" EXPECTED_DEPLOY_ID="${EXPECTED_DEPLOY_ID}" node --input-type=module - <<'NODE'
           import {readFile} from 'node:fs/promises';
-          import {assertOneLoopProductionReleaseProof} from './platform/api/portal-authenticated-production-proof-core.mjs';
+          import {assertOneLoopProductionReleaseProof,assertOriginalInnovationProductionReleaseProof} from './platform/api/portal-authenticated-production-proof-core.mjs';
           const text=await readFile('live-portal-authenticated-proof.json','utf8');
           const proof=JSON.parse(text);
           if(proof?.contract!=='PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1')throw new Error('Authenticated Portal proof contract mismatch');
@@ -214,6 +224,10 @@ jobs:
           if(proof?.payload_shape_verified!==true)throw new Error('Authenticated Portal proof did not verify response shape');
           if(proof?.synthetic_user_cleanup!=='DELETED')throw new Error('Authenticated Portal proof did not clean up synthetic user');
           const oneLoopProof=assertOneLoopProductionReleaseProof(proof); // 15 genuine loops may remain RED/AMBER
+          const innovationProof=process.env.INNOVATION_ADMIN_PROOF_REQUIRED==='true'
+            ? assertOriginalInnovationProductionReleaseProof(proof):null;
+          // Internal immutable source coverage is NOT original agent ACK,
+          // external provider delivery or paid outcome.
           if(/access_token|refresh_token|password|authorization|@proof\.invalid/i.test(text))throw new Error('Authenticated Portal proof leaked secret or synthetic identity material');
           console.log(JSON.stringify({
             contract:proof.contract,
@@ -231,6 +245,16 @@ jobs:
             one_loop_overall_status:oneLoopProof.overallStatus,
             one_loop_nonadmin_denied:oneLoopProof.nonadminDenied,
             one_loop_unauthenticated_denied:oneLoopProof.unauthenticatedDenied,
+            original_innovation_proof:innovationProof?'ORIGINAL_SIGNED_ADMIN_SOURCE_PROVEN':'NOT_REQUIRED_BY_CHANGE_SCOPE',
+            original_innovation_counts:innovationProof?{
+              events:innovationProof.events,
+              historical_writer_backed:innovationProof.historical_writer_backed,
+              unsupported:innovationProof.unsupported,
+              currently_not_done:innovationProof.currently_not_done,
+              external_provider_proven:false,
+              original_agent_consumer_ack_proven:false,
+              revenue_proven:false
+            }:null,
           }));
           NODE
               then
@@ -347,6 +371,15 @@ jobs:
           --routes-json '${{ steps.scope.outputs.routes }}'
           --routes-ok '${{ steps.scope.outputs.browser_required != 'true' || (steps.routes.outcome == 'success' && steps.pricing.outcome == 'success') }}'
           --output .artifacts/production-release-readback.json
+      - name: Reconcile protected original innovation code release into SAME ONE BRAIN operation
+        if: ${{ success() && steps.scope.outputs.deployment_required == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node --test tests/brain-innovation-original-code-production-receipt-20261115.test.mjs
+          node scripts/brain/innovation-original-code-production-receipt.mjs --record
       - name: Capture production readback failure as Brain learning evidence
         if: failure()
         env:

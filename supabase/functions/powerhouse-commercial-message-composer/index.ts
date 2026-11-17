@@ -161,36 +161,43 @@ async function generate(db:any,anthropicKey:string,anthropicModel:string,action:
 // is required before any held item reaches generation.
 async function originalVerifiedSourceHeldCandidates(db:any,limit:number,channels:string[],actionIds:string[],now:string){
   if(channels.length&&!channels.some(c=>['email','e-mail'].includes(c)))return [];
-  let q=db.from('powerhouse_commercial_message_plan_v1').select('*')
-    .eq('status','waiting')
-    .contains('evidence',{execution_gate:{reason:'SOURCE_SPECIFIC_EVIDENCE_REQUIRED'}})
-    .order('priority',{ascending:false}).limit(50);
-  if(channels.length)q=q.in('channel_norm',channels);
-  if(actionIds.length)q=q.in('action_id',actionIds);
-  const{data:waiting,error}=await q;
-  if(error)throw new Error('ORIGINAL_HELD_PLAN_READ:'+error.message);
+  // A fixed top-50 can starve source-ready held actions forever behind
+  // older unsourced items. Scan a capped, stable original-view window across
+  // pages; no new sender, action, scheduler or provider call is introduced.
   const resumed:any[]=[];
-  for(const action of waiting||[]){
-    if(!clean(action?.action_id)||!clean(action?.person_key)||!clean(action?.company_key))continue;
-    const{data:research,error:researchErr}=await db.from('powerhouse_sales_actions')
-      .select('action_id,status,person_key,company_key,source_url,executed_at,evidence')
-      .eq('dedupe_key','relationship-research:outreach-source:'+action.action_id)
-      .eq('action_type','research_enrichment').eq('channel','internal')
-      .eq('person_key',action.person_key).eq('company_key',action.company_key)
-      .eq('status','done').maybeSingle();
-    if(researchErr)throw new Error('ORIGINAL_HELD_RESEARCH_READ:'+researchErr.message);
-    const sourceUrl=clean(research?.evidence?.public_research_execution?.source_url);
-    if(!sourceUrl)continue;
-    const{data:news,error:newsErr}=await db.from('bg_bedrijfsnieuws')
-      .select('url,bedrijf,titel,haak,over_dit_bedrijf,afgewezen_reden,zekerheid,gepubliceerd_op,opgehaald_op')
-      .eq('url',sourceUrl).eq('over_dit_bedrijf',true)
-      .order('opgehaald_op',{ascending:false}).limit(1).maybeSingle();
-    if(newsErr)throw new Error('ORIGINAL_HELD_NEWS_READ:'+newsErr.message);
-    // Contract verifies original action ID, person/company keys, provider
-    // source URL, confidence, freshness and rejection status. No consent inferred.
-    const verified=sourceVerifiedComposerHandoff(action,research,news,now);
-    if(verified)resumed.push(verified);
-    if(resumed.length>=limit)break;
+  const pageSize=50,maxPages=4;
+  for(let page=0;page<maxPages&&resumed.length<limit;page++){
+    let q=db.from('powerhouse_commercial_message_plan_v1').select('*')
+      .eq('status','waiting')
+      .contains('evidence',{execution_gate:{reason:'SOURCE_SPECIFIC_EVIDENCE_REQUIRED'}})
+      .order('priority',{ascending:false}).order('action_id',{ascending:true})
+      .range(page*pageSize,(page+1)*pageSize-1);
+    if(channels.length)q=q.in('channel_norm',channels);
+    if(actionIds.length)q=q.in('action_id',actionIds);
+    const {data:waiting,error}=await q;
+    if(error)throw new Error('ORIGINAL_HELD_PLAN_READ:'+error.message);
+    for(const action of waiting||[]){
+      if(!clean(action?.action_id)||!clean(action?.person_key)||!clean(action?.company_key))continue;
+      const{data:research,error:researchErr}=await db.from('powerhouse_sales_actions')
+        .select('action_id,status,person_key,company_key,source_url,executed_at,evidence')
+        .eq('dedupe_key','relationship-research:outreach-source:'+action.action_id)
+        .eq('action_type','research_enrichment').eq('channel','internal')
+        .eq('person_key',action.person_key).eq('company_key',action.company_key)
+        .eq('status','done').maybeSingle();
+      if(researchErr)throw new Error('ORIGINAL_HELD_RESEARCH_READ:'+researchErr.message);
+      const sourceUrl=clean(research?.evidence?.public_research_execution?.source_url);
+      if(!sourceUrl)continue;
+      const{data:news,error:newsErr}=await db.from('bg_bedrijfsnieuws')
+        .select('url,bedrijf,titel,haak,over_dit_bedrijf,afgewezen_reden,zekerheid,gepubliceerd_op,opgehaald_op')
+        .eq('url',sourceUrl).eq('over_dit_bedrijf',true)
+        .order('opgehaald_op',{ascending:false}).limit(1).maybeSingle();
+      if(newsErr)throw new Error('ORIGINAL_HELD_NEWS_READ:'+newsErr.message);
+      // No company-news source or failed independent verification => HOLD.
+      const verified=sourceVerifiedComposerHandoff(action,research,news,now);
+      if(verified)resumed.push(verified);
+      if(resumed.length>=limit)break;
+    }
+    if((waiting||[]).length<pageSize)break;
   }
   return resumed;
 }

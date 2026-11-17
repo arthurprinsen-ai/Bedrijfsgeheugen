@@ -67,6 +67,30 @@ test('a different query is never itself accepted as a fresh source or publishing
 
 });
 
+test('Mira quote search targets independent dated customer friction, not vendor-release wording',()=>{
+ assert.equal(MIRA_SOURCE_ALTERNATE_QUERIES['offertes-zonder-opvolging'],'ondernemers offertes opvolgen');
+ assert.equal(MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES['offertes-zonder-opvolging'],
+   'offerte blijft liggen klanten');
+ assert.equal(MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES['offertes-zonder-opvolging'],
+   'offerte geen reactie ondernemer');
+ let alternates=0,distinct=0;
+ for(let n=0;n<180;n++){
+  const date=new Date(Date.UTC(2026,10,1+n)).toISOString().slice(0,10);
+  const q=rotateDistinctMiraQueries(date,selectCanonicalRadarSourceQueries(date));
+  assert.equal(q.length,8);
+  assert.equal(q.filter(x=>x.channel==='instagram_company').length,6);
+  assert.equal(q.filter(x=>x.channel==='linkedin_personal').length,2);
+  assert.equal(new Set(q.map(x=>x.query)).size,8);
+  assert.equal(q.some(x=>x.query==='ondernemers offertes opvolgen'),false);
+  if(q.some(x=>x.query==='offerte blijft liggen klanten'))alternates++;
+  if(q.some(x=>x.query==='offerte geen reactie ondernemer'))distinct++;
+ }
+ assert.ok(alternates>0&&distinct>0);
+ // No relaxation of existing evidence eligibility or media proof gates.
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/classifyMiraSourceUrl\(sourceUrl\)\.ok/);
+});
+
 test('original company concentration query does not fetch broad finance/stock news as an MKB problem',()=>{
  assert.equal(MIRA_SOURCE_ALTERNATE_QUERIES['klantafhankelijkheid'],'ondernemer afhankelijk grote klant',
    'the globally shared canonical queries are never altered here');

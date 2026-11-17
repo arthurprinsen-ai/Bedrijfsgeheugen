@@ -1,0 +1,42 @@
+{
+  "fingerprint": "supabase|source-lock|native-original-commercial-work-email-safe-review-867|20261115-v1",
+  "root_cause": "Native original Supabase production independently applied the protected #5838 original commercial Heartbeat safe-review owner ACK migration 20261115103000, increasing actual applied migration history to 867, while immutable Git main still had 866 recorded version/name pairs. First 866 native/source pairwise records independently matched exactly; the 867th is the sole truly applied extra provider record.",
+  "scope": "ORIGINAL_PROVIDER_VERIFIED_GITOPS_MIGRATION_HISTORY_ONLY",
+  "owner": "existing original Supabase migration-history protected GitOps owner",
+  "prevention_rule": "Source lock may append ONLY the independently verified native applied version/name pair, preserving the exact original 866-pair prefix; never invent ahead migration or apply SQL outside protected GitHub–Supabase promotion. Source lock parity is not a substitute for natural safe commercial owner acknowledgement or lawful outreach proof.",
+  "regression": "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+  "evidence": {
+    "provider_id": "adhjwmvyoixzjtmiroln",
+    "observed_at_utc": "2026-11-15T10:15:28.626Z",
+    "native_count": 867,
+    "source_count_before": 866,
+    "prefix_pair_conflicts": 0,
+    "native_extra_version": "20261115103000",
+    "native_extra_name": "original_public_work_email_commercial_safe_review_ack_v1",
+    "parent_heartbeat_owner_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5838",
+    "source_main_at_cutoff": "f199aeee30762dc8f2b5e491093eed13e71d2eee",
+    "source_review_owner_effect": "NATURAL_HEARTBEAT_PROOF_PENDING_AT_OBSERVATION",
+    "commercial_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "true_external_sends_proven_for_candidate": 0,
+    "release_status": "CANDIDATE_UNTIL_PROTECTED_CHECKS_MERGE_AND_NATIVE_PAIRWISE_READBACK"
+  },
+  "learning_state": "OBSERVED_NOT_CLOSED",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_GITOPS_SOURCE_HISTORY_ONE_BEHIND_867",
+    "scope": "GITOPS_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  }
+}

@@ -3,14 +3,23 @@
 const UUID=/^[a-f\d]{8}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{4}-[a-f\d]{12}$/i;
 const norm=v=>String(v??'').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 const clean=(v,max)=>String(v??'').trim().slice(0,max);
-function safeUrl(value){
+// A provider result's tracked redirect (e.g. google.com/goto) is NOT an
+// independently readable publisher page. Require a direct public HTTPS URL.
+// This is a research-candidate gate only, never deliverability or send authority.
+export function directResearchSourceUrl(value){
  try{
   const u=new URL(String(value||''));
-  if(u.protocol!=='https:'||u.username||u.password||!u.hostname.includes('.')||
-     /^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(1[6-9]|2\d|3[01])\.)/i.test(u.hostname))return null;
+  const host=u.hostname.toLowerCase().replace(/^www\./,'');
+  if(u.protocol!=='https:'||u.username||u.password||!host.includes('.')||
+     u.port&&u.port!=='443'||u.toString().length>2400||
+     /^(localhost|127\.|10\.|192\.168\.|169\.254\.|0\.|172\.(1[6-9]|2\d|3[01])\.)/i.test(host)||
+     ((/^google\.[a-z.]+$/.test(host)||host==='googleadservices.com')&&
+       /^\/(?:goto|url|aclk|search)(?:\/|$)/i.test(u.pathname))||
+     ['t.co','bit.ly','tinyurl.com','ow.ly','lnkd.in','goo.gl'].includes(host))return null;
   return u.toString();
  }catch{return null}
 }
+function safeUrl(value){return directResearchSourceUrl(value)}
 export function researchSourceCandidate(researchAction,best,observedAt){
  const origin=researchAction?.evidence?.original_outreach_action_id;
  if(!UUID.test(String(origin||'')))return null;
