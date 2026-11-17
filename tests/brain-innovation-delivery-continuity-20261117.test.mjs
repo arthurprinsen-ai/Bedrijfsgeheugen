@@ -130,3 +130,47 @@ test('independently proven original consumer ACK is not downgraded and still req
  assert.equal(a.independent_impact_verified,false);
  assert.equal(a.terminal_success,false);
 });
+
+test('historical protected release recorded by original Brain is reconciled across legitimate final PR head',()=>{
+ const f=fixture({pr:true}),finalHead='e'.repeat(40);
+ f.operation.evidence.original_code_candidate_release={
+   contract:'ORIGINAL_INNOVATION_PROTECTED_RELEASE_READBACK_V1',
+   original_candidate_id:id,original_pr_url:f.operation.evidence.original_code_candidate_pr.url,
+   initial_pr_head_sha:head,final_protected_pr_head_sha:finalHead,
+   merge_sha:merge,github_merged:true,protected_ci:'PASSED',
+   independent_release_readback_result:'SUCCESS',
+   implementation_technical_release_verified:true,
+   netlify_state:'READY_CURRENT_PRODUCTION',netlify_deploy_id:'native-deploy-001',netlify_commit_sha:merge
+ };
+ f.operation.evidence.original_code_production_readback={
+   contract:'ORIGINAL_INNOVATION_CODE_RELEASE_INDEPENDENT_READBACK_V1',
+   candidate_id:id,original_operation_id:opId,original_owner:f.operation.capability_id,
+   source_revision:rev,source_sha256:sha,github_pr_final_head:finalHead,
+   github_merge_commit_sha:merge,netlify_deploy_id:'native-deploy-001',
+   netlify_deploy_commit_sha:merge,netlify_context:'production',
+   netlify_deploy_status:'ready',independently_verified_provider_release:true,
+   original_innovation_fully_delivered:false,independent_business_effect_verified:false
+ };
+ const pr=githubPr({state:'MERGED',headRefOid:finalHead,mergeCommit:{oid:merge}});
+ const a=examineOriginalDelivery({...f,githubPr:pr});
+ assert.equal(a.stage,'HISTORICAL_NATIVE_CODE_RELEASE_VERIFIED_EFFECT_MEASUREMENT_DUE');
+ assert.equal(a.historically_verified_code_release,true);
+ assert.equal(a.verified_code_in_production,false,'historic evidence is not a fresh current-deploy GET');
+ assert.equal(a.production_deploy_id,'native-deploy-001');
+ assert.equal(a.independent_impact_verified,false);
+ assert.equal(a.terminal_success,false);
+ const sourceDrift=fixture({pr:true});
+ sourceDrift.operation.evidence.original_code_candidate_release=f.operation.evidence.original_code_candidate_release;
+ sourceDrift.operation.evidence.original_code_production_readback={
+   ...f.operation.evidence.original_code_production_readback,
+   source_sha256:'f'.repeat(64)
+ };
+ assert.equal(examineOriginalDelivery({...sourceDrift,githubPr:pr}).stage,'ORIGINAL_PR_HEAD_CHANGED_REVIEW_DUE');
+ const now=examineOriginalDelivery({...f,githubPr:pr,production:{
+   state:'ready',context:'production',id:'latest-provider-deploy',
+   commit_ref:deploy,current_contains_merge:true
+ }});
+ assert.equal(now.stage,'PRODUCTION_CODE_PRESENT_EFFECT_MEASUREMENT_DUE');
+ assert.equal(now.verified_code_in_production,true);
+ assert.equal(now.terminal_success,false);
+});
