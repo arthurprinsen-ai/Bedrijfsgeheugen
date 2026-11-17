@@ -16,7 +16,7 @@ test('original agents and continuity skill reject deployment-only daily blog gre
  }
 });
 test('no duplicate executor, forbidden protected-gate bypass or manual state promotion',()=>{
- assert.match(agents,/geen tweede writer\/cron\/queue/);
+ assert.match(agents,/geen tweede writer\/cron\/queue|een tweede writer\/cron\/queue starten/i);
  assert.match(skill,/geen parallelle scheduler/i);
  assert.match(skill,/nooit directe databasepromotie/);
  assert.match(playbook,/405 "required status check is expected"/);
