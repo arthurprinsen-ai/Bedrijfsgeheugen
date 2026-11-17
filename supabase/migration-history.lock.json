@@ -3504,8 +3504,12 @@
     {
       "version": "20261117094500",
       "name": "original_result_guardian_existing_watchdog_v1"
+    },
+    {
+      "version": "20261117102500",
+      "name": "original_composer_email_channel_fairness_v1"
     }
   ],
-  "captured_at": "2026-11-17T09:16:03.759162+00:00",
+  "captured_at": "2026-11-17T09:55:01.336147Z",
   "project_ref": "adhjwmvyoixzjtmiroln"
 }
