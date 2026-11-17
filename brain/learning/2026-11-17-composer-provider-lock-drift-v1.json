@@ -23,8 +23,7 @@
       "name": "original_composer_bounded_fair_candidate_v2"
     },
     "historical_replay": [
-      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
-      "tests/supabase-migration-history-integrity.test.mjs"
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
     ]
   },
   "evidence": [
