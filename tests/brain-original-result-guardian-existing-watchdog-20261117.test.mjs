@@ -8,7 +8,7 @@ test('guardian is invoked by the ORIGINAL #171 email watcher, never a new schedu
   assert.match(sql,/BEFORE INSERT ON public\.bg_gezondheid/i);
   assert.match(sql,/powerhouse-email-executor/);
   assert.match(sql,/powerhouse-email-execution-watchdog-v1/);
-  assert.match(sql,/canonical_scheduler','#171');
+  assert.match(sql,/'canonical_scheduler','#171'/);
   assert.doesNotMatch(sql,/cron\.schedule\s*\(|net\.http_post\s*\(|create\s+table/i);
 });
 
