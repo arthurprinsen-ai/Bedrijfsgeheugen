@@ -228,17 +228,25 @@ async function reconcileOriginalPublicationMetricHandoffs(db:any){
  const {data:obs,error}=await db.from('content_publication_obligations')
   .select('tenant_id,publication_date,channel,status,external_id,published_at,live_proven_at,measured_at,learned_at,metrics,updated_at')
   .eq('tenant_id','canonical').eq('status','LIVE_PROVEN')
-  .in('channel',['linkedin_personal','linkedin_company'])
+  .in('channel',['linkedin_personal','linkedin_company','instagram'])
   .gte('publication_date',since).lte('publication_date',localDay())
   .not('live_proven_at','is',null).order('publication_date',{ascending:false}).limit(22);
  if(error)throw new Error('ORIGINAL_METRIC_OBLIGATION_READ:'+error.message);
  let savedCount=0,overdue=0,errors=0;const stages:any[]=[];
  for(const ob of obs||[]){
   const kind=ob.channel==='linkedin_personal'?'canonical':'bedrijfsgeheugen';
-  const {data:posts,error:pe}=await db.from('social_posts')
+  // The SAME original #177 owns all social media metric receipts. For IG,
+  // the identity is numeric Meta media ID plus owned-brand channel kind.
+  // An account aggregate or historical Buffer row never proves a post.
+  let postQuery=db.from('social_posts')
    .select('tenant_id,post_id,external_post_id,channel_kind,published_at')
-   .eq('tenant_id',kind).eq('platform','linkedin')
-   .eq('channel_kind',ob.channel).eq('external_post_id',ob.external_id).limit(2);
+   .eq('tenant_id',kind)
+   .eq('platform',ob.channel==='instagram'?'instagram':'linkedin')
+   .eq('external_post_id',ob.external_id);
+  postQuery=ob.channel==='instagram'
+   ?postQuery.in('channel_kind',['instagram_business','instagram_company'])
+   :postQuery.eq('channel_kind',ob.channel);
+  const {data:posts,error:pe}=await postQuery.limit(2);
   if(pe){errors++;stages.push({day:ob.publication_date,channel:ob.channel,stage:'POST_READ_ERROR'});continue;}
   const post=posts?.[0];
   if(posts?.length!==1){stages.push({day:ob.publication_date,channel:ob.channel,stage:'POST_IDENTITY_NOT_UNIQUE'});continue;}
