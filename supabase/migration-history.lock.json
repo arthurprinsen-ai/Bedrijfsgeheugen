@@ -3500,8 +3500,20 @@
     {
       "version": "20261116110100",
       "name": "personal_linkedin_life_only_producer_v1"
+    },
+    {
+      "version": "20261117094500",
+      "name": "original_result_guardian_existing_watchdog_v1"
+    },
+    {
+      "version": "20261117102500",
+      "name": "original_composer_email_channel_fairness_v1"
+    },
+    {
+      "version": "20261117110000",
+      "name": "original_guardian_news_source_provider_truth_v2"
     }
   ],
-  "captured_at": "2026-11-16T10:07:54.646910Z",
-  "project_ref": "adhjwmvyoixzjtmiroln"
+  "project_ref": "adhjwmvyoixzjtmiroln",
+  "captured_at": "2026-11-17T10:18:40.655Z"
 }
