@@ -12,3 +12,4 @@ Besluit Arthur 17 nov 2026 (Merkrichting Rituals): rust en exclusieve begeerte. 
 - Bewijs lokaal: volledige build op kopie, screenshots voor/na (home, over-ons, prijzen; desktop en mobiel); vier gerelateerde tests groen.
 - Niet bewezen: live-readback, Lighthouse-vergelijking en gedragseffect. Bekend: op mobiel overlapt de WhatsApp-knop de onderbalk licht.
 - Bekende beperking: WhatsApp-knop en onderbalk op mobiel; apart oppakken.
+- Lock-rij 20261117192500 toegevoegd omdat main rood stond.
