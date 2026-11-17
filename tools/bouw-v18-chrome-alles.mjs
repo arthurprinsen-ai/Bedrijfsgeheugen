@@ -279,7 +279,7 @@ if (fouten.length) {
   // Megamenu-contract (V18): menulinks blijven zwart en vet. Inline, omdat
   // het gelinkte stylesheet in de browsercheck van productie komt en dus nog niet de
   // nieuwste versie heeft; zo klopt het contract op dezelfde build.
-  const megamenuContract = '<style data-rb-megamenu>html body header.v17-header a[data-bg-megamenu-link][href],html body header.v17-header a[data-bg-megamenu-link][href] *{color:#000!important;font-weight:700!important}</style>';
+  const megamenuContract = '<style data-rb-megamenu>html body header.v17-header a[data-bg-megamenu-link][href],html body header.v17-header a[data-bg-megamenu-link][href] *{color:#000!important;font-weight:700!important}html body header.v17-header :is(.mega,.bgkop-paneel) h3:not([data-bg-megamenu-heading]){color:#fff!important;font-weight:700!important}</style>';
   const link = '<link rel="stylesheet" href="/assets/rituals-belevenis.css?v=20261117">' + megamenuContract;
   for (const pad of await allePaginas()) {
     let h = await readFile(pad, 'utf8');
