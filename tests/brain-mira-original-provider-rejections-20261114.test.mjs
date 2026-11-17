@@ -22,7 +22,7 @@ test('publication and original independent-source safety gates are untouched',()
     "priorContract && priorContract!==row.metadata.contract",
     "powerhouse_materialize_mira_problem_recommendation_v1",
     "brain_observe_failure",
-    "classifyMiraRadarHttpStatus({sourceReady:allSourceReady,errors})",
+    "classifyMiraRadarHttpStatus({sourceReady:miraBusinessSourceReady,errors})",
     "sendsAuthorized:false"
   ]) assert.ok(source.includes(guard),guard);
   assert.doesNotMatch(source,/cron\.schedule\(|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH|UPDATE content_publication_obligations/i);
