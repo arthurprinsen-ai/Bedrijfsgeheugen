@@ -1,4 +1,6 @@
 ## 17 november 2026 — P0_ORIGINAL_ONE_LOOP_ALL14_AGENTS_20261117 | alle 14 bestaande agents, één Powerhouse–ONE BRAIN–Heartbeat-keten
+**Eerste verplichte werkstap:** lees vóór iedere herstel- of statusactie `docs/brain/groen-draaiboek.md`. De bestaande 15-nov anti-voortijdige-afsluitingsregels blijven ongewijzigd van kracht.
+
 
 **Bindend voor alle bestaande agents, skills, chats en automatiseringen, voor álle originele werkzaamheden en tenants.** De enige oorspronkelijke Agent Fabric bevat exact 14 bestaande `DEFAULT_AGENT_TEAM`-specialisten. Zij erven via `ORIGINAL_ONE_LOOP_ALL_AGENT_TASKS` vier universele, toetsbare verplichtingen: (1) oorspronkelijke eigenaar + `tenant_id`, `source_revision`, `correlation_id`, lease/idempotency; (2) eigenlijke actie→ONE BRAIN **named consumer `PROCESSED`-ACK**; (3) Heartbeat onafhankelijke provider- en outcome-meting→daadwerkelijk toepassen van nieuwe leerregel bij een volgende natuurlijke uitvoering; (4) elke fout naar het **bestaande** ONE BRAIN-register met fingerprint, oorzaak, één eigenaar, bounded retry, regressie en verschuldigde hercontrole. Dit verleent geen extra uitvoerbevoegdheid aan observerende specialisten: source owner/dispatch/publisher/metrics/learning blijven exact bestaande writer/CAS-gates.
 
