@@ -12,7 +12,7 @@ test('original agents and continuity skill reject deployment-only daily blog gre
   assert.match(doc,/LIVE_PROVEN/);
   assert.match(doc,/ONE BRAIN/);
   assert.match(doc,/PROCESSED/);
-  assert.match(doc,/2026-11-17/);
+  assert.match(doc,/2026-11-17|17 november 2026/);
  }
 });
 test('no duplicate executor, forbidden protected-gate bypass or manual state promotion',()=>{
