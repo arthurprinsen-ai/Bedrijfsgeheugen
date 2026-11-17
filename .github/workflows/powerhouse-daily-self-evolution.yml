@@ -239,6 +239,15 @@ jobs:
           node-version: '22'
       - name: Verify original implementation selection and path guards
         run: node --test tests/brain-innovation-original-code-delivery-20261115.test.mjs
+      # Historical quality source evidence is neither current production nor consumer ACK.
+      # Update SAME original 14 operations before selecting any protected code.
+      - name: Verify all-original innovation evidence reconciliation contract
+        run: node --test tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs
+      - name: Reconcile original 14 owner evidence with native Brain CAS and independent GET
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/brain/innovation-original-evidence-reconciliation.mjs --writeback
       - name: Select at most one source-bound original engineering work order
         id: candidate
         env:
