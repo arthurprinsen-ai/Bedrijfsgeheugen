@@ -31,5 +31,22 @@
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5977",
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857"
   ],
-  "unverified": "Independent business effect, customer value, Heartbeat consumer ACK, provider delivered external transaction and full implementation of other 13 original obligations remain OPEN."
+  "unverified": "Independent business effect, customer value, Heartbeat consumer ACK, provider delivered external transaction and full implementation of other 13 original obligations remain OPEN.",
+  "prevention_rule": "For every original innovation with protected historic source evidence and no new Codex-generated PR receipt: resolve the original native merged GitHub PR and run a fresh bounded independent source readback; publish only nonterminal versioned original Brain evidence, NEVER duplicate an already-implemented change or substitute internal events for verified delivery, causal value or Heartbeat ACK.",
+  "evidence": {
+    "original_source_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+    "historical_implementation_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857",
+    "followup_truth_prs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5866",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5879"
+    ],
+    "historical_original_brain_reference": "protected_implementation_source_evidence: ORIGINAL_ENGINEERING_IMPLEMENTATION_EVIDENCE_V1; 165 original SQL internal source events; independent effect false, owner ACK false",
+    "original_continuity_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5977",
+    "negative_test": "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs",
+    "first_required_red": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44168209008",
+    "first_required_red_reason": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning due missing machine prevention/evidence semantic keys; root cause and regression already present; no guard waived",
+    "native_new_release": "NOT_YET_MERGED",
+    "new_live_source_effect": "NOT_YET_PROVEN",
+    "business_outcome": "NOT_PROVEN"
+  }
 }
