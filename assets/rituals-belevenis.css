@@ -100,7 +100,14 @@ html body :focus-visible{outline:2px solid #14171A;outline-offset:3px;border-rad
 ::selection{background:#FFE86B;color:#14171A}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:none}}
 
-/* Megamenu-contract (V18): koppen en menulinks blijven zwart en vet, ook in de Rituals-kop. */
-html body header.v17-header :is(h1,h2,h3,h4,h5,h6,[role="heading"]),
-html body header.v17-header a[data-bg-megamenu-link][href],
-html body header.v17-header a[data-bg-megamenu-link][href] *{color:#000!important;font-weight:700!important}
+/* V18-megamenu: contrast-contract zit op een JS-gemarkeerde menuroot.
+   Die kan buiten header.v17-header staan; behoud daarom dezelfde echte root,
+   gewone links en koppen zonder promokaart of globale nav te overschrijven.
+   Hoge specificiteit voorkomt dat Rituals #14171A de zwarte V18-guard vervangt. */
+html body [data-bg-megamenu-root="true"] [data-bg-megamenu-heading]{
+  color:#000!important;font-weight:800!important
+}
+html body [data-bg-megamenu-root="true"] a[data-bg-megamenu-link][href],
+html body [data-bg-megamenu-root="true"] a[data-bg-megamenu-link][href] *{
+  color:#000!important;font-weight:700!important
+}
