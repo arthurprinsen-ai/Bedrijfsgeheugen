@@ -56,5 +56,11 @@
     "original_post_or_email_already_sent_must_not_be_duplicated": true,
     "original_site_to_cro_handoff_receipt": "OPEN_ORIGINAL_SOURCE_RELEASE_READBACK_GAP"
   },
-  "post_release": "Protected Required+BRAIN+CodeQL, exact current main Netlify READY, independent public crawl of changed pages & full i18n, original ONE BRAIN source and owner consumer ACK; actual email/social provider ID and URLs before mark sent; 7/14/28 day observed effects and CRO learning. Never mark claimed website ranking/visitor improvement from this source change alone."
+  "post_release": "Protected Required+BRAIN+CodeQL, exact current main Netlify READY, independent public crawl of changed pages & full i18n, original ONE BRAIN source and owner consumer ACK; actual email/social provider ID and URLs before mark sent; 7/14/28 day observed effects and CRO learning. Never mark claimed website ranking/visitor improvement from this source change alone.",
+  "prevention": [
+    "Original SEO BG169 must reconcile genuine GSC query-to-page observations before changing content; preserve one original intent owner and exclude provider-navigational generic terms from commercial priority.",
+    "Original commercial landings must contain descriptive, useful buyer-intent headings and a crawlable contextual pillar-to-money link, with truthful commercial CTA, no doorway copy, sitewide NL/EN translation and only accurate modified sitemap lastmod.",
+    "Promote source-backed SEO campaigns through existing authorized LinkedIn, Mira and email owners only; require unique content, genuine authorization and independent provider ID/URL readback before marking dispatched.",
+    "One original Source #175→ONE BRAIN #140→Heartbeat revised consumer SHA plus real GSC/GA4 human visit attribution, CTA, qualified lead, verified order and revenue is needed for measured effect; missing data or stale 175 original site release proof remains OPEN, never false green."
+  ]
 }
