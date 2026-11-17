@@ -881,7 +881,7 @@ Deno.serve(async (req) => {
         let sourceSnapshots:any[]=[];
         if(postIds.length){
           const {data, error:snapshotError}=await db.from('social_metric_snapshots')
-            .select('tenant_id,post_id,data_quality,observed_at,metrics')
+            .select('tenant_id,post_id,source,source_event_id,data_quality,observed_at,metrics')
             .eq('tenant_id','bedrijfsgeheugen').in('post_id',postIds)
             .gte('observed_at',new Date(Date.now()-72*3600000).toISOString())
             .order('observed_at',{ascending:false}).limit(100);
