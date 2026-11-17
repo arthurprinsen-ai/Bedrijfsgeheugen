@@ -1,0 +1,24 @@
+{
+  "fingerprint": "design|rituals|portal-wide-calm-layer|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "agent-reliability",
+  "obligation_id": "design|rituals|portal-wide-calm-layer|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "DESIGN_CONTRAST_REGRESSION", "scope": "UI", "machine_enforceable": false, "repeat_count": 2, "security_sensitive": false},
+  "root_cause": "Een globale stijllaag zette knoppen om zonder expliciete tekstkleur; donkere tekst op donkere achtergrond (eerder ook op de scan-titel in de donkere sidebar).",
+  "correction": "Elke achtergrond die de laag zet krijgt in dezelfde regel een expliciete tekstkleur; schermcontrole van de uitgelogde schil voor en na.",
+  "prevention": [
+    "Zet bij elke achtergrondwijziging in dezelfde regel ook de tekstkleur.",
+    "Controleer na elke globale stijllaag desktop en mobiel met een screenshot voordat je pusht."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs"],
+    "canary": ["tests/seo-homepage-context-slider-readability.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs", "tests/seo-homepage-context-slider-readability.test.mjs"],
+    "source": ["portal-v2/rituals-portaal.css"],
+    "outcome": "Lokaal: schermen voor/na en portaaltests groen. Live-readback en ingelogde weergaven open."
+  }
+}
