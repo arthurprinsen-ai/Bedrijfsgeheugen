@@ -49,3 +49,10 @@ test('the user-approved candidate remains subject to original composer and Gmail
   assert.doesNotMatch(sql,/set\s+.+human_approved/i);
   assert.doesNotMatch(sql,/disable|alter\s+job|unschedule/i);
 });
+
+test('clean-room preview has explicit dependency-missing classification, while production executes unchanged source SQL',()=>{
+  assert.match(sql,/to_regclass\('public\.powerhouse_commercial_message_plan_v1'\) IS NULL/);
+  assert.match(sql,/ORIGINAL_COMPOSER_PREVIEW_DEPENDENCY_MISSING/);
+  assert.match(sql,/ELSE[\s\S]*EXECUTE \$original_source\$[\s\S]*CREATE OR REPLACE FUNCTION/);
+  assert.match(sql,/Original production SQL readback mandatory/);
+});
