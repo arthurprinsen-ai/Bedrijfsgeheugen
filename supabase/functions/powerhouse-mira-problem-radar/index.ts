@@ -163,6 +163,12 @@ Deno.serve(async(req:Request)=>{
      continue;
    }
    const personalTopic=channel==='linkedin_personal'?classifyObservationalPersonalSource({topic:personalQueryTopic,title,excerpt}):null;
+   // The two personal source slots must never be reclassified into a Mira business
+   // signal just because a rejected life-context article mentions a PH-P word.
+   if(channel==='linkedin_personal'&&!personalTopic){
+     reject('PERSONAL_SOURCE_NOT_OBSERVATIONAL_CONTEXT',q,sourceUrl,title);
+     continue;
+   }
    // Original provider text must support the final 150-word factual narrative.
    const personalSourceTextComplete=!personalTopic || (
      excerpt.trim().length>=240
@@ -174,8 +180,10 @@ Deno.serve(async(req:Request)=>{
    // Do not leak unsupported public signals to the Instagram winner or personal publisher.
    if(!problemTopic||(!personalTopic&&!portalProblemId)){reject('NO_CANONICAL_TOPIC_MATCH',q,sourceUrl,title);continue}
    const all=(title+' '+excerpt).toLowerCase();
-   const complaint=channel==='instagram_company'
-     ?classifyMiraBusinessFriction({title,excerpt}).frictionScore
+   const businessEvidence=channel==='instagram_company'
+     ?classifyMiraBusinessFriction({title,excerpt}):null;
+   const complaint=businessEvidence
+     ?businessEvidence.frictionScore
      :/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
    // Recognition is validated differently per lane: a real matched daily-life
    // source should not need entrepreneur vocabulary to reach the SAME 0.72 floor.
@@ -188,7 +196,7 @@ Deno.serve(async(req:Request)=>{
    const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&personalSourceTextComplete&&(Boolean(portalProblemId)||Boolean(personalTopic)),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,source_context_provider:x.contentProvider||sr.provider,source_date_provider:x.dateProvider||sr.provider,source_identity_contract:'canonical_https_hostname_path_v1',provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),source_text_complete_verified:personalTopic?personalSourceTextComplete:null,first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&personalSourceTextComplete&&(Boolean(portalProblemId)||Boolean(personalTopic))&&(businessEvidence?.admissible!==false),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,source_context_provider:x.contentProvider||sr.provider,source_date_provider:x.dateProvider||sr.provider,source_identity_contract:'canonical_https_hostname_path_v1',provider_score:x.score??null,business_friction_contract:businessEvidence?.contract||null,business_source_admissible:businessEvidence?.admissible??null,business_source_admission_reason:businessEvidence?.reason||null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),source_text_complete_verified:personalTopic?personalSourceTextComplete:null,first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
    // Existing source_url is globally unique, but personal and Mira contracts MUST
    // never overwrite each other's previously collected evidence or frozen lineage.
    const prior=await db.from('powerhouse_mira_problem_signals_v1').select('metadata').eq('source_url',sourceUrl).maybeSingle();
@@ -200,7 +208,7 @@ Deno.serve(async(req:Request)=>{
      continue;
    }
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
-   stored++; if(row.eligible) eligible++; else reject(!personalSourceTextComplete?'PERSONAL_OBSERVATIONAL_SOURCE_TEXT_INCOMPLETE':'FAILED_SCORE_OR_VERIFIED_DATE_GATE',q,sourceUrl,title);
+   stored++; if(row.eligible) eligible++; else reject(businessEvidence?.admissible===false?'VENDOR_ANNOUNCEMENT_NOT_OBSERVED_OPERATIONAL_FRICTION':!personalSourceTextComplete?'PERSONAL_OBSERVATIONAL_SOURCE_TEXT_INCOMPLETE':'FAILED_SCORE_OR_VERIFIED_DATE_GATE',q,sourceUrl,title);
    if(personalTopic){personalStored++;if(row.eligible)personalEligible++;}
   }
  }
