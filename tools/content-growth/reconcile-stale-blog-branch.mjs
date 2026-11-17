@@ -10,10 +10,10 @@ export function eligibleStaleBlogPrs(pulls,today,repository,maxAgeDays=14){
  const todayMs=Date.parse(today+'T12:00:00Z');
  return (Array.isArray(pulls)?pulls:[]).filter(pr=>{
   const m=BRANCH_RE.exec(String(pr?.head?.ref||''));
-  if(!m||pr.state!=='open'||pr.base?.ref!=='main'||pr.head?.repo?.full_name!==repository)return false;
+  if(!m||pr.state!=='open'||pr.draft===true||pr.base?.ref!=='main'||pr.head?.repo?.full_name!==repository)return false;
   const age=(todayMs-Date.parse(m[1]+'T12:00:00Z'))/MS_DAY;
   return Number.isInteger(age)&&age>=1&&age<=maxAgeDays;
- }).sort((a,b)=>b.head.ref.localeCompare(a.head.ref));
+ }).sort((a,b)=>a.head.ref.localeCompare(b.head.ref));
 }
 export function branchRecoveryDecision(pr,branch,repository){
  if(!pr||pr.state!=='open'||pr.base?.ref!=='main'||pr.head?.repo?.full_name!==repository||pr.head?.ref!==branch||!/^[0-9a-f]{40}$/.test(String(pr.head?.sha||'')))return 'REJECT_IDENTITY_MISMATCH';
