@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|release|provider-applied-migration-lock-new-876th-entry-missing|20261117-v1",
+  "obligation_id": "powerhouse|release|provider-history-876th-entry-readback|20261117-v1",
+  "owner": "existing protected Supabase Migration Authority / original GitHub Required gate",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_MIGRATION_LOCK_DRIFT",
+    "scope": "DEPLOYMENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-migration-history-integrity.test.mjs",
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ]
+  },
+  "root_cause": "An authorized migration original_result_guardian_existing_watchdog_v1 version 20261117094500 was already present in GitHub SQL and applied to original production Supabase, but source migration-history.lock.json still held 875 previous versions. Original protected Required gate rejected unrelated Mira source PR #5942 due to 876 executable migrations versus 875 lock rows.",
+  "prevention": "Before every protected PR, compare entire immutable provider migration history with GitHub lock + executable SQL, append ONLY provider-confirmed version/name records. Do not forge version, edit migration SQL after apply, suppress integrity test, or bypass branch protection.",
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+    "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+  ],
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_sql": "SELECT version,name FROM supabase_migrations.schema_migrations ORDER BY version",
+    "previous_875_exact_identity_parity": true,
+    "provider_applied_count": 876,
+    "git_lock_before": 875,
+    "exact_missing": {
+      "version": "20261117094500",
+      "name": "original_result_guardian_existing_watchdog_v1"
+    },
+    "provider_observed_utc": "2026-11-17T09:15:50.724Z",
+    "original_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44053428555"
+  },
+  "outcome": "LOCK_SOURCE_CANDIDATE_ONLY_UNTIL_PROTECTED_MERGE_AND_REQUIRED_SUCCEEDED",
+  "next_action": "Protected migration integrity replay on PR then merge with strict branch protection, rebase original Mira source PR #5942 and prove provider exact Edge source release. This is not Meta or customer conversion proof."
+}
