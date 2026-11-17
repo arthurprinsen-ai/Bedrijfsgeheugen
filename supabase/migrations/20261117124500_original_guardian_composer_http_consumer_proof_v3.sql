@@ -1,7 +1,5 @@
--- P0 #4198 original one-loop Result Guardian v3.
--- Read actual original #116 commercial heartbeat -> pg_net HTTP provider ACK.
--- Do NOT treat scheduled/dispatched as consumer PROCESSED or Gmail SENT.
--- No new trigger, cron, transport, provider retry or permission bypass.
+-- P0 #4198: extend the original #171 Result Guardian with exact
+-- original #116 heartbeat-to-real HTTP consumer receipts; NO new scheduler.
 BEGIN;
 CREATE OR REPLACE FUNCTION public.powerhouse_original_result_guardian_v1()
  RETURNS trigger
@@ -126,9 +124,8 @@ BEGIN
     AND (v_news_last_provider_ok IS NULL OR v_news_last_provider_ok<v_now-interval '72 hours');
 
 
-  -- Match the original #116 commercial heartbeat request_id to the ACTUAL
-  -- pg_net result. A dispatch ACK alone is not a composer consumer receipt.
-  -- Bounded read only; never retry a provider call or create another sender.
+  -- Bounded exact original #116 heartbeat -> pg_net provider readback.
+  -- The original request_id is DISPATCHED only, not a consumer receipt.
   SELECT h.occurred_at,
     (h.evidence#>>'{composer,request_id}')::bigint,
     r.created,r.status_code,
@@ -139,7 +136,27 @@ BEGIN
   FROM public.powerhouse_runtime_events h
   JOIN net._http_response r
     ON r.id=CASE
-      WHEN h.evidence#>>'{composer,request_id}' ~ '^[0-9]{1,18}
+      WHEN h.evidence#>>'{composer,request_id}' ~ '^[0-9]{1,18}$'
+      THEN (h.evidence#>>'{composer,request_id}')::bigint ELSE NULL::bigint END
+  WHERE h.event_type='commercial_heartbeat'
+    AND h.occurred_at>=v_now-interval '50 minutes'
+    AND h.evidence#>>'{composer,contract}'='powerhouse-human-sales-composer-dispatch-v2'
+  ORDER BY h.occurred_at DESC LIMIT 1;
+
+  v_composer_failed:=coalesce(v_composer_http_status>=400,false);
+  v_composer_result:=CASE
+    WHEN v_composer_http_status=503
+      AND coalesce(v_composer_body,'') LIKE '%PLAN_READ:canceling statement due to statement timeout%'
+      THEN 'ORIGINAL_COMPOSER_PLAN_READ_SQL_TIMEOUT'
+    WHEN v_composer_failed THEN 'ORIGINAL_COMPOSER_PROVIDER_HTTP_NON_SUCCESS'
+    WHEN v_composer_http_status=200 AND v_composer_processed>0
+      AND coalesce(v_composer_body,'') LIKE '%"contract":"powerhouse-human-commercial-message-composer-v2"%'
+      THEN 'ORIGINAL_COMPOSER_PROCESSED_NOT_GMAIL_SENT'
+    WHEN v_composer_http_status=200 THEN 'ORIGINAL_COMPOSER_HTTP_200_PROCESSING_NOT_PROVEN'
+    ELSE 'NO_RECENT_CORRELATED_PROVIDER_RECEIPT'
+  END;
+
+  v_event_key := 'original-result-guardian:'||v_hour||':commercial';
   SELECT EXISTS (SELECT 1 FROM public.powerhouse_runtime_events
                  WHERE dedupe_key=v_event_key)
     INTO v_already_checked;
@@ -257,139 +274,11 @@ EXCEPTION WHEN OTHERS THEN
   RETURN NEW;
 END;
 $function$
-
-      THEN (h.evidence#>>'{composer,request_id}')::bigint ELSE NULL::bigint END
-  WHERE h.event_type='commercial_heartbeat'
-    AND h.occurred_at>=v_now-interval '50 minutes'
-    AND h.evidence#>>'{composer,contract}'='powerhouse-human-sales-composer-dispatch-v2'
-  ORDER BY h.occurred_at DESC
-  LIMIT 1;
-
-  v_composer_failed:=coalesce(v_composer_http_status>=400,false);
-  v_composer_result:=CASE
-    WHEN v_composer_http_status=503
-      AND coalesce(v_composer_body,'') LIKE '%PLAN_READ:canceling statement due to statement timeout%'
-      THEN 'ORIGINAL_COMPOSER_PLAN_READ_SQL_TIMEOUT'
-    WHEN v_composer_failed THEN 'ORIGINAL_COMPOSER_PROVIDER_HTTP_NON_SUCCESS'
-    WHEN v_composer_http_status=200 AND v_composer_processed>0
-      AND coalesce(v_composer_body,'') LIKE '%"contract":"powerhouse-human-commercial-message-composer-v2"%'
-      THEN 'ORIGINAL_COMPOSER_PROCESSED_NOT_GMAIL_SENT'
-    WHEN v_composer_http_status=200 THEN 'ORIGINAL_COMPOSER_HTTP_200_PROCESSING_NOT_PROVEN'
-    ELSE 'NO_RECENT_CORRELATED_PROVIDER_RECEIPT'
-  END;
-
-  v_event_key := 'original-result-guardian:'||v_hour||':commercial';
-  SELECT EXISTS (SELECT 1 FROM public.powerhouse_runtime_events
-                 WHERE dedupe_key=v_event_key)
-    INTO v_already_checked;
-
-  -- Automatic *safe* recovery: choose ONE other already-approved candidate via
-  -- the ORIGINAL selector. It only prepares an action; the canonical composer,
-  -- recipient lawfulness, suppression, pressure and original Gmail sender retain
-  -- exclusive authorization. Never retry an uncertain provider side effect.
-  -- Hourly dedupe + daily cap prevent a ten-minute watchdog from flooding the queue.
-  IF NOT v_already_checked AND v_held>0 AND v_ready=0 AND v_uncertain=0
-     AND NOT v_news_plan_limit_hit
-     AND v_today_candidates<5
-     AND (v_now AT TIME ZONE 'Europe/Amsterdam')::time >= time '09:00'
-  THEN
-    v_recovery_attempted := true;
-    BEGIN
-      v_recovery := public.powerhouse_prepare_connection_email_activation_v1(v_day,1);
-      v_recovery_created := least(1,greatest(0,coalesce((v_recovery->>'prepared')::int,0)));
-    EXCEPTION WHEN OTHERS THEN
-      v_recovery_error := left(SQLSTATE||':'||SQLERRM,240);
-    END;
-  END IF;
-
-  v_state := CASE
-    WHEN v_recovery_error IS NOT NULL THEN 'ERROR'
-    WHEN v_news_plan_limit_hit OR v_news_stale OR v_held>0 OR v_handoff_broken>0 OR v_yesterday_missing>0
-      OR v_research_tracked>v_research_consumed THEN 'DEGRADED'
-    ELSE 'OBSERVED' END;
-  v_snapshot := jsonb_build_object(
-    'contract','powerhouse-original-result-guardian-v1',
-    'state',v_state,
-    'owner','existing-powerhouse-reliability',
-    'canonical_scheduler','#171',
-    'original_commercial_owner','#116',
-    'original_content_owner','#140',
-    'checked_at',v_now,
-    'day',v_day,
-    'held_source_specific',v_held,
-    'prepared_without_source_hold',v_ready,
-    'provider_uncertain_no_resend',v_uncertain,
-    'original_daily_candidates',v_today_candidates,
-    'daily_candidate_cap',5,
-    'last_day_channel_obligations',v_yesterday_obligations,
-    'last_day_missing_live_proof',v_yesterday_missing,
-    'broken_email_handoffs_7d',v_handoff_broken,
-    'research_tracked',v_research_tracked,
-    'research_consumer_receipts',v_research_consumed,
-    'news_source_provider_state',CASE WHEN v_news_plan_limit_hit THEN 'TAVILY_PLAN_LIMIT_EXCEEDED' WHEN v_news_stale THEN 'PROVIDER_NEWS_INGEST_STALE' ELSE 'NO_NEW_SOURCE_FAILURE_OBSERVED' END,
-    'news_source_cron20_last_run',v_news_cron_last_run,
-    'news_source_last_ingest',v_news_last_ingest,
-    'news_source_last_successful_provider_health',v_news_last_provider_ok,
-    'news_source_owner','existing-bg-bedrijfsnieuws-20',
-    'news_source_failure_independently_observed',v_news_plan_limit_hit OR v_news_stale,
-    'original_fallback_evaluated',NOT v_already_checked,
-    'fallback_attempted',v_recovery_attempted,
-    'fallback_prepared',v_recovery_created,
-    'fallback_error',v_recovery_error,
-    'next_owner',CASE WHEN v_recovery_created>0 THEN 'original-commercial-composer'
-                      WHEN v_held>0 THEN 'original-relationship-public-research'
-                      ELSE 'original-commercial-owner' END,
-    'repair_policy',CASE WHEN v_recovery_created>0 THEN 'NEXT_ORIGINAL_NATURAL_RUN'
-                         WHEN v_held>0 THEN 'SOURCE_UNVERIFIED_KEEP_HOLD_AND_RESEARCH_DUE_ONLY'
-                         ELSE 'OBSERVE_ORIGINAL_OWNERS' END,
-    'provider_send_attempted',false,
-    'news_quota_no_redundant_retry',v_news_plan_limit_hit,
-    'provider_result_proven_by_guardian',false,
-    'release_green_proven',false
-  );
-
-  -- Existing event store, one hourly idempotency key; no parallel task queue.
-  IF NOT v_already_checked THEN
-    INSERT INTO public.powerhouse_runtime_events(
-      dedupe_key,event_type,source,subject_key,occurred_at,
-      evidence,context,state,data_quality,confidence,updated_at)
-    VALUES(
-      v_event_key,'original_result_guardian_observation',
-      'powerhouse-original-result-guardian-v1','commercial-result-guard',v_now,
-      v_snapshot,
-      jsonb_build_object('owner','existing-powerhouse-reliability',
-                         'original_issue',4198,'single_runtime',true),
-      CASE WHEN v_state='ERROR' THEN 'error' ELSE 'observed' END,
-      'OBSERVED',1,v_now)
-    ON CONFLICT (dedupe_key) DO NOTHING;
-  END IF;
-
-  NEW.gegevens := coalesce(NEW.gegevens,'{}'::jsonb)
-    || jsonb_build_object('result_guardian',v_snapshot);
-  IF v_state IN ('ERROR','DEGRADED')
-     AND (v_held>0 OR v_handoff_broken>0 OR v_recovery_error IS NOT NULL OR v_news_plan_limit_hit OR v_news_stale)
-  THEN
-    NEW.status := 'fout';
-  END IF;
-  RETURN NEW;
-EXCEPTION WHEN OTHERS THEN
-  -- Preserve watchdog liveness, never declare a failed guardian GREEN.
-  NEW.status := 'fout';
-  NEW.gegevens := coalesce(NEW.gegevens,'{}'::jsonb) || jsonb_build_object(
-    'result_guardian',jsonb_build_object(
-      'contract','powerhouse-original-result-guardian-v1',
-      'state','ERROR','checked_at',clock_timestamp(),
-      'error',left(SQLSTATE||':'||SQLERRM,240),
-      'recovery_owner','existing-powerhouse-reliability',
-      'provider_send_attempted',false));
-  RETURN NEW;
-END;
-$function$
 ;
 REVOKE ALL ON FUNCTION public.powerhouse_original_result_guardian_v1()
   FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.powerhouse_original_result_guardian_v1()
   TO service_role;
 COMMENT ON FUNCTION public.powerhouse_original_result_guardian_v1()
-IS 'Existing #171 Result Guardian. Independently reconcile original commercial composer #116 request_id to pg_net HTTP status and processed count. 503 is red; 200 consumed is not Gmail SENT.';
+IS 'Existing #171 Result Guardian. Match exact original commercial composer request_id to pg_net HTTP status and processed count. HTTP503 is red; HTTP200 consumed is not Gmail SENT.';
 COMMIT;
