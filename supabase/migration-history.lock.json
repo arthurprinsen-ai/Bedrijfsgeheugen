@@ -3520,8 +3520,12 @@
     {
       "version": "20261117162500",
       "name": "powerhouse_cro_site_social_diagnostics_v1"
+    },
+    {
+      "version": "20261117192500",
+      "name": "original_cro_consumer_source_diagnostics_v1"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-17T17:13:07.000Z"
+  "captured_at": "2026-11-17T19:22:05.782588Z"
 }
