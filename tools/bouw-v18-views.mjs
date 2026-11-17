@@ -3,6 +3,7 @@ import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenbl
          volgendeStap, VOLGENDE_CSS , GEGEVENS, LOCATIE_SCHEMA} from './v18-verrijking.mjs';
 import { INHOUD_CSS, kruimelpad, zetKop, HERO_URL } from './bouw-v18-chrome.mjs';
 import { VIEWS } from './v18-views-lijst.mjs';
+import { renderViewSeoContextLinks, assertViewSeoContextLinksRendered } from './v18-seo-context-links.mjs';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-beweging.mjs';
 import { zoekwoordVoor, HOMEPAGE_WOORD, titelVoor } from './zoekwoorden.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_CSS, VRAAG_JS, VRAAGBALK,
@@ -97,7 +98,7 @@ for (const p of VIEWS) {
 
   html = html.replace(`<div class="page active" id="view-${p.view}">`,
     `<div class="page active" id="view-${p.view}">${hero}`
-    + `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}${bovenblok}`);
+    + `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}${bovenblok}${renderViewSeoContextLinks(p.seoContextLinks)}`);
 
   // de secties van deze weergave komen op bij het scrollen, net als op de homepage
   {
@@ -154,6 +155,7 @@ for (const p of VIEWS) {
   html = metGegevens(html);
   html = maakBeweeglijk(html);
   html = hoofdletterMerk(html);
+  assertViewSeoContextLinksRendered(html, p.seoContextLinks);
   await writeFile(p.bestand, html, 'utf8');
   gemaakt++;
 }
