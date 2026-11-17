@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|cro|site-social-measurement-scope-gap|20261117-v1",
+  "obligation_id": "CRO_SITE_SOCIAL_DIAGNOSTICS_20261117",
+  "owner": "original Powerhouse CRO/ONE BRAIN/Heartbeat and source metric collectors",
+  "compiler": {
+    "failure_class": "CRO_WEBSITE_SOCIAL_EMAIL_EVIDENCE_SCOPE_MISMATCH",
+    "scope": "DATA_QUALITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-site-social-diagnostics-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-site-social-diagnostics-20261117.test.mjs"
+    ]
+  },
+  "root_cause": "Existing storage has >95% robot-flagged events in the rolling 7d window, 151 nonrobot raw clicks but zero canonical CTA aggregate, only 34 consented nonrobot page events, GA4 partial attribution; social snapshots have incomparable personal LinkedIn vs LinkedIn-company vs Instagram source denominators. Email learning aggregates last recomputed 2026-10-28 (27 reported sends, 2 replies) with no jointly send-ACK and independent-readback verified email action within the last seven days; email outcome evidence must remain separate.",
+  "source_evidence": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "website_events_7d": 35173,
+    "robot_flagged_7d": 33574,
+    "nonrobot_events_7d": 1599,
+    "nonrobot_click_events_7d": 151,
+    "consented_nonrobot_page_events_7d": 34,
+    "social_snapshots_7d": 452,
+    "ga4_status": "partial",
+    "attributed_ga4_post_measurements": 0,
+    "email_historical_reported_sends": 27,
+    "email_historical_reported_replies": 2,
+    "email_last_learning_recomputed_at": "2026-10-28T10:58:42.202582Z",
+    "email_verified_send_readbacks_7d": 0
+  },
+  "correction": "Add three service-role-only, security-invoker diagnostic views of original website, real post-provider and historical/verified email evidence. No new scheduler, writer, collector, tracking or table.",
+  "prevention": "Require exact source scope, bot/consent gating, minimum comparable sample, assignment plus independent provider and paid-outcome readback before CRO or social claims. Record actual effect using existing original agents. For email compare only fresh provider-confirmed sends, respect suppression and avoid historical send statistics being counted as current successes.",
+  "status": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "tests": [
+    "tests/brain-cro-site-social-diagnostics-20261117.test.mjs"
+  ],
+  "independent_production_readback_proven": false,
+  "commercial_improvement_proven": false
+}
