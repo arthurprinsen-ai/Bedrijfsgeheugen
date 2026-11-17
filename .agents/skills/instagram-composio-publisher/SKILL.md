@@ -5,6 +5,19 @@ description: Canonical Powerhouse Instagram publishing and recovery skill. Use f
 
 # Instagram Composio Publisher
 
+## Permanente originele OpenArt-asynchrone handoff (17 november 2026)
+
+De oorspronkelijke mediaservice heeft action **pin_generation** (alleen na beschermd uitgerolde PR #5936 of opvolger; verifieer productiebron exact). Dit is een ontvangstbewijs voor een door de BESTAANDE OpenArt MCP producer aangemaakte PENDING job, GEEN tweede uitvoerder, kostenopdracht of Meta-writer.
+
+Bij een echt ongebruikt, gedateerd uniek Mira-PH-P dagonderwerp en dezelfde originele mediajob: (1) originele authentieke generation_preflight, (2) exclusieve powerhouse_claim_instagram_media_job_v1 CAS met onveranderlijke worker en bron, (3) dezelfde verbonden OpenArt-project/bron/master/quote controle, (4) precies één openart_generate_video Wan3.0 element2video 8s 1080p 9:16 audio=false. Referentie object in visualReferences: type=image, id=Yjqu4D7v76HABNPmQPj1, url=https://cdn.openart.ai/openart-ai/production/2026-09/create-image/WZvuT1BzGx566fWaFo8F/image_1790665568080_41c2e10a_1790665568142_c6e526dd.jpg, label=Original canonical Mira master. De aangesloten OpenArt OAuth-interface heeft op 17-Nov deze master met 928x1152 JPEG correct toegankelijk gemaakt; de werkelijke video moet los echte native 1080x1920 worden geverifieerd.
+
+**DIRECT na de gegenereerde historyId, voordat de achtergrondjob voltooid is:** roep via de al bestaande originele Supabase-media-router action=pin_generation aan, met runDate, job_id, worker, openart_history_id, openart_project_id=rUF5anXD47gVokckYjf9, original master ID/URL, source recommendation_id, approved exact scene en canonical_problem_id, model=wan3-0, mode=element2video, provider_status=PENDING, quoted_credits<=640. De router moet GENERATING met immutable history-ID teruggeven. Bij 409 of 422 nooit tweede generatie starten; originele job/Brain exact herlezen.
+
+**Ieder volgend bestaand executormoment:** lees eerst dezelfde originele job. GENERATING met history-ID => gebruik OpenArt openart_creation_get(historyId), niet een nieuwe aanvraag. PENDING/RUNNING => idem bewaren. COMPLETED => pak echte URL/bytes en voer de normale originele media-router submit_asset uit; laat de onafhankelijke SHA/native formaat/mute/3-frame 0.940+ Mira/temporal 0.900+ verifier controleren. Pas bij echt bewijs de enige originele Meta-publisher 1x laten verzenden, onafhankelijke Meta-ID/permalink readback en oorspronkelijke ONE BRAIN consumer PROCESSED, Heartbeat meten. FAILED => behoud history, oorzaak en oorspronkelijke owner; geen automatische blinde heraankoop.
+
+Als een job CLAIMED is zonder bewaarde history-ID (agentuitval tussen betaalde OpenArt-aanvraag en pin), zoek eerst bij dezelfde OpenArt projecthistorie naar één exact corresponderende generatie op source/owner/time/model/master. Alleen één ondubbelzinnig bestaand history-ID mag worden vastgezet. Bij nul/meer/onzeker: OPEN en eigenaar herbeoordelen, niet opnieuw betaald genereren totdat bewezen is dat er geen provider-side-effect was.
+
+
 ## 17 november 2026 — gekwalificeerde OpenArt-producent, zonder fictieve API-sleutel
 
 Productie-audit 2026-11-17: de originele Supabase vault heeft **geen** `OPENART_API_KEY`; het gekoppelde OpenArt OAuth/MCP-account heeft 37.000 credits en het bestaande project `rUF5anXD47gVokckYjf9` is beschikbaar. Die verbindingen zijn NIET uitwisselbaar. OpenArt publiceert geen algemeen ondersteunde API-key productroute (https://openart.ai/blog/openart-cli-generate-images-and-video-from-terminal/). Gebruik uitsluitend een daadwerkelijk geautoriseerde bestaande ChatGPT/OpenArt MCP/CLI-OAuth-producer als ORIGINELE producer. De native Supabase server doet alleen de bestaande beveiligde claim, bronverificatie, exacte media/Meta/ONE BRAIN handoff. Geen OAuth-tokens kopiëren of een fictieve OPENART_API_KEY invoeren.

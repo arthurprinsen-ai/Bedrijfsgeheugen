@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|commercial|original-result-guardian|20261117-v1",
+  "obligation_id": "powerhouse|commercial|original-result-guardian|20261117-v1",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "problem": "The native scheduler and provider preflight can pass while original source-held commercial tasks remain unconsumed and there are no independently provider-readback-verified emails.",
+  "observations": {
+    "date": "2026-11-17",
+    "commercial_handoff_health": "DEGRADED",
+    "broken_or_unproven_handoffs_7d": 4,
+    "provider_readback_proven_7d": 0,
+    "source_hold": "SOURCE_SPECIFIC_EVIDENCE_REQUIRED",
+    "daily_contact_rollup_is_not_new_external_research": true
+  },
+  "root_cause": "The original email-execution watchdog monitors overdue work but does not select another safe original candidate when all available messages are waiting for verified source facts. The scheduler's success is not an end-to-end result.",
+  "prevention_rule": "On the same original #171 health insert, record a bounded independent guardian decision. When only source-held original emails remain and no provider attempt is ambiguous, allow at most one new original eligibility-gated candidate per hour within the daily five-candidate limit.",
+  "owner": "existing-powerhouse-reliability",
+  "execution_owner": "original-#116-and-#171",
+  "provider_authority": "original Gmail sender only",
+  "regression_test": "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs",
+  "deployment": "PROTECTED_PR_PENDING",
+  "provider_send_claim": false,
+  "customer_outcome_claim": false,
+  "further_evidence_required": [
+    "Required+CodeQL pass",
+    "native migration deployed",
+    "original natural #171 guardian readback",
+    "original composer disposition",
+    "independent Gmail provider message ID/readback for any send",
+    "ONE BRAIN exact consumer PROCESSED"
+  ],
+  "failure_class": "COMMERCIAL_RESULT_WATCHDOG_GAP",
+  "compiler": {
+    "failure_class": "COMMERCIAL_RESULT_WATCHDOG_GAP",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "tests": [
+    "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-result-guardian-existing-watchdog-20261117.test.mjs"
+    ]
+  },
+  "fix": "Bind bounded, safe candidate selection and failure observability to original #171 watchdog, preserve exact provider and contact authority; no new scheduler."
+}
