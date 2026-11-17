@@ -103,3 +103,7 @@
 .bgkop-mob>a{padding:.95rem 0;border-bottom:1px solid var(--bg-lijn);font-size:1rem;font-weight:600;color:var(--bg-inkt);text-decoration:none}
 .bgkop-mcta{margin-top:1.1rem;border:0!important;background:var(--bg-inkt);color:#fff!important;border-radius:999px;text-align:center;padding:.9rem 1.2rem!important}
 @media(min-width:1101px){.bgkop-mob{display:none!important}}
+
+/* Rituals-richting (17 nov 2026): rustiger tempo, geen kleurwijziging. Zie Notion "Merkrichting Rituals". */
+.bgkop-links a,.bgkop-trig svg,.bgkop-macc svg{transition-duration:.45s;transition-timing-function:cubic-bezier(.2,.6,.2,1)}
+@media(prefers-reduced-motion:reduce){.bgkop *{transition:none!important}}

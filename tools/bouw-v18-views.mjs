@@ -118,7 +118,7 @@ for (const p of VIEWS) {
   html = html.replace('</main>',
     `<section class="inhoud-body" style="padding:10px 0 96px"><div class="wrap">${vergelijker(p.naam.toLowerCase())}${VERTREK}`
     + `${volgendeStap(false)}${mensenblok(false)}</div></section></main>`);
-  html = html.replace('</body>', `${EXTRA_HTML}\n${RING}\n${LEK}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${BEWEGING_JS}\n${ORGANISATIE_SCHEMA}\n`
+  html = html.replace('</body>', `${EXTRA_HTML}\n${RING}\n${['/frisse-blik', '/prijzen'].includes(p.pad) ? LEK : ''}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${BEWEGING_JS}\n${ORGANISATIE_SCHEMA}\n`
     + `${schemas({ isBlog: false, titel: p.titel, omschrijving: p.omschrijving, canoniek, h1: p.naam, body: html })}\n</body>`);
 
   // de hero levert de h1; een tweede h1 in de weergave zakt naar h2
