@@ -292,7 +292,7 @@ if (fouten.length) {
 // Rituals-beleving: interactielaag (onthulling bij scrollen, ademmoment, zachte
 // overgangen). Alleen presentatie; zonder JS blijft alles gewoon zichtbaar.
 {
-  const script = '<script src="/assets/rituals-beleving.js?v=20261117" defer></script>';
+  const script = '<script src="/assets/rituals-beleving.js?v=20261117b" defer></script>';
   for (const pad of await allePaginas()) {
     let h = await readFile(pad, 'utf8');
     if (!h.includes('</body>') || h.includes('rituals-beleving.js')) continue;
