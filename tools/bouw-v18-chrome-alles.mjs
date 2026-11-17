@@ -272,6 +272,19 @@ if (fouten.length) {
   }
 }
 
+// Rituals-belevenis (besluit Arthur 17 nov 2026): één gelinkt stylesheet met
+// zelf gehoste Fraunces + Instrument Sans, papieren kop, boogvormig videoraam,
+// stille cookiekaart. Alleen vorm; tekst, routes en gedrag blijven gelijk.
+{
+  const link = '<link rel="stylesheet" href="/assets/rituals-belevenis.css?v=20261117">';
+  for (const pad of await allePaginas()) {
+    let h = await readFile(pad, 'utf8');
+    if (!h.includes('</head>') || h.includes('rituals-belevenis.css')) continue;
+    h = h.replace('</head>', link + '\n</head>');
+    await writeFile(pad, h, 'utf8');
+  }
+}
+
 // De losse bouwstenen onder components/ zijn fragmenten, geen pagina's. Ze
 // horen niet in Google: dunne inhoud die met echte pagina's concurreert.
 for await (const p of glob('components/*/*.html')) {

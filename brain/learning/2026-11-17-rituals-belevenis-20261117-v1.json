@@ -1,0 +1,24 @@
+{
+  "fingerprint": "site|rituals|belevenis-website|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|belevenis-website|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "BRAND_DIRECTION_DRIFT", "scope": "SITE", "machine_enforceable": false, "repeat_count": 1, "security_sensitive": false},
+  "root_cause": "De eerste Rituals-laag was te dun (alleen gewicht en padding) en voelde goedkoop; het besluit van 17 nov vraagt een echte belevenis.",
+  "correction": "Eigen gelinkt stylesheet met zelf gehoste serif, papieren kop en boogvormig videoraam; alleen vorm.",
+  "prevention": [
+    "Zet merkrichting als gescopete laag in de generator, nooit in gegenereerde HTML.",
+    "Controleer eerst of een parallelle sessie al een PR heeft voor hetzelfde pad."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs"],
+    "canary": ["tests/seo-homepage-context-slider-readability.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs", "tests/seo-homepage-context-slider-readability.test.mjs"],
+    "source": ["tools/bouw-v18-chrome-alles.mjs", "assets/rituals-belevenis.css"],
+    "outcome": "Lokaal: screenshots voor/na en vier tests groen. Live-readback open."
+  }
+}
