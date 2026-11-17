@@ -10,3 +10,9 @@
 - Automated regression: `tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs`.
 - Release: protected exact-head Required/CodeQL, merge to main, scoped original delivery recovery job, native original Brain receipt update and independently measured metrics after release. No live status before all gates.
 - Rollback: protected revert of additive source code and workflow test invocation; historical original Brain data preserved.
+
+## Exact protected admission regression and repaired source semantics
+
+- The first protected admission for PR #5983, https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44168209008 , correctly rejected `INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning`, although the earlier canonical learning historical replay and canary tests both passed.
+- Root cause: the learning JSON documented preventive and historical proof context under descriptive keys but omitted mandatory machine-readable `prevention_rule` and `evidence` keys required by the existing material writeback closure guard.
+- Fixed in the **same original PR** without relaxing or modifying admission: explicit nonempty prevention rule plus source references, exact regression, protected historical PRs and conservative business-outcome NOT_PROVEN fields. Original technical release and live source-effect readback remain to be verified after protected merge.
