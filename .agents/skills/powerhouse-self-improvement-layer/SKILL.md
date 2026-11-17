@@ -3,6 +3,15 @@ name: powerhouse-self-improvement-layer
 description: Use for every Powerhouse task involving autonomous learning, self-improvement, model routing, agent objectives, evaluations, architecture health, learning compilation, or automatic improvement of code/models/processes.
 ---
 
+## 17 november 2026 — reproduceerbare fout leidt tot echte skill-update én volgende-run bewijs
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. Elke bestaande innovatie-, reliability-, SEO-, growth-, editorial-, security- of agent-rol erft `incident-recovery.v1` in het canonieke `DEFAULT_AGENT_TEAM`. Het bestaande incident-register `public.brain_failure_registry` en de originele occurrence-RPC `public.brain_observe_failure` zijn leidend, niet een nieuw memory-, planner-, scheduler- of automation-spoor. Een leertekst is pas een **toegepaste les** wanneer de oorspronkelijke andere consumer de exacte bronrevisie en leerreferentie met `PROCESSED`-ACK bevestigt, vervolgens de volgende natuurlijke uitvoering de correctie daadwerkelijk gebruikt en onafhankelijke readback van de foutklasse heeft plaatsgevonden.
+
+Voor een hersteld incident: registreer originele provider/run+attempt occurrence, oorzaak of expliciet onbekend, correctie en rollback, regressietest en resultaat, preventieregel en versie van de relevante skill, exact beschermde GitHub-merge en passende productie-/providerreadback, oorspronkelijke consumer-ACK, learning-application-ref en volgende natuurlijke run. Laat de bestaande `reconcileIncidentObligations` onvolledige herstelclaims naar `RECOVERY_PROOF_MISSING` sturen met de afzonderlijke ontbrekende proof-items. Herstel binnen oorspronkelijke owner/lease; bij regressie de bestaande fingerprint heropenen en oorzaak verbeteren in dezelfde lineage. Geen badge groen, skillversie of `learning_applied=true` van dezelfde agent als onafhankelijk bewijs aanvaarden.
+
+Na eerste beschermde uitrol: controleer dat elke van de oorspronkelijke 14 agents de vijf gemeenschappelijke taken, het herstel-playbook en `incident-recovery.v1` heeft; doe ook het negatieve replay (missing consumer, wrong revision, same owner, repeat failure) en wacht op echte consumer + native productie readback alvorens een overkoepelend succes te rapporteren. Documentatie: `docs/changes/2026-11-17-original-incident-learned-closure.md` en bestaande P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Elke nieuwe fout wordt geregistreerd, ook als de eerste reparatie mislukt; andere veilige executions blijven actief.
+
+
 # Powerhouse Self-Improvement Layer
 
 ## P0 15 november 2026 — herhaalde uitvoering krijgt eigen oorspronkelijke evidencecyclus
