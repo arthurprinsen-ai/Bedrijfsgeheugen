@@ -11,5 +11,15 @@
   "proof_status": "SOURCE_CODE_CANDIDATE_ONLY",
   "production_post": "NOT_PROVEN",
   "next_safe_owner_action": "Protected merge, exact Supabase production source parity, then next natural original radar source-intake result and original producer/media/provider consumer receipts.",
-  "do_not_create_new_scheduler": true
+  "do_not_create_new_scheduler": true,
+  "failure_class": "SOURCE_RELEVANCE",
+  "scope": "CONTENT",
+  "machine_enforceable": true,
+  "repeat_count": 2,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ]
+  }
 }
