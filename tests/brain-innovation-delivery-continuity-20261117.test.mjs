@@ -110,3 +110,9 @@ test('original 14-count/candidate identity must never be silently dropped',()=>{
  assert.throws(()=>planOriginalContinuity({snapshot:{...snapshot,intakes:[]},
    report:{...report,counts:{candidates:1,obligations:1,intakes:0}}}),/ORPHAN_ORIGINAL/);
 });
+
+test('even source-backed receipt cannot silently turn a terminal original operation into a new deployment',()=>{
+ const f=fixture({pr:true});
+ f.operation.status='VERIFIED';
+ assert.throws(()=>examineOriginalDelivery(f),/UNSUPPORTED_ORIGINAL_OPERATION_STATE/);
+});
