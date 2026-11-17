@@ -84,7 +84,7 @@ test('genuine 16 Nov 2026 Dutch invoice-processing harm is detectable without in
   assert.equal(score(headline,'Innovatie voor ondernemers').admissible,false,headline);
  }
  const src=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/index.ts',import.meta.url),'utf8');
- assert.match(src,/factuurfout\|foutieve factur\|onjuiste factur/);
+ assert.match(src,/factuurfout\|foutieve factu\(\?:u\)\?r\|onjuiste factu\(\?:u\)\?r/);
  assert.match(src,/krappe marges\|marges\? onder druk/);
  assert.match(src,/eligible:total>=0\.72&&publication\.eligible/);
  assert.match(src,/businessEvidence\?\.admissible!==false/);
