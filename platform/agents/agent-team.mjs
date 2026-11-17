@@ -1,8 +1,18 @@
 import { createAgentRegistry } from './agent-registry.mjs';
 
 const sharedLearning = Object.freeze(['outcome.v1','pattern.v1']);
+// These are mandatory for every member of the SAME 14-agent fabric, including
+// a future member added to its canonical roster. No parallel incident worker.
+export const SHARED_INCIDENT_DUTIES = Object.freeze([
+  'register-every-observed-error-near-miss-and-failed-guard-by-original-brain-fingerprint-and-readback',
+  'repair-safe-faults-with-existing-owner-and-idempotent-native-provider-readback-before-replay',
+  'document-original-cause-repair-rollback-test-prevention-and-versioned-skill-without-false-green',
+  'prove-original-consumer-processed-applied-learning-and-next-natural-run-recurrence-check-before-incident-closure',
+  'reopen-original-incident-on-recurrence-and-continue-other-authorized-work-without-second-executor'
+]);
+const SHARED_INCIDENT_PLAYBOOK = 'same-owner-observe-repair-regress-protect-release-readback-consumer-learn-recheck';
 
-export const DEFAULT_AGENT_TEAM = Object.freeze([
+const BASE_AGENT_TEAM = Object.freeze([
   Object.freeze({
     id:'agent-integration-engineer',
     domains:['Operations','Product','Website','Data'],
@@ -134,6 +144,14 @@ export const DEFAULT_AGENT_TEAM = Object.freeze([
     learningContracts:[...sharedLearning,'product.v1','opportunity.v1'],
   }),
 ]);
+// Apply the invariant once, at the canonical exported roster boundary.
+// Direct consumers of DEFAULT_AGENT_TEAM and createDefaultAgentRegistry agree.
+export const DEFAULT_AGENT_TEAM = Object.freeze(BASE_AGENT_TEAM.map(agent => Object.freeze({
+  ...agent,
+  tasks:Object.freeze([...new Set([...SHARED_INCIDENT_DUTIES,...agent.tasks])]),
+  playbooks:Object.freeze([...new Set([...agent.playbooks,SHARED_INCIDENT_PLAYBOOK])]),
+  learningContracts:Object.freeze([...new Set([...agent.learningContracts,'incident-recovery.v1'])]),
+})));
 
 export function createDefaultAgentRegistry() {
   return createAgentRegistry(DEFAULT_AGENT_TEAM);

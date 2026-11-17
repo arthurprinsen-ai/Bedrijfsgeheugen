@@ -6,12 +6,49 @@ const SHA = /^[a-f0-9]{64}$/i;
 const date = value => typeof value === 'string' && Number.isFinite(Date.parse(value)) ? Date.parse(value) : null;
 const safe = value => typeof value === 'string' && ID.test(value) ? value : null;
 
+// The existing ONE BRAIN preflight is a read-only verifier, not a new sender,
+// incident writer, scheduler, provider observer or independent evidence producer.
+// An agent's own VERIFIED flag is never proof that a second agent learned.
+const MATERIAL_REPAIR_REFERENCES=Object.freeze([
+ 'root_cause_ref','regression_ref','prevention_rule_ref','documentation_ref',
+ 'skill_version','source_revision','learning_application_ref',
+ 'consumer_processed_ref','next_natural_run_ref'
+]);
+export function missingIncidentLearningProof(recovery={},learningReceipts=[],identity={}){
+ const missing=MATERIAL_REPAIR_REFERENCES.filter(key=>!safe(recovery?.[key]));
+ if(recovery?.learning_applied!==true)missing.push('LEARNING_NOT_APPLIED');
+ if(recovery?.original_consumer_processed!==true)missing.push('CONSUMER_NOT_PROCESSED');
+ if(recovery?.recurrence_checked!==true)missing.push('RECURRENCE_NOT_CHECKED');
+ const verifiedAt=date(recovery?.verified_at);
+ const nextRunAt=date(recovery?.next_natural_run_at);
+ if(verifiedAt===null||nextRunAt===null||nextRunAt<verifiedAt)missing.push('NEXT_NATURAL_RUN_PROOF_DUE');
+ const exact=(Array.isArray(learningReceipts)?learningReceipts:[]).filter(x=>
+  x?.provider_event_id===identity?.provider_event_id
+  && x?.fingerprint===identity?.fingerprint
+  && x?.source_revision===recovery?.source_revision
+  && x?.learning_application_ref===recovery?.learning_application_ref
+  && x?.consumer_processed_ref===recovery?.consumer_processed_ref
+  && x?.consumer_state==='PROCESSED'
+  && x?.readback_confirmed===true
+  && safe(x?.consumer_owner)
+  && x?.consumer_owner!==recovery?.owner
+  && date(x?.applied_at)!==null
+  && verifiedAt!==null && date(x.applied_at)>=verifiedAt
+  && nextRunAt!==null && nextRunAt>=date(x.applied_at)
+ );
+ if(exact.length!==1)missing.push(exact.length>1
+  ? 'ORIGINAL_LEARNING_RECEIPT_CONFLICT'
+  : 'ORIGINAL_CONSUMER_PROCESSED_LEARNING_RECEIPT_MISSING');
+ return Object.freeze([...new Set(missing)]);
+}
+
 export const INCIDENT_AUDIT_FINGERPRINT = 'powerhouse|agent-incident|silent-failure-and-unverified-recovery|20261103-v1';
 
 export function reconcileIncidentObligations({
   observations,
   receipts,
   recoveries,
+  learningReceipts = [],
   sourceReadbackComplete = false,
   registryReadbackComplete = false
 } = {}) {
@@ -32,7 +69,8 @@ export function reconcileIncidentObligations({
     obligations: [],
     authority: 'EXISTING_ONE_BRAIN_HEARTBEAT_EXCLUSIVE_WRITER'
   };
-  if (!Array.isArray(observations) || !Array.isArray(receipts) || !Array.isArray(recoveries)) return result;
+  if (!Array.isArray(observations) || !Array.isArray(receipts) || !Array.isArray(recoveries) ||
+      !Array.isArray(learningReceipts)) return result;
   result.audited_events = observations.length;
   const byKey = new Map();
   const providerFingerprints = new Map();
@@ -125,7 +163,8 @@ export function reconcileIncidentObligations({
     }
     const verifiedAt = date(recovery.verified_at);
     const detectedAt = date(receipt.registered_at);
-    const fullyVerified = recovery.status === 'VERIFIED'
+    const missingLearningProof = missingIncidentLearningProof(recovery,learningReceipts,{provider_event_id:id,fingerprint});
+    const fullyVerified = missingLearningProof.length === 0 && recovery.status === 'VERIFIED'
       && recovery.regression_passed === true
       && recovery.independent_provider_readback === true
       && recovery.prevention_applied === true
@@ -136,6 +175,7 @@ export function reconcileIncidentObligations({
     if (!fullyVerified) {
       result.proof_required++;
       result.obligations.push({provider_event_id:id,fingerprint,status:'RECOVERY_PROOF_MISSING',
+        missing_proof:missingLearningProof,
         next_action:'EXISTING_OWNER_REGRESSION_PROVIDER_READBACK_AND_LEARNING'});
       continue;
     }
