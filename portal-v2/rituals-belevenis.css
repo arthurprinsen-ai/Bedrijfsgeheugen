@@ -44,3 +44,12 @@ html body .main :where(.livepill,.eh-status,.v2globalstatus,.pill){background:tr
 html body .main .owner-status{background:transparent!important;border:0!important;border-left:2px solid var(--rb-goud)!important;border-radius:0!important;color:var(--rb-zacht)!important;font-weight:450!important;padding:6px 14px!important}
 html body .topbar .smallbtn.ai,html body .topbar .ai{background:var(--rb-inkt)!important;color:#fff!important;border:1px solid var(--rb-inkt)!important;border-radius:999px!important;padding:10px 22px!important;letter-spacing:.1em!important}
 html body .topbar .ai:hover{background:transparent!important;color:var(--rb-inkt)!important}
+
+/* Beleving (interactie): zachte reacties, geen schokken. */
+html{scroll-behavior:smooth}
+html body :focus-visible{outline:2px solid var(--rb-inkt);outline-offset:3px;border-radius:4px}
+html body .sidebar :focus-visible{outline-color:var(--rb-goud)}
+::selection{background:var(--rb-goud);color:var(--rb-inkt)}
+html body .main :where(.card,[class*="card"]){transition:box-shadow .7s ease,border-color .7s ease}
+html body .main :where(.card,[class*="card"]):hover{box-shadow:0 18px 40px -28px rgba(20,23,26,.35)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

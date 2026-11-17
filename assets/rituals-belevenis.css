@@ -90,3 +90,12 @@ html body .wrap :is(h2){margin-bottom:.6em}
   html body .inhoud-kop video{display:none!important}
 }
 @media(prefers-reduced-motion:reduce){html body *{transition:none!important}}
+
+/* Beleving (interactie): langzame, rustige reacties. Alleen vorm en beweging. */
+html{scroll-behavior:smooth}
+html body main a{transition:color .5s ease,opacity .5s ease,border-color .5s ease}
+html body main :where(.card,[class*="card"],[class*="tile"]){transition:transform .7s cubic-bezier(.22,.61,.36,1),box-shadow .7s ease,border-color .7s ease}
+html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:translateY(-4px);box-shadow:0 18px 40px -26px rgba(20,23,26,.35)}
+html body :focus-visible{outline:2px solid #14171A;outline-offset:3px;border-radius:4px}
+::selection{background:#FFE86B;color:#14171A}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:none}}
