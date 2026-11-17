@@ -24,7 +24,27 @@ export function branchRecoveryDecision(pr,branch,repository){
 }
 function gh(args){return execFileSync('gh',args,{encoding:'utf8',timeout:25000,maxBuffer:6*1024*1024});}
 function api(path){return JSON.parse(gh(['api',path]));}
-export function recoverOneStaleBlogBranch({repo,today,fetchPage=api,updateBranch=gh}={}){
+
+export function canonicalBlogApprovalState(row){
+ return Boolean(row && row.status==='APPROVED' && row.approved_at &&
+  !row.published_at && !row.live_proven_at && !row.external_id);
+}
+function readCanonicalBlogApproval(date){
+ const key=String(process.env.SUPABASE_SERVICE_ROLE_KEY||'').trim();
+ if(!key)throw Error('BLOG_RECOVERY_CANONICAL_SERVICE_AUTH_MISSING');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(date))throw Error('BLOG_RECOVERY_INVALID_SOURCE_DATE');
+ const url='https://adhjwmvyoixzjtmiroln.supabase.co/rest/v1/content_publication_obligations'
+  +'?tenant_id=eq.canonical&channel=eq.blog&publication_date=eq.'+date
+  +'&select=status,approved_at,published_at,live_proven_at,external_id&limit=1';
+ const result=execFileSync('curl',['--fail','--silent','--show-error','--max-time','15',
+  '--header','apikey: '+key,'--header','Authorization: Bearer '+key,url],
+  {encoding:'utf8',timeout:25000,maxBuffer:65536});
+ const rows=JSON.parse(result);
+ if(!Array.isArray(rows)||rows.length!==1)throw Error('BLOG_RECOVERY_CANONICAL_STATUS_UNVERIFIED');
+ return canonicalBlogApprovalState(rows[0]);
+}
+
+export function recoverOneStaleBlogBranch({repo,today,fetchPage=api,updateBranch=gh,verifyDue=readCanonicalBlogApproval}={}){
  const open=[];
  for(let page=1;page<=3;page++){
   const batch=fetchPage('repos/'+repo+'/pulls?state=open&per_page=100&page='+page);
@@ -38,6 +58,11 @@ export function recoverOneStaleBlogBranch({repo,today,fetchPage=api,updateBranch
   if(pr?.head?.sha!==item.head.sha){console.log('BLOG_BACKLOG_HEAD_MOVED_RETRY_NEXT_HOUR:'+item.number);continue;}
   const decision=branchRecoveryDecision(pr,item.head.ref,repo);
   if(decision==='REQUEST_GITHUB_NATIVE_UPDATE'){
+   const date=item.head.ref.slice(-10);
+   if(!verifyDue(date)){
+    console.log('BLOG_BACKLOG_NOT_APPROVED_OR_ALREADY_LIVE:PR='+item.number+':date='+date);
+    continue;
+   }
    updateBranch(['api','-X','PUT','repos/'+repo+'/pulls/'+item.number+'/update-branch','-f','expected_head_sha='+pr.head.sha]);
    console.log('BLOG_BACKLOG_NATIVE_UPDATE_REQUESTED:PR='+item.number+':date='+item.head.ref.slice(-10)+':old_head='+pr.head.sha);
    return {action:'UPDATE_REQUESTED',number:item.number};
