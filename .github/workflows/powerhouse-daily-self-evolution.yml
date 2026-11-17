@@ -44,6 +44,10 @@ jobs:
   improve:
     if: ${{ (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery') && (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_code_recovery') }}
     needs: daily-admission
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -115,6 +119,17 @@ jobs:
         run: |
           node --test tests/brain-innovation-original-owner-decision-20261115.test.mjs
           node scripts/brain/innovation-original-owner-decision.mjs --writeback
+      - name: Reconcile all original innovation deliveries, protected builds, production and effect proof
+        if: always()
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs
+          node scripts/brain/innovation-original-delivery-continuity.mjs --reconcile
       - name: Persist exact-run daily agent-learning checkpoint even after a failed step
         if: always()
         env:
