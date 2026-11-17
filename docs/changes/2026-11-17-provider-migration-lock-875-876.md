@@ -1,0 +1,10 @@
+# 17 November — reconcile already-applied original Supabase migration in protected source lock
+
+**Independent evidence:** original production Supabase project `adhjwmvyoixzjtmiroln` query `SELECT version,name FROM supabase_migrations.schema_migrations ORDER BY version` returned 876 applied version/name pairs. Existing GitHub `supabase/migration-history.lock.json` held 875 entries. All prior 875 entries were compared one-to-one against actual Supabase provider readback with zero identity or name mismatches. The ONE genuine missing provider migration was:
+- `20261117094500` / `original_result_guardian_existing_watchdog_v1`, whose exact executable SQL is already in original GitHub `supabase/migrations/20261117094500_original_result_guardian_existing_watchdog_v1.sql`.
+
+**Required CI incident:** original Mira source discovery PR #5942 was correctly blocked by the original historical Supabase migration lock parity checks. Required run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44053428555 failed with executable migration count 876 against old lock 875. This incident is not caused by the Mira source query and must not be worked around by weakening Required checks.
+
+**Repair:** append ONLY this exact already-applied provider version/name pair to the same existing `migration-history.lock.json`, retaining all 875 prior records in their original order, and refresh `captured_at` using real provider observation 2026-11-17T09:15:50.724Z. Do not create or reapply a migration, patch DDL, claim provider side effects or fake identities. Original protected Required migration tests must pass, CodeQL must pass, and strict main merge remains mandatory. Then original Mira source PR #5942 must update its head to current base and run its own protected Required and CodeQL before release.
+
+**Boundary:** application migration proof is NOT business publication. Original Instagram still needs dated source, immutable winner, claimed OpenArt history, exact video/face/temporal and Meta ID/GET, and ONE BRAIN consumer PROCESSED.
