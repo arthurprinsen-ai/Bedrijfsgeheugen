@@ -346,11 +346,6 @@ jobs:
           SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node scripts/brain/innovation-original-code-nochange-review.mjs --record
-      - name: Fail visibly when original quality reconciliation did not complete
-        if: ${{ always() && steps.original_quality_reconcile.outcome == 'failure' }}
-        run: |
-          echo "::error::ORIGINAL_14_QUALITY_RECONCILIATION_FAILED: original ONE BRAIN readback/CAS unresolved. Do not mark operation complete."
-          exit 1
       - name: Publish only the validated code candidate on a new protected PR
         if: steps.candidate.outputs.selected == 'true' && steps.validation.outputs.has_changes == 'true'
         id: delivery
@@ -419,3 +414,8 @@ jobs:
           if ! gh pr merge "$PR_URL" --auto --squash; then
             echo "::warning::PROTECTED_AUTO_MERGE_NOT_ENABLED: candidate remains open; no green claim."
           fi
+      - name: Fail visibly when original quality reconciliation did not complete
+        if: ${{ always() && steps.original_quality_reconcile.outcome == 'failure' }}
+        run: |
+          echo "::error::ORIGINAL_14_QUALITY_RECONCILIATION_FAILED: original ONE BRAIN readback/CAS unresolved. Do not mark operation complete."
+          exit 1
