@@ -22,3 +22,6 @@ Patch the original `powerhouse_commercial_message_candidates_v1` ranking, using 
 A top-N single global score sorter with mixed-channel age/priority values can starve a valid channel even while all crons are green. Test lane fairness against skewed candidates and reserve bounded capacity; classify true source holds separately from scheduler or provider failures.
 
 No direct production hotpatch; rollback protected PR.
+
+## CI recovery — native clean-room missing archival base view
+Exact PR #5945 initial Supabase Preview and dependent Required tests rejected the candidate at 2026-11-17T09:33 UTC: `ERROR: type "public.powerhouse_commercial_message_plan_v1" does not exist (SQLSTATE 42704)`. Independent preview SQL confirmed original view and composer RPC both absent, although both exist in real original production; historical schema migrations reside under repository-only archives. Corrective SQL uses an explicit `to_regclass` dependency check, no substitute view/type, and emits named dependency-missing NOTICE in an incomplete preview. Production WITH genuine base type executes full unchanged SQL candidate function. Preserve two distinct verifications: (1) candidate source/test/preview checks and (2) native original production function existence/SQL definition/candidate selection plus downstream original composer. Do not call a no-op preview an E2E pass.
