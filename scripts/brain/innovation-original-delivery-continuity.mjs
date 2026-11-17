@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import {readCanonicalRows,evaluateOriginalOwnerHandoff} from './innovation-original-owner-readback.mjs';
 import {trustedBrainReadConfig} from './planned-action-review-audit.mjs';
 import {readOriginalSalesExecutionAudit} from '../../platform/portal/powerhouse-existing-integration-read-model.mjs';
+import {CONTRACT as QUALITY_CONTRACT,QUALITY_NEXT} from './innovation-original-evidence-reconciliation.mjs';
 
 // Same original daily agent, no separate scheduler or Brain.
 // All writes are nonterminal evidence updates on original versioned operations.
@@ -19,6 +20,53 @@ const statusKind=decision=>decision==='CRO_MEASUREMENT_AND_HOLDOUT_DESIGN_REQUIR
   decision==='BASELINE_AND_EVALUATION_DESIGN_REQUIRED'?'BASELINE_AND_EVALUATION':
   decision==='CONCRETE_PROTECTED_CHANGE_PROPOSAL_DUE'?'PROTECTED_ENGINEERING':
   'SOURCE_REVIEW_REQUIRED';
+
+// The original 14 source-quality receipts are immutable nonterminal evidence.
+// A historical quality signal can specify the original owner's NEXT proof duty,
+// but cannot authorize a build, provider send, consumer ACK, or effect claim.
+export function sourceQualityNextAction({candidate,obligation,operation,decision,alreadyVerified=false}={}){
+  const receipt=operation?.evidence?.original_evidence_reconciliation;
+  if(!receipt||candidate?.proposed_action?.kind!=='bounded_learning_followup')return null;
+  const quality=receipt.source_quality;
+  const expected=QUALITY_NEXT[candidate.component_id];
+  assert(decision?.decision==='BASELINE_AND_EVALUATION_DESIGN_REQUIRED'&&
+    operation.status==='PLANNED'&&!alreadyVerified&&
+    receipt.contract===QUALITY_CONTRACT&&
+    receipt.candidate_id===candidate.candidate_id&&
+    receipt.original_operation_id===operation.id&&
+    receipt.original_owner===operation.capability_id&&
+    receipt.source_revision===obligation.evidence?.source_revision&&
+    receipt.source_sha256===operation.payload_sha256&&
+    receipt.original_change_id===candidate.source_key&&
+    receipt.source_decision_fingerprint===decision.fingerprint&&
+    receipt.source_pre_review_fingerprint===operation.evidence?.original_agent_pre_review?.fingerprint&&
+    quality?.original_fingerprint===candidate.baseline?.quality_fingerprint&&
+    ['verified','guarded'].includes(quality?.status)&&
+    quality.historical_claim_not_current_production_proof===true&&
+    /^[a-f0-9]{64}$/i.test(quality.source_evidence_sha256)&&
+    /^[a-f0-9]{64}$/i.test(receipt.fingerprint)&&
+    receipt.next_action===expected&&typeof expected==='string'&&
+    receipt.disposition===(quality.status==='verified'?
+      'HISTORICAL_VERIFIED_QUALITY_SOURCE_CURRENT_EFFECT_DUE':
+      'HISTORICAL_GUARDED_QUALITY_SOURCE_CURRENT_PROOF_DUE')&&
+    receipt.evidence_type==='HISTORICAL_FIRST_PARTY_QUALITY_EVENT_UNCONFIRMED_AS_CURRENT_PRODUCTION'&&
+    receipt.independently_verified_current_effect===false&&
+    receipt.consumer_ack_verified===false&&receipt.terminal_success===false&&
+    receipt.historical_baseline_not_current_effect===true&&
+    receipt.protected_review_required===true&&
+    receipt.automated_external_provider_dispatch===false,
+    'ORIGINAL_QUALITY_RECEIPT_SOURCE_OR_AUTHORITY_DRIFT');
+  return Object.freeze({
+    stage:quality.status==='verified'?
+      'HISTORICAL_VERIFIED_QUALITY_SOURCE_CURRENT_EFFECT_DUE':
+      'HISTORICAL_GUARDED_QUALITY_SOURCE_CURRENT_PROOF_DUE',
+    next_action:expected,receipt_fingerprint:receipt.fingerprint,
+    quality_evidence_digest:quality.source_evidence_sha256,
+    historical_source_status:quality.status,
+    current_effect_verified:false,
+    consumer_ack_verified:false
+  });
+}
 
 export function examineOriginalDelivery({candidate,obligation,operation,githubPr=null,production=null,legacyPr=null,sourceAudit=null,checkedAt=new Date().toISOString()}={}){
   assert(Number.isFinite(Date.parse(checkedAt)),'CLOCK_INVALID');
@@ -217,12 +265,23 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
       }else stage='PREEXISTING_PROTECTED_SOURCE_PR_NOT_MERGED_REVIEW_DUE';
     }
   }
+  const originalQualityAction=sourceQualityNextAction({
+    candidate,obligation,operation,decision,alreadyVerified
+  });
+  if(originalQualityAction){
+    assert(stage==='BASELINE_OR_SAFE_SCOPE_DUE','ORIGINAL_QUALITY_CANNOT_REPLACE_CODE_OR_IMPACT');
+    stage=originalQualityAction.stage;
+  }
   // Neither a PR nor a deploy can attest measured business impact.
   const assessment={contract:CONTRACT,candidate_id:candidate.candidate_id,
     source_revision:obligation.evidence.source_revision,
     source_sha256:operation.payload_sha256,original_owner:owner,
     original_operation_id:operation.id,delivery_lane:statusKind(decision.decision),
     stage,pr_number:prNumber,merge_sha:mergeSha,
+    original_quality_next_action:originalQualityAction?.next_action??null,
+    original_quality_receipt_fingerprint:originalQualityAction?.receipt_fingerprint??null,
+    original_quality_evidence_sha256:originalQualityAction?.quality_evidence_digest??null,
+    current_quality_effect_verified:false,
     production_deploy_id:deployId,production_sha:deployedSha,
     verified_code_in_production:codeInProduction,
     historically_verified_code_release:previouslyVerifiedCodeRelease,
