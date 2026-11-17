@@ -31,6 +31,10 @@ export const MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES=Object.freeze({
   // Seek dated real-life 'stuck quote / no reply' evidence, without changing
   // accepted-source score/date/URL/topic or adding another search slot.
   'offertes-zonder-opvolging':'offerte blijft liggen klanten',
+  // 16-Nov independent Dutch invoice-error news demonstrates the missing
+  // real MKB payment process friction that generic 'onbetaalde facturen'
+  // news search often misses. This is DISCOVERY ONLY, never proof or approval.
+  'debiteuren':'bedrijven factuurfouten betalingsachterstanden',
   'klantafhankelijkheid':'mkb klantconcentratie omzet'
 });
 const familyLookup=new Map(MIRA_SOURCE_TOPIC_QUERIES.flatMap(f=>[

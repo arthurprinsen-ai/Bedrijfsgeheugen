@@ -277,6 +277,7 @@ jobs:
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           import { deriveNetlifyDeploymentApplicability } from './tools/delivery/netlify-deployment-applicability.mjs';
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
+          import { reconcileLivePrScope } from './tools/delivery/live-pr-scope-reconciliation.mjs';
           import { evaluateBranchHygiene, resolvePRScopeMergeBase } from './tools/delivery-branch-hygiene-guard.mjs';
           import { resolveDeliveryMetadataAuthority } from './tools/delivery/delivery-metadata-authority.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
@@ -297,9 +298,19 @@ jobs:
               } : undefined,
             },
           });
-          const livePrBody = process.env.PR_BODY_INPUT || (context.prNumber
-            ? JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${context.prNumber}`],{encoding:'utf8'})).body || ''
-            : '');
+          const livePr=context.prNumber && ['pull_request','workflow_dispatch'].includes(process.env.EVENT_NAME)
+            ? JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${context.prNumber}`],{encoding:'utf8'}))
+            : null;
+          const livePrScope=livePr ? reconcileLivePrScope({
+            eventName:process.env.EVENT_NAME,
+            prNumber:context.prNumber,
+            eventBaseSha:context.baseSha,
+            eventHeadSha:context.changeHeadSha,
+            livePr,
+          }) : null;
+          const livePrBody = process.env.PR_BODY_INPUT || livePr?.body || '';
+          if(livePrScope?.baseDrift) console.log('REQUIRED_PR_EVENT_BASE_STALE:verified_live_base='+livePrScope.baseSha);
+
           const oneLoopPolicy=JSON.parse(await readFile('config/powerhouse-one-loop-v1.json','utf8'));
           const metadataAuthority=resolveDeliveryMetadataAuthority({
             prBody: livePrBody,
@@ -315,7 +326,7 @@ jobs:
           // For a diverged PR, GitHub's merge base is the scope authority.
           // A two-dot diff from today's main includes unrelated main edits.
           // Non-PR and merge-group delivery retain their event-base scope.
-          const providerBaseSha=context.prNumber && context.baseSha ? context.baseSha : comparisonBaseSha;
+          const providerBaseSha=livePrScope?.baseSha || comparisonBaseSha;
           const prComparison=context.prNumber && ['pull_request','workflow_dispatch'].includes(process.env.EVENT_NAME)
             ? JSON.parse(execFileSync('gh',[
                 'api',

@@ -1,0 +1,30 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|gitops|native-provider-877-applied-with-missing-source-lock|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "APPLIED_SUPABASE_MIGRATION_MISSING_FROM_CANONICAL_LOCK"
+  },
+  "root_cause": "Merged original composer-email fairness migration 20261117102500_original_composer_email_channel_fairness_v1.sql on protected main #5945 was natively APPLIED in Supabase EU production (877 total) while canonical GitOps source lock had 876 records; each original 876 ordered version/name matched native provider. Original Required on independent Janitor #5946 was legitimately blocked by six migration integrity tests. Earlier 876 lock repair #5944 was correct at the time, but this new 877 source/lock drift recurred after a separate protected merge.",
+  "prevention": [
+    "After any protected SQL release original GitOps/Supabase owner MUST compare native migration-history version/name against canonical GitOps source lock before marking deploy/release ready for downstream agents.",
+    "Append exactly the provider-confirmed missing applied version/name to the existing lock in canonical native order; never replay SQL, change older identities, bypass Required or create parallel registry.",
+    "A downstream PR failing migration lock is not proof its own source changes failed; root cause stays one original source/lock incident family with each true applied version distinguished and sent to original owner.",
+    "Document failure and future guard to make lock reconciliation an independently verified dependency of original migration producer before handoff, not just a separate cleanup."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5945",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5946",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44054272367",
+    "2026-11-17 native Supabase management list_migrations 877 total; exact 876 GitOps lock prefix and single 877th pair 20261117102500 original_composer_email_channel_fairness_v1",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  ],
+  "acceptance": "Original protected Required/CodeQL and migration-lock regressions exact-head PASS, protected squash merge, independent current main lock 877 ordered entries vs native provider 877 exact version/name; no SQL re-execution. Broader agents and actual provider outcomes separately open."
+}
