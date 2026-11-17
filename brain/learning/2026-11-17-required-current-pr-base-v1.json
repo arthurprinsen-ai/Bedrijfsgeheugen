@@ -17,8 +17,7 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-required-live-pr-base-reconciliation-20261117.test.mjs",
-      "tests/brain-required-merge-base-scope-v1.test.mjs",
-      "tests/delivery-branch-hygiene-guard.test.mjs"
+      "tests/brain-required-merge-base-scope-v1.test.mjs"
     ]
   },
   "evidence": [
@@ -26,7 +25,8 @@
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44048420630",
     "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44049230571",
     "https://docs.github.com/en/rest/pulls/pulls#get-a-pull-request",
-    "https://docs.github.com/en/rest/commits/commits#compare-two-commits"
+    "https://docs.github.com/en/rest/commits/commits#compare-two-commits",
+    "tests/delivery-branch-hygiene-guard.test.mjs (secondary original contract, not a dependency-free learning-evaluation replay)"
   ],
   "acceptance": "Exact new-head Required/CodeQL and real protected merge of candidate, followed by original automation PR #5934 rerun whose verified provider live-base scope is six and not 10; real Netlify + source processing required before whole lifecycle green."
 }
