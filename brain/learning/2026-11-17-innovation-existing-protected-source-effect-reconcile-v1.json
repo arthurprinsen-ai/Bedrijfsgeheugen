@@ -1,0 +1,57 @@
+{
+  "contract": "ORIGINAL_INNOVATION_EXISTING_PROTECTED_SOURCE_CONTINUITY_LEARNING_V1",
+  "fingerprint": "powerhouse|innovation|historically-protected-sales-code-classified-build-missing|20261117-v1",
+  "observed_at": "2026-11-17",
+  "root_cause": "Original exact-code PR generator refuses parent PR references (correct against duplicate code), while original delivery continuity previously classified a source-backed, protected-merged and independently audited previous implementation as PROTECTED_BUILD_DUE due to no newly generated exact-purpose Codex PR receipt. It suppressed existing owner progress and current source effect audit.",
+  "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+  "original_operation_id": "edebcb32-335b-49f0-b527-eb4289f95c5c",
+  "original_owner": "agent:agent-integration-engineer",
+  "prior_original_implementation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857",
+  "prior_production_source_evidence": "Original Brain protected_implementation_source_evidence and original_production_source_postrelease_audit: 165 historical full-week internal sales-action execution events from canonical SQL. No external sends, actual revenue, causal benefit, independent owner ACK or Heartbeat effect.",
+  "change": "Reuse the same ORIGINAL daily continuity watcher: exact source+owner+revision identity, native GitHub merged PR identity and fresh seven-day bounded original Supabase PostgREST internal execution audit, rather than duplicate code. Persist source-only bounded nonterminal measurements in the existing original Brain operation with the existing expected-version CAS+independent GET.",
+  "security": "No new agent, scheduler, provider sender, migration, credential, table or external mutation. Only source count aggregates go into private original Brain, no personal or raw event identifiers in artifact output. Missing provider evidence remains explicitly unverified.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs",
+      "tests/brain-innovation-merged-parent-safebuild-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs",
+      "tests/brain-innovation-merged-parent-safebuild-20261117.test.mjs"
+    ]
+  },
+  "terminal_success": false,
+  "source_refs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5977",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857"
+  ],
+  "unverified": "Independent business effect, customer value, Heartbeat consumer ACK, provider delivered external transaction and full implementation of other 13 original obligations remain OPEN.",
+  "prevention_rule": "For every original innovation with protected historic source evidence and no new Codex-generated PR receipt: resolve the original native merged GitHub PR and run a fresh bounded independent source readback; publish only nonterminal versioned original Brain evidence, NEVER duplicate an already-implemented change or substitute internal events for verified delivery, causal value or Heartbeat ACK. A prior linked historical parent can unlock a NEW candidate only where the original ONE BRAIN operation has no independently recorded protected implementation for that SAME candidate/revision. Preserve duplicate guard and require source-bound evidence or fail closed.",
+  "evidence": {
+    "original_source_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+    "historical_implementation_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857",
+    "followup_truth_prs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5866",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5879"
+    ],
+    "historical_original_brain_reference": "protected_implementation_source_evidence: ORIGINAL_ENGINEERING_IMPLEMENTATION_EVIDENCE_V1; 165 original SQL internal source events; independent effect false, owner ACK false",
+    "original_continuity_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5977",
+    "negative_test": "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs",
+    "first_required_red": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44168209008",
+    "first_required_red_reason": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning due missing machine prevention/evidence semantic keys; root cause and regression already present; no guard waived",
+    "native_new_release": "NOT_YET_MERGED",
+    "new_live_source_effect": "NOT_YET_PROVEN",
+    "business_outcome": "NOT_PROVEN",
+    "protected_parent_selector": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5981",
+    "no_duplicate_followup_guard": "original original_code_candidate_pr or protected_implementation_source_evidence must hold before inspecting previous historical parent PR, with exact source owner/revision and native PR URL contract",
+    "new_regression": "tests/brain-innovation-merged-parent-safebuild-20261117.test.mjs"
+  }
+}

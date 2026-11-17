@@ -3,6 +3,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {readCanonicalRows,evaluateOriginalOwnerHandoff} from './innovation-original-owner-readback.mjs';
 import {trustedBrainReadConfig} from './planned-action-review-audit.mjs';
+import {readOriginalSalesExecutionAudit} from '../../platform/portal/powerhouse-existing-integration-read-model.mjs';
 
 // Same original daily agent, no separate scheduler or Brain.
 // All writes are nonterminal evidence updates on original versioned operations.
@@ -19,7 +20,7 @@ const statusKind=decision=>decision==='CRO_MEASUREMENT_AND_HOLDOUT_DESIGN_REQUIR
   decision==='CONCRETE_PROTECTED_CHANGE_PROPOSAL_DUE'?'PROTECTED_ENGINEERING':
   'SOURCE_REVIEW_REQUIRED';
 
-export function examineOriginalDelivery({candidate,obligation,operation,githubPr=null,production=null,checkedAt=new Date().toISOString()}={}){
+export function examineOriginalDelivery({candidate,obligation,operation,githubPr=null,production=null,legacyPr=null,sourceAudit=null,checkedAt=new Date().toISOString()}={}){
   assert(Number.isFinite(Date.parse(checkedAt)),'CLOCK_INVALID');
   assert(UUID.test(candidate?.candidate_id)&&candidate.source_key===obligation?.change_id&&
     obligation.business_entity===candidate.candidate_id&&
@@ -49,6 +50,8 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
   let stage='BASELINE_OR_SAFE_SCOPE_DUE';
   let prNumber=null,mergeSha=null,deployedSha=null,deployId=null,codeInProduction=false;
   let previouslyVerifiedCodeRelease=false;
+  let preexistingProtectedSource=false;
+  let internalSourceReadback=null;
   if(statusKind(decision.decision)==='CRO_HOLDOUT')stage='CRO_CONSENT_BASELINE_AND_HOLDOUT_DUE';
   if(alreadyVerified)stage='ORIGINAL_CONSUMER_ACK_VERIFIED_IMPACT_READBACK_DUE';
   if(!alreadyVerified&&statusKind(decision.decision)==='PROTECTED_ENGINEERING')stage='PROTECTED_BUILD_DUE';
@@ -141,6 +144,74 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
       }
     }
   }
+
+  // One original 55bb source-joined sales-execution innovation was implemented
+  // through an earlier protected portal PR, before the bounded Codex selector
+  // existed. Its original intake has no new exact-purpose PR receipt; that must
+  // NOT reset a real historical implementation back to "build missing".
+  // Historical source text alone is not live provider, customer or impact proof.
+  const existingSource=operation.evidence?.protected_implementation_source_evidence;
+  if(candidate.component_id==='powerhouse-sales-cycle-execution-read-model'&&
+    !prior&&!noop&&!alreadyVerified&&existingSource){
+    assert(existingSource.contract==='ORIGINAL_ENGINEERING_IMPLEMENTATION_EVIDENCE_V1'&&
+      existingSource.candidate_id===candidate.candidate_id&&
+      existingSource.original_owner===owner&&
+      existingSource.source_revision===obligation.evidence.source_revision&&
+      existingSource.implementation_scope==='readonly_original_sales_action_full_week_census'&&
+      existingSource.protected_release_verified===true&&
+      /^https:\/\/github\.com\/arthurprinsen-ai\/Bedrijfsgeheugen\/pull\/[1-9][0-9]*$/.test(existingSource.pr_url),
+      'LEGACY_IMPLEMENTATION_SOURCE_IDENTITY_CONFLICT');
+    stage='PREEXISTING_PROTECTED_SOURCE_NATIVE_PR_READBACK_DUE';
+    if(legacyPr){
+      assert(legacyPr.url===existingSource.pr_url&&
+        legacyPr.number===Number(existingSource.pr_url.split('/').at(-1))&&
+        legacyPr.baseRefName==='main'&&
+        typeof legacyPr.body==='string'&&
+        legacyPr.body.includes('Original candidate `'+candidate.candidate_id+'`')&&
+        legacyPr.body.includes('Candidate-Type: implementation')&&
+        legacyPr.body.includes('Writer-Lease-Owner: original agent:agent-integration-engineer'),
+        'LEGACY_GITHUB_PR_LINEAGE_CONFLICT');
+      if(legacyPr.state==='MERGED'&&SHA.test(legacyPr.mergeCommit?.oid)){
+        preexistingProtectedSource=true;
+        stage='PREEXISTING_PROTECTED_SOURCE_CURRENT_PROVIDER_AUDIT_DUE';
+        // This is a NEW live native PostgREST 7-day exact-count, full-page
+        // source-action join. Only internal sales execution is measured.
+        if(sourceAudit?.readOnly===true&&
+          sourceAudit.externalProviderProof===false&&
+          sourceAudit.paidOutcomeProof===false&&
+          sourceAudit.scope==='FULL_LAST_7D'&&
+          Number.isSafeInteger(sourceAudit.totalEvents7d)&&
+          Number.isSafeInteger(sourceAudit.sampledEvents)&&
+          sourceAudit.totalEvents7d===sourceAudit.sampledEvents&&
+          Number.isSafeInteger(sourceAudit.actionBackedSample)&&
+          Number.isSafeInteger(sourceAudit.unsupportedSample)&&
+          sourceAudit.actionBackedSample>=0&&
+          sourceAudit.unsupportedSample>=0&&
+          sourceAudit.actionBackedSample+sourceAudit.unsupportedSample===sourceAudit.sampledEvents&&
+          Number.isFinite(Date.parse(sourceAudit.observedAt))&&
+          Math.abs(Date.parse(checkedAt)-Date.parse(sourceAudit.observedAt))<=3600000){
+          internalSourceReadback={
+            provider:'ORIGINAL_CANONICAL_SUPABASE_POSTGREST',
+            scope:'FULL_LAST_7D',
+            state:sourceAudit.state,
+            total_internal_execution_events_7d:sourceAudit.totalEvents7d,
+            writer_action_joined:sourceAudit.actionBackedSample,
+            unsupported_internal_events:sourceAudit.unsupportedSample,
+            missing_original_actions:sourceAudit.missingActionSample,
+            current_action_not_done:sourceAudit.currentActionNotDoneSample,
+            current_execution_missing_event:sourceAudit.currentExecutionWithoutEventSample,
+            independent_provider_send_verified:false,
+            independent_revenue_or_customer_value_verified:false
+          };
+          stage=sourceAudit.state==='HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED'?
+            'PREEXISTING_SOURCE_CURRENTLY_MEASURED_CAUSAL_OUTCOME_DUE':
+            sourceAudit.state==='NO_EXECUTION_EVENTS_OBSERVED'?
+              'PREEXISTING_SOURCE_NO_CURRENT_EVENTS_MEASUREMENT_DUE':
+              'PREEXISTING_SOURCE_GAPS_REQUIRE_ORIGINAL_OWNER_REPAIR';
+        }
+      }else stage='PREEXISTING_PROTECTED_SOURCE_PR_NOT_MERGED_REVIEW_DUE';
+    }
+  }
   // Neither a PR nor a deploy can attest measured business impact.
   const assessment={contract:CONTRACT,candidate_id:candidate.candidate_id,
     source_revision:obligation.evidence.source_revision,
@@ -150,6 +221,8 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
     production_deploy_id:deployId,production_sha:deployedSha,
     verified_code_in_production:codeInProduction,
     historically_verified_code_release:previouslyVerifiedCodeRelease,
+    existing_protected_source_pr_verified:preexistingProtectedSource,
+    internal_source_readback:internalSourceReadback,
     expected_impact:null,actual_impact:null,holdout_impact:null,
     independent_impact_verified:false,consumer_ack_verified:alreadyVerified,
     independent_heartbeat_learning_verified:false,terminal_success:false,
@@ -159,7 +232,7 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
   return Object.freeze({...assessment,assessment_fingerprint:fingerprint(stable)});
 }
 
-export function planOriginalContinuity({snapshot,report,githubPrByCandidate={},productionByCandidate={},checkedAt=new Date().toISOString()}={}){
+export function planOriginalContinuity({snapshot,report,githubPrByCandidate={},productionByCandidate={},legacyPrByCandidate={},sourceAuditByCandidate={},checkedAt=new Date().toISOString()}={}){
   assert(report?.contract==='ORIGINAL_INNOVATION_AGENT_OWNER_READBACK_V1'&&
     [snapshot?.candidates,snapshot?.obligations,snapshot?.intakes].every(Array.isArray)&&
     report.counts?.candidates===snapshot.candidates.length&&
@@ -175,7 +248,9 @@ export function planOriginalContinuity({snapshot,report,githubPrByCandidate={},p
     assert(obligation&&operation,'ORPHAN_ORIGINAL');
     plans.push(Object.freeze({operation,assessment:examineOriginalDelivery({candidate,obligation,operation,
       githubPr:githubPrByCandidate[candidate.candidate_id]??null,
-      production:productionByCandidate[candidate.candidate_id]??null,checkedAt})}));
+      production:productionByCandidate[candidate.candidate_id]??null,
+      legacyPr:legacyPrByCandidate[candidate.candidate_id]??null,
+      sourceAudit:sourceAuditByCandidate[candidate.candidate_id]??null,checkedAt})}));
   }
   assert(plans.length===snapshot.obligations.length&&plans.length===snapshot.intakes.length,
     'SOURCE_CARDINALITY_DRIFT');
@@ -242,6 +317,8 @@ async function main(){
   const report=evaluateOriginalOwnerHandoff(snapshot);
   const githubPrByCandidate={};
   const productionByCandidate={};
+  const legacyPrByCandidate={};
+  const sourceAuditByCandidate={};
   let currentProduction=null;
   try{currentProduction=await netlifyProduction();}catch{
     // Provider unavailable: release remains unverified, never fabricated.
@@ -268,7 +345,28 @@ async function main(){
       // Provider readback stays DUE, never re-dispatch an external effect.
     }
   }
-  const plans=planOriginalContinuity({snapshot,report,githubPrByCandidate,productionByCandidate});
+
+  // Existing original source-joined innovation was protected released before
+  // this bounded Codex PR generator existed. Reconcile its REAL native PR and
+  // actual source data, rather than generating duplicate code or inventing ACK.
+  for(const candidate of snapshot.candidates){
+    if(candidate.component_id!=='powerhouse-sales-cycle-execution-read-model')continue;
+    const operation=snapshot.intakes.find(op=>op.correlation_id==='innovation-delivery:'+candidate.candidate_id);
+    const existing=operation?.evidence?.protected_implementation_source_evidence;
+    if(!existing||operation.evidence?.original_code_candidate_pr)continue;
+    const match=/^https:\/\/github\.com\/arthurprinsen-ai\/Bedrijfsgeheugen\/pull\/([1-9][0-9]*)$/.exec(existing.pr_url);
+    assert(match,'LEGACY_SOURCE_PR_UNBOUNDED');
+    try{
+      legacyPrByCandidate[candidate.candidate_id]=gh(['pr','view',match[1],'--repo',REPO,'--json',
+        'number,url,state,headRefName,headRefOid,baseRefName,body,mergeCommit']);
+    }catch{
+      // Missing provider proof is nonterminal, never fake "not implemented".
+    }
+    sourceAuditByCandidate[candidate.candidate_id]=await readOriginalSalesExecutionAudit({
+      baseUrl:config.origin,key:config.key});
+  }
+  const plans=planOriginalContinuity({snapshot,report,githubPrByCandidate,productionByCandidate,
+    legacyPrByCandidate,sourceAuditByCandidate});
   const counts={};let writes=0;
   for(const item of plans){
     counts[item.assessment.stage]=(counts[item.assessment.stage]??0)+1;
@@ -276,6 +374,8 @@ async function main(){
   }
   process.stdout.write(JSON.stringify({contract:CONTRACT,source_count:plans.length,reviewed:plans.length,
     actual_provider_verified_code_in_production:plans.filter(x=>x.assessment.verified_code_in_production).length,
+    original_legacy_protected_source_reconciled:plans.filter(x=>x.assessment.existing_protected_source_pr_verified).length,
+    independently_audited_internal_sales_execution:plans.filter(x=>x.assessment.internal_source_readback?.scope==='FULL_LAST_7D').length,
     independently_measured_outcomes:0,original_terminalized:0,original_rows_updated:writes,
     states:counts,missing_or_unproven:plans.length,no_new_agent:true,no_new_schedule:true,
     no_external_send:true,terminal_success:false})+'\n');

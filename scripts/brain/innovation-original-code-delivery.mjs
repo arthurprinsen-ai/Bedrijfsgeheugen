@@ -122,6 +122,24 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
          priorNoChange.consumer_ack_verified!==false)fail('ORIGINAL_NOCHANGE_REVIEW_CONFLICT');
       held++;continue;
     }
+    // Original engineering implementations may predate this Codex candidate
+    // generator. The protected native source evidence belongs to the SAME
+    // candidate even when no original_code_candidate_pr receipt exists.
+    // A historical parent is not authorization to reproduce an already
+    // protected implementation. The existing continuity watchdog must
+    // independently reconcile actual PR, deployment, source and effect.
+    const implemented=op.evidence?.protected_implementation_source_evidence;
+    if(implemented!==undefined){
+      if(!obj(implemented)||
+         implemented.contract!=='ORIGINAL_ENGINEERING_IMPLEMENTATION_EVIDENCE_V1'||
+         implemented.candidate_id!==c.candidate_id||
+         implemented.original_owner!==owner||
+         implemented.source_revision!==obligation.evidence.source_revision||
+         !/^https:\/\/github\.com\/arthurprinsen-ai\/Bedrijfsgeheugen\/pull\/[1-9][0-9]*$/.test(implemented.pr_url??'')||
+         implemented.protected_release_verified!==true)
+        fail('ORIGINAL_PRIOR_PROTECTED_IMPLEMENTATION_CONFLICT');
+      held++;continue;
+    }
     // A previously implemented source, or a duplicate candidate PR, must be reconciled, not rebuilt.
     if(/\bPR\s*#?\d{3,6}\b/i.test(action)){held++;continue;}
     // A linked old PR is never sufficient. The actual GitHub merged parent
