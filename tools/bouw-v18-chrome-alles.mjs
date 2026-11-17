@@ -285,6 +285,18 @@ if (fouten.length) {
   }
 }
 
+// Rituals-beleving: interactielaag (onthulling bij scrollen, ademmoment, zachte
+// overgangen). Alleen presentatie; zonder JS blijft alles gewoon zichtbaar.
+{
+  const script = '<script src="/assets/rituals-beleving.js?v=20261117" defer></script>';
+  for (const pad of await allePaginas()) {
+    let h = await readFile(pad, 'utf8');
+    if (!h.includes('</body>') || h.includes('rituals-beleving.js')) continue;
+    h = h.replace('</body>', script + '\n</body>');
+    await writeFile(pad, h, 'utf8');
+  }
+}
+
 // De losse bouwstenen onder components/ zijn fragmenten, geen pagina's. Ze
 // horen niet in Google: dunne inhoud die met echte pagina's concurreert.
 for await (const p of glob('components/*/*.html')) {
