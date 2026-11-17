@@ -224,6 +224,12 @@ EXCEPTION WHEN OTHERS THEN
 END;
 $function$
 ;
+-- Explicitly preserve the existing original service-only caller boundary.
+REVOKE ALL ON FUNCTION public.powerhouse_original_result_guardian_v1()
+FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_original_result_guardian_v1()
+TO service_role;
+
 COMMENT ON FUNCTION public.powerhouse_original_result_guardian_v1()
 IS 'Canonical #171 existing guardian v2: detect email handoff AND cron20 Tavily quota/feed staleness from real HTTP/provider receipts, do not repeat quota-exceeded lookups or declare green; no alternate scheduler.';
 COMMIT;
