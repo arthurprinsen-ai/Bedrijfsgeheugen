@@ -1,8 +1,15 @@
--- P0 #4198: the ORIGINAL composer must not starve prepared email forever
--- behind high-priority LinkedIn-DM candidates. No new worker/provider/cron,
--- no changing recipient permission, source/provenance or provider-send controls.
+-- P0 #4198 ORIGINAL composer fairness. The historical composer rowtype is
+-- deployed in production but absent from Supabase clean-room preview because
+-- the foundational source was archived in repository-only migration history.
+-- Fail truthfully: preview absence is NOT production behavior proof.
+-- No parallel owner, send permission, scheduler or fake preview type.
 BEGIN;
-
+DO $guard$
+BEGIN
+  IF to_regclass('public.powerhouse_commercial_message_plan_v1') IS NULL THEN
+    RAISE NOTICE 'ORIGINAL_COMPOSER_PREVIEW_DEPENDENCY_MISSING: no rowtype; no function altered. Original production SQL readback mandatory.';
+  ELSE
+    EXECUTE $original_source$
 CREATE OR REPLACE FUNCTION public.powerhouse_commercial_message_candidates_v1(
   p_limit integer DEFAULT 10,
   p_channels text[] DEFAULT NULL::text[],
@@ -54,7 +61,12 @@ AS $candidate$
     p.priority DESC, p.action_id
   LIMIT GREATEST(1,LEAST(coalesce(p_limit,10),50));
 $candidate$;
-
+$original_source$;
+    EXECUTE $original_comment$
 COMMENT ON FUNCTION public.powerhouse_commercial_message_candidates_v1(integer,text[],uuid[])
 IS 'Existing original composer selector. Reserve at most two of its existing batch slots for eligible email candidates to prevent LinkedIn-DM priority starvation; no grant, send or status bypass.';
+$original_comment$;
+  END IF;
+END
+$guard$;
 COMMIT;
