@@ -87,8 +87,8 @@ test('Mira quote search targets independent dated customer friction, not vendor-
  }
  assert.ok(alternates>0&&distinct>0);
  // No relaxation of existing evidence eligibility or media proof gates.
- assert.match(radar,/eligible:total>=0\\.72&&publication\\.eligible/);
- assert.match(radar,/classifyMiraSourceUrl\\(sourceUrl\\)\\.ok/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/classifyMiraSourceUrl\(sourceUrl\)\.ok/);
 });
 
 test('original company concentration query does not fetch broad finance/stock news as an MKB problem',()=>{
