@@ -6,3 +6,4 @@ Besluit Arthur 17 nov 2026: site en portaal ademen rust en exclusieve begeerte; 
 - Geen inhoud-, route- of logicawijziging. System Map opnieuw gegenereerd.
 - Bewijs lokaal: alle 73 portaalpagina's doorlopen, desktop- en mobielscreenshots voor en na; contrastfout op "Vraag Bedrijfsgeheugen" gevonden en gecorrigeerd; portaaltests groen.
 - Niet bewezen: gedragseffect (geen voor/na-meting), ingelogde weergaven (alleen uitgelogde schil gezien).
+- Delivery-Lane in de PR-body gecorrigeerd naar `portal` (eerste invulling `frontend` bestaat niet).
