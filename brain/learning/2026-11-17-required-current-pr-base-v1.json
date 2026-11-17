@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "delivery|required|stale-pr-event-base-scope-contamination|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "REQUIRED_IMMUTABLE_PR_EVENT_BASE_STALE_AFTER_MAIN_ADVANCE"
+  },
+  "root_cause": "PR #5934's immutable pull_request event base SHA 8411f99e stayed pinned after main moved to d77ebe46 and later 53a6c99d, although its PR head had incorporated new main. Existing Required fetched current PR.body but compared GitHub commits using the old event base. The original scope guard counted 10 unrelated files against the honest Scope-Budget 6 and failed. This correct fail-closed symptom revealed stale provider base selection, not permission to increase budget.",
+  "prevention": [
+    "For an existing open original PR, fetch current live GitHub PR resource once, verify exact unchanged event head SHA, number, base branch main and valid current base SHA before computing the original verified compare merge-base.",
+    "Reconcile event.base.sha drift with current GitHub PR base SHA only when original PR identity/head are independently confirmed. Reject changed head, closed PR or non-main base with a typed failure and allow a fresh exact-head run.",
+    "Keep original resolvePRScopeMergeBase, branch hygiene, Scope-Budget, CodeQL, Required, BG169 and Netlify public proof unchanged.",
+    "No parallel CI executor, no branch rewrite, no direct main, no false GREEN; require actual protected merge, natural results and original ONE BRAIN readback."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-live-pr-base-reconciliation-20261117.test.mjs",
+      "tests/brain-required-merge-base-scope-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5934",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44048420630",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44049230571",
+    "https://docs.github.com/en/rest/pulls/pulls#get-a-pull-request",
+    "https://docs.github.com/en/rest/commits/commits#compare-two-commits",
+    "tests/delivery-branch-hygiene-guard.test.mjs (secondary original contract, not a dependency-free learning-evaluation replay)"
+  ],
+  "acceptance": "Exact new-head Required/CodeQL and real protected merge of candidate, followed by original automation PR #5934 rerun whose verified provider live-base scope is six and not 10; real Netlify + source processing required before whole lifecycle green."
+}
