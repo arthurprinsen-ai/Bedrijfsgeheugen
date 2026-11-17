@@ -6,3 +6,4 @@ Besluit Arthur 17 nov 2026: site en portaal ademen rust en exclusieve begeerte. 
 - Geen tekst-, prijs-, link- of routewijziging; alle `data-money-primary`- en conversie-attributen ongewijzigd.
 - Bewijs lokaal: desktop- en mobielscreenshots voor en na; tests die `prijzen` raken groen.
 - Niet bewezen: live-readback en gedragseffect (geen voor/na-meting).
+- Delivery-Lane in de PR-body gecorrigeerd naar `website` (eerste invulling `frontend` bestaat niet).
