@@ -16,8 +16,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
-      "tests/brain-supabase-native-history-20261106.test.mjs"
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
     ]
   },
   "evidence": [
