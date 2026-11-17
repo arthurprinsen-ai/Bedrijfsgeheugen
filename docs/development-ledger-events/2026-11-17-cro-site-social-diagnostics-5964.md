@@ -19,3 +19,9 @@
 - Exact rejected head `653c54ee9d4d9dae49219d5e6ba38cd6d7762698`: Required preflight failure `SCOPE_CONTAMINATED` because PR metadata `Change-Scope: 5 files` was a placeholder; `Scope-Budget: 5 files` was also not parseable as an integer.
 - Repaired the **same** PR #5964 metadata to four explicit non-verification paths with `Scope-Budget: 4`. The existing `tests/` file remains a verification artifact, not a new product file; existing fail-closed hygiene code was not altered.
 - The prior failed run stays as evidence. Only a new exact-head Required + CodeQL pass, preview migration replay and post-merge provider readback may establish release completion. No assertion of paid conversion or live site improvement from this documentation step.
+
+## Addition without a parallel executor — email learning, 17 November 2026
+- Existing canonical `powerhouse_email_learning_stats` (11 rows) last updated 2026-10-28; 27 historical reported sends, two replies. Original `powerhouse_sales_actions` has no execution in the past seven days, nor a send+readback verified execution. No positive revenue claim.
+- Added third read-only, service-only invoker email signal to **same** SQL migration, with original send evidence and suppression counts, no subject/recipient/body exposure.
+- Separate actual Supabase transaction compiled the view and read four strategy diagnostics; all returned `NO_RECENT_VERIFIED_EMAIL_SEND`, before transaction rollback. This is not a live applied migration.
+- Same original PR, exact four-file product scope plus verification test, no changed scheduler or protected policy. Required/CodeQL, migration history, service-role readback, original consumer, and independent commercial effect remain terminal proof obligations.
