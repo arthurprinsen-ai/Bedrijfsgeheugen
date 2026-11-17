@@ -1,6 +1,6 @@
 # Rituals-richting stap 2: rustigere homepage-hero
 
-Besluit 17 nov 2026 (Arthur): website en portaal ademen rust en exclusieve begeerte, zoals Rituals; energie en humor blijven voor social. Stap 2 van de richting; bouwt voort op #5938 (gestapeld).
+Besluit 17 nov 2026 (Arthur): website en portaal ademen rust en exclusieve begeerte, zoals Rituals; energie en humor blijven voor social. Stap 2 van de richting; bouwt voort op #5938 (inmiddels gemerged, main groen via #5963).
 
 - Alleen CSS, een extra laag `v18-home-rituals` in `tools/bouw-v18-chrome-alles.mjs` (na `v18-home-blauw`). Geen DOM-, tekst-, kleur- of routewijziging; de pinned V18-payload is ongemoeid.
 - Kop: kleiner en rustiger (clamp 2,2-3,5 rem, gewicht 600, ruimere regelhoogte).
