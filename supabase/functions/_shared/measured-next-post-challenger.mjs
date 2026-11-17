@@ -15,10 +15,14 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
    &&date.getTime()-instant(p.published_at)>=24*3600000
    &&date.getTime()-instant(p.published_at)<=21*86400000).slice(0,24);
  const ids=new Set(sample.map(p=>p.post_id));
+ const originalIgMediaByPost=new Map(sample.filter(p=>p.platform==='instagram')
+   .map(p=>[p.post_id,String(p.external_post_id||'')]));
+
  const recent=snapshots.filter(s=>s?.tenant_id==='bedrijfsgeheugen'&&ids.has(s.post_id)
    &&(channel==='instagram_company'
      ?s.source==='composio-instagram'&&s.data_quality==='OBSERVED'
-       &&/^composio:instagram:[0-9]{10,25}:/.test(String(s.source_event_id||''))
+       &&/^[0-9]{10,25}$/.test(originalIgMediaByPost.get(s.post_id)||'')
+       &&String(s.source_event_id||'').startsWith('composio:instagram:'+originalIgMediaByPost.get(s.post_id)+':')
      :['OBSERVED','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED'].includes(s.data_quality))
    &&instant(s.observed_at)!==null
    &&date.getTime()-instant(s.observed_at)<=72*3600000
@@ -140,14 +144,12 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
   {name:'READERS_NEXT_STEP',change:'Maak één optionele, brongetrouwe vervolgstap concreter zonder conversiedruk.'}
  ];
  const instagram=[
-  {name:'SHAREABLE_FRICTION_HOOK',metric:'provider_observed_shares_per_reach',
-   change:'Maak uitsluitend de openingszin concreter: één herkenbare, daadwerkelijk uit de actuele bron afleidbare ondernemersfrictie. Geen verzonnen case, clickbait of gevraagd nepdelen.'},
-  {name:'SAVEABLE_OWNER_CHECK',metric:'provider_observed_saves_per_reach',
-   change:'Verhelder uitsluitend één praktische eigenaar/controlehandeling voor het ondernemersprobleem, bruikbaar om op te slaan; behoud dezelfde bron en Mira-scène.'},
-  {name:'DISCUSSION_QUESTION',metric:'provider_observed_comments_per_reach',
-   change:'Stel precies één natuurlijke open vraag bij de concrete scène, geen engagementbait of gefingeerd ondernemersverhaal.'},
-  {name:'VOLUNTARY_NEXT_STEP',metric:'verified_utm_qualified_lead_progression',
-   change:'Verduidelijk uitsluitend één vrijwillige vervolgstap met aantoonbaar werkende trackingbestemming, zonder persoonsgegevens of onbewezen orderclaim.'}
+  {name:'SCENE_HOOK',metric:'provider_observed_shares_per_reach',
+   change:'Verduidelijk uitsluitend de opening van de bestaande fictieve Mira-scène met één herkenbare, bronvaste ondernemersfrictie; geen nepklantcase of engagementbait.'},
+  {name:'CONSEQUENCE',metric:'provider_observed_saves_per_reach',
+   change:'Verhelder uitsluitend één concreet mogelijk gevolg of bruikbare eigenaar/controlehandeling van de bronvaste ondernemersfrictie; behoud de bestaande Mira-scène.'},
+  {name:'RELEVANT_QUESTION',metric:'provider_observed_comments_per_reach',
+   change:'Stel uitsluitend één natuurlijke nuttige vraag bij het probleem, zonder likes, delen of reageren af te dwingen.'}
  ];
  const variants=channel==='blog'?blog:channel==='instagram_company'?instagram:company;
  const choice=variants[Math.floor(stamp/86400000)%variants.length];
