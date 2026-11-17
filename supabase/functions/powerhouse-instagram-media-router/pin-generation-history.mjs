@@ -75,5 +75,6 @@ export function assessMiraOriginalGenerationReceipt({runDate,localDate,job,ob,wi
    next_action:'Read original OpenArt history status and exact provider output; no duplicate generation.'};
 }
 function coalesceActiveVeto(ob){
- return ob?.evidence?.veto?.active===true||ob?.evidence?.mira_source_veto_active===true;
+ return String(ob?.evidence?.veto?.active??'false')==='true'||
+   String(ob?.evidence?.mira_source_veto_active??'false')==='true';
 }
