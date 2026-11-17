@@ -20,7 +20,9 @@
     "historical_replay": [
       "tests/brain-mira-independent-personal-source-20261117.test.mjs",
       "tests/brain-original-personal-radar-source-parity-20261115.test.mjs",
-      "tests/brain-mira-radar-http-contract-20261113.test.mjs"
+      "tests/brain-mira-radar-http-contract-20261113.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
     ],
     "shadow": [
       "tests/brain-mira-original-provider-rejections-20261114.test.mjs",
