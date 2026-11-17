@@ -11,3 +11,8 @@ Besluit Arthur 17 nov 2026: rust en exclusieve begeerte; ook interactie, UI en U
 - Geen tekst-, route- of logicawijziging. System Map opnieuw gegenereerd.
 - Bewijs lokaal: gedragstest (onthulling, adem open/dicht, begroeting, geen losse tekst, geen scriptfouten) desktop en mobiel; 24 gerelateerde tests groen.
 - Niet bewezen: ingelogde portaalweergaven, effect op gedrag of conversie, live-readback tot na merge.
+
+## Herstel na onafhankelijke Required-browsercheck
+De eerste beschermde browserrun https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44168414229 faalde 12 keer op exact hetzelfde V18-megamenu-contract: headingkleur was rgb(20,23,26), terwijl zwart rgb(0,0,0) en vet >=700 vereist zijn. De eerdere Rituals-override targette alleen descendants van header.v17-header. Het echte JS-gemarkeerde menu kan echter buiten die header worden geplaatst.
+
+Daarom corrigeert dezelfde bron-PR uitsluitend de selectors voor data-bg-megamenu-root, data-bg-megamenu-heading en data-bg-megamenu-link met voldoende specificiteit. Het gewone menupaneel blijft zwart en vet; de promotiekaart, gewone header en overige nieuwe interacties behouden hun bedoelde stijl. De originele browsercheck is niet afgezwakt. De wijziging is nog niet live: opnieuw exact-head Required/CodeQL, beschermde merge en onafhankelijke Netlify/public browser-readback zijn vereist.
