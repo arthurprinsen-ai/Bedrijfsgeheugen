@@ -63,3 +63,42 @@ test('existing API contract remains fail-closed and source calls diagnostic logg
   assert.match(route,/error:error\.code\},\{status:409\}/);
   assert.ok(route.indexOf('DATA_SOVEREIGNTY_AI_BLOCKED') < route.indexOf('reportI18nError({error,requestId,dataClass})'));
 });
+
+test('production OpenAI adapter marker distinguishes quota and server rejection safely', () => {
+  for (const code of [429, 500, 503]) {
+    const logs = [];
+    const event = reportI18nError({
+      error:new Error('OPENAI_PROVIDER_ERROR_' + code + ':sensitive provider text sk-test-key customer@example.com'),
+      requestId, dataClass:'Public', log:line=>logs.push(line)
+    });
+    assert.equal(event.failure_class,'UPSTREAM_HTTP_REJECTION');
+    assert.equal(event.upstream_status,code);
+    assert.equal(logs.length,1);
+    assert.doesNotMatch(logs[0], /sensitive|sk-test|customer@example/);
+  }
+  assert.equal(classifyI18nError(new Error('OPENAI_PROVIDER_ERROR_299:untrusted')).upstream_status,null);
+});
+
+test('budget exhaustion and empty provider response are not mislabeled as arbitrary runtime failures', () => {
+  assert.deepEqual(classifyI18nError(new Error('OPENAI_OUTPUT_BUDGET_EXHAUSTED')), {
+    failure_class:'OUTPUT_BUDGET_EXHAUSTED', upstream_status:null
+  });
+  assert.deepEqual(classifyI18nError(new Error('OPENAI_EMPTY_RESPONSE')), {
+    failure_class:'EMPTY_MODEL_RESPONSE', upstream_status:null
+  });
+  assert.deepEqual(classifyI18nError(new Error('OPENAI_REFUSAL')), {
+    failure_class:'MODEL_REFUSAL', upstream_status:null
+  });
+});
+
+test('known translation JSON/shape failures are distinct, without exposing any text', () => {
+  assert.deepEqual(classifyI18nError(new Error('Translation response was not valid JSON')), {
+    failure_class:'TRANSLATION_INVALID_JSON', upstream_status:null
+  });
+  assert.deepEqual(classifyI18nError(new Error('Translation response shape mismatch')), {
+    failure_class:'TRANSLATION_SHAPE_MISMATCH', upstream_status:null
+  });
+  assert.deepEqual(classifyI18nError(new Error('OPENAI_PROVIDER_ERROR_429 contains unrelated data')), {
+    failure_class:'TRANSLATION_RUNTIME_OR_SHAPE', upstream_status:null
+  });
+});
