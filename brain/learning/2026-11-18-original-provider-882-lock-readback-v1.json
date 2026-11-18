@@ -1,0 +1,48 @@
+{
+  "fingerprint": "powerhouse|gitops|original-provider-882-lock-missing-after-native-migration|20261118-v1",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "obligation_id": "powerhouse|gitops|original-provider-882-lock-missing-after-native-migration|20261118-v1",
+  "owner": "existing-original-Supabase-GitOps-release-owner",
+  "root_cause": "Native production protected merge of PR6039 auto-applied exact original migration 20261118174500, but canonical migration-history.lock.json still listed 881 historical identities; future release integrity can fail if not reconciled.",
+  "observed_evidence": {
+    "native_provider_count": 882,
+    "original_lock_count": 881,
+    "first_881_exact_identity_matches": true,
+    "latest_native": {
+      "version": "20261118174500",
+      "name": "original_provider_owner_notification_receipt_v3"
+    },
+    "native_original_guardian_live": true,
+    "new_owner_notification_provider_delivery_proven": false
+  },
+  "fix": "Only append the 882nd exact already-applied native version/name to existing canonical migration-history.lock.json after readback; preserve first 881 entries and original GitOps release provenance. No SQL rerun, new scheduler, nonnative applied-history entry or provider send.",
+  "prevention_rule": "On every original protected GitOps SQL release, ensure the full executable main source and version/name match independently recorded native provider history, then update lock through protected PR before next candidate; a merge is not a provider delivery outcome.",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-882-migration-lock-20261118.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_UNTIL_PROTECTED_LOCK_MERGE",
+  "evidence": {
+    "native_provider_count": 882,
+    "lock_previous_count": 881,
+    "first_881_exact_matches": true,
+    "latest_applied": {
+      "version": "20261118174500",
+      "name": "original_provider_owner_notification_receipt_v3"
+    },
+    "source_in_main": true,
+    "provider_runtime_code_live": true,
+    "owner_notification_sent": false
+  },
+  "tests": [
+    "tests/brain-original-provider-882-migration-lock-20261118.test.mjs"
+  ]
+}
