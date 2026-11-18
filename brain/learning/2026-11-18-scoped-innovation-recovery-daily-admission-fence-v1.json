@@ -1,0 +1,38 @@
+{
+  "contract": "ORIGINAL_DAILY_INNOVATION_RECOVERY_ADMISSION_LEARNING_V1",
+  "fingerprint": "powerhouse|innovation|scoped-recovery-mistaken-as-full-daily|20261118-v1",
+  "observed_at": "2026-11-18T07:15:43Z",
+  "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original powerhousedaily-run-admission-v1 filtered only workflow_run created_at/event/head_branch and interpreted earlier workflow_dispatch original_delivery_recovery as the full daily run. The genuine full daily run 44256077963 was falsely suppressed at admission because limited recovery 44256002607 had workflow conclusion success; its daily-admission job was in fact SKIPPED and only original-delivery-recovery was successful.",
+  "prevention_rule": "Never count a workflow_dispatch run as completed daily learning merely because its workflow_run is successful. Independently GET native GitHub /actions/runs/{id}/jobs exact count, verify six original job identities and job results. A single scoped original recovery with skipped daily-admission/improve/model-freshness is NOT a full daily. A full daily that never passed admission and triggered no workers is safe to retry. A genuine admitted full daily always consumes the day's single original attempt. Fail closed on missing or ambiguous native history.",
+  "evidence": {
+    "historical_limited_recovery": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44256002607",
+    "limited_recovery_job_status": "original-delivery-recovery success; daily-admission/improve/model-freshness and original code candidate all skipped",
+    "historically_false_duplicate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44256077963",
+    "false_duplicate_observation": "DUPLICATE_DAILY_RUN_SUPPRESSED prior_run_id=44256002607, proof=NOT_TERMINAL_JOB_SUCCESS, daily-admission failed exit 78 before any worker ran",
+    "prod_brain_readback": "14/14 original innovation obligations and intakes persist; last original continuity readback 2026-11-18T07:04:23.711Z, no verified independent innovation outcome",
+    "original_selector_safety": "Existing protected single-candidate no-duplicate code selection and daily concurrency unchanged.",
+    "regression": "tests/brain-innovation-daily-scoped-recovery-fence-20261118.test.mjs",
+    "not_yet_proven": "No full daily work on new version nor original daily engineering candidate confirmed until postmerge native GitHub run and original Brain readback.",
+    "rollback": "Protected revert of additive native job classification and tests; leave original Brain evidence untouched."
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-learning-run-admission-v1.test.mjs",
+      "tests/brain-innovation-daily-scoped-recovery-fence-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-daily-scoped-recovery-fence-20261118.test.mjs"
+    ]
+  },
+  "status": "PROTECTED_SOURCE_CANDIDATE_NOT_LIVE",
+  "independent_effect_verified": false,
+  "terminal_success": false
+}
