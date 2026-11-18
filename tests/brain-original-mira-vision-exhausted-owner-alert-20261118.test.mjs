@@ -5,6 +5,9 @@ const sql=readFileSync(new URL('../supabase/migrations/20261118194000_original_g
 
 test('one ORIGINAL #171 service-only trigger, not a parallel provider dispatcher',()=>{
  assert.equal((sql.match(/CREATE OR REPLACE FUNCTION public\.powerhouse_original_result_guardian_v1\(\)/g)||[]).length,1);
+ assert.ok(sql.length<24000,'a safe single native function migration must not accidentally duplicate its source during string interpolation');
+ assert.equal((sql.match(/v_state := CASE/g)||[]).length,1,'the original guardian must contain exactly one state reducer');
+ assert.equal((sql.match(/IF v_mira_exhausted THEN/g)||[]).length,1,'a single exhausted vision owner action per original guarded event');
  assert.equal((sql.match(/v_state := CASE/g)||[]).length,1);
  assert.match(sql,/pg_try_advisory_xact_lock/);
  assert.match(sql,/REVOKE ALL ON FUNCTION public\.powerhouse_original_result_guardian_v1\(\)\s+FROM PUBLIC, anon, authenticated/);
