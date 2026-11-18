@@ -125,3 +125,14 @@ html body section.hero-video.hero-inspiration .hero-video-actions p,html body se
 
 /* Cookiebanner rechtsonder op brede schermen: de hoofdknop in de hero blijft vrij (18 nov 2026) */
 @media(min-width:900px){html body #bgCookie{left:auto!important;right:20px!important;bottom:88px!important}}
+
+/* Mobiel: de hoofdactie staat direct onder de kop, de uitleg erna (18 nov 2026) */
+@media(max-width:760px){html body section.hero-video.hero-inspiration .hero-copy{display:flex!important;flex-direction:column!important}
+html body section.hero-video.hero-inspiration .hero-copy>*{order:6}
+html body section.hero-video.hero-inspiration .hero-copy>.hero-kicker{order:0}
+html body section.hero-video.hero-inspiration .hero-copy>h1{order:1}
+html body section.hero-video.hero-inspiration .hero-copy>.handline{order:2}
+html body section.hero-video.hero-inspiration .hero-video-actions{display:contents!important}
+html body section.hero-video.hero-inspiration .hero-video-actions>.hero-primary{order:3;align-self:flex-start;margin:14px 0 6px!important}
+html body section.hero-video.hero-inspiration .hero-copy>.hero-sub{order:4}
+html body section.hero-video.hero-inspiration .hero-video-actions>*:not(.hero-primary){order:5}}
