@@ -313,7 +313,7 @@
       var tekst = u < 6 ? 'Rustige nacht.' : u < 12 ? 'Goedemorgen.' : u < 18 ? 'Goedemiddag.' : 'Goedenavond.';
       var g = doc.createElement('span');
       g.className = 'rb-groet';
-      g.textContent = tekst + ' Neem de tijd.';
+      g.textContent = tekst + ' Hier houd jij de leiding.';
       welkom.insertBefore(g, welkom.firstChild);
     }
 

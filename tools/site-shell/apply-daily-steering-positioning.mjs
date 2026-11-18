@@ -5,23 +5,23 @@ import { readFile, writeFile } from 'node:fs/promises';
 const COPY = Object.freeze({
   nl: {
     headline:'Je bedrijf verandert elke dag. <span class="mark">Je besturing moet mee.</span>',
-    lead:'Bedrijfsgeheugen verbindt wat er <strong>binnen én buiten je onderneming</strong> verandert met je strategie, doelen, mensen, processen en financiën. Je ziet wat geraakt wordt, welke beslissing nodig is en wie de actie oppakt. Het resultaat wordt gemeten en helpt bij de volgende keuze. <strong>Geen extra AI-tool: een manier om je onderneming iedere dag beter te sturen.</strong> Bovenop de systemen die je al gebruikt.',
+    lead:'Bedrijfsgeheugen brengt samen wat er <strong>binnen én buiten je onderneming</strong> verandert: strategie, doelen, mensen, processen en financiën. Jij ziet wat geraakt wordt, welke beslissing nodig is en wie de actie oppakt. Wat vandaag niet wordt vastgelegd, is morgen weg. <strong>Geen extra AI-tool: de rust van een onderneming die je zelf in de hand hebt.</strong> Bovenop de systemen die je al gebruikt, zoals AFAS, Exact Online en Microsoft 365.',
     eyebrow:'POWERHOUSE · DAGELIJKSE ONDERNEMINGSSTURING',
-    kicker:'Iedere dag beter sturen',
-    benefitsLabel:'Waarde voor ondernemers',
+    kicker:'Voor ondernemers die de leiding houden',
+    benefitsLabel:'Wat je terugkrijgt',
     benefits:['Kansen eerder herkennen','Risico’s tijdig begrijpen','Keuzes onderbouwen','Acties met eigenaar','Effecten meten','Continu verbeteren'],
-    technologyCta:'Bekijk de technologie erachter →',
+    technologyCta:'Ontdek hoe het geheugen werkt →',
     sectionHeading:'Niet alleen inzicht. <span class="mark">Van verandering naar actie en resultaat.</span>',
     sectionLead:'Een chatbot geeft antwoord. Een dashboard toont cijfers. Een automatisering voert een losse stap uit. Bedrijfsgeheugen verbindt juist interne en externe signalen met je strategie en bedrijfssituatie, helpt gevolgen en prioriteiten bepalen, zet acties uit met een eigenaar en gebruikt de gemeten uitkomst voor de volgende beslissing. POWERHOUSE is de motor; betere ondernemingssturing is het doel.'
   },
   en: {
     headline:'Your business changes every day. <span class="mark">Your decisions should keep up.</span>',
-    lead:'Bedrijfsgeheugen connects what changes <strong>inside and outside your business</strong> to your strategy, goals, people, processes and finances. See what is affected, which decision matters and who owns the next action. Measure outcomes and use them to improve the next decision. <strong>Not another AI tool: a practical way to run your business better every day.</strong> On top of the software you already use.',
+    lead:'Bedrijfsgeheugen brings together what changes <strong>inside and outside your business</strong>: strategy, goals, people, processes and finances. You see what is affected, which decision matters and who owns the next action. What is not captured today is gone tomorrow. <strong>Not another AI tool: the calm of a business you hold in your own hands.</strong> On top of the software you already use, such as AFAS, Exact Online and Microsoft 365.',
     eyebrow:'POWERHOUSE · EVERYDAY BUSINESS STEERING',
-    kicker:'Better decisions, every day',
-    benefitsLabel:'Value for business owners',
+    kicker:'For owners who stay in charge',
+    benefitsLabel:'What you get back',
     benefits:['Spot opportunities sooner','Understand emerging risks','Make informed decisions','Assign accountable actions','Measure real outcomes','Keep improving'],
-    technologyCta:'Explore the technology behind it →',
+    technologyCta:'See how the memory works →',
     sectionHeading:'Beyond insights. <span class="mark">From change to action and results.</span>',
     sectionLead:'A chatbot answers questions. A dashboard displays figures. An automation executes one predefined step. Bedrijfsgeheugen instead connects internal and external signals to your strategy and business context, helps assess impact and priorities, assigns actions and feeds measured results into the next decision. POWERHOUSE is the engine; better daily steering is the outcome.'
   }
