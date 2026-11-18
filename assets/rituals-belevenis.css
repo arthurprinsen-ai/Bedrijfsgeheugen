@@ -150,3 +150,16 @@ html body .rb-besluit dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--r
 html body .rb-besluit p{display:none;margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--rit-zacht,#5B6168);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding-top:14px}
 @media(min-width:1100px){html body .rb-besluit{position:absolute;top:calc(50% - 90px);right:max(5vw,calc((100vw - 1200px)/2));transform:translateY(-50%);width:min(34vw,430px)}}
 @media(max-width:1099px){html body .rb-besluit{position:relative;margin:24px auto 0;max-width:520px;width:calc(100% - 32px);padding:20px 20px 16px}html body .rb-besluit h2{font-size:1.3rem;margin:10px 0 12px}}@media(max-width:760px){html body .rb-besluit .rb-b-waarom,html body .rb-besluit .rb-b-datum,html body .rb-besluit p{display:none}html body .rb-besluit dl>div{padding:9px 0}}
+
+/* Hero-beweging: de besluitkaart vult zich rustig en blijft lang staan (18 nov 2026) */
+@keyframes rb-lees{0%{opacity:0;transform:translateY(6px)}7%{opacity:1;transform:none}86%{opacity:1;transform:none}95%{opacity:0;transform:translateY(-3px)}100%{opacity:0}}
+@keyframes rb-stip{0%,100%{box-shadow:0 0 0 1px rgba(20,23,26,.25)}50%{box-shadow:0 0 0 1px rgba(20,23,26,.25),0 0 0 7px rgba(255,232,107,.45)}}
+@keyframes rb-oud{0%,30%{opacity:0}42%,86%{opacity:.75}95%,100%{opacity:0}}
+html body .rb-besluit h2,html body .rb-besluit dl>div{animation:rb-lees 16s ease-in-out infinite}
+html body .rb-besluit dl>div{animation-delay:calc(var(--i,0)*.9s + .5s)}
+html body .rb-besluit small i{animation:rb-stip 16s ease-in-out infinite;animation-delay:4.4s}
+html body .rb-besluit .rb-b-oud{margin-top:14px;padding:12px 14px;border:1px dashed rgba(20,23,26,.28);border-radius:12px;opacity:0;animation:rb-oud 16s ease-in-out infinite;animation-delay:.5s}
+html body .rb-besluit .rb-b-oud small{display:block;font-size:11px;letter-spacing:.16em;margin-bottom:4px}
+html body .rb-besluit .rb-b-oud span{font-size:13px;line-height:1.5;color:var(--rit-zacht,#5B6168)}
+@media(max-width:760px){html body .rb-besluit .rb-b-oud{display:none}}
+@media(prefers-reduced-motion:reduce){html body .rb-besluit h2,html body .rb-besluit dl>div,html body .rb-besluit small i{animation:none!important}html body .rb-besluit .rb-b-oud{animation:none!important;opacity:.75}}

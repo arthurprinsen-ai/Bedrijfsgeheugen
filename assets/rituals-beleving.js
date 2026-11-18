@@ -14,6 +14,8 @@
 
   var IS_EN = (doc.documentElement.getAttribute('lang') || '').slice(0, 2) === 'en';
   var EN = {
+  "Vorige maand · zonder bron": "Last month · without a source",
+  "Waarom koos je die leverancier? Bron onbekend, eigenaar vertrokken.": "Why did you choose that supplier? Source unknown, owner gone.",
   "Besluit · voorbeeld": "Decision · example",
   "Offerte Van Dijk Techniek verlengen?": "Renew the Van Dijk Techniek quote?",
   "Waarom nu": "Why now",
@@ -294,7 +296,10 @@
         '<div><dt>' + tr('Eigenaar') + '</dt><dd>' + tr('Sanne, sales') + '</dd></div>' +
         '<div class="rb-b-datum"><dt>' + tr('Vastgelegd') + '</dt><dd>' + tr('Vandaag, met bron') + '</dd></div>' +
         '</dl>' +
-        '<p>' + tr('Elk besluit heeft een bron, een eigenaar en een datum.') + '</p>';
+        '<p>' + tr('Elk besluit heeft een bron, een eigenaar en een datum.') + '</p>' +
+        '<div class="rb-b-oud"><small>' + tr('Vorige maand · zonder bron') + '</small><span>' + tr('Waarom koos je die leverancier? Bron onbekend, eigenaar vertrokken.') + '</span></div>';
+      var rijen = kaart.querySelectorAll('dl>div');
+      for (var r = 0; r < rijen.length; r++) rijen[r].style.setProperty('--i', r);
       hv.parentNode.appendChild(kaart);
       hv.setAttribute('data-rb-vervangen', '1');
       try { hv.pause(); } catch (e) {}
