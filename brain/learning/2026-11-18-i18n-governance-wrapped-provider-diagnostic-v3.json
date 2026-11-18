@@ -1,0 +1,44 @@
+{
+  "fingerprint": "netlify|production-i18n-translate|http-502|20261022-v1",
+  "date": "2026-11-18",
+  "original_owner": "netlify/functions/i18n-translate.mjs",
+  "parent_issue": 4215,
+  "related_issue": 4198,
+  "state": "CODE_CANDIDATE",
+  "terminal_success": false,
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 14,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Original provider wrapper `runGovernedProductionAI` catches adapter exceptions and prefixes `AI provider failed safely: `; previous i18n helper's exact OPENAI_PROVIDER_ERROR_ anchored parser never matched wrapped provider 429/500, leaving generic HTTP502 diagnostics.",
+  "prevention": "Classify safely from exactly one recognized canonical governance prefix before known adapter marker, without logging any raw exception or provider text; preserve original fail-closed HTTP and sovereign data class semantics.",
+  "evidence": {
+    "tests": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "baseline": {
+      "requests_after_v2_http502": 14,
+      "observed_window_start": "2026-11-18T06:55:00Z",
+      "failure_class": "TRANSLATION_RUNTIME_OR_SHAPE",
+      "upstream_status": null
+    },
+    "actual_upstream_root_cause": "UNKNOWN",
+    "successfully_translated_ui_readback": false
+  },
+  "guardrails": [
+    "No new translator/scheduler/provider/model",
+    "No raw exception, user prompt, credentials or tenant identifier in diagnostics",
+    "Original 409 sovereignty and 502 failure semantics remain",
+    "PR or Netlify ready alone is not successful translation"
+  ],
+  "independent_effect_verified": false
+}
