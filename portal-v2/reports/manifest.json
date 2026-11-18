@@ -23,14 +23,14 @@
    "quarter": "2026-Q4",
    "title": "De Kloof No. 04: het Kwartaalmagazine",
    "published": "2026-11-18",
-   "sources": 12,
-   "pages": 17,
-   "pdfBytes": 752016,
-   "summary": "Exclusief kwartaalmagazine met het Kwartaalritueel: 90 minuten, vijf bewegingen, negen bouwblokken met cijfer, betekenis, risico en wat je maandag doet. Invulbaar werkblad en plan.",
+   "sources": 17,
+   "pages": 21,
+   "pdfBytes": 4925846,
+   "summary": "Exclusief kwartaalmagazine met het Kwartaalritueel: eigen analyse van afhankelijkheden in Europese AI-data, acht lenzen (psychologie, strategie, wet, arbeid, politiek, energie, techniek, processen), negen bouwblokken met maandagactie en invulbare werkbladen.",
    "highlights": [
-    "13,8% van de microbedrijven gebruikt AI, tegen 66,2% van de grootbedrijven (CBS 2025).",
-    "Wet verschoven: hoog-risico AI naar 2 december 2027 (Verordening (EU) 2026/1744).",
-    "80% voelt zich productiever, 6% van de grote organisaties haalt minstens 5% winst uit AI."
+    "Eigen analyse op 27 landen: leiders zijn landen waar kleine bedrijven 43% halen van het niveau van grote, achterblijvers 22%.",
+    "Geen inhaalslag: achterblijvers groeien in verhouding niet harder (rho −0,12, p 0,56).",
+    "Wet verschoven: hoog-risico AI naar 2 december 2027 (Verordening (EU) 2026/1744)."
    ],
    "pdf": "/portal-v2/reports/de-kloof-no04-2026-q4.pdf",
    "data": "/portal-v2/reports/ai-mkb-2026-q4.db"

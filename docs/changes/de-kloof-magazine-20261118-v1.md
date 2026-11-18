@@ -1,6 +1,6 @@
 # De Kloof No. 04, kwartaalmagazine — 18 november 2026
 
-Wat: nieuwe editie in Kwartaalrapporten: exclusief magazine (17 pagina's) met Kwartaalritueel, negen bouwblokken uit openbare data (Eurostat, CBS, UWV, Stanford, McKinsey, AI Act, Verizon, Epoch), invulbaar werkblad en plan. 12 nieuwe bronnen en 50 feiten in de database, elk met bewijsniveau.
+Wat: nieuwe editie in Kwartaalrapporten: exclusief magazine (21 pagina's) met Kwartaalritueel, eigen analyse van afhankelijkheden, acht lenzen, negen bouwblokken, reclamepagina (Eurostat, CBS, UWV, Stanford, McKinsey, AI Act, Verizon, Epoch), invulbaar werkblad en plan. 17 bronnen, 57 feiten en 13 nieuwe analyseresultaten in de database, elk met bewijsniveau.
 
 Omslagbeeld is AI-gegenereerd en zo gemarkeerd. Bronnen op niveau C (leveranciersonderzoek) zijn als indicatie benoemd. Geen prijzen, geen klantcitaten.
 

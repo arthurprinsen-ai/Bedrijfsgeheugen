@@ -34,13 +34,13 @@ p{margin-bottom:3mm;font-size:10.5pt}
 .cap{font-size:12pt;line-height:1.4;max-width:92mm;padding-bottom:1.5mm}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:7mm}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5mm}
-.bar{margin-bottom:2.6mm}.bar .l{display:flex;justify-content:space-between;font-size:9.8pt;margin-bottom:.8mm}
-.bar .t{height:4.6mm;background:rgba(10,22,48,.08)}.bar .f{height:100%;background:var(--ink)}.bar.h .f{background:var(--gt)}
-.ch{margin:5mm 0 4mm;padding:5mm 6mm;border:.3mm solid var(--ln);background:rgba(255,255,255,.45)}
+.bar{margin-bottom:2.1mm}.bar .l{display:flex;justify-content:space-between;font-size:9.8pt;margin-bottom:.8mm}
+.bar .t{height:4.2mm;background:rgba(10,22,48,.08)}.bar .f{height:100%;background:var(--ink)}.bar.h .f{background:var(--gt)}
+.ch{margin:3.5mm 0 3mm;padding:3.8mm 5mm;border:.3mm solid var(--ln);background:rgba(255,255,255,.45)}
 .ch .ct{font-size:6.8pt;letter-spacing:.2em;text-transform:uppercase;color:var(--mut);margin-bottom:2.5mm;font-weight:600}
-.mon{background:var(--ink);color:#f4ecdc;padding:6mm 7mm;margin:5mm 0}
+.mon{background:var(--ink);color:#f4ecdc;padding:4.5mm 6mm;margin:3mm 0}
 .mon h3{color:var(--gd)}
-.st{display:flex;gap:3mm;margin-bottom:3mm;align-items:flex-start;font-size:11pt;line-height:1.4}
+.st{display:flex;gap:3mm;margin-bottom:2.2mm;align-items:flex-start;font-size:10.6pt;line-height:1.38}
 .st .n{font-family:Ser;font-size:15pt;color:var(--gd);line-height:1;flex:none;width:5mm}
 .cbx{display:inline-block;width:4.2mm;height:4.2mm;border:.3mm solid var(--gd);flex:none;margin-top:.4mm}
 .lab{display:inline-block;font-size:6.5pt;letter-spacing:.16em;text-transform:uppercase;font-weight:700;padding:.7mm 2.2mm;border:.3mm solid var(--ink);margin-right:2mm}
@@ -51,8 +51,23 @@ p{margin-bottom:3mm;font-size:10.5pt}
 .mv .m{font-family:Ser;font-size:28pt;line-height:.95;color:var(--gt)}
 .mv .m small{display:block;font-family:Inst;font-size:6.5pt;letter-spacing:.2em;text-transform:uppercase;color:var(--mut)}
 .tl{display:flex;margin:3mm 0}.tl div{flex:1;padding-right:2.5mm;border-top:.6mm solid var(--gt);padding-top:2mm;font-size:8.6pt;line-height:1.3}.tl b{display:block;font-family:Ser;font-weight:400;font-size:13pt;color:var(--ink)}
-table{border-collapse:collapse;width:100%;font-size:8pt;line-height:1.3}td,th{border-bottom:.2mm solid var(--ln);padding:1.6mm 1.5mm;text-align:left;vertical-align:top}th{font-size:6.3pt;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
+table{border-collapse:collapse;width:100%;font-size:7.2pt;line-height:1.3}td,th{border-bottom:.2mm solid var(--ln);padding:.9mm 1.5mm;text-align:left;vertical-align:top}th{font-size:6.3pt;letter-spacing:.14em;text-transform:uppercase;color:var(--mut)}
 .mini{font-size:10pt;line-height:1.5}
+@font-face{font-family:Hand;font-weight:500;src:url(@F@caveat/files/caveat-latin-500-normal.woff2)}
+.p:not(.dk){background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .28  0 0 0 0 .15  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.note{font-family:Hand;font-weight:500;font-size:15pt;line-height:1.05;color:#7a5a0c;transform:rotate(-1.6deg);border-left:.6mm solid var(--gd);padding:1mm 0 1mm 4mm;margin:3mm 0 1mm;max-width:130mm}
+.note b{font-weight:500;text-decoration:underline;text-decoration-color:var(--gd);text-decoration-thickness:.7mm;text-underline-offset:1mm}
+.alt .bigrow{flex-direction:row-reverse;text-align:right;justify-content:space-between}
+.alt .cap{max-width:100mm}
+.card{border:.3mm solid var(--ln);padding:4mm 5mm;background:rgba(255,255,255,.5)}
+.card h4{font-family:Ser;font-weight:400;font-size:15pt;line-height:1.08;margin-bottom:1.5mm}
+.card .n{font-family:Ser;font-size:30pt;line-height:1;color:var(--gt)}
+.card p{font-size:9.2pt;line-height:1.42;margin-bottom:1.5mm}
+.tg{font-size:6.2pt;letter-spacing:.14em;text-transform:uppercase;color:var(--mut);font-weight:700}
+.l8{display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.l8 .card{padding:3.5mm 4.5mm}
+.l8 .card h4{font-size:14pt}.l8 .card p{font-size:8.5pt;line-height:1.36}
+
 .q{font-family:Ser;font-style:italic;font-size:15pt;line-height:1.25;border-left:.8mm solid var(--gd);padding-left:5mm;margin:4mm 0}
 """.replace("@F@",FD)
 pages=[];N=[0]
@@ -66,14 +81,17 @@ def bar(l,v,mx=None,h=False,u='%',dec=1):
 def chart(t,rows,mx=None,note='',u='%',dec=1):
     return f"<div class='ch'><div class='ct'>{t}</div>{''.join(bar(*r[:2],mx=mx,h=(len(r)>2 and r[2]),u=u,dec=dec) for r in rows)}{('<div class=mini style=color:var(--mut);margin-top:1mm>'+note+'</div>') if note else ''}</div>"
 BN=[0]
+NOTES={1:'Onze eerste reactie: dit gat is <b>kleiner dan het voelt</b>. Het is geen techniek, het is een begin.',2:'Saai is goed. Wie begint bij het werk dat niemand mist, <b>verliest niets</b>.',3:'Let op: kennis staat bovenaan, geld ver eronder. Dat is <b>goed nieuws</b>.',4:'Je team is je ver vooruit. <b>Ga ernaast staan</b>, niet ervoor.',5:'Uitstel is geen vrijbrief. De regels over <b>mensen opleiden</b> gelden al.',6:'Dit is geen IT-probleem. Het is een <b>gewoonteprobleem</b>.',7:'Mensen willen een mens, maar niet <b>wachten</b>. Daar zit je kans.',8:'Prijs is niet de vraag. <b>Gebruik</b> is de vraag.',9:'Meet wat je <b>aan het eind van de week</b> hoopt te zien, niet wat leuk klinkt.'}
 def block(mv,title,big,cap,charts,means,risk,steps,tool,label,src,foot):
     BN[0]+=1
+    nt=NOTES.get(BN[0],'')
+    nt=f"<div class='note'>{nt}</div>" if nt else ''
     st=''.join(f"<div class='st'><span class='cbx' data-f='b{BN[0]}s{i+1}'></span><span>{s}</span></div>" for i,s in enumerate(steps))
     pg(f"""<div class='k'>Bouwblok {BN[0]:02d} &middot; Beweging {mv}</div><h2>{title}</h2>
 <div class='bigrow'><div class='big'>{big}</div><div class='cap'>{cap}</div></div>{charts}
 <div class='g2'><div><h3>Wat het betekent</h3><p class='mini'>{means}</p></div><div><h3>Risico</h3><p class='mini'>{risk}</p></div></div>
-<div class='mon'><h3>Doe dit maandag</h3>{st}<div class='mini' style='color:#cfc7b2;margin-top:2mm'><b style='color:var(--gd)'>Gereedschap:</b> {tool}</div></div>
-<div class='ft'><span class='lab'>{label}</span>{foot}<br>Bron: {src}</div>""")
+{nt}<div class='mon'><h3>Doe dit maandag</h3>{st}<div class='mini' style='color:#cfc7b2;margin-top:2mm'><b style='color:var(--gd)'>Gereedschap:</b> {tool}</div></div>
+<div class='ft'><span class='lab'>{label}</span>{foot}<br>Bron: {src}</div>""",'alt' if BN[0]%2==0 else '')
 
 # ---- 1 cover
 cv=IMG(SC+'mag/cover_a.jpg')
@@ -94,7 +112,7 @@ pg(f"""<img src='{cv}' style='position:absolute;inset:0;width:100%;height:100%;o
 pg(f"""<div class='k'>Welkom</div><h1>Een afspraak met <i>jezelf.</i></h1>
 <p style='font-size:11.5pt;line-height:1.5;max-width:150mm'>Bijna iedere ondernemer wil weten wat AI voor zijn bedrijf kan doen. Bijna niemand heeft er een rustig moment voor. Dit magazine is daarom geen rapport. Het is een ritueel: negentig minuten per kwartaal, met koffie, een pen en eerlijke cijfers.</p>
 <div class='q'>Het gat is geen techniek. Het gat is tijd, kennis en een eerste kleine stap.</div>
-<p style='max-width:150mm'>Wij hebben openbare data uit Europa, Nederland en de wereld naast elkaar gelegd: Eurostat, CBS, UWV, Stanford, McKinsey, Verizon en de AI Act. Elk cijfer heeft een bron, een bewijsniveau en een label. Daarna hebben we het teruggebracht tot negen bouwblokken die je zonder voorkennis kunt lezen en dezelfde week nog kunt gebruiken.</p>
+<p style='max-width:150mm'>Wij hebben openbare data uit Europa, Nederland en de wereld naast elkaar gelegd: Eurostat, CBS, UWV, Stanford, McKinsey, Verizon en de AI Act. Elk cijfer heeft een bron, een bewijsniveau en een label. Daarna hebben we de verbanden zelf doorgerekend en teruggebracht tot negen bouwblokken die je zonder voorkennis kunt lezen en dezelfde week nog kunt gebruiken.</p>
 <h3 style='margin-top:6mm'>Zo lees je een bouwblok</h3>
 <div class='g3' style='margin-top:2mm'>
 <div class='ch' style='margin:0'><div class='ct'>1 &middot; Het cijfer</div><p class='mini'>Eén getal, met bron en jaar.</p></div>
@@ -105,13 +123,13 @@ pg(f"""<div class='k'>Welkom</div><h1>Een afspraak met <i>jezelf.</i></h1>
 <div style='position:absolute;left:17mm;right:17mm;bottom:20mm;font-size:8.5pt;color:var(--mut)'>Arthur &middot; Bedrijfsgeheugen &middot; 18 november 2026<br>Naam van jouw bedrijf: <span class='fld' data-f='bedrijf' style='width:80mm'></span></div>""")
 # ---- 3 ritueel + inhoud
 pg(f"""<div class='k'>Het Kwartaalritueel</div><h1>Negentig minuten. <i>Vijf bewegingen.</i></h1>
-<p style='max-width:150mm'>Plan één ochtend per kwartaal. Telefoon weg, deur dicht. Loop de vijf bewegingen door, in deze volgorde. Elke beweging heeft bouwblokken in dit magazine en een plek in het werkblad op pagina 14.</p>
-<div class='mv'><div class='m'>I<small>10 min</small></div><div><b>Kijk</b> &middot; Waar sta je in de kloof?<br><span class='mini'>Bouwblok 01 &middot; pagina 5</span></div></div>
-<div class='mv'><div class='m'>II<small>15 min</small></div><div><b>Kies</b> &middot; Eén taak, één drempel.<br><span class='mini'>Bouwblokken 02 en 03 &middot; pagina 6 en 7</span></div></div>
-<div class='mv'><div class='m'>III<small>25 min</small></div><div><b>Regel</b> &middot; Team, wet en veiligheid.<br><span class='mini'>Bouwblokken 04, 05 en 06 &middot; pagina 8 tot 10</span></div></div>
-<div class='mv'><div class='m'>IV<small>30 min</small></div><div><b>Bouw</b> &middot; Bouw eerst een AI, in plaats van weer een Excel.<br><span class='mini'>Bouwblokken 07 en 08 &middot; pagina 11 en 12</span></div></div>
-<div class='mv'><div class='m'>V<small>10 min</small></div><div><b>Meet</b> &middot; Eén getal, over 90 dagen terug.<br><span class='mini'>Bouwblok 09 &middot; pagina 13</span></div></div>
-<div class='mv' style='border-bottom:.3mm solid var(--ink)'><div class='m'>&#8734;<small>vooraf</small></div><div class='mini'>Werkblad pagina 14, jouw plan pagina 15, bronnen pagina 16. Op de laatste pagina vind je een maand gratis hulp bij het ritueel.</div></div>""")
+<p style='max-width:150mm'>Plan één ochtend per kwartaal. Telefoon weg, deur dicht. Loop de vijf bewegingen door, in deze volgorde. Elke beweging heeft bouwblokken in dit magazine en een plek in het werkblad op pagina 17.</p>
+<div class='mv'><div class='m'>I<small>10 min</small></div><div><b>Kijk</b> &middot; Waar sta je in de kloof?<br><span class='mini'>Bouwblok 01 &middot; pagina 8</span></div></div>
+<div class='mv'><div class='m'>II<small>15 min</small></div><div><b>Kies</b> &middot; Eén taak, één drempel.<br><span class='mini'>Bouwblokken 02 en 03 &middot; pagina 9 en 10</span></div></div>
+<div class='mv'><div class='m'>III<small>25 min</small></div><div><b>Regel</b> &middot; Team, wet en veiligheid.<br><span class='mini'>Bouwblokken 04, 05 en 06 &middot; pagina 11 tot 13</span></div></div>
+<div class='mv'><div class='m'>IV<small>30 min</small></div><div><b>Bouw</b> &middot; Bouw eerst een AI, in plaats van weer een Excel.<br><span class='mini'>Bouwblokken 07 en 08 &middot; pagina 14 en 15</span></div></div>
+<div class='mv'><div class='m'>V<small>10 min</small></div><div><b>Meet</b> &middot; Eén getal, over 90 dagen terug.<br><span class='mini'>Bouwblok 09 &middot; pagina 16</span></div></div>
+<div class='mv' style='border-bottom:.3mm solid var(--ink)'><div class='m'>&#8734;<small>vooraf</small></div><div class='mini'>Werkblad pagina 17, jouw plan pagina 18, bronnen pagina 19. Op de laatste pagina vind je een maand gratis hulp bij het ritueel.</div></div>""")
 # ---- 4 kloof in een blik
 pg(f"""<div class='k'>De kloof in één blik</div><h1 style='font-size:34pt'>Nederland loopt voor. <i>Het mkb niet.</i></h1>
 <p style='max-width:150mm'>Eén op de vijf Europese bedrijven met 10 of meer medewerkers gebruikt AI. Nederland staat zesde. Hoe kleiner het bedrijf, hoe groter de kloof.</p>
@@ -121,6 +139,91 @@ pg(f"""<div class='k'>De kloof in één blik</div><h1 style='font-size:34pt'>Ned
 <div class='ch'><div class='ct'>Nederland (CBS), 2025 &middot; % met AI, ander bereik: 2+ medewerkers</div>{bar('Microbedrijven (2–10)',13.8,mx=70)}{bar('Mkb (10–250)',29.8,mx=70)}{bar('Grootbedrijf',66.2,mx=70,h=True)}</div>
 <div class='g2'><div><h3>Let op</h3><p class='mini'>Eurostat meet bedrijven met 10+ medewerkers, het CBS ook microbedrijven. Niet één op één vergelijkbaar.</p></div><div><h3>Ons oordeel</h3><p class='mini'>De snelste groei zit bij tekst en administratie. Wie nu begint, loopt niet achter, maar voorop in zijn eigen straat.</p></div></div>
 <div class='ft'><span class='lab'>Feit</span>Eurostat KS-01-26-009 (2026), Eurostat nieuws 11-12-2025, CBS via ICTMagazine 16-3-2026.</div>""")
+
+# ---- analyse 1: afhankelijkhedenkaart
+def lab(x,y,t,col='#0a1630'):
+    w=len(t)*1.55+3
+    return f'<rect x="{x-w/2}" y="{y-2.6}" width="{w}" height="4.6" fill="#f6f0e3"/><text x="{x}" y="{y+.7}" font-size="2.9" font-family="Inst" fill="{col}" text-anchor="middle">{t}</text>'
+def edge(x1,y1,x2,y2,w,dash=False,col='#0a1630'):
+    d=' stroke-dasharray="2.4 1.8"' if dash else ''
+    return f'<line x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" stroke="{col}" stroke-width="{w}"{d} stroke-linecap="round"/>'
+def node(x,y,w,t,hi=False):
+    f='#0a1630' if hi else '#f6f0e3';c='#f4ecdc' if hi else '#0a1630'
+    return f'<rect x="{x-w/2}" y="{y-5}" width="{w}" height="10" rx="1" fill="{f}" stroke="#0a1630" stroke-width=".35"/><text x="{x}" y="{y+1.1}" font-size="3" font-family="Inst" font-weight="600" fill="{c}" text-anchor="middle">{t}</text>'
+G='#9a7418'
+svg=f'''<svg viewBox="0 0 176 96" width="170mm" xmlns="http://www.w3.org/2000/svg">
+{edge(53,14,71,42,2.6,False,G)}{edge(53,46,71,46,1.5,False,G)}{edge(53,78,71,50,.5,True)}
+{edge(123,14,105,42,1.8,False,G)}{edge(123,46,105,46,.5,True)}{edge(123,78,105,50,.5,True)}
+{lab(60,24,'ρ 0,997')}{lab(62,41.5,'ρ 0,89')}{lab(60,67,'ρ 0,36 (n.s.)')}
+{lab(116,24,'ρ 0,89')}{lab(114,41.5,'|ρ| ≤ 0,32 (n.s.)')}{lab(116,67,'ρ 0,18 (n.s.)')}
+{node(88,46,32,'AI per land',True)}
+{node(28,14,50,'AI bij kleine bedrijven')}{node(28,46,50,'AI bij grote bedrijven')}{node(28,78,50,'Groot, gegeven klein')}
+{node(148,14,50,'Verhouding klein/groot')}{node(148,46,50,'Mix van doelen')}{node(148,78,50,'Privégebruik gen-AI')}
+<text x="88" y="93" font-size="2.7" font-family="Inst" fill="#5b6478" text-anchor="middle">Dikke lijn: sterk en significant. Streeplijn: niet aantoonbaar (n.s.). 27 EU-landen, Eurostat 2025; privégebruik n=15.</text></svg>'''
+pg(f"""<div class='k'>Eigen analyse &middot; Bedrijfsgeheugen</div><h1 style='font-size:34pt'>Wat hangt waarmee <i>samen?</i></h1>
+<p style='max-width:155mm'>De meeste rapporten tellen en rangschikken. Wij hebben de Eurostat-cijfers van 27 landen en de CBS-cijfers van 12 sectoren op afhankelijkheden getoetst, met betrouwbaarheidsintervallen. Dit is wat overeind bleef, en wat niet.</p>
+<div class='ch' style='padding:3mm 3mm 1mm'>{svg}</div>
+<div class='l8'>
+<div class='card'><div class='tg'>Bevinding 1 &middot; Ons oordeel</div><h4>Het begint bij de kleinste.</h4><p>Landen met veel AI zijn landen waar <b>kleine</b> bedrijven meedoen: 28,9% tegen 8,1% in de onderste negen (3,6 keer). Bij grote bedrijven is dat verschil 1,8 keer. Let op: dit is deels rekenkundig, omdat kleine bedrijven zwaar wegen in het totaal.</p></div>
+<div class='card'><div class='tg'>Bevinding 2 &middot; Feit</div><h4>Leiders sluiten de rij.</h4><p>In de top negen halen kleine bedrijven gemiddeld 43% van het niveau van grote bedrijven. In de onderste negen is dat 22% (ρ = 0,89, interval 0,74 tot 0,95). Dit is niet rekenkundig.</p></div>
+<div class='card'><div class='tg'>Bevinding 3 &middot; Feit</div><h4>Wat je doet, telt niet. Dát je begint wel.</h4><p>De mix van doelen (administratie, marketing, productie) hangt in geen enkele toets samen met het niveau (alle p &gt; 0,1).</p></div>
+<div class='card'><div class='tg'>Bevinding 4 &middot; Feit</div><h4>Geen inhaalslag.</h4><p>Achterblijvers groeien niet harder, in verhouding (ρ = −0,12, p = 0,56). Dus het gat in procentpunten wordt groter: 14,4 naar 19,0 voor dezelfde landen.</p></div></div>
+<div class='ft'><span class='lab'>Eigen analyse</span>Spearman-rangcorrelatie met bootstrap (5.000 trekkingen). Correlatie is geen oorzaak. Bron: Eurostat KS-01-26-009; eigen berekening, zie pagina 6.</div>""")
+# ---- analyse 2: bewijs
+import sqlite3 as _sq
+_c=_sq.connect(SC+'groot/ai_mkb.db')
+def _r(n):
+    r=_c.execute("select value,ci_low,ci_high,n,note from analysis_results where name like ? order by id desc limit 1",(n+'%',)).fetchone();return r
+def _row(lbl,n,read,p=None):
+    v,lo,hi,nn,note=_r(n)
+    ci=f"{lo:.2f} tot {hi:.2f}".replace('.',',') if lo is not None else '—'
+    return f"<tr><td>{lbl}</td><td>{nn}</td><td><b>{v:.2f}</b></td><td>{ci}</td><td>{p or ''}</td><td>{read}</td></tr>".replace('.',',') if False else f"<tr><td>{lbl}</td><td>{nn}</td><td><b>{(('%.3f' if abs(v)>0.99 else '%.2f')%v).replace('.',',')}</b></td><td>{ci}</td><td>{p or ''}</td><td>{read}</td></tr>"
+
+def forest():
+    items=[('Totaal ~ klein','totaal vs small'),('Totaal ~ groot','totaal vs large'),('Groot, gegeven klein','partieel T~groot | klein'),('Klein/groot-verhouding','totaal vs ratio klein/groot'),('Aandeel marketing','totaal vs aandeel marketing/verkoop'),('Aandeel administratie','totaal vs aandeel administratie/management'),('Groei pp ~ niveau','groei 2024-25 (pp) vs niveau 2024'),('Relatieve groei ~ niveau','relatieve groei vs niveau 2024'),('Privégebruik gen-AI','bedrijfsadoptie vs individueel'),('Sector: groei ~ niveau','sector: groei 2023-25 (pp) vs niveau 2023')]
+    x0,x1=-0.7,1.0;X=lambda v:58+(v-x0)/(x1-x0)*112
+    o=f'<svg viewBox="0 0 176 {len(items)*6.4+12}" width="170mm" xmlns="http://www.w3.org/2000/svg"><line x1="{X(0)}" y1="3" x2="{X(0)}" y2="{len(items)*6.4+4}" stroke="#0a1630" stroke-width=".3" stroke-dasharray="1.5 1.2"/>'
+    for k,(l,n) in enumerate(items):
+        v,lo,hi,nn,_=_r(n[:40]) if False else _c.execute("select value,ci_low,ci_high,n,note from analysis_results where name like ? order by id desc limit 1",(n+'%',)).fetchone()
+        y=8+k*6.4;col='#9a7418' if (lo>0 or hi<0) else '#8a91a3'
+        o+=f'<text x="2" y="{y+1}" font-size="3" font-family="Inst" fill="#0a1630">{l}</text><line x1="{X(lo)}" y1="{y}" x2="{X(hi)}" y2="{y}" stroke="{col}" stroke-width="1.1" stroke-linecap="round"/><circle cx="{X(v)}" cy="{y}" r="1.4" fill="{col}"/>'
+    for t in (-0.5,0,0.5,1.0):
+        o+=f'<text x="{X(t)}" y="{len(items)*6.4+10}" font-size="2.8" font-family="Inst" fill="#5b6478" text-anchor="middle">{str(t).replace(".",",")}</text>'
+    return o+'</svg>'
+
+rows=''.join([
+_row('Totaal ~ klein (landen)','totaal vs small','Sterk; deels rekenkundig','&lt; 0,001'),
+_row('Totaal ~ groot (landen)','totaal vs large','Sterk, maar zwakker dan klein','&lt; 0,001'),
+_row('Totaal ~ groot, gegeven klein','partieel T~groot | klein (Spearman)','Interval omvat 0: geen eigen rol aantoonbaar','n.s.'),
+_row('Totaal ~ klein/groot-verhouding','totaal vs ratio klein/groot','Sterk, niet rekenkundig','&lt; 0,001'),
+_row('Totaal ~ aandeel marketing','totaal vs aandeel marketing/verkoop','Geen verband','0,49'),
+_row('Totaal ~ aandeel administratie','totaal vs aandeel administratie/management','Geen verband','0,44'),
+_row('Groei (pp) ~ niveau 2024','groei 2024-25 (pp) vs niveau 2024','Wie hoog staat, wint meer pp','0,0005'),
+_row('Relatieve groei ~ niveau 2024','relatieve groei vs niveau 2024','Geen inhaalslag','0,56'),
+_row('Bedrijven ~ privégebruik gen-AI','bedrijfsadoptie vs individueel gen-AI-gebruik','Geen verband (n klein)','0,52'),
+_row('Sectoren: niveau 2025 ~ 2023','sector: niveau 2025 vs niveau 2023','Rangorde blijft staan','0,0002'),
+_row('Sectoren: groei ~ niveau 2023','sector: groei 2023-25 (pp) vs niveau 2023','Wie hoog staat, groeit meer','0,004')])
+pg(f"""<div class='k'>Eigen analyse &middot; Het bewijs</div><h2>Zo sterk is wat we <i>vonden</i></h2>
+<table><tr><th>Verband</th><th>n</th><th style='text-transform:none'>rho</th><th>95%-interval</th><th>p</th><th>Lees als</th></tr>{rows}</table>
+<div class='g2' style='margin-top:6mm'><div><h3>Methode</h3><p class='mini'>Rangcorrelatie (Spearman), betrouwbaarheidsinterval via 5.000 bootstrap-trekkingen. Landen: 27 EU-lidstaten, bedrijven met 10+ medewerkers, 2025 (Eurostat). Sectoren: 12 CBS-sectoren, 2+ medewerkers, 2023–2025. Privégebruik: 15 landen met Microsoft-data.</p></div>
+<div><h3>Wat dit niet is</h3><p class='mini'>Geen oorzaak-en-gevolg. Een kleine n maakt intervallen breed. &ldquo;Niet significant&rdquo; betekent niet &ldquo;geen verband&rdquo;, maar: niet aantoonbaar met deze data. Eurostat en CBS meten andere groepen, dus we hebben ze niet gemengd.</p></div></div>
+<h3 style='margin-top:6mm'>Zo zeker zijn we: correlatie met 95%-interval</h3><div class='ch' style='margin:1mm 0 0;padding:3mm 3mm 1mm'>{forest()}</div><p class='mini' style='color:var(--mut);margin-top:1mm'>Goud: interval ligt los van nul. Grijs: aantoonbaar verband ontbreekt.</p><div class='note' style='margin-top:4mm'>Wij beweren niet dat dit nog nooit iemand zag. Wij laten zien <b>hoe zeker</b> we zijn. Dat is het verschil.</div>
+<div class='ft'><span class='lab'>Eigen analyse</span>Alle berekeningen en ruwe cijfers staan in de database bij het magazine (tabellen country_ai, sector_ai, analysis_results).<br>Bron: Eurostat KS-01-26-009, CBS (sectoren), eigen berekening Bedrijfsgeheugen, november 2026.</div>""")
+# ---- acht lenzen
+def lens(t,n,txt,imp,lab,src):
+    return f"<div class='card'><div class='tg'>{t} &middot; {lab}</div><div class='n'>{n}</div><p>{txt}</p><p><b>Voor jou:</b> {imp}</p><div class='tg' style='margin-top:1mm;text-transform:none;letter-spacing:.02em;font-weight:400'>{src}</div></div>"
+L=[lens('Psychologie','75,4%','van de Nederlanders (18+) verwacht dat bepaalde banen verdwijnen. Slechts 18% weet dat AI anders redeneert dan een mens.','angst en onwetendheid zijn teamthema&rsquo;s. Praat erover voordat je tools uitrolt.','Feit / indicatie','CBS 2025; Conclusion, 1.000 Nederlanders, 2026'),
+lens('Strategie','6%','van de (grote) organisaties haalt minstens 5% van de winst uit AI. De winnaars veranderen hun werk, niet alleen hun gereedschap.','kies één proces en ontwerp het opnieuw, in plaats van tien tools uit te proberen.','Feit','McKinsey 2026 (via The Register)'),
+lens('Wetgeving','dec 2027','nieuwe datum voor hoog-risico AI. AI-geletterdheid blijft nu al gelden: ondersteunen in plaats van garanderen.','leg je AI-gebruik vast en leer je mensen ermee werken.','Feit','Verordening (EU) 2026/1744'),
+lens('Arbeidsmarkt','64%','van de Nederlandse bedrijven heeft vacatures die ze niet vervuld krijgen. Circa 30% daarvan kiest automatisering als belangrijkste antwoord.','kleine bedrijven (5–50) kiezen vooral voor aantrekkelijk werkgeverschap. Automatisering vult dat aan, het vervangt het niet.','Verband','CBS via NL Times, juni 2026'),
+lens('Politiek','6 nov','2026: het kabinet stelt de visie &ldquo;Kiezen voor AI voor iedereen&rdquo; vast. Drempels voor het mkb moeten weg, begeleid experimenteren wordt mogelijk. Bedragen noemt het bericht niet.','volg de uitwerking van AI-infrastructuur begin 2027. Reken nog niet op geld.','Feit','Rijksoverheid, 6-11-2026'),
+lens('Energie','±10%','van de piekvraag naar stroom kan in Nederland naar datacentra gaan als alle geplande projecten worden gebouwd. Amsterdam pauzeerde nieuwe projecten door netschaarste.','AI draait in andermans datacentra. Vraag waar je data staat en wat een prijsstijging voor je abonnement betekent.','Verband (scenario)','IEA, november 2025'),
+lens('Technologie','13×','per jaar daalt de prijs voor dezelfde AI-prestaties. Maar de rekenkracht groeit 3,3 keer per jaar, en stroom en chips blijven schaars.','kies geen aanbieder voor drie jaar. Houd je gegevens overdraagbaar.','Verband','Epoch AI; Stanford AI Index 2026'),
+lens('Processen','39,3%','van de Nederlandse bedrijven met AI zet het in voor administratie en bedrijfsvoering, het vaakst. Daarna marketing en verkoop (37,2%).','begin bij het proces met de meeste herhaling en de minste glamour.','Feit','Eurostat KS-01-26-009')]
+pg(f"""<div class='k'>Acht lenzen</div><h2>Dezelfde kloof, <i>acht kanten</i></h2>
+<p class='mini' style='max-width:155mm'>Een kloof heeft geen enkele oorzaak. Daarom keken we naar psychologie, strategie, wetgeving, arbeidsmarkt, politiek, energie, techniek en processen. Per lens één getal en wat het voor jou betekent.</p>
+<div class='l8' style='margin-top:3mm'>{''.join(L)}</div>
+<div class='ft'>Elke lens staat in de database met bron en bewijsniveau. Secundaire bronnen en leveranciersonderzoek zijn als indicatie benoemd. Geen juridisch of financieel advies.</div>""")
 
 block('I · Kijk','Waar sta jij <i>in de kloof?</i>','13,8%','van de microbedrijven (2–10 medewerkers) gebruikte in 2025 AI. Mkb (10–250): 29,8%. Grootbedrijf: 66,2%.',
  chart('Nederland (CBS), 2025',[('Micro',13.8),('Mkb',29.8),('Groot',66.2,True)],mx=70)+chart('EU (Eurostat), 2025, 10+ medewerkers',[('Klein',17.0),('Middelgroot',30.4),('Groot',55.0,True)],mx=70),
@@ -175,7 +278,7 @@ block('V · Meet','Gebruik is geen <i>resultaat</i>','6%','van de (grote) organi
  'Persoonlijke winst wordt pas bedrijfswinst als het werk verandert. In studies (Stanford AI Index 2026) ligt de winst bij klantenservice rond 14–15% en bij software op 26%. Of dat voor jou geldt, is ons oordeel, geen meting.',
  'Zelfrapportage en grote organisaties. Voor het mkb zijn geen vergelijkbare cijfers.',
  ['Kies vooraf één getal: uren per offerte, doorlooptijd, of aantal fouten.','Meet dat getal nu, twee weken lang.','Meet het opnieuw na negentig dagen en schrijf op wat er is veranderd.'],
- 'een simpel meetblad: taak, baseline, nulmeting na 90 dagen. Je plan op pagina 15 heeft de velden al.','Ons oordeel','McKinsey (via The Register, 25-8-2026); Stanford AI Index 2026 (via UNU-C3).','Secundaire samenvattingen. ')
+ 'een simpel meetblad: taak, baseline, nulmeting na 90 dagen. Je plan op pagina 18 heeft de velden al.','Ons oordeel','McKinsey (via The Register, 25-8-2026); Stanford AI Index 2026 (via UNU-C3).','Secundaire samenvattingen. ')
 
 # ---- 14 werkblad
 mvs=[('I','Kijk','10 min','Waar sta ik? Mijn teamgrootte en mijn drie tijdvreters.'),('II','Kies','15 min','De ene taak en de drempel die ik wegneem.'),('III','Regel','25 min','Drie teamregels, mijn AI-register, mijn beveiligingsstap.'),('IV','Bouw','30 min','Mijn eerste AI-assistent: voor welke vraag, met wiens antwoorden.'),('V','Meet','10 min','Mijn ene getal, nu en over 90 dagen.')]
@@ -199,6 +302,23 @@ pg(f"""<div class='k'>Verantwoording</div><h2>Bronnen en <i>bewijs</i></h2>
 <p class='mini'>Niveau A: officiële statistiek of wet. B: samenvatting of onderzoek met open methode. C: leveranciersonderzoek, indicatief. We hebben bij elk cijfer de populatie en de beperking genoteerd.</p>
 <table><tr><th>Bron</th><th>Titel</th><th>Niveau</th><th>Let op</th></tr>{tr}</table>
 <p class='mini' style='margin-top:4mm'>Niet gebruikt: cijfers die we niet bij de primaire bron konden terugvinden. Wat ontbreekt, laten we weg in plaats van te schatten. Het beeld op de voorkant is AI-gegenereerd. Dit magazine is geen juridisch of financieel advies.</p>""")
+# ---- advertentie
+QP=qr(PORTAL,'#0a1630')
+CI=IMG(SC+'groot/img/consult.jpg')
+pg(f"""<img src='{CI}' style='position:absolute;left:0;top:0;width:210mm;height:128mm;object-fit:cover;object-position:50% 40%'>
+<div style='position:absolute;left:0;top:0;width:210mm;height:128mm;background:linear-gradient(180deg,rgba(10,22,48,.55) 0%,rgba(10,22,48,0) 35%,rgba(10,22,48,.0) 60%,rgba(10,22,48,.95) 100%)'></div>
+<div style='position:absolute;right:17mm;top:10mm;font-size:6.5pt;letter-spacing:.3em;text-transform:uppercase;color:#e8c46e'>Advertentie</div>
+<div style='position:absolute;left:17mm;right:17mm;top:98mm'><div style='font-family:Ser;font-size:46pt;line-height:1;color:#f7efdc'>Je bedrijf weet alles.<br><i style='color:#e8c46e'>Alleen niet waar.</i></div></div>
+<div style='position:absolute;left:17mm;right:17mm;top:138mm'>
+<p style='font-size:11.5pt;max-width:150mm;color:#e9e1cc'>Bedrijfsgeheugen is het geheugen van je bedrijf: documenten, systemen en afspraken op één plek, koppelbaar, doorzoekbaar en door AI te bevragen. Zodat kennis blijft als iemand vertrekt, en je team sneller antwoord heeft dan het kan zoeken.</p>
+<div class='g3' style='margin-top:6mm'>
+<div><h3>Vind</h3><p class='mini'>Stel een vraag in gewone taal. Krijg het antwoord uit je eigen documenten en systemen, met bron.</p></div>
+<div><h3>Verbind</h3><p class='mini'>Koppel je boekhouding, mail en dossiers. Eén keer instellen, daarna loopt het mee.</p></div>
+<div><h3>Bewaar</h3><p class='mini'>Leg vast hoe het werkt en waarom, voordat het in iemands hoofd blijft zitten.</p></div></div>
+<div style='display:flex;gap:7mm;align-items:center;margin-top:7mm;padding-top:6mm;border-top:.25mm solid rgba(232,196,110,.5)'>
+<div style='background:#f6f0e3;padding:2.5mm;width:30mm;flex:none'>{QP}</div>
+<div><div style='font-family:Ser;font-size:22pt;line-height:1.05;color:#f7efdc'>Begin met een <i style='color:#e8c46e'>Frisse Blik.</i></div><p class='mini' style='color:#cfc7b2;margin-top:2mm'>Een kennismaking van een uur. Samen kijken we waar de kloof in jouw bedrijf zit. Scan de code of ga naar bedrijfsgeheugen.nl/frisse-blik.</p></div></div></div>
+<div style='position:absolute;right:17mm;bottom:10mm;font-size:5pt;letter-spacing:.14em;text-transform:uppercase;opacity:.6'>Beeld: AI-gegenereerd</div>""",'dk')
 # ---- 17 achterkant
 QT=qr(TRIAL,'#0a1630')
 pg(f"""<div class='k'>Samen doen</div><h1>Liever niet alleen aan <i>tafel?</i></h1>
