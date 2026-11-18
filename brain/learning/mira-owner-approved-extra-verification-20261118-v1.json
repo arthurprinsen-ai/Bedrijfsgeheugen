@@ -17,9 +17,20 @@
     "EXTRA_VERIFICATION_IS_ONE_TIME_AND_SAME_ASSET_ONLY",
     "A_CONTRACT_THAT_REQUIRES_OWNER_REVIEW_MUST_PROVIDE_A_RECORDING_PATH"
   ],
-  "compiler": { "failure_class": "retry-ledger-without-owner-review-path" },
+  "compiler": {
+    "failure_class": "retry-ledger-without-owner-review-path",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
   "evaluation": {
-    "historical_replay": "tests/brain-mira-original-exact-video-provider-retry.test.mjs"
+    "historical_replay": [
+      "tests/brain-mira-original-exact-video-provider-retry.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-original-exact-video-provider-retry.test.mjs"
+    ]
   },
   "evidence": [
     "media job 4a68dc41-6e60-4b64-ba7b-400086cb7296 vision_retry_count=3, last_error MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE",
