@@ -36,10 +36,13 @@ export function planPersonalObservationalReviewRecovery({decision,obligation,con
  const d=decision?.delivery_evidence||{},o=obligation?.evidence||{};
  const source=clean(d.personal_source_recommendation_id);
  const attempts=Number(obligation?.recovery_attempts);
+ const code=knownReviewCode(d);
  const exactlyRejected=decision?.channel==='linkedin_personal'
    &&decision?.decision==='publish'&&decision?.state==='blocked'
    &&obligation?.channel==='linkedin_personal'&&obligation?.status==='BLOCKED'
-   &&exactReview(d)&&exactReview(o);
+   &&!!code&&code===knownReviewCode(o)
+   &&(code!=='FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED'
+      ||(userFactSource(d)&&userFactSource(o)));
  const sourceMatched=!!source&&source===clean(o.personal_source_recommendation_id)
    &&/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(source)
    &&/^[0-9a-f]{64}$/i.test(clean(d.reviewed_text_hash))
