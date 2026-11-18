@@ -23,8 +23,18 @@
   ],
   "evaluation": {
     "regression": "tests/brain-i18n-translation-diagnostics-v1.test.mjs",
-    "production_validation": "Fresh classified error + exact deployment readback required"
+    "production_validation": "Fresh classified error + exact deployment readback required",
+    "historical_replay": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ]
   },
   "independent_effect_verified": false,
-  "terminal_success": false
+  "terminal_success": false,
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 13,
+    "security_sensitive": false
+  }
 }
