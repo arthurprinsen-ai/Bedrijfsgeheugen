@@ -14,6 +14,16 @@
 
   var IS_EN = (doc.documentElement.getAttribute('lang') || '').slice(0, 2) === 'en';
   var EN = {
+  "Je adviseur": "Your advisor",
+  "Eerst luisteren. Dan pas bouwen.": "Listen first. Then build.",
+  "Bedrijfsgeheugen is geen leverancier die een demo geeft en verdwijnt. Arthur Prinsen kijkt eerst met je mee naar hoe jouw bedrijf werkt.": "Bedrijfsgeheugen is not a vendor that gives a demo and disappears. Arthur Prinsen first looks along with you at how your business works.",
+  "Duidelijke afspraken vooraf": "Clear agreements up front",
+  "Je weet vooraf wat we doen en wat het kost.": "You know up front what we do and what it costs.",
+  "Klein beginnen": "Start small",
+  "We starten met één vraag en toetsen het resultaat voordat we verder gaan.": "We start with one question and test the result before we go further.",
+  "Jij beslist. Wij leggen vast.": "You decide. We record it.",
+  "Elk advies krijgt een bron, een eigenaar en een datum.": "Every piece of advice gets a source, an owner and a date.",
+  "Plan een gesprek met Arthur": "Book a conversation with Arthur",
   "Besluit · voorbeeld": "Decision · example",
   "Offerte Van Dijk Techniek verlengen?": "Renew the Van Dijk Techniek quote?",
   "Waarom nu": "Why now",
@@ -256,10 +266,8 @@
     doc.body.appendChild(pil);
     var hero = doc.querySelector('.hero-copy .rb-adem-knop');
     if (hero) {
+      // Op de homepage staat het ritueel al in de hero en boven de voettekst; geen zwevende knop over de inhoud.
       pil.style.display = 'none';
-      var toon = function () { pil.style.display = (window.pageYOffset || 0) > (window.innerHeight || 700) * 0.9 ? '' : 'none'; };
-      window.addEventListener("scroll", toon, { passive: true });
-      toon();
     }
   }
 
@@ -282,6 +290,27 @@
     // Hero-beeld: het oorspronkelijke drone-filmpje blijft staan (rustige vlucht door architectuur).
     var hv0 = doc.querySelector('section.hero-video .hero-bg-video');
     if (hv0) { hv0.removeAttribute('data-rb-vervangen'); var sp0 = hv0.play && hv0.play(); if (sp0 && sp0.catch) sp0.catch(function () {}); }
+
+    // Adviseur-blok direct na de hero: persoonlijk, rustig, zonder claims.
+    var heroSec = doc.querySelector('section.hero-video');
+    if (heroSec && !doc.querySelector('.rb-adviseur')) {
+      var adv = doc.createElement('section');
+      adv.className = 'rb-adviseur';
+      adv.setAttribute('aria-label', tr('Je adviseur'));
+      adv.innerHTML =
+        '<div class="rb-adv-wrap">' +
+        '<small>' + tr('Je adviseur') + '</small>' +
+        '<h2>' + tr('Eerst luisteren. Dan pas bouwen.') + '</h2>' +
+        '<p class="rb-adv-lead">' + tr('Bedrijfsgeheugen is geen leverancier die een demo geeft en verdwijnt. Arthur Prinsen kijkt eerst met je mee naar hoe jouw bedrijf werkt.') + '</p>' +
+        '<ol>' +
+        '<li><b>' + tr('Duidelijke afspraken vooraf') + '</b><span>' + tr('Je weet vooraf wat we doen en wat het kost.') + '</span></li>' +
+        '<li><b>' + tr('Klein beginnen') + '</b><span>' + tr('We starten met één vraag en toetsen het resultaat voordat we verder gaan.') + '</span></li>' +
+        '<li><b>' + tr('Jij beslist. Wij leggen vast.') + '</b><span>' + tr('Elk advies krijgt een bron, een eigenaar en een datum.') + '</span></li>' +
+        '</ol>' +
+        '<a class="rb-adv-knop" href="https://calendly.com/arthur-prinsen/adviesgesprek-slimmer-geregeld" target="_blank" rel="noopener">' + tr('Plan een gesprek met Arthur') + '</a>' +
+        '</div>';
+      heroSec.parentNode.insertBefore(adv, heroSec.nextSibling);
+    }
 
     // De WhatsApp-knop pas na een schermhoogte scrollen, zodat hij de hoofdactie niet afdekt.
     var wa = doc.querySelector('.bg-whatsapp-contact');
