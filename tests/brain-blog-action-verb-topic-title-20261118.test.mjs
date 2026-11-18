@@ -30,7 +30,8 @@ test('approved 18-Nov blog picks actual subject, not prepare/verb boilerplate',(
   assert.equal(x.focus,'MKB-boekhouding');
   assert.equal(x.title,'MKB-boekhouding koppelen aan mobiele betaalapps');
   assert.ok(x.title.length<=60);
-  assert.doesNotMatch(x.title,/^bereid:|wat verandert er voor jou/i);
+  assert.doesNotMatch(x.title,/^bereid:/i);
+  assert.doesNotMatch(x.title,/wat verandert er voor jou/i);
   assert.doesNotMatch(x.focus,/^(bereid|voorbereiden|maak|zorg)$/i);
 });
 
