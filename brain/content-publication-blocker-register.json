@@ -4,6 +4,16 @@
  "rule": "Before building or changing any blog/post/newsletter flow, read this register. A listed blocker must not recur: apply its prevention, or document why it no longer applies.",
  "historical_blockers": [
   {
+    "fingerprint": "powerhouse|linkedin-personal|late-verified-user-fact-stale-hold|20261118-v1",
+    "date": "2026-11-18",
+    "channels": [
+      "linkedin_personal"
+    ],
+    "cause": "Original content-loop does not rebootstrap an already existing hold/blocked PERSONAL_TRUTH_SOURCE_UNVERIFIED decision after a newer verified user-authored first-person source is materialized. Original source owner remained silent until manually called; original provider API then separately returned 429 insufficient_quota.",
+    "prevention": "Within original content-loop use original semantic first-person user fact gate and immutable same-day source arrival newer than held decision, check unconsumed original provider authority, no earlier side effect, and replay only the original orchestrator once. Retain independent personal review and valid provider receipt; API quota remains external.",
+    "source": "brain/learning/2026-11-18-original-personal-late-source-rebootstrap-v1.json"
+  },
+  {
     "fingerprint": "powerhouse|daily-blog|committed-tree-preview-static-i18n-one-gap|20261118-v1",
     "date": "2026-11-18",
     "channels": [
