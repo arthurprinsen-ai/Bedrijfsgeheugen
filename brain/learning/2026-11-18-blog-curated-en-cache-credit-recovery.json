@@ -1,0 +1,64 @@
+{
+  "fingerprint": "powerhouse|daily-blog|static-i18n-provider-credit-blocked|20261118-v1",
+  "date": "2026-11-18",
+  "parent_issues": [
+    5232,
+    4215,
+    4198
+  ],
+  "owner": "original powerhouse-daily-blog.yml",
+  "original_tenant": "canonical",
+  "source_date": "2026-11-18",
+  "channel": "blog",
+  "source_status": "APPROVED",
+  "original_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44257300433",
+  "source_receipt": "STATIC_I18N_CACHE_GAPS_V1",
+  "source_keys_count": 76,
+  "missing_key_count_after_candidate": 0,
+  "source_patch": "config/bg-static-i18n-en.d/powerhouse-blog-2026-11-18.json",
+  "source_translation_provenance": "curated OpenAI assistant output reviewed with original immutable-token, hypothesis and evidence guard tests; NOT an OpenAI API provider success",
+  "upstream_http_status": 429,
+  "upstream_provider_code": "credit_balance_exhausted",
+  "underlying_api_billing_recovered": false,
+  "state": "CONTENT_CACHE_CANDIDATE",
+  "protected_pr_merged": false,
+  "article_live_proven": false,
+  "independent_effect_verified": false,
+  "root_cause": "Approved blog depends on precisely 76 English translations not yet cached, while the configured OpenAI API billing account has exhausted credits. The original fail-closed publisher correctly refused to publish a partially translated English article.",
+  "safe_recovery": "Complete the exact original day source-key EN cache using curated bilingual content with immutable source and quality tests. Reuse original writer, original same-day approved blog and protected CodeQL/Netlify stages. Never infer actual API credits were restored or a post was published.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-original-en-cache-20261118.test.mjs"
+    ],
+    "shadow": [],
+    "canary": []
+  },
+  "restrictions": [
+    "No new publisher, cron, model or provider",
+    "No false claims, finance KPIs or private customer identifiers",
+    "No bypass of mandatory translation coverage",
+    "No unapproved API budget or credential changes",
+    "No fake GREEN and no duplicate blog posting"
+  ],
+  "compiler": {
+    "failure_class": "PROVIDER_QUOTA",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention": "The original publisher must prepare and commit source-exact reviewed English caches before its protected build, detect and fail fast on exhausted OpenAI API credits, preserve the original approved blog obligation and unique producer lineage, and resume only through the original writer with complete bilingual coverage, protected CI/merge, independent NL+EN destination readback and Brain/Heartbeat closure. Never claim API credits are restored from a cache patch.",
+  "evidence": {
+    "source_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44257300433",
+    "original_source_receipt": "STATIC_I18N_CACHE_GAPS_V1",
+    "source_keys_count": 76,
+    "translated_entries": 76,
+    "provider_http_status": 429,
+    "provider_error_code": "credit_balance_exhausted",
+    "tests": [
+      "tests/brain-blog-original-en-cache-20261118.test.mjs"
+    ],
+    "protected_main_merged": false,
+    "original_article_live_readback": false
+  }
+}
