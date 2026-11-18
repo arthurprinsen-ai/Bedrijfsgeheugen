@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|daily-blog|generic-long-seo-title-and-keyword-erased-topic|20261115-v1",
+  "root_cause": "Original Supabase-first blog artifact for 2026-11-15 has source title 'Stap‑voor‑stap: MKB klaarmaken voor integratie tussen boekhouding en mobiele betaalapps'. In original tools/site-shell/publish_powerhouse_blog_artifact.py seo_focus() treated first word 'Stap' as a valid primary keyword; seo_title() shortened any >60-character title to generic 'Stap: wat verandert er voor jou?'. Existing technical SEO gate accepted that topic-free keyword/title because the same generic word was present in H1/title. The original protected PR #5833 remained unmerged and the APPROVED blog had no provider readback. A page-like code candidate is not a live article.",
+  "scope": "ORIGINAL_SUPABASE_FIRST_DAILY_BLOG_RENDERER_AND_PREPUBLICATION_EDITORIAL_GATE",
+  "owner": "Existing powerhouse-daily-blog original publisher + original SEO/CRO/Data Quality skill, canonical source powerhouse_content_artifacts",
+  "prevention_rule": "Use exact source-confirmed connected system names in SEO focus when original title explicitly says integration between X and Y; for all other long titles retain an honest bounded source-substantive truncation without generic 'what changes for you' templates. Reject missing/generic topic keywords and generic title templates in the existing technical SEO preflight, preserving legitimate specific single-word brands. Re-review uncertain vendor API forecasts separately; never invent provider facts, outcome, approved editorial checks or Netlify/public GET. Original current-day/slug/identity, protected PR workflow and ONE BRAIN consumer retained; no second blog sender, scheduler or source of truth.",
+  "regression": [
+    "tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs"
+  ],
+  "evidence": {
+    "source_table": "public.powerhouse_content_artifacts",
+    "source_day": "2026-11-15",
+    "source_channel": "blog",
+    "original_title": "Stap‑voor‑stap: MKB klaarmaken voor integratie tussen boekhouding en mobiele betaalapps",
+    "source_artifact_status": "content_ready",
+    "original_broken_public_title": "Stap: wat verandert er voor jou?",
+    "original_broken_focus_keyword": "Stap",
+    "corrected_topic_derived_from_source": "boekhouding en mobiele betaalapps",
+    "original_daily_blog_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5833",
+    "original_root_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "provider_post_created_by_fix": false,
+    "existing_blog_publication_state": "APPROVED_NOT_LIVE_PROVEN",
+    "release_state": "SOURCE_CANDIDATE_NEEDS_EXACT_PROTECTED_CI_MERGE_REGENERATED_BLOG_PUBLIC_READBACK"
+  },
+  "learning_state": "OBSERVED_QUALITY_DEFECT_PREVENTION_SOURCE_CANDIDATE",
+  "compiler": {
+    "failure_class": "BLOG_LONG_TITLE_GENERIC_FALLBACK_WIPED_SOURCE_INTENT",
+    "scope": "WEBSITE_SEO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-daily-blog-seo-closure-20261022.test.mjs"
+    ]
+  }
+}
