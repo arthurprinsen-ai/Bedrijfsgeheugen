@@ -123,12 +123,16 @@ def seo_focus(data):
               and raw_words[-1].casefold() not in starters
               and raw_words[0].casefold() not in generic_actions)
     candidates = [raw] if raw_ok else []
-    if len(meaningful) >= 2:
+    if len(meaningful) >= 2 and meaningful[1].casefold() not in (starters | {"op", "met", "aan", "en", "of"}):
+        # Preserve the exact original hyphenated subject ONLY for an
+        # action-verb question. Do not silently rewrite older Twinfield
+        # and other already certified noun-phrase selection contracts.
+        source_question = bool(re.match(r"(?i)^hoe bereid (?:je|jij|u)\b", title))
         pair = re.search(
             r"(?<!\w)" + re.escape(meaningful[0]) + r"[\s-]+" + re.escape(meaningful[1]) + r"(?!\w)",
             title, flags=re.I
         )
-        candidates.append(pair.group(0) if pair else " ".join(meaningful[:2]))
+        candidates.append(pair.group(0) if source_question and pair else " ".join(meaningful[:2]))
     if meaningful and meaningful[0].casefold() not in starters:
         candidates.append(meaningful[0])
     haystack = (title + " " + body).casefold()
