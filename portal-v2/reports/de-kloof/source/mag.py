@@ -113,6 +113,7 @@ pg(f"""<div class='k'>Welkom</div><h1>Een afspraak met <i>jezelf.</i></h1>
 <p style='font-size:11.5pt;line-height:1.5;max-width:150mm'>Bijna iedere ondernemer wil weten wat AI voor zijn bedrijf kan doen. Bijna niemand heeft er een rustig moment voor. Dit magazine is daarom geen rapport. Het is een ritueel: negentig minuten per kwartaal, met koffie, een pen en eerlijke cijfers.</p>
 <div class='q'>Het gat is geen techniek. Het gat is tijd, kennis en een eerste kleine stap.</div>
 <p style='max-width:150mm'>Wij hebben openbare data uit Europa, Nederland en de wereld naast elkaar gelegd: Eurostat, CBS, UWV, Stanford, McKinsey, Verizon en de AI Act. Elk cijfer heeft een bron, een bewijsniveau en een label. Daarna hebben we de verbanden zelf doorgerekend en teruggebracht tot negen bouwblokken die je zonder voorkennis kunt lezen en dezelfde week nog kunt gebruiken.</p>
+<div class='card' style='margin-top:5mm'><div class='tg'>Niet voor iedereen</div><p style='margin:0'>Dit magazine staat niet open op het internet. Het is er voor wie zich aanmeldt, elk kwartaal in een nieuwe editie, met een eigen analyse op Europese en Nederlandse data. Eén ondernemer, één exemplaar, negentig minuten.</p></div>
 <h3 style='margin-top:6mm'>Zo lees je een bouwblok</h3>
 <div class='g3' style='margin-top:2mm'>
 <div class='ch' style='margin:0'><div class='ct'>1 &middot; Het cijfer</div><p class='mini'>Eén getal, met bron en jaar.</p></div>
@@ -129,6 +130,11 @@ pg(f"""<div class='k'>Het Kwartaalritueel</div><h1>Negentig minuten. <i>Vijf bew
 <div class='mv'><div class='m'>III<small>25 min</small></div><div><b>Regel</b> &middot; Team, wet en veiligheid.<br><span class='mini'>Bouwblokken 04, 05 en 06 &middot; pagina 11 tot 13</span></div></div>
 <div class='mv'><div class='m'>IV<small>30 min</small></div><div><b>Bouw</b> &middot; Bouw eerst een AI, in plaats van weer een Excel.<br><span class='mini'>Bouwblokken 07 en 08 &middot; pagina 14 en 15</span></div></div>
 <div class='mv'><div class='m'>V<small>10 min</small></div><div><b>Meet</b> &middot; Eén getal, over 90 dagen terug.<br><span class='mini'>Bouwblok 09 &middot; pagina 16</span></div></div>
+<div class='card' style='margin-top:6mm'><div class='tg'>Maak er een moment van &middot; Voor jezelf</div><h4>Dit uur is van jou.</h4>
+<p>Een ondernemer die zijn kwartaal plant, doet iets wat niemand anders voor hem doet. Behandel het als een afspraak met je beste klant.</p>
+<div class='g2' style='gap:4mm;margin-top:2mm'><div><p class='mini'><b>Plek.</b> Kies een plek waar je zelden werkt: een café, de tuin, de bank.<br><b>Drinken.</b> Koffie, thee, wat jij lekker vindt.<br><b>Stilte.</b> Telefoon op vliegtuigstand, mail dicht.</p></div>
+<div><p class='mini'><b>Pen.</b> Schrijf met de hand; dat vertraagt en dwingt keuzes af.<br><b>Einde.</b> Sluit af met één zin: wat ik dit kwartaal anders ga doen.<br><b>Beloning.</b> Plan er iets prettigs achteraan.</p></div></div>
+<div class='g2' style='gap:4mm;margin-top:3mm'><div><p class='mini' style='margin:0'>Mijn ritueel-datum</p><span class='fb' data-f='r_datum' style='height:8mm'></span></div><div><p class='mini' style='margin:0'>Mijn plek</p><span class='fb' data-f='r_plek' style='height:8mm'></span></div></div></div>
 <div class='mv' style='border-bottom:.3mm solid var(--ink)'><div class='m'>&#8734;<small>vooraf</small></div><div class='mini'>Werkblad pagina 17, jouw plan pagina 18, bronnen pagina 19. Op de laatste pagina vind je een maand gratis hulp bij het ritueel.</div></div>""")
 # ---- 4 kloof in een blik
 pg(f"""<div class='k'>De kloof in één blik</div><h1 style='font-size:34pt'>Nederland loopt voor. <i>Het mkb niet.</i></h1>
@@ -381,6 +387,17 @@ pg("""<div class='k'>De besluitkaart &middot; Werkblad</div><h1>Eén beslissing.
 <div class='g2'><div><h3>Verwachte uitkomst</h3><span class='fb' data-f='b_uitkomst' style='height:12mm'></span></div><div><h3>Evaluatiedatum</h3><span class='fb' data-f='b_datum' style='height:12mm'></span></div></div>
 <h3>Wat heb ik geleerd? (invullen bij evaluatie)</h3><span class='fb' data-f='b_geleerd' style='height:16mm'></span>
 <div class='ft'>Bewaar je kaarten bij het kwartaalritueel. Na een jaar zie je welke beslissingen je kunt overlaten aan een regel of een AI-assistent.</div>""")
+# ---- jouw moment
+pg("""<div class='k'>Jouw moment &middot; Afsluiting</div><h1 style='font-size:32pt'>Leg de cijfers even <i>weg.</i></h1>
+<p style='max-width:155mm'>Negentig minuten is lang genoeg om iets te beslissen en kort genoeg om iets te voelen. Beantwoord deze vragen voor jezelf, niet voor je team of je klanten. Niemand leest ze, behalve jij.</p>
+<div class='q'>Een bedrijf groeit zelden sneller dan zijn eigenaar tijd heeft om na te denken.</div>
+<h3>Waar ben ik dit kwartaal trots op?</h3><span class='fb' data-f='m_trots' style='height:15mm'></span>
+<h3>Wat geeft mij energie in mijn werk?</h3><span class='fb' data-f='m_energie' style='height:15mm'></span>
+<h3>Wat kost mij energie, en kan dat weg of kleiner?</h3><span class='fb' data-f='m_kost' style='height:15mm'></span>
+<h3>Wat zou ik doen met één vrije dag per week extra?</h3><span class='fb' data-f='m_dag' style='height:15mm'></span>
+<h3>Wat laat ik los?</h3><span class='fb' data-f='m_los' style='height:15mm'></span>
+<div style='margin-top:5mm;font-size:9pt'><span class='cbx' data-f='m_gedaan' style='border-color:var(--ink)'></span> Ik heb mijn uur genomen. Tot het volgende kwartaal.</div>
+<div class='ft'>AI is een middel. Het doel is meer tijd voor wat jij belangrijk vindt. Dit zijn geen meetresultaten, maar jouw eigen antwoorden.</div>""")
 # ---- advertentie
 QP=qr(PORTAL,'#0a1630')
 CI=IMG(SC+'groot/img/consult.jpg')
