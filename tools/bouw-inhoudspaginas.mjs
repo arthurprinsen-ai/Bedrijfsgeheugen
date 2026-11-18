@@ -96,6 +96,7 @@ for (const p of paginas) {
   } else {
     html = html.replace('</head>', `<link rel="canonical" href="${canoniek}">\n</head>`);
   }
+  if (p.lang) html = html.replace(/<html lang="[a-z-]+"/i, `<html lang="${p.lang}"`);
   await writeFile(p.bestand, html, 'utf8');
   console.log(`Inhoudspagina geschreven: ${p.bestand} (${html.length} tekens)`);
 }
