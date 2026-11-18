@@ -102,3 +102,37 @@ test('known translation JSON/shape failures are distinct, without exposing any t
     failure_class:'TRANSLATION_RUNTIME_OR_SHAPE', upstream_status:null
   });
 });
+
+test('governed production adapter wrapper retains structured upstream HTTP classification', () => {
+  const source = readFileSync(new URL('../platform/brain/production-ai.mjs',import.meta.url),'utf8');
+  assert.match(source,/AI provider failed safely: \$\{error\?\.message/);
+  for(const code of [400,401,429,500,502,503]) {
+    const logs=[];
+    const event=reportI18nError({
+      error:new Error('AI provider failed safely: OPENAI_PROVIDER_ERROR_'+code+':secret provider diagnostic sk-private customer@secret.nl'),
+      requestId,dataClass:'Confidential',log:line=>logs.push(line)
+    });
+    assert.equal(event.failure_class,'UPSTREAM_HTTP_REJECTION');
+    assert.equal(event.upstream_status,code);
+    assert.equal(logs.length,1);
+    assert.doesNotMatch(logs[0],/secret|sk-private|customer@/);
+  }
+  assert.deepEqual(classifyI18nError(new Error('AI provider failed safely: OPENAI_PROVIDER_ERROR_299:fake')), {
+    failure_class:'TRANSLATION_RUNTIME_OR_SHAPE',upstream_status:null
+  });
+});
+
+test('wrapped provider refusal, exhausted budget and empty text remain distinct without details',()=>{
+  for(const [message,kind] of [
+    ['OPENAI_REFUSAL','MODEL_REFUSAL'],
+    ['OPENAI_OUTPUT_BUDGET_EXHAUSTED','OUTPUT_BUDGET_EXHAUSTED'],
+    ['OPENAI_EMPTY_RESPONSE','EMPTY_MODEL_RESPONSE']
+  ]) {
+    const classified=classifyI18nError(new Error('AI provider failed safely: '+message));
+    assert.equal(classified.failure_class,kind);
+    assert.equal(classified.upstream_status,null);
+  }
+  assert.deepEqual(classifyI18nError(new Error('AI provider failed safely: private text of customer')), {
+    failure_class:'TRANSLATION_RUNTIME_OR_SHAPE',upstream_status:null
+  });
+});
