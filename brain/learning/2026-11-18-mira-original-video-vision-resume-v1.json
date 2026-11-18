@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|instagram-mira|exact-video-vision-provider-resume-missing|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "original powerhouse-instagram-media-router / powerhouse-content-loop",
+  "parent_issue": 5232,
+  "related_issue": 4198,
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "terminal_success": false,
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-original-exact-video-provider-retry.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-original-exact-video-provider-retry.test.mjs"
+    ]
+  },
+  "root_cause": "The canonical read-only preflight preserves completed Mira video in VERIFYING but never starts the original exact-media verifier again after provider 429. A live scheduler and media job do not prove real identity verification.",
+  "prevention": "Permit only original source-locked same OpenArt history, CAS lease and bounded 30/60/120-minute vision-only retries, at most three. A real measured reject never becomes a transient provider retry, and no new OpenArt generation or Meta publish is allowed without independent face>=0.940 and temporal proof.",
+  "evidence": {
+    "tests": [
+      "tests/brain-mira-original-exact-video-provider-retry.test.mjs"
+    ],
+    "original_job_id": "4a68dc41-6e60-4b64-ba7b-400086cb7296",
+    "original_openart_history_id": "r6sZX8kdGyvpD6zEbWg7",
+    "initial_router_request": 34812,
+    "classified_recovery_request": 34828,
+    "verified_runtime_version_before_fix": 967,
+    "face_verdict": null,
+    "meta_external_id": null,
+    "independent_effect_verified": false
+  },
+  "guardrails": [
+    "No parallel executor, new cron, new paid OpenArt generation or channel write",
+    "No fake identity PASS after provider 429",
+    "Original CAS job and immutable source",
+    "Keep original 0.940 face, temporal, Meta and Heartbeat gates"
+  ],
+  "independent_effect_verified": false
+}

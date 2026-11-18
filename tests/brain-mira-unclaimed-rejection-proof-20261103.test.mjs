@@ -77,6 +77,8 @@ test('original media router and identical Mira identity standard stay intact',()
  const face=readFileSync('supabase/functions/_shared/mira-canonical-face.mjs','utf8');
  assert.match(face,/MIRA_IDENTITY_MIN_CONFIDENCE=0\.94/);
  assert.match(router,/reconcileHistoricalRejectedGeneratingJob\(db,\{job,ob\}\)/);
- assert.match(router,/if\(!fv\.body\?\.pass\|\|!miraFaceProofValid/);
+ assert.match(router,/const verdict=assessMiraFrameVerifierResult\(fv\)/);
+  assert.match(router,/verdict\.kind==='PROVIDER_UNAVAILABLE'/);
+  assert.match(router,/verdict\.kind==='MEASURED_FACE_REJECTED'/);
  assert.match(router,/VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH/);
 });
