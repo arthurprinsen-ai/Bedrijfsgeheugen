@@ -279,35 +279,9 @@
       else kop.appendChild(knop);
     }
 
-    // Hero-beeld: een besluitkaart (voorbeeld) in plaats van het stockfilmpje. Het toont wat het product doet.
-    var hv = doc.querySelector('section.hero-video .hero-bg-video');
-    if (hv && !doc.querySelector('.rb-besluit')) {
-      var kaart = doc.createElement('aside');
-      kaart.className = 'rb-besluit';
-      kaart.setAttribute('aria-label', tr('Besluit · voorbeeld'));
-      kaart.innerHTML =
-        '<small><i aria-hidden="true"></i>' + tr('Besluit · voorbeeld') + '</small>' +
-        '<h2>' + tr('Offerte Van Dijk Techniek verlengen?') + '</h2>' +
-        '<dl>' +
-        '<div class="rb-b-waarom"><dt>' + tr('Waarom nu') + '</dt><dd>' + tr('Het contract loopt af en de marge staat onder druk.') + '</dd></div>' +
-        '<div><dt>' + tr('Bron') + '</dt><dd>' + tr('AFAS-contract en de mail van 12 november') + '</dd></div>' +
-        '<div><dt>' + tr('Eigenaar') + '</dt><dd>' + tr('Sanne, sales') + '</dd></div>' +
-        '<div class="rb-b-datum"><dt>' + tr('Vastgelegd') + '</dt><dd>' + tr('Vandaag, met bron') + '</dd></div>' +
-        '</dl>' +
-        '<p>' + tr('Elk besluit heeft een bron, een eigenaar en een datum.') + '</p>';
-      var film = doc.createElement('figure');
-      film.className = 'rb-film';
-      var rust = doc.createElement('video');
-      rust.setAttribute('muted', ''); rust.muted = true; rust.loop = true; rust.playsInline = true;
-      rust.setAttribute('playsinline', ''); rust.setAttribute('aria-hidden', 'true'); rust.setAttribute('tabindex', '-1');
-      rust.preload = 'metadata'; rust.poster = '/assets/hero-rust.jpg'; rust.src = '/assets/hero-rust.mp4';
-      film.appendChild(rust); film.appendChild(kaart);
-      hv.parentNode.appendChild(film);
-      var stil = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (!stil) { var spel = rust.play(); if (spel && spel.catch) spel.catch(function () {}); }
-      hv.setAttribute('data-rb-vervangen', '1');
-      try { hv.pause(); } catch (e) {}
-    }
+    // Hero-beeld: het oorspronkelijke drone-filmpje blijft staan (rustige vlucht door architectuur).
+    var hv0 = doc.querySelector('section.hero-video .hero-bg-video');
+    if (hv0) { hv0.removeAttribute('data-rb-vervangen'); var sp0 = hv0.play && hv0.play(); if (sp0 && sp0.catch) sp0.catch(function () {}); }
 
     // De WhatsApp-knop pas na een schermhoogte scrollen, zodat hij de hoofdactie niet afdekt.
     var wa = doc.querySelector('.bg-whatsapp-contact');

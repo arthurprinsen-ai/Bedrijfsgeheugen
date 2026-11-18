@@ -166,3 +166,13 @@ html body .rb-film .rb-besluit p{display:none}
 html body .rb-film .rb-besluit{position:absolute!important;margin:0!important;max-width:none}
 @media(max-width:1099px){html body .rb-film .rb-besluit h2{font-size:.95rem}}
 html body .rb-film .rb-besluit{top:auto!important;right:auto!important;transform:none!important}
+html body section.hero-video.hero-inspiration .hero-copy>.rb-film{order:3;width:100%;max-width:520px;margin:6px 0 18px}
+@media(max-width:1099px){html body .rb-film video{aspect-ratio:16/11}}
+@media(max-width:1099px){html body .rb-film .rb-besluit h2{font-size:1rem!important;line-height:1.2!important;margin:6px 0 8px!important}html body .rb-film .rb-besluit{width:min(62%,230px)}}
+/* Hero-film: het drone-filmpje vult weer de hele hero (vlucht door architectuur, overzicht als een vogel).
+   Links vervaagt het beeld in het papier, zodat de tekst rustig leesbaar blijft. */
+html body section.hero-video.hero-inspiration video.hero-bg-video{position:absolute!important;inset:0!important;top:0!important;right:0!important;left:0!important;bottom:0!important;transform:none!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;object-fit:cover!important;object-position:62% 50%!important;filter:saturate(.82) brightness(1.02) contrast(.96)!important;margin:0!important;-webkit-mask-image:linear-gradient(90deg,transparent 0,transparent 42%,rgba(0,0,0,.5) 58%,#000 80%);mask-image:linear-gradient(90deg,transparent 0,transparent 42%,rgba(0,0,0,.5) 58%,#000 80%)}
+@media(max-width:860px){
+  html body section.hero-video.hero-inspiration video.hero-bg-video{position:absolute!important;inset:0 0 auto 0!important;top:0!important;height:230px!important;width:100%!important;object-position:50% 40%!important;-webkit-mask-image:linear-gradient(180deg,#000 0,#000 45%,transparent 92%);mask-image:linear-gradient(180deg,#000 0,#000 45%,transparent 92%)}
+  html body section.hero-video.hero-inspiration .hero-video-content{padding-top:236px!important}
+}
