@@ -61,19 +61,19 @@ test('live-shaped hero replaces the old knowledge pitch rather than stacking a s
 <a href="https://www.bedrijfsgeheugen.nl/ai-ecosysteem">Bekijk het AI-ecosysteem →</a>
 </section></main></body></html>`;
   const nl=applyDailySteeringPositioning(fixture,'nl');
-  assert.match(nl,/Iedere dag beter sturen/);
+  assert.match(nl,/Voor ondernemers die de leiding houden/);
   assert.match(nl,/<p class="hero-sub" data-bg-daily-steering-copy="v2">/);
   assert.equal((nl.match(/data-bg-daily-steering-copy="v2"/g)||[]).length,1);
   assert.doesNotMatch(nl,/Je bedrijf heeft een geheugen\. Alleen zit te veel/);
   assert.doesNotMatch(nl,/<p class="lead" data-bg-daily-steering-copy/);
   assert.doesNotMatch(nl,/Voorbeelden van AI-agents/);
   assert.match(nl,/Kansen eerder herkennen/);
-  assert.match(nl,/Bekijk de technologie erachter/);
+  assert.match(nl,/Ontdek hoe het geheugen werkt/);
   assert.ok(nl.includes('href="https://www.bedrijfsgeheugen.nl/zelfscan"'));
   assert.equal(applyDailySteeringPositioning(nl,'nl'),nl);
   const en=applyDailySteeringPositioning(fixture.replace('Voorbeelden van AI-agents','Examples of AI agents'),'en');
-  assert.match(en,/Better decisions, every day/);
-  assert.match(en,/Value for business owners/);
+  assert.match(en,/For owners who stay in charge/);
+  assert.match(en,/What you get back/);
   assert.match(en,/Spot opportunities sooner/);
   assert.equal((en.match(/data-bg-daily-steering-copy="v2"/g)||[]).length,1);
 });
@@ -189,4 +189,16 @@ test('generated V18 video-hero shade never becomes the owner-value injection poi
 test('homepage reordering rejects comment-based pre-hero markup instead of partial sanitization',()=>{
  const html='<main><section aria-labelledby="bg-predictive-heading"><h2 id="bg-predictive-heading">Evidence</h2></section><!-- nested <!-- unsupported --><div class="wrap hero"><h1>Primary entrepreneur proposition</h1><p class="lead">Real source context</p></div></main>';
  assert.throws(()=>applyDailySteeringPositioning(html,'nl'),/VALUE_FIRST_PRE_HERO_COMMENT_UNSUPPORTED/);
+});
+
+test('hero-tekst blijft eerlijk: geen nep-schaarste, geen marktleider-claim, geen uitroeptekens',()=>{
+  for(const taal of ['nl','en']){
+    const tekst=applyDailySteeringPositioning(homepage,taal).replace(/<[^>]+>/g,' ');
+    assert.doesNotMatch(tekst,/nog \d+ plekken|laatste kans|marktleider|beperkt beschikbaar|only \d+ spots|market leader/i);
+  }
+  const nl=applyDailySteeringPositioning(homepage,'nl');
+  const hero=(nl.match(/<h1[\s\S]*?<\/h1>/)||[''])[0]+(nl.match(/<p[^>]*data-bg-daily-steering-copy="v2"[\s\S]*?<\/p>/)||[''])[0];
+  assert.ok(hero.length>200,'hero gevonden');
+  assert.ok(!hero.includes('!'));
+  assert.match(hero,/AFAS/);
 });
