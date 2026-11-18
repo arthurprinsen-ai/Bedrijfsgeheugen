@@ -176,3 +176,24 @@ html body section.hero-video.hero-inspiration video.hero-bg-video{position:absol
   html body section.hero-video.hero-inspiration video.hero-bg-video{position:absolute!important;inset:0 0 auto 0!important;top:0!important;height:230px!important;width:100%!important;object-position:50% 40%!important;-webkit-mask-image:linear-gradient(180deg,#000 0,#000 45%,transparent 92%);mask-image:linear-gradient(180deg,#000 0,#000 45%,transparent 92%)}
   html body section.hero-video.hero-inspiration .hero-video-content{padding-top:236px!important}
 }
+/* ---------- Adviseur-ronde (homepage) ---------- */
+html body .rb-adviseur{background:var(--rit-papier-zacht,#F3F1EC);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));border-bottom:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding:clamp(56px,8vw,104px) 5vw;font-family:var(--rit-sans,'Instrument Sans',system-ui,sans-serif);color:var(--rit-inkt,#14171A)}
+html body .rb-adv-wrap{max-width:1100px;margin:0 auto}
+html body .rb-adviseur small{display:block;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--rit-zacht,#5B6168);font-weight:500}
+html body .rb-adviseur h2{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:clamp(1.9rem,3.4vw,2.9rem);line-height:1.12;letter-spacing:-.02em;margin:18px 0 18px;color:var(--rit-inkt,#14171A);max-width:26ch}
+html body .rb-adviseur .rb-adv-lead{font-size:1.05rem;line-height:1.7;color:var(--rit-zacht,#5B6168);max-width:36rem;margin:0 0 40px}
+html body .rb-adviseur ol{list-style:none;margin:0 0 40px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+html body .rb-adviseur li{padding:22px 28px 22px 0;border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));display:flex;flex-direction:column;gap:8px}
+html body .rb-adviseur li b{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:1.25rem;color:var(--rit-inkt,#14171A)}
+html body .rb-adviseur li span{font-size:.97rem;line-height:1.6;color:var(--rit-zacht,#5B6168)}
+html body .rb-adviseur .rb-adv-knop{display:inline-block;padding:14px 28px;border-radius:999px;border:1px solid var(--rit-inkt,#14171A);color:var(--rit-inkt,#14171A);text-decoration:none;font-weight:600;font-size:.97rem;transition:background-color .4s,color .4s}
+html body .rb-adviseur .rb-adv-knop:hover{background:var(--rit-inkt,#14171A);color:var(--rit-papier,#FBFAF7)}
+@media(max-width:860px){html body .rb-adviseur ol{grid-template-columns:1fr}html body .rb-adviseur li{padding-right:0}}
+/* Eén rustige donkere kleur in plaats van drie blauwtinten. */
+html body :is(section.bgvf,section.pgl,section.v18-chaos-section){background:#14171A!important}
+/* Productkaarten: papier met een dunne lijn in plaats van geel en blauw. */
+html body .service-product-card:is(.lime,.cyan,.blue){background:#F3F1EC!important;color:#14171A!important;border:1px solid rgba(20,23,26,.14)!important;box-shadow:none!important}
+html body .service-product-card:is(.lime,.cyan,.blue) :is(h1,h2,h3,h4,a,b,strong,span,li){color:#14171A!important}
+html body .service-product-card:is(.lime,.cyan,.blue) p{color:#5B6168!important}
+/* Het bedrag mag rustig zijn: serif, kleiner, gewone dikte. */
+html body #annualPotential.count-big{font-family:var(--rit-serif,'Fraunces',Georgia,serif)!important;font-weight:400!important;font-size:clamp(3.2rem,8vw,6rem)!important;letter-spacing:-.025em!important;line-height:1.05!important}

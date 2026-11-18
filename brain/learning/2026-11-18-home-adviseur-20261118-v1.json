@@ -1,0 +1,39 @@
+{
+  "fingerprint": "site|rituals|home-adviseur|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|home-adviseur|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 15,
+    "security_sensitive": false
+  },
+  "root_cause": "De homepage had verzadigde kleuren, een zwevende knop en geen persoonlijke adviseur-toon.",
+  "correction": "Adviseur-blok, één donkere tint, rustige kaarten en bedrag.",
+  "prevention": [
+    "Controleer homepage-secties op verzadigde kleuren en zwevende elementen."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-belevenis.css",
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Lokaal gemeten en bekeken; live-readback open."
+  }
+}
