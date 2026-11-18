@@ -4,6 +4,16 @@
  "rule": "Before building or changing any blog/post/newsletter flow, read this register. A listed blocker must not recur: apply its prevention, or document why it no longer applies.",
  "historical_blockers": [
   {
+    "fingerprint": "powerhouse|daily-blog|seo-action-verb-generic-title|20261118-v1",
+    "date": "2026-11-18",
+    "channels": [
+      "blog"
+    ],
+    "cause": "Canonical original source 'Hoe bereid je je MKB-boekhouding...' yielded SEO focus 'bereid' and generic lowercase title 'bereid: wat verandert er voor jou?' in protected blog PR #6028; required preflight correctly blocked.",
+    "prevention": "Original daily blog publisher seo_focus excludes leading generic action verbs, keeps source noun phrases/hyphens; source-bound seo_title outputs informative title <=60; exact regression and original publishing protections remain active; no duplicate sender, fabricated provider proof or bypass.",
+    "source": "brain/learning/2026-11-18-original-blog-seo-action-verb-title-v1.json"
+  },
+  {
     "fingerprint": "powerhouse|linkedin-personal|late-verified-user-fact-stale-hold|20261118-v1",
     "date": "2026-11-18",
     "channels": [
