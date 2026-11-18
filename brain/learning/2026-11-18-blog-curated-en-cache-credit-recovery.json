@@ -47,5 +47,18 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "prevention": "The original publisher must prepare and commit source-exact reviewed English caches before its protected build, detect and fail fast on exhausted OpenAI API credits, preserve the original approved blog obligation and unique producer lineage, and resume only through the original writer with complete bilingual coverage, protected CI/merge, independent NL+EN destination readback and Brain/Heartbeat closure. Never claim API credits are restored from a cache patch."
+  "prevention": "The original publisher must prepare and commit source-exact reviewed English caches before its protected build, detect and fail fast on exhausted OpenAI API credits, preserve the original approved blog obligation and unique producer lineage, and resume only through the original writer with complete bilingual coverage, protected CI/merge, independent NL+EN destination readback and Brain/Heartbeat closure. Never claim API credits are restored from a cache patch.",
+  "evidence": {
+    "source_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44257300433",
+    "original_source_receipt": "STATIC_I18N_CACHE_GAPS_V1",
+    "source_keys_count": 76,
+    "translated_entries": 76,
+    "provider_http_status": 429,
+    "provider_error_code": "credit_balance_exhausted",
+    "tests": [
+      "tests/brain-blog-original-en-cache-20261118.test.mjs"
+    ],
+    "protected_main_merged": false,
+    "original_article_live_readback": false
+  }
 }
