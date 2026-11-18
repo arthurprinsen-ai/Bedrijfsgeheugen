@@ -297,10 +297,11 @@ pg(f"""<div class='k'>Jouw plan</div><h1>Eén taak. <i>Eén getal.</i> Negentig 
 import sqlite3
 c=sqlite3.connect(SC+'groot/ai_mkb.db')
 rows=c.execute("select id,publisher,name,published,tier,caveat from sources where id like 'M%' order by id").fetchall()
-tr=''.join(f"<tr><td>{r[1]}</td><td>{r[2]}<br><span style='color:var(--mut)'>{r[3]}</span></td><td><b>{r[4]}</b></td><td>{r[5]}</td></tr>" for r in rows)
+_cut=lambda t,n:(t if len(t)<=n else t[:n-1].rsplit(' ',1)[0]+'…')
+tr=''.join(f"<tr><td>{_cut(r[1],26)}</td><td>{_cut(r[2],62)}<br><span style='color:var(--mut)'>{r[3]}</span></td><td><b>{r[4]}</b></td><td>{_cut(r[5],70)}</td></tr>" for r in rows)
 pg(f"""<div class='k'>Verantwoording</div><h2>Bronnen en <i>bewijs</i></h2>
 <p class='mini'>Niveau A: officiële statistiek of wet. B: samenvatting of onderzoek met open methode. C: leveranciersonderzoek, indicatief. We hebben bij elk cijfer de populatie en de beperking genoteerd.</p>
-<table><tr><th>Bron</th><th>Titel</th><th>Niveau</th><th>Let op</th></tr>{tr}</table>
+<table style='font-size:6.4pt;line-height:1.22'><tr><th>Bron</th><th>Titel</th><th>Niveau</th><th>Let op</th></tr>{tr}</table>
 <p class='mini' style='margin-top:2mm;font-size:6.6pt;line-height:1.3'>Niet gebruikt: cijfers die we niet bij de primaire bron konden terugvinden. Beeld op de voorkant: AI-gegenereerd. Geen juridisch of financieel advies.</p>""")
 # ---- datalab: wie meet wat
 pg(f"""<div class='k'>Eigen analyse &middot; Meetverschil</div><h1 style='font-size:32pt'>Hoeveel Nederlandse bedrijven gebruiken AI? <i>Dat hangt af van wie telt.</i></h1>
@@ -348,7 +349,8 @@ pg(f"""<div class='k'>De Atlas &middot; Editie 2026-Q4</div><h1 style='font-size
 <p class='mini' style='margin-top:1.5mm'>Gebruik van AI in 2025 (Eurostat) tegenover het laatste jaar van elk kenmerk. Holm-correctie voor {len(_an)} toetsen. Verband, geen oorzaak: rijke landen hebben veel gemeen.</p></div>
 <div class='l8'>
 <div class='card'><div class='tg'>Ons oordeel</div><h4>AI volgt arbeid, niet energie.</h4><p>Landen met dure arbeid en veel R&amp;D gebruiken meer AI. De prijs van elektriciteit voor bedrijven doet er niet toe (rho {f(_db.execute("select value from analysis_results where name like '%Elektriciteitsprijs%'").fetchone()[0])}).</p></div>
-<div class='card'><div class='tg'>Wat niet lukte</div><h4>Eerlijk over de gaten.</h4><p>Veertien World Bank-reeksen (o.a. bestuurskwaliteit) en acht CBS-tabellen (o.a. ondernemersvertrouwen) haalden we niet binnen. Nieuws, talen buiten de gebruikte bronnen en betaalde data ontbreken. Volgende editie vullen we aan.</p></div></div>
+<div class='card'><div class='tg'>Wat niet lukte</div><h4>Eerlijk over de gaten.</h4><p>Acht World Bank-reeksen (o.a. bestuurskwaliteit) en acht CBS-tabellen (o.a. ondernemersvertrouwen) haalden we niet binnen. Nieuws, talen buiten de gebruikte bronnen en betaalde data ontbreken. Volgende editie vullen we aan.</p></div></div>
+<div class='card' style='margin-top:3mm'><div class='tg'>Naast Nederland &middot; Feit</div><h4>Spanje 33,6%, Italië 16,4%, Nederland 33,2%.</h4><p>Bedrijven 10+ die AI gebruiken: Spanje Q1 2026 (INE), Italië en Nederland 2025. Italië: mkb 15,7%, groot 53,1%. Japan meldt 86,4% (gen-AI, minstens één taak): andere vraag en basis, niet vergelijkbaar.</p></div>
 <div class='ft'><span class='lab'>Eigen analyse</span>Spearman met bootstrap (3.000 trekkingen). Download: portal-v2/reports/trendbank/ (catalogus en volledige database). Vergelijk alleen reeksen met dezelfde definitie.</div>""".replace(f"{_tot[0]:,}",f"{_tot[0]:,}".replace(',','.')).replace(f"{_tot[1]:,}",f"{_tot[1]:,}".replace(',','.')))
 # ---- advertentie
 QP=qr(PORTAL,'#0a1630')

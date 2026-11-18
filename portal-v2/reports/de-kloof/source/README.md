@@ -4,4 +4,4 @@ Bouw: `python3 mag.py` (HTML + PDF via Playwright), daarna `python3 forms_mag.py
 ## Trendbank en Atlas (2026-Q4)
 - `portal-v2/reports/trendbank/trendbank-2026-q4.sqlite.xz`: alle meetpunten (tabellen `observations`, `sources`; xz uitpakken met `xz -d`). `series_catalogue.csv`: overzicht per reeks. `observations.csv/json`: handgekozen kern.
 - `loaders/`: scripts per bron (Eurostat, OECD, IMF, World Bank, ECB, CBS, OWID). Volgende editie: opnieuw draaien met editielabel 2026-Q5 en vergelijken binnen dezelfde definitie.
-- Bekende gaten: 14 World Bank-reeksen (o.a. WGI) en 8 CBS-tabellen (o.a. ondernemersvertrouwen 85612NED) mislukten; opnieuw proberen.
+- Bekende gaten: 8 World Bank-reeksen (o.a. WGI) en 8 CBS-tabellen (o.a. ondernemersvertrouwen 85612NED) mislukten; opnieuw proberen.
