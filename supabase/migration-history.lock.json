@@ -3528,8 +3528,12 @@
     {
       "version": "20261118174500",
       "name": "original_provider_owner_notification_receipt_v3"
+    },
+    {
+      "version": "20261118184000",
+      "name": "original_guardian_provider_scope_source_freshness_v4"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-18T17:54:58.160Z"
+  "captured_at": "2026-11-18T18:45:28.978Z"
 }

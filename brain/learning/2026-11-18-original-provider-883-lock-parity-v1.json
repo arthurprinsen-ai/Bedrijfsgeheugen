@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|gitops|provider-883-native-lock-drift|20261118-v1",
+  "obligation_id": "powerhouse|gitops|provider-883-native-lock-drift|20261118-v1",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original protected Supabase GitOps migration writer",
+  "root_cause": "After protected PR #6043 native production automatically applied version 20261118184000 and total 883; original protected main migration-history.lock.json contained 882. Source lock must follow exact independent provider receipt or future original PR preflights fail.",
+  "evidence": {
+    "provider_applied_count": 883,
+    "original_lock_previous_count": 882,
+    "first_882_identity_matches": true,
+    "native_latest": {
+      "version": "20261118184000",
+      "name": "original_guardian_provider_scope_source_freshness_v4"
+    },
+    "sql_original_guardian_live": true,
+    "original_watchdog_natural_recheck_pending": true
+  },
+  "prevention_rule": "Canonical GitOps must only append exactly independently applied source-version/name with full prefix parity; never fabricate applied migrations, trigger a second release, override preview errors or label business outcome green.",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-883-lock-parity-20261118.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-provider-883-lock-parity-20261118.test.mjs"
+  ],
+  "status": "CANDIDATE_UNTIL_PROTECTED_LOCK_MERGE"
+}
