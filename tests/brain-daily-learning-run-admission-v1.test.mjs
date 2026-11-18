@@ -76,11 +76,22 @@ test('provider-only evaluation reads canonical existing workflow; no invented su
     calls.push(uri);
     if(uri.endsWith('/powerhouse-daily-self-evolution.yml'))return workflow;
     if(uri.includes('/runs?'))return packet(data);
+    if(uri.includes('/actions/runs/'+manual.id+'/jobs?'))return {
+      total_count:6,jobs:[
+        {id:1,name:'daily-admission',status:'completed',conclusion:'success'},
+        {id:2,name:'improve',status:'completed',conclusion:'success'},
+        {id:3,name:'model-freshness',status:'completed',conclusion:'failure'},
+        {id:4,name:'original-intake-recovery',status:'completed',conclusion:'skipped'},
+        {id:5,name:'original-delivery-recovery',status:'completed',conclusion:'skipped'},
+        {id:6,name:'original-innovation-code-candidate',status:'completed',conclusion:'skipped'}
+      ]
+    };
     throw Error('unexpected path');
   }});
   assert.equal(x.status,'DUPLICATE_DAILY_RUN_SUPPRESSED');
   assert.equal(x.allow_execution,false);
-  assert.equal(calls.length,2);
+  assert.equal(calls.length,3);
+  assert.match(calls[2],/actions\/runs\/39932498219\/jobs/);
   assert.match(calls[1],/created=2026-10-23/);
   assert.match(calls[1],/branch=main/);
 });
