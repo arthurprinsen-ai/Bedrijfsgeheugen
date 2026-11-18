@@ -40,7 +40,9 @@ jobs:
       - name: Prove first daily GitHub workflow run before any learning or catalog audit
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node tools/delivery/daily-learning-run-admission.mjs
+        run: |
+          node --test tests/brain-daily-learning-run-admission-v1.test.mjs tests/brain-innovation-daily-scoped-recovery-fence-20261118.test.mjs
+          node tools/delivery/daily-learning-run-admission.mjs
 
   improve:
     if: ${{ (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_intake_recovery') && (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_code_recovery') && (github.event_name != 'workflow_dispatch' || inputs.execution_scope != 'original_delivery_recovery') }}
