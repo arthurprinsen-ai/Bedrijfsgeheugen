@@ -22,5 +22,19 @@
   "live_proven": false,
   "repair": "Add one source-exact 220-char teaser and faithful EN target to original-day cache. Test 77 keys. Re-run original writer after protected merge and verify source-bound public NL+EN and provider DB.",
   "effect": "UNKNOWN",
-  "next_action": "protected Required + CodeQL and canonical blog writer exact production readback"
+  "next_action": "protected Required + CodeQL and canonical blog writer exact production readback",
+  "compiler": {
+    "failure_class": "PROVIDER_QUOTA",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-original-en-cache-20261118.test.mjs"
+    ],
+    "shadow": [],
+    "canary": []
+  }
 }
