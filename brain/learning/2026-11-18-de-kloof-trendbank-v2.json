@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-18",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|quarterly-report-lacks-trend-store|20261118-v2",
+  "failure_class": "CONTENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Cijfers werden per editie los gepubliceerd zonder definitie en populatie in een vaste reeks, waardoor trends en meetverschillen niet te berekenen waren.",
+  "evidence": {
+    "at_utc": "2026-11-18T07:00:00Z",
+    "source": "opdracht Arthur 18 nov 2026 08:00"
+  },
+  "fix": "Trendbank (observations) met definitie, populatie, bron en editielabel; pagina Wie meet wat; vijf nieuwe primaire bronnen.",
+  "prevention_rule": "Elke kwartaaleditie voegt zijn meetpunten toe aan de trendbank met definitie en populatie en vergelijkt alleen binnen dezelfde definitie.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge",
+    "PDF in portaal toont 23 pagina's",
+    "CSV trendbank bereikbaar"
+  ]
+}
