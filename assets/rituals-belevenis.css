@@ -99,3 +99,10 @@ html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:tra
 html body :focus-visible{outline:2px solid #14171A;outline-offset:3px;border-radius:4px}
 ::selection{background:#FFE86B;color:#14171A}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:none}}
+
+/* Goud is één detail per scherm (besluit 17 nov): de dikke gele markeerstift en het gele vlak worden
+   een dunne gouden lijn en een stil papieren vlak met een gouden rand. */
+html body .bgx-streep.bgx-aan{background-size:100% 14%!important;background-position:0 96%!important}
+@media(prefers-reduced-motion:reduce){html body .bgx-streep{background-size:100% 14%!important;background-position:0 96%!important}}
+html body .bm-kern{background:var(--rit-papier-zacht,#F3F1EC)!important;border-left:3px solid #FFE86B!important;border-radius:6px!important;font-weight:400!important}
+html body .bm-kern strong{font-weight:500!important}
