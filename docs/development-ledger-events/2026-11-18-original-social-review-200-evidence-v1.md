@@ -1,0 +1,5 @@
+# 2026-11-18 original social reviewer evidence conflict / #4198
+
+Original production root was read independently after first personal post: 18 Nov / linkedin_personal, PUBLISHED then LIVE_PROVEN, exact provider URN urn:li:share:7528898612878278657 and consumed original capability, original `pre_publish_gate=passed`, current `final_text_hash=4bdb...b3c9`, stale `review_status=422`, `reviewed_text_hash=709a...14480d`, stale 422 violations. Provider readback returned 200 Forbidden; independent public page existence was recorded, not exact text provider readback. NEVER resend.
+
+Source root: existing original publisher spreads old decision.delivery_evidence into gatePassedEvidence and does not reset stale review_status/reviewed_text_hash/violations on verified HTTP200 PASS current hash. Hard gate precedes evidence write; preserve it. Implement current approved review fields plus capped prior 422 history and new machine regression, learning, skill and documentation in original protected lane only. No DB migration or manual existing-row rewrite.
