@@ -9,12 +9,31 @@
   "observations": {
     "date": "2026-11-18",
     "sales_actions_30d_with_relationship_evidence": 0,
-    "activate_connection_30d": {"skipped": 440, "expired": 300},
+    "activate_connection_30d": {
+      "skipped": 440,
+      "expired": 300
+    },
     "autonomous_email_held_source_specific_evidence_required_30d": 28
   },
   "root_cause": "relationshipFact() returned ok=false whenever evidence.relationship_evidence was absent, even when the action itself carried role and company_name.",
   "fix": "relationshipFact() falls back to the action's own role and company_name; two different facts are still required, all other composer gates are unchanged.",
   "prevention": "Test tests/brain-composer-relationship-fact-20261106.test.mjs covers the fallback, bare name, company-only and missing human_readable_context.",
-  "not_proven": ["no message generated for a real connection yet", "no provider-confirmed send", "no reply or customer outcome"],
-  "owner": "powerhouse-commercial-message-composer"
+  "not_proven": [
+    "no message generated for a real connection yet",
+    "no provider-confirmed send",
+    "no reply or customer outcome"
+  ],
+  "owner": "powerhouse-commercial-message-composer",
+  "failure_class": "CLASSIFIER_GAP",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "COMMERCIAL_COMPOSER",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "tests": [
+    "tests/brain-composer-relationship-fact-20261106.test.mjs"
+  ],
+  "regression_test": "tests/brain-composer-relationship-fact-20261106.test.mjs"
 }
