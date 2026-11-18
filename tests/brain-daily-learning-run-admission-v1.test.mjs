@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {assessDailyRunAdmission,evaluateProviderDailyRun}
+import {assessDailyRunAdmission,evaluateProviderDailyRun,isProvenScopedRecoveryRun}
   from '../tools/delivery/daily-learning-run-admission.mjs';
 
 const NOW='2026-10-23T09:34:00.000Z';
@@ -12,6 +12,25 @@ const row=(id,event,created_at,status='completed',conclusion='failure')=>({
 const manual=row(39932498219,'workflow_dispatch','2026-10-23T09:31:34Z');
 const lateScheduled=row(39932748334,'schedule','2026-10-23T09:33:37Z');
 const packet=rs=>({total_count:rs.length,workflow_runs:rs});
+
+const allJobs=Object.freeze([
+  'daily-admission','improve','model-freshness',
+  'original-intake-recovery','original-innovation-code-candidate','original-delivery-recovery'
+]);
+const scopedJobs=(active='original-delivery-recovery',result='success')=>({
+  total_count:allJobs.length,
+  jobs:allJobs.map(name=>({
+    name,status:'completed',conclusion:name===active?result:'skipped'
+  }))
+});
+const fullDailyJobs=()=>({
+  total_count:allJobs.length,
+  jobs:allJobs.map(name=>({
+    name,status:'completed',conclusion:name==='daily-admission'?'success':
+      name==='improve'?'failure':'skipped'
+  }))
+});
+
 const config=(runId,rs,overrides={})=>({
   now:NOW,runId,event:runId===manual.id?'workflow_dispatch':'schedule',
   ref:'refs/heads/main',workflow,snapshot:packet(rs),...overrides
@@ -76,13 +95,15 @@ test('provider-only evaluation reads canonical existing workflow; no invented su
     calls.push(uri);
     if(uri.endsWith('/powerhouse-daily-self-evolution.yml'))return workflow;
     if(uri.includes('/runs?'))return packet(data);
+    if(uri.includes('/actions/runs/'+manual.id+'/jobs?'))return fullDailyJobs();
     throw Error('unexpected path');
   }});
   assert.equal(x.status,'DUPLICATE_DAILY_RUN_SUPPRESSED');
   assert.equal(x.allow_execution,false);
-  assert.equal(calls.length,2);
+  assert.equal(calls.length,3);
   assert.match(calls[1],/created=2026-10-23/);
   assert.match(calls[1],/branch=main/);
+  assert.match(calls[2],/actions\/runs\//);
 });
 
 test('one existing workflow, two independent jobs, and no duplicate scheduler',()=>{
@@ -96,4 +117,90 @@ test('one existing workflow, two independent jobs, and no duplicate scheduler',(
   assert.equal((workflowText.match(/needs: daily-admission/g)||[]).length,2);
   assert.match(workflowText,/node tools\/delivery\/daily-learning-run-admission\.mjs/);
   assert.doesNotMatch(workflowText,/continue-on-error: true/);
+});
+
+
+test('18 November native incident: successful original delivery recovery cannot consume actual daily slot',()=>{
+  // Verified native provider run 44256002607 at 07:04:10 UTC:
+  // normal daily jobs all SKIPPED, original delivery recovery SUCCESS.
+  // Full daily run 44256077963 at 07:04:47 was previously falsely vetoed.
+  const recovery=row(44256002607,'workflow_dispatch','2026-11-18T07:04:10Z','completed','success');
+  const daily=row(44256077963,'workflow_dispatch','2026-11-18T07:04:47Z','completed','failure');
+  const packetNow={...config(daily.id,[daily,recovery],{
+    now:'2026-11-18T07:04:55.000Z',event:'workflow_dispatch',
+    priorJobsByRunId:{[recovery.id]:scopedJobs()}
+  })};
+  const verdict=assessDailyRunAdmission(packetNow);
+  assert.equal(isProvenScopedRecoveryRun(recovery,scopedJobs()),true);
+  assert.equal(verdict.status,'FIRST_DAILY_RUN_ADMITTED');
+  assert.equal(verdict.scoped_recoveries_excluded,1);
+  assert.equal(verdict.allow_execution,true);
+});
+test('all three original bounded recovery lanes never replace full daily, even after failure',()=>{
+  for(const kind of [
+    'original-intake-recovery','original-innovation-code-candidate',
+    'original-delivery-recovery'
+  ]){
+    for(const conclusion of ['success','failure','cancelled','timed_out']){
+      const recovery=row(111,'workflow_dispatch','2026-11-18T04:01:00Z','completed',conclusion);
+      const daily=row(222,'schedule','2026-11-18T04:50:00Z','queued',null);
+      const receipt=scopedJobs(kind,conclusion);
+      assert.equal(isProvenScopedRecoveryRun(recovery,receipt),true,kind+':'+conclusion);
+      const v=assessDailyRunAdmission(config(222,[daily,recovery],{
+        now:'2026-11-18T05:01:00.000Z',
+        priorJobsByRunId:{[recovery.id]:receipt}
+      }));
+      assert.equal(v.allow_execution,true,kind+':'+conclusion);
+      assert.equal(v.scoped_recoveries_excluded,1);
+    }
+  }
+});
+test('an actual first daily, including a failed earlier attempt, still prevents double daily learning',()=>{
+  const previous=row(444,'workflow_dispatch','2026-11-18T06:00:00Z','completed','failure');
+  const current=row(555,'schedule','2026-11-18T07:00:00Z');
+  const x=assessDailyRunAdmission(config(current.id,[previous,current],{
+    now:'2026-11-18T07:00:01.000Z',
+    priorJobsByRunId:{[previous.id]:fullDailyJobs()}
+  }));
+  assert.equal(x.status,'DUPLICATE_DAILY_RUN_SUPPRESSED');
+  assert.equal(x.prior_run_id,previous.id);
+  assert.equal(x.allow_execution,false);
+});
+test('unknown, partial, forged, or scheduled job evidence never bypasses once-daily admission',()=>{
+  const recovery=row(111,'workflow_dispatch','2026-11-18T04:00:00Z','completed','success');
+  const daily=row(222,'schedule','2026-11-18T06:00:00Z','queued',null);
+  const truncated={...scopedJobs(),total_count:100};
+  const dup={...scopedJobs(),jobs:scopedJobs().jobs.map((j,i)=>i===1?{...j,name:'daily-admission'}:j)};
+  const altered={...scopedJobs(),jobs:scopedJobs().jobs.map(j=>j.name==='improve'?{...j,conclusion:'success'}:j)};
+  const allSkipped={...scopedJobs(),jobs:scopedJobs().jobs.map(j=>({...j,conclusion:'skipped'}))};
+  const missing={...scopedJobs(),jobs:scopedJobs().jobs.slice(1),total_count:5};
+  const variants=[null,{},truncated,dup,altered,allSkipped,missing,{...scopedJobs(),jobs:'tampered'}];
+  for(const receipt of variants){
+    assert.equal(isProvenScopedRecoveryRun(recovery,receipt),false);
+    const v=assessDailyRunAdmission(config(daily.id,[daily,recovery],{
+      now:'2026-11-18T06:00:01.000Z',
+      priorJobsByRunId:{[recovery.id]:receipt}
+    }));
+    assert.equal(v.status,'DUPLICATE_DAILY_RUN_SUPPRESSED');
+  }
+  assert.equal(isProvenScopedRecoveryRun({...recovery,event:'schedule'},scopedJobs()),false);
+});
+test('provider adapter independently reads prior recovery jobs; no input inference from workflow run conclusion',()=>{
+  const earlier=row(44256002607,'workflow_dispatch','2026-11-18T07:04:10Z','completed','success');
+  const current=row(44256077963,'workflow_dispatch','2026-11-18T07:04:47Z','queued',null);
+  const env={GITHUB_REPOSITORY:'arthurprinsen-ai/Bedrijfsgeheugen',
+    GITHUB_RUN_ID:String(current.id),
+    GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_REF:'refs/heads/main'};
+  const calls=[];
+  const result=evaluateProviderDailyRun({env,now:'2026-11-18T07:04:55.000Z',request:uri=>{
+    calls.push(uri);
+    if(uri.endsWith('/powerhouse-daily-self-evolution.yml'))return workflow;
+    if(uri.includes('/runs?'))return packet([current,earlier]);
+    if(uri.includes('/runs/'+earlier.id+'/jobs?'))return scopedJobs();
+    throw Error('unexpected provider URL '+uri);
+  }});
+  assert.equal(result.allow_execution,true);
+  assert.equal(result.scoped_recoveries_excluded,1);
+  assert.equal(calls.length,3);
+  assert.ok(calls[2].includes('actions/runs/'+earlier.id+'/jobs?'));
 });
