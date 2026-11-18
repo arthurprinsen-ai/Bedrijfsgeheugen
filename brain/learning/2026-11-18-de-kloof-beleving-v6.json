@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-18",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|quarterly-report-too-data-heavy-no-experience|20261118-v6",
+  "failure_class": "CONTENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Het magazine was data-zwaar, met weinig rustmomenten, me-time en voelbare exclusiviteit.",
+  "evidence": {
+    "at_utc": "2026-11-18T09:05:00Z",
+    "source": "opdracht Arthur 18 nov 2026 10:00"
+  },
+  "fix": "Ritueelkaart, exclusiviteitsregel en reflectiepagina toegevoegd, zonder nep-schaarste of unieke claims.",
+  "prevention_rule": "Elke editie: toets op inspiratie, exclusiviteit, beleving en me-time; exclusiviteit blijft feitelijk (aanmelding), nooit verzonnen schaarste.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge",
+    "PDF in portaal 27 pagina's, bytes gelijk aan repo"
+  ]
+}
