@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-18",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|quarterly-report-lacks-global-corpus|20261118-v3",
+  "failure_class": "CONTENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Het magazine steunde op te weinig bronnen en had geen bulkingest voor open API's, waardoor brede wereldwijde analyse en trendvergelijking ontbraken.",
+  "evidence": {
+    "at_utc": "2026-11-18T07:00:00Z",
+    "source": "opdracht Arthur 18 nov 2026 08:00"
+  },
+  "fix": "Bulkloaders voor Eurostat, OECD, IMF, World Bank, ECB, CBS en OWID in een trendbank met definitie en editielabel; Atlaspagina met toets op 27 EU-landen incl. Holm-correctie.",
+  "prevention_rule": "Elke editie draait de loaders opnieuw, rapporteert mislukte reeksen en vergelijkt alleen binnen dezelfde definitie; toetsen krijgen meervoudigheidscorrectie.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge",
+    "PDF in portaal toont 24 pagina's",
+    "trendbank-archief bereikbaar"
+  ]
+}
