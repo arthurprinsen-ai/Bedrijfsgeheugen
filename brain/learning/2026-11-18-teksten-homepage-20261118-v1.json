@@ -1,0 +1,38 @@
+{
+  "fingerprint": "site|rituals|teksten-homepage|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|teksten-homepage|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 10,
+    "security_sensitive": false
+  },
+  "root_cause": "Interne systeemnamen (ONE BRAIN, Powerhouse, Heartbeat) stonden in klantgerichte homepagetekst, in strijd met het besluit: geen jargon in de klantweergave.",
+  "correction": "Intro herschreven zonder interne termen; titel met leiding; NL en EN samen.",
+  "prevention": [
+    "Interne termen horen niet in publieke copy; grep de live homepage op interne namen bij elke tekstronde."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "tools/site-shell/apply-business-os-positioning.mjs"
+    ],
+    "outcome": "Lokaal groen; live-readback open."
+  }
+}
