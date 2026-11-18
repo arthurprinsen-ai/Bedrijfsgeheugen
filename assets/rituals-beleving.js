@@ -295,7 +295,7 @@
         '<div class="rb-b-datum"><dt>' + tr('Vastgelegd') + '</dt><dd>' + tr('Vandaag, met bron') + '</dd></div>' +
         '</dl>' +
         '<p>' + tr('Elk besluit heeft een bron, een eigenaar en een datum.') + '</p>';
-      hv.parentNode.insertBefore(kaart, hv.nextSibling);
+      hv.parentNode.appendChild(kaart);
       hv.setAttribute('data-rb-vervangen', '1');
       try { hv.pause(); } catch (e) {}
     }

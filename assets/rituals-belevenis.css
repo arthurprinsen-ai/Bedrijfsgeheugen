@@ -148,5 +148,5 @@ html body .rb-besluit dl>div{display:grid;grid-template-columns:96px 1fr;gap:14p
 html body .rb-besluit dt{font-size:12.5px;color:var(--rit-zacht,#5B6168)}
 html body .rb-besluit dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--rit-inkt,#14171A)}
 html body .rb-besluit p{display:none;margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--rit-zacht,#5B6168);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding-top:14px}
-@media(min-width:761px){html body .rb-besluit{position:absolute;top:calc(50% - 90px);right:max(5vw,calc((100vw - 1200px)/2));transform:translateY(-50%);width:min(34vw,430px)}}
-@media(max-width:760px){html body .rb-besluit{position:relative;margin:18px 10px 0;padding:20px 20px 16px}html body .rb-besluit h2{font-size:1.3rem;margin:10px 0 12px}html body .rb-besluit .rb-b-waarom,html body .rb-besluit .rb-b-datum,html body .rb-besluit p{display:none}html body .rb-besluit dl>div{padding:9px 0}}
+@media(min-width:1100px){html body .rb-besluit{position:absolute;top:calc(50% - 90px);right:max(5vw,calc((100vw - 1200px)/2));transform:translateY(-50%);width:min(34vw,430px)}}
+@media(max-width:1099px){html body .rb-besluit{position:relative;margin:24px auto 0;max-width:520px;width:calc(100% - 32px);padding:20px 20px 16px}html body .rb-besluit h2{font-size:1.3rem;margin:10px 0 12px}}@media(max-width:760px){html body .rb-besluit .rb-b-waarom,html body .rb-besluit .rb-b-datum,html body .rb-besluit p{display:none}html body .rb-besluit dl>div{padding:9px 0}}
