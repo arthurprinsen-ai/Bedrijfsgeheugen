@@ -29,5 +29,20 @@
       "tests/brain-original-provider-882-migration-lock-20261118.test.mjs"
     ]
   },
-  "status": "CANDIDATE_UNTIL_PROTECTED_LOCK_MERGE"
+  "status": "CANDIDATE_UNTIL_PROTECTED_LOCK_MERGE",
+  "evidence": {
+    "native_provider_count": 882,
+    "lock_previous_count": 881,
+    "first_881_exact_matches": true,
+    "latest_applied": {
+      "version": "20261118174500",
+      "name": "original_provider_owner_notification_receipt_v3"
+    },
+    "source_in_main": true,
+    "provider_runtime_code_live": true,
+    "owner_notification_sent": false
+  },
+  "tests": [
+    "tests/brain-original-provider-882-migration-lock-20261118.test.mjs"
+  ]
 }
