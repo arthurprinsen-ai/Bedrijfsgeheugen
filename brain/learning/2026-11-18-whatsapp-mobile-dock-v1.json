@@ -19,7 +19,7 @@
       "tests/brain-whatsapp-mobile-dock-20261118.test.mjs"
     ],
     "canary": [
-      "tests/integration/portal-v2-website-one-app-phone-tablet.spec.js"
+      "tests/brain-whatsapp-mobile-dock-20261118.test.mjs"
     ]
   },
   "evidence": [
