@@ -206,6 +206,13 @@
     pil.innerHTML = '<i aria-hidden="true"></i>Neem je moment';
     pil.addEventListener('click', open);
     doc.body.appendChild(pil);
+    var hero = doc.querySelector('.hero-copy .rb-adem-knop');
+    if (hero) {
+      pil.style.display = 'none';
+      var toon = function () { pil.style.display = (window.pageYOffset || 0) > (window.innerHeight || 700) * 0.9 ? '' : 'none'; };
+      window.addEventListener("scroll", toon, { passive: true });
+      toon();
+    }
   }
 
   /* ---------- website ---------- */
