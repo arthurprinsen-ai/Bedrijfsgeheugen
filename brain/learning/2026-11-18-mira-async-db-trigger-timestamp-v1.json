@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|instagram-mira|async-db-trigger-lease-timestamp-drift|20261118-v1",
+  "date": "2026-11-18",
+  "parent_fingerprint": "powerhouse|instagram-mira|exact-video-vision-provider-resume-missing|20261118-v1",
+  "parent_issue": 5232,
+  "related_issue": 4198,
+  "owner": "original powerhouse-instagram-media-router",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "terminal_success": false,
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-async-claim-timestamp-cas.test.mjs"
+    ]
+  },
+  "root_cause": "After the original async preflight claim, a database trigger overwrites updated_at with DB now(); the original background failure reporter used caller claimedAt in a strict CAS and silently matched zero rows, losing the real provider 503 evidence.",
+  "prevention": "Use DB-returned updated_at from SELECT id,updated_at on original claim for subsequent async failure CAS. Always use UPDATE RETURNING and distinguish zero-row stale/concurrent proof from recorded failure. Never replace actual PASS or real measured rejection.",
+  "evidence": {
+    "tests": [
+      "tests/brain-mira-async-claim-timestamp-cas.test.mjs"
+    ],
+    "original_media_job_id": "4a68dc41-6e60-4b64-ba7b-400086cb7296",
+    "router_request_id": 34850,
+    "original_background_http": 503,
+    "background_edge_timestamp": "2026-11-18T06:47:58.518Z",
+    "caller_claimed_at": "2026-11-18T06:47:40.928Z",
+    "trigger_updated_at": "2026-11-18T06:47:40.986122+00:00",
+    "original_last_error": "null",
+    "identity_proven": false,
+    "instagram_meta_id": null
+  },
+  "guardrails": [
+    "Same original job and video, no new OpenArt generation",
+    "No fake face PASS or lost provider error",
+    "Preserve 0.940 face, temporal, exact media and Meta readback gates",
+    "CAS readback with database timestamp, not caller clock"
+  ],
+  "independent_effect_verified": false
+}
