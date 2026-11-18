@@ -377,6 +377,7 @@
       "owner": "agent-website-ux",
       "paths": [
         ".cache/bg-static-i18n-en",
+        "data/i18n/bg-static-i18n-en.json",
         ".github/scripts/",
         ".github/workflows/website-cross-browser-screenshot-assurance.yml",
         "404.html",
