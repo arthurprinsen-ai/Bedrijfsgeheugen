@@ -1,0 +1,39 @@
+{
+  "fingerprint": "site|rituals|hero-drone-terug|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|hero-drone-terug|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 15,
+    "security_sensitive": false
+  },
+  "root_cause": "Het oorspronkelijke drone-filmpje was vervangen door een ander beeld dat Arthur niet wilde.",
+  "correction": "Origineel drone-filmpje full-bleed terug in de hero.",
+  "prevention": [
+    "Vervang een bestaand hero-beeld niet zonder dat de opdrachtgever dat vraagt."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-belevenis.css",
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Lokaal gemeten en bekeken; live-readback open."
+  }
+}
