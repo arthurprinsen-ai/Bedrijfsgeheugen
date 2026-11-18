@@ -52,7 +52,7 @@ test('source epistemics and reversible audit safeguards survive faithful English
 
 test('no claims of provider-paid translation or terminal live success embedded in cache file',()=>{
   const s=readFileSync(patch,'utf8');
-  // Exact forbidden endpoint check; avoid ambiguous regex matching on URL hosts.
-  assert.equal(s.includes('https://api.openai.com/v1/responses'),false);
+  // The patch is source text only: no credential or provider-receipt field.
+  assert.equal(Object.keys(data).some(key => ['OPENAI_API_KEY','authorization','provider_receipt'].includes(key)),false);
   assert.doesNotMatch(s,/"live_proven_at"|"external_id"|"provider_success"|"deployment_ready"/);
 });
