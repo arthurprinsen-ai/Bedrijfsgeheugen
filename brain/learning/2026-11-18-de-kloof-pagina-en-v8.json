@@ -12,7 +12,7 @@
     "at_utc": "2026-11-18T10:12:00Z",
     "source": "opdracht Arthur 18 nov 2026 10:12"
   },
-  "fix": "Pagina's /de-kloof en /the-gap uit inhoudspaginas.json, Engelse PDF via vaste vertaalpaar-pijplijn, exclusiviteitstekst eerlijk gemaakt.",
+  "fix": "Pagina /de-kloof uit inhoudspaginas.json (Engels via vertaalcache), Engelse PDF via vaste vertaalpaar-pijplijn, exclusiviteitstekst eerlijk gemaakt.",
   "prevention_rule": "Een lead magnet met publieke downloadpagina zegt nooit dat het niet openbaar is; elke editie krijgt NL en EN met dezelfde cijfers.",
   "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
   "compiler": {

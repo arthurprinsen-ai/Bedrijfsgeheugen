@@ -2,4 +2,4 @@
 
 Obligation: `de-kloof-pagina-en:2026q4`.
 
-Pagina's `/de-kloof` en `/the-gap`, Engelse PDF, manifest-editie toegevoegd, NL-PDF bijgewerkt (exclusiviteitstekst). Test: `tests/brain-portal-kwartaalrapporten-20261106.test.mjs`. Geen migratie, geen scheduler, geen prijswijziging.
+Pagina `/de-kloof` (Engels via `/en/de-kloof`), Engelse PDF, manifest-editie toegevoegd, NL-PDF bijgewerkt (exclusiviteitstekst). Test: `tests/brain-portal-kwartaalrapporten-20261106.test.mjs`. Geen migratie, geen scheduler, geen prijswijziging.

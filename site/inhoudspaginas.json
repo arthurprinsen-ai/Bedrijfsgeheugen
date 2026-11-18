@@ -133,27 +133,8 @@
       {"kop": "Atlas en Trendbank", "tekst": "1,7 miljoen meetpunten uit Eurostat, OECD, IMF, World Bank, ECB, CBS en Our World in Data, met definitie en bron, zodat de volgende editie trends toont in plaats van momentopnamen."},
       {"kop": "Jouw moment", "tekst": "Het magazine is gemaakt om op te pakken met een kop koffie en een pen. Een kwartaalritueel, een reflectiepagina voor jezelf en ruimte om er een moment van te maken."}
     ],
-    "slot": "Ook beschikbaar in het Engels: The Gap, No. 04.",
-    "cta": {"tekst": "Download De Kloof No. 04 (PDF, invulbaar)", "href": "/portal-v2/reports/de-kloof-no04-2026-q4.pdf"}
-  },
-  {
-    "bestand": "the-gap.html",
-    "pad": "/the-gap",
-    "lang": "en",
-    "titel": "The Gap No. 04: the quarterly magazine on AI in small business | Bedrijfsgeheugen",
-    "omschrijving": "Free quarterly magazine with original analysis of European and Dutch AI data, eight lenses, nine building blocks with a Monday action, and a decision card. 27 pages, fillable.",
-    "kicker": "QUARTERLY MAGAZINE",
-    "kruimel": "The Gap",
-    "h1": "The Gap No. 04: what everyone wants, but almost nobody dares.",
-    "intro": "A quarterly magazine for entrepreneurs who will really set aside a morning for it. Ninety minutes, five moves, your business weighed against the evidence. Free, new every edition, with original analysis of European and Dutch data.",
-    "blokken": [
-      {"kop": "What's inside", "tekst": "Original analysis of 27 EU countries, eight lenses (psychology, strategy, law, labour, politics, energy, technology and processes) and nine building blocks, each with a concrete Monday action. The worksheets are fillable right in the PDF."},
-      {"kop": "What the numbers show", "tekst": "Countries where small firms reach 43% of large firms' AI use lead the field; laggards sit at 22%. There is no catch-up: laggards are not growing faster in proportion. And AI use in the Netherlands ranges from 13.8% to 70% depending on definition and population, which is why every figure states what was measured."},
-      {"kop": "The decision card", "tekst": "A framework and fillable worksheet for the decisions you take every day: which ones can be quick, which deserve time, and what the evidence says about how entrepreneurs decide."},
-      {"kop": "Atlas and Trend bank", "tekst": "1.7 million data points from Eurostat, OECD, IMF, World Bank, ECB, CBS and Our World in Data, each with definition and source, so the next edition shows trends rather than snapshots."},
-      {"kop": "Your moment", "tekst": "Made to be picked up with a cup of coffee and a pen: a quarterly ritual, a reflection page for yourself and room to make it a moment."}
-    ],
-    "slot": "Also available in Dutch: De Kloof, No. 04.",
-    "cta": {"tekst": "Download The Gap No. 04 (PDF, fillable)", "href": "/portal-v2/reports/the-gap-no04-2026-q4.pdf"}
+    "slot": "Ook in het Engels: The Gap, No. 04.",
+    "cta": {"tekst": "Download De Kloof No. 04 (Nederlandstalige PDF, invulbaar)", "href": "/portal-v2/reports/de-kloof-no04-2026-q4.pdf"},
+    "cta2": {"tekst": "Download The Gap No. 04 (Engelstalige PDF, invulbaar)", "href": "/portal-v2/reports/the-gap-no04-2026-q4.pdf"}
   }
 ]
