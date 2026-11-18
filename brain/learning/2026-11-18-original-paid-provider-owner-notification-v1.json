@@ -19,5 +19,21 @@
     "new_sender": false
   },
   "verification": "Protected original Required+CodeQL, native matching migration/version, original #171 next watchdog readback and exact daily owner-action event; then verified existing task message. Never claim sent, credits restored or green from a database record.",
-  "status": "CANDIDATE_UNTIL_NATIVE_AND_TASK_PROOF"
+  "status": "CANDIDATE_UNTIL_NATIVE_AND_TASK_PROOF",
+  "compiler": {
+    "failure_class": "OWNER_ALERT_DELIVERY_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-owner-notification-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-owner-notification-20261118.test.mjs"
+    ]
+  },
+  "prevention_rule": "Original provider result must create one source-backed owner action, which remains notification_sent=false until a separate existing-task receipt proves user-visible notification. Paid subscription is not API request budget; exact provider readback and original writer authority must be preserved."
 }
