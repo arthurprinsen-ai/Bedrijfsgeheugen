@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|late-verified-user-fact-stale-hold|20261118-v1",
+  "date": "2026-11-18",
+  "tenant": "canonical",
+  "channel": "linkedin_personal",
+  "owner": "original powerhouse-content-loop / powerhouse-content-orchestrator / powerhouse-social-publisher",
+  "source_run_date": "2026-11-18",
+  "root_cause": "Original content supervisor bootstrapped only missing daily decisions, selected duplicate/editorial failures, and a narrow source-unverified builder condition. A personal decision already hold/blocked for PERSONAL_TRUTH_SOURCE_UNVERIFIED on the preceding day remained locked even when a real, strictly personal, newer source revision was materialized; the scheduler returned RED and skipped original content generation. A manual exact-original orchestrator call proved the later source was eligible and transitioned the same decision from hold/blocked to publish/decided, but provider model gpt-5-mini HTTP429 insufficient_quota then stopped artifact generation independently.",
+  "prevention": "In the existing content-loop reuse its held personal decision/source read and the SAME original semantic personalFirstPersonSourceViolations gate. Permit one original bootstrap only when a later verified user-fact source belongs to same date/channel, has exact personal identity and original chat fact lineage, is not rejected/consumed, and no external provider side effect is possible. Do not infer final review, provider authority, actual post, API billing recovery or commercial outcomes. Preserve original generation_retry_after, no second sender or cron.",
+  "evidence": {
+    "before_decision": "hold/blocked; capability_reason PERSONAL_TRUTH_SOURCE_UNVERIFIED; created 2026-11-17T23:24:25Z",
+    "source_materialization": "powerhouse_materialize_source_backed_channel_candidates_v2 confirmed one independent source for 2026-11-18",
+    "after_original_orchestrator": "publish/decided; original source accepted without bypass",
+    "original_orchestrator_provider_truth": "artifact-ai HTTP429 insufficient_quota and generation_retry_after; no LinkedIn provider send",
+    "no_live_post_proof": true,
+    "regression_tests": [
+      "tests/brain-personal-late-user-fact-rebootstrap-20261118.test.mjs"
+    ],
+    "runtime_deployed": false
+  },
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-late-user-fact-rebootstrap-20261118.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-late-user-fact-rebootstrap-20261118.test.mjs"
+    ],
+    "canary": []
+  },
+  "status": "CANDIDATE_ONLY",
+  "live_proven": false,
+  "restrictions": [
+    "No new content supervisor, scheduler, sender, provider, bypass or direct personal post",
+    "No fabricated personal event or visitor/order metrics",
+    "Do not treat valid source as final copy approval",
+    "No retry before bounded original quota cooldown",
+    "No provider post without independent member-author content hash, readback and duplicate proof"
+  ]
+}
