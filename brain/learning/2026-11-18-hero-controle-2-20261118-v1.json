@@ -1,0 +1,40 @@
+{
+  "fingerprint": "site|rituals|hero-controle-2|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|hero-controle-2|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 12,
+    "security_sensitive": false
+  },
+  "root_cause": "Een reparatie getest met een ingevoegde stijl op de live pagina maar zonder het resultaat visueel te bekijken (alleen posities gemeten): padding-top 0 schoof de kop onder de header. Ook bleek witte tekst op papier niet in een eerdere controle te zijn gemeten.",
+  "correction": "Marge in plaats van padding; screenshot bekeken vóór oplevering; kleurcontrole op alle tekst in de hero-acties.",
+  "prevention": [
+    "Na elke layoutreparatie het screenshot bekijken, niet alleen posities meten.",
+    "Hero-controle meet ook de berekende tekstkleur van alle links en regels tegen de achtergrond."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-belevenis.css",
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Gemeten en bekeken tegen live met ingevoegde CSS; live-readback open."
+  }
+}

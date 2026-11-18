@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-18",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|lead-magnet-public-page-en-edition|20261118-v8",
+  "failure_class": "CONTENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Het magazine had geen openbare pagina en geen Engelse versie; tekst op pagina 2 beweerde dat het niet op internet staat.",
+  "evidence": {
+    "at_utc": "2026-11-18T10:12:00Z",
+    "source": "opdracht Arthur 18 nov 2026 10:12"
+  },
+  "fix": "Pagina /de-kloof uit inhoudspaginas.json (Engels via vertaalcache), Engelse PDF via vaste vertaalpaar-pijplijn, exclusiviteitstekst eerlijk gemaakt.",
+  "prevention_rule": "Een lead magnet met publieke downloadpagina zegt nooit dat het niet openbaar is; elke editie krijgt NL en EN met dezelfde cijfers.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge",
+    "PDF NL en EN live, bytes gelijk aan repo"
+  ]
+}
