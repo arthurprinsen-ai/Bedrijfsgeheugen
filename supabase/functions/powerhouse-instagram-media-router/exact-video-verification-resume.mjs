@@ -66,3 +66,27 @@ export function planMiraExactVideoVerificationResume({runDate,localDate,job,ob,r
  return Object.freeze({kind:'RETRY_EXACT_MEDIA',contract:MIRA_EXACT_VERIFICATION_RESUME,
   attempts:nextCount,retry_after:retryAfter,history_id:hist,job_id:job.id,asset_manifest:manifest});
 }
+
+/**
+ * Preserve one completed, independently failed original verifier result using
+ * the *database-returned* timestamp from the claim's RETURNING row.
+ * The media-job trigger replaces incoming updated_at with its own now(), so
+ * using the caller's timestamp silently matches zero rows in PostgREST.
+ * A concurrent real PASS/rejection wins: no overwrite and no false green.
+ */
+export async function recordMiraExactVerificationFailure({
+  db,jobId,claimUpdatedAt,code,nextAction,now=new Date().toISOString()
+}={}){
+ const allowed=['MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE','MIRA_EXACT_VIDEO_PROOF_NEEDS_REVIEW'];
+ if(!db||!/^[0-9a-f-]{36}$/i.test(String(jobId||''))||
+    !dateMs(claimUpdatedAt)||!allowed.includes(String(code||'')))
+   return Object.freeze({kind:'INVALID_RECOVERY_RECEIPT'});
+ const {data,error}=await db.from('powerhouse_instagram_media_jobs_v1')
+   .update({last_error:code,next_action:String(nextAction||'').slice(0,450),updated_at:now})
+   .eq('id',jobId).eq('status','WAITING_PROOF')
+   .eq('updated_at',claimUpdatedAt).is('last_error',null)
+   .select('id').maybeSingle();
+ if(error)return Object.freeze({kind:'WRITE_FAILED',error_code:String(error.code||'unknown').slice(0,30)});
+ if(!data)return Object.freeze({kind:'CONCURRENT_RESULT_PRESERVED'});
+ return Object.freeze({kind:'RECORDED',job_id:jobId});
+}

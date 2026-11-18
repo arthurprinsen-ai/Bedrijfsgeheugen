@@ -11,7 +11,7 @@ import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,ch
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 import {assessMiraOriginalGenerationReceipt,MIRA_ORIGINAL_GENERATION_RECEIPT_CONTRACT} from './pin-generation-history.mjs';
 import {assessMiraFrameVerifierResult} from './frame-verifier-result.mjs';
-import {planMiraExactVideoVerificationResume,MIRA_EXACT_VERIFICATION_RESUME} from './exact-video-verification-resume.mjs';
+import {planMiraExactVideoVerificationResume,MIRA_EXACT_VERIFICATION_RESUME,recordMiraExactVerificationFailure} from './exact-video-verification-resume.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -430,18 +430,25 @@ Deno.serve(async req=>{
        .eq('id',job.id).eq('tenant_id','canonical').eq('publication_date',runDate)
        .eq('status',job.status).eq('attempts',job.attempts)
        .eq('updated_at',job.updated_at).eq('republish_forbidden',false)
-       .select('id').maybeSingle();
+       // The validation trigger replaces updated_at. RETURNING is the only
+       // valid source for a later async failure-write CAS.
+       .select('id,updated_at').maybeSingle();
      if(claim.error)return json({ok:false,error:'MIRA_EXACT_PROOF_CAS_FAILED'},503);
      if(!claim.data)return json({ok:true,ready:false,status:'STATE_CHANGED_RETRY',runDate},409);
      const recordFailure=async(code:string)=>{
        const next_action=code==='MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE'
         ?'Vision provider unavailable. Resume exact original OpenArt history after cooldown '+plan.retry_after+'.'
         :'Independently inspect real media quality verdict; do not auto-buy a replacement or publish.';
-       const saved=await db.from('powerhouse_instagram_media_jobs_v1')
-         .update({last_error:code,next_action,updated_at:new Date().toISOString()})
-         .eq('id',job.id).eq('status','WAITING_PROOF')
-         .eq('updated_at',claimedAt).is('last_error',null);
-       if(saved.error)console.error('MIRA_EXACT_PROOF_RECOVERY_WRITE_FAILED',clean(saved.error.code).slice(0,40));
+       const outcome=await recordMiraExactVerificationFailure({
+         db,jobId:job.id,claimUpdatedAt:claim.data.updated_at,
+         code,nextAction:next_action
+       });
+       if(outcome.kind==='WRITE_FAILED')
+         console.error('MIRA_EXACT_PROOF_RECOVERY_WRITE_FAILED',outcome.error_code);
+       else if(outcome.kind==='INVALID_RECOVERY_RECEIPT')
+         console.error('MIRA_EXACT_PROOF_RECOVERY_RECEIPT_INVALID');
+       // A concurrent verified/rejected result wins without a stale overwrite.
+       // Never invent a second verification or a video from a changed lease.
      };
      const background=invoke(base,token,'powerhouse-instagram-media-router',{
        runDate,action:'submit_asset',postType:'reel',provider:'openart',
