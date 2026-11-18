@@ -20,7 +20,7 @@
     ]
   },
   "root_cause": "Original provider wrapper `runGovernedProductionAI` catches adapter exceptions and prefixes `AI provider failed safely: `; previous i18n helper's exact OPENAI_PROVIDER_ERROR_ anchored parser never matched wrapped provider 429/500, leaving generic HTTP502 diagnostics.",
-  "prevention": "Classify safely from exactly one recognized canonical governance prefix before known adapter marker, without logging any raw exception or provider text; preserve original fail-closed HTTP and sovereign data class semantics.",
+  "prevention": "Classify safely from exactly one recognized canonical governance prefix before known adapter marker, without logging any raw exception or provider text; preserve original fail-closed HTTP and sovereign data class semantics. Observed original GitHub static EN publisher HTTP429 must fail closed without duplicate translation, while the already-approved original daily blog remains active for future protected retries.",
   "evidence": {
     "tests": [
       "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
@@ -32,7 +32,17 @@
       "upstream_status": null
     },
     "actual_upstream_root_cause": "UNKNOWN",
-    "successfully_translated_ui_readback": false
+    "successfully_translated_ui_readback": false,
+    "independent_correlated_origin": {
+      "github_blog_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44257300433",
+      "observed_utc": "2026-11-18T07:15:30Z",
+      "failure_class": "STATIC_I18N_PROVIDER_BILLING_BLOCKED",
+      "safe_error_code": "OPENAI_I18N_HTTP_429",
+      "inspected_source": "tools/site-shell/build-localized-routes.mjs",
+      "confidence": "SOURCE_CONFIRMED_FOR_GITHUB_STATIC_TRANSLATION_ONLY",
+      "same_credentials_as_netlify_or_supabase": "NOT_PROVEN",
+      "meaning": "GitHub static English blog build rejected by OpenAI provider billing/quota; runtime Netlify 502 and Mira vision 429 require their own independently verified cause."
+    }
   },
   "guardrails": [
     "No new translator/scheduler/provider/model",
