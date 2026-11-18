@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {assessDailyRunAdmission,evaluateProviderDailyRun,isProvenScopedRecoveryRun}
+import {assessDailyRunAdmission,evaluateProviderDailyRun,isProvenScopedRecoveryRun,isProvenPreExecutionAdmissionAbort}
   from '../tools/delivery/daily-learning-run-admission.mjs';
 
 const NOW='2026-10-23T09:34:00.000Z';
@@ -23,6 +23,14 @@ const scopedJobs=(active='original-delivery-recovery',result='success')=>({
     name,status:'completed',conclusion:name===active?result:'skipped'
   }))
 });
+
+const preExecutionAbortJobs=()=>({
+  total_count:allJobs.length,
+  jobs:allJobs.map(name=>({
+    name,status:'completed',conclusion:name==='daily-admission'?'failure':'skipped'
+  }))
+});
+
 const fullDailyJobs=()=>({
   total_count:allJobs.length,
   jobs:allJobs.map(name=>({
@@ -203,4 +211,79 @@ test('provider adapter independently reads prior recovery jobs; no input inferen
   assert.equal(result.scoped_recoveries_excluded,1);
   assert.equal(calls.length,3);
   assert.ok(calls[2].includes('actions/runs/'+earlier.id+'/jobs?'));
+});
+
+test('18 Nov: a bounded recovery followed by independently proven zero-effect admission abort permits exactly one real daily retry',()=>{
+  const scoped=row(44256002607,'workflow_dispatch','2026-11-18T07:04:10Z','completed','success');
+  const aborted=row(44256077963,'workflow_dispatch','2026-11-18T07:04:47Z','completed','failure');
+  const retry=row(44260000000,'workflow_dispatch','2026-11-18T07:15:00Z','queued',null);
+  assert.equal(isProvenPreExecutionAdmissionAbort(aborted,preExecutionAbortJobs()),true);
+  const verdict=assessDailyRunAdmission(config(retry.id,[retry,aborted,scoped],{
+    now:'2026-11-18T07:15:10.000Z',event:'workflow_dispatch',
+    priorJobsByRunId:{[scoped.id]:scopedJobs(),[aborted.id]:preExecutionAbortJobs()}
+  }));
+  assert.equal(verdict.allow_execution,true);
+  assert.equal(verdict.status,'FIRST_DAILY_RUN_ADMITTED');
+  assert.equal(verdict.scoped_recoveries_excluded,1);
+  assert.equal(verdict.pre_execution_aborts_verified,1);
+});
+test('one safe retry maximum, no infinite daily attempts after repeated admission failures',()=>{
+  const a=row(100,'workflow_dispatch','2026-11-18T04:01:00Z','completed','failure');
+  const b=row(200,'workflow_dispatch','2026-11-18T05:01:00Z','completed','failure');
+  const c=row(300,'workflow_dispatch','2026-11-18T06:01:00Z','queued',null);
+  const result=assessDailyRunAdmission(config(c.id,[a,b,c],{
+    now:'2026-11-18T06:01:10.000Z',event:'workflow_dispatch',
+    priorJobsByRunId:{[a.id]:preExecutionAbortJobs(),[b.id]:preExecutionAbortJobs()}
+  }));
+  assert.equal(result.status,'PRE_EXECUTION_RETRY_BUDGET_EXCEEDED');
+  assert.equal(result.allow_execution,false);
+  assert.equal(result.pre_execution_aborts_verified,2);
+});
+test('admission-only abort needs ALL six exact original jobs and no execution before retry',()=>{
+ const aborted=row(200,'schedule','2026-11-18T04:47:00Z','completed','failure');
+ const genuine=fullDailyJobs();
+ const altered={...preExecutionAbortJobs(),jobs:preExecutionAbortJobs().jobs.map(j=>
+   j.name==='original-innovation-code-candidate'?{...j,conclusion:'success'}:j)};
+ const wrongState={...preExecutionAbortJobs(),jobs:preExecutionAbortJobs().jobs.map(j=>
+   j.name==='daily-admission'?{...j,conclusion:'success'}:j)};
+ const missing={total_count:6,jobs:preExecutionAbortJobs().jobs.slice(1)};
+ for(const evidence of [null,{},genuine,altered,wrongState,missing,
+   {...preExecutionAbortJobs(),total_count:7}]){
+   assert.equal(isProvenPreExecutionAdmissionAbort(aborted,evidence),false);
+ }
+ assert.equal(isProvenPreExecutionAdmissionAbort(aborted,preExecutionAbortJobs()),true);
+ assert.equal(isProvenPreExecutionAdmissionAbort({...aborted,conclusion:'success'},preExecutionAbortJobs()),false);
+});
+test('a prior genuine daily remains duplicate even if a separate earlier admission failed with no effects',()=>{
+ const aborted=row(111,'workflow_dispatch','2026-11-18T04:05:00Z','completed','failure');
+ const real=row(222,'workflow_dispatch','2026-11-18T05:05:00Z','completed','failure');
+ const current=row(333,'schedule','2026-11-18T06:05:00Z','queued',null);
+ const x=assessDailyRunAdmission(config(current.id,[aborted,real,current],{
+   now:'2026-11-18T06:06:00.000Z',
+   priorJobsByRunId:{[aborted.id]:preExecutionAbortJobs(),[real.id]:fullDailyJobs()}
+ }));
+ assert.equal(x.allow_execution,false);
+ assert.equal(x.status,'DUPLICATE_DAILY_RUN_SUPPRESSED');
+ assert.equal(x.prior_run_id,real.id);
+});
+test('provider adapter verifies recovery and admission abort independently before real daily retry',()=>{
+ const first=row(44256002607,'workflow_dispatch','2026-11-18T07:04:10Z','completed','success');
+ const abort=row(44256077963,'workflow_dispatch','2026-11-18T07:04:47Z','completed','failure');
+ const retry=row(44260000000,'workflow_dispatch','2026-11-18T07:15:00Z','queued',null);
+ const env={GITHUB_REPOSITORY:'arthurprinsen-ai/Bedrijfsgeheugen',
+   GITHUB_RUN_ID:String(retry.id),GITHUB_EVENT_NAME:'workflow_dispatch',GITHUB_REF:'refs/heads/main'};
+ const calls=[];
+ const x=evaluateProviderDailyRun({env,now:'2026-11-18T07:15:10.000Z',request:uri=>{
+   calls.push(uri);
+   if(uri.endsWith('/powerhouse-daily-self-evolution.yml'))return workflow;
+   if(uri.includes('/runs?'))return packet([retry,abort,first]);
+   if(uri.includes('/runs/'+first.id+'/jobs?'))return scopedJobs();
+   if(uri.includes('/runs/'+abort.id+'/jobs?'))return preExecutionAbortJobs();
+   throw Error('unexpected provider URL '+uri);
+ }});
+ assert.equal(x.allow_execution,true);
+ assert.equal(x.pre_execution_aborts_verified,1);
+ assert.equal(x.scoped_recoveries_excluded,1);
+ assert.equal(calls.length,4);
+ assert.equal(calls.filter(c=>c.includes('/jobs?')).length,2);
 });
