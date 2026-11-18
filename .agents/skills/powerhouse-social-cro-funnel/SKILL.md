@@ -5,6 +5,10 @@ description: Operate the existing Bedrijfsgeheugen social post → engagement �
 
 # Powerhouse social CRO — één bewijsgestuurde lus (30 oktober 2026)
 
+## 18 november 2026 — committed-tree blogpreview moet bronexact tweetalig zijn
+
+Fingerprint: `powerhouse|daily-blog|committed-tree-preview-static-i18n-one-gap|20261118-v1`. De oorspronkelijke `.github/workflows/powerhouse-daily-blog.yml` vond na de eerste complete 76-key EN-cache op run 44296846787 één **andere**, door de originele definitieve HTML-render ontstane 220-tekens voorvertoning: `Signalering Onderzoek/forecast …`. De bestaande OpenAI API gaf 429 `credit_balance_exhausted`; **geen** financiële of kwaliteitsgate mag hiervoor worden uitgezet. Het originele brongebonden JSON-cachebestand bevat nu ook deze exact geobserveerde preview met een inhoudelijk correcte, handmatig gecontroleerde Engelse vertaling. Regressietest valideert alle 77 sleutelparen en deze view; publiceer uitsluitend via de originele idempotente writer, beschermde CI, main/Netlify en onafhankelijke NL+EN public-GET/immutable content-id. Deze cachepatch bewijst nooit dat de betaalde provider is hersteld, een blog live staat, e-mails zijn verzonden, persoonlijke posts zijn gepubliceerd of verkeer/omzet is gerealiseerd. Bij nieuwe sourceRevision/missing segment: fail closed, bewaar dezelfde obligation/owner/incident, corrigeer alleen de origineel waargenomen bron en pas de next-run guard toe.
+
 ## 2026-11-13 — blog merge → original publisher live-proof zonder uurvertraging
 
 Fingerprint: `BLOG_MERGE_PUSH_ORIGINAL_OWNER_RECEIPT_20261113`. De originele `.github/workflows/powerhouse-daily-blog.yml` blijft de enige eigenaar van publicatie en sluiting. Een beschermde `main`-merge van `blog/**` triggert die **zelfde** bestaande `push`-workflow onmiddellijk naast het **ongewijzigde** originele `11 * * * *` uurrooster; bestaande concurrency `powerhouse-daily-blog` en de dag/tenant-schrijverspoort voorkomen dubbele auteurs en posts. Geen extra job, workflow, scheduler, publisher, Netlify-deploy of publicatiecircuit.
