@@ -1,5 +1,5 @@
 -- Original #171 P0 #4198. No new scheduler, provider request, Meta send,
--- 4th verification, paid generation or fabricated human alert delivery.
+-- fourth verification, paid generation, or fabricated owner alert delivery.
 BEGIN;
 CREATE OR REPLACE FUNCTION public.powerhouse_original_result_guardian_v1()
  RETURNS trigger
@@ -158,9 +158,44 @@ BEGIN
   LIMIT 1;
   v_openai_quota := coalesce(v_openai_quota,false);
 
-  -- Existing original Mira job only, no automatic fourth verification.
+  -- Original #171 is an observer; never a fourth billable vision verification.
   SELECT j.id::text,j.asset_manifest->>'openart_history_id',
-         CASE WHEN coalesce(j.asset_manifest->>'vision_retry_count','') ~ '^[0-9]+
+         CASE WHEN coalesce(j.asset_manifest->>'vision_retry_count','') ~ '^[0-9]+$'
+              THEN (j.asset_manifest->>'vision_retry_count')::int ELSE 0 END
+  INTO v_mira_media_job_id,v_mira_history_id,v_mira_vision_retries
+  FROM public.powerhouse_instagram_media_jobs_v1 j
+  JOIN public.content_publication_obligations o
+    ON o.publication_date=j.publication_date AND o.channel='instagram'
+  WHERE j.tenant_id='canonical' AND j.publication_date=v_day
+    AND j.channel='instagram' AND j.status='WAITING_PROOF'
+    AND j.last_error='MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE'
+    AND j.asset_manifest->>'vision_resume_contract'='mira-original-exact-video-provider-retry-v1'
+    AND coalesce(o.external_id,'')='' AND o.status IN ('FAILED','BLOCKED')
+  ORDER BY j.updated_at DESC LIMIT 1;
+  v_mira_vision_retries := coalesce(v_mira_vision_retries,0);
+  v_mira_exhausted := v_mira_media_job_id IS NOT NULL
+    AND v_mira_vision_retries >= 3;
+  IF v_mira_exhausted THEN
+    v_owner_actions := v_owner_actions || jsonb_build_array(jsonb_build_object(
+      'fingerprint','mira-vision-verifier-3of3-original',
+      'provider','Mira original frame-verification provider',
+      'code','MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE',
+      'severity','ACTION_REQUIRED',
+      'owner','original-mira-media-verifier / ONE BRAIN original recovery',
+      'impact','Het oorspronkelijke OpenArt-video bestaat; de onafhankelijke gezicht/frame-controle is bij 3 van 3 pogingen niet bewezen. Geen Meta-Instagram-publicatie.',
+      'media_job_id',v_mira_media_job_id,
+      'openart_history_id',v_mira_history_id,
+      'vision_retry_count',v_mira_vision_retries,
+      'max_automatic_verification_attempts',3,
+      'exact_frame_identity_proven',false,
+      'meta_provider_post_id',null,
+      'human_action','Bestaande Mira-eigenaar: controleer de geautoriseerde providerverbinding en beoordeel een veilig herstel binnen het oorspronkelijke contract. Geen vierde verifier-poging of nieuwe betaalde OpenArt-video, geen Meta-publicatie zonder onafhankelijke identiteitsscores >=0,940 op de vereiste frames.',
+      'notification_sent',false,'delivery_proof','NOT_SENT_BY_GUARDIAN',
+      'incident_url','https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'));
+  END IF;
+
+  IF v_news_plan_limit_hit THEN
+    v_owner_actions := v_owner_actions || jsonb_build_array(jsonb_build_object(
       'fingerprint','tavily-432-original-news','provider','Tavily',
       'code','TAVILY_432','severity','ACTION_REQUIRED',
       'owner','existing-bg-bedrijfsnieuws-20',
@@ -322,215 +357,6 @@ BEGIN
     || jsonb_build_object('result_guardian',v_snapshot);
   IF v_state IN ('ERROR','DEGRADED')
      AND (v_held>0 OR v_handoff_broken>0 OR v_recovery_error IS NOT NULL OR v_news_plan_limit_hit OR v_news_stale OR v_openai_quota OR v_mira_exhausted)
-  THEN
-    NEW.status := 'fout';
-  END IF;
-  RETURN NEW;
-EXCEPTION WHEN OTHERS THEN
-  -- Preserve watchdog liveness, never declare a failed guardian GREEN.
-  NEW.status := 'fout';
-  NEW.gegevens := coalesce(NEW.gegevens,'{}'::jsonb) || jsonb_build_object(
-    'result_guardian',jsonb_build_object(
-      'contract','powerhouse-original-result-guardian-v1',
-      'state','ERROR','checked_at',clock_timestamp(),
-      'error',left(SQLSTATE||':'||SQLERRM,240),
-      'recovery_owner','existing-powerhouse-reliability',
-      'provider_send_attempted',false));
-  RETURN NEW;
-END;
-$function$
-
-              THEN (j.asset_manifest->>'vision_retry_count')::int ELSE 0 END
-  INTO v_mira_media_job_id,v_mira_history_id,v_mira_vision_retries
-  FROM public.powerhouse_instagram_media_jobs_v1 j
-  JOIN public.content_publication_obligations o
-    ON o.publication_date=j.publication_date AND o.channel='instagram'
-  WHERE j.tenant_id='canonical' AND j.publication_date=v_day
-    AND j.channel='instagram' AND j.status='WAITING_PROOF'
-    AND j.last_error='MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE'
-    AND j.asset_manifest->>'vision_resume_contract'='mira-original-exact-video-provider-retry-v1'
-    AND coalesce(o.external_id,'')='' AND o.status IN ('FAILED','BLOCKED')
-  ORDER BY j.updated_at DESC LIMIT 1;
-  v_mira_vision_retries := coalesce(v_mira_vision_retries,0);
-  v_mira_exhausted := v_mira_media_job_id IS NOT NULL
-    AND v_mira_vision_retries >= 3;
-  IF v_mira_exhausted THEN
-    v_owner_actions := v_owner_actions || jsonb_build_array(jsonb_build_object(
-      'fingerprint','mira-vision-verifier-3of3-original',
-      'provider','Mira original frame-verification provider',
-      'code','MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE',
-      'severity','ACTION_REQUIRED',
-      'owner','original-mira-media-verifier / ONE BRAIN original recovery',
-      'impact','Het oorspronkelijke OpenArt-video bestaat, maar de onafhankelijke gezicht/frame-controle is bij 3 van 3 pogingen niet bewezen. Geen Meta-Instagram-publicatie.',
-      'media_job_id',v_mira_media_job_id,
-      'openart_history_id',v_mira_history_id,
-      'vision_retry_count',v_mira_vision_retries,
-      'max_automatic_verification_attempts',3,
-      'exact_frame_identity_proven',false,
-      'meta_provider_post_id',null,
-      'human_action','Bestaande Mira-eigenaar: controleer de geautoriseerde providerverbinding en beoordeel een veilig herstel binnen het oorspronkelijke contract. Geen vierde verifier-poging of nieuwe betaalde OpenArt-video, geen Meta-publicatie zonder onafhankelijke identiteitsscores >=0,940 op de vereiste frames.',
-      'notification_sent',false,'delivery_proof','NOT_SENT_BY_GUARDIAN',
-      'incident_url','https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'));
-  END IF;
-
-  IF v_news_plan_limit_hit THEN
-    v_owner_actions := v_owner_actions || jsonb_build_array(jsonb_build_object(
-      'fingerprint','tavily-432-original-news','provider','Tavily',
-      'code','TAVILY_432','severity','ACTION_REQUIRED',
-      'owner','existing-bg-bedrijfsnieuws-20',
-      'impact',format('Laatste originele Tavily-aanvraag gaf HTTP432; sindsdien %s nieuwe nieuwsrijen (%s voldoen aan basisfilters). Ingestie is geen herstelbewijs van dezelfde Tavily-verbinding; e-mail blijft op afzonderlijke bron-/toestemmingspoort.',
-                      v_news_ingests_after_432,v_news_basic_match_after_432),
-      'last_failed_at',v_news_last_432_at,
-      'ingests_after_failure',v_news_ingests_after_432,
-      'base_matches_after_failure',v_news_basic_match_after_432,
-      'failure_last_observed_not_currently_reproven',true,
-      'original_provider_recovery_verified',false,
-      'paid_account_reported',true,
-      'paid_or_unpaid_independently_verified',false,
-      'human_action','Bestaande bronagent: controleer veilig of oorspronkelijke sleutel bij betaalde Tavily-workspace en juiste plan/PAYG-scope hoort; alleen accountbeheerder kan ontbrekende providerautorisatie herstellen; geen extra betaling veronderstellen.',
-      'action_url','https://help.tavily.com/articles/8645538886-understanding-http-errors',
-      'notification_sent',false,'delivery_proof','NOT_SENT_BY_GUARDIAN',
-      'incident_url','https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'));
-  END IF;
-  IF v_openai_quota THEN
-    v_owner_actions := v_owner_actions || jsonb_build_array(jsonb_build_object(
-      'fingerprint','openai-429-personal-original','provider','OpenAI',
-      'code','429 insufficient_quota','severity','ACTION_REQUIRED',
-      'owner','original-personal-content-orchestrator',
-      'impact','Persoonlijke LinkedIn-post nog niet providerbewezen',
-      'paid_account_reported',true,
-      'paid_or_unpaid_independently_verified',false,
-      'retry_after',v_openai_retry_after,
-      'last_failed_at',v_openai_last_failed_at,
-      'failure_last_observed_not_currently_reproven',true,
-      'original_personal_generator_recovery_verified',false,
-      'human_action','Bestaande persoonlijke executor: verifieer na oorspronkelijke cooldown dezelfde OpenAI API-key en gebonden org/project en projectbudget; eigenaar toont positief API-tegoed. Geen nieuwe betaling, alternatieve ongeautoriseerde sleutel of voortijdige repost.',
-      'action_url','https://platform.openai.com/settings/organization/billing/',
-      'notification_sent',false,'delivery_proof','NOT_SENT_BY_GUARDIAN',
-      'incident_url','https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198'));
-  END IF;
-
-  v_event_key := 'original-result-guardian:'||v_hour||':commercial';
-  SELECT EXISTS (SELECT 1 FROM public.powerhouse_runtime_events
-                 WHERE dedupe_key=v_event_key)
-    INTO v_already_checked;
-
-  -- Automatic *safe* recovery: choose ONE other already-approved candidate via
-  -- the ORIGINAL selector. It only prepares an action; the canonical composer,
-  -- recipient lawfulness, suppression, pressure and original Gmail sender retain
-  -- exclusive authorization. Never retry an uncertain provider side effect.
-  -- Hourly dedupe + daily cap prevent a ten-minute watchdog from flooding the queue.
-  IF NOT v_already_checked AND v_held>0 AND v_ready=0 AND v_uncertain=0
-     AND NOT v_news_plan_limit_hit
-     AND v_today_candidates<5
-     AND (v_now AT TIME ZONE 'Europe/Amsterdam')::time >= time '09:00'
-  THEN
-    v_recovery_attempted := true;
-    BEGIN
-      v_recovery := public.powerhouse_prepare_connection_email_activation_v1(v_day,1);
-      v_recovery_created := least(1,greatest(0,coalesce((v_recovery->>'prepared')::int,0)));
-    EXCEPTION WHEN OTHERS THEN
-      v_recovery_error := left(SQLSTATE||':'||SQLERRM,240);
-    END;
-  END IF;
-
-  v_state := CASE
-    WHEN v_recovery_error IS NOT NULL THEN 'ERROR'
-    WHEN v_openai_quota OR v_news_plan_limit_hit OR v_news_stale OR v_held>0 OR v_handoff_broken>0 OR v_yesterday_missing>0
-      OR v_research_tracked>v_research_consumed THEN 'DEGRADED'
-    ELSE 'OBSERVED' END;
-  v_snapshot := jsonb_build_object(
-    'contract','powerhouse-original-result-guardian-v1',
-    'state',v_state,
-    'owner','existing-powerhouse-reliability',
-    'canonical_scheduler','#171',
-    'original_commercial_owner','#116',
-    'original_content_owner','#140',
-    'checked_at',v_now,
-    'day',v_day,
-    'held_source_specific',v_held,
-    'prepared_without_source_hold',v_ready,
-    'provider_uncertain_no_resend',v_uncertain,
-    'original_daily_candidates',v_today_candidates,
-    'daily_candidate_cap',5,
-    'last_day_channel_obligations',v_yesterday_obligations,
-    'last_day_missing_live_proof',v_yesterday_missing,
-    'broken_email_handoffs_7d',v_handoff_broken,
-    'research_tracked',v_research_tracked,
-    'research_consumer_receipts',v_research_consumed,
-    'news_source_provider_state',CASE WHEN v_news_plan_limit_hit THEN 'TAVILY_PLAN_LIMIT_EXCEEDED' WHEN v_news_stale THEN 'PROVIDER_NEWS_INGEST_STALE' ELSE 'NO_NEW_SOURCE_FAILURE_OBSERVED' END,
-    'news_source_error_scope','HISTORICAL_PROVIDER_FAILURE_CURRENT_HEALTH_UNVERIFIED',
-    'news_source_last_432_at',v_news_last_432_at,
-    'news_source_ingests_after_last_432',v_news_ingests_after_432,
-    'news_source_base_matches_after_last_432',v_news_basic_match_after_432,
-    'news_ingestion_not_sufficient_for_original_tavily_recovery',true,
-    'openai_personal_last_429_at',v_openai_last_failed_at,
-    'openai_personal_recovery_unverified',v_openai_quota,
-    'news_source_cron20_last_run',v_news_cron_last_run,
-    'news_source_last_ingest',v_news_last_ingest,
-    'news_source_last_successful_provider_health',v_news_last_provider_ok,
-    'news_source_owner','existing-bg-bedrijfsnieuws-20',
-    'news_source_failure_independently_observed',v_news_plan_limit_hit OR v_news_stale,
-    'original_fallback_evaluated',NOT v_already_checked,
-    'fallback_attempted',v_recovery_attempted,
-    'fallback_prepared',v_recovery_created,
-    'fallback_error',v_recovery_error,
-    'next_owner',CASE WHEN v_recovery_created>0 THEN 'original-commercial-composer'
-                      WHEN v_held>0 THEN 'original-relationship-public-research'
-                      ELSE 'original-commercial-owner' END,
-    'repair_policy',CASE WHEN v_recovery_created>0 THEN 'NEXT_ORIGINAL_NATURAL_RUN'
-                         WHEN v_held>0 THEN 'SOURCE_UNVERIFIED_KEEP_HOLD_AND_RESEARCH_DUE_ONLY'
-                         ELSE 'OBSERVE_ORIGINAL_OWNERS' END,
-    'provider_send_attempted',false,
-    'news_quota_no_redundant_retry',v_news_plan_limit_hit,
-    'provider_result_proven_by_guardian',false,
-    'release_green_proven',false
-  );
-
-  -- Owner action event is NOT a delivered message: one deduplicated event
-  -- per original provider fingerprint/day; existing scheduled tasks deliver.
-  v_snapshot := v_snapshot || jsonb_build_object(
-    'owner_action_due',v_owner_actions,
-    'owner_action_delivery',jsonb_build_object(
-      'state',CASE WHEN jsonb_array_length(v_owner_actions)>0 THEN 'PENDING_VERIFIED_OWNER_NOTIFICATION' ELSE 'NONE' END,
-      'notification_sent',false,
-      'delivery_proof','NOT_SENT_BY_GUARDIAN',
-      'independent_owner_task_receipt_required',true));
-  FOR v_owner_item IN SELECT value FROM jsonb_array_elements(v_owner_actions) LOOP
-    INSERT INTO public.powerhouse_runtime_events(
-      dedupe_key,event_type,source,subject_key,occurred_at,
-      evidence,context,state,data_quality,confidence,updated_at)
-    VALUES(
-      'original-owner-action:'||to_char(v_day,'YYYYMMDD')||':'||(v_owner_item->>'fingerprint'),
-      'owner_action_required','powerhouse-original-result-guardian-v1',
-      'original-provider-owner-notification',v_now,v_owner_item,
-      jsonb_build_object('owner','existing-powerhouse-reliability',
-                         'original_issue',4198,'original_scheduler','#171',
-                         'alert_delivery_is_not_assumed',true),
-      'observed','OBSERVED',1,v_now)
-    ON CONFLICT (dedupe_key) DO NOTHING;
-  END LOOP;
-
-  -- Existing event store, one hourly idempotency key; no parallel task queue.
-  IF NOT v_already_checked THEN
-    INSERT INTO public.powerhouse_runtime_events(
-      dedupe_key,event_type,source,subject_key,occurred_at,
-      evidence,context,state,data_quality,confidence,updated_at)
-    VALUES(
-      v_event_key,'original_result_guardian_observation',
-      'powerhouse-original-result-guardian-v1','commercial-result-guard',v_now,
-      v_snapshot,
-      jsonb_build_object('owner','existing-powerhouse-reliability',
-                         'original_issue',4198,'single_runtime',true),
-      CASE WHEN v_state='ERROR' THEN 'error' ELSE 'observed' END,
-      'OBSERVED',1,v_now)
-    ON CONFLICT (dedupe_key) DO NOTHING;
-  END IF;
-
-  NEW.gegevens := coalesce(NEW.gegevens,'{}'::jsonb)
-    || jsonb_build_object('result_guardian',v_snapshot);
-  IF v_state IN ('ERROR','DEGRADED')
-     AND (v_held>0 OR v_handoff_broken>0 OR v_recovery_error IS NOT NULL OR v_news_plan_limit_hit OR v_news_stale OR v_openai_quota)
   THEN
     NEW.status := 'fout';
   END IF;
