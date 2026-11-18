@@ -48,7 +48,7 @@ export function isProvenScopedRecoveryRun(run,jobsReadback){
   const scoped=ORIGINAL_RECOVERY_JOBS.filter(name=>{
     const job=byName.get(name);
     return job?.conclusion!=='skipped'&&
-      ((job?.status==='completed'&&['success','failure','cancelled'].includes(job?.conclusion))||
+      ((job?.status==='completed'&&['success','failure','cancelled','timed_out','neutral'].includes(job?.conclusion))||
        (['queued','in_progress','waiting'].includes(job?.status)&&job?.conclusion==null));
   });
   if(scoped.length!==1)return false;
