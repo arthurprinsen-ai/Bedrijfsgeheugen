@@ -160,7 +160,8 @@ for (const p of v18Paginas) {
   if (!home.includes('v18-speels')) {
     home = home.replace('</head>', SPEELS_CSS + '\n</head>');
     home = home.replace('</main>', VERTREK + '</main>');
-    home = home.replace('</body>', LEK + '\n' + EXTRA_HTML + '\n' + SPEELS_JS + '\n' + INTERACTIE_JS + '\n</body>');
+    // rust (besluit 17 nov): de gele LEK-teller staat alleen op /frisse-blik en /prijzen, niet op de homepage
+    home = home.replace('</body>', EXTRA_HTML + '\n' + SPEELS_JS + '\n' + INTERACTIE_JS + '\n</body>');
   }
   if (!home.includes('"@type":"Organization"')) {
     home = home.replace('</body>', ORGANISATIE_SCHEMA + '\n</body>');
