@@ -7,6 +7,29 @@ export function classifyI18nError(error) {
     return Object.freeze({ failure_class: 'SOVEREIGNTY_DENIED', upstream_status: null });
   }
   const message = typeof error?.message === 'string' ? error.message : '';
+  // Production OpenAI errors use OPENAI_PROVIDER_ERROR_<HTTP>:<details>.
+  // Only parse the fixed adapter marker; never log provider details or request content.
+  const openaiHttp = /^OPENAI_PROVIDER_ERROR_([45][0-9]{2})(?::|$)/.exec(message);
+  if (openaiHttp) {
+    return Object.freeze({ failure_class: 'UPSTREAM_HTTP_REJECTION', upstream_status: Number(openaiHttp[1]) });
+  }
+  // Disjoint, non-sensitive failure types allow the original owner to choose a
+  // bounded recovery without confusing rate limiting with JSON/output failures.
+  if (message === 'OPENAI_OUTPUT_BUDGET_EXHAUSTED') {
+    return Object.freeze({ failure_class: 'OUTPUT_BUDGET_EXHAUSTED', upstream_status: null });
+  }
+  if (message === 'OPENAI_EMPTY_RESPONSE') {
+    return Object.freeze({ failure_class: 'EMPTY_MODEL_RESPONSE', upstream_status: null });
+  }
+  if (message === 'OPENAI_REFUSAL') {
+    return Object.freeze({ failure_class: 'MODEL_REFUSAL', upstream_status: null });
+  }
+  if (message === 'Translation response was not valid JSON') {
+    return Object.freeze({ failure_class: 'TRANSLATION_INVALID_JSON', upstream_status: null });
+  }
+  if (message === 'Translation response shape mismatch') {
+    return Object.freeze({ failure_class: 'TRANSLATION_SHAPE_MISMATCH', upstream_status: null });
+  }
   const match = /^\s*([45][0-9]{2})(?:\s|$)/.exec(message);
   if (match) {
     return Object.freeze({ failure_class: 'UPSTREAM_HTTP_REJECTION', upstream_status: Number(match[1]) });
