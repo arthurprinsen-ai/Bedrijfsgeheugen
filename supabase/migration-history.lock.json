@@ -3532,8 +3532,12 @@
     {
       "version": "20261118184000",
       "name": "original_guardian_provider_scope_source_freshness_v4"
+    },
+    {
+      "version": "20261118194000",
+      "name": "original_guardian_mira_vision_exhausted_owner_notice_v5"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-18T18:45:28.978Z"
+  "captured_at": "2026-11-18T19:55:20.963Z"
 }
