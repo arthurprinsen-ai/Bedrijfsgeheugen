@@ -11,3 +11,9 @@
 - Tests: `tests/brain-daily-learning-run-admission-v1.test.mjs`, covering actual false duplicate, all bounded recovery lanes and fake/missing data vetoes.
 - Semantic learning: `brain/learning/2026-11-18-scoped-recovery-daily-admission-false-duplicate-v1.json`.
 - Rollback: protected revert of changed original script/tests/learning/skill; no original Brain data erased or modified by this source-only PR.
+
+## Same-PR refinement — a daily run stopped before all side effects is recoverable once
+
+- Original 18 Nov daily run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44256077963 had read-only `daily-admission` FAILURE and **all other five jobs SKIPPED**. It performed no Engineering, learning or model execution. Its earlier-failed-run veto would otherwise permanently lose today's genuine daily opportunity.
+- Add source-proven `isProvenPreExecutionAdmissionAbort` from exact original six-job native response. Permit ONE retry of an abort with `daily-admission` failed and every other original job completed SKIPPED, with either schedule or workflow_dispatch event and main branch. A genuine daily that progressed past admission, even if its later work failed, **continues to block duplicate daily execution**. Two or more admission aborts fail closed (`PRE_EXECUTION_RETRY_BUDGET_EXCEEDED`). Native readback unknown or partial fails closed.
+- Regression extends the existing exact historical 18 Nov run IDs and one-retry budget. Normal original cron and shared concurrency unchanged. Postmerge fresh daily required for verified live execution.
