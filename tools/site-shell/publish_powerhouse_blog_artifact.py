@@ -125,7 +125,7 @@ def seo_focus(data):
     candidates = [raw] if raw_ok else []
     if len(meaningful) >= 2:
         pair = re.search(
-            r"(?<!\\w)" + re.escape(meaningful[0]) + r"[\\s-]+" + re.escape(meaningful[1]) + r"(?!\\w)",
+            r"(?<!\w)" + re.escape(meaningful[0]) + r"[\s-]+" + re.escape(meaningful[1]) + r"(?!\w)",
             title, flags=re.I
         )
         candidates.append(pair.group(0) if pair else " ".join(meaningful[:2]))
