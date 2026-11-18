@@ -103,5 +103,7 @@ test('original router uses protected on-date Brain reconciliation and exact-hist
  assert.match(source,/originalProducerRejectedHandoff/);
  assert.match(source,/allowGeneratingExactHistory:originalProducerRejectedHandoff/);
  assert.match(source,/checkHistoricalMiraHistoryRejection\(db,manifest.openart_history_id\)/);
- assert.match(source,/if\(!fv\.body\?\.pass\|\|!miraFaceProofValid/);
+ assert.match(source,/const verdict=assessMiraFrameVerifierResult\(fv\)/);
+  assert.match(source,/verdict\.kind==='PROVIDER_UNAVAILABLE'/);
+  assert.match(source,/verdict\.kind==='MEASURED_FACE_REJECTED'/);
 });

@@ -85,9 +85,11 @@ test('verified, already posted, missing CAS and invalid reason cannot mutate job
 
 test('existing preflight CAS and exact router fail-closed path remain wired',()=>{
  const source=readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
- assert.match(source,/recordMediaProofRejection\(db,\{job,ob,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'/);
+ assert.match(source,/recordMediaProofRejection\(db,\{job,ob,\s*code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'/);
  assert.match(source,/retainMediaProofFailure\(job,ob,baseRow\)/);
- assert.match(source,/if\(!fv\.body\?\.pass\|\|!miraFaceProofValid/);
+ assert.match(source,/const verdict=assessMiraFrameVerifierResult\(fv\)/);
+  assert.match(source,/verdict\.kind==='PROVIDER_UNAVAILABLE'/);
+  assert.match(source,/verdict\.kind==='MEASURED_FACE_REJECTED'/);
  assert.match(source,/return json\(\{ok:false,error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'/);
  assert.match(source,/const write=await writeMediaPreflight\(db,job,row\)/);
  assert.match(source,/\.is\('external_id',null\)/);
