@@ -58,6 +58,35 @@ export function isProvenScopedRecoveryRun(run,jobsReadback){
   });
 }
 
+
+/**
+ * One bounded retry is safe ONLY when native GitHub proves that the previous
+ * full daily run failed at read-only daily-admission BEFORE any improve,
+ * Engineering code candidate, model-freshness or recovery execution began.
+ * A previously admitted (even later failed) true daily must still block.
+ * Unproven or repeated aborts remain blocking to prevent retry storms.
+ */
+export function isProvenPreExecutionAdmissionAbort(run,jobsReadback){
+  if(!EVENTS.has(run?.event)||run?.head_branch!=='main'||
+    run?.status!=='completed'||run?.conclusion!=='failure'||
+    !jobsReadback||jobsReadback.total_count!==ALL_EXPECTED_JOBS.size||
+    !Array.isArray(jobsReadback.jobs)||
+    jobsReadback.jobs.length!==ALL_EXPECTED_JOBS.size)return false;
+  const byName=new Map();
+  for(const job of jobsReadback.jobs){
+    if(!ALL_EXPECTED_JOBS.has(job?.name)||byName.has(job.name)||
+      typeof job.status!=='string')return false;
+    byName.set(job.name,job);
+  }
+  if(byName.size!==ALL_EXPECTED_JOBS.size)return false;
+  const admission=byName.get('daily-admission');
+  if(admission.status!=='completed'||admission.conclusion!=='failure')return false;
+  return [...ORIGINAL_RECOVERY_JOBS,'improve','model-freshness'].every(name=>{
+    const job=byName.get(name);
+    return job?.status==='completed'&&job?.conclusion==='skipped';
+  });
+}
+
 export function assessDailyRunAdmission({now,runId,event,ref,workflow,snapshot,priorJobsByRunId={}}={}){
   const base={contract:'powerhouse-daily-run-admission-v1',status:'HOLD_INVALID_PROVIDER_EVIDENCE',
     allow_execution:false,prior_run_id:null,proof:'NOT_TERMINAL_JOB_SUCCESS'};
@@ -92,17 +121,30 @@ export function assessDailyRunAdmission({now,runId,event,ref,workflow,snapshot,p
   // A recovery-only run has no normal learning/admission jobs, regardless
   // of its overall success or failure. Do not let it consume today's ONE
   // allowed genuine daily execution. Unknown job proofs remain blocking.
+  const scopedRecoveries=older.filter(row=>
+    isProvenScopedRecoveryRun(row,priorJobsByRunId?.[row.id]));
+  const preExecutionAborts=older.filter(row=>
+    isProvenPreExecutionAdmissionAbort(row,priorJobsByRunId?.[row.id]));
   const earlierDaily=older.filter(row=>
-    !isProvenScopedRecoveryRun(row,priorJobsByRunId?.[row.id]));
+    !scopedRecoveries.some(s=>s.id===row.id)&&
+    !preExecutionAborts.some(a=>a.id===row.id));
   if(earlierDaily.length){
     return {...base,status:'DUPLICATE_DAILY_RUN_SUPPRESSED',
       prior_run_id:earlierDaily[0].id,
       earlier_status:earlierDaily[0].status,
       earlier_conclusion:earlierDaily[0].conclusion??null,
-      scoped_recoveries_excluded:older.length-earlierDaily.length};
+      scoped_recoveries_excluded:scopedRecoveries.length,
+      pre_execution_aborts_verified:preExecutionAborts.length};
+  }
+  if(preExecutionAborts.length>1){
+    return {...base,status:'PRE_EXECUTION_RETRY_BUDGET_EXCEEDED',
+      prior_run_id:preExecutionAborts[0].id,
+      scoped_recoveries_excluded:scopedRecoveries.length,
+      pre_execution_aborts_verified:preExecutionAborts.length};
   }
   return {...base,status:'FIRST_DAILY_RUN_ADMITTED',allow_execution:true,
-    scoped_recoveries_excluded:older.length};
+    scoped_recoveries_excluded:scopedRecoveries.length,
+    pre_execution_aborts_verified:preExecutionAborts.length};
 }
 
 export function evaluateProviderDailyRun({
@@ -117,10 +159,11 @@ export function evaluateProviderDailyRun({
   const snapshot=request('repos/'+repo+'/actions/workflows/'+WORKFLOW+
     '/runs?branch=main&created='+now.slice(0,10)+'&per_page=100');
   const priorJobsByRunId={};
-  // Only a preceding manual dispatch can be a scoped recovery. Native
-  // scheduled runs always count toward one genuine daily execution.
+  // All earlier run jobs are native provider evidence: a scoped recovery
+  // can be manual only, but an admission-only aborted daily can be manual
+  // OR scheduled. Both exclusions require independent exact job receipts.
   for(const row of Array.isArray(snapshot?.workflow_runs)?snapshot.workflow_runs:[]){
-    if(row?.id===id||row?.event!=='workflow_dispatch'||
+    if(row?.id===id||!EVENTS.has(row?.event)||
       row?.head_branch!=='main'||row?.created_at?.slice(0,10)!==now.slice(0,10))
       continue;
     const thisRun=snapshot.workflow_runs.find(x=>x.id===id);
