@@ -30,5 +30,5 @@ test('public language-option clicks own navigation before mobile menu capture ha
   const source = fs.readFileSync(runtime,'utf8');
   const apply = fs.readFileSync(path.resolve('tools/site-shell/apply-i18n.mjs'),'utf8');
   assert.match(source,/window\.addEventListener\('click',[\s\S]*\[data-bg-language-option\][\s\S]*event\.stopImmediatePropagation\(\)[\s\S]*event\.preventDefault\(\)[\s\S]*window\.location\.assign\(href\)[\s\S]*, true\);/);
-  assert.match(apply,/cms-i18n-20260930-4/);
+  assert.match(apply,/cms-i18n-20261118-1/);
 });
