@@ -11,6 +11,43 @@
   window.__rbBeleving = true;
 
   var doc = document, root = doc.documentElement;
+
+  var IS_EN = (doc.documentElement.getAttribute('lang') || '').slice(0, 2) === 'en';
+  var EN = {
+  "Kennis die alleen in hoofden zit": "Knowledge that only lives in people’s heads",
+  "Wat alleen in hoofden zit, leggen wij voor je vast.": "What lives only in people’s heads, we capture for you.",
+  "Zie hoe wij dat bewaren": "See how we keep it",
+  "Losse mails, bestanden en systemen": "Loose emails, files and systems",
+  "Wat verspreid ligt, brengen wij rustig samen.": "What is scattered, we bring together calmly.",
+  "Zie hoe systemen samenkomen": "See how systems come together",
+  "Werk dat zich steeds herhaalt": "Work that keeps repeating",
+  "Wat zich herhaalt, hoeft jou niet langer te kosten.": "What repeats no longer has to cost you.",
+  "Zie hoe het werkt": "See how it works",
+  "Beslissingen die nergens staan": "Decisions that are written down nowhere",
+  "Wat besloten is, blijft voortaan vindbaar.": "What has been decided stays findable.",
+  "Doe de Frisse blik": "Take the Fresh Perspective Scan",
+  "Ik wil alleen even rust": "I just want a moment of calm",
+  "Dan is dit precies genoeg. Neem de tijd.": "Then this is exactly enough. Take your time.",
+  "Geheugenritueel": "Memory ritual",
+  "Wat houdt je hoofd bezet?": "What is on your mind?",
+  "Kies wat nu het zwaarst weegt. Wij onthouden het.": "Choose what weighs most right now. We will remember it.",
+  "Liever niet nu": "Not now",
+  "Verder": "Continue",
+  "Er hoeft nu niets.": "Nothing is needed right now.",
+  " — wij onthouden het.": " — we will remember it.",
+  "Het ligt veilig. Jij kunt verder.": "It is safe. You can carry on.",
+  "Adem in": "Breathe in",
+  "Adem uit": "Breathe out",
+  "Vier tellen · ronde ": "Four counts · round ",
+  "Zes tellen · ronde ": "Six counts · round ",
+  " van 3": " of 3",
+  "Neem je moment": "Take a moment",
+  "Neem je moment: het geheugenritueel": "Take a moment: the memory ritual",
+  "Een moment voor jezelf": "A moment for yourself",
+  "Het geheugenritueel": "The memory ritual",
+  "Wij onthouden. Jij ademt.": "We remember. You breathe."
+};
+  function tr(s) { return IS_EN && EN[s] ? EN[s] : s; }
   var rustig = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   var isPortaal = !!doc.querySelector('aside.sidebar');
 
@@ -64,11 +101,11 @@
 
   /* ---------- geheugenritueel ---------- */
   var KEUZES = [
-    { t: 'Kennis die alleen in hoofden zit', z: 'Wat alleen in hoofden zit, leggen wij voor je vast.', h: '/bedrijfsgeheugen', l: 'Zie hoe wij dat bewaren' },
-    { t: 'Losse mails, bestanden en systemen', z: 'Wat verspreid ligt, brengen wij rustig samen.', h: '/systemen-koppelen', l: 'Zie hoe systemen samenkomen' },
-    { t: 'Werk dat zich steeds herhaalt', z: 'Wat zich herhaalt, hoeft jou niet langer te kosten.', h: '/hoe-het-werkt', l: 'Zie hoe het werkt' },
-    { t: 'Beslissingen die nergens staan', z: 'Wat besloten is, blijft voortaan vindbaar.', h: '/frisse-blik', l: 'Doe de Frisse blik' },
-    { t: 'Ik wil alleen even rust', z: 'Dan is dit precies genoeg. Neem de tijd.', h: '', l: '' }
+    { t: tr('Kennis die alleen in hoofden zit'), z: tr('Wat alleen in hoofden zit, leggen wij voor je vast.'), h: (IS_EN ? '/en' : '') + '/bedrijfsgeheugen', l: tr('Zie hoe wij dat bewaren') },
+    { t: tr('Losse mails, bestanden en systemen'), z: tr('Wat verspreid ligt, brengen wij rustig samen.'), h: (IS_EN ? '/en' : '') + '/systemen-koppelen', l: tr('Zie hoe systemen samenkomen') },
+    { t: tr('Werk dat zich steeds herhaalt'), z: tr('Wat zich herhaalt, hoeft jou niet langer te kosten.'), h: (IS_EN ? '/en' : '') + '/hoe-het-werkt', l: tr('Zie hoe het werkt') },
+    { t: tr('Beslissingen die nergens staan'), z: tr('Wat besloten is, blijft voortaan vindbaar.'), h: (IS_EN ? '/en' : '') + '/frisse-blik', l: tr('Doe de Frisse blik') },
+    { t: tr('Ik wil alleen even rust'), z: tr('Dan is dit precies genoeg. Neem de tijd.'), h: '', l: '' }
   ];
   var overlay = null, timers = [], vorigeFocus = null, gekozen = null;
   function wis() { timers.forEach(clearTimeout); timers = []; }
@@ -80,15 +117,15 @@
     overlay.className = 'rb-adem';
     overlay.setAttribute('role', 'dialog');
     overlay.setAttribute('aria-modal', 'true');
-    overlay.setAttribute('aria-label', 'Geheugenritueel');
+    overlay.setAttribute('aria-label', tr('Geheugenritueel'));
     overlay.innerHTML =
       '<div class="rb-adem-cirkel" aria-hidden="true"></div>' +
       '<p class="rb-adem-tekst" aria-live="polite"></p>' +
       '<p class="rb-adem-sub"></p>' +
-      '<div class="rb-adem-keuzes" role="group" aria-label="Wat houdt je hoofd bezet?"></div>' +
+      '<div class="rb-adem-keuzes" role="group" aria-label="' + tr('Wat houdt je hoofd bezet?') + '"></div>' +
       '<p class="rb-adem-bewaard" aria-hidden="true"></p>' +
       '<a class="rb-adem-link" hidden></a>' +
-      '<button type="button" class="rb-adem-sluit">Verder</button>';
+      '<button type="button" class="rb-adem-sluit">' + tr('Verder') + '</button>';
     doc.body.appendChild(overlay);
     var lijst = q('.rb-adem-keuzes');
     KEUZES.forEach(function (k, i) {
@@ -116,12 +153,12 @@
   function toonKeuze() {
     fase('kies');
     gekozen = null;
-    q('.rb-adem-tekst').textContent = 'Wat houdt je hoofd bezet?';
-    q('.rb-adem-sub').textContent = 'Kies wat nu het zwaarst weegt. Wij onthouden het.';
+    q('.rb-adem-tekst').textContent = tr('Wat houdt je hoofd bezet?');
+    q('.rb-adem-sub').textContent = tr('Kies wat nu het zwaarst weegt. Wij onthouden het.');
     q('.rb-adem-keuzes').hidden = false;
     q('.rb-adem-link').hidden = true;
     q('.rb-adem-bewaard').classList.remove('rb-zichtbaar');
-    q('.rb-adem-sluit').textContent = 'Liever niet nu';
+    q('.rb-adem-sluit').textContent = tr('Liever niet nu');
     var eerste = q('.rb-adem-keuze');
     if (eerste) eerste.focus();
   }
@@ -130,9 +167,9 @@
     gekozen = KEUZES[i];
     fase('adem');
     q('.rb-adem-keuzes').hidden = true;
-    q('.rb-adem-sluit').textContent = 'Verder';
+    q('.rb-adem-sluit').textContent = tr('Verder');
     var b = q('.rb-adem-bewaard');
-    b.textContent = i === KEUZES.length - 1 ? 'Er hoeft nu niets.' : gekozen.t + ' — wij onthouden het.';
+    b.textContent = i === KEUZES.length - 1 ? tr('Er hoeft nu niets.') : gekozen.t + tr(' — wij onthouden het.');
     var c = q('.rb-adem-cirkel');
     c.style.transitionDuration = '0s';
     c.style.transform = 'scale(.62)';
@@ -146,7 +183,7 @@
     var c = q('.rb-adem-cirkel'), t = q('.rb-adem-tekst'), s = q('.rb-adem-sub');
     if (n >= 3) {
       fase('klaar');
-      t.textContent = 'Het ligt veilig. Jij kunt verder.';
+      t.textContent = tr('Het ligt veilig. Jij kunt verder.');
       s.textContent = gekozen ? gekozen.z : '';
       c.style.transitionDuration = '2.5s';
       c.style.transform = 'scale(.8)';
@@ -158,13 +195,13 @@
       }
       return;
     }
-    t.textContent = 'Adem in';
-    s.textContent = 'Vier tellen · ronde ' + (n + 1) + ' van 3';
+    t.textContent = tr('Adem in');
+    s.textContent = tr('Vier tellen · ronde ') + (n + 1) + tr(' van 3');
     c.style.transitionDuration = rustig ? '0s' : '4s';
     c.style.transform = 'scale(1)';
     na(4000, function () {
-      t.textContent = 'Adem uit';
-      s.textContent = 'Zes tellen · ronde ' + (n + 1) + ' van 3';
+      t.textContent = tr('Adem uit');
+      s.textContent = tr('Zes tellen · ronde ') + (n + 1) + tr(' van 3');
       c.style.transitionDuration = rustig ? '0s' : '6s';
       c.style.transform = 'scale(.62)';
       na(6000, function () { ronde(n + 1); });
@@ -202,8 +239,8 @@
     var pil = doc.createElement('button');
     pil.type = 'button';
     pil.className = 'rb-moment';
-    pil.setAttribute('aria-label', 'Neem je moment: het geheugenritueel');
-    pil.innerHTML = '<i aria-hidden="true"></i>Neem je moment';
+    pil.setAttribute('aria-label', tr('Neem je moment: het geheugenritueel'));
+    pil.innerHTML = '<i aria-hidden="true"></i>' + tr('Neem je moment');
     pil.addEventListener('click', open);
     doc.body.appendChild(pil);
     var hero = doc.querySelector('.hero-copy .rb-adem-knop');
@@ -223,7 +260,7 @@
     var kop = doc.querySelector('section.hero-video .hero-copy');
     if (kop && !kop.querySelector('.rb-adem-knop')) {
       var acties = kop.querySelector('.hero-video-actions');
-      var knop = ademKnop('Neem je moment');
+      var knop = ademKnop(tr('Neem je moment'));
       knop.style.margin = '6px 0 0';
       var eerstePara = acties && acties.querySelector('p');
       if (eerstePara) acties.insertBefore(knop, eerstePara);
@@ -237,8 +274,8 @@
     if (voet && !doc.querySelector('.rb-band')) {
       var band = doc.createElement('section');
       band.className = 'rb-band';
-      band.setAttribute('aria-label', 'Een moment voor jezelf');
-      band.innerHTML = '<small>Het geheugenritueel</small><p>Wij onthouden. Jij ademt.</p><button type="button">Neem je moment</button>';
+      band.setAttribute('aria-label', tr('Een moment voor jezelf'));
+      band.innerHTML = '<small>' + tr('Het geheugenritueel') + '</small><p>' + tr('Wij onthouden. Jij ademt.') + '</p><button type="button">' + tr('Neem je moment') + '</button>';
       band.querySelector('button').addEventListener('click', open);
       voet.parentNode.insertBefore(band, voet);
     }
@@ -327,7 +364,7 @@
     // Ademknop onderin de zijbalk.
     var zij = doc.querySelector('aside.sidebar');
     if (zij && !zij.querySelector('.rb-adem-knop')) {
-      var b = ademKnop('Neem je moment');
+      var b = ademKnop(tr('Neem je moment'));
       b.style.color = '#fff';
       b.style.margin = '16px 18px';
       b.style.alignSelf = 'flex-start';
