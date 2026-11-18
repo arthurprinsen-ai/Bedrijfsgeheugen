@@ -14,6 +14,17 @@
 
   var IS_EN = (doc.documentElement.getAttribute('lang') || '').slice(0, 2) === 'en';
   var EN = {
+  "Besluit · voorbeeld": "Decision · example",
+  "Offerte Van Dijk Techniek verlengen?": "Renew the Van Dijk Techniek quote?",
+  "Waarom nu": "Why now",
+  "Het contract loopt af en de marge staat onder druk.": "The contract is ending and the margin is under pressure.",
+  "Bron": "Source",
+  "AFAS-contract en de mail van 12 november": "AFAS contract and the email of 12 November",
+  "Eigenaar": "Owner",
+  "Sanne, sales": "Sanne, sales",
+  "Vastgelegd": "Recorded",
+  "Vandaag, met bron": "Today, with source",
+  "Elk besluit heeft een bron, een eigenaar en een datum.": "Every decision has a source, an owner and a date.",
   "Kennis die alleen in hoofden zit": "Knowledge that only lives in people’s heads",
   "Wat alleen in hoofden zit, leggen wij voor je vast.": "What lives only in people’s heads, we capture for you.",
   "Zie hoe wij dat bewaren": "See how we keep it",
@@ -266,6 +277,35 @@
       if (eerstePara) acties.insertBefore(knop, eerstePara);
       else if (acties) acties.appendChild(knop);
       else kop.appendChild(knop);
+    }
+
+    // Hero-beeld: een besluitkaart (voorbeeld) in plaats van het stockfilmpje. Het toont wat het product doet.
+    var hv = doc.querySelector('section.hero-video .hero-bg-video');
+    if (hv && !doc.querySelector('.rb-besluit')) {
+      var kaart = doc.createElement('aside');
+      kaart.className = 'rb-besluit';
+      kaart.setAttribute('aria-label', tr('Besluit · voorbeeld'));
+      kaart.innerHTML =
+        '<small><i aria-hidden="true"></i>' + tr('Besluit · voorbeeld') + '</small>' +
+        '<h2>' + tr('Offerte Van Dijk Techniek verlengen?') + '</h2>' +
+        '<dl>' +
+        '<div class="rb-b-waarom"><dt>' + tr('Waarom nu') + '</dt><dd>' + tr('Het contract loopt af en de marge staat onder druk.') + '</dd></div>' +
+        '<div><dt>' + tr('Bron') + '</dt><dd>' + tr('AFAS-contract en de mail van 12 november') + '</dd></div>' +
+        '<div><dt>' + tr('Eigenaar') + '</dt><dd>' + tr('Sanne, sales') + '</dd></div>' +
+        '<div class="rb-b-datum"><dt>' + tr('Vastgelegd') + '</dt><dd>' + tr('Vandaag, met bron') + '</dd></div>' +
+        '</dl>' +
+        '<p>' + tr('Elk besluit heeft een bron, een eigenaar en een datum.') + '</p>';
+      hv.parentNode.appendChild(kaart);
+      hv.setAttribute('data-rb-vervangen', '1');
+      try { hv.pause(); } catch (e) {}
+    }
+
+    // De WhatsApp-knop pas na een schermhoogte scrollen, zodat hij de hoofdactie niet afdekt.
+    var wa = doc.querySelector('.bg-whatsapp-contact');
+    if (wa && kop) {
+      var waToon = function () { if ((window.pageYOffset || 0) > (window.innerHeight || 700) * 0.9) wa.style.removeProperty('display'); else wa.style.setProperty('display', 'none', 'important'); };
+      window.addEventListener('scroll', waToon, { passive: true });
+      waToon();
     }
 
     // Zelfde ritueel op elke pagina: een stille pil en een rustband boven de voettekst.
