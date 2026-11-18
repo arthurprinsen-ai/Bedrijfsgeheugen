@@ -9,7 +9,47 @@ const WORKFLOW='powerhouse-daily-self-evolution.yml';
 const EVENTS=new Set(['schedule','workflow_dispatch']);
 const REPO=/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i;
 
-export function assessDailyRunAdmission({now,runId,event,ref,workflow,snapshot}={}){
+const WORKFLOW_JOBS=new Set(['daily-admission','improve','model-freshness',
+  'original-intake-recovery','original-delivery-recovery','original-innovation-code-candidate']);
+const SCOPED_RECOVERY_JOBS=new Set(['original-intake-recovery',
+  'original-delivery-recovery','original-innovation-code-candidate']);
+const isSkipped=job=>job?.status==='completed'&&job.conclusion==='skipped';
+
+// Check actual GitHub JOB evidence, not a successful workflow_run conclusion:
+// a "delivery recovery" successfully finishing says nothing about full daily
+// learning. Likewise an admission rejected before ANY worker ran is retryable.
+export function classifyHistoricalDailyJobs(packet){
+  if(!packet||!Number.isSafeInteger(packet.total_count)||
+    packet.total_count!==WORKFLOW_JOBS.size||
+    !Array.isArray(packet.jobs)||packet.jobs.length!==packet.total_count)
+    return 'HOLD_PRIOR_JOB_HISTORY_INCOMPLETE';
+  const jobs=new Map();
+  for(const job of packet.jobs){
+    if(!Number.isSafeInteger(job?.id)||job.id<=0||
+       typeof job.name!=='string'||!WORKFLOW_JOBS.has(job.name)||
+       jobs.has(job.name)||typeof job.status!=='string')
+      return 'HOLD_PRIOR_JOB_HISTORY_INVALID';
+    jobs.set(job.name,job);
+  }
+  if(jobs.size!==WORKFLOW_JOBS.size)return 'HOLD_PRIOR_JOB_HISTORY_INCOMPLETE';
+  const daily=jobs.get('daily-admission');
+  const ordinary=['improve','model-freshness'].every(name=>isSkipped(jobs.get(name)));
+  const scoped=[...SCOPED_RECOVERY_JOBS].filter(name=>!isSkipped(jobs.get(name)));
+  if(isSkipped(daily)&&ordinary&&scoped.length===1&&
+    [...SCOPED_RECOVERY_JOBS].filter(name=>!scoped.includes(name))
+      .every(name=>isSkipped(jobs.get(name))))
+    return 'SCOPED_RECOVERY_NOT_A_DAILY_RUN';
+  if(daily.status==='completed'&&daily.conclusion==='failure'&&
+    [...WORKFLOW_JOBS].filter(name=>name!=='daily-admission')
+      .every(name=>isSkipped(jobs.get(name))))
+    return 'UNADMITTED_DAILY_NO_SIDE_EFFECTS';
+  if(daily.status==='completed'&&daily.conclusion==='skipped')
+    return 'HOLD_SCOPED_RUN_IDENTITY_AMBIGUOUS';
+  return 'GENUINE_DAILY_ATTEMPT';
+}
+
+
+export function assessDailyRunAdmission({now,runId,event,ref,workflow,snapshot,priorJobReports={}}={}){
   const base={contract:'powerhouse-daily-run-admission-v1',status:'HOLD_INVALID_PROVIDER_EVIDENCE',
     allow_execution:false,prior_run_id:null,proof:'NOT_TERMINAL_JOB_SUCCESS'};
   if(typeof now!=='string'||!Number.isFinite(Date.parse(now))||
@@ -40,11 +80,31 @@ export function assessDailyRunAdmission({now,runId,event,ref,workflow,snapshot}=
     (x.created_at<current.created_at ||
     (x.created_at===current.created_at&&x.id<current.id)))
     .sort((a,b)=>a.created_at.localeCompare(b.created_at)||a.id-b.id);
-  if(older.length){
-    return {...base,status:'DUPLICATE_DAILY_RUN_SUPPRESSED',prior_run_id:older[0].id,
-      earlier_status:older[0].status,earlier_conclusion:older[0].conclusion??null};
+  const ignored=[];
+  for(const earlier of older){
+    // A scheduled run is always a candidate daily run; scoped recovery is
+    // workflow_dispatch only and MUST be distinguished by native job proof.
+    if(earlier.event==='workflow_dispatch' &&
+      Object.prototype.hasOwnProperty.call(priorJobReports,earlier.id)){
+      const classification=classifyHistoricalDailyJobs(priorJobReports[earlier.id]);
+      if(classification.startsWith('HOLD_')){
+        return {...base,status:classification,prior_run_id:earlier.id};
+      }
+      if(classification==='SCOPED_RECOVERY_NOT_A_DAILY_RUN'||
+         classification==='UNADMITTED_DAILY_NO_SIDE_EFFECTS'){
+        ignored.push({id:earlier.id,reason:classification});
+        continue;
+      }
+    }
+    // No job evidence? Fail closed under original canonical behavior:
+    // treat the earlier candidate as a daily attempt, never assume a reset.
+    return {...base,status:'DUPLICATE_DAILY_RUN_SUPPRESSED',
+      prior_run_id:earlier.id,earlier_status:earlier.status,
+      earlier_conclusion:earlier.conclusion??null,
+      ignored_non_daily_runs:ignored.length};
   }
-  return {...base,status:'FIRST_DAILY_RUN_ADMITTED',allow_execution:true};
+  return {...base,status:'FIRST_DAILY_RUN_ADMITTED',allow_execution:true,
+    ignored_non_daily_runs:ignored.length};
 }
 
 export function evaluateProviderDailyRun({
@@ -58,8 +118,27 @@ export function evaluateProviderDailyRun({
   // Day-scoped history: an incomplete first page is NOT reliable absence.
   const snapshot=request('repos/'+repo+'/actions/workflows/'+WORKFLOW+
     '/runs?branch=main&created='+now.slice(0,10)+'&per_page=100');
+  const priorJobReports={};
+  if(Array.isArray(snapshot?.workflow_runs) && snapshot.workflow_runs.length<=100 &&
+     Number.isSafeInteger(snapshot.total_count)&&
+     snapshot.total_count===snapshot.workflow_runs.length){
+    const current=snapshot.workflow_runs.find(row=>row?.id===id);
+    if(current&&typeof current.created_at==='string'){
+      const olderManual=snapshot.workflow_runs.filter(row=>
+        row?.head_branch==='main'&&row.event==='workflow_dispatch'&&
+        row.created_at?.slice(0,10)===now.slice(0,10)&&row.id!==id&&
+        (row.created_at<current.created_at||
+         (row.created_at===current.created_at&&row.id<current.id)));
+      for(const row of olderManual){
+        // The live GitHub Actions /jobs response, not metadata or run title,
+        // independently establishes scoped recovery versus genuine daily.
+        priorJobReports[row.id]=request('repos/'+repo+'/actions/runs/'+row.id+
+          '/jobs?per_page=100');
+      }
+    }
+  }
   return assessDailyRunAdmission({now,runId:id,event:env.GITHUB_EVENT_NAME,
-    ref:env.GITHUB_REF,workflow,snapshot});
+    ref:env.GITHUB_REF,workflow,snapshot,priorJobReports});
 }
 
 function gh(endpoint){
