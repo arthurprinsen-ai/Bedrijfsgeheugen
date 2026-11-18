@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|provider-status|stale-432-alert-ignores-later-news-evidence|20261118-v1",
+  "obligation_id": "powerhouse|provider-status|stale-432-alert-ignores-later-news-evidence|20261118-v1",
+  "original_owner": "#171 original result guardian / original #20 news source owner / original personal content orchestrator",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original #171 classified any Tavily HTTP432 within a 36-hour lookback as an unqualified current provider plan failure and claimed no new verified news, while five fresh news rows had arrived later. Original OpenAI personal 429 from earlier in day was likewise last-observed, not a new verified present-tense failure. Private owner screenshots show paid OpenAI API headroom and Tavily PAYG, but don't prove the same Vault API key affiliation.",
+  "evidence": {
+    "tavily_original_last_error": "2026-11-18 17:08:26 UTC native #20 request 35277 HTTP500 TAVILY_432",
+    "latest_news": "2026-11-18 17:23 UTC 5 rows after last #20 432, 1 passing base filters (not lawful send source proof)",
+    "openai_personal": "2026-11-18 14:59 UTC original personal gpt-5-mini insufficient_quota; same writer still no external ID",
+    "api_key_tenancy": "Original Vault keys present, key-to-paid-account scope UNKNOWN",
+    "owner_delivery": "Original #171 owner alerts stored with notification_sent=false",
+    "native_post_proof": "Unknown until protected original migration and natural #171 tick"
+  },
+  "prevention_rule": "The original guardian must distinguish last observed provider failure, subsequent source ingestion, and a successful native same-key provider recovery receipt. Never claim current billing deficit from old error when paid account evidence exists; don't count independent search rows as Tavily recovery or legal email send.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-scope-source-freshness-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-scope-source-freshness-20261118.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_PENDING_PROTECTED_RELEASE_AND_NATIVE_TICK",
+  "tests": [
+    "tests/brain-original-provider-scope-source-freshness-20261118.test.mjs"
+  ]
+}
