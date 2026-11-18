@@ -1,0 +1,46 @@
+{
+  "fingerprint": "netlify|production-i18n-translate|governed-provider-wrapper-masks-http|20261118-v1",
+  "parent_fingerprint": "netlify|production-i18n-translate|http-502|20261022-v1",
+  "date": "2026-11-18",
+  "parent_issue": 4215,
+  "related_issue": 4198,
+  "owner": "original Netlify i18n function / governed AI runtime",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "terminal_success": false,
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 12,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Production AI safely prefixes raw provider errors with 'AI provider failed safely: ', but existing translation classifier only recognizes OPENAI_PROVIDER_ERROR_<HTTP> at the beginning, so genuine known provider statuses are masked as generic errors.",
+  "prevention": "Recognize one exact static governed wrapper only in memory and classify safe known fixed provider codes without serializing messages, credentials, prompts or tenants. Keep original sovereignty/security gates and fail-closed response unchanged.",
+  "evidence": {
+    "tests": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "netlify_main_sha": "43c78e804f35c624a918029a90b354b851c92843",
+    "netlify_deploy_id": "6afd4b4ef39e5fbbc0ab1a0d",
+    "production_http_request_id": 34858,
+    "netlify_edge_request_id": "01M7PQ6WB0N4RH2JKAF59X6A46",
+    "observed_http_status": 502,
+    "observed_failure_class": "TRANSLATION_RUNTIME_OR_SHAPE",
+    "observed_upstream_status": null,
+    "provider_http_status": "UNKNOWN",
+    "translation_success_proven": false
+  },
+  "guardrails": [
+    "No disclosure of raw provider message, API credentials, user text or tenant IDs",
+    "No governance, auth, consent, data sovereignty or fail-closed bypass",
+    "No parallel translator, scheduler or fallback provider",
+    "No false-green until actual API response and independent destination readback"
+  ],
+  "independent_effect_verified": false
+}
