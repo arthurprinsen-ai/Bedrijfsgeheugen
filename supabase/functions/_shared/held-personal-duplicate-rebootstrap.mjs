@@ -43,3 +43,57 @@ export function shouldRebootstrapHeldPersonalDuplicate(decision,obligation,recom
   const n=Number(obligation?.recovery_attempts ?? 0);
   return !reserve && Number.isFinite(n) && n>=0 && n<3;
 }
+
+
+// A new, source-exact, verified personal user-fact can arrive AFTER the
+// canonical personal decision was held for missing truth. The original
+// supervisor may wake the original orchestrator ONCE, never a publisher.
+// The original orchestrator independently revalidates the same real source,
+// final copy, identity and one-time provider authority.
+import {personalFirstPersonSourceViolations} from './personal-first-person-story-gate.mjs';
+
+export function planVerifiedLatePersonalSourceRebootstrap({
+  decision=null,obligation=null,recommendations=[],runDate='',
+  capabilityConsumed=false
+}={}){
+  const deny=reason=>({eligible:false,reason,source_recommendation_id:null});
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(clean(runDate)))return deny('DATE_INVALID');
+  if(clean(decision?.channel)!=='linkedin_personal'||clean(decision?.decision)!=='hold'||
+     clean(decision?.state)!=='blocked')return deny('NOT_ORIGINAL_HELD_PERSONAL');
+  const de=decision?.delivery_evidence||{},oe=obligation?.evidence||{};
+  if(clean(de.capability_reason)!=='PERSONAL_TRUTH_SOURCE_UNVERIFIED')
+    return deny('NOT_PERSONAL_MISSING_SOURCE');
+  if(clean(obligation?.channel)!=='linkedin_personal'||
+     !['PLANNED','GENERATED','BLOCKED','FAILED'].includes(clean(obligation?.status)))
+    return deny('ORIGINAL_OBLIGATION_INELIGIBLE');
+  if(capabilityConsumed || clean(decision.delivery_ref)||clean(obligation?.external_id)||
+     clean(obligation?.published_at)||clean(obligation?.live_proven_at))
+    return deny('PROVIDER_AUTHORITY_OR_SIDE_EFFECT_PRESENT');
+  for(const e of [de,oe]){
+    if(e?.possible_provider_side_effect===true ||e?.provider_create_success===true||
+       e?.provider_publication_ack_verified===true||e?.provider_truth_verified===true||
+       e?.republish_forbidden===true) return deny('POSSIBLE_PROVIDER_SIDE_EFFECT');
+  }
+  const previous=Date.parse(clean(decision?.updated_at));
+  if(!Number.isFinite(previous))return deny('DECISION_TIMESTAMP_UNPROVEN');
+  const rejected = new Set([de.personal_source_recommendation_id,oe.personal_source_recommendation_id,
+    ...(Array.isArray(de.rejected_recommendation_ids)?de.rejected_recommendation_ids:[]),
+    ...(Array.isArray(oe.rejected_recommendation_ids)?oe.rejected_recommendation_ids:[])
+  ].map(clean).filter(Boolean));
+  for(const row of Array.isArray(recommendations)?recommendations:[]){
+    const e=row?.evidence||{},id=clean(row?.recommendation_id);
+    if(!id || rejected.has(id)||clean(row?.target_channel)!=='linkedin_personal'||
+       clean(row?.run_date)!==runDate||!['suggested','accepted'].includes(clean(row?.status))||
+       clean(e.source_kind)!=='verified_personal_source' ||
+       clean(e.identity_contract)!=='arthur-personal-linkedin-identity-v4'||
+       clean(e.identity_gate_version)!=='channel-identity-hard-gate-v3')continue;
+    const arrived=Date.parse(clean(row?.updated_at));
+    if(!Number.isFinite(arrived)||arrived<=previous)continue;
+    // This is the shared original first-person source verifier, not a
+    // synthetic status flag or copied news/article as a personal event.
+    if(personalFirstPersonSourceViolations(e,runDate).length)continue;
+    return {eligible:true,reason:'VERIFIED_USER_FACT_ARRIVED_AFTER_HELD_DECISION',
+      source_recommendation_id:id};
+  }
+  return deny('NO_NEW_ELIGIBLE_UNCONSUMED_USER_FACT');
+}
