@@ -1,0 +1,11 @@
+# 18 Nov 2026 — fix original blog focus keyword action-verb misclassification
+
+**Original incident:** <https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44300357585> failed canonical same-day blog PR <https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6028> SEO preflight. Source title was about preparing an MKB accounting system to connect to mobile payment apps, but the original publisher selected action verb `bereid` as focus and generated `bereid: wat verandert er voor jou?` (lowercase and generic). That failure is independently observed, not speculative.
+
+**Root repair:** In the **existing** `tools/site-shell/publish_powerhouse_blog_artifact.py`, exclude leading editorial action verbs from source-derived search topics, preserve hyphenated subject noun phrases, and normalize only source-eligible `Hoe bereid je je <subject> voor op integratie/koppeling met <target>?` titles to `<subject> koppelen aan <target>` when <=60 chars. Exact approved case yields focus `MKB-boekhouding`, title `MKB-boekhouding koppelen aan mobiele betaalapps`. No AI invention or generalized source rewrite. Existing 22-Oct legacy title and pronoun/SEO regressions must remain unchanged.
+
+**Related original candidate:** The same original `automation/powerhouse-blog-2026-11-18` branch / #6028 owns the pending content; its HTML/index/RSS and separate same-day EN cache have been corrected in place with unchanged canonical URL and immutable content ID, pending its own protected Required/CodeQL/Netlify/public truth. No second blog writer or duplicate post. Do not claim the candidate has already merged or reached production.
+
+**Release contract:** semantic learning replay, append-only ledger, protected Required/CodeQL, merge to main, explicit original writer/agent skill projection, exact Netlify deploy and independent live public HTML for BOTH languages, source evidence, ONE BRAIN/Heartbeat. Email and personal social proof are distinct and remain open until real provider IDs.
+
+**Limits:** This is a bounded source-specific fix; the upstream translation-provider HTTP429 account billing from the earlier cache incident remains a separate external constraint. Never bypass provider, branch or publication quality controls.
