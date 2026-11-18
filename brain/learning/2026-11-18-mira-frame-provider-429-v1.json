@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|instagram-mira|frame-verifier-429-not-face-result|20261118-v1",
+  "parent_issue": 5232,
+  "date": "2026-11-18",
+  "owner": "original powerhouse-instagram-media-router",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "terminal_success": false,
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-frame-429-not-face-mismatch.test.mjs"
+    ]
+  },
+  "root_cause": "The original router combined unsuccessful independent verifier HTTP/protocol outcomes with measured facial mismatch. Original provider returned 429 and no identity comparison.",
+  "prevention": "Mira video identity rejection must require actual independently measured two-image numeric face verdict; HTTP 429/5xx or null verdict is not a face mismatch. Preserve source-bound history and existing retry owner.",
+  "evidence": {
+    "tests": [
+      "tests/brain-mira-frame-429-not-face-mismatch.test.mjs"
+    ],
+    "production_readback": {
+      "router_http": 422,
+      "router_request_id": 34812,
+      "upstream_error": "VISION_PROVIDER_REQUEST_FAILED:429",
+      "measured_face_score": null,
+      "original_openart_history_id": "r6sZX8kdGyvpD6zEbWg7",
+      "original_media_job_id": "4a68dc41-6e60-4b64-ba7b-400086cb7296",
+      "instagram_provider_id": null,
+      "conversion_effect_verified": false
+    }
+  },
+  "guardrails": [
+    "Preserve original exclusive media job and OpenArt history",
+    "No alternative sender, duplicate paid OpenArt generation or threshold lowering",
+    "No privacy-sensitive verifier logs or invented face scores",
+    "Never mark a PR or scheduler as final provider effect"
+  ],
+  "independent_effect_verified": false
+}

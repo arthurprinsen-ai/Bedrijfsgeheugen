@@ -10,6 +10,7 @@ import {MIRA_APPROVED_DERIVED_INPUT,validatePinnedMiraDerivedInput} from '../_sh
 import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,checkHistoricalMiraHistoryRejection,reconcileHistoricalRejectedGeneratingJob} from './preflight-write.mjs';
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 import {assessMiraOriginalGenerationReceipt,MIRA_ORIGINAL_GENERATION_RECEIPT_CONTRACT} from './pin-generation-history.mjs';
+import {assessMiraFrameVerifierResult} from './frame-verifier-result.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -290,12 +291,30 @@ Deno.serve(async req=>{
      if(frameUrl)payload.mediaUrl=frameUrl;
      else {payload.imageBase64=frameBase64;payload.mediaMime=clean(f.mediaType||'image/jpeg');}
      const fv=await invoke(base,token,'powerhouse-instagram-media-verifier',payload);
-     if(!fv.body?.pass||!miraFaceProofValid(fv.body?.visual||{},'image')){
-     const diagnostic=await recordMediaProofRejection(db,{job,ob,code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,historyId:manifest.openart_history_id,confidence:fv.body?.visual?.face_identity_confidence,
-       allowGeneratingExactHistory:originalProducerRejectedHandoff,assetUrl:u});
-     if(diagnostic.kind==='failed'||diagnostic.kind==='partial')console.error('MIRA_REJECTION_DIAGNOSTIC_WRITE_FAILED',diagnostic.code);
-     return json({ok:false,error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,detail:fv.body},422);
-   }
+     const verdict=assessMiraFrameVerifierResult(fv);
+     // An actual HTTP 429/5xx or empty verifier result means NO face comparison
+     // took place. Keep this exact paid OpenArt history, never mark its image
+     // rejected, never publish and never buy a replacement on this basis.
+     if(verdict.kind==='PROVIDER_UNAVAILABLE')
+       return json({ok:false,error:'MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE',
+         position:f.position,verifier_http:verdict.http_status,
+         next_action:'Retain original OpenArt history and retry genuine frame verification via same original owner after provider recovery.'},503);
+     if(verdict.kind==='UNVERIFIED')
+       return json({ok:false,error:'MIRA_FRAME_IDENTITY_VERDICT_UNAVAILABLE',
+         position:f.position,next_action:'Keep exact media and request independently measured frame identity, not an inferred mismatch.'},503);
+     if(verdict.kind==='OTHER_VISUAL_REJECTED')
+       return json({ok:false,error:'MIRA_FRAME_VISUAL_QUALITY_GATE_REJECTED',
+         position:f.position,next_action:'Inspect an actual measured visual-quality verdict; do not fabricate a face mismatch.'},422);
+     if(verdict.kind==='MEASURED_FACE_REJECTED'){
+       const diagnostic=await recordMediaProofRejection(db,{job,ob,
+         code:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',position:f.position,
+         historyId:manifest.openart_history_id,confidence:verdict.confidence,
+         allowGeneratingExactHistory:originalProducerRejectedHandoff,assetUrl:u});
+       if(diagnostic.kind==='failed'||diagnostic.kind==='partial')
+         console.error('MIRA_REJECTION_DIAGNOSTIC_WRITE_FAILED',diagnostic.code);
+       return json({ok:false,error:'VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH',
+         position:f.position,measured_confidence:verdict.confidence},422);
+     }
      fps.push({position:f.position,seconds:Number(f.seconds||0),...fv.body.visual,sha256:fv.body.sha256});
    }
    const temporalCheck=await invoke(base,token,'powerhouse-instagram-temporal-verifier',{publicationDate:runDate,videoSha256:final.sha256,frames});
