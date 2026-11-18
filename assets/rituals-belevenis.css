@@ -115,3 +115,7 @@ html body #bgCookie .bgLang{display:none!important}
 html body #bgCookie .bgKort{display:inline!important}
 html body #bgCookie .bgBtns{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:8px!important;margin-top:10px!important}
 html body #bgCookie .bgBtns button{flex:1 1 0!important;padding:8px 12px!important;white-space:nowrap!important}
+
+/* Hero: eerste scherm blijft rustig en de hoofdactie blijft zichtbaar (18 nov 2026) */
+@media(min-width:900px){html body section.hero-video.hero-inspiration .hero-video-content{padding-top:0!important}html body section.hero-video.hero-inspiration .hero-copy{margin-top:-56px}}
+@media(max-width:760px){html body section.hero-video.hero-inspiration video.hero-bg-video{height:210px!important;max-height:210px!important;object-fit:cover!important}html body section.hero-video.hero-inspiration .hero-video-content{margin-top:-56px!important}}
