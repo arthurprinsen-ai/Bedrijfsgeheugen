@@ -291,6 +291,16 @@
     var hv0 = doc.querySelector('section.hero-video .hero-bg-video');
     if (hv0) { hv0.removeAttribute('data-rb-vervangen'); var sp0 = hv0.play && hv0.play(); if (sp0 && sp0.catch) sp0.catch(function () {}); }
 
+    // Mobiel: de hero kort houden. De geruststelling blijft, de lange uitleg staat verderop op de pagina.
+    if (window.matchMedia && window.matchMedia('(max-width:860px)').matches) {
+      var gerust = doc.querySelector('section.hero-video .hero-video-actions p > strong');
+      if (gerust && gerust.parentNode && !gerust.parentNode.hasAttribute('data-rb-kort')) {
+        var ouder = gerust.parentNode;
+        ouder.setAttribute('data-rb-kort', '1');
+        while (gerust.nextSibling) ouder.removeChild(gerust.nextSibling);
+      }
+    }
+
     // Adviseur-blok direct na de hero: persoonlijk, rustig, zonder claims.
     var heroSec = doc.querySelector('section.hero-video');
     if (heroSec && !doc.querySelector('.rb-adviseur')) {
