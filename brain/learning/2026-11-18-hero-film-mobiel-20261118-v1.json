@@ -1,0 +1,39 @@
+{
+  "fingerprint": "site|rituals|hero-film-mobiel|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|hero-film-mobiel|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 15,
+    "security_sensitive": false
+  },
+  "root_cause": "Op mobiel stond het hero-filmpje onder de uitleg, buiten het eerste scherm.",
+  "correction": "Film in de hero-kolom onder de hoofdknop; kaart kleiner op mobiel.",
+  "prevention": [
+    "Hero-visual hoort in het eerste scherm op 390x844; controleer met schermafbeelding."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-belevenis.css",
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Lokaal gemeten en bekeken; live-readback open."
+  }
+}

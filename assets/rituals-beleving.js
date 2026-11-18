@@ -302,7 +302,9 @@
       rust.setAttribute('playsinline', ''); rust.setAttribute('aria-hidden', 'true'); rust.setAttribute('tabindex', '-1');
       rust.preload = 'metadata'; rust.poster = '/assets/hero-rust.jpg'; rust.src = '/assets/hero-rust.mp4';
       film.appendChild(rust); film.appendChild(kaart);
-      hv.parentNode.appendChild(film);
+      var kopCopy = doc.querySelector('section.hero-video .hero-copy');
+      var smal = window.matchMedia && window.matchMedia('(max-width:1099px)').matches;
+      (smal && kopCopy ? kopCopy : hv.parentNode).appendChild(film);
       var stil = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       if (!stil) { var spel = rust.play(); if (spel && spel.catch) spel.catch(function () {}); }
       hv.setAttribute('data-rb-vervangen', '1');
