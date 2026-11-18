@@ -81,6 +81,15 @@ def bar(l,v,mx=None,h=False,u='%',dec=1):
 def chart(t,rows,mx=None,note='',u='%',dec=1):
     return f"<div class='ch'><div class='ct'>{t}</div>{''.join(bar(*r[:2],mx=mx,h=(len(r)>2 and r[2]),u=u,dec=dec) for r in rows)}{('<div class=mini style=color:var(--mut);margin-top:1mm>'+note+'</div>') if note else ''}</div>"
 BN=[0]
+BK={1:('Type 2','Beslis met wat je weet: noteer je teamgrootte en kies je vergelijkingsgroep.'),
+2:('Type 2','Terug te draaien. Regel: begin met een taak van meer dan twee uur per week.'),
+3:('Type 2','Evalueer na 30 dagen welke belemmering je als eerste hebt weggenomen.'),
+4:('Type 2','Eén teamregel in één zin; evaluatiedatum: je volgende ritueel.'),
+5:('Type 1','Moeilijk terug te draaien. Vraag een tweede mening (jurist of branchevereniging) voor je beslist.'),
+6:('Type 2','Niet wachten op meer informatie: zet tweestapsverificatie nu aan.'),
+7:('Type 2','Aanname om op te schrijven: klanten accepteren een AI-concept dat jij controleert.'),
+8:('Type 1','Pre-mortem: wat als de prijs verdubbelt? Kies geen aanbieder voor drie jaar.'),
+9:('Type 2','Eén getal, één evaluatiedatum over negentig dagen.')}
 NOTES={1:'Onze eerste reactie: dit gat is <b>kleiner dan het voelt</b>. Het is geen techniek, het is een begin.',2:'Saai is goed. Wie begint bij het werk dat niemand mist, <b>verliest niets</b>.',3:'Let op: kennis staat bovenaan, geld ver eronder. Dat is <b>goed nieuws</b>.',4:'Je team is je ver vooruit. <b>Ga ernaast staan</b>, niet ervoor.',5:'Uitstel is geen vrijbrief. De regels over <b>mensen opleiden</b> gelden al.',6:'Dit is geen IT-probleem. Het is een <b>gewoonteprobleem</b>.',7:'Mensen willen een mens, maar niet <b>wachten</b>. Daar zit je kans.',8:'Prijs is niet de vraag. <b>Gebruik</b> is de vraag.',9:'Meet wat je <b>aan het eind van de week</b> hoopt te zien, niet wat leuk klinkt.'}
 def block(mv,title,big,cap,charts,means,risk,steps,tool,label,src,foot):
     BN[0]+=1
@@ -90,6 +99,7 @@ def block(mv,title,big,cap,charts,means,risk,steps,tool,label,src,foot):
     pg(f"""<div class='k'>Bouwblok {BN[0]:02d} &middot; Beweging {mv}</div><h2>{title}</h2>
 <div class='bigrow'><div class='big'>{big}</div><div class='cap'>{cap}</div></div>{charts}
 <div class='g2'><div><h3>Wat het betekent</h3><p class='mini'>{means}</p></div><div><h3>Risico</h3><p class='mini'>{risk}</p></div></div>
+<div class='mini' style='margin-top:2mm;border-top:.25mm solid var(--ln);padding-top:1.5mm'><span class='lab'>Besluitkaart &middot; {BK[BN[0]][0]}</span>{BK[BN[0]][1]}</div>
 {nt}<div class='mon'><h3>Doe dit maandag</h3>{st}<div class='mini' style='color:#cfc7b2;margin-top:2mm'><b style='color:var(--gd)'>Gereedschap:</b> {tool}</div></div>
 <div class='ft'><span class='lab'>{label}</span>{foot}<br>Bron: {src}</div>""",'alt' if BN[0]%2==0 else '')
 
@@ -113,7 +123,7 @@ pg(f"""<div class='k'>Welkom</div><h1>Een afspraak met <i>jezelf.</i></h1>
 <p style='font-size:11.5pt;line-height:1.5;max-width:150mm'>Bijna iedere ondernemer wil weten wat AI voor zijn bedrijf kan doen. Bijna niemand heeft er een rustig moment voor. Dit magazine is daarom geen rapport. Het is een ritueel: negentig minuten per kwartaal, met koffie, een pen en eerlijke cijfers.</p>
 <div class='q'>Het gat is geen techniek. Het gat is tijd, kennis en een eerste kleine stap.</div>
 <p style='max-width:150mm'>Wij hebben openbare data uit Europa, Nederland en de wereld naast elkaar gelegd: Eurostat, CBS, UWV, Stanford, McKinsey, Verizon en de AI Act. Elk cijfer heeft een bron, een bewijsniveau en een label. Daarna hebben we de verbanden zelf doorgerekend en teruggebracht tot negen bouwblokken die je zonder voorkennis kunt lezen en dezelfde week nog kunt gebruiken.</p>
-<div class='card' style='margin-top:5mm'><div class='tg'>Niet voor iedereen</div><p style='margin:0'>Dit magazine staat niet open op het internet. Het is er voor wie zich aanmeldt, elk kwartaal in een nieuwe editie, met een eigen analyse op Europese en Nederlandse data. Eén ondernemer, één exemplaar, negentig minuten.</p></div>
+<div class='card' style='margin-top:5mm'><div class='tg'>Niet voor iedereen</div><p style='margin:0'>Dit magazine is gratis, maar niet voor iedereen: het is geschreven voor ondernemers die er echt een ochtend voor nemen. Elke editie nieuw, met een eigen analyse op Europese en Nederlandse data. Eén ondernemer, één exemplaar, negentig minuten.</p></div>
 <h3 style='margin-top:6mm'>Zo lees je een bouwblok</h3>
 <div class='g3' style='margin-top:2mm'>
 <div class='ch' style='margin:0'><div class='ct'>1 &middot; Het cijfer</div><p class='mini'>Eén getal, met bron en jaar.</p></div>
@@ -135,7 +145,7 @@ pg(f"""<div class='k'>Het Kwartaalritueel</div><h1>Negentig minuten. <i>Vijf bew
 <div class='g2' style='gap:4mm;margin-top:2mm'><div><p class='mini'><b>Plek.</b> Kies een plek waar je zelden werkt: een café, de tuin, de bank.<br><b>Drinken.</b> Koffie, thee, wat jij lekker vindt.<br><b>Stilte.</b> Telefoon op vliegtuigstand, mail dicht.</p></div>
 <div><p class='mini'><b>Pen.</b> Schrijf met de hand; dat vertraagt en dwingt keuzes af.<br><b>Einde.</b> Sluit af met één zin: wat ik dit kwartaal anders ga doen.<br><b>Beloning.</b> Plan er iets prettigs achteraan.</p></div></div>
 <div class='g2' style='gap:4mm;margin-top:3mm'><div><p class='mini' style='margin:0'>Mijn ritueel-datum</p><span class='fb' data-f='r_datum' style='height:8mm'></span></div><div><p class='mini' style='margin:0'>Mijn plek</p><span class='fb' data-f='r_plek' style='height:8mm'></span></div></div></div>
-<div class='mv' style='border-bottom:.3mm solid var(--ink)'><div class='m'>&#8734;<small>vooraf</small></div><div class='mini'>Werkblad pagina 17, jouw plan pagina 18, bronnen pagina 19. Op de laatste pagina vind je een maand gratis hulp bij het ritueel.</div></div>""")
+<div class='mv' style='border-bottom:.3mm solid var(--ink)'><div class='m'>&#8734;<small>vooraf</small></div><div class='mini'>Werkblad pagina 17, jouw plan pagina 18, bronnen pagina 19, besluitkaart pagina 23 en 24, jouw moment pagina 25. Op de laatste pagina vind je een maand gratis hulp bij het ritueel.</div></div>""")
 # ---- 4 kloof in een blik
 pg(f"""<div class='k'>De kloof in één blik</div><h1 style='font-size:34pt'>Nederland loopt voor. <i>Het mkb niet.</i></h1>
 <p style='max-width:150mm'>Eén op de vijf Europese bedrijven met 10 of meer medewerkers gebruikt AI. Nederland staat zesde. Hoe kleiner het bedrijf, hoe groter de kloof.</p>
@@ -365,13 +375,18 @@ pg("""<div class='k'>De besluitkaart &middot; Kader</div><h1 style='font-size:30
 <div class='card'><div class='tg'>Stap 1 &middot; Hoe terugdraaibaar?</div><h4>Type 1 of Type 2.</h4><p><b>Type 2</b>: terug te draaien, goedkoop te herstellen. Beslis snel, met ongeveer 70% van de informatie, en leg een regel vast. <b>Type 1</b>: moeilijk of duur terug te draaien (ontslag, grote investering, prijsstrategie). Neem de tijd, vraag een tweede mening en schrijf je aannames op.</p><span class='lab'>Werkregel</span></div>
 <div class='card'><div class='tg'>Stap 2 &middot; Op basis waarvan?</div><h4>Intuïtie alleen waar leren kan.</h4><p>Kahneman en Klein (2009): vertrouw op onderbuikgevoel alleen in een regelmatige omgeving met snelle, duidelijke feedback. Bij zeldzame of trage beslissingen (aannemen, prijzen, investeren) heeft data of een checklist de voorkeur.</p><span class='lab'>Onderzoek</span></div></div>
 <div class='card' style='margin-top:3mm'><div class='tg'>Stap 3 &middot; Wie ben jij als beslisser?</div><h4>Vijf typen in het Nederlandse mkb.</h4>
-<table><tr><th>Type</th><th style='text-align:right'>Aandeel</th><th>Valkuil</th></tr>
-<tr><td><b>Informers' friends</b></td><td style='text-align:right'>~33%</td><td>Veel advies zoeken, trager beslissen</td></tr>
-<tr><td><b>Daredevils</b></td><td style='text-align:right'>~22%</td><td>Snel en op gevoel, weinig toetsing</td></tr>
-<tr><td><b>Lone rangers</b></td><td style='text-align:right'>~21%</td><td>Alles zelf, geen tegenspraak</td></tr>
-<tr><td><b>Doubtful minds</b></td><td style='text-align:right'>~20%</td><td>Uitstellen, twijfel</td></tr>
-<tr><td><b>Busy bees</b></td><td style='text-align:right'>~6%</td><td>Druk, weinig tijd voor afweging</td></tr></table>
-<p class='mini' style='margin-top:1.5mm'>Panteia (Gibcus, Vermeulen &amp; De Jong, 2009): 646 Nederlandse ondernemers, peiljaar 2004. De valkuilen in de laatste kolom zijn onze samenvatting van de typenamen, geen meetresultaat. Het is oud onderzoek; zie het als hypothese.</p></div>
+<table><tr><th>Type</th><th style='text-align:right'>Aandeel</th><th>Kenmerk</th></tr>
+<tr><td><b>Informers' friends</b></td><td style='text-align:right'>~33%</td><td>Beslist op advies van anderen, weinig alternatieven (26%)</td></tr>
+<tr><td><b>Daredevils</b></td><td style='text-align:right'>~22%</td><td>Veel informatie (77%) en overleg (97%), hoog risico, innovatief</td></tr>
+<tr><td><b>Lone rangers</b></td><td style='text-align:right'>~21%</td><td>Beslist alleen, weinig informatie (49%), langste ervaring</td></tr>
+<tr><td><b>Doubtful minds</b></td><td style='text-align:right'>~20%</td><td>Meeste informatie (86%) en alternatieven (89%), blijft twijfelen</td></tr>
+<tr><td><b>Busy bees</b></td><td style='text-align:right'>~6%</td><td>Meeste besluiten, altijd overleg, grote investeringen</td></tr></table>
+<p class='mini' style='margin-top:1.5mm'>Panteia (Gibcus, Vermeulen &amp; De Jong, 2009): 646 Nederlandse ondernemers, peiljaar 2004. Horeca is oververtegenwoordigd en het onderzoek is oud en niet representatief: zie het als gespreksopener (welk type ben jij?), niet als etiket.</p></div>
+<div class='card' style='margin-top:3mm'><div class='tg'>Hoe Nederlandse ondernemers beslissen &middot; Feit / indicatie</div>
+<table><tr><td>Data is zelden leidend: <b>12%</b> van de mkb'ers (Exact, artikel jan 2024; editie niet vermeld, nog te controleren)</td></tr>
+<tr><td>Bijna drie kwart van de ondernemers (5+ werkzame personen) ervaart meer onzekerheid (CBS, sept 2025)</td></tr>
+<tr><td>69% ligt wel eens wakker; 70% gebruikt AI, maar 47% weet niet goed hoe (Exact MKB Barometer 2026, 1.719 ondernemers; zelfrapportage)</td></tr></table>
+<p class='mini' style='margin-top:1.5mm'>Beslissen is voor de meeste ondernemers een eenzaam werk met onvolledige informatie. Daarom helpt een vaste kaart meer dan nog een cijfer.</p></div>
 <div class='l8' style='margin-top:3mm'>
 <div class='card'><div class='tg'>Wat we meten &middot; Feit</div><h4>Nederland gebruikt AI: 33,2%.</h4><p>Bedrijven met 10+ werknemers, 2025 (Eurostat): plaats 6 van 35 landen, EU27 20,0%. Bij 10&ndash;49 werknemers 28,8%, bij 250+ 67,6%. Klein beslist dus nog het vaakst zonder AI.</p></div>
 <div class='card'><div class='tg'>Wereldwijd &middot; Feit</div><h4>OECD: 61% gebruikt AI, 76% is beginner.</h4><p>D4SME 2026: 2.018 mkb-bedrijven in 12 landen. Beginnen is de norm, niet de uitzondering.</p></div></div>
@@ -397,7 +412,7 @@ pg("""<div class='k'>Jouw moment &middot; Afsluiting</div><h1 style='font-size:3
 <h3>Wat zou ik doen met één vrije dag per week extra?</h3><span class='fb' data-f='m_dag' style='height:15mm'></span>
 <h3>Wat laat ik los?</h3><span class='fb' data-f='m_los' style='height:15mm'></span>
 <div style='margin-top:5mm;font-size:9pt'><span class='cbx' data-f='m_gedaan' style='border-color:var(--ink)'></span> Ik heb mijn uur genomen. Tot het volgende kwartaal.</div>
-<div class='ft'>AI is een middel. Het doel is meer tijd voor wat jij belangrijk vindt. Dit zijn geen meetresultaten, maar jouw eigen antwoorden.</div>""")
+<div class='ft'>Je bent niet de enige die dit nodig heeft: 11,8% van de zelfstandigen had in 2025 burn-outklachten (TNO, NEA/ZEA). AI is een middel; het doel is meer tijd voor wat jij belangrijk vindt.</div>""")
 # ---- advertentie
 QP=qr(PORTAL,'#0a1630')
 CI=IMG(SC+'groot/img/consult.jpg')
