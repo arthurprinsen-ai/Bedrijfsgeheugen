@@ -36,5 +36,18 @@
     "machine_enforceable": true,
     "repeat_count": 13,
     "security_sensitive": false
+  },
+  "root_cause": "Diagnostic classifier accepted a leading bare HTTP code, while the production OpenAI adapter prefixes errors OPENAI_PROVIDER_ERROR_<HTTP>: so upstream 4xx/5xx and model-output issues collapsed to one generic type.",
+  "prevention": "Run historical privacy regression for provider 429/500/503, invalid adapter markers, model output budget/empty/refusal, translation JSON/shape; enforce this with existing protected learning gate without changing fail-closed handlers.",
+  "evidence": {
+    "tests": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "production_readback": {
+      "baseline": "13 HTTP 502 on /api/i18n-translate in 24-hour window",
+      "failure_class_before": "TRANSLATION_RUNTIME_OR_SHAPE",
+      "actual_upstream_cause": "UNKNOWN",
+      "exact_success_after_deploy": false
+    }
   }
 }
