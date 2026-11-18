@@ -1,0 +1,38 @@
+{
+  "fingerprint": "site|copy|home-hero-ondernemerstaal|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|copy|home-hero-ondernemerstaal|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "PUBLIC_COPY_ABSTRACT_FOR_TARGET_READER",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "De homepage-kop sprak in productentaal (besturing, ondernemingssturing) en zei niet in vijf seconden wat de ondernemer eraan overhoudt; de lead somde onderdelen op in plaats van het probleem en de uitkomst te noemen.",
+  "correction": "Kop en lead herschreven rond het concrete probleem (kennis in hoofd, mailbox en Excel) en de uitkomst (een week vrij, minder brandjes, tijd voor jezelf), met de gratis scan als eerste stap. NL en EN. Geen nieuwe garanties of cijfers.",
+  "prevention": [
+    "Toets publieke koppen op probleem en uitkomst in gewone taal, niet op productbegrippen.",
+    "Nieuwe hero-copy bevat geen garantie, schaarste of marktleider-claim (bestaande test blijft gelden)."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs"
+    ],
+    "source": [
+      "tools/site-shell/apply-daily-steering-positioning.mjs"
+    ],
+    "outcome": "Lokaal: 15 van 15 tests groen. Live-readback en meting van klik op de scan open."
+  }
+}
