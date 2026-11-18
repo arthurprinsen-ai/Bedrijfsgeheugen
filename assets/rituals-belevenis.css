@@ -148,5 +148,21 @@ html body .rb-besluit dl>div{display:grid;grid-template-columns:96px 1fr;gap:14p
 html body .rb-besluit dt{font-size:12.5px;color:var(--rit-zacht,#5B6168)}
 html body .rb-besluit dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--rit-inkt,#14171A)}
 html body .rb-besluit p{display:none;margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--rit-zacht,#5B6168);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding-top:14px}
-@media(min-width:1100px){html body .rb-besluit{position:absolute;top:calc(50% - 90px);right:max(5vw,calc((100vw - 1200px)/2));transform:translateY(-50%);width:min(34vw,430px)}}
-@media(max-width:1099px){html body .rb-besluit{position:relative;margin:24px auto 0;max-width:520px;width:calc(100% - 32px);padding:20px 20px 16px}html body .rb-besluit h2{font-size:1.3rem;margin:10px 0 12px}}@media(max-width:760px){html body .rb-besluit .rb-b-waarom,html body .rb-besluit .rb-b-datum,html body .rb-besluit p{display:none}html body .rb-besluit dl>div{padding:9px 0}}
+html body .rb-film{margin:0;position:relative;z-index:2}
+html body .rb-film video{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:62% 50%;border-radius:22px;background:#E9E5DC;box-shadow:0 40px 80px -48px rgba(20,23,26,.5)}
+html body .rb-film .rb-besluit{position:absolute;left:-36px;bottom:28px;width:min(78%,330px);padding:20px 22px 16px;background:rgba(251,250,247,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+html body .rb-film .rb-besluit h2{font-size:1.2rem;margin:10px 0 8px}
+html body .rb-film .rb-besluit .rb-b-waarom,html body .rb-film .rb-besluit .rb-b-datum{display:none}
+html body .rb-film .rb-besluit dl>div{grid-template-columns:70px 1fr;padding:8px 0}
+html body .rb-film .rb-besluit dd{font-size:13px}
+@media(min-width:1100px){html body .rb-film{position:absolute;top:calc(50% - 90px);right:max(5vw,calc((100vw - 1200px)/2));transform:translateY(-50%);width:min(30vw,400px)}}
+@media(max-width:1099px){html body .rb-film{max-width:520px;width:calc(100% - 32px);margin:24px auto 0}html body .rb-film video{aspect-ratio:4/3}html body .rb-film .rb-besluit{left:12px;bottom:12px;width:min(76%,300px);padding:14px 16px 10px}html body .rb-film .rb-besluit h2{font-size:1.05rem}}
+@media(prefers-reduced-motion:reduce){html body .rb-film video{animation:none}}
+html body .rb-film .rb-besluit{width:min(62%,250px);left:-44px;bottom:26px;padding:16px 18px 6px;min-height:0;height:auto}
+html body .rb-film .rb-besluit h2{font-size:1.05rem;margin:8px 0 6px}
+html body .rb-film .rb-besluit dl>div:nth-of-type(n+3){display:none}
+html body .rb-film .rb-besluit p{display:none}
+@media(max-width:1099px){html body .rb-film .rb-besluit{left:10px;bottom:10px;width:min(66%,250px);padding:12px 14px 4px}html body .rb-film .rb-besluit dl{display:none}}
+html body .rb-film .rb-besluit{position:absolute!important;margin:0!important;max-width:none}
+@media(max-width:1099px){html body .rb-film .rb-besluit h2{font-size:.95rem}}
+html body .rb-film .rb-besluit{top:auto!important;right:auto!important;transform:none!important}

@@ -295,7 +295,16 @@
         '<div class="rb-b-datum"><dt>' + tr('Vastgelegd') + '</dt><dd>' + tr('Vandaag, met bron') + '</dd></div>' +
         '</dl>' +
         '<p>' + tr('Elk besluit heeft een bron, een eigenaar en een datum.') + '</p>';
-      hv.parentNode.appendChild(kaart);
+      var film = doc.createElement('figure');
+      film.className = 'rb-film';
+      var rust = doc.createElement('video');
+      rust.setAttribute('muted', ''); rust.muted = true; rust.loop = true; rust.playsInline = true;
+      rust.setAttribute('playsinline', ''); rust.setAttribute('aria-hidden', 'true'); rust.setAttribute('tabindex', '-1');
+      rust.preload = 'metadata'; rust.poster = '/assets/hero-rust.jpg'; rust.src = '/assets/hero-rust.mp4';
+      film.appendChild(rust); film.appendChild(kaart);
+      hv.parentNode.appendChild(film);
+      var stil = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!stil) { var spel = rust.play(); if (spel && spel.catch) spel.catch(function () {}); }
       hv.setAttribute('data-rb-vervangen', '1');
       try { hv.pause(); } catch (e) {}
     }
