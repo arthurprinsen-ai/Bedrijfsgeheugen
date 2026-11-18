@@ -25,8 +25,11 @@ const nonempty=value=>typeof value==='string'?value.trim():String(value??'').tri
 // relatiedossier tellen (action.evidence.relationship_evidence); een gegeven zonder waarde telt niet mee.
 // Minimaal twee verschillende feiten, zodat een kale naam of alleen een bedrijfsnaam nooit volstaat.
 export function relationshipFact(action){
- const r=action?.evidence?.relationship_evidence;
- if(!r||typeof r!=='object')return Object.freeze({ok:false,facts:Object.freeze([]),text:''});
+ // Besluit 27 okt 2026: functie + bedrijf uit het eigen contactrecord zijn zelf al twee verifieerbare feiten.
+ // Zonder aparte relationship_evidence valt de gate daarom terug op de eigen velden van de actie; een kale naam
+ // of alleen een bedrijfsnaam blijft onvoldoende (minimaal twee verschillende feiten).
+ const ev=action?.evidence?.relationship_evidence;
+ const r=ev&&typeof ev==='object'&&!Array.isArray(ev)?ev:{};
  const facts=[];
  const role=nonempty(r.role||action?.role), company=nonempty(r.company_name||action?.company_name);
  const prior=nonempty(r.prior_conversation||r.last_message||r.last_contact_summary);
