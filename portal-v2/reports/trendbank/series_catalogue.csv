@@ -2184,12 +2184,18 @@ owid_share-companies-using-artificial-intelligence,share companies using artific
 owid_share-of-individuals-using-the-internet,share of individuals using the internet,OWID-share-of-individuals-using-the-internet,6659,1990,2025,231,,Our World in Data (afgeleid van brondata): share-of-individuals-using-the-internet / it_net_user_zs
 owid_statutory-corporate-income-tax-rate,statutory corporate income tax rate,OWID-statutory-corporate-income-tax-rate,1786,2000,2018,94,,Our World in Data (afgeleid van brondata): statutory-corporate-income-tax-rate / combined_corporate_income_tax_rate__ctsd__oecd__2019
 owid_trade-as-share-of-gdp,trade as share of gdp,OWID-trade-as-share-of-gdp,9739,1960,2025,207,,Our World in Data (afgeleid van brondata): trade-as-share-of-gdp / ne_trd_gnfs_zs
+verified_facts_M23,AI-gebruik bouw (10+),M23,1,2026-Q1,2026-Q1,1,%,"Primaire bron, zie sources"
+verified_facts_M24,Bedrijven 10+ die AI gebruiken,M24,3,2023,2025,1,%,"Primaire bron, zie sources"
+verified_facts_M25,Bedrijven die gen-AI voor minstens een taak gebruiken (andere basis),M25,1,2026,2026,1,%,"Primaire bron, zie sources"
+verified_facts_M26,Claude-aandeel,M26,1,2026,2026,1,%,"Primaire bron, zie sources"
+verified_facts_M27,Aandeel defensie-investeringen direct aan import besteed 2015-2024,M27,2,2015-2024,2035,2,%,"Primaire bron, zie sources"
 wb_BX.GSR.CCIS.ZS,ICT-dienstenexport,W-BX.GSR.CCIS.ZS,3445,2010,2025,233,% dienstenexport,"World Bank BX.GSR.CCIS.ZS: ICT service exports (% of service exports, BoP)"
 wb_BX.KLT.DINV.WD.GD.ZS,FDI-instroom,W-BX.KLT.DINV.WD.GD.ZS,3820,2010,2025,247,% BBP,"World Bank BX.KLT.DINV.WD.GD.ZS: Foreign direct investment, net inflows (% of GDP)"
 wb_EG.ELC.ACCS.ZS,Toegang tot elektriciteit,W-EG.ELC.ACCS.ZS,3885,2010,2024,259,% bevolking,World Bank EG.ELC.ACCS.ZS: Access to electricity (% of population)
 wb_EG.FEC.RNEW.ZS,Hernieuwbaar aandeel energieverbruik,W-EG.FEC.RNEW.ZS,3095,2010,2022,256,%,World Bank EG.FEC.RNEW.ZS: Renewable energy consumption (% of total final energy consumption)
 wb_EG.USE.PCAP.KG.OE,Energiegebruik per inwoner,W-EG.USE.PCAP.KG.OE,2838,2010,2024,190,kg olie-eq,World Bank EG.USE.PCAP.KG.OE: Energy use (kg of oil equivalent per capita)
 wb_EN.GHG.CO2.PC.CE.AR5,CO2 per inwoner,W-EN.GHG.CO2.PC.CE.AR5,3705,2010,2024,247,t,World Bank EN.GHG.CO2.PC.CE.AR5: Carbon dioxide (CO2) emissions excluding LULUCF per capita (t CO2e/capita)
+wb_FP.CPI.TOTL.ZG,Inflatie (CPI),W-FP.CPI.TOTL.ZG,3644,2010,2025,237,%,World Bank FP.CPI.TOTL.ZG
 wb_FS.AST.PRVT.GD.ZS,Binnenlandse krediet aan private sector,W-FS.AST.PRVT.GD.ZS,3284,2010,2025,228,% BBP,World Bank FS.AST.PRVT.GD.ZS: Domestic credit to private sector (% of GDP)
 wb_FX.OWN.TOTL.ZS,Bankrekening (15+),W-FX.OWN.TOTL.ZS,784,2011,2024,179,%,World Bank FX.OWN.TOTL.ZS: Account ownership at a financial institution or with a mobile-money-service provider (% of population ages 15+)
 wb_GB.XPD.RSDV.GD.ZS,R&D-uitgaven,W-GB.XPD.RSDV.GD.ZS,1660,2010,2024,177,% BBP,World Bank GB.XPD.RSDV.GD.ZS: Research and development expenditure (% of GDP)
@@ -2197,8 +2203,10 @@ wb_GC.DOD.TOTL.GD.ZS,Centrale overheidsschuld,W-GC.DOD.TOTL.GD.ZS,812,2010,2024,
 wb_GC.TAX.TOTL.GD.ZS,Belastingopbrengst,W-GC.TAX.TOTL.GD.ZS,2406,2010,2024,184,% BBP,World Bank GC.TAX.TOTL.GD.ZS: Tax revenue (% of GDP)
 wb_IC.BUS.NDNS.ZS,Nieuwe bedrijven per 1.000 mensen 15-64,W-IC.BUS.NDNS.ZS,2927,2010,2024,225,per 1.000,"World Bank IC.BUS.NDNS.ZS: New business density (new registrations per 1,000 people ages 15-64)"
 wb_IP.PAT.RESD,Octrooiaanvragen residenten,W-IP.PAT.RESD,1860,2010,2024,160,aantal,"World Bank IP.PAT.RESD: Patent applications, residents"
+wb_IT.CEL.SETS.P2,Mobiele abonnementen,W-IT.CEL.SETS.P2,3638,2010,2025,254,per 100,World Bank IT.CEL.SETS.P2
 wb_IT.NET.BBND.P2,Vast breedband,W-IT.NET.BBND.P2,3551,2010,2025,252,per 100,World Bank IT.NET.BBND.P2: Fixed broadband subscriptions (per 100 people)
 wb_IT.NET.SECR.P6,Beveiligde internetservers,W-IT.NET.SECR.P6,3853,2010,2024,259,per miljoen,World Bank IT.NET.SECR.P6: Secure Internet servers (per 1 million people)
+wb_IT.NET.USER.ZS,Internetgebruikers,W-IT.NET.USER.ZS,3352,2010,2025,237,% bevolking,World Bank IT.NET.USER.ZS
 wb_LP.LPI.OVRL.XQ,Logistics Performance Index,W-LP.LPI.OVRL.XQ,1186,2010,2022,212,1-5,World Bank LP.LPI.OVRL.XQ: Logistics performance index: Overall (1=low to 5=high)
 wb_MS.MIL.XPND.GD.ZS,Militaire uitgaven,W-MS.MIL.XPND.GD.ZS,3133,2010,2025,206,% BBP,World Bank MS.MIL.XPND.GD.ZS: Military expenditure (% of GDP)
 wb_NE.TRD.GNFS.ZS,Handel,W-NE.TRD.GNFS.ZS,3465,2010,2025,229,% BBP,World Bank NE.TRD.GNFS.ZS: Trade (% of GDP)
@@ -2207,10 +2215,13 @@ wb_NV.SRV.TOTL.ZS,Diensten,W-NV.SRV.TOTL.ZS,3842,2010,2025,249,% BBP,"World Bank
 wb_NY.GDP.MKTP.CD,"BBP, lopende USD",W-NY.GDP.MKTP.CD,4043,2010,2025,258,USD,World Bank NY.GDP.MKTP.CD: GDP (current US$)
 wb_NY.GDP.MKTP.KD.ZG,BBP-groei,W-NY.GDP.MKTP.KD.ZG,4023,2010,2025,257,%,World Bank NY.GDP.MKTP.KD.ZG: GDP growth (annual %)
 wb_NY.GDP.PCAP.PP.CD,"BBP per inwoner, PPP",W-NY.GDP.PCAP.PP.CD,3872,2010,2025,247,USD,"World Bank NY.GDP.PCAP.PP.CD: GDP per capita, PPP (current international $)"
+wb_NY.GNS.ICTR.ZS,Bruto spaarquote,W-NY.GNS.ICTR.ZS,3074,2010,2025,212,% BBP,World Bank NY.GNS.ICTR.ZS
 wb_SE.TER.ENRR,Tertiair onderwijs bruto inschrijving,W-SE.TER.ENRR,2574,2010,2025,226,%,"World Bank SE.TER.ENRR: School enrollment, tertiary (% gross)"
 wb_SH.XPD.CHEX.GD.ZS,Gezondheidsuitgaven,W-SH.XPD.CHEX.GD.ZS,3318,2010,2024,237,% BBP,World Bank SH.XPD.CHEX.GD.ZS: Current health expenditure (% of GDP)
 wb_SL.AGR.EMPL.ZS,Werkgelegenheid landbouw,W-SL.AGR.EMPL.ZS,3682,2010,2025,231,%,World Bank SL.AGR.EMPL.ZS: Employment in agriculture (% of total employment) (modeled ILO estimate)
 wb_SL.SRV.EMPL.ZS,Werkgelegenheid diensten,W-SL.SRV.EMPL.ZS,3682,2010,2025,231,%,World Bank SL.SRV.EMPL.ZS: Employment in services (% of total employment) (modeled ILO estimate)
+wb_SL.TLF.CACT.ZS,Arbeidsparticipatie,W-SL.TLF.CACT.ZS,3682,2010,2025,231,%,World Bank SL.TLF.CACT.ZS
+wb_SL.UEM.TOTL.ZS,Werkloosheid (ILO),W-SL.UEM.TOTL.ZS,3682,2010,2025,231,%,World Bank SL.UEM.TOTL.ZS
 wb_SP.POP.1564.TO.ZS,Bevolking 15-64,W-SP.POP.1564.TO.ZS,4176,2010,2025,261,%,World Bank SP.POP.1564.TO.ZS: Population ages 15-64 (% of total population)
 wb_SP.POP.SCIE.RD.P6,Onderzoekers,W-SP.POP.SCIE.RD.P6,1376,2010,2024,162,per miljoen,World Bank SP.POP.SCIE.RD.P6: Researchers in R&D (per million people)
 wb_SP.POP.TOTL,Bevolking,W-SP.POP.TOTL,4176,2010,2025,261,aantal,"World Bank SP.POP.TOTL: Population, total"

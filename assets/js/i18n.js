@@ -12,6 +12,8 @@
   let localeEpoch = 0;
   let cache = loadCache();
   let controlsBound = false;
+  const PROVIDER_RETRY_COOLDOWN_MS = 5 * 60 * 1000;
+  let providerRetryAfter = 0;
 
   const cssEscape = value => String(value).replace(/"/g, '&quot;');
   const normalizeLocale = value => String(value || '').toLowerCase().split('-')[0];
@@ -203,6 +205,8 @@
       if (typeof hit === 'string' && hit) out.set(source,hit);
       else missing.push(source);
     }
+    // Keep the original source visible during a provider outage; no hot-loop.
+    if (missing.length && Date.now() < providerRetryAfter) throw new Error('translation_temporarily_unavailable');
     const batches = [];
     let batch = [], chars = 0;
     for (const source of missing) {
@@ -216,24 +220,21 @@
     async function requestPart(part) {
       if (requestEpoch !== localeEpoch) return false;
       let response;
-      for (let attempt=0; attempt<2; attempt++) {
-        try {
-          response = await fetch('/api/i18n-translate', {
-            method:'POST',
-            headers:{'content-type':'application/json'},
-            body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
-          });
-        } catch { response = null; }
-        if (response?.ok) break;
-        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 300));
-      }
+      try {
+        response = await fetch('/api/i18n-translate', {
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
+        });
+      } catch { response = null; }
       if (!response?.ok) {
-        if (part.length > 5) {
-          let any = false;
-          for (let i=0;i<part.length;i+=5) any = (await requestPart(part.slice(i,i+5))) || any;
-          return any;
+        // Never recursively split, retry per item or send a second request
+        // during a real provider 429/5xx/network outage.
+        if (!response || response.status >= 500 || response.status === 429 || response.status === 402) {
+          providerRetryAfter = Date.now() + PROVIDER_RETRY_COOLDOWN_MS;
+          throw new Error('translation_provider_unavailable');
         }
-        return false;
+        throw new Error('translation_request_rejected');
       }
       let payload;
       try { payload = await response.json(); } catch { return false; }
@@ -255,11 +256,8 @@
 
     for (const part of batches) await requestPart(part);
 
-    const unresolved = missing.filter(source => !out.has(source));
-    for (const source of unresolved) {
-      await requestPart([source]);
-    }
-
+    // Incomplete successful translation is a quality failure, not permission
+    // for one-by-one paid retries or unsafe translated-copy substitutions.
     const stillMissing = unique.filter(source => !out.has(source));
     if (stillMissing.length) {
       throw new Error('translation_incomplete:' + stillMissing.length);
@@ -517,6 +515,10 @@
       mountControl();
       roots.forEach(root => syncInternalLinks(root));
       if (locale !== 'en') return;
+      // A statically translated public /en page must not repeatedly invoke
+      // the paid runtime translator on unrelated DOM mutations.
+      if (!isPortal() && pathLocale() === 'en' &&
+          document.documentElement.dataset.bgStaticTranslated !== 'false') return;
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(()=>{
         for (const root of roots) apply(root).catch(()=>{});
