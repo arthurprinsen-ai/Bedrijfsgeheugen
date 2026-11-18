@@ -7,9 +7,9 @@ const patch='config/bg-static-i18n-en.d/powerhouse-blog-2026-11-18.json';
 const data=JSON.parse(readFileSync(patch,'utf8'));
 const entries=Object.entries(data);
 
-test('source-exact curated EN cache closes exactly 76 genuinely observed approved 18-Nov blog gaps',()=>{
-  assert.equal(entries.length,76);
-  assert.equal(Object.keys(data).length,76);
+test('source-exact curated EN cache closes 76 original gaps and one observed committed-tree preview gap',()=>{
+  assert.equal(entries.length,77);
+  assert.equal(Object.keys(data).length,77);
   for(const [source,target] of entries){
     assert.ok(source.trim().length>1);
     assert.ok(target.trim().length>1);
@@ -55,4 +55,16 @@ test('no claims of provider-paid translation or terminal live success embedded i
   // The patch is source text only: no credential or provider-receipt field.
   assert.equal(Object.keys(data).some(key => ['OPENAI_API_KEY','authorization','provider_receipt'].includes(key)),false);
   assert.doesNotMatch(s,/"live_proven_at"|"external_id"|"provider_success"|"deployment_ready"/);
+});
+
+
+test('committed-tree teaser variant has one exact reviewed English cache entry, not a fallback to paid API',()=>{
+  const key="Signalering Onderzoek/forecast signaleert één duidelijk probleem: veel MKB’ers hebben moeite om hun boekhoudsoftware te koppelen aan nieuwe mobiele betaaloplossingen. Dit artikel beschrijft hoe je die interne en externe…";
+  const value=data[key];
+  assert.ok(value,'2026-11-18 original committed-tree source must be cached');
+  assert.match(value,/^Signals Research\/forecast identifies one clear problem/);
+  assert.match(value,/SMEs/);
+  assert.match(value,/mobile payment solutions/);
+  assert.ok(value.endsWith('…'));
+  assert.ok(!value.includes('MKB’ers'));
 });

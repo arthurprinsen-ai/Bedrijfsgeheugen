@@ -1,0 +1,55 @@
+{
+  "fingerprint": "powerhouse|daily-blog|committed-tree-preview-static-i18n-one-gap|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "original powerhouse-daily-blog.yml",
+  "tenant": "canonical",
+  "channel": "blog",
+  "publication_date": "2026-11-18",
+  "source_status": "APPROVED",
+  "original_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44296846787",
+  "original_failed_step": "Create exactly one protected candidate",
+  "observed_gap_count": 1,
+  "observed_source_length": 220,
+  "original_cache_entries": 76,
+  "patch_entries": 77,
+  "provider_http_status": 429,
+  "provider_error_code": "credit_balance_exhausted",
+  "source_patch": "config/bg-static-i18n-en.d/powerhouse-blog-2026-11-18.json",
+  "regression": "tests/brain-blog-original-en-cache-20261118.test.mjs",
+  "original_publisher_preserved": true,
+  "api_billing_proven_recovered": false,
+  "protected_merged": false,
+  "live_proven": false,
+  "repair": "Add one source-exact 220-char teaser and faithful EN target to original-day cache. Test 77 keys. Re-run original writer after protected merge and verify source-bound public NL+EN and provider DB.",
+  "effect": "UNKNOWN",
+  "next_action": "protected Required + CodeQL and canonical blog writer exact production readback",
+  "compiler": {
+    "failure_class": "PROVIDER_QUOTA",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-original-en-cache-20261118.test.mjs"
+    ],
+    "shadow": [],
+    "canary": []
+  },
+  "root_cause": "Original 18-Nov blog source-tree cached EN segments were complete (76), but the committed-tree page renderer joined 'Signalering' and the article excerpt into an additional exact 220-character translatable source absent from the same original-day EN patch; OpenAI translation API returned 429 credit_balance_exhausted, correctly stopping protected PR publication.",
+  "prevention": "Run both original source-tree and committed-tree static-i18n checks; keep the exact observed 220-character source plus faithful English in the same original-day cache (77 entries), prove it with historical regression and fail closed on any new source/paid API quota error. Only the original idempotent protected publisher can publish; require exact NL/EN public readback.",
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44296846787",
+    "original_job_id": 134775997741,
+    "observed_cache_gap": 1,
+    "observed_source_length": 220,
+    "prior_entries": 76,
+    "corrected_entries": 77,
+    "tests": [
+      "tests/brain-blog-original-en-cache-20261118.test.mjs"
+    ],
+    "provider_api_429": true,
+    "live_proven": false
+  }
+}
