@@ -142,7 +142,7 @@ BEGIN
       'fingerprint','tavily-432-original-news','provider','Tavily',
       'code','TAVILY_432','severity','ACTION_REQUIRED',
       'owner','existing-bg-bedrijfsnieuws-20',
-      'impact','Geen nieuwe geverifieerde bedrijfsnieuwsbron; gerichte outreach blijft onterecht niet als verzonden getoond',
+      'impact','Geen nieuwe geverifieerde bedrijfsnieuwsbron; gerichte outreach blijft terecht in bron-hold en is niet verzonden',
       'paid_account_reported',true,
       'paid_or_unpaid_independently_verified',false,
       'human_action','Controleer Tavily API-workspace, sleutel, werkelijk abonnement en planlimiet; niet aannemen dat het abonnement onbetaald is',
