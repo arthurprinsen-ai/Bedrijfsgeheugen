@@ -440,7 +440,10 @@ Deno.serve(async (req) => {
     const rejectedPersonalObservation=(initialDecisions||[]).find((d:any)=>
       clean(d.channel)==='linkedin_personal'&&clean(d.state)==='blocked'&&
       Number(d.delivery_evidence?.review_status)===422&&
-      d.delivery_evidence?.violations?.some((v:any)=>v?.code==='OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED'));
+      d.delivery_evidence?.violations?.some((v:any)=>[
+        'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED',
+        'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED'
+      ].includes(clean(v?.code))));
     if(rejectedPersonalObservation){
       const [obligationSource,capabilitySource]=await Promise.all([
         db.from('content_publication_obligations')
