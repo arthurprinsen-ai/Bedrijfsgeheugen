@@ -5,6 +5,11 @@ import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL} from '../_shared/mir
 
 export const MIRA_EXACT_VERIFICATION_RESUME='mira-original-exact-video-provider-retry-v1';
 const MAX_ATTEMPTS=3;
+// One extra verification, only with a stored explicit owner review bound to this exact job+history.
+export const OWNER_REVIEW_FIELD='owner_review_extra_verification';
+const ownerReviewValid=(m,job,hist)=>{const r=m?.[OWNER_REVIEW_FIELD];
+ return !!r&&r.approved_by==='arthur'&&r.extra_attempts===1&&r.job_id===job?.id&&r.history_id===hist
+  &&dateMs(r.approved_at)!==null&&/^[a-z0-9:_.\-]{8,80}$/i.test(String(r.approval_ref||''))&&r.no_regeneration===true;};
 const ORIGINAL_PROJECT='rUF5anXD47gVokckYjf9';
 const OPENART_MP4=/^https:\/\/cdn\.openart\.ai\/openart-ai\/production\/[^?#]+\.mp4$/;
 const historyOk=x=>/^[A-Za-z0-9]{8,64}$/.test(String(x||''));
@@ -30,7 +35,7 @@ export function planMiraExactVideoVerificationResume({runDate,localDate,job,ob,r
   &&m.openart_project_id===ORIGINAL_PROJECT&&historyOk(hist)&&OPENART_MP4.test(url)
   &&m.identity_reference_id===MIRA_MASTER_REFERENCE_ID&&m.generation_mode==='element2video'
   &&ob?.tenant_id==='canonical'&&ob?.publication_date===date&&ob?.channel==='instagram'
-  &&ob?.status==='BLOCKED'&&!ob?.external_id&&!ob?.live_proven_at
+  &&(ob?.status==='BLOCKED'||(ob?.status==='FAILED'&&ownerReviewValid(m,job,hist)))&&!ob?.external_id&&!ob?.live_proven_at
   &&ob?.evidence?.republish_forbidden!==true
   &&String(ob?.evidence?.veto?.active??'false')!=='true'
   &&ob?.evidence?.mira_source_veto_active!==true
@@ -42,8 +47,9 @@ export function planMiraExactVideoVerificationResume({runDate,localDate,job,ob,r
   : (!job.last_error&&m.vision_resume_contract===MIRA_EXACT_VERIFICATION_RESUME)||transientError(job.last_error);
  if(!errors)return hold('MEASURED_OR_UNKNOWN_REJECTION_REQUIRES_ORIGINAL_REVIEW');
  const used=Number(m.vision_retry_count||0);
- if(!Number.isInteger(used)||used<0||used>MAX_ATTEMPTS)return hold('INVALID_RETRY_LEDGER');
- if(used>=MAX_ATTEMPTS)return Object.freeze({kind:'EXHAUSTED',reason:'SAME_ASSET_VERIFICATION_RETRY_LIMIT',attempts:used});
+ const max=MAX_ATTEMPTS+(ownerReviewValid(m,job,hist)?1:0);
+ if(!Number.isInteger(used)||used<0||used>max)return hold('INVALID_RETRY_LEDGER');
+ if(used>=max)return Object.freeze({kind:'EXHAUSTED',reason:'SAME_ASSET_VERIFICATION_RETRY_LIMIT',attempts:used});
  const nowMs=typeof now==='number'?now:dateMs(now);
  if(nowMs===null||!Number.isFinite(nowMs))return hold('CLOCK_UNAVAILABLE');
  // First real OpenArt completion needs 30 minutes of provider recovery before

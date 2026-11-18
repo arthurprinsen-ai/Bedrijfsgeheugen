@@ -1,0 +1,29 @@
+{
+  "type": "FailureClass",
+  "version": "MIRA-OWNER-APPROVED-EXTRA-VERIFICATION-v1",
+  "fingerprint": "instagram|mira|exact-video-verification-exhausted-without-owner-review-path|20261118-v1",
+  "observedAt": "2026-11-18T22:05:00+01:00",
+  "status": "VERIFIED_LEARNING",
+  "subject": "Mira exact-video verification exhausted after vision-provider outage",
+  "symptom": "The 18-nov Mira video was completed and preserved, but all three bounded verification attempts hit MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE while provider billing was empty. After billing was restored the contract still said explicit original-owner review was needed, yet no code path could accept such a review, so the obligation went FAILED.",
+  "rootCause": "The retry ledger had a hard maximum of three with no representation of an explicit owner decision. The contract demanded owner review but offered no auditable way to record it, so the only options were to stay stuck or to tamper with the ledger.",
+  "failedApproach": "Resetting vision_retry_count or editing the job directly in the database to force a fourth run; both would bypass the contract and leave no audit trail.",
+  "provenFix": {
+    "strategy": "Planner accepts exactly one extra verification only when asset_manifest.owner_review_extra_verification is bound to the same job id and OpenArt history id, approved_by=arthur, extra_attempts=1, a dated approval_ref and no_regeneration=true. A FAILED obligation is eligible only with that review. The maximum becomes four and is not renewable. No OpenArt generation, no alternate verifier, no change to face thresholds or the Meta publisher gates.",
+    "regression": "tests/brain-mira-original-exact-video-provider-retry.test.mjs"
+  },
+  "preventionRules": [
+    "OWNER_REVIEW_MUST_BE_A_BOUND_AUDITABLE_RECORD_NOT_A_LEDGER_RESET",
+    "EXTRA_VERIFICATION_IS_ONE_TIME_AND_SAME_ASSET_ONLY",
+    "A_CONTRACT_THAT_REQUIRES_OWNER_REVIEW_MUST_PROVIDE_A_RECORDING_PATH"
+  ],
+  "compiler": { "failure_class": "retry-ledger-without-owner-review-path" },
+  "evaluation": {
+    "historical_replay": "tests/brain-mira-original-exact-video-provider-retry.test.mjs"
+  },
+  "evidence": [
+    "media job 4a68dc41-6e60-4b64-ba7b-400086cb7296 vision_retry_count=3, last_error MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE",
+    "obligation instagram 2026-11-18 status FAILED, external_id null",
+    "owner instruction in chat 2026-11-18 21:55 Europe/Amsterdam: all three decisions approved"
+  ]
+}
