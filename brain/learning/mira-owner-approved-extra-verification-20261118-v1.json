@@ -36,5 +36,6 @@
     "media job 4a68dc41-6e60-4b64-ba7b-400086cb7296 vision_retry_count=3, last_error MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE",
     "obligation instagram 2026-11-18 status FAILED, external_id null",
     "owner instruction in chat 2026-11-18 21:55 Europe/Amsterdam: all three decisions approved"
-  ]
+  ],
+  "root_cause": "The retry ledger had a hard maximum of three with no representation of an explicit owner decision. The contract demanded owner review but offered no auditable way to record it, so the only options were to stay stuck or to tamper with the ledger."
 }
