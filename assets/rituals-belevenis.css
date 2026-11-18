@@ -197,3 +197,10 @@ html body .service-product-card:is(.lime,.cyan,.blue) :is(h1,h2,h3,h4,a,b,strong
 html body .service-product-card:is(.lime,.cyan,.blue) p{color:#5B6168!important}
 /* Het bedrag mag rustig zijn: serif, kleiner, gewone dikte. */
 html body #annualPotential.count-big{font-family:var(--rit-serif,'Fraunces',Georgia,serif)!important;font-weight:400!important;font-size:clamp(3.2rem,8vw,6rem)!important;letter-spacing:-.025em!important;line-height:1.05!important}
+/* Mobiel: korte hero. Kop, belofte, één knop, één link, één zin geruststelling. */
+@media(max-width:860px){
+  html body section.hero-video.hero-inspiration .hero-sub{display:none!important}
+  html body section.hero-video.hero-inspiration .hero-video-actions p:not(:first-of-type){display:none!important}
+  html body section.hero-video.hero-inspiration :is(.hero-note,.hero-example-switch){display:none!important}
+  html body section.hero-video.hero-inspiration .hero-video-actions p{margin:10px 0 0!important;font-size:.95rem!important;line-height:1.5!important}
+}
