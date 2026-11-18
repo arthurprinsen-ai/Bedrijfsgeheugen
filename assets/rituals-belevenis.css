@@ -117,5 +117,11 @@ html body #bgCookie .bgBtns{display:flex!important;flex-direction:row!important;
 html body #bgCookie .bgBtns button{flex:1 1 0!important;padding:8px 12px!important;white-space:nowrap!important}
 
 /* Hero: eerste scherm blijft rustig en de hoofdactie blijft zichtbaar (18 nov 2026) */
-@media(min-width:900px){html body section.hero-video.hero-inspiration .hero-video-content{padding-top:0!important}html body section.hero-video.hero-inspiration .hero-copy{margin-top:-56px}}
+@media(min-width:900px){html body section.hero-video.hero-inspiration .hero-copy{margin-top:-64px}html body section.hero-video.hero-inspiration .hero-video-content{padding-bottom:150px!important}}
+/* Secundaire regels onder de knop waren wit op papier: nu leesbaar */
+html body section.hero-video.hero-inspiration .hero-video-actions a:not(.hero-primary):not(.hero-secondary):not(.rb-adem-knop){color:var(--rit-inkt,#14171A)!important;text-decoration:underline!important;text-underline-offset:3px;opacity:1!important}
+html body section.hero-video.hero-inspiration .hero-video-actions p,html body section.hero-video.hero-inspiration .hero-video-actions p *:not(a):not(strong){color:var(--rit-zacht,#5B6168)!important;opacity:1!important}
 @media(max-width:760px){html body section.hero-video.hero-inspiration video.hero-bg-video{height:210px!important;max-height:210px!important;object-fit:cover!important}html body section.hero-video.hero-inspiration .hero-video-content{margin-top:-56px!important}}
+
+/* Cookiebanner rechtsonder op brede schermen: de hoofdknop in de hero blijft vrij (18 nov 2026) */
+@media(min-width:900px){html body #bgCookie{left:auto!important;right:20px!important;bottom:88px!important}}

@@ -1,0 +1,41 @@
+{
+  "fingerprint": "site|rituals|cookie-en-hero-vrij|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|cookie-en-hero-vrij|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 13,
+    "security_sensitive": false
+  },
+  "root_cause": "De toestemmingsbanner wordt na de vertaalslag in elke pagina gezet en bleef daardoor Nederlands op /en/; een EN-controle op alleen hoofdtekst miste dat.",
+  "correction": "Banner krijgt een Engelse variant voor lang=en; banner rechtsonder zodat de hoofdactie vrij blijft.",
+  "prevention": [
+    "Elke EN-controle leest ook de banner, knoppen en aria-labels van de live /en/-pagina.",
+    "Elementen die na de vertaalslag worden ingevoegd krijgen een eigen EN-variant."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "tools/site-shell/analytics-sitebreed.mjs",
+      "assets/rituals-belevenis.css",
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Lokaal groen; live-readback open."
+  }
+}
