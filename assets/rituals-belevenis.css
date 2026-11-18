@@ -136,3 +136,17 @@ html body section.hero-video.hero-inspiration .hero-video-actions{display:conten
 html body section.hero-video.hero-inspiration .hero-video-actions>.hero-primary{order:3;align-self:flex-start;margin:14px 0 6px!important}
 html body section.hero-video.hero-inspiration .hero-copy>.hero-sub{order:4}
 html body section.hero-video.hero-inspiration .hero-video-actions>*:not(.hero-primary){order:5}}
+
+/* Hero-beeld: besluitkaart (voorbeeld) i.p.v. stockfilmpje met boog (18 nov 2026) */
+html body section.hero-video.hero-inspiration video.hero-bg-video[data-rb-vervangen]{display:none!important}
+html body .rb-besluit{background:var(--rit-papier-zacht,#F3F1EC);border:1px solid var(--rit-lijn,rgba(20,23,26,.14));border-radius:20px;padding:30px 30px 24px;color:var(--rit-inkt,#14171A);box-shadow:0 30px 60px -40px rgba(20,23,26,.35);font-family:var(--rit-sans,'Instrument Sans',system-ui,sans-serif);z-index:2}
+html body .rb-besluit small{display:flex;align-items:center;gap:9px;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rit-zacht,#5B6168);font-weight:500}
+html body .rb-besluit small i{display:block;width:8px;height:8px;border-radius:50%;background:#FFE86B;box-shadow:0 0 0 1px rgba(20,23,26,.25)}
+html body .rb-besluit h2{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:1.65rem;line-height:1.2;letter-spacing:-.01em;margin:16px 0 20px;color:var(--rit-inkt,#14171A)}
+html body .rb-besluit dl{margin:0;display:grid;gap:0}
+html body .rb-besluit dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14))}
+html body .rb-besluit dt{font-size:12.5px;color:var(--rit-zacht,#5B6168)}
+html body .rb-besluit dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--rit-inkt,#14171A)}
+html body .rb-besluit p{display:none;margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--rit-zacht,#5B6168);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding-top:14px}
+@media(min-width:761px){html body .rb-besluit{position:absolute;top:calc(50% - 90px);right:max(5vw,calc((100vw - 1200px)/2));transform:translateY(-50%);width:min(34vw,430px)}}
+@media(max-width:760px){html body .rb-besluit{position:relative;margin:18px 10px 0;padding:20px 20px 16px}html body .rb-besluit h2{font-size:1.3rem;margin:10px 0 12px}html body .rb-besluit .rb-b-waarom,html body .rb-besluit .rb-b-datum,html body .rb-besluit p{display:none}html body .rb-besluit dl>div{padding:9px 0}}
