@@ -5,6 +5,14 @@ description: Enforce Arthur's personal LinkedIn as a strictly personal-life chan
 
 # Personal LinkedIn — personal life only
 
+## 18 november 2026 — nieuw werkelijk gebruikersfeit hervat de originele geblokkeerde bronbeslissing
+
+Fingerprint: `powerhouse|linkedin-personal|late-verified-user-fact-stale-hold|20261118-v1`. De originele persoonlijke `powerhouse_channel_decisions`-rij van 18 november stond sinds 17 november `hold/blocked` wegens `PERSONAL_TRUTH_SOURCE_UNVERIFIED`. Een daarna geregistreerd, echt gebruikersfeit met correcte, brongebonden identiteit werd wel door de originele bronmaterialisatie gevonden, maar de bestaande `powerhouse-content-loop` herstartte de originele `powerhouse-content-orchestrator` niet voor deze reeds bestaande blokkeringsrij. De scheduler bleef draaien terwijl de bron tot nu toe niet aan de schrijfeigenaar werd overgedragen.
+
+**Verplichte herstelregel in de oorspronkelijke lus:** controleer bij een oude `hold/blocked` alleen een **nieuwer**, exact hetzelfde datum/tenant/kanaal, niet eerder afgewezen `verified_personal_source`-record. Gebruik de bestaande `personalFirstPersonSourceViolations` met echte `chat-history:user-fact`-lineage, identiteit- en privacyregels; controleer dat geen eerdere create, mogelijke providerside-effect, publicatiebewijs of verbruikte originele autorisatie bestaat. Bij één geldige bron: hervat enkel de reeds bestaande `powerhouse-content-orchestrator` binnen dezelfde content-loop-lease. Geen nieuw proces, geen tweede publisher, geen oude/verzonnen ervaring, geen duplicaat of handmatige `LIVE_PROVEN`-mutatie.
+
+Een na bronherstel mislukte AI-tekstgeneratie (bijv. provider `HTTP429 insufficient_quota`) blijft een **aparte** fout met originele retry/cooldown en financierings-/providerwaarheid; nooit als een persoonlijke post presenteren. Oorspronkelijke eindredactie, exact final-text-hash/identity review en onafhankelijke LinkedIn provider-ID plus readback blijven verplicht. Regressie: `tests/brain-personal-late-user-fact-rebootstrap-20261118.test.mjs`.
+
 Fingerprint: `personal-linkedin-personal-life-only-v1`.
 
 ## Hard rule
