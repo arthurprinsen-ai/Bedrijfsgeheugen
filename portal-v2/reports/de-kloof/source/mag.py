@@ -297,10 +297,11 @@ pg(f"""<div class='k'>Jouw plan</div><h1>Eén taak. <i>Eén getal.</i> Negentig 
 import sqlite3
 c=sqlite3.connect(SC+'groot/ai_mkb.db')
 rows=c.execute("select id,publisher,name,published,tier,caveat from sources where id like 'M%' order by id").fetchall()
-tr=''.join(f"<tr><td>{r[1]}</td><td>{r[2]}<br><span style='color:var(--mut)'>{r[3]}</span></td><td><b>{r[4]}</b></td><td>{r[5]}</td></tr>" for r in rows)
+_cut=lambda t,n:(t if len(t)<=n else t[:n-1].rsplit(' ',1)[0]+'…')
+tr=''.join(f"<tr><td>{_cut(r[1],26)}</td><td>{_cut(r[2],62)}<br><span style='color:var(--mut)'>{r[3]}</span></td><td><b>{r[4]}</b></td><td>{_cut(r[5],70)}</td></tr>" for r in rows)
 pg(f"""<div class='k'>Verantwoording</div><h2>Bronnen en <i>bewijs</i></h2>
 <p class='mini'>Niveau A: officiële statistiek of wet. B: samenvatting of onderzoek met open methode. C: leveranciersonderzoek, indicatief. We hebben bij elk cijfer de populatie en de beperking genoteerd.</p>
-<table><tr><th>Bron</th><th>Titel</th><th>Niveau</th><th>Let op</th></tr>{tr}</table>
+<table style='font-size:6.4pt;line-height:1.22'><tr><th>Bron</th><th>Titel</th><th>Niveau</th><th>Let op</th></tr>{tr}</table>
 <p class='mini' style='margin-top:2mm;font-size:6.6pt;line-height:1.3'>Niet gebruikt: cijfers die we niet bij de primaire bron konden terugvinden. Beeld op de voorkant: AI-gegenereerd. Geen juridisch of financieel advies.</p>""")
 # ---- datalab: wie meet wat
 pg(f"""<div class='k'>Eigen analyse &middot; Meetverschil</div><h1 style='font-size:32pt'>Hoeveel Nederlandse bedrijven gebruiken AI? <i>Dat hangt af van wie telt.</i></h1>
@@ -348,8 +349,38 @@ pg(f"""<div class='k'>De Atlas &middot; Editie 2026-Q4</div><h1 style='font-size
 <p class='mini' style='margin-top:1.5mm'>Gebruik van AI in 2025 (Eurostat) tegenover het laatste jaar van elk kenmerk. Holm-correctie voor {len(_an)} toetsen. Verband, geen oorzaak: rijke landen hebben veel gemeen.</p></div>
 <div class='l8'>
 <div class='card'><div class='tg'>Ons oordeel</div><h4>AI volgt arbeid, niet energie.</h4><p>Landen met dure arbeid en veel R&amp;D gebruiken meer AI. De prijs van elektriciteit voor bedrijven doet er niet toe (rho {f(_db.execute("select value from analysis_results where name like '%Elektriciteitsprijs%'").fetchone()[0])}).</p></div>
-<div class='card'><div class='tg'>Wat niet lukte</div><h4>Eerlijk over de gaten.</h4><p>Veertien World Bank-reeksen (o.a. bestuurskwaliteit) en acht CBS-tabellen (o.a. ondernemersvertrouwen) haalden we niet binnen. Nieuws, talen buiten de gebruikte bronnen en betaalde data ontbreken. Volgende editie vullen we aan.</p></div></div>
+<div class='card'><div class='tg'>Wat niet lukte</div><h4>Eerlijk over de gaten.</h4><p>Acht World Bank-reeksen (o.a. bestuurskwaliteit) en acht CBS-tabellen (o.a. ondernemersvertrouwen) haalden we niet binnen. Nieuws, talen buiten de gebruikte bronnen en betaalde data ontbreken. Volgende editie vullen we aan.</p></div></div>
+<div class='card' style='margin-top:3mm'><div class='tg'>Naast Nederland &middot; Feit</div><h4>Spanje 33,6%, Italië 16,4%, Nederland 33,2%.</h4><p>Bedrijven 10+ die AI gebruiken: Spanje Q1 2026 (INE), Italië en Nederland 2025. Italië: mkb 15,7%, groot 53,1%. Japan meldt 86,4% (gen-AI, minstens één taak): andere vraag en basis, niet vergelijkbaar.</p></div>
 <div class='ft'><span class='lab'>Eigen analyse</span>Spearman met bootstrap (3.000 trekkingen). Download: portal-v2/reports/trendbank/ (catalogus en volledige database). Vergelijk alleen reeksen met dezelfde definitie.</div>""".replace(f"{_tot[0]:,}",f"{_tot[0]:,}".replace(',','.')).replace(f"{_tot[1]:,}",f"{_tot[1]:,}".replace(',','.')))
+# ---- besluitkaart
+pg("""<div class='k'>De besluitkaart &middot; Kader</div><h1 style='font-size:30pt'>Wat besluit je <i>eigenlijk</i> elke dag?</h1>
+<p style='max-width:165mm'>AI helpt pas als je weet welke keuzes je maakt, hoe je ze maakt en waarop je ze baseert. Dit kader geeft elke beslissing een vaste vorm, zodat je kunt zien welke je kunt overlaten aan een regel of assistent en welke bij jou blijven.</p>
+<div class='l8' style='margin-top:3mm'>
+<div class='card'><div class='tg'>Stap 1 &middot; Hoe terugdraaibaar?</div><h4>Type 1 of Type 2.</h4><p><b>Type 2</b>: terug te draaien, goedkoop te herstellen. Beslis snel, met ongeveer 70% van de informatie, en leg een regel vast. <b>Type 1</b>: moeilijk of duur terug te draaien (ontslag, grote investering, prijsstrategie). Neem de tijd, vraag een tweede mening en schrijf je aannames op.</p><span class='lab'>Werkregel</span></div>
+<div class='card'><div class='tg'>Stap 2 &middot; Op basis waarvan?</div><h4>Intuïtie alleen waar leren kan.</h4><p>Kahneman en Klein (2009): vertrouw op onderbuikgevoel alleen in een regelmatige omgeving met snelle, duidelijke feedback. Bij zeldzame of trage beslissingen (aannemen, prijzen, investeren) heeft data of een checklist de voorkeur.</p><span class='lab'>Onderzoek</span></div></div>
+<div class='card' style='margin-top:3mm'><div class='tg'>Stap 3 &middot; Wie ben jij als beslisser?</div><h4>Vijf typen in het Nederlandse mkb.</h4>
+<table><tr><th>Type</th><th style='text-align:right'>Aandeel</th><th>Valkuil</th></tr>
+<tr><td><b>Informers' friends</b></td><td style='text-align:right'>~33%</td><td>Veel advies zoeken, trager beslissen</td></tr>
+<tr><td><b>Daredevils</b></td><td style='text-align:right'>~22%</td><td>Snel en op gevoel, weinig toetsing</td></tr>
+<tr><td><b>Lone rangers</b></td><td style='text-align:right'>~21%</td><td>Alles zelf, geen tegenspraak</td></tr>
+<tr><td><b>Doubtful minds</b></td><td style='text-align:right'>~20%</td><td>Uitstellen, twijfel</td></tr>
+<tr><td><b>Busy bees</b></td><td style='text-align:right'>~6%</td><td>Druk, weinig tijd voor afweging</td></tr></table>
+<p class='mini' style='margin-top:1.5mm'>Panteia (Gibcus, Vermeulen &amp; De Jong, 2009): 646 Nederlandse ondernemers, peiljaar 2004. De valkuilen in de laatste kolom zijn onze samenvatting van de typenamen, geen meetresultaat. Het is oud onderzoek; zie het als hypothese.</p></div>
+<div class='l8' style='margin-top:3mm'>
+<div class='card'><div class='tg'>Wat we meten &middot; Feit</div><h4>Nederland gebruikt AI: 33,2%.</h4><p>Bedrijven met 10+ werknemers, 2025 (Eurostat): plaats 6 van 35 landen, EU27 20,0%. Bij 10&ndash;49 werknemers 28,8%, bij 250+ 67,6%. Klein beslist dus nog het vaakst zonder AI.</p></div>
+<div class='card'><div class='tg'>Wereldwijd &middot; Feit</div><h4>OECD: 61% gebruikt AI, 76% is beginner.</h4><p>D4SME 2026: 2.018 mkb-bedrijven in 12 landen. Beginnen is de norm, niet de uitzondering.</p></div></div>
+<div class='ft'><span class='lab'>Open gat</span>We vonden geen Nederlandse studie naar de dagelijkse beslissingen zelf, en geen vergelijkbare data voor China, India, Brazilië, Afrika en het Midden-Oosten. Verder: een Type 1/Type 2-indeling is een denkmodel, geen meting.</div>""")
+# ---- besluitkaart invulbaar
+pg("""<div class='k'>De besluitkaart &middot; Werkblad</div><h1>Eén beslissing. <i>Eén kaart.</i></h1><p class='mini' style='max-width:150mm'>Kies een beslissing die je deze maand zeker neemt. Vul de kaart in vóór je beslist en terug bij de evaluatiedatum.</p>
+<h3 style='margin-top:4mm'>De beslissing</h3><span class='fb' data-f='b_beslissing'></span>
+<div class='g2'><div><h3>Domein</h3><span class='fb' data-f='b_domein' style='height:9mm'></span></div><div><h3>Wie beslist?</h3><span class='fb' data-f='b_wie' style='height:9mm'></span></div></div>
+<div style='margin:2mm 0 3mm;font-size:9pt'><span class='cbx' data-f='b_type1' style='border-color:var(--ink)'></span> Type 1 (moeilijk terug te draaien) &nbsp;&nbsp; <span class='cbx' data-f='b_type2' style='border-color:var(--ink)'></span> Type 2 (terug te draaien)</div>
+<div class='g2'><div><h3>Regel of drempel</h3><span class='fb' data-f='b_regel' style='height:16mm'></span></div><div><h3>Benodigde data</h3><span class='fb' data-f='b_data' style='height:16mm'></span></div></div>
+<h3>Mijn aannames (wat moet waar zijn?)</h3><span class='fb' data-f='b_aanname' style='height:16mm'></span>
+<h3>Pre-mortem: stel dat het mislukt, waarom?</h3><span class='fb' data-f='b_premortem' style='height:16mm'></span>
+<div class='g2'><div><h3>Verwachte uitkomst</h3><span class='fb' data-f='b_uitkomst' style='height:12mm'></span></div><div><h3>Evaluatiedatum</h3><span class='fb' data-f='b_datum' style='height:12mm'></span></div></div>
+<h3>Wat heb ik geleerd? (invullen bij evaluatie)</h3><span class='fb' data-f='b_geleerd' style='height:16mm'></span>
+<div class='ft'>Bewaar je kaarten bij het kwartaalritueel. Na een jaar zie je welke beslissingen je kunt overlaten aan een regel of een AI-assistent.</div>""")
 # ---- advertentie
 QP=qr(PORTAL,'#0a1630')
 CI=IMG(SC+'groot/img/consult.jpg')
