@@ -34,6 +34,7 @@ const phases = Object.freeze([
   ['website-coherence','tools/site-shell/finalize-website-coherence-v1.mjs'],
   ['daily-steering-positioning','tools/site-shell/apply-daily-steering-positioning.mjs'],
   ['frisse-blik-concreet','tools/site-shell/apply-frisse-blik-concreet.mjs'],
+  ['klantcase-placeholders','tools/site-shell/remove-klantcase-placeholders.mjs'],
   ['business-os-positioning','tools/site-shell/apply-business-os-positioning.mjs'],
   ['cms-runtime','tools/site-shell/apply-cms-runtime.mjs'],
   ['sitemap','tools/genereer-sitemap.mjs'],
