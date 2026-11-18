@@ -53,3 +53,34 @@ body:has([data-portal-mobile-primary]) .bg-app-public-dock{
  display:none!important;visibility:hidden!important;pointer-events:none!important
 }
 body.bg-app-public-has-dock:has(#portalView){padding-bottom:0!important}
+
+/* Keep WhatsApp a branded, independent action ABOVE the four-tab public mobile
+   dock. The legacy .wa and canonical contact component share this contract. */
+:is(a.wa,a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]){
+  background-color:#25D366!important;color:#fff!important
+}
+@media(max-width:1100px){
+  body.bg-app-public-has-dock :is(a.wa,a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]){
+    position:fixed!important;right:14px!important;
+    bottom:calc(86px + env(safe-area-inset-bottom,0px))!important;
+    box-sizing:border-box!important;width:56px!important;height:56px!important;
+    min-width:56px!important;min-height:56px!important;padding:0!important;
+    display:grid!important;place-items:center!important;border:0!important;
+    border-radius:50%!important;background-color:#25D366!important;color:#fff!important;
+    box-shadow:0 8px 22px rgba(0,0,0,.18)!important;z-index:1410!important
+  }
+  body.bg-app-public-has-dock a.wa .tx{display:none!important}
+  body.bg-app-public-has-dock :is(a.wa,a.bg-whatsapp-contact) svg{fill:currentColor!important}
+  /* Some older pages already render a legacy widget; never show two bubbles. */
+  body.bg-app-public-has-dock:has(a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]) a.wa{
+    display:none!important;pointer-events:none!important
+  }
+  /* Respect the original consent overlay and the on-screen keyboard. */
+  body.bg-app-public-has-dock:has(#bgCookie.bgShow) :is(a.wa,a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]){
+    bottom:calc(165px + env(safe-area-inset-bottom,0px))!important
+  }
+  body.bg-app-public-has-dock.bg-site-mobile-menu-open :is(a.wa,a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]),
+  body.bg-app-public-has-dock:has(#bgMobileNav.open,#bgSharedMobileNav.open,input:focus,textarea:focus,[contenteditable="true"]:focus) :is(a.wa,a.bg-whatsapp-contact[data-bg-component="whatsapp-contact"]){
+    display:none!important;visibility:hidden!important;pointer-events:none!important
+  }
+}
