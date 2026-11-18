@@ -27,15 +27,11 @@
   "root_cause": "Approved blog depends on precisely 76 English translations not yet cached, while the configured OpenAI API billing account has exhausted credits. The original fail-closed publisher correctly refused to publish a partially translated English article.",
   "safe_recovery": "Complete the exact original day source-key EN cache using curated bilingual content with immutable source and quality tests. Reuse original writer, original same-day approved blog and protected CodeQL/Netlify stages. Never infer actual API credits were restored or a post was published.",
   "evaluation": {
-    "tests": [
+    "historical_replay": [
       "tests/brain-blog-original-en-cache-20261118.test.mjs"
     ],
-    "terminal_requires": [
-      "protected cache PR merge",
-      "original daily publisher protected blog PR and merge",
-      "independent live NL/EN URL and copy readback",
-      "ONE BRAIN/Heartbeat verified outcome"
-    ]
+    "shadow": [],
+    "canary": []
   },
   "restrictions": [
     "No new publisher, cron, model or provider",
@@ -43,5 +39,12 @@
     "No bypass of mandatory translation coverage",
     "No unapproved API budget or credential changes",
     "No fake GREEN and no duplicate blog posting"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "PROVIDER_QUOTA",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
