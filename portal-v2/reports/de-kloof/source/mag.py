@@ -301,7 +301,37 @@ tr=''.join(f"<tr><td>{r[1]}</td><td>{r[2]}<br><span style='color:var(--mut)'>{r[
 pg(f"""<div class='k'>Verantwoording</div><h2>Bronnen en <i>bewijs</i></h2>
 <p class='mini'>Niveau A: officiële statistiek of wet. B: samenvatting of onderzoek met open methode. C: leveranciersonderzoek, indicatief. We hebben bij elk cijfer de populatie en de beperking genoteerd.</p>
 <table><tr><th>Bron</th><th>Titel</th><th>Niveau</th><th>Let op</th></tr>{tr}</table>
-<p class='mini' style='margin-top:4mm'>Niet gebruikt: cijfers die we niet bij de primaire bron konden terugvinden. Wat ontbreekt, laten we weg in plaats van te schatten. Het beeld op de voorkant is AI-gegenereerd. Dit magazine is geen juridisch of financieel advies.</p>""")
+<p class='mini' style='margin-top:2mm;font-size:6.6pt;line-height:1.3'>Niet gebruikt: cijfers die we niet bij de primaire bron konden terugvinden. Beeld op de voorkant: AI-gegenereerd. Geen juridisch of financieel advies.</p>""")
+# ---- datalab: wie meet wat
+pg(f"""<div class='k'>Eigen analyse &middot; Meetverschil</div><h1 style='font-size:32pt'>Hoeveel Nederlandse bedrijven gebruiken AI? <i>Dat hangt af van wie telt.</i></h1>
+<p style='max-width:160mm'>Dezelfde vraag, acht antwoorden tussen 14% en 70%. Geen enkel getal is fout: ze meten andere bedrijven, andere vragen en andere mensen. Wie ze door elkaar haalt, trekt de verkeerde conclusie.</p>
+{chart('AI-gebruik in Nederland, acht metingen (2025-2026)',[('CBS micro (2-10 wp)',13.8),('CBS alle bedrijven (2+)',17.0),('CBS mkb (10-250 wp)',29.8),('CBS/Eurostat bedrijven 10+',33.2),('Werkenden die AI voor werk gebruiken (CBS)',42.9),('Personen 15-64, gen-AI (Microsoft)',43.5),('Grootbedrijf (250+, CBS)',66.2),('Mkb zegt AI te gebruiken (Exact, zelfrapportage)',70.0)],note='Rijen: bedrijfsstatistiek (CBS, Eurostat), persoonsmetingen (CBS, Microsoft) en een zelfrapportage-enquête (Exact). Niet optellen of gelijkstellen.')}
+<div class='l8'>
+<div class='card'><div class='tg'>Regel 1 &middot; Feit</div><h4>Tel je mee vanaf twee of tien?</h4><p>CBS 2+ geeft 17%, 10+ geeft 33,2%. Het verschil zit in de allerkleinste bedrijven, niet in de techniek.</p></div>
+<div class='card'><div class='tg'>Regel 2 &middot; Feit</div><h4>Gebruik je, of zeg je dat?</h4><p>De Exact-barometer meldt 70% in 2026, na 33% en 6% eerder. Dat is zelfrapportage onder klanten van een boekhoudpakket. Statistiek en enquête zijn geen reeks.</p></div>
+<div class='card'><div class='tg'>Regel 3 &middot; Feit</div><h4>Mensen zijn geen bedrijven.</h4><p>42,9% van de werkenden gebruikt AI voor werk (CBS 2025), terwijl 29,8% van de mkb-bedrijven dat officieel doet. Je team loopt voor op je bedrijf.</p></div>
+<div class='card'><div class='tg'>Ons oordeel</div><h4>Vergelijk alleen binnen één meting.</h4><p>Voor jouw eigen trend: kies één definitie en meet die elk kwartaal. Daarom bewaren we vanaf nu elke reeks met definitie en populatie.</p></div></div>
+<div class='ft'><span class='lab'>Eigen analyse</span>Bronnen: CBS (S02, M02, M22), Eurostat (M12), Microsoft (S11), Exact (S04). Populatie en definitie per getal in de trendbank (pagina 21).</div>""")
+# ---- trendbank
+def _o(sid,seg=None):
+    q="select period,value from observations where series_id=? "+("and segment=? " if seg else "")+"order by period"
+    return _db.execute(q,(sid,seg) if seg else (sid,)).fetchall()
+_db=_sq.connect(SC+'groot/ai_mkb.db')
+_n=_db.execute('select count(*),count(distinct series_id) from observations').fetchone()
+_pr=_db.execute("select value from observations where series_id='nl_labour_productivity_growth' order by period").fetchall()
+_pr=[v[0] for v in _pr]
+_r1=_db.execute("select value,ci_low,ci_high,note from analysis_results where name like 'Automatisering als maatregel: persistentie%'").fetchone()
+_r2=_db.execute("select value,ci_low,ci_high,note from analysis_results where name like 'Automatisering als maatregel: verandering%'").fetchone()
+f=lambda x,d=2:f"{x:.{d}f}".replace('.',',')
+pg(f"""<div class='k'>Trendbank &middot; Editie 2026-Q4</div><h1 style='font-size:32pt'>Wat we nu vastleggen, <i>vergelijken we straks.</i></h1>
+<p style='max-width:160mm'>Elke editie leggen we de meetpunten met definitie, populatie en bron vast. Zo kan No. 05 laten zien wat er verschoven is, niet alleen waar we staan. In deze editie: <b>{_n[0]} meetpunten in {_n[1]} reeksen</b>, open te downloaden als CSV en JSON.</p>
+<div class='l8'>
+<div class='card'><div class='tg'>Nieuw &middot; Feit</div><h4>Automatiseren tegen personeelstekort: 24,7% naar 29,7%.</h4><p>64% van de bedrijven heeft personeelstekort (CBS, april 2026). Grootbedrijf kiest er het vaakst voor (40,4%), kleinbedrijf het minst (20,1%). Informatie en communicatie: 28,5% naar 44,1%. Nog steeds geen meting van AI-gebruik zelf: automatisering omvat ook robotisering.</p></div>
+<div class='card'><div class='tg'>Nieuw &middot; Feit</div><h4>Productiviteit +2,5% in 2025, na twee jaar daling.</h4><p>Commerciele sector, toegevoegde waarde per gewerkt uur (CBS, voorlopig). In 2023 was het -2,0%, in 2024 -0,4%. Geen bewijs dat AI dit veroorzaakt: de bijdrage zit vooral in handel en industrie, informatie en communicatie droeg -0,15 punt bij.</p></div>
+<div class='card'><div class='tg'>Nieuw &middot; Feit</div><h4>Faillissementen: oktober +27%.</h4><p>322 tegen 253 een jaar eerder, maar jan-okt staat op 2.983 tegen 3.063 (eigen optelling). De maand zegt weinig, de reeks meer. Wij houden de reeks bij.</p></div>
+<div class='card'><div class='tg'>Nieuw &middot; Eigen analyse</div><h4>Wie hoog start, blijft hoog. Inhalen niet aangetoond.</h4><p>Over 12 sectoren is de rangorde bijna gelijk gebleven (rho {f(_r1[0])}, interval {f(_r1[1])} tot {f(_r1[2])}). Of lage sectoren harder groeien: rho {f(_r2[0])}, interval {f(_r2[1])} tot {f(_r2[2])}, dus niet aantoonbaar. 11 van 12 sectoren stegen.</p></div></div>
+<div class='ch'><div class='ct'>Wat de trendbank bevat</div><p class='mini' style='margin:0'>Eurostat AI-gebruik per land en bedrijfsgrootte (2024, 2025) &middot; CBS AI-gebruik per sector (2023-2025) &middot; CBS arbeidsproductiviteit 2000-2025 &middot; CBS automatisering en personeelstekort per sector (apr 2025, apr 2026) &middot; CBS faillissementen per maand en sector &middot; Microsoft AI-gebruik per land (Q2 2026) &middot; CBS AI onder werkenden &middot; Exact MKB Barometer &middot; NL-meetverschillen (acht definities).</p></div>
+<div class='ft'><span class='lab'>Eigen analyse</span>Spearman-rangcorrelatie met bootstrap (5.000 trekkingen), n = 12 sectoren, CBS Conjunctuurenquête (M18). Download: portal-v2/reports/trendbank/. Vergelijk alleen reeksen met dezelfde definitie.</div>""")
 # ---- advertentie
 QP=qr(PORTAL,'#0a1630')
 CI=IMG(SC+'groot/img/consult.jpg')
