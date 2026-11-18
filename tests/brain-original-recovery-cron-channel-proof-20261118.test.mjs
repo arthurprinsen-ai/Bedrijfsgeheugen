@@ -19,7 +19,7 @@ test('only existing original recovery control-plane cron with one owner and orig
   assert.ok(source.includes("ORIGINAL_RECOVERY_CRON_REGISTERED_NOT_ACTIVE"));
   assert.ok(source.includes("PERFORM cron.schedule(v_name, v_schedule, v_command)"));
   assert.ok(recovery.includes("pg_try_advisory_xact_lock"));
-  assert.ok(recovery.includes("geen tweede job/scheduler"));
+  assert.ok(recovery.includes("zonder tweede job/scheduler"));
 });
 
 test('native job run is independently distinguished from triage completion and provider outcome',()=>{
@@ -40,7 +40,7 @@ test('native job run is independently distinguished from triage completion and p
 test('personal LinkedIn never turns zero source into a fabricated first-person social post',()=>{
   assert.match(personal,/PERSONAL_TRUTH_SOURCE_UNVERIFIED/);
   assert.match(personal,/SOURCE_SUPPLY_REQUIRED/);
-  assert.match(personal,/niet.*eerste-persoons|eerste-persoons.*niet/i);
+  assert.ok(personal.includes("Nieuwscontext is geen bewijs"));
   assert.match(personal,/provider ID|provider-ID/);
   assert.equal(learn.evidence.linkedin_personal_provider_post,null);
 });
