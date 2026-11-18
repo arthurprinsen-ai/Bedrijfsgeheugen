@@ -432,7 +432,9 @@ Deno.serve(async (req) => {
       }
     }
     // Exact original personal final-review 422, not a provider failure:
-    // one bounded rebootstrap after the shared observation lexicon was fixed.
+    // bounded same-owner rebootstrap after the shared observation lexicon
+    // OR verified first-person household context was fixed. Do not bypass
+    // the independent reviewer or publish a previously rejected artifact.
     // Both same-day original records and unconsumed authority must agree.
     let retryablePersonalObservationReview=false;
     const rejectedPersonalObservation=(initialDecisions||[]).find((d:any)=>
