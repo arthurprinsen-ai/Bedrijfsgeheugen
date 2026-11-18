@@ -106,3 +106,12 @@ html body .bgx-streep.bgx-aan{background-size:100% 14%!important;background-posi
 @media(prefers-reduced-motion:reduce){html body .bgx-streep{background-size:100% 14%!important;background-position:0 96%!important}}
 html body .bm-kern{background:var(--rit-papier-zacht,#F3F1EC)!important;border-left:3px solid #FFE86B!important;border-radius:6px!important;font-weight:400!important}
 html body .bm-kern strong{font-weight:500!important}
+
+/* Cookiemelding compact (besluit 17 nov: rust): de korte tekst, één rij knoppen, geen kop.
+   De lange variant dekte op desktop de hero-tekst en de primaire knop af. */
+html body #bgCookie{width:min(340px,calc(100vw - 40px))!important;max-width:340px!important;padding:14px 16px!important;border-radius:16px!important}
+html body #bgCookie h4{display:none!important}
+html body #bgCookie .bgLang{display:none!important}
+html body #bgCookie .bgKort{display:inline!important}
+html body #bgCookie .bgBtns{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:8px!important;margin-top:10px!important}
+html body #bgCookie .bgBtns button{flex:1 1 0!important;padding:8px 12px!important;white-space:nowrap!important}
