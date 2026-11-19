@@ -45,9 +45,11 @@ export function composerSourcePreflight(action,plan){
  const ev=action?.evidence||{}, pub=ev?.public_source_evidence?.evidence||{};
  const sourceText=nonempty(ev?.headline||ev?.summary||pub?.headline||pub?.summary);
  const missing=[];
- if(plan?.human_readable_context!==true)missing.push('human_readable_context');
- const newsOk=plan?.source_trigger_relevance===true&&nonempty(action?.source_url).startsWith('https://')&&sourceText.length>=24;
  const relationship=relationshipFact(action);
+ // Besluit 27 okt 2026: twee verifieerbare relatiefeiten zijn zelf leesbare context. De plan-view zet
+ // human_readable_context alleen bij nieuws/headline/reply, waardoor relatie-acties anders altijd faalden.
+ if(plan?.human_readable_context!==true&&!relationship.ok)missing.push('human_readable_context');
+ const newsOk=plan?.human_readable_context===true&&plan?.source_trigger_relevance===true&&nonempty(action?.source_url).startsWith('https://')&&sourceText.length>=24;
  if(!newsOk&&!relationship.ok){
   if(plan?.source_trigger_relevance!==true)missing.push('source_trigger_relevance');
   if(!nonempty(action?.source_url).startsWith('https://'))missing.push('https_source_url');

@@ -21,9 +21,12 @@ test('one fact, empty values or unknown status never pass',()=>{
   assert.equal(composerSourcePreflight({...base,evidence:{relationship_evidence:rel}},plan).ok,false);
  }
 });
-test('human readable context stays mandatory and the news path is unchanged',()=>{
+test('19 Nov: relationship facts are readable context themselves; news path still needs human_readable_context',()=>{
  const rel={relationship_evidence:{role:'Eigenaar',company_name:'Van Dijk',status:'in_gesprek'}};
- assert.deepEqual(composerSourcePreflight({...base,evidence:rel},{human_readable_context:false}).missing,['human_readable_context']);
+ assert.equal(composerSourcePreflight({...base,evidence:rel},{human_readable_context:false}).ok,true);
+ assert.ok(composerSourcePreflight(base,{human_readable_context:false}).missing.includes('human_readable_context'));
+ const newsNoCtx=composerSourcePreflight({source_url:'https://nu.nl/a',evidence:{headline:'Bedrijf kondigt overname aan van concurrent in regio'}},{human_readable_context:false,source_trigger_relevance:true});
+ assert.equal(newsNoCtx.ok,false);
  const news={source_url:'https://nu.nl/a',evidence:{headline:'Bedrijf kondigt overname aan van concurrent in regio'}};
  const r=composerSourcePreflight(news,{human_readable_context:true,source_trigger_relevance:true});
  assert.equal(r.ok,true);assert.equal(r.via,'news');
@@ -41,5 +44,5 @@ test('18 Nov: role + company on the action itself count as two facts, bare name 
  assert.deepEqual([...relationshipFact(own).facts],['role','company']);
  assert.equal(composerSourcePreflight({...base,company_name:'DP Services'},plan).ok,false);
  assert.equal(composerSourcePreflight({...base,role:'CEO'},plan).ok,false);
- assert.equal(composerSourcePreflight(own,{human_readable_context:false}).ok,false);
+ assert.equal(composerSourcePreflight(own,{human_readable_context:false}).ok,true);
 });
