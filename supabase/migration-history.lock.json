@@ -3536,8 +3536,12 @@
     {
       "version": "20261118194000",
       "name": "original_guardian_mira_vision_exhausted_owner_notice_v5"
+    },
+    {
+      "version": "20261119090000",
+      "name": "connection_relationship_email_activation_v1"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-18T19:55:20.963Z"
+  "captured_at": "2026-11-19T09:12:00.000Z"
 }
