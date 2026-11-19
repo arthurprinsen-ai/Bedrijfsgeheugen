@@ -94,3 +94,7 @@ begin
   end if;
   execute 'create or replace view public.powerhouse_mkb_trigger_intelligence_v1 with (security_invoker=true) as '||v_new;
 end $$;
+
+-- Internal views: server-side only.
+revoke all on public.powerhouse_company_signal_resolution_v1 from public, anon, authenticated;
+revoke all on public.powerhouse_mkb_trigger_intelligence_v1 from public, anon, authenticated;

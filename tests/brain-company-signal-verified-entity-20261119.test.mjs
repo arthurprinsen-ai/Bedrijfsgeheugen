@@ -43,3 +43,8 @@ test('trigger view ignores legacy fragments and its own growth-swarm output, and
 test('no data is deleted or rewritten by the migration', () => {
   assert.doesNotMatch(code, /\bdelete\s+from\b|\btruncate\b|\bdrop\s+(table|view)\b|\bupdate\s+public\./i);
 });
+
+test('both internal views stay server-only', () => {
+  assert.match(code, /revoke all on public\.powerhouse_company_signal_resolution_v1 from public, anon, authenticated/);
+  assert.match(code, /revoke all on public\.powerhouse_mkb_trigger_intelligence_v1 from public, anon, authenticated/);
+});
