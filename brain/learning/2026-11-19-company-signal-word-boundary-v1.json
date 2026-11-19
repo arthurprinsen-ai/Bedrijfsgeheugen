@@ -1,0 +1,31 @@
+{
+  "type": "DATA_QUALITY_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-19",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "powerhouse|company-signal|substring-match-junk-entity|20261119-v1",
+  "owner": "existing powerhouse_company_signal_resolution_v1 and powerhouse_resolve_company_person_signals_v1; no new mechanism, scheduler or register",
+  "compiler": {
+    "failure_class": "ENTITY_RESOLUTION_SUBSTRING_MATCH",
+    "scope": "POWERHOUSE_TRIGGER_RESEARCH",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "powerhouse_company_signal_resolution_v1 matched bg_connecties.bedrijf as a lowercase substring of news text. Short or common names (anva, appen, ster, deel) matched inside other words, became predictive-signal entity keys and then trigger research actions that never obtained a domain, KvK number or decision maker and expired after 24 hours. The trigger view also read its own growth-swarm output back as company evidence.",
+  "prevention_rule": "A company entity is accepted only as a canonical source company or as a whole-word, exact-spelling, capitalised mention that is not on the common-word and month stoplist. Legacy substring-resolved signals and growth-swarm output are not read as company trigger evidence. No data is deleted.",
+  "prevention_rules": ["ACCEPT_COMPANY_ENTITY_ONLY_WHEN_WHOLE_WORD_AND_VERIFIED"],
+  "evaluation": {
+    "historical_replay": ["tests/brain-company-signal-verified-entity-20261119.test.mjs"],
+    "shadow": ["tests/brain-company-signal-verified-entity-20261119.test.mjs"],
+    "canary": ["tests/brain-company-signal-verified-entity-20261119.test.mjs"]
+  },
+  "evidence": {
+    "historical": [
+      "19 Nov 2026 production read-only: 776 trigger research actions in 7 days, 117 distinct keys, 527 single short words; 898 research_enrichment expired vs 195 done",
+      "Read-only simulation of the new rule on 1029 explicit-mention rows: 172 remain (215 keys down to 72)"
+    ],
+    "current": ["pending protected required test, migration apply and next natural 05:45 resolver run readback"]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_NATURAL_RESOLVER_RUN"
+}

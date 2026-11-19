@@ -3536,6 +3536,10 @@
     {
       "version": "20261118194000",
       "name": "original_guardian_mira_vision_exhausted_owner_notice_v5"
+    },
+    {
+      "version": "20261119090500",
+      "name": "company_signal_word_boundary_verified_entity_v1"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
