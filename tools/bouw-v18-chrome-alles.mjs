@@ -281,7 +281,7 @@ if (fouten.length) {
   // het gelinkte stylesheet in de browsercheck van productie komt en dus nog niet de
   // nieuwste versie heeft; zo klopt het contract op dezelfde build.
   const megamenuContract = '<style data-rb-megamenu>html body header.v17-header a[data-bg-megamenu-link][href],html body header.v17-header a[data-bg-megamenu-link][href] *{color:#000!important;font-weight:700!important}html body header.v17-header :is(.mega,.bgkop-paneel) h3:not([data-bg-megamenu-heading]){color:#fff!important;font-weight:700!important}</style>';
-  const link = '<link rel="stylesheet" href="/assets/rituals-belevenis.css?v=20261118c">' + megamenuContract;
+  const link = '<link rel="stylesheet" href="/assets/rituals-belevenis.css?v=20261118q">' + megamenuContract;
   for (const pad of await allePaginas()) {
     let h = await readFile(pad, 'utf8');
     if (!h.includes('</head>') || h.includes('rituals-belevenis.css')) continue;
@@ -293,7 +293,7 @@ if (fouten.length) {
 // Rituals-beleving: interactielaag (onthulling bij scrollen, ademmoment, zachte
 // overgangen). Alleen presentatie; zonder JS blijft alles gewoon zichtbaar.
 {
-  const script = '<script src="/assets/rituals-beleving.js?v=20261117b" defer></script>';
+  const script = '<script src="/assets/rituals-beleving.js?v=20261118o" defer></script>';
   for (const pad of await allePaginas()) {
     let h = await readFile(pad, 'utf8');
     if (!h.includes('</body>') || h.includes('rituals-beleving.js')) continue;

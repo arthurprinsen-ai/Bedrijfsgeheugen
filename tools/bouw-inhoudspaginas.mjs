@@ -44,6 +44,7 @@ function routerLaatLinksDoor(html) {
 function inhoudBlok(p) {
   const blokken = (p.blokken || []).map(b => `<article><h2>${ontsnap(b.kop)}</h2><p>${ontsnap(b.tekst)}</p></article>`).join('\n');
   const cta = p.cta ? `<p><a class="cta" href="${p.cta.href}">${ontsnap(p.cta.tekst)} \u2192</a></p>` : '';
+  const cta2 = p.cta2 ? `<p><a class="cta" href="${p.cta2.href}">${ontsnap(p.cta2.tekst)} \u2192</a></p>` : '';
   const slot = p.slot ? `<p>${ontsnap(p.slot)}</p>` : '';
   const kruimelLabel = ontsnap(p.kruimel || p.kicker || p.h1);
   const kruimelSchema = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"${kruimelLabel}","item":"https://www.bedrijfsgeheugen.nl${p.pad}"}]}<\/script>`;
@@ -58,6 +59,7 @@ function inhoudBlok(p) {
 ${blokken}
 ${slot}
 ${cta}
+${cta2}
 </div></section>
 </div>
 `;

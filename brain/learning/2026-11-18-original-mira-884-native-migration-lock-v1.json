@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|gitops|original-mira-v5-native-884-lock-backfill|20261118-v1",
+  "obligation_id": "powerhouse|gitops|original-mira-v5-native-884-lock-backfill|20261118-v1",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original protected Supabase GitOps history writer (NO new executor)",
+  "root_cause": "Original protected PR #6047 merged to main and native production independently applied exact version 20261118194000/original_guardian_mira_vision_exhausted_owner_notice_v5 as migration 884; canonical main migration-history.lock.json still had 883 applied identities. Without independent native source-lock reconciliation, the next original migration candidate would fail history integrity.",
+  "evidence": {
+    "native_applied_count": 884,
+    "main_lock_previous_count": 883,
+    "first_883_identity_pairs_match": true,
+    "native_last_version": "20261118194000",
+    "native_last_name": "original_guardian_mira_vision_exhausted_owner_notice_v5",
+    "native_guardian_v5_live": true,
+    "original_mira_provider_post": false,
+    "owner_task_delivery_verified": false
+  },
+  "prevention_rule": "On original protected native SQL deployment, compare every already-applied version/name with main lock, append only the exact extra independently observed native version in an original protected PR, enforce regression+learning and test with protected preview, never rerun SQL or synthesize database effects.",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-mira-884-native-migration-lock-20261118.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-mira-884-native-migration-lock-20261118.test.mjs"
+  ],
+  "status": "CANDIDATE_PENDING_PROTECTED_LOCK_MERGE"
+}

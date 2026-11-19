@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|commercial|approved-connections-without-predictive-brief-never-prepared|20261119-v1",
+  "obligation_id": "powerhouse|commercial|approved-connections-without-predictive-brief-never-prepared|20261119-v1",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "problem": "Of 23,295 connections, 119 are approved recipients (human_approved, valid email, role and company, not suppressed) yet none is prepared for email, because the only producer also requires a predictive brief.",
+  "observations": {
+    "date": "2026-11-19",
+    "bg_connecties_total": 23295,
+    "human_approved_with_email": 123,
+    "eligible_now": 119,
+    "never_offered": 73,
+    "existing_producer_cap_per_day": 5
+  },
+  "root_cause": "powerhouse_prepare_connection_email_activation_v1 selects only from powerhouse_predictive_commercial_brief_cache_v1 with HOT/PREDICTIVE/WARM state; the 27 Oct decision (role + company are verifiable facts) had no producer.",
+  "fix": "New powerhouse_prepare_connection_relationship_email_v1 called from the existing daily powerhouse_prepare_connection_activation_v1 job: approved recipients with role and company become prepared autonomous_email actions carrying relationship_evidence; total daily budget stays 5, predictive path first, no new scheduler, no send.",
+  "prevention": "tests/brain-connection-relationship-email-20261119.test.mjs asserts approval, suppression, cooldown, budget, no scheduler and no send in the migration source.",
+  "not_proven": [
+    "migration applied in production",
+    "action prepared for a real connection",
+    "message generated on real data",
+    "provider-confirmed send",
+    "reply or customer outcome"
+  ],
+  "owner": "powerhouse-connection-activation",
+  "failure_class": "CLASSIFIER_GAP",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "COMMERCIAL_ACTIVATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "tests": [
+    "tests/brain-connection-relationship-email-20261119.test.mjs"
+  ],
+  "regression_test": "tests/brain-connection-relationship-email-20261119.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connection-relationship-email-20261119.test.mjs"
+    ]
+  }
+}

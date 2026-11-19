@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|personal-linkedin|stale422-copied-after-approved-review-and-provider-create|20261118-v1",
+  "obligation_id": "powerhouse|personal-linkedin|stale422-copied-after-approved-review-and-provider-create|20261118-v1",
+  "original_owner": "original powerhouse-social-publisher, original independent bg-pre-publish-review, original provider reconciler",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "A genuine original personal post was regenerated after source-locked 422 repair, independently reviewer PASSED and sent with unique provider urn:li:share:7528898612878278657. Original publisher merged prior delivery_evidence in gatePassedEvidence but failed to replace the stale review_status=422, reviewed_text_hash=old draft and violations, creating mutually contradictory passed+422 record. Later reconcilers propagated contradictory fields. Provider GET_POST_CONTENT returned Forbidden although original public-LinkedIn-page existence readback was independently observed.",
+  "evidence": {
+    "date": "2026-11-18",
+    "day_channel": "linkedin_personal",
+    "provider_post_id": "urn:li:share:7528898612878278657",
+    "canonical_publication_status": "LIVE_PROVEN",
+    "current_final_hash": "4bdbbb5f61eea015d65691d0fbb321949139505d239121f9131dfb06a902b3c9",
+    "stale_prior_hash": "709acac620929d74fa27a4216f93be6ed810b293dbad1c3fbd748de16814480d",
+    "pre_publish_gate": "passed",
+    "stale_review_status": 422,
+    "provider_exact_text_readback": "UNVERIFIED_FORBIDDEN",
+    "duplicate_republish_permitted": false
+  },
+  "prevention_rule": "Only after the same independent reviewer returns HTTP200, PASS and exact current text SHA, set CURRENT review_status=200, reviewed_text_hash=current text hash, clear current violations and transient-review error. Preserve bounded older 422 as prior_rejected_review historical data, never as current veto. Preserve original publication authority, text hash, provider no-resend and independent readback; never retroactively claim inaccessible provider text is verified.",
+  "compiler": {
+    "failure_class": "EVIDENCE_CONFLICT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-social-review-200-evidence-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-social-review-200-evidence-20261118.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-social-review-200-evidence-20261118.test.mjs"
+  ],
+  "status": "CANDIDATE_UNTIL_PROTECTED_RELEASE_CURRENT_ROW_STILL_HISTORICALLY_CONFLICTED"
+}

@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|personal-linkedin|dweilrobot-final-context-lexical-422-recovery-gap|20261118-v1",
+  "obligation_id": "powerhouse|personal-linkedin|dweilrobot-final-context-lexical-422-recovery-gap|20261118-v1",
+  "original_owner": "powerhouse-content-loop #140, original pre-publish-review and same original content orchestrator",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "18-Nov original personal LinkedIn generated a 148-word source-backed first-person household text after 429 billing cooldown, but exact final reviewer marked 422 FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED despite the phrase 'Ik zocht een dweilrobot'. Reviewer life-context regex recognized robotstofzuiger but not dweilrobot/waterleiding/afvoer. Original content-loop 422 bounded rebootstrap only matched OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED, so a content-ready artifact became BLOCKED without a same-owner recovery.",
+  "evidence": {
+    "date": "2026-11-18",
+    "state": "original personal decision publish/blocked; obligation BLOCKED",
+    "source_family": "real verified 2026-11-15 user-fact concerning robot for tap and drain; no purchase/use inferred",
+    "artifact": "content_ready, 148 words, model gpt-5-mini, exact independent reviewer 422",
+    "user_fact_verified": true,
+    "original_external_id": null,
+    "recovery_attempts": 1,
+    "provider_side_effect": false,
+    "live_proof": "pending"
+  },
+  "prevention_rule": "Treat household device words consistently under the existing concrete first-person+household context+action validator; ONLY the exact independent 422 with matching same-day decision/obligation source+text hash, verified original user-fact provenance and unconsumed external authority may restart the original editor up to three attempts. No bypass of independent reviewer, provider readback, uniqueness, consent or personal truth.",
+  "compiler": {
+    "failure_class": "RECOVERY_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-dweilrobot-review-rebootstrap-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-dweilrobot-review-rebootstrap-20261118.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-personal-dweilrobot-review-rebootstrap-20261118.test.mjs"
+  ],
+  "status": "CANDIDATE_UNTIL_PROTECTED_RELEASE_AND_NATURAL_REVIEW_PROOF"
+}

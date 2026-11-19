@@ -1,0 +1,5 @@
+# 2026-11-18 original provider lock 883 / #4198
+
+Production source protected #6043 true main SHA 7e58cb30a9765b403430960b338e98460e34ed19. Official native Supabase provider after merge registered 883, new exact `20261118184000/original_guardian_provider_scope_source_freshness_v4` as last applied migration. Original Git main migration-history.lock.json 882; all 882 identities exactly matched provider. One protected source-only lock update created; no SQL reapplication and no extra executor. Existing ONE BRAIN result guardian new code independently read back live. No natural result after release yet, so reported code-live only, not owner-message delivered or social/email sends.
+
+Required follow-up: candidate-specific protected CI+CodeQL+preview, merge, exact native/source 883 parity. A replay of old provider preview migrations must be recovered on its own existing preview branch without bypassing hard checks or touching production. Actual provider status remains subject to same-key proof. Test `tests/brain-original-provider-883-lock-parity-20261118.test.mjs`.

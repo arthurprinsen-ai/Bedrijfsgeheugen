@@ -67,7 +67,7 @@ test('existing one-loop executor and original editor both consume bounded recove
  const loop=await readFile(new URL('powerhouse-content-loop/index.ts',root),'utf8');
  const editor=await readFile(new URL('powerhouse-content-orchestrator/index.ts',root),'utf8');
  assert.match(loop,/retryableCompanyEditorialBlock=regeneration\.eligible/);
- assert.match(loop,/retryableHeldPersonalDuplicate \|\| retryableCompanyEditorialBlock/);
+ assert.match(loop,/retryableHeldPersonalDuplicate[^;\n]*\|\|[^;\n]*retryableCompanyEditorialBlock/);
  assert.match(editor,/companyRegeneration\?\.eligible/);
  assert.match(editor,/company_blocked_regeneration:/);
  assert.match(editor,/rejected_recommendation_ids:rejectedRecommendationIds/);

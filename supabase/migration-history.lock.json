@@ -3524,8 +3524,28 @@
     {
       "version": "20261117192500",
       "name": "original_cro_consumer_source_diagnostics_v1"
+    },
+    {
+      "version": "20261118174500",
+      "name": "original_provider_owner_notification_receipt_v3"
+    },
+    {
+      "version": "20261118184000",
+      "name": "original_guardian_provider_scope_source_freshness_v4"
+    },
+    {
+      "version": "20261118194000",
+      "name": "original_guardian_mira_vision_exhausted_owner_notice_v5"
+    },
+    {
+      "version": "20261119090000",
+      "name": "connection_relationship_email_activation_v1"
+    },
+    {
+      "version": "20261119090500",
+      "name": "company_signal_word_boundary_verified_entity_v1"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-17T19:22:05.782588Z"
+  "captured_at": "2026-11-19T09:35:00.000Z"
 }

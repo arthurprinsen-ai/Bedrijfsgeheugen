@@ -1,6 +1,6 @@
 import postgres from 'npm:postgres@3.4.7';
 import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
-import {shouldRebootstrapHeldPersonalDuplicate} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
+import {shouldRebootstrapHeldPersonalDuplicate,planVerifiedLatePersonalSourceRebootstrap} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
 import {assessDailyPublicationRecovery,assessPreventivePublicationReadiness} from '../_shared/daily-publication-recovery.mjs';
 import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
 import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
@@ -432,13 +432,18 @@ Deno.serve(async (req) => {
       }
     }
     // Exact original personal final-review 422, not a provider failure:
-    // one bounded rebootstrap after the shared observation lexicon was fixed.
+    // bounded same-owner rebootstrap after the shared observation lexicon
+    // OR verified first-person household context was fixed. Do not bypass
+    // the independent reviewer or publish a previously rejected artifact.
     // Both same-day original records and unconsumed authority must agree.
     let retryablePersonalObservationReview=false;
     const rejectedPersonalObservation=(initialDecisions||[]).find((d:any)=>
       clean(d.channel)==='linkedin_personal'&&clean(d.state)==='blocked'&&
       Number(d.delivery_evidence?.review_status)===422&&
-      d.delivery_evidence?.violations?.some((v:any)=>v?.code==='OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED'));
+      d.delivery_evidence?.violations?.some((v:any)=>[
+        'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED',
+        'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED'
+      ].includes(clean(v?.code))));
     if(rejectedPersonalObservation){
       const [obligationSource,capabilitySource]=await Promise.all([
         db.from('content_publication_obligations')
@@ -471,32 +476,49 @@ Deno.serve(async (req) => {
     // Reopen only when the provider authority is provably unused, then reuse the
     // existing source materializer and alternate-content decision path.
     let retryableHeldPersonalDuplicate = false;
+    let retryableVerifiedLatePersonalSource = false;
     const personalHeld = (initialDecisions || []).find((decision:any) =>
       clean(decision.channel)==='linkedin_personal' &&
       clean(decision.state)==='blocked' &&
       clean(decision.decision)==='hold');
     if (personalHeld) {
-      const [obligationResult,recommendationResult] = await Promise.all([
+      const [obligationResult,recommendationResult,capabilityResult] = await Promise.all([
         db.from('content_publication_obligations')
-          .select('channel,status,last_error,external_id,evidence,recovery_attempts')
+          .select('channel,status,last_error,external_id,evidence,recovery_attempts,published_at,live_proven_at')
           .eq('tenant_id','canonical').eq('publication_date',runDate)
           .eq('channel','linkedin_personal').maybeSingle(),
         db.from('powerhouse_content_recommendations')
-          .select('recommendation_id,dedupe_key,status')
+          .select('recommendation_id,dedupe_key,status,target_channel,run_date,updated_at,evidence')
           .eq('run_date',runDate).eq('target_channel','linkedin_personal')
-          .limit(12)
+          .order('updated_at',{ascending:false}).limit(50),
+        db.from('powerhouse_social_publish_capabilities_v1')
+          .select('channel,consumed_at,revoked_at')
+          .eq('run_date',runDate).eq('channel','linkedin_personal').maybeSingle()
       ]);
-      if (obligationResult.error || recommendationResult.error) {
+      if (obligationResult.error || recommendationResult.error || capabilityResult.error) {
         stepResults.push({name:'held-personal-source-read',ok:false,degraded:true,
-          error:'PERSONAL_DUPLICATE_RECOVERY_READ_FAILED'});
+          error:'PERSONAL_ORIGINAL_AUTHORITY_OR_SOURCE_READ_FAILED'});
       } else {
         retryableHeldPersonalDuplicate=shouldRebootstrapHeldPersonalDuplicate(
           personalHeld,obligationResult.data,recommendationResult.data||[],runDate);
+        // The old source-missing hold predates a newly verified first-person
+        // user-fact. Wake ONLY the same original orchestrator, inside the
+        // existing loop lease, and only for an unused original capability.
+        const arrival=planVerifiedLatePersonalSourceRebootstrap({
+          decision:personalHeld,obligation:obligationResult.data,
+          recommendations:recommendationResult.data||[],runDate,
+          capabilityConsumed:Boolean(capabilityResult.data?.consumed_at&&!capabilityResult.data?.revoked_at)
+        });
+        retryableVerifiedLatePersonalSource=arrival.eligible;
+        stepResults.push({name:'held-personal-late-source-recovery',ok:true,
+          skipped:!arrival.eligible,reason:arrival.reason,
+          source_recommendation_id:arrival.source_recommendation_id,
+          original_writer:'powerhouse-content-orchestrator'});
       }
     }
     let bootstrapStillInFlight = false;
     // A completed bootstrap is one of the normal bounded generation rounds.
-    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate || retryableCompanyEditorialBlock || retryablePersonalObservationReview) {
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate || retryableVerifiedLatePersonalSource || retryableCompanyEditorialBlock || retryablePersonalObservationReview) {
       const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
       stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
       // When the child may still be running, do not invoke it a second time in

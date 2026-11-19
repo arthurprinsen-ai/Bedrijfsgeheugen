@@ -116,6 +116,94 @@ html body #bgCookie .bgKort{display:inline!important}
 html body #bgCookie .bgBtns{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:8px!important;margin-top:10px!important}
 html body #bgCookie .bgBtns button{flex:1 1 0!important;padding:8px 12px!important;white-space:nowrap!important}
 
+/* Hero: eerste scherm blijft rustig en de hoofdactie blijft zichtbaar (18 nov 2026) */
+@media(min-width:900px){html body section.hero-video.hero-inspiration .hero-copy{margin-top:-64px}html body section.hero-video.hero-inspiration .hero-video-content{padding-bottom:150px!important}}
+/* Secundaire regels onder de knop waren wit op papier: nu leesbaar */
+html body section.hero-video.hero-inspiration .hero-video-actions a:not(.hero-primary):not(.hero-secondary):not(.rb-adem-knop){color:var(--rit-inkt,#14171A)!important;text-decoration:underline!important;text-underline-offset:3px;opacity:1!important}
+html body section.hero-video.hero-inspiration .hero-video-actions p,html body section.hero-video.hero-inspiration .hero-video-actions p *:not(a):not(strong){color:var(--rit-zacht,#5B6168)!important;opacity:1!important}
+@media(max-width:760px){html body section.hero-video.hero-inspiration video.hero-bg-video{height:210px!important;max-height:210px!important;object-fit:cover!important}html body section.hero-video.hero-inspiration .hero-video-content{margin-top:-56px!important}}
+
+/* Cookiebanner rechtsonder op brede schermen: de hoofdknop in de hero blijft vrij (18 nov 2026) */
+@media(min-width:900px){html body #bgCookie{left:auto!important;right:20px!important;bottom:88px!important}}
+
+/* Mobiel: de hoofdactie staat direct onder de kop, de uitleg erna (18 nov 2026) */
+@media(max-width:760px){html body section.hero-video.hero-inspiration .hero-copy{display:flex!important;flex-direction:column!important}
+html body section.hero-video.hero-inspiration .hero-copy>*{order:6}
+html body section.hero-video.hero-inspiration .hero-copy>.hero-kicker{order:0}
+html body section.hero-video.hero-inspiration .hero-copy>h1{order:1}
+html body section.hero-video.hero-inspiration .hero-copy>.handline{order:2}
+html body section.hero-video.hero-inspiration .hero-video-actions{display:contents!important}
+html body section.hero-video.hero-inspiration .hero-video-actions>.hero-primary{order:3;align-self:flex-start;margin:14px 0 6px!important}
+html body section.hero-video.hero-inspiration .hero-copy>.hero-sub{order:4}
+html body section.hero-video.hero-inspiration .hero-video-actions>*:not(.hero-primary){order:5}}
+
+/* Hero-beeld: besluitkaart (voorbeeld) i.p.v. stockfilmpje met boog (18 nov 2026) */
+html body section.hero-video.hero-inspiration video.hero-bg-video[data-rb-vervangen]{display:none!important}
+html body .rb-besluit{background:var(--rit-papier-zacht,#F3F1EC);border:1px solid var(--rit-lijn,rgba(20,23,26,.14));border-radius:20px;padding:30px 30px 24px;color:var(--rit-inkt,#14171A);box-shadow:0 30px 60px -40px rgba(20,23,26,.35);font-family:var(--rit-sans,'Instrument Sans',system-ui,sans-serif);z-index:2}
+html body .rb-besluit small{display:flex;align-items:center;gap:9px;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rit-zacht,#5B6168);font-weight:500}
+html body .rb-besluit small i{display:block;width:8px;height:8px;border-radius:50%;background:#FFE86B;box-shadow:0 0 0 1px rgba(20,23,26,.25)}
+html body .rb-besluit h2{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:1.65rem;line-height:1.2;letter-spacing:-.01em;margin:16px 0 20px;color:var(--rit-inkt,#14171A)}
+html body .rb-besluit dl{margin:0;display:grid;gap:0}
+html body .rb-besluit dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14))}
+html body .rb-besluit dt{font-size:12.5px;color:var(--rit-zacht,#5B6168)}
+html body .rb-besluit dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--rit-inkt,#14171A)}
+html body .rb-besluit p{display:none;margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--rit-zacht,#5B6168);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding-top:14px}
+html body .rb-film{margin:0;position:relative;z-index:2}
+html body .rb-film video{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:62% 50%;border-radius:22px;background:#E9E5DC;box-shadow:0 40px 80px -48px rgba(20,23,26,.5)}
+html body .rb-film .rb-besluit{position:absolute;left:-36px;bottom:28px;width:min(78%,330px);padding:20px 22px 16px;background:rgba(251,250,247,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+html body .rb-film .rb-besluit h2{font-size:1.2rem;margin:10px 0 8px}
+html body .rb-film .rb-besluit .rb-b-waarom,html body .rb-film .rb-besluit .rb-b-datum{display:none}
+html body .rb-film .rb-besluit dl>div{grid-template-columns:70px 1fr;padding:8px 0}
+html body .rb-film .rb-besluit dd{font-size:13px}
+@media(min-width:1100px){html body .rb-film{position:absolute;top:calc(50% - 90px);right:max(5vw,calc((100vw - 1200px)/2));transform:translateY(-50%);width:min(30vw,400px)}}
+@media(max-width:1099px){html body .rb-film{max-width:520px;width:calc(100% - 32px);margin:24px auto 0}html body .rb-film video{aspect-ratio:4/3}html body .rb-film .rb-besluit{left:12px;bottom:12px;width:min(76%,300px);padding:14px 16px 10px}html body .rb-film .rb-besluit h2{font-size:1.05rem}}
+@media(prefers-reduced-motion:reduce){html body .rb-film video{animation:none}}
+html body .rb-film .rb-besluit{width:min(62%,250px);left:-44px;bottom:26px;padding:16px 18px 6px;min-height:0;height:auto}
+html body .rb-film .rb-besluit h2{font-size:1.05rem;margin:8px 0 6px}
+html body .rb-film .rb-besluit dl>div:nth-of-type(n+3){display:none}
+html body .rb-film .rb-besluit p{display:none}
+@media(max-width:1099px){html body .rb-film .rb-besluit{left:10px;bottom:10px;width:min(66%,250px);padding:12px 14px 4px}html body .rb-film .rb-besluit dl{display:none}}
+html body .rb-film .rb-besluit{position:absolute!important;margin:0!important;max-width:none}
+@media(max-width:1099px){html body .rb-film .rb-besluit h2{font-size:.95rem}}
+html body .rb-film .rb-besluit{top:auto!important;right:auto!important;transform:none!important}
+html body section.hero-video.hero-inspiration .hero-copy>.rb-film{order:3;width:100%;max-width:520px;margin:6px 0 18px}
+@media(max-width:1099px){html body .rb-film video{aspect-ratio:16/11}}
+@media(max-width:1099px){html body .rb-film .rb-besluit h2{font-size:1rem!important;line-height:1.2!important;margin:6px 0 8px!important}html body .rb-film .rb-besluit{width:min(62%,230px)}}
+/* Hero-film: het drone-filmpje vult weer de hele hero (vlucht door architectuur, overzicht als een vogel).
+   Links vervaagt het beeld in het papier, zodat de tekst rustig leesbaar blijft. */
+html body section.hero-video.hero-inspiration video.hero-bg-video{position:absolute!important;inset:0!important;top:0!important;right:0!important;left:0!important;bottom:0!important;transform:none!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;object-fit:cover!important;object-position:62% 50%!important;filter:saturate(.82) brightness(1.02) contrast(.96)!important;margin:0!important;-webkit-mask-image:linear-gradient(90deg,transparent 0,transparent 42%,rgba(0,0,0,.5) 58%,#000 80%);mask-image:linear-gradient(90deg,transparent 0,transparent 42%,rgba(0,0,0,.5) 58%,#000 80%)}
+@media(max-width:860px){
+  html body section.hero-video.hero-inspiration video.hero-bg-video{position:absolute!important;inset:0 0 auto 0!important;top:0!important;height:230px!important;width:100%!important;object-position:50% 40%!important;-webkit-mask-image:linear-gradient(180deg,#000 0,#000 45%,transparent 92%);mask-image:linear-gradient(180deg,#000 0,#000 45%,transparent 92%)}
+  html body section.hero-video.hero-inspiration .hero-video-content{padding-top:236px!important}
+}
+/* ---------- Adviseur-ronde (homepage) ---------- */
+html body .rb-adviseur{background:var(--rit-papier-zacht,#F3F1EC);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));border-bottom:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding:clamp(56px,8vw,104px) 5vw;font-family:var(--rit-sans,'Instrument Sans',system-ui,sans-serif);color:var(--rit-inkt,#14171A)}
+html body .rb-adv-wrap{max-width:1100px;margin:0 auto}
+html body .rb-adviseur small{display:block;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--rit-zacht,#5B6168);font-weight:500}
+html body .rb-adviseur h2{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:clamp(1.9rem,3.4vw,2.9rem);line-height:1.12;letter-spacing:-.02em;margin:18px 0 18px;color:var(--rit-inkt,#14171A);max-width:26ch}
+html body .rb-adviseur .rb-adv-lead{font-size:1.05rem;line-height:1.7;color:var(--rit-zacht,#5B6168);max-width:36rem;margin:0 0 40px}
+html body .rb-adviseur ol{list-style:none;margin:0 0 40px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+html body .rb-adviseur li{padding:22px 28px 22px 0;border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));display:flex;flex-direction:column;gap:8px}
+html body .rb-adviseur li b{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:1.25rem;color:var(--rit-inkt,#14171A)}
+html body .rb-adviseur li span{font-size:.97rem;line-height:1.6;color:var(--rit-zacht,#5B6168)}
+html body .rb-adviseur .rb-adv-knop{display:inline-block;padding:14px 28px;border-radius:999px;border:1px solid var(--rit-inkt,#14171A);color:var(--rit-inkt,#14171A);text-decoration:none;font-weight:600;font-size:.97rem;transition:background-color .4s,color .4s}
+html body .rb-adviseur .rb-adv-knop:hover{background:var(--rit-inkt,#14171A);color:var(--rit-papier,#FBFAF7)}
+@media(max-width:860px){html body .rb-adviseur ol{grid-template-columns:1fr}html body .rb-adviseur li{padding-right:0}}
+/* Eén rustige donkere kleur in plaats van drie blauwtinten. */
+html body :is(section.bgvf,section.pgl,section.v18-chaos-section){background:#14171A!important}
+/* Productkaarten: papier met een dunne lijn in plaats van geel en blauw. */
+html body .service-product-card:is(.lime,.cyan,.blue){background:#F3F1EC!important;color:#14171A!important;border:1px solid rgba(20,23,26,.14)!important;box-shadow:none!important}
+html body .service-product-card:is(.lime,.cyan,.blue) :is(h1,h2,h3,h4,a,b,strong,span,li){color:#14171A!important}
+html body .service-product-card:is(.lime,.cyan,.blue) p{color:#5B6168!important}
+/* Het bedrag mag rustig zijn: serif, kleiner, gewone dikte. */
+html body #annualPotential.count-big{font-family:var(--rit-serif,'Fraunces',Georgia,serif)!important;font-weight:400!important;font-size:clamp(3.2rem,8vw,6rem)!important;letter-spacing:-.025em!important;line-height:1.05!important}
+/* Mobiel: korte hero. Kop, belofte, één knop, één link, één zin geruststelling. */
+@media(max-width:860px){
+  html body section.hero-video.hero-inspiration .hero-sub{display:none!important}
+  html body section.hero-video.hero-inspiration .hero-video-actions p:not(:first-of-type){display:none!important}
+  html body section.hero-video.hero-inspiration :is(.hero-note,.hero-example-switch){display:none!important}
+  html body section.hero-video.hero-inspiration .hero-video-actions p{margin:10px 0 0!important;font-size:.95rem!important;line-height:1.5!important}
+}
 /* Eén stille voortgangsindicator (besluit 17 nov): de leestijd-ring boven de WhatsApp-knop dubbelt de
    dunne gouden lijn bovenaan en verdwijnt. */
 html body .bgx-ring{display:none!important}

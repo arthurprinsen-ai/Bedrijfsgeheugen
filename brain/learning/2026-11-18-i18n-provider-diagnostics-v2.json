@@ -1,0 +1,53 @@
+{
+  "fingerprint": "netlify|production-i18n-translate|http-502|20261022-v1",
+  "date": "2026-11-18",
+  "parent_issue": 4215,
+  "original_owner": "netlify/functions/i18n-translate.mjs",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "problem": "Generic log class collapsed OpenAI provider markers and translation errors",
+  "observed_production": {
+    "endpoint": "/api/i18n-translate",
+    "response_status": 502,
+    "requests_24h": 13,
+    "source_classification": "TRANSLATION_RUNTIME_OR_SHAPE",
+    "actual_upstream_cause": "UNKNOWN"
+  },
+  "root_cause_diagnostic": "Existing OpenAI adapter throws OPENAI_PROVIDER_ERROR_<HTTP>:<details>; classifier only matched a leading bare HTTP code.",
+  "correction": "Only static, bounded diagnostic classes and HTTP codes; never provider message or request text.",
+  "guardrails": [
+    "No new executor/scheduler/store",
+    "No prompt, tenant, credentials, translation text, email or raw message in logs",
+    "Sovereignty/authorization and fail-closed HTTP semantics unchanged",
+    "Unknown actual root cause remains unknown"
+  ],
+  "evaluation": {
+    "regression": "tests/brain-i18n-translation-diagnostics-v1.test.mjs",
+    "production_validation": "Fresh classified error + exact deployment readback required",
+    "historical_replay": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ]
+  },
+  "independent_effect_verified": false,
+  "terminal_success": false,
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 13,
+    "security_sensitive": false
+  },
+  "root_cause": "Diagnostic classifier accepted a leading bare HTTP code, while the production OpenAI adapter prefixes errors OPENAI_PROVIDER_ERROR_<HTTP>: so upstream 4xx/5xx and model-output issues collapsed to one generic type.",
+  "prevention": "Run historical privacy regression for provider 429/500/503, invalid adapter markers, model output budget/empty/refusal, translation JSON/shape; enforce this with existing protected learning gate without changing fail-closed handlers.",
+  "evidence": {
+    "tests": [
+      "tests/brain-i18n-translation-diagnostics-v1.test.mjs"
+    ],
+    "production_readback": {
+      "baseline": "13 HTTP 502 on /api/i18n-translate in 24-hour window",
+      "failure_class_before": "TRANSLATION_RUNTIME_OR_SHAPE",
+      "actual_upstream_cause": "UNKNOWN",
+      "exact_success_after_deploy": false
+    }
+  }
+}

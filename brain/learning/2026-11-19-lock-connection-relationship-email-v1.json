@@ -1,0 +1,24 @@
+{
+  "fingerprint": "supabase|migration-lock|connection-relationship-email-migration-without-lock|20261119-v1",
+  "date": "2026-11-19",
+  "owner": "agent-reliability",
+  "obligation_id": "supabase|migration-lock|connection-relationship-email-migration-without-lock|20261119-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "MIGRATION_LOCK_DRIFT", "scope": "CI", "machine_enforceable": true, "repeat_count": 5, "security_sensitive": false},
+  "root_cause": "PR #6051 voegde migratie 20261119090000 toe die na merge op de provider is toegepast zonder dat de lock in dezelfde wijziging werd bijgewerkt; main en openstaande PR's werden rood op de lock-tests.",
+  "correction": "Eén regel toegevoegd aan de lock na providerreadback; geen test aangepast.",
+  "prevention": [
+    "Werk supabase/migration-history.lock.json in dezelfde PR bij als de migratie, met providerreadback.",
+    "Lees voor een lockwijziging altijd eerst de providergeschiedenis; voeg nooit een versie toe die daar niet staat."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-cro-production-migration-lock-20261029.test.mjs"],
+    "canary": ["tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-cro-production-migration-lock-20261029.test.mjs", "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"],
+    "source": ["supabase/migration-history.lock.json"],
+    "outcome": "Lokaal: lock bevat de nieuwe versie 20261119090000 en komt overeen met de provider. PR-checks en productie-readback open."
+  }
+}

@@ -68,4 +68,31 @@ test.describe('One installed Bedrijfsgeheugen app across phone and tablet',()=>{
   expect(errors).toEqual([]);
  });
 
+ test('WhatsApp stays branded green above the public scan dock at phone and tablet widths',async({page})=>{
+  if(!base)test.skip(true,'PREVIEW_URL or PRODUCTION_URL required');
+  for(const width of [320,390,820]){
+   await page.setViewportSize({width,height:844});
+   const response=await page.goto(base+'/frisse-blik?whatsapp-dock-test='+width,{waitUntil:'domcontentloaded',timeout:45000});
+   expect(response.status()).toBeLessThan(400);
+   const dock=page.locator('[data-bg-app-public-dock]');
+   await expect(dock).toBeVisible();
+   const widgets=page.locator('a.bg-whatsapp-contact:visible, a.wa:visible');
+   await expect(widgets).toHaveCount(1);
+   const values=await page.evaluate(()=>{
+    const nav=document.querySelector('[data-bg-app-public-dock]');
+    const wa=[...document.querySelectorAll('a.bg-whatsapp-contact,a.wa')]
+     .find(node=>{const style=getComputedStyle(node);return style.display!=='none'&&style.visibility!=='hidden'});
+    const navRect=nav.getBoundingClientRect(),waRect=wa.getBoundingClientRect();
+    return {navTop:navRect.top,waBottom:waRect.bottom,green:getComputedStyle(wa).backgroundColor,
+      href:wa.href,withinViewport:waRect.left>=0&&waRect.right<=innerWidth,
+      navAction:nav.querySelector('a:last-child').getBoundingClientRect().toJSON()};
+   });
+   expect(values.green).toBe('rgb(37, 211, 102)');
+   expect(values.waBottom).toBeLessThanOrEqual(values.navTop-8);
+   expect(values.withinViewport).toBeTruthy();
+   expect(values.href.startsWith('https://wa.me/')).toBeTruthy();
+   await dock.locator('a').last().click({trial:true});
+  }
+ });
+
 });

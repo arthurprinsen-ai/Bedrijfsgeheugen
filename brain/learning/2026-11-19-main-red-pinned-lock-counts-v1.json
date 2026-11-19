@@ -1,0 +1,23 @@
+{
+  "fingerprint": "ci|test|pinned-migration-count-and-literal-source-order|20261119-v1",
+  "date": "2026-11-19",
+  "owner": "agent-reliability",
+  "obligation_id": "ci|test|pinned-migration-count-and-literal-source-order|20261119-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "STALE_TEST_ASSUMPTION", "scope": "CI", "machine_enforceable": true, "repeat_count": 3, "security_sensitive": false},
+  "root_cause": "Tests pinden het totaal aantal migraties in de lock (882/883/884) en de letterlijke volgorde van een conditie in bronCode; elke nieuwe migratie of legitieme brontoevoeging maakte main rood.",
+  "correction": "Tests assert de uitkomst: eigen migratie precies één keer aanwezig, versies uniek en geordend, identifiers in dezelfde conditie. Lock en bron ongewijzigd.",
+  "prevention": [
+    "Pin nooit een totaalaantal migraties of exacte brontekst; assert aanwezigheid, uniciteit en volgorde.",
+    "Een test die bij elke nieuwe migratie moet worden aangepast is een verouderde assertievorm, geen controle."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-original-mira-884-native-migration-lock-20261118.test.mjs"],
+    "canary": ["tests/brain-original-provider-883-lock-parity-20261118.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-original-mira-884-native-migration-lock-20261118.test.mjs", "tests/brain-original-provider-882-migration-lock-20261118.test.mjs", "tests/brain-original-provider-883-lock-parity-20261118.test.mjs", "tests/brain-first-time-right-company-regeneration-20261102.test.mjs"],
+    "outcome": "Lokaal: alle lock- en pariteitstests groen. PR-checks en main-readback open."
+  }
+}

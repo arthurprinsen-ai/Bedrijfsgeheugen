@@ -49,7 +49,9 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/input\[type="submit"\]/);
   assert.match(runtime,/\['placeholder','title','aria-label','alt'\]/);
   assert.match(runtime,/stillMissing/);
-  assert.match(runtime,/await requestPart\(\[source\]\)/);
+  // A provider-429/5xx must fail closed; the old per-string fallback caused a paid request storm.
+  assert.doesNotMatch(runtime,/await requestPart\(\[source\]\)/);
+  assert.match(runtime,/translation_provider_unavailable/);
   assert.doesNotMatch(runtime,/translated === source/);
   // #2558: English is atomic across the site; on public pages a locale change navigates to the
   // localized route instead of translating the menu in place.
