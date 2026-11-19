@@ -88,7 +88,7 @@ function ensureDialog(){
  if(dialog)return;
  shade=make('div','bg-il-shade');shade.hidden=true;shade.addEventListener('click',()=>closeInsightLens());
  dialog=make('aside','bg-il-dialog');dialog.hidden=true;dialog.id='bgInsightLens';dialog.setAttribute('role','dialog');dialog.setAttribute('aria-modal','true');dialog.setAttribute('aria-label','Inzichtlens');
- const head=make('header','bg-il-header');head.append(make('div','bg-il-kicker','POWERHOUSE · INZICHTLENS'));
+ const head=make('header','bg-il-header');head.append(make('div','bg-il-kicker','BEDRIJFSGEHEUGEN · INZICHTLENS'));
  heading=make('h2');head.append(heading);
  closeButton=make('button','bg-il-close','×');closeButton.type='button';closeButton.setAttribute('aria-label','Sluit inzichtlens');closeButton.addEventListener('click',()=>closeInsightLens());head.append(closeButton);
  head.append(make('p','','Van begrijpen naar scenario, beslissing en meetbaar resultaat.'));

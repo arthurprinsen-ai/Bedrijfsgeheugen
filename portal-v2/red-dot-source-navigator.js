@@ -40,7 +40,7 @@ export function sourceNavigatorExplanation(phase,snapshot){
  case 'verify':
   return 'Eerst echte providerrechten en bronreadback, daarna veilige opslag, tenant-isolatie en een onafhankelijke controle. Een voorbeeldtest of geactiveerde instelling is geen bewijs van werkelijke gegevens.';
  case 'understand':
-  return 'Pas nadat echte gegevens en herkomst bevestigd zijn, mogen ze als KPI of bedrijfsinzicht verschijnen. Het Brein en Powerhouse mogen alleen met toegestane, geverifieerde gegevens werken. Zonder bewijs zie je geen fictieve cijfers.';
+  return 'Pas nadat echte gegevens en herkomst bevestigd zijn, mogen ze als KPI of bedrijfsinzicht verschijnen. Het Intelligentielaag en Bedrijfsgeheugen mogen alleen met toegestane, geverifieerde gegevens werken. Zonder bewijs zie je geen fictieve cijfers.';
  default: return sourceNavigatorExplanation('choose',snapshot);
  }
 }

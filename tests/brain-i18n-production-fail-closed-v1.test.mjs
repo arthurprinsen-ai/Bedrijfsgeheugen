@@ -28,7 +28,7 @@ test('English production success is fail-closed at the browser proof layer',()=>
   assert.match(verifier,/async function switchPublicLocale/);
   assert.match(verifier,/expectedPath/);
   assert.match(verifier,/page\.locator\('html'\)\.getAttribute\('lang'\)/);
-  assert.match(verifier,/English route has no visible Powerhouse SaaS text/);
+  assert.match(verifier,/English route has no visible Bedrijfsgeheugen SaaS text/);
   assert.match(verifier,/English route still shows Dutch pricing hero copy/);
   assert.match(verifier,/language switch exposed runtime translation failure/);
 });

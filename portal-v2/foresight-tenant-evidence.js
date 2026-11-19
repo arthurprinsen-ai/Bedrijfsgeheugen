@@ -1,4 +1,4 @@
-// Read-only Powerhouse source overlay: independent company evidence, never a forecast.
+// Read-only Bedrijfsgeheugen source overlay: independent company evidence, never a forecast.
 const list=v=>Array.isArray(v)?v:[];
 const clean=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const num=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
@@ -73,16 +73,16 @@ export function buildTenantForesightEvidence(packet,{metric='revenue_growth',mod
  };
 }
 export function renderTenantForesightEvidence(context,{status='loading'}={}){
- if(status==='loading')return '<div class="pfs-sourcebox" role="status">Powerhouse-bronnen in de klantcontext worden gecontroleerd…</div>';
- if(!context||context.state!=='TENANT_AUTHENTICATED')return '<div class="pfs-sourcebox">De beveiligde Powerhouse-broncontext is niet beschikbaar. Er worden geen bedrijfsspecifieke signalen overgenomen.</div>';
+ if(status==='loading')return '<div class="pfs-sourcebox" role="status">Bedrijfsgeheugen-bronnen in de klantcontext worden gecontroleerd…</div>';
+ if(!context||context.state!=='TENANT_AUTHENTICATED')return '<div class="pfs-sourcebox">De beveiligde Bedrijfsgeheugen-broncontext is niet beschikbaar. Er worden geen bedrijfsspecifieke signalen overgenomen.</div>';
  const mode=context.selectedMode||'all';
  const options=[['all','Alle ontwikkelingen'],['risk','Risico’s'],['opportunity','Kansen'],['development','Overig']].map(([id,label])=>'<option value="'+id+'"'+(mode===id?' selected':'')+'>'+label+'</option>').join('');
  const item=x=>'<article class="pfs-sourceitem"><b>'+clean(x.title)+'</b><p>Bedrijfsonderdeel: '+clean(x.target)+' · impactscore '+clean(x.score)+'/100</p><p>'+clean(x.rationale).slice(0,300)+'</p><small>Bron '+clean(x.source)+' · '+clean(x.observedAt.slice(0,10))+' · '+(x.evidenceLinked?'Bronverwijzingen aanwezig (niet onafhankelijk gevalideerd)':'Bronbewijs onvoldoende voor een harde claim')+'</small></article>';
  const impact=context.impacts.length?context.impacts.map(item).join(''):'<p>Nog geen actuele, klantgebonden gescoorde signalen in deze context.</p>';
  const actions=context.actions.length?'<div class="pfs-sourceactions"><h5>Voorgestelde acties (niet uitgevoerd)</h5>'+context.actions.map(a=>'<p>'+clean(a.title)+' · '+clean(a.state)+'</p>').join('')+'</div>':'';
  const outside=context.external.length?'<details><summary>Extern relevant, bedrijfseffect nog onbekend ('+context.external.length+')</summary>'+context.external.map(s=>'<p>'+clean(s.title)+' · '+clean(s.source)+'</p>').join('')+'</details>':'';
- return '<section class="pfs-sourcebox" aria-label="Powerhouse bronbewijs">'+
-  '<div class="pfs-source-toolbar"><h4>Powerhouse-signalen die jouw bedrijf kunnen raken</h4><label>Toon <select data-pfs-evidence-filter aria-label="Filter bedrijfssignalen">'+options+'</select></label><button type="button" data-pfs-evidence-refresh>Bronnen vernieuwen</button></div><p>'+context.sourceStats.observed+' van '+context.sourceStats.known+' bronmogelijkheden verbonden, waargenomen of live in de broncatalogus. Dit is geen claim dat ze voor deze klant allemaal actief zijn.</p>'+
+ return '<section class="pfs-sourcebox" aria-label="Bedrijfsgeheugen bronbewijs">'+
+  '<div class="pfs-source-toolbar"><h4>Bedrijfsgeheugen-signalen die jouw bedrijf kunnen raken</h4><label>Toon <select data-pfs-evidence-filter aria-label="Filter bedrijfssignalen">'+options+'</select></label><button type="button" data-pfs-evidence-refresh>Bronnen vernieuwen</button></div><p>'+context.sourceStats.observed+' van '+context.sourceStats.known+' bronmogelijkheden verbonden, waargenomen of live in de broncatalogus. Dit is geen claim dat ze voor deze klant allemaal actief zijn.</p>'+
   '<div class="pfs-sourcegrid">'+impact+'</div>'+actions+outside+
-  '<p class="pfs-source-disclaimer">'+clean(context.note)+' Heartbeat-SLA en voorspelnauwkeurigheid zijn hier nog niet geverifieerd.</p></section>';
+  '<p class="pfs-source-disclaimer">'+clean(context.note)+' leerlus-SLA en voorspelnauwkeurigheid zijn hier nog niet geverifieerd.</p></section>';
 }

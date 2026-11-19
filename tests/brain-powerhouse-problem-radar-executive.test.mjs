@@ -45,7 +45,7 @@ test('cockpit renders problem-first framing and evidence drawer',()=>{
  const html=executiveCockpitMarkup(buildExecutiveProjection(state,{tenantId:'tenant-1'}));
  assert.match(html,/Wat vraagt vandaag aandacht\?/);
  assert.match(html,/PH-P001/);
- assert.match(html,/Waarom zegt Powerhouse dit\?/);
+ assert.match(html,/Waarom zegt Bedrijfsgeheugen dit\?/);
  assert.match(html,/ESTIMATED/);
  assert.match(html,/Owner Dependency Reduction/);
  assert.match(html,/doorlooptijd approvals/);

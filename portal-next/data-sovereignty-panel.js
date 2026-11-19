@@ -110,7 +110,7 @@ class DataSovereigntyPanel extends HTMLElement{
    ${impactPending?`<section class="dsp-alert dsp-cross-domain-review" role="status" aria-label="Herbeoordeling AI-keuze en CSRD">
     <h3>Gevolgen van je AI- of datakeuze worden beoordeeld</h3>
     <p><strong>Wijziging:</strong> ${esc(impactTypeLabel[impact.kind]||'Infrastructuur of databeleid')}.</p>
-    <p><strong>Opvolging door het Brein:</strong> ${esc(reviewStatus)}.</p>
+    <p><strong>Opvolging door de intelligentielaag:</strong> ${esc(reviewStatus)}.</p>
     <p>De gevolgen voor gegevensbescherming, beveiliging, leveranciers, kosten en duurzaamheid moeten opnieuw worden vastgesteld. Ook relevante CSRD/ESRS-onderwerpen worden gecontroleerd${esrsCandidates.length?' ('+esrsCandidates.map(esc).join(', ')+')':''}.</p>
     <p>Dit betekent niet dat CSRD voor jouw organisatie verplicht is of dat energieverbruik en CO₂ al zijn gemeten. De gekozen AI-route wordt niet automatisch geactiveerd.</p>
    </section>`:''}
@@ -139,7 +139,7 @@ class DataSovereigntyPanel extends HTMLElement{
    <section class="dsp-card"><h3>2. Providers & datalocaties</h3><div class="dsp-tablewrap"><table><thead><tr><th>Provider</th><th>Klantdata</th><th>Verwerking</th><th>Opslag</th><th>Doorgifte</th><th>Training</th><th>Bewijs</th><th>Retentie / toelichting</th></tr></thead><tbody>${providerRows(s.providers)}</tbody></table></div></section>
    <section class="dsp-card"><h3>3. AI-routes die data kunnen verwerken</h3><div class="dsp-tablewrap"><table><thead><tr><th>Use-case</th><th>Provider/model</th><th>Verwerking</th><th>Doorgifte</th><th>Training</th><th>Datacategorieën</th><th>Retentie</th><th>Subprocessors / bewijs</th></tr></thead><tbody>${aiRows(s.aiRoutes)}</tbody></table></div></section>
    <section class="dsp-card"><h3>4. Mijn koppelingen</h3><p class="dsp-card-intro">Bron en doel worden automatisch uit de connectorconfiguratie geprojecteerd. Secrets of credentials worden hier nooit getoond.</p><div class="dsp-tablewrap"><table><thead><tr><th>Koppeling</th><th>Status</th><th>Bron</th><th>Doel</th><th>Bronopslag</th><th>Doelopslag</th><th>Residency</th></tr></thead><tbody>${connectorRows(s.connectors)}</tbody></table></div></section>
-   <footer class="dsp-foot">Automatisch herijkt via Brain → Heartbeat → Powerhouse → provider/connector readback. Truth policy: measured_or_evidence_backed_else_unknown.</footer>
+   <footer class="dsp-foot">Automatisch herijkt via Intelligentielaag → leerlus → Bedrijfsgeheugen → provider/connector readback. Truth policy: measured_or_evidence_backed_else_unknown.</footer>
   </section>`;
   this.querySelectorAll('[data-scope]').forEach(b=>b.addEventListener('click',()=>{this.scope=b.dataset.scope;this.load()}));
   const form=this.querySelector('.dsp-policy');

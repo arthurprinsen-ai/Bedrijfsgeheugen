@@ -39,7 +39,7 @@ function project(metric,horizon,scenario){
 }
 function forecastSvg(metric,horizon,scenario){
   const p=project(metric,horizon,scenario);
-  if(!p)return '<div class="ng-empty">Geen geverifieerde prognose voor deze schermindicator. Raadpleeg de brongebonden Powerhouse-scenariostudio; zichtbare KPI-tekst is geen voorspelling.</div>';
+  if(!p)return '<div class="ng-empty">Geen geverifieerde prognose voor deze schermindicator. Raadpleeg de brongebonden Bedrijfsgeheugen-scenariostudio; zichtbare KPI-tekst is geen voorspelling.</div>';
   const values=[p.current,p.projected,p.lower,p.upper],min=Math.min(...values),max=Math.max(...values);
   const range=Math.max(0.001,max-min),y=v=>150-(v-min)/range*110;
   return `<svg viewBox="0 0 520 180" role="img" aria-label="Geverifieerde prognose voor ${esc(metric.label)}">
@@ -52,7 +52,7 @@ function buildLens(){
   const section=document.createElement('section');
   section.className='card ng-lens';
   section.setAttribute('aria-label','Toekomstlens');
-  section.innerHTML=`<div class="ng-lens-head"><div><span class="ng-eyebrow">POWERHOUSE FUTURE LENS</span><h2>Wat gebeurt er als je niets verandert — en wat als je nu handelt?</h2><p>Brongebonden prognoses zijn alleen zichtbaar na onafhankelijke verificatie en backtesting. Gebruik de scenariostudio voor niet-gevalideerde aannames.</p></div><span class="ng-trust">verklaarbaar · contextbewust · actiegericht</span></div>
+  section.innerHTML=`<div class="ng-lens-head"><div><span class="ng-eyebrow">BEDRIJFSGEHEUGEN FUTURE LENS</span><h2>Wat gebeurt er als je niets verandert — en wat als je nu handelt?</h2><p>Brongebonden prognoses zijn alleen zichtbaar na onafhankelijke verificatie en backtesting. Gebruik de scenariostudio voor niet-gevalideerde aannames.</p></div><span class="ng-trust">verklaarbaar · contextbewust · actiegericht</span></div>
   <div class="ng-controls">
     <label>Signaal<select id="ngMetric"></select></label>
     <label>Horizon<select id="ngHorizon"><option value="3">3 maanden</option><option value="6" selected>6 maanden</option><option value="12">12 maanden</option></select></label>
@@ -92,7 +92,7 @@ function inspectorHtml(node){
   return `<div class="ng-inspector-head"><div><span class="ng-eyebrow">CONTEXT INSPECTOR</span><h2>${esc(m.label)}</h2></div><button type="button" data-ng-close aria-label="Sluiten">×</button></div>
   <div class="ng-inspector-grid"><section><h3>Begrijp</h3><p>Huidige waarde <b>${Number.isFinite(m.value)?pct(m.value):'niet beschikbaar'}</b>. Zichtbare verandering <b>${Number.isFinite(m.delta)?(m.delta>=0?'+':'')+pct(m.delta):'niet beschikbaar'}</b>.</p></section>
   <section><h3>Vertrouw</h3><p>${conf===null?'Betrouwbaarheid onbekend: de schermtekst is geen brongevalideerde meting.':'Gekalibreerde modelbetrouwbaarheid <b>'+pct(conf)+'%</b>; bronbewijs en backtest zijn verplicht.'}</p></section>
-  <section><h3>Kijk vooruit</h3><p>Gebruik de brongebonden Powerhouse-scenariostudio. Zonder geverifieerde tijdreeks worden geen toekomstwaarden berekend.</p></section>
+  <section><h3>Kijk vooruit</h3><p>Gebruik de brongebonden Bedrijfsgeheugen-scenariostudio. Zonder geverifieerde tijdreeks worden geen toekomstwaarden berekend.</p></section>
   <section><h3>Handel</h3><p>Van elk inzicht moet de gebruiker naar een actie, roadmap-item of besluit kunnen gaan zonder de context kwijt te raken.</p></section></div>`;
 }
 function openInspector(node){

@@ -34,7 +34,7 @@
     const section=document.createElement('section');section.id='bgCanonicalScanHistory';
     section.style.cssText='margin:18px 0;padding:18px;border:1px solid #dce4ee;border-radius:16px;background:#fff;box-shadow:0 1px 3px rgba(22,39,62,.06)';
     const h=document.createElement('h2');h.textContent='Scanhistorie';h.style.cssText='margin:0 0 6px;font-size:1.15rem';section.appendChild(h);
-    const p=document.createElement('p');p.textContent='Oude en nieuwe Frisse Blik-scans uit dezelfde Powerhouse-bron.';p.style.cssText='margin:0 0 12px;color:#64748b;font-size:.86rem';section.appendChild(p);
+    const p=document.createElement('p');p.textContent='Oude en nieuwe Frisse Blik-scans uit dezelfde Bedrijfsgeheugen-bron.';p.style.cssText='margin:0 0 12px;color:#64748b;font-size:.86rem';section.appendChild(p);
     const list=document.createElement('div');list.style.cssText='display:grid;gap:8px';
     for(const row of scans.slice(0,12)){
       const item=document.createElement('div');item.style.cssText='display:flex;gap:12px;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #e5e7eb;border-radius:10px';

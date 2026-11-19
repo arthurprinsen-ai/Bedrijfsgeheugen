@@ -5,7 +5,7 @@ import { verifyLiveSite } from './live-contract.mjs';
 const COMMIT = '0123456789abcdef0123456789abcdef01234567';
 const pricingMarkup = `
 <div class="choice pil">
-  <a class="on" href="#saas">Powerhouse SaaS</a>
+  <a class="on" href="#saas">Bedrijfsgeheugen SaaS</a>
   <a class="off" href="#expertise">Consulting & workshops</a>
 </div>
 <section id="saas">

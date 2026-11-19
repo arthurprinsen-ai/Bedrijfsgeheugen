@@ -107,7 +107,7 @@ function renderForm(root,state,schema){
 export function mountCompanyInput(root,{pageId='profiel',domainState,onSaveStatus}={}){
  if(!root?.querySelectorAll)throw new TypeError('COMPANY_INPUT_ROOT_REQUIRED');
  if(pageId==='gegevens-invullen'||pageId==='ingevulde-gegevens'){
-  root.innerHTML='<section class="v2tabempty"><h4>Volledige bedrijfsgegevens laden</h4><p>De canonieke Powerhouse-velden worden samengebracht.</p></section>';
+  root.innerHTML='<section class="v2tabempty"><h4>Volledige bedrijfsgegevens laden</h4><p>De canonieke Bedrijfsgeheugen-velden worden samengebracht.</p></section>';
   let active=true;
   import('./full-company-input.js').then(({mountFullCompanyInput})=>{
    if(active)mountFullCompanyInput(root,{domainState,reviewOnly:pageId==='ingevulde-gegevens',onSaveStatus});

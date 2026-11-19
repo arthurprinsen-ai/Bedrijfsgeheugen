@@ -52,7 +52,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     const handoff=domainState.pendingHandoffs?.();
     if(handoff?.pending){
       const pendingNote=add(guide,'p','eh-truth',handoff.retryable
-        ?'De laatste wijziging wacht nog op bevestiging van het Bedrijfsbrein. De bestaande portaalcontrole probeert opnieuw; het gevolgadvies is nog niet bewezen.'
+        ?'De laatste wijziging wacht nog op bevestiging van de intelligentielaag. De bestaande portaalcontrole probeert opnieuw; het gevolgadvies is nog niet bewezen.'
         :'Een eerdere wijziging is nog niet volledig bevestigd. Controleer de opgeslagen bedrijfsgegevens in de juiste sessie; het gevolgadvies is nog niet bewezen.');
       pendingNote.setAttribute('role','status');
     }
@@ -168,7 +168,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       :'Koppel je scan en bedrijfsgegevens om aanbevelingen op je eigen situatie te baseren.');
     add(sourceCard,'small','eh-attention-evidence',model.intelligence.ready
       ?model.intelligence.verifiedSignals+' brononderbouwde onderdelen beschikbaar'
-      :'Geen actuele, klantgebonden Powerhouse-projectie bewezen');
+      :'Geen actuele, klantgebonden Bedrijfsgeheugen-projectie bewezen');
     const scanAction=add(sourceCard,'button','eh-text-action','Bekijk jouw nulmetingen →');
     scanAction.type='button';scanAction.dataset.entrepreneurScan='true';
     const proofCard=add(attentionGrid,'article','eh-attention-card');
@@ -212,7 +212,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     const measure=add(ambition,'button','eh-text-action','Doel en bedrijfsgegevens bekijken →');
     measure.type='button';measure.dataset.entrepreneurPage='bedrijfssituatie';
 
-    // Existing Brain/Powerhouse cockpit and scenario navigator are projections of
+    // Existing Intelligentielaag cockpit and scenario navigator are projections of
     // this same authenticated snapshot, not separate onboarding databases.
     const journeySection=renderEntrepreneurJourney(host,journey);
     if(journeySection)advanced.appendChild(journeySection);
@@ -224,14 +224,14 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     const pendingHandoff=domainState.pendingHandoffs?.();
     if(pendingHandoff?.pending){
       const pendingMessage=add(host,'p','eh-feedback eh-truth',pendingHandoff.retryable
-        ?'Verwerking onderweg: je gegevens zijn nog niet volledig bevestigd in het Bedrijfsbrein. De bestaande controles proberen opnieuw.'
+        ?'Verwerking onderweg: je gegevens zijn nog niet volledig bevestigd in de intelligentielaag. De bestaande controles proberen opnieuw.'
         :'Niet alle verwerking is bevestigd. Controleer de aangemelde bedrijfsomgeving en de opgeslagen gegevens.');
       pendingMessage.setAttribute('role','status');
     }
     const feedback=add(host,'p','eh-feedback',notice||(
       snapshot?.status==='error'?'Gegevens zijn niet bevestigd als opgeslagen. Je wijzigingen blijven herstelbaar.':
       model.intelligence.ready?model.intelligence.verifiedSignals+' brononderbouwde onderdelen beschikbaar in de bestaande ondernemerscockpit.':
-      'Nog geen geverifieerde Powerhouse-projectie. We tonen geen verzonnen kansen of resultaten.'
+      'Nog geen geverifieerde Bedrijfsgeheugen-projectie. We tonen geen verzonnen kansen of resultaten.'
     ));
     feedback.setAttribute('role','status');feedback.setAttribute('aria-live','polite');
   };

@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 
 export const REQUIRED_TEXT=Object.freeze([
-  'Powerhouse SaaS',
+  'Bedrijfsgeheugen SaaS',
   'Consulting & workshops',
   'Starter',
   'Pro',

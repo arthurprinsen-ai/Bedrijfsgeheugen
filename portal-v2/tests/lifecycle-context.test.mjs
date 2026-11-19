@@ -34,7 +34,7 @@ test('native lifecycle pages render context, models, connections and Scale core'
   assert.ok(page);
   const titles=page.blocks.map(x=>x.title);
   assert.ok(titles.includes('Contextstatus'));
-  assert.ok(titles.includes('Powerhouse-verbindingen'));
+  assert.ok(titles.includes('Bedrijfsgeheugen-verbindingen'));
   assert.ok(titles.includes('Relevante modellen'));
   assert.ok(titles.includes('Verbonden portaalonderdelen'));
   assert.ok(titles.includes('Scale — volledige kernintelligentie'));

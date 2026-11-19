@@ -32,7 +32,7 @@ export function processPortfolioMarkup(state,{today=new Date().toISOString().sli
    '<label>Procesverantwoordelijke<input name="owner" required maxlength="120" value="'+esc(p.owner||'')+'"></label>'+
    '<label>Einddatum<input name="targetDate" type="date" value="'+esc(p.targetDate||'')+'"></label>'+
    '<button type="submit">Planning bijwerken</button></form>'+
-   '<p>Invoer is nog geen onafhankelijke ONE BRAIN-ontvangst, Powerhouse-uitvoering of Heartbeat-effect.</p></article>';
+   '<p>Invoer is nog geen onafhankelijke ONE BRAIN-ontvangst, Bedrijfsgeheugen-uitvoering of Leerlus-effect.</p></article>';
  }).join('');
  return '<section class="v2processportfolio" data-process-portfolio><details><summary>'+
   '<strong>Processen & overdrachten</strong><span>'+portfolio.open+' processen · '+

@@ -5,7 +5,7 @@ export const PORTAL_SECTIONS = Object.freeze({
   denken: { label: 'Denken', pages: ['strategiemodellen','modellen','canvassen','eindconclusie'] },
   overname: { label: 'Overname', pages: ['due-diligence','exit'] },
   doen: { label: 'Doen', pages: ['strategie-naar-maandagochtend','actueel-houden','wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen'] },
-  'brein-powerhouse': { label: 'Brein & Powerhouse', pages: ['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail'] },
+  'intelligentielaag-powerhouse': { label: 'Intelligentielaag', pages: ['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail'] },
   beheer: { label: 'Beheer', pages: ['koppelingen','gebruikers','documenten','instellingen','audit'] }
 });
 

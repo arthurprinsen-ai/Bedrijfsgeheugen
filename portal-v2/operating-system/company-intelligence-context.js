@@ -81,7 +81,7 @@ export function buildCompanyIntelligenceContext(input={},surface='executive-cock
 function stage(icon,label,item,copy){return `<article class="ci-stage"><span>${icon}</span><small>${esc(label)}</small><strong>${esc(title(item,copy))}</strong><em>${item?esc(evidenceLabel(item)):'nog geen bewezen context'}</em></article>`;}
 export function renderCompanyIntelligenceContext(input={},surface='executive-cockpit'){
   const model=buildCompanyIntelligenceContext(input,surface);
-  if(!model.available)return '<section class="ci-context ci-context-empty" data-company-intelligence-context data-context-surface="'+esc(surface)+'"><div><small>Powerhouse Intelligence</small><strong>Nog onvoldoende bewezen context</strong><p>Zodra tenant-scoped bewijs beschikbaar is, verschijnt hier de keten van signaal naar besluit, actie, resultaat en learning.</p></div></section>';
+  if(!model.available)return '<section class="ci-context ci-context-empty" data-company-intelligence-context data-context-surface="'+esc(surface)+'"><div><small>Bedrijfsgeheugen Intelligence</small><strong>Nog onvoldoende bewezen context</strong><p>Zodra tenant-scoped bewijs beschikbaar is, verschijnt hier de keten van signaal naar besluit, actie, resultaat en learning.</p></div></section>';
   // Only show graph arrows for explicit matching IDs. Unrelated nodes may
   // appear in the five-stage overview but never as a fabricated causal chain.
   const nodeById=new Map(model.graph.nodes.map(node=>[node.id,node]));
@@ -98,7 +98,7 @@ export function renderCompanyIntelligenceContext(input={},surface='executive-coc
     ${model.learning?`<p><b>Geleerd en gekoppeld:</b> ${esc(model.learning)}</p>`:'<p>Leereffect nog niet onafhankelijk aangetoond.</p>'}</div>`:'';
 
   return `<section class="ci-context" data-company-intelligence-context data-context-surface="${esc(surface)}">
-    <div class="ci-head"><div><small>Powerhouse Intelligence</small><h3>Powerhouse ziet nu</h3><p>Wat zien we → waarom telt het → wat doen we → wat kwam eruit → wat leren we.</p></div><span>tenant-scoped</span></div>
+    <div class="ci-head"><div><small>Bedrijfsgeheugen Intelligence</small><h3>Bedrijfsgeheugen ziet nu</h3><p>Wat zien we → waarom telt het → wat doen we → wat kwam eruit → wat leren we.</p></div><span>tenant-scoped</span></div>
     <div class="ci-stages">
       ${stage('◎','Ziet',model.signal,'Nog geen bewezen signaal')}
       ${stage('⌘','Begrijpt',model.problem||model.opportunity,'Nog geen bewezen context')}

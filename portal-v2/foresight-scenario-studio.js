@@ -81,7 +81,7 @@ export function buildForesightStudioModel(state={},options={}){
   };
   const count=metrics.filter(x=>x.forecast).length;
   // The authenticated brain-operating-loop projects operational observations per tenant.
-  // Never turn these events into a forecast, outcome or global Powerhouse health claim.
+  // Never turn these events into a forecast, outcome or global Bedrijfsgeheugen health claim.
   const runtime=state?.portal?.runtime;
   const obs=runtime?.observability;
   const age=Date.now()-Date.parse(obs?.updatedAt||'');
@@ -90,8 +90,8 @@ export function buildForesightStudioModel(state={},options={}){
   const actionCount=hasTenantRuntime?arr(runtime?.actions?.items).length:0;
   const sourceCount=hasTenantRuntime?arr(runtime?.sources?.items).length:0;
   return {days,metrics,active,scenario,available:count,
-    intelligence:{brain:hasTenantRuntime?'Brein: '+eventCount+' recente runtime-observaties, '+actionCount+' geregistreerde acties':'Klantgebonden doelen en tijdreeksen',powerhouse:'Platformbrede Powerhouse-forecasts zijn niet automatisch tenantdata',heartbeat:hasTenantRuntime?'Brongezondheid: '+sourceCount+' onderdelen in geauthenticeerde Brein-projectie; geen garantie voor actuele Heartbeat-SLA':'Tenantgebonden Heartbeat nog niet geverifieerd'},
-    truth:'No global Powerhouse/admin data, demo fixtures or synthetic KPIs are used.'};
+    intelligence:{brain:hasTenantRuntime?'Intelligentie: '+eventCount+' recente runtime-observaties, '+actionCount+' geregistreerde acties':'Klantgebonden doelen en tijdreeksen',powerhouse:'Platformbrede Bedrijfsgeheugen-forecasts zijn niet automatisch tenantdata',heartbeat:hasTenantRuntime?'Brongezondheid: '+sourceCount+' onderdelen in geauthenticeerde Intelligentie-projectie; geen garantie voor actuele leerlus-SLA':'Tenantgebonden Leerlus nog niet geverifieerd'},
+    truth:'No global Bedrijfsgeheugen/admin data, demo fixtures or synthetic KPIs are used.'};
 }
 const fmt=(value,unit)=>value===null||!Number.isFinite(Number(value))?'—':new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1}).format(value)+(unit?' '+unit:'');
 function chart(metric,scenario){
@@ -123,8 +123,8 @@ function markup(model,state){
   const choose=model.metrics.map(x=>'<option value="'+esc(x.id)+'"'+(x.id===m.id?' selected':'')+'>'+esc(x.domain+' · '+x.label)+(x.forecast?'':' · bron ontbreekt')+'</option>').join('');
   const forecast=s?'<div class="pfs-stat-grid"><div><small>Laatste meting</small><strong>'+esc(fmt(m.current,m.unit))+'</strong></div><div><small>Trend op horizon</small><strong>'+esc(fmt(s.baseline,m.unit))+'</strong></div><div><small>Wat-als-variant</small><strong>'+esc(fmt(s.simulated,m.unit))+'</strong></div><div><small>Statistische band</small><strong>'+esc(fmt(s.lower,m.unit))+' – '+esc(fmt(s.upper,m.unit))+'</strong></div></div>':'<div class="pfs-gap">Voor '+esc(m.label)+' is nog geen onderbouwde tijdreeks beschikbaar. Scenarioresultaten blijven uit totdat minimaal drie chronologische metingen beschikbaar zijn.</div>';
   const variants=[['-10','Tegenvaller'],['0','Basispad'],['10','Meewind']].map(([pct,title])=>'<button type="button" data-pfs-preset="'+pct+'"'+(model.scenario?.sensitivity===Number(pct)?' aria-pressed="true"':' aria-pressed="false"')+'>'+title+'</button>').join('');
-  return '<section class="pfs-studio" data-pfs-studio="true" aria-label="Powerhouse interactieve scenariostudio">'+
-    '<div class="pfs-head"><div><span class="pfs-eyebrow">POWERHOUSE · BREIN · FORESIGHT</span><h3>Wat gebeurt er als je niets verandert — of juist ingrijpt?</h3>'+
+  return '<section class="pfs-studio" data-pfs-studio="true" aria-label="Bedrijfsgeheugen interactieve scenariostudio">'+
+    '<div class="pfs-head"><div><span class="pfs-eyebrow">BEDRIJFSGEHEUGEN · INTELLIGENTIE · FORESIGHT</span><h3>Wat gebeurt er als je niets verandert — of juist ingrijpt?</h3>'+
     '<p>Verken financiële én niet-financiële doelen. De grafiek gebruikt uitsluitend beschikbare klantmetingen; de gevoeligheidsaanpassing is een simulatie.</p></div><span class="pfs-count">'+model.available+' / '+model.metrics.length+' trends beschikbaar</span></div>'+
     '<div class="pfs-controls"><label>Bedrijfsonderdeel<select data-pfs-metric>'+choose+'</select></label>'+
     '<label>Vooruitkijken<select data-pfs-days>'+[30,90,180,365].map(d=>'<option value="'+d+'"'+(model.days===d?' selected':'')+'>'+d+' dagen</option>').join('')+'</select></label></div>'+
@@ -134,7 +134,7 @@ function markup(model,state){
     forecast+'<div class="pfs-bottom"><div><h4>Doorwerking in je bedrijf</h4><p>Relevante afhankelijkheden: '+m.related.map(esc).join(' · ')+'. Niet automatisch als geldelijk effect of causaal resultaat berekend.</p>'+
     '<button type="button" data-pfs-page="'+esc(m.page)+'">Bekijk bron en bijbehorende acties →</button></div>'+
     '<div><h4>Betrouwbaarheid en herkomst</h4><p>'+m.history.length+' historische meetpunten; '+m.evidenceCount+' bronverwijzingen. Status: '+esc(m.quality)+'.</p><p>'+esc(m.note)+'</p></div></div>'+
-    '<details class="pfs-sources"><summary>Brein, Powerhouse en Heartbeat: aansluitstatus</summary><p>'+esc(model.intelligence.brain)+' · '+esc(model.intelligence.powerhouse)+' · '+esc(model.intelligence.heartbeat)+'.</p><p>Een platformbrede voorspelling is geen automatisch gevalideerde klantprognose. Eerst authenticatie, tenant-scope, versheid en modelkwaliteit controleren.</p></details>'+
+    '<details class="pfs-sources"><summary>Intelligentielaag, Bedrijfsgeheugen en leerlus: aansluitstatus</summary><p>'+esc(model.intelligence.brain)+' · '+esc(model.intelligence.powerhouse)+' · '+esc(model.intelligence.heartbeat)+'.</p><p>Een platformbrede voorspelling is geen automatisch gevalideerde klantprognose. Eerst authenticatie, tenant-scope, versheid en modelkwaliteit controleren.</p></details>'+
     renderDecisionTwinReceipt(buildDecisionTwinReceipt(state,model))+
     '<div class="pfs-roadmap"><button type="button" data-pfs-add-roadmap'+(proposal?'':' disabled')+'>Bewaar scenario als voorstel op de roadmap</button>'+
     '<p><small>Alleen een concept ter beoordeling: er wordt niets uitgevoerd of gepubliceerd. '+(proposal?'':'Kies een afwijkend scenario met minimaal drie bronverwijzingen in een beveiligde klantcontext.')+'</small></p><p data-pfs-roadmap-status role="status" aria-live="polite"></p></div>'+

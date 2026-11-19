@@ -56,7 +56,7 @@ export function mountWinstnavigator({domainState,stateClient}={}){
  const dialog=el('dialog',undefined,'bg-w-nav');dialog.id='bgWinstnavigator';
  dialog.setAttribute('aria-labelledby','bgWinstnavTitle');
  const head=el('header',undefined,'bg-w-nav-head');
- head.append(el('small','POWERHOUSE · INTERACTIEVE BUSINESS TWIN'));
+ head.append(el('small','BEDRIJFSGEHEUGEN · INTERACTIEVE BUSINESS TWIN'));
  const title=el('h2','Je bedrijf, alles verbonden');title.id='bgWinstnavTitle';head.append(title);
  head.append(el('p','Klik, hover, scroll of veeg. Ontdek de betekenis van echte gegevens en verken je volgende ondernemersbeslissing.'));
  const closeButton=el('button','×','bg-w-nav-close');closeButton.type='button';closeButton.setAttribute('aria-label','Sluiten');head.append(closeButton);

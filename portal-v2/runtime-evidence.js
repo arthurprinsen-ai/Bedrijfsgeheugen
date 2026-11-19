@@ -1,5 +1,5 @@
 /**
- * Runtime-evidence voor de Brein- en Powerhouse-pagina's.
+ * Runtime-evidence voor de Intelligentie- en Bedrijfsgeheugen-pagina's.
  *
  * `/api/brain-operating-loop` geeft per tenant de canonieke operating-loopprojectie.
  * Portal V2 projecteert die waarheid en rekent hier geen alternatieve businesslogica uit.
@@ -79,7 +79,7 @@ function inferLayer(record={}) {
   if(/skill|projection/.test(hay))return 'Skills';
   if(/learning|memory|writeback/.test(hay))return 'Brain / Learning';
   if(/agent|chat|worker/.test(hay))return 'Agents / Chats';
-  return txt(record.component||record.domain||'Powerhouse');
+  return txt(record.component||record.domain||'Bedrijfsgeheugen');
 }
 function sourceEvidenceUrl(record={}) {
   const values=[
@@ -112,7 +112,7 @@ function normalizeObservabilityRecord(record={},index=0) {
     status,
     severity,
     actor:txt(record.actor?.name||record.actor||record.actorId||record.worker||record.agent||'system'),
-    source:txt(record.source||record.platform||record.provider||record.origin||'Powerhouse'),
+    source:txt(record.source||record.platform||record.provider||record.origin||'Bedrijfsgeheugen'),
     layer:inferLayer(record),
     fingerprint:txt(record.fingerprint||record.failureFingerprint||record.errorFingerprint),
     // Only an explicit trace field counts. correlationId is a loop identifier, not a trace,

@@ -55,7 +55,7 @@ test('compound intelligence self-improvement is a visible contextual portal obli
   const ui=fs.readFileSync(new URL('../foresight-context-ui.js',import.meta.url),'utf8');
   const api=fs.readFileSync(new URL('../../netlify/functions/portal-prediction-intelligence.mjs',import.meta.url),'utf8');
   assert.match(ui,/Compound Intelligence/);
-  assert.match(ui,/Wordt Powerhouse aantoonbaar slimmer\?/);
+  assert.match(ui,/Wordt Bedrijfsgeheugen aantoonbaar slimmer\?/);
   assert.match(ui,/self_improvement/);
   assert.match(api,/powerhouse_self_improvement_control_v1/);
   assert.match(api,/self_improvement:selfImprovement/);

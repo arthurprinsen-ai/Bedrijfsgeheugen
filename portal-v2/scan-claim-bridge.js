@@ -43,7 +43,7 @@ export function createScanClaimBridge({doc=document,fetcher=fetch,storage=global
   section.style.cssText='margin:16px 0;padding:16px 20px;border:1px solid #dce4ee;border-radius:14px;background:#fff';
   const header=element(doc,'h2','', 'Mijn nulmetingen');
   header.style.cssText='margin:0 0 6px;font-size:1.12rem';
-  const intro=element(doc,'p','', 'Je geverifieerde scans en de aansluiting op jouw Bedrijfsgeheugen Brein.');
+  const intro=element(doc,'p','', 'Je geverifieerde scans en de aansluiting op jouw Bedrijfsgeheugen-intelligentielaag.');
   intro.style.cssText='margin:0 0 10px;color:#64748b;font-size:.88rem';
   const status=element(doc,'p','');
   status.setAttribute('role','status');status.style.cssText='font-size:.84rem;color:#475569;margin:5px 0';

@@ -218,8 +218,8 @@
       "route": "/ai-modelwijzer"
     },
     {
-      "keyword": "company brain",
-      "route": "/company-brain"
+      "keyword": "company intelligence",
+      "route": "/company-intelligence"
     }
   ],
   "schema": {

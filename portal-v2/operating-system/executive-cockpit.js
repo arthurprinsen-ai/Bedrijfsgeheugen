@@ -38,7 +38,7 @@ const attentionCard=item=>`<article class="os-attention-card"><div class="os-att
 const visualScore=(label,value)=>Number.isFinite(Number(value))?`<div class="os-signal-meter"><span>${esc(label)}</span><i><b style="width:${Math.max(0,Math.min(100,Number(value)))}%"></b></i><em>${Math.round(Number(value))}</em></div>`:'';
 const contextualVisual=item=>{
  const dims=item.priority_dimensions||{};
- const meters=[['Actueel',dims.recency],['Omvang',dims.scale],['Urgentie',dims.urgency],['Koopintentie',dims.buying_intent],['Powerhouse-fit',dims.powerhouse_relevance]].map(([l,v])=>visualScore(l,v)).join('');
+ const meters=[['Actueel',dims.recency],['Omvang',dims.scale],['Urgentie',dims.urgency],['Koopintentie',dims.buying_intent],['Bedrijfsgeheugen-fit',dims.powerhouse_relevance]].map(([l,v])=>visualScore(l,v)).join('');
  const chips=[item.sector_or_segment,item.buying_trigger,item.source_class,item.freshness_status].filter(Boolean).map(v=>`<span>${esc(v)}</span>`).join('');
  const symptoms=item.symptoms?.length?`<div class="os-problem-symptoms">${item.symptoms.slice(0,3).map(v=>`<span>${esc(v)}</span>`).join('')}</div>`:'';
  const context=item.context_relevance||item.benchmark_context;
@@ -51,7 +51,7 @@ const problemCard=item=>`<article class="os-attention-card os-problem-card" data
  <p><strong>Impact:</strong> ${item.impact_value==null?'nog te valideren':esc(item.impact_value)}</p>
  <p><strong>Eerst doen:</strong> ${esc(item.actions?.[0]||item.next_action||'bewijs verzamelen en valideren')}</p>
  ${contextualVisual(item)}
- <details class="os-evidence-drawer"><summary>Waarom zegt Powerhouse dit?</summary>
+ <details class="os-evidence-drawer"><summary>Waarom zegt Bedrijfsgeheugen dit?</summary>
   <p><strong>Bewijsstatus:</strong> ${esc(item.evidence_health?.status||'unavailable')} · ${Math.round((item.confidence||item.evidence_health?.confidence||0)*100)}%</p>
   <p><strong>Bronnen:</strong> ${item.source_refs?.length?item.source_refs.map(esc).join(' · '):'nog geen bronreferenties beschikbaar'}</p>
   <p><strong>Root causes:</strong> ${item.root_causes?.length?item.root_causes.map(esc).join(' · '):'nog te valideren'}</p>
@@ -96,7 +96,7 @@ export function executiveCockpitMarkup(model){
   <div class="os-metrics"><article><small>Bedrijfsgezondheid</small><b>${pct(model.health_score)}</b></article><article><small>Strategievoortgang</small><b>${pct(model.strategy_progress)}</b></article><article><small>Besluiten nodig</small><b>${model.decision_queue.length}</b></article><article><small>Open toprisico’s</small><b>${model.risks.length}</b></article></div>
   <div class="os-executive-scan"><section><h3>Nu beslissen / uitvoeren</h3>${model.next_best_actions.length?`<ol>${model.next_best_actions.map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.next_action||item.explanation||item.summary||'')}</small></li>`).join('')}</ol>`:'<p class="os-empty">Geen bewezen acties.</p>'}</section><section><h3>Vooruitkijken</h3>${model.forecasts.length?`<ol>${model.forecasts.slice(0,4).map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.explanation||item.summary||'')}</small></li>`).join('')}</ol>`:'<p class="os-empty">Geen bewezen forecasts.</p>'}</section></div>
   <details class="os-detail"><summary>Verdieping: risico’s, kansen, veranderingen en outcomes</summary><div class="os-grid">${list('Toprisico’s',model.risks)}${list('Kansen',model.opportunities)}${list('Wat veranderde?',model.changes)}${list('Gerealiseerde outcomes',model.outcomes)}</div></details>
-  <section class="os-cms-workstream" aria-label="Content en CMS in Powerhouse">
+  <section class="os-cms-workstream" aria-label="Content en CMS in Bedrijfsgeheugen">
     <h3>Content & Growth Studio · schrijf → controleer → publiceer → meet → leer</h3>
     <p>Beheer website- en portaalteksten met begrijpelijke velden, een veilig conceptvoorbeeld en de bestaande serverkwaliteitscontrole. Content blijft concept tot bevoegde goedkeuring en onafhankelijke publieke controle. GA4, CTA, leads, betaalde orders en leereffecten blijven aparte, brongebonden metingen.</p>
     <a href="https://www.bedrijfsgeheugen.nl/cms.html" rel="noopener">Open visuele CMS Studio en publicatiebeheer →</a>
@@ -104,7 +104,7 @@ export function executiveCockpitMarkup(model){
     <p><strong>Vertrouwen en kwaliteit:</strong> klantteksten worden gecontroleerd op interne technische informatie, conceptinstructies, overdreven garanties en claims zonder bron. De eindredactie beoordeelt feiten, privacy en relevantie; het effect op klantvertrouwen is niet automatisch bewezen.</p>
   </section>
   <section class="os-health"><h3>Data & bewijs</h3><p>${model.evidence_health.stale} verouderd · ${model.evidence_health.low_confidence} lage confidence · ${model.evidence_health.unavailable} onvolledig</p></section>
-  <nav class="os-module-tabs" aria-label="Powerhouse modules">${tabs}</nav><div class="os-module-detail" aria-live="polite"></div>
+  <nav class="os-module-tabs" aria-label="Bedrijfsgeheugen modules">${tabs}</nav><div class="os-module-detail" aria-live="polite"></div>
  </section>`;
 }
 

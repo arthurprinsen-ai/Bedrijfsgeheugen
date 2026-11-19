@@ -219,7 +219,7 @@ export function customerActionProgressMarkup(model={}){
 
 export function customerValueBriefingMarkup(model={}){
  const briefing=buildCustomerValueBriefing(model);
- const intro='<header><small>Jouw bedrijf beter maken · Powerhouse</small><h3>Welke verbetering pakken we vandaag aan?</h3><p>Van bedrijfsprobleem naar besluit, uitvoering, gemeten effect en leren. Alleen bewijs telt als gerealiseerde waarde.</p></header>';
+ const intro='<header><small>Jouw bedrijf beter maken · Bedrijfsgeheugen</small><h3>Welke verbetering pakken we vandaag aan?</h3><p>Van bedrijfsprobleem naar besluit, uitvoering, gemeten effect en leren. Alleen bewijs telt als gerealiseerde waarde.</p></header>';
  if(!briefing.available)return '<section class="os-strategy-advisor" data-customer-value="evidence-due" aria-label="Bedrijfsverbetering">'+intro+
  '<p>Er is nog geen actuele, onderbouwde en uitvoerbare verbeteractie. Begin met een betrouwbare nulmeting en controleer de gekoppelde bedrijfsgegevens. Geen verzonnen omzet- of ROI-claims.</p>'+
  '<button type="button" data-os-page="evidence-health" aria-pressed="false">Controleer bedrijfsgegevens →</button></section>'+customerActionProgressMarkup(model);
@@ -258,7 +258,7 @@ export function customerValueBriefingMarkup(model={}){
  '<p><b>Wat nu:</b> '+escapeHtml(briefing.nextAction)+'</p>'+
  '<p><b>Meetlat:</b> '+escapeHtml(briefing.metric||'nog vast te leggen')+' · <b>Nulmeting:</b> '+escapeHtml(briefing.baseline||'ontbreekt')+'</p>'+
  '<p><b>Verwachte waarde:</b> '+(briefing.expected?escapeHtml(briefing.expected)+' ('+escapeHtml(briefing.expectedKind)+', geen realisatie)':'nog niet betrouwbaar te kwantificeren')+'</p>'+
- proof+financialHtml+'<p>'+(briefing.approvalRequired?'Jouw toestemming of bevoegd besluit is vereist vóór uitvoering.':'Uitvoering uitsluitend via de bestaande goedgekeurde Powerhouse-policy.')+'</p>'+
+ proof+financialHtml+'<p>'+(briefing.approvalRequired?'Jouw toestemming of bevoegd besluit is vereist vóór uitvoering.':'Uitvoering uitsluitend via de bestaande goedgekeurde Bedrijfsgeheugen-policy.')+'</p>'+
  '<details><summary>Waarop is dit gebaseerd?</summary><p>'+briefing.sourceRefs.map(escapeHtml).join(' · ')+'</p></details>'+
  '<button type="button" data-os-page="next-best-actions" aria-pressed="false">Beoordeel deze verbeteractie →</button></article></section>'+customerActionProgressMarkup(model);
 }

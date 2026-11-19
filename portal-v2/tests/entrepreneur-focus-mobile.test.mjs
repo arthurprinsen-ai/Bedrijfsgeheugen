@@ -45,7 +45,7 @@ test('focus controls meet keyboard and motion preferences and preserve visible e
  assert.match(css,/prefers-reduced-motion/);
  assert.match(css,/eh-focus \.eh-main-action/);
  assert.match(ui,/Nog geen onafhankelijk bewezen financieel resultaat/);
- assert.match(ui,/Geen actuele, klantgebonden Powerhouse-projectie bewezen/);
+ assert.match(ui,/Geen actuele, klantgebonden Bedrijfsgeheugen-projectie bewezen/);
  assert.match(ui,/Voorbeeldcijfers en voorspellingen tellen nooit mee/);
 });
 

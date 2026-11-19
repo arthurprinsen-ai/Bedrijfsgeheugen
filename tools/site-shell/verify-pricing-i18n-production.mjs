@@ -104,7 +104,7 @@ async function run() {
     await saasPanel.waitFor({state:'visible',timeout:20_000});
     await expectVisible(consultingPanel,'consulting pricing section');
     const body = await page.locator('body').innerText();
-    for (const token of ['Powerhouse SaaS','Starter','Pro','Groei','Enterprise']) {
+    for (const token of ['Bedrijfsgeheugen SaaS','Starter','Pro','Groei','Enterprise']) {
       if (!body.includes(token)) throw new Error('pricing SaaS token missing: '+token);
     }
     const consultingText=await consultingPanel.innerText();
@@ -124,7 +124,7 @@ async function run() {
 
     await switchPublicLocale(page, 'en', '/en/prijzen');
     const pricingEnglish = await page.locator('body').innerText();
-    if (!/Powerhouse SaaS/i.test(pricingEnglish)) throw new Error('English route has no visible Powerhouse SaaS text');
+    if (!/Bedrijfsgeheugen SaaS/i.test(pricingEnglish)) throw new Error('English route has no visible Bedrijfsgeheugen SaaS text');
     if (/Kies software of expertise/i.test(pricingEnglish)) throw new Error('English route still shows Dutch pricing hero copy');
     await switchPublicLocale(page, 'nl', '/prijzen');
 

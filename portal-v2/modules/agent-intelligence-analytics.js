@@ -1,6 +1,6 @@
 /**
  * Read-only Agent Intelligence projection over the existing, authenticated
- * Powerhouse operating-loop read model. No second scheduler, ledger or writer.
+ * Bedrijfsgeheugen operating-loop read model. No second scheduler, ledger or writer.
  * Observed activity is never promoted to verified business improvement.
  */
 const html = value => String(value ?? '').replace(/[&<>"']/g, char => ({
@@ -213,7 +213,7 @@ export function qualityReportMarkup({events=[],runtime={},days=7,now=Date.now()}
   return '<section class="poc-panel pai-quality-report" aria-labelledby="pai-quality-title">'+
     '<header><span class="pai-quality-eyebrow">KWALITEITSRAPPORT · BEWIJSGESTUURD</span>'+
     '<h4 id="pai-quality-title">Hoe betrouwbaar verbeteren we echt?</h4>'+
-    '<p class="poc-note">Automatische momentopname van de reeds beveiligde Brain/Heartbeat-readback; venster: '+
+    '<p class="poc-note">Automatische momentopname van de reeds beveiligde Brain/Leerlus-readback; venster: '+
     html(report.windowDays)+' UTC-dagen. Geen fictief totaalcijfer, geen beloofde omzet, geen schijn-groen.</p></header>'+
     '<div class="poc-tablewrap"><table class="poc-table pai-quality-table"><thead><tr><th scope="col">Kwaliteitsgebied</th>'+
     '<th scope="col">Bewijsstatus</th><th scope="col">Onderbouwing en beperking</th></tr></thead>'+
@@ -240,10 +240,10 @@ export function agentIntelligenceMarkup({events=[],runtime={},period='week',now=
     '</small>'+(record.proof?'<a href="'+html(record.proof)+'" target="_blank" rel="noopener noreferrer">Bronbewijs</a>':'')+
     '</article>').join('');
   return '<section class="pai-learning" aria-labelledby="pai-title">'+
-    '<header class="pai-head"><div><span>POWERHOUSE · LEERINTELLIGENTIE</span>'+
+    '<header class="pai-head"><div><span>BEDRIJFSGEHEUGEN · LEERINTELLIGENTIE</span>'+
     '<h3 id="pai-title">Worden de agents aantoonbaar slimmer?</h3>'+
     '<p>Van signalen en incidenten naar besluiten, tests, productiecontrole en herbruikbare kennis. '+
-    'Dezelfde bestaande Brain/Heartbeat-loop blijft eigenaar van acties; deze cockpit is uitsluitend read-only.</p></div></header>'+
+    'Dezelfde bestaande Brain/Leerlus-loop blijft eigenaar van acties; deze cockpit is uitsluitend read-only.</p></div></header>'+
     '<div class="poc-kpis pai-kpis">'+
       metric('Activiteit waargenomen',telemetry.observed,'Geen bewijs van behaalde bedrijfswaarde')+
       metric('Fout- en blokkadesignalen',telemetry.failures,'Geclassificeerde runtime-events')+

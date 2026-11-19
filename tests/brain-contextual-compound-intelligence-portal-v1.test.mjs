@@ -9,7 +9,7 @@ test('contextual portal exposes canonical compound intelligence evidence',()=>{
   const api=read('netlify/functions/portal-prediction-intelligence.mjs');
   const css=read('portal-v2/foresight-context.css');
   assert.match(ui,/Compound Intelligence/);
-  assert.match(ui,/Wordt Powerhouse aantoonbaar slimmer\?/);
+  assert.match(ui,/Wordt Bedrijfsgeheugen aantoonbaar slimmer\?/);
   assert.match(ui,/selfImprovementPanel\(quality\.self_improvement\)/);
   assert.match(api,/powerhouse_self_improvement_control_v1/);
   assert.match(api,/self_improvement:selfImprovement/);

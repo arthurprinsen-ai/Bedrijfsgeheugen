@@ -67,9 +67,9 @@ function page(){
  @media(max-width:1000px){.plans{grid-template-columns:repeat(2,1fr)}.services{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr 1fr}.finder{grid-template-columns:1fr 1fr}}
  @media(max-width:640px){.plans,.services,.flow,.finder{grid-template-columns:1fr}.hero{padding-top:42px}.choice{flex-direction:column}.closing .wrap{display:block}}
  </style>
- <div class="hero held" data-bg-component="hero"><div class="wrap"><p class="bgkruim"><b>POWERHOUSE PRIJZEN</b></p><h1>Kies software of expertise.<br><em>Combineer wanneer het nodig is.</em></h1><p>Powerhouse is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.</p><div class="choice pil"><a class="on" href="#saas">Powerhouse SaaS</a><a class="off" href="#expertise">Consulting & workshops</a></div></div></div>
+ <div class="hero held" data-bg-component="hero"><div class="wrap"><p class="bgkruim"><b>BEDRIJFSGEHEUGEN PRIJZEN</b></p><h1>Kies software of expertise.<br><em>Combineer wanneer het nodig is.</em></h1><p>Bedrijfsgeheugen is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.</p><div class="choice pil"><a class="on" href="#saas">Bedrijfsgeheugen SaaS</a><a class="off" href="#expertise">Consulting & workshops</a></div></div></div>
  <div class="wrap">
- <section class="sec" id="saas"><h2>Powerhouse SaaS</h2><p class="sub">Eén platform. Vier niveaus. Altijd op- en downgradebaar.</p><div class="plans">${renderSaas()}</div><div class="included"><span>✓ Powerhouse Intelligence</span><span>✓ Powerhouse Agents</span><span>✓ Powerhouse Connect</span><span>✓ Rolgebaseerde acties</span><span>✓ NL / EN</span><span>✓ Security & privacy</span></div><p class="sub" style="margin-top:14px"><b>30 dagen gratis proberen:</b> geen betaalmethode nodig. Je start met alleen je bedrijfsnaam en e-mailadres. Daarna kies je zelf een abonnement; kies je niets, dan stopt de toegang en wordt er niets afgeschreven.</p></section>
+ <section class="sec" id="saas"><h2>Bedrijfsgeheugen SaaS</h2><p class="sub">Eén platform. Vier niveaus. Altijd op- en downgradebaar.</p><div class="plans">${renderSaas()}</div><div class="included"><span>✓ Bedrijfsgeheugen Intelligence</span><span>✓ Bedrijfsgeheugen Agents</span><span>✓ Bedrijfsgeheugen Connect</span><span>✓ Rolgebaseerde acties</span><span>✓ NL / EN</span><span>✓ Security & privacy</span></div><p class="sub" style="margin-top:14px"><b>30 dagen gratis proberen:</b> geen betaalmethode nodig. Je start met alleen je bedrijfsnaam en e-mailadres. Daarna kies je zelf een abonnement; kies je niets, dan stopt de toegang en wordt er niets afgeschreven.</p></section>
  <section class="sec"><h2>Wat groeit mee met je abonnement?</h2><p class="sub">De kern blijft gelijk; capaciteit, actualiteit, automatisering en governance groeien mee.</p><div class="tablebox"><table><thead><tr><th></th>${catalog.saas.map(p=>`<th>${esc(p.name)}</th>`).join('')}</tr></thead><tbody>${renderMatrix()}</tbody></table></div></section>
  <section class="sec" id="expertise"><h2>Liever eerst samen scherpstellen of versnellen?</h2><p class="sub">Onze workshops en trajecten helpen je om snel de juiste keuzes te maken en direct impact te realiseren.</p><div class="services">${renderServices()}</div></section>
  <section class="sec"><div class="bundle"><h2>Combineer zonder dubbel te betalen</h2><p>${esc(catalog.commercial_rules.credit_rule)} ${esc(catalog.commercial_rules.temporary_access_rule)}</p><div class="flow"><div><b>1. Workshop of scan</b>Breng kansen en prioriteiten in kaart.</div><div><b>2. Waarde wordt verrekend</b>De kosten tellen mee bij een aansluitende Build Sprint.</div><div><b>3. Tijdelijke portaltoegang</b>Tijdens de uitvoering krijg je Pro- of Groei-toegang.</div><div><b>4. Daarna door met SaaS</b>Na oplevering loopt je abonnement door als je dat kiest.</div></div></div></section>
@@ -81,10 +81,10 @@ function page(){
 function englishPage(){
   let html=page();
   const replacements=[
-    ['POWERHOUSE PRIJZEN','POWERHOUSE PRICING'],
+    ['BEDRIJFSGEHEUGEN PRIJZEN','BEDRIJFSGEHEUGEN PRICING'],
     ['Kies software of expertise.','Choose software or expertise.'],
     ['Combineer wanneer het nodig is.','Combine them when needed.'],
-    ['Powerhouse is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.','Powerhouse is available as software (SaaS), consulting & workshops, or both. Choose what fits your organisation, pace and ambition.'],
+    ['Bedrijfsgeheugen is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.','Bedrijfsgeheugen is available as software (SaaS), consulting & workshops, or both. Choose what fits your organisation, pace and ambition.'],
     ['Consulting & workshops','Consulting & workshops'],
     ['Eén platform. Vier niveaus. Altijd op- en downgradebaar.','One platform. Four levels. Upgrade or downgrade at any time.'],
     ['Meest gekozen','Most popular'],
@@ -117,7 +117,7 @@ function englishPage(){
     ['Volledig afgestemd op jouw organisatie en eisen.','Fully aligned with your organisation and requirements.'],
     ['60–150 of meerdere locaties','60–150 employees or multiple locations'],
     ['Grotere organisaties','Larger organisations'],
-    ['Powerhouse Intelligence basis','Powerhouse Intelligence core'],
+    ['Bedrijfsgeheugen Intelligence basis','Bedrijfsgeheugen Intelligence core'],
     ['Bedrijfsprofiel & benchmark','Company profile & benchmark'],
     ['Maandelijks veranderoverzicht','Monthly change overview'],
     ['Basis actielijst','Basic action list'],

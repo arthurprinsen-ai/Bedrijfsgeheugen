@@ -1,5 +1,5 @@
 // Tenant-scoped projection of the original portal.deliveryPlan only.
-// Customer completion is never a downstream Brain/Powerhouse/Heartbeat receipt.
+// Customer completion is never a downstream Intelligentielaag/Leerlus receipt.
 export const PROCESS_TEMPLATES=Object.freeze([
  {id:'product-intro',label:'Nieuw product introduceren',steps:[
   ['intake','Doel en eigenaar vaststellen','task',35],

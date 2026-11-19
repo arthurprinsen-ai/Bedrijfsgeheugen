@@ -8,7 +8,7 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 
 function modelMarkup(model,editable=false){
   const isBcg=model.id==='bcg';
-  const body=isBcg?`<div class="bcg-grid">${model.quadrants.map(q=>`<article class="bcg-quadrant${q.current?' current':''}" data-quadrant="${esc(q.id)}"><b>${esc(q.label)}</b><p>${esc(q.description)}</p>${q.current?'<strong>Huidige positie</strong>':''}</article>`).join('')}</div>`:`<div class="v2reviewlist"><article><div><small>Signaal</small><b>${esc(model.signal||'Geen signaal')}</b></div><strong>${esc(model.source)}</strong></article><article><div><small>Bewijsbasis</small><b>${esc(model.evidence)}</b></div><strong>Powerhouse</strong></article></div>`;
+  const body=isBcg?`<div class="bcg-grid">${model.quadrants.map(q=>`<article class="bcg-quadrant${q.current?' current':''}" data-quadrant="${esc(q.id)}"><b>${esc(q.label)}</b><p>${esc(q.description)}</p>${q.current?'<strong>Huidige positie</strong>':''}</article>`).join('')}</div>`:`<div class="v2reviewlist"><article><div><small>Signaal</small><b>${esc(model.signal||'Geen signaal')}</b></div><strong>${esc(model.source)}</strong></article><article><div><small>Bewijsbasis</small><b>${esc(model.evidence)}</b></div><strong>Bedrijfsgeheugen</strong></article></div>`;
   const edit=editable?`<label><span>${esc(model.prompt)}</span><textarea rows="3" data-model-note="${esc(model.id)}" ${isBcg?'data-bcg-note':''}>${esc(model.note)}</textarea></label>`:'';
   return `<section class="strategic-model${isBcg?' bcg-model':''}" data-model-id="${esc(model.id)}"><header><small>${esc(model.source)}</small><h3>${esc(model.title)}</h3><p>${esc(model.explanation)}</p></header>${body}<section class="model-conclusion"><b>Conclusie</b><p>${esc(model.conclusion)}</p></section>${edit}</section>`;
 }
@@ -47,7 +47,7 @@ function financeResult(id,state){
 }
 function financeMarkup(item,state){
   const result=financeResult(item.id,state);
-  return `<section class="strategic-model finance-model" data-model-id="${esc(item.id)}"><header><small>${esc(item.source)}</small><h3>${esc(item.title)}</h3><p>Hetzelfde financiële model als in het oude portaal, berekend op de canonieke V2-klantstate.</p></header><div class="v2reviewlist"><article><div><small>Uitkomst</small><b>${esc(result.value)}</b></div><strong>Legacy parity</strong></article><article><div><small>Rekenbasis</small><b>${esc(result.evidence)}</b></div><strong>Powerhouse</strong></article></div><section class="model-conclusion"><b>Verder werken</b><p>De invoer en verdiepende financiële context staan onder Waarde en financiering.</p><button type="button" class="pvprimary" data-open-page="waarde-financiering">Open waarde en financiering →</button></section></section>`;
+  return `<section class="strategic-model finance-model" data-model-id="${esc(item.id)}"><header><small>${esc(item.source)}</small><h3>${esc(item.title)}</h3><p>Hetzelfde financiële model als in het oude portaal, berekend op de canonieke V2-klantstate.</p></header><div class="v2reviewlist"><article><div><small>Uitkomst</small><b>${esc(result.value)}</b></div><strong>Legacy parity</strong></article><article><div><small>Rekenbasis</small><b>${esc(result.evidence)}</b></div><strong>Bedrijfsgeheugen</strong></article></div><section class="model-conclusion"><b>Verder werken</b><p>De invoer en verdiepende financiële context staan onder Waarde en financiering.</p><button type="button" class="pvprimary" data-open-page="waarde-financiering">Open waarde en financiering →</button></section></section>`;
 }
 function modelCatalog(models,includeFinance){
   const strategic=models.map(model=>`<button type="button" data-model-jump="${esc(model.id)}"><span>${esc(model.title)}</span><i>→</i></button>`).join('');
@@ -75,7 +75,7 @@ export function mountStrategicModelWorkspace(root,{domainState,openPage,shell,on
     const models=buildStrategicModels(state);
     if(models.length!==STRATEGIC_MODEL_IDS.length)throw new Error('STRATEGIC_MODEL_REGISTRY_INCOMPLETE');
     if(tab==='acties'){
-      root.innerHTML=`<div class="pvactions strategic-actions">${models.map(model=>{const action=roadmapActionFor(model),exists=(Array.isArray(state.roadmap)?state.roadmap:[]).some(item=>String(item?.id||'')===action.id);return `<button type="button" ${model.id==='bcg'?'data-bcg-roadmap ':''}data-model-roadmap="${esc(model.id)}" ${exists?'disabled':''}><span>${exists?'Actie staat op roadmap':`${esc(model.title)} → roadmap`}</span><i>→</i></button>`}).join('')}<button type="button" data-open-page="canvassen"><span>Open canvassen</span><i>→</i></button><button type="button" data-open-page="strategie-naar-maandagochtend"><span>Vertaal naar uitvoering</span><i>→</i></button></div><p class="sub" data-model-action-status data-bcg-action-status>Acties worden tenant-scoped toegevoegd aan de bestaande Powerhouse-roadmap.</p>`;
+      root.innerHTML=`<div class="pvactions strategic-actions">${models.map(model=>{const action=roadmapActionFor(model),exists=(Array.isArray(state.roadmap)?state.roadmap:[]).some(item=>String(item?.id||'')===action.id);return `<button type="button" ${model.id==='bcg'?'data-bcg-roadmap ':''}data-model-roadmap="${esc(model.id)}" ${exists?'disabled':''}><span>${exists?'Actie staat op roadmap':`${esc(model.title)} → roadmap`}</span><i>→</i></button>`}).join('')}<button type="button" data-open-page="canvassen"><span>Open canvassen</span><i>→</i></button><button type="button" data-open-page="strategie-naar-maandagochtend"><span>Vertaal naar uitvoering</span><i>→</i></button></div><p class="sub" data-model-action-status data-bcg-action-status>Acties worden tenant-scoped toegevoegd aan de bestaande Bedrijfsgeheugen-roadmap.</p>`;
       root.querySelectorAll('[data-open-page]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.openPage)));
       root.querySelectorAll('[data-model-roadmap]').forEach(button=>button.addEventListener('click',async()=>{
         const status=root.querySelector('[data-model-action-status]'),id=button.dataset.modelRoadmap;
@@ -84,7 +84,7 @@ export function mountStrategicModelWorkspace(root,{domainState,openPage,shell,on
           if(!model)throw new Error('STRATEGIC_MODEL_NOT_FOUND');
           const merged=mergeRoadmapFor(current,model);
           domainState.set('roadmap',merged.roadmap);onSaveStatus?.('saving');button.disabled=true;if(status)status.textContent='Roadmap opslaan…';
-          await domainState.flush();onSaveStatus?.('saved');button.querySelector('span').textContent='Actie staat op roadmap';if(status)status.textContent='Opgeslagen en server-bevestigd in de canonieke Powerhouse-roadmap.';
+          await domainState.flush();onSaveStatus?.('saved');button.querySelector('span').textContent='Actie staat op roadmap';if(status)status.textContent='Opgeslagen en server-bevestigd in de canonieke Bedrijfsgeheugen-roadmap.';
         }catch{onSaveStatus?.('error');button.disabled=false;if(status)status.textContent='Opslaan mislukt — geen serverbevestiging; roadmap niet als gewijzigd gemeld.'}
       }));
       return;
@@ -94,7 +94,7 @@ export function mountStrategicModelWorkspace(root,{domainState,openPage,shell,on
       return;
     }
     const includeFinance=shell?.dataset.workspace==='modellen';
-    root.innerHTML=`${modelCatalog(models,includeFinance)}<div class="strategic-model-grid">${models.map(model=>modelMarkup(model,tab==='invullen')).join('')}${includeFinance?FINANCE_MODEL_CATALOG.map(model=>financeMarkup(model,state)).join(''):''}</div>${tab==='invullen'?'<div class="v2formactions"><button type="button" class="pvprimary" data-strategy-save data-bcg-save>Alle modelnotities opslaan</button><span data-strategy-status data-bcg-status>Tenant-scoped Powerhouse-writeback.</span></div>':''}`;
+    root.innerHTML=`${modelCatalog(models,includeFinance)}<div class="strategic-model-grid">${models.map(model=>modelMarkup(model,tab==='invullen')).join('')}${includeFinance?FINANCE_MODEL_CATALOG.map(model=>financeMarkup(model,state)).join(''):''}</div>${tab==='invullen'?'<div class="v2formactions"><button type="button" class="pvprimary" data-strategy-save data-bcg-save>Alle modelnotities opslaan</button><span data-strategy-status data-bcg-status>Tenant-scoped Bedrijfsgeheugen-writeback.</span></div>':''}`;
     bindModelNavigation(root,openPage);
     if(tab!=='invullen'||!domainState)return;
     root.querySelectorAll('[data-model-note]').forEach(node=>node.addEventListener('input',()=>{

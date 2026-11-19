@@ -47,7 +47,7 @@ function assertCanonical(html) {
     '€ 99',
     '€ 299',
     '€ 749',
-    'Powerhouse SaaS',
+    'Bedrijfsgeheugen SaaS',
     'Directie & AI Workshop',
     'Bedrijfsgeheugen Scan',
     'Build Sprint',

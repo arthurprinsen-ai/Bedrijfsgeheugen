@@ -74,7 +74,7 @@ test('pricing exposes canonical Starter Pro Groei and Enterprise tiers',async()=
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
   for(const token of ['Starter','€ 99','Pro','€ 299','Groei','€ 749','Enterprise','Op maat']) assert.ok(html.includes(token),token);
   for(const plan of ['starter','pro','groei']) assert.match(html,new RegExp('https://www\\.bedrijfsgeheugen\\.nl/afsluiten\\?plan='+plan));
-  assert.match(html,/Powerhouse SaaS/);
+  assert.match(html,/Bedrijfsgeheugen SaaS/);
   assert.match(html,/Consulting & workshops/);
 });
 

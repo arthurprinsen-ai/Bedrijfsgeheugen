@@ -50,7 +50,7 @@ function normalizeRevenueBlocks(input){
     }
   }
   const en=/\blang=(["'])en\1/i.test(html)||/\/en\//i.test(canonicalOf(html));
-  const merged='<section class="bg-revenue-links" data-bg-revenue-links="v2"><h2>'+(en?'Continue in Powerhouse':'Verder in Powerhouse')+'</h2><p>'+(en?'Choose the next step that fits what you are viewing now.':'Kies de vervolgstap die past bij wat je op deze pagina bekijkt.')+'</p><div class="bg-revenue-links__items">'+anchors.join('')+'</div></section>';
+  const merged='<section class="bg-revenue-links" data-bg-revenue-links="v2"><h2>'+(en?'Continue in Bedrijfsgeheugen':'Verder in Bedrijfsgeheugen')+'</h2><p>'+(en?'Choose the next step that fits what you are viewing now.':'Kies de vervolgstap die past bij wat je op deze pagina bekijkt.')+'</p><div class="bg-revenue-links__items">'+anchors.join('')+'</div></section>';
   let first=true;
   html=html.replace(re,()=>{if(first){first=false;return merged}return ''});
   return html;

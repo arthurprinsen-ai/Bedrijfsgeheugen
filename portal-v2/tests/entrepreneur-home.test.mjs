@@ -141,7 +141,7 @@ test('three entrepreneur attention cards remain authenticated and evidence-aware
  assert.ok(ui.indexOf("if(!loggedIn){")<ui.indexOf("attention.dataset.entrepreneurAttention='v1'"));
  assert.match(ui,/model\.next\.kind==='verified-proposal'/);
  assert.match(ui,/Number\.isInteger\(outcomes\)&&outcomes>0/);
- assert.match(ui,/Geen actuele, klantgebonden Powerhouse-projectie bewezen/);
+ assert.match(ui,/Geen actuele, klantgebonden Bedrijfsgeheugen-projectie bewezen/);
  assert.match(ui,/Voorbeeldcijfers en voorspellingen tellen nooit mee/);
  assert.match(ui,/dataset\.entrepreneurPage='outcomes-evidence'/);
  assert.equal((ui.match(/const journey=buildEntrepreneurJourneyModel\(customerState/g)||[]).length,1);

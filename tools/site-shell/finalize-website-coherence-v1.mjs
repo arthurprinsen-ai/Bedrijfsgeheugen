@@ -34,15 +34,15 @@ function ensureStyle(html){
 const productTruth=`
 <section class="bg-product-truth-v1" data-bg-product-truth-v1 aria-labelledby="bg-product-truth-title">
   <div class="bg-product-truth-wrap">
-    <span class="bg-product-truth-kicker">ZO WERKT POWERHOUSE</span>
+    <span class="bg-product-truth-kicker">ZO WERKT BEDRIJFSGEHEUGEN</span>
     <h2 id="bg-product-truth-title">Eén platform. Drie lagen die samenwerken.</h2>
     <p class="bg-product-truth-lead">Je ziet wat er speelt, zet inzicht om in concrete acties en voert die uit in de systemen die je al gebruikt. Intelligence, Agents en Connect vormen samen één gesloten werklijn van bron tot resultaat.</p>
     <div class="bg-product-truth-grid">
-      <article><span>Zien &amp; begrijpen</span><h3>Powerhouse Intelligence</h3><p>Bedrijfsdata, kennis, benchmarks en externe signalen worden samengebracht tot actuele context, prioriteiten en managementinformatie.</p></article>
-      <article><span>Beslissen &amp; uitvoeren</span><h3>Powerhouse Agents</h3><p>Inzichten worden vertaald naar taken, workflows en acties met eigenaarschap, goedkeuringen, bewijs en terugkoppeling.</p></article>
-      <article><span>Verbinden &amp; automatiseren</span><h3>Powerhouse Connect</h3><p>AFAS, Exact, Microsoft 365, webshops, CRM en API's sluiten aan op dezelfde gegevens- en uitvoeringslaag.</p></article>
+      <article><span>Zien &amp; begrijpen</span><h3>Bedrijfsgeheugen Intelligence</h3><p>Bedrijfsdata, kennis, benchmarks en externe signalen worden samengebracht tot actuele context, prioriteiten en managementinformatie.</p></article>
+      <article><span>Beslissen &amp; uitvoeren</span><h3>Bedrijfsgeheugen Agents</h3><p>Inzichten worden vertaald naar taken, workflows en acties met eigenaarschap, goedkeuringen, bewijs en terugkoppeling.</p></article>
+      <article><span>Verbinden &amp; automatiseren</span><h3>Bedrijfsgeheugen Connect</h3><p>AFAS, Exact, Microsoft 365, webshops, CRM en API's sluiten aan op dezelfde gegevens- en uitvoeringslaag.</p></article>
     </div>
-    <div class="bg-product-model" aria-label="Zo werkt Powerhouse">
+    <div class="bg-product-model" aria-label="Zo werkt Bedrijfsgeheugen">
       <div class="bg-product-node"><small>1</small><b>Bronnen</b><span>Data · kennis · systemen</span></div><i>→</i>
       <div class="bg-product-node"><small>2</small><b>Intelligence</b><span>Context · kansen · risico's</span></div><i>→</i>
       <div class="bg-product-node"><small>3</small><b>Agents</b><span>Besluiten · taken · workflows</span></div><i>→</i>
@@ -50,7 +50,7 @@ const productTruth=`
       <div class="bg-product-node accent"><small>5</small><b>Resultaat</b><span>Bewijs · impact · leren</span></div>
     </div>
     <div class="bg-product-ai-links"><b>Verder met AI:</b><a href="/ai-modelwijzer">AI-modelwijzer</a><a href="/ai-capability-model">AI-capabilitymodel</a><a href="/ai-adoptie">AI-adoptie</a><a href="/ai-governance">AI-governance</a><a href="/ai-act">AI Act</a><a href="/data-soevereiniteit">Data-soevereiniteit</a></div>
-    <div class="bg-product-truth-loop" aria-label="Powerhouse closed loop">
+    <div class="bg-product-truth-loop" aria-label="Bedrijfsgeheugen closed loop">
       <b>Data</b><i>→</i><b>Context</b><i>→</i><b>Intelligence</b><i>→</i><b>Besluit</b><i>→</i><b>Actie</b><i>→</i><b>Bewijs</b><i>→</i><b>Leren</b>
     </div>
     <div class="bg-product-truth-actions">
@@ -64,15 +64,15 @@ const productTruth=`
 const productTruthEn=`
 <section class="bg-product-truth-v1" data-bg-product-truth-v1 aria-labelledby="bg-product-truth-title">
   <div class="bg-product-truth-wrap">
-    <span class="bg-product-truth-kicker">HOW POWERHOUSE WORKS</span>
+    <span class="bg-product-truth-kicker">HOW BEDRIJFSGEHEUGEN WORKS</span>
     <h2 id="bg-product-truth-title">One platform. Three layers working together.</h2>
     <p class="bg-product-truth-lead">See what is happening, turn insight into concrete actions and execute them in the systems you already use. Intelligence, Agents and Connect form one closed workflow from source to outcome.</p>
     <div class="bg-product-truth-grid">
-      <article><span>See &amp; understand</span><h3>Powerhouse Intelligence</h3><p>Company data, knowledge, benchmarks and external signals become current context, priorities and management intelligence.</p></article>
-      <article><span>Decide &amp; execute</span><h3>Powerhouse Agents</h3><p>Insights become tasks, workflows and actions with ownership, approvals, evidence and outcome readback.</p></article>
-      <article><span>Connect &amp; automate</span><h3>Powerhouse Connect</h3><p>AFAS, Exact, Microsoft 365, webshops, CRM and APIs connect to the same data and execution layer.</p></article>
+      <article><span>See &amp; understand</span><h3>Bedrijfsgeheugen Intelligence</h3><p>Company data, knowledge, benchmarks and external signals become current context, priorities and management intelligence.</p></article>
+      <article><span>Decide &amp; execute</span><h3>Bedrijfsgeheugen Agents</h3><p>Insights become tasks, workflows and actions with ownership, approvals, evidence and outcome readback.</p></article>
+      <article><span>Connect &amp; automate</span><h3>Bedrijfsgeheugen Connect</h3><p>AFAS, Exact, Microsoft 365, webshops, CRM and APIs connect to the same data and execution layer.</p></article>
     </div>
-    <div class="bg-product-model" aria-label="How Powerhouse works">
+    <div class="bg-product-model" aria-label="How Bedrijfsgeheugen works">
       <div class="bg-product-node"><small>1</small><b>Sources</b><span>Data · knowledge · systems</span></div><i>→</i>
       <div class="bg-product-node"><small>2</small><b>Intelligence</b><span>Context · opportunities · risks</span></div><i>→</i>
       <div class="bg-product-node"><small>3</small><b>Agents</b><span>Decisions · tasks · workflows</span></div><i>→</i>
@@ -80,7 +80,7 @@ const productTruthEn=`
       <div class="bg-product-node accent"><small>5</small><b>Outcome</b><span>Evidence · impact · learning</span></div>
     </div>
     <div class="bg-product-ai-links"><b>Explore AI:</b><a href="/en/ai-modelwijzer">AI model guide</a><a href="/en/ai-capability-model">AI capability model</a><a href="/en/ai-adoptie">AI adoption</a><a href="/en/ai-governance">AI governance</a><a href="/en/ai-act">AI Act</a><a href="/en/data-soevereiniteit">Data sovereignty</a></div>
-    <div class="bg-product-truth-loop" aria-label="Powerhouse closed loop">
+    <div class="bg-product-truth-loop" aria-label="Bedrijfsgeheugen closed loop">
       <b>Data</b><i>→</i><b>Context</b><i>→</i><b>Intelligence</b><i>→</i><b>Decision</b><i>→</i><b>Action</b><i>→</i><b>Evidence</b><i>→</i><b>Learning</b>
     </div>
     <div class="bg-product-truth-actions">
@@ -96,7 +96,7 @@ function ensureProductTruth(html,route){
   const section=route==='/en/product'?productTruthEn:productTruth;
 
   // Never create a second hero. The build pipeline can rewrite /product before this
-  // finalizer runs, so anchor the Powerhouse model inside the customer narrative.
+  // finalizer runs, so anchor the Bedrijfsgeheugen model inside the customer narrative.
   // Prefer replacing the legacy "website/portal parity" implementation section.
   // Keep the match inside one section. The previous broad expression could start
   // at the page hero and consume the real H1 when the legacy phrase appeared in

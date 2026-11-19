@@ -43,13 +43,13 @@ export function powerhouseIntegrationMarkup(snapshot){
   const sourceCoverage=sourceNames.length ? liveSources+' / '+sourceNames.length : 'ONBEKEND';
   const gaps=Array.isArray(snapshot?.gapCodes)?snapshot.gapCodes:[];
   const rows=[
-    ['Powerhouse / Brain',a?esc(a.state||'UNKNOWN'):'GEEN BRON',a?'Lagen '+knownNum(a.wiredLayers)+' / '+knownNum(a.totalLayers)+' · leerstatus '+esc(a.learningState||'UNKNOWN'):'Geen actuele runtime-readback'],
-    ['Heartbeat',a?'ACTIEF VOLGENS BRON':'GEEN BRON',a?'Core jobs '+knownNum(a.activeJobs)+' / '+knownNum(a.requiredJobs)+' · fouten '+knownNum(a.currentRuntimeErrors):'Geen live jobbewijs'],
+    ['Bedrijfsgeheugen / Brain',a?esc(a.state||'UNKNOWN'):'GEEN BRON',a?'Lagen '+knownNum(a.wiredLayers)+' / '+knownNum(a.totalLayers)+' · leerstatus '+esc(a.learningState||'UNKNOWN'):'Geen actuele runtime-readback'],
+    ['Leerlus',a?'ACTIEF VOLGENS BRON':'GEEN BRON',a?'Core jobs '+knownNum(a.activeJobs)+' / '+knownNum(a.requiredJobs)+' · fouten '+knownNum(a.currentRuntimeErrors):'Geen live jobbewijs'],
     ['Capability-register',capabilities?'GERAADPLEEGD':'GEEN BRON',capabilities?'Verbonden '+knownNum(capabilities.wired)+' / '+knownNum(capabilities.registered)+' · zonder bewijs '+knownNum(capabilities.withoutEvidence):'Geen inventaris'],
     ['Intelligentielagen',intelligence?'GERAADPLEEGD':'GEEN BRON',intelligence?'Bekend '+knownNum(intelligence.wired)+' / '+knownNum(intelligence.registered)+' · zonder bewijs '+knownNum(intelligence.withoutEvidence):'Geen bronbewijs'],
     ['Integriteitslussen',loops?esc(loops.state||'UNKNOWN'):'GEEN BRON',loops?'Groen '+knownNum(loops.green)+' · oranje '+knownNum(loops.amber)+' · rood '+knownNum(loops.red)+' / totaal '+knownNum(loops.total):'Geen actuele lus-readback; nooit impliciet groen'],
     ['Terminale verplichtingen',terminal?(terminal.healthy===true?'CONTROLPLANE GEZOND':'HERSTEL OPEN'):'GEEN BRON',terminal?'Niet-afgerond '+knownNum(terminal.nonterminal)+' · geblokkeerd '+knownNum(terminal.blocked)+' · geëscaleerde onbekende resultaten '+knownNum(terminal.escalated):'Geen terminale bewijscontrole; nooit impliciet groen'],
-    ['Brein · agent- en herstelopdrachten',agentDispatch?esc(agentDispatch.state):'GEEN BRON',
+    ['Intelligentie · agent- en herstelopdrachten',agentDispatch?esc(agentDispatch.state):'GEEN BRON',
        agentDispatch?'AgentWork wacht '+knownNum(agentDispatch.pending)+' · RecoveryWork wacht '+knownNum(agentDispatch.recovering)+' · geen onafhankelijk uitvoeringsbewijs':'Originele onveranderlijke dispatch niet onafhankelijk uitleesbaar'],
     ['CRO / experimenten',experiments?esc(experiments.readiness||'UNKNOWN'):'GEEN BRON',experiments?'Toewijzingen '+knownNum(experiments.assignments)+' · controlegroep '+knownNum(experiments.holdoutAssignments):'Geen experimenteerbewijs'],
     ['Innovatie · oorspronkelijke agents',innovation?esc(innovation.state):'GEEN BRON',
@@ -66,7 +66,7 @@ export function powerhouseIntegrationMarkup(snapshot){
     ['Growth / Revenue',commercial?'BRON UITGELEZEN':'GEEN BRON',commercial?'Prospects '+knownNum(commercial.prospects)+' · acties '+knownNum(commercial.nextBestActions)+' · bron-omzet '+esc(knownMoney(commercial.realizedRevenueEur)):'Geen betrouwbaar omzetoverzicht'],
     ['Commerciële provider-overdracht',handoff?esc(handoff.state||'ONBEKEND'):'GEEN BRON',
       handoff?'Bewezen '+knownNum(handoff.providerProven7d)+' · onbewezen/verlopen '+knownNum(handoff.brokenOrUnproven7d)+' · A/B-behandelingen '+knownNum(handoff.linkedTreatments7d):'Geen onafhankelijke oorspronkelijke commercial-scorecard'],
-    ['Brein · commerciële incidenten',incidents?(incidents.active>0?'OPEN':'BRON UITGELEZEN'):'GEEN BRON',
+    ['Intelligentie · commerciële incidenten',incidents?(incidents.active>0?'OPEN':'BRON UITGELEZEN'):'GEEN BRON',
       incidents?'Actief '+knownNum(incidents.active)+' · technisch opgelost '+knownNum(incidents.resolved)+' · status uit het oorspronkelijke Brain-register':'Origineel Brain-register onbereikbaar; niet groen']
   ].map(row=>'<tr><th scope="row">'+esc(row[0])+'</th><td>'+row[1]+'</td><td>'+row[2]+'</td></tr>').join('');
   const messages=gaps.length?gaps.slice(0,18).map(v=>'<li>'+esc(v)+'</li>').join(''):'<li>Geen stage-voor-stage providerbewijs in deze projectie.</li>';
@@ -84,8 +84,8 @@ export function powerhouseIntegrationMarkup(snapshot){
     :'<li>Geen incidentregels uit het oorspronkelijke register opgehaald; dit bewijst geen herstel.</li>';
 
   return '<section class="cp-integration" data-bg-component="powerhouse-integration-health" data-proof="END_TO_END_UNPROVEN">'+
-    '<h3>Powerhouse · gezamenlijke systeemstatus</h3>'+
-    '<p>Één brongevoed overzicht van Brain, Heartbeat, de 15 integriteitslussen, terminale bewijsplichten, Growth en experimenten. <strong>Een gekoppelde laag of actieve job is geen bewezen volledige uitvoering, klant of order.</strong></p>'+
+    '<h3>Bedrijfsgeheugen · gezamenlijke systeemstatus</h3>'+
+    '<p>Één brongevoed overzicht van Brain, Leerlus, de 15 integriteitslussen, terminale bewijsplichten, Growth en experimenten. <strong>Een gekoppelde laag of actieve job is geen bewezen volledige uitvoering, klant of order.</strong></p>'+
     '<p><strong>Broncontrole: '+esc(sourceState)+'</strong> · Bronnen LIVE: <strong>'+esc(sourceCoverage)+'</strong> · Volledige uitvoeringsketen: <strong>NIET BEWEZEN</strong> · Gecontroleerd: '+esc(snapshot?.observedAt||'onbekend')+'</p>'+
     '<div class="cp-integration-scroll"><table><thead><tr><th>Onderdeel</th><th>Bronstatus</th><th>Meetstand</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<details><summary>Ontbrekend bewijs en bronstatussen ('+knownNum(gaps.length)+')</summary>'+
@@ -101,8 +101,8 @@ export function powerhouseIntegrationMarkup(snapshot){
     '<p>Status: <strong>'+esc(innovation?.state||'BRON ONBEREIKBAAR')+'</strong> · Bronnen gebonden '+knownNum(innovation?.sourceBound)+' / '+knownNum(innovation?.candidates)+' · onafhankelijke ACK '+knownNum(innovation?.verifiedConsumerAcks)+' · uitkomst <strong>NIET BEWEZEN</strong></p>'+
     '<ul>'+(innovationItems||'<li>Geen onafhankelijk bronbewijs beschikbaar; toon geen nul als succes.</li>')+'</ul>'+
     '<p><a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198" target="_blank" rel="noopener noreferrer">Oorspronkelijke innovatieverplichting #4198</a></p></details>'+
-    '<details data-bg-original-commercial-incidents="true"><summary>Brein · incidentlog en overdrachtsbewijs ('+knownNum(incidents?.active)+' actief)</summary>'+
-    '<p>Een gerepareerde codefout is niet hetzelfde als een gesloten commerciële lus. Statussen komen rechtstreeks uit het oorspronkelijke Brein; ontbrekende bronnen worden niet groen.</p>'+
+    '<details data-bg-original-commercial-incidents="true"><summary>Intelligentie · incidentlog en overdrachtsbewijs ('+knownNum(incidents?.active)+' actief)</summary>'+
+    '<p>Een gerepareerde codefout is niet hetzelfde als een gesloten commerciële lus. Statussen komen rechtstreeks uit het oorspronkelijke Intelligentielaag; ontbrekende bronnen worden niet groen.</p>'+
     '<ul>'+incidentItems+'</ul>'+
     '<p><a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198" target="_blank" rel="noopener noreferrer">Canoniek commercieel incident #4198</a></p></details>'+
     '</section>';
@@ -125,7 +125,7 @@ export function controlPlaneCockpitMarkup(data={}){
   </article>`).join('');
 
   return `<section class="cp-admin-cockpit" data-bg-component="powerhouse-control-plane-cockpit">
-    <div class="cp-head"><div><small>Intern · Powerhouse control plane</small><h2>Obligations</h2><p>Één read-only projectie van de canonical Brain-state, bewijs, recovery en outcome.</p></div><span>${esc(data.generatedAt||'')}</span></div>
+    <div class="cp-head"><div><small>Intern · Bedrijfsgeheugen control plane</small><h2>Obligations</h2><p>Één read-only projectie van de canonical Brain-state, bewijs, recovery en outcome.</p></div><span>${esc(data.generatedAt||'')}</span></div>
     <div class="cp-metrics">
       <article><small>Geclaimd afgerond</small><b>${num(metrics.obligations_fulfilled)}</b><span>van ${num(metrics.obligations_total)} · uitkomstbewijs apart</span></article>
       <article><small>First time right</small><b>${pct(metrics.first_time_right_pct)}</b><span>${num(metrics.first_time_right_count)} obligations</span></article>

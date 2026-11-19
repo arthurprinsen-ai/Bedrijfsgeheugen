@@ -82,7 +82,7 @@ function errorView(events){
 }
 function layerView(events,observability){
   const components=arr(observability.components);
-  return `<div class="poc-grid2"><section class="poc-panel"><h4>Activiteit per laag</h4><p class="poc-note">Brein: context, verbanden en leren. Powerhouse: beoordelen, beslissen en uitvoeren. Heartbeat: geplande taken en resultaatcontrole. Hieronder staat alleen activiteit die in de geladen runtimegegevens is vastgelegd.</p>${bars(groupCount(events,'layer').slice(0,16),events.length)}</section><section class="poc-panel"><h4>Platform- en componentstatus</h4>${components.length?components.map(c=>`<article class="poc-component"><div><b>${esc(c.name||c.component||c.platform||'Component')}</b><small>${esc(c.kind||c.layer||'')}</small></div><span class="poc-dot ${c.healthy===false?'bad':'good'}"></span></article>`).join(''):empty('Nog geen componentstatus in de runtimeprojectie.')}</section></div>`;
+  return `<div class="poc-grid2"><section class="poc-panel"><h4>Activiteit per laag</h4><p class="poc-note">Intelligentie: context, verbanden en leren. Bedrijfsgeheugen: beoordelen, beslissen en uitvoeren. Leerlus: geplande taken en resultaatcontrole. Hieronder staat alleen activiteit die in de geladen runtimegegevens is vastgelegd.</p>${bars(groupCount(events,'layer').slice(0,16),events.length)}</section><section class="poc-panel"><h4>Platform- en componentstatus</h4>${components.length?components.map(c=>`<article class="poc-component"><div><b>${esc(c.name||c.component||c.platform||'Component')}</b><small>${esc(c.kind||c.layer||'')}</small></div><span class="poc-dot ${c.healthy===false?'bad':'good'}"></span></article>`).join(''):empty('Nog geen componentstatus in de runtimeprojectie.')}</section></div>`;
 }
 function knowledgeView(events){
   const knowledge=events.filter(isKnowledge);
@@ -113,7 +113,7 @@ function deliveryView(events,observability){
   const issueMarkup=`<div class="poc-panel" data-original-netlify-incident data-evidence-status="${verifiedIssue?'READBACK_COMPLETE':'UNVERIFIED'}" data-production-current="${esc(String(issue.productionCurrent===true))}">
     <div class="poc-panelhead"><h4>Incident #5241 · Netlify-bouwfout</h4><span class="poc-badge ${issueTone}">${esc(issueLabel)}</span></div>
     <p class="poc-note">Websitepublicatie, incidentafhandeling en bewezen bronoorzaak zijn afzonderlijke controles. ${esc(verifiedIssue?issue.nextAction:'De oorspronkelijke GitHub-incidentbron is momenteel niet onafhankelijk teruggelezen.')}</p>
-    <p class="poc-note">Laatste GitHub-controle: ${esc(verifiedIssue?fmtTime(issue.issueUpdatedAt):'Onbekend')}. Herstel gebeurt alleen via de bestaande ONE BRAIN-, release- en Heartbeat-keten.</p>
+    <p class="poc-note">Laatste GitHub-controle: ${esc(verifiedIssue?fmtTime(issue.issueUpdatedAt):'Onbekend')}. Herstel gebeurt alleen via de bestaande ONE BRAIN-, release- en Leerlus-keten.</p>
     <a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241" target="_blank" rel="noopener noreferrer">Origineel incident en leerbewijs bekijken</a>
   </div>`;
   const releasePanel=`<section class="poc-panel" data-release-status-panel><h4>Release & productiebewijs</h4><div class="poc-kpis compact"><span data-release-stage="github" data-stage-value="${esc(status.githubRelease)}">${kpi('GitHub-release',label[status.githubRelease])}</span><span data-release-stage="netlify" data-stage-value="${esc(status.netlifyDeployment)}">${kpi('Netlify-deployment',label[status.netlifyDeployment])}</span><span data-release-stage="production" data-stage-value="${esc(status.productionReadback)}">${kpi('Productie-readback',label[status.productionReadback])}</span></div><p class="poc-note" data-release-canary role="status">Geauthenticeerde canary wordt gecontroleerd…</p><p class="poc-note">${providerEvidence?'Status gebaseerd op expliciet aangeleverd releasebewijs.':'Onafhankelijk GitHub-/Netlify-providerbewijs ontbreekt: geen groen zonder readback.'} ${status.reason?esc(status.reason):''}</p>${issueMarkup}</section>`;
@@ -203,7 +203,7 @@ function oneLoopAssuranceView(assurance){
     return `<article class="poc-component" data-loop-key="${esc(row.key)}" data-loop-status="${esc(row.status)}"><div><b>${esc(row.key)}</b><small>${esc(reason)} · ${esc(row.freshStages)}/${esc(row.requiredStages)} fasen · ${esc(fmtTime(row.checkedAt))}</small>${ownerDetail}${actionDetail}${remediation}</div><span class="poc-badge ${t}">${esc(row.status)}</span></article>`;
   }).join('');
   return `<section class="poc-panel" data-one-loop-assurance data-evidence-status="READBACK_COMPLETE" data-overall-status="${esc(status)}">
-    <div class="poc-panelhead"><h4>ONE BRAIN + Powerhouse + Heartbeat · één meetlus</h4><span class="poc-badge ${toneStatus}">${esc(label[status]||'Niet bewezen')}</span></div>
+    <div class="poc-panelhead"><h4>ONE BRAIN + Bedrijfsgeheugen + Leerlus · één meetlus</h4><span class="poc-badge ${toneStatus}">${esc(label[status]||'Niet bewezen')}</span></div>
     <p class="poc-note">Eén bestaande uitvoeringsarchitectuur; dit is uitsluitend onafhankelijke broncontrole van de 15 bestaande lussen, géén tweede executor. Een succesvolle job is geen bewezen klantresultaat. Laatste controle: ${esc(fmtTime(source.observedAt))}.</p>
     <div class="poc-kpis compact">${kpi('Lussen',counts.total,'bestaande canonieke inventaris')}${kpi('Groen',counts.green,'bron-gates voldoen')}${kpi('Oranje',counts.amber,'nog ontbrekend bewijs')}${kpi('Rood',counts.red,'guard of outcome faalt')}</div>
     ${priorityPanel}${publicationPanel}<p class="poc-note" data-original-guard-proof="${esc(diagnosis?.status||'UNAVAILABLE')}">${esc(diagnosticState)}</p><details><summary><b>Open alle 15 lussen en oorzaken</b></summary>${list}</details>
@@ -217,7 +217,7 @@ function liveView(events,observability,refreshError=''){
     ['GitHub / CI',/github|pull request|commit|merge|codeql|branch protection|required check/i],
     ['Netlify / productie',/netlify|deploy|website|production release|site release/i],
     ['Supabase / data',/supabase|edge function|migration|database|postgres/i],
-    ['Heartbeat / Brein',/heartbeat|brain|powerhouse|obligation|reconciliation/i],
+    ['Leerlus / Intelligentielaag',/heartbeat|brain|powerhouse|obligation|reconciliation/i],
     ['Commerciële kanalen',/email|e-mail|linkedin|instagram|post|social|lead|commerc|dm\b|sales/i],
     ['Agents / workflows',/agent|worker|workflow|automation|autonom|orchestrat/i]
   ];
@@ -235,7 +235,7 @@ function liveView(events,observability,refreshError=''){
   const eventLine=e=>`<article class="poc-error"><div>${statusBadge(e)}<b>${esc(e.title||e.rawType||'Activiteit')}</b></div><p>${esc(e.detail||e.subjectId||'Geen nadere oorzaak of actie vastgelegd.')}</p><small>${esc(fmtTime(e.occurredAt))} · ${esc(e.actor||'Onbekend')} · ${esc(e.source||'Onbekend')}${e.referenceUrl?` · <a href="${esc(e.referenceUrl)}" target="_blank" rel="noopener noreferrer">Open bronbewijs ↗</a>`:''}</small></article>`;
   const time=observability.updatedAt||latest[0]?.occurredAt;
   const outdated=!timeMs(time)||now-timeMs(time)>7200000;
-  return `${oneLoopAssuranceView(observability.oneLoopAssurance)}<section class="poc-panel"><div class="poc-panelhead"><h4>POWERHOUSE ∞ · Live Command Center</h4><span class="poc-badge ${refreshError||outdated?'bad':'good'}">${refreshError?'Vernieuwen mislukt':outdated?'Geen actueel bewijs':'Recente waarnemingen'}</span></div><p class="poc-note">Dit overzicht toont waargenomen feiten uit de beveiligde Brain-projectie, geen fictieve percentages of gesimuleerde activiteit. Provider- en productiestatus zijn pas geverifieerd als daarvoor een recent terminal bewijsrecord bestaat. Laatste observatie: ${esc(fmtTime(time))}.</p></section>
+  return `${oneLoopAssuranceView(observability.oneLoopAssurance)}<section class="poc-panel"><div class="poc-panelhead"><h4>BEDRIJFSGEHEUGEN ∞ · Live Command Center</h4><span class="poc-badge ${refreshError||outdated?'bad':'good'}">${refreshError?'Vernieuwen mislukt':outdated?'Geen actueel bewijs':'Recente waarnemingen'}</span></div><p class="poc-note">Dit overzicht toont waargenomen feiten uit de beveiligde Brain-projectie, geen fictieve percentages of gesimuleerde activiteit. Provider- en productiestatus zijn pas geverifieerd als daarvoor een recent terminal bewijsrecord bestaat. Laatste observatie: ${esc(fmtTime(time))}.</p></section>
   <div class="poc-grid3">${blocks}</div>
   <div class="poc-grid2"><section class="poc-panel"><h4>Blokkades en herstel</h4>${blockers.length?blockers.map(eventLine).join(''):empty('Geen blokkades geregistreerd in deze selectie; dit bewijst niet dat alle externe systemen probleemloos draaien.')}</section>
   <section class="poc-panel"><h4>Actuele werkstroom en bewijslinks</h4>${recent.length?recent.map(eventLine).join(''):empty('Geen actuele uitvoering in de canonieke projectie. Er worden geen werkzaamheden gesuggereerd.')}</section></div>`;
@@ -367,7 +367,7 @@ function systemMapView(systemMap,events,observability={}){
   const flows=arr(systemMap.flow).map(edge=>`<div class="psm-edge"><b>${esc(edge.from)}</b><span>→</span><b>${esc(edge.to)}</b><small>${esc(edge.label)}</small></div>`).join('');
   const inventory=(title,items)=>`<details class="psm-inventory"><summary><b>${esc(title)}</b><span>${arr(items).length}</span></summary><div>${arr(items).map(item=>`<code>${esc(item)}</code>`).join('')}</div></details>`;
   const contract=systemMap.agentRegistrationContract||{};
-  return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Powerhouse met elkaar</h4><p>Het Brein bewaart en verbindt bedrijfscontext, bronnen en geleerde lessen. Powerhouse gebruikt die context om signalen te beoordelen, acties te kiezen en resultaten te volgen. Heartbeat laat de bestaande taken op hun eigen ritme uitvoeren en controleert hun uitkomst. Het portaal toont de beschikbare gegevens en bewijsstatus; GitHub levert de code, Supabase verwerkt en bewaart, Netlify ontsluit en Notion documenteert. Een geplande taak of opgeslagen keuze bewijst nog geen uitgevoerde actie.</p></div><small>Broninventaris gecontroleerd: ${esc(fmtTime(systemMap.observedAt))}</small></section>
+  return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Bedrijfsgeheugen met elkaar</h4><p>De intelligentielaag bewaart en verbindt bedrijfscontext, bronnen en geleerde lessen. Bedrijfsgeheugen gebruikt die context om signalen te beoordelen, acties te kiezen en resultaten te volgen. Leerlus laat de bestaande taken op hun eigen ritme uitvoeren en controleert hun uitkomst. Het portaal toont de beschikbare gegevens en bewijsstatus; GitHub levert de code, Supabase verwerkt en bewaart, Netlify ontsluit en Notion documenteert. Een geplande taak of opgeslagen keuze bewijst nog geen uitgevoerde actie.</p></div><small>Broninventaris gecontroleerd: ${esc(fmtTime(systemMap.observedAt))}</small></section>
   <p class="poc-note">De uitleg en broninventaris volgen dezelfde gecontroleerde release als dit portaal. Dit registreert wat is gebouwd; live werking vereist afzonderlijk runtime- en resultaatbewijs. Broncontrole: ${esc(systemMap.explanationInventory?.contentHash?.slice(0,12)||'nog geen controlebewijs')}. Supabase-catalogus waargenomen: ${esc(fmtTime(liveSupabase.generatedAt))}.</p>
   <div class="poc-kpis psm-kpis">
     ${kpi('Supabase tabellen',liveSupabase.status==='LIVE'?liveTables.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
@@ -443,7 +443,7 @@ function systemMapView(systemMap,events,observability={}){
     </div>
     <p class="poc-note">Bronreadback ${esc(fmtTime(publication.observedAt))}. De herstelcode beschrijft de volgende veilige stap, niet een uitgevoerde actie. Bestaande executor, duplicate-gate, media-identiteit en protected release blijven verplicht.</p>
   </section>
-  <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
+  <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Bedrijfsgeheugen, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
   <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
   <div class="poc-grid2">
     <section class="poc-panel"><h4>Datastroom & samenhang</h4><div class="psm-flow">${flows}</div></section>
@@ -458,7 +458,7 @@ function systemMapView(systemMap,events,observability={}){
       ${liveSupabase.status==='LIVE'?inventory('Supabase views · live',liveViews):''}
       ${liveSupabase.status==='LIVE'?inventory('Supabase databasefuncties · live',liveDbFunctions):''}
       ${liveSupabase.status==='LIVE'?inventory('Supabase cron-jobs · live',liveCron):`<div class="poc-empty">Supabase live inventory: ${esc(liveSupabase.reason||'UNAVAILABLE')}</div>`}
-      ${inventory('Powerhouse skills',inventories.skills)}
+      ${inventory('Bedrijfsgeheugen skills',inventories.skills)}
       ${inventory('Agent fabric modules',inventories.agentFabricModules)}
     </div>
   </section>
@@ -516,7 +516,7 @@ function integrationsView(model={}){
         <button type="submit" ${loading?'disabled':''}>Valideren en veilig opslaan</button>
       </form>
       <hr>
-      <p class="poc-note">Na een geldige key maakt Powerhouse een Composio-hosted Instagram Connect Link. Meta/Instagram OAuth-credentials blijven bij Composio.</p>
+      <p class="poc-note">Na een geldige key maakt Bedrijfsgeheugen een Composio-hosted Instagram Connect Link. Meta/Instagram OAuth-credentials blijven bij Composio.</p>
       <button type="button" data-composio-link ${loading||!keyPresent||ready?'disabled':''}>Instagram koppelen</button>
       ${link?`<p class="poc-note"><a href="${esc(link)}" target="_blank" rel="noopener noreferrer">OAuth-link opnieuw openen</a></p>`:''}
       ${ready?`<p class="poc-note"><b>Gereed:</b> exact één actieve Instagram-connection is gevalideerd. ${data.resume_attempted?(data.publisher_ok?'Publisher direct hervat.':'Publisher-resume vraagt aandacht.'):(model.polling?'Automatische hervatting wordt gestart.':'Publisher kan hervatten.')}</p>`:''}
@@ -563,11 +563,11 @@ async function openAdminLogin(){
 
 function accessState(root,status,onLogin){
   const copy=status==='forbidden'
-    ?['Geen toegang','Dit onderdeel is alleen beschikbaar voor geautoriseerde Powerhouse-beheerders.']
+    ?['Geen toegang','Dit onderdeel is alleen beschikbaar voor geautoriseerde Bedrijfsgeheugen-beheerders.']
     :status==='error'
       ?['Beveiligde data niet beschikbaar','De admin-only observability-API kon niet veilig worden gelezen. Er wordt geen fallback naar de gewone klant-API gebruikt.']
-      :['Inloggen vereist','Log in met een geautoriseerd beheeraccount om het Powerhouse Control Center te openen.'];
-  root.innerHTML=`<section class="poc-panel poc-access"><span>🔒 Powerhouse Control Center</span><h3>${esc(copy[0])}</h3><p>${esc(copy[1])}</p>${status==='unauthenticated'?'<button type="button" class="poc-login">Inloggen</button>':''}</section>`;
+      :['Inloggen vereist','Log in met een geautoriseerd beheeraccount om het Bedrijfsgeheugen Control Center te openen.'];
+  root.innerHTML=`<section class="poc-panel poc-access"><span>🔒 Bedrijfsgeheugen Control Center</span><h3>${esc(copy[0])}</h3><p>${esc(copy[1])}</p>${status==='unauthenticated'?'<button type="button" class="poc-login">Inloggen</button>':''}</section>`;
   root.querySelector('.poc-login')?.addEventListener('click',async()=>{
     const button=root.querySelector('.poc-login');
     if(button){button.disabled=true;button.textContent='Inloggen openen…';}
@@ -593,7 +593,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     const obs=securedRuntime.observability||{};
     const all=arr(obs.events);const events=filterEvents(all,state);
     const actors=unique(all.map(e=>e.actor)),layers=unique(all.map(e=>e.layer)),sources=unique(all.map(e=>e.source));
-    root.innerHTML=`<header class="poc-head"><div><span>Powerhouse Control Center</span><h3>Alles wat AI, agents, chats en delivery doen</h3><p>Dagelijks inzicht in activiteit, fouten, learnings, skills, systemen, GitHub/delivery en terminal bewijs. Geen runtime-evidence = geen verzonnen status.</p></div><div class="poc-live"><i></i><b>${state.refreshError?'Vernieuwen mislukt':'Beveiligde readback'}</b><small>${esc(obs.updatedAt?fmtTime(obs.updatedAt):'')}</small></div></header>
+    root.innerHTML=`<header class="poc-head"><div><span>Bedrijfsgeheugen Control Center</span><h3>Alles wat AI, agents, chats en delivery doen</h3><p>Dagelijks inzicht in activiteit, fouten, learnings, skills, systemen, GitHub/delivery en terminal bewijs. Geen runtime-evidence = geen verzonnen status.</p></div><div class="poc-live"><i></i><b>${state.refreshError?'Vernieuwen mislukt':'Beveiligde readback'}</b><small>${esc(obs.updatedAt?fmtTime(obs.updatedAt):'')}</small></div></header>
       <section class="poc-filters">
         <label>Periode<select data-filter="period"><option value="today">Vandaag</option><option value="week">7 dagen</option><option value="month">30 dagen</option><option value="all">Alles</option></select></label>
         <label>Actor<select data-filter="actor"><option value="all">Alle actors</option>${actors.map(v=>`<option>${esc(v)}</option>`).join('')}</select></label>
@@ -698,7 +698,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
   }
 
   async function refresh({quiet=false}={}){
-    if(!quiet)root.innerHTML='<div class="poc-empty">Beveiligde Powerhouse-data laden…</div>';
+    if(!quiet)root.innerHTML='<div class="poc-empty">Beveiligde Bedrijfsgeheugen-data laden…</div>';
     let result;
     try{result=await adminRuntimeEvidence(fetchImpl);}catch{result={status:'error',runtime:null};}
     if(destroyed)return;

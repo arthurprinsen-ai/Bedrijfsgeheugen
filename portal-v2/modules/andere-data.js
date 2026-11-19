@@ -83,7 +83,7 @@ function render(container,data){
   const loopCounts=oneLoop?.status==='READBACK_COMPLETE'?oneLoop.counts:null;
 
   const gateNames={
-    BRAIN_DELIVERY_READBACK:'Growth-event afgeleverd aan ONE BRAIN (niet alleen Heartbeat-opslag)',
+    BRAIN_DELIVERY_READBACK:'Growth-event afgeleverd aan ONE BRAIN (niet alleen Leerlus-opslag)',
     FIRST_PARTY_EVENT_RECEIPT:'Exacte opslagbevestiging website-event',
     ACTUAL_CTA_EXPOSURE:'Echte CTA-interactie',
     CONTROLLED_CRO_EXPERIMENT:'Gerandomiseerde controlegroep met volwassen uitkomst',
@@ -201,7 +201,7 @@ function render(container,data){
     '<td>'+badge(row.executionState)+'<br><small>'+esc(row.stageStatus)+'</small></td>'+
     '<td>'+esc(row.task)+'<br><small>Eigenaar: '+esc(row.owner)+'</small></td></tr>').join('');
   const commercialFunnelCard='<section class="od-card" data-one-brain-commercial-funnel>'+
-    '<h3>Powerhouse → ONE BRAIN → Heartbeat · één commerciële groeilus</h3>'+
+    '<h3>Bedrijfsgeheugen → ONE BRAIN → Leerlus · één commerciële groeilus</h3>'+
     '<p>Originele bronketen: LinkedIn persoonlijk/bedrijf + Instagram bereik, likes, reacties en reposts → clicks en connecties → website → CTA → vrijwillige gekwalificeerde lead → onafhankelijke betaalde order → leren en verbeteren. Mailantwoorden worden als eigen origineel kanaal gecontroleerd. Er is geen tweede publisher, agent, CRM of scheduler.</p>'+
     '<p>Funnelbewijs: '+badge(commercialFunnel?.status||'UNVERIFIED')+' · Laatste readback: '+esc(commercialFunnel?.observedAt||'—')+'</p>'+
     '<div class="od-grid">'+
@@ -242,7 +242,7 @@ function render(container,data){
     '</td><td>'+esc(row.action)+'<br><small>Acceptatie: '+esc(row.success)+'</small></td></tr>').join('');
   const providerRepairCard='<section class="od-card" data-one-brain-ga4-private-calibration-repair>'+
     '<h3>ONE BRAIN · GA4-bron en voorspellingskalibratie herstellen</h3>'+
-    '<p>Originele GA4-data en de bestaande publieke/privé kalibratie lopen via de bestaande Powerhouse-executors. Een geslaagde connectorcall is geen nieuw GA4-bezoek. Een actieve publieke kalibrator mag geen privé-bedrijfs- of persoonsvoorspellingen ongecontroleerd afvinken.</p>'+
+    '<p>Originele GA4-data en de bestaande publieke/privé kalibratie lopen via de bestaande Bedrijfsgeheugen-executors. Een geslaagde connectorcall is geen nieuw GA4-bezoek. Een actieve publieke kalibrator mag geen privé-bedrijfs- of persoonsvoorspellingen ongecontroleerd afvinken.</p>'+
     '<p>Gezamenlijk herstelbewijs: '+badge(providerRepair?.status||'UNVERIFIED')+
     ' · Broncontrole: '+esc(providerRepair?.asOf||'—')+'</p>'+
     '<h4>GA4 · bron is niet hetzelfde als verwerking</h4>'+
@@ -270,7 +270,7 @@ function render(container,data){
     '<p class="od-foot">Geen extra scheduler, ongevraagde tracking, uitkomst uit geen antwoord, gegevens van personen in publieke AI-modellen of gefingeerde ROI. Eerst nieuwe échte GA4-observaties en zelfstandig geverifieerde privé-uitkomsten; daarna pas groen en causaliteitscontrole voor CRO.</p></section>';
 
   const compoundCard='<section class="od-card" data-one-brain-compound-proof>'+
-    '<h3>ONE BRAIN + Heartbeat · drie dagelijkse verbeterlussen</h3>'+
+    '<h3>ONE BRAIN + Leerlus · drie dagelijkse verbeterlussen</h3>'+
     '<p>Gedeelde originele commerciële, leer-, runtime- en portaalbronnen. De agents hebben één gezamenlijke bewijslijst; alleen geregistreerde acties, werkelijke klantwaarde en onafhankelijke betaalbewijzen kunnen een resultaat sluiten. Een groen technisch systeem is niet automatisch meer omzet.</p>'+
     '<p>Bewijsstatus: '+badge(improvement?.status||'UNVERIFIED')+
     ' · Laatste controle '+esc(improvement?.at||'—')+'</p>'+
@@ -279,7 +279,7 @@ function render(container,data){
     '<div class="od-scroll"><table><thead><tr><th>#</th><th>Bewijsachterstand</th><th>Oorspronkelijke eigenaar</th><th>Veilige volgende stap</th></tr></thead>'+
     '<tbody>'+(improvementPriorities||'<tr><td colspan="4">Geen actuele, verifieerbare prioritering beschikbaar.</td></tr>')+
     '</tbody></table></div>'+
-    '<p class="od-foot">Portaalroute-events bevatten mogelijk beheerders en previews: dit zijn geen geverifieerde betalende klanten of unieke bezoekers. De kaart toont geen persoonsgegevens, verzendt niets en kan de oorspronkelijke vijftien Heartbeat-lussen niet groen maken. Ontbrekende, verouderde of niet-toegestane bronnen blijven UNVERIFIED.</p></section>';
+    '<p class="od-foot">Portaalroute-events bevatten mogelijk beheerders en previews: dit zijn geen geverifieerde betalende klanten of unieke bezoekers. De kaart toont geen persoonsgegevens, verzendt niets en kan de oorspronkelijke vijftien Leerlus-lussen niet groen maken. Ontbrekende, verouderde of niet-toegestane bronnen blijven UNVERIFIED.</p></section>';
 
   const originalBackendCard='<section class="od-card" data-brain-original-backend-evidence>'+
     '<h3>ONE BRAIN · volledige backendtest</h3>'+
@@ -322,7 +322,7 @@ function render(container,data){
     '<a href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41350194932" target="_blank" rel="noopener noreferrer">Oorspronkelijke mislukte controle</a>.</p></section>';
   const editorialQualityCard='<section class="od-card" data-social-editorial-quality>'+
     '<h3>LinkedIn · kwaliteit vóór bereik</h3>'+
-    '<p>Publiceer geen technische voortgangsrapporten als ondernemersverhaal. Een herkenbare zakelijke situatie, oorzaak en gevolg, een waarheidsgetrouwe praktische les en een originele opening gaan vóór interne Powerhouse-cijfers.</p>'+
+    '<p>Publiceer geen technische voortgangsrapporten als ondernemersverhaal. Een herkenbare zakelijke situatie, oorzaak en gevolg, een waarheidsgetrouwe praktische les en een originele opening gaan vóór interne Bedrijfsgeheugen-cijfers.</p>'+
     '<p>Kwaliteitsresultaat van échte posts: '+badge(editorialQuality?.status||'UNVERIFIED')+
     ' · Social CRO-bron: '+badge(social?.status||'UNVERIFIED')+'</p>'+
     '<div class="od-grid">'+
@@ -333,9 +333,9 @@ function render(container,data){
     '<p class="od-foot">Regressie tegen generieke AI-openingen en interne statuscijfers; na publicatie afzonderlijk provider-ID, leeftijdsgelijke views/reacties, website- en leadbron, betaling en volgende natuurlijke leerbeslissing controleren. Een code-release of extra view is geen bewezen commerciële winst. Incident: '+esc(editorialQuality?.incident||'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439')+'.</p></section>';
   container.innerHTML='<section class="cro-od" aria-labelledby="croOtherDataTitle">'+
     '<style>'+css+'</style>'+
-    '<div class="od-actions"><button type="button" data-cro-reload>Bronnen vernieuwen</button><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center" data-open-page="powerhouse-control-center">Powerhouse Control Center</a></div>'+
+    '<div class="od-actions"><button type="button" data-cro-reload>Bronnen vernieuwen</button><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center" data-open-page="powerhouse-control-center">Bedrijfsgeheugen Control Center</a></div>'+
     '<h3 id="croOtherDataTitle">Websitegegevens & CRO-experimenten</h3>'+
-    '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Powerhouse- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
+    '<p class="od-note">Eén beveiligde, alleen-lezen projectie van de bestaande Bedrijfsgeheugen- en Supabase-bronnen. Websitegedrag, experimenten, hypotheses, steekproeven, resultaten en besluiten blijven van elkaar onderscheiden. Geen verzonnen uplift of conversie.</p>'+
     '<p class="od-foot">Bronstatus website: '+badge(source.website?.status)+' · experimenten: '+badge(source.experiments?.status)+' · beleid: '+badge(source.policies?.status)+' · conversiebewijs: '+badge(source.conversionProof?.status)+' · cohortbewijs: '+badge(source.experimentProof?.status)+' · uitstap- en gedragssignalen: '+badge(source.behavior?.status)+' · Social CRO: '+badge(source.socialFunnel?.status)+' · laatste website-update '+esc(date(source.website?.lastObservedAt))+' · laatst gecontroleerd '+esc(date(data.generatedAt))+'</p>'+
     '<div class="od-grid">'+cardData+'</div>'+
     weeklyCard+
@@ -347,8 +347,8 @@ function render(container,data){
     recoveryAuditCard+
     compoundCard+
     innovationCard+
-    '<section class="od-card"><h3>Powerhouse · één canonieke lus (15 controleketens)</h3>'+
-    '<p>Deze read-only status komt rechtstreeks uit dezelfde bestaande ONE BRAIN/Heartbeat-controlebron als het Powerhouse Control Center. CRO en omzet gebruiken deze gedeelde waarheid; een RED betekent geen afgeronde commerciële cyclus.</p>'+
+    '<section class="od-card"><h3>Bedrijfsgeheugen · één canonieke lus (15 controleketens)</h3>'+
+    '<p>Deze read-only status komt rechtstreeks uit dezelfde bestaande ONE BRAIN/Leerlus-controlebron als het Bedrijfsgeheugen Control Center. CRO en omzet gebruiken deze gedeelde waarheid; een RED betekent geen afgeronde commerciële cyclus.</p>'+
     '<p>Oorspronkelijke 15-lussenbron: '+badge(source.oneLoop?.status)+
     ' · Organisme: '+badge(oneLoop?.overallStatus)+
     ' · Laatste controle: '+esc(date(oneLoop?.checkedAt))+'</p>'+
@@ -359,7 +359,7 @@ function render(container,data){
     '<p>Geen onbewezen groene status: '+esc(oneLoop?.reason||'Geen rode of oranje lussen waargenomen')+'.</p>')+
     '<p class="od-foot">Een ontbrekende of verouderde 15-lussenreadback blijft UNVERIFIED. Nooit kunstmatig groen maken; resultaten pas sluiten met onafhankelijk uitvoerings-, conversie- en providerbewijs.</p></section>'+
     '<section class="od-card"><h3>Autonome outreach · brononderzoek → uitvoering → ontvangstbewijs</h3>'+
-    '<p>Gedeelde Powerhouse/ONE BRAIN-waarheid uit de oorspronkelijke sales-actions. Een intern onderzoek is geen verzonden e-mail; een cronstatus is geen Gmail-bewijs.</p>'+
+    '<p>Gedeelde Bedrijfsgeheugen/ONE BRAIN-waarheid uit de oorspronkelijke sales-actions. Een intern onderzoek is geen verzonden e-mail; een cronstatus is geen Gmail-bewijs.</p>'+
     '<p>Bronreadback: '+badge(outreach?.status)+' · Verantwoordelijke onderzoeksagent: '+
     esc(outreach?.nextOwner||'Niet bevestigd')+'</p>'+
     '<div class="od-grid">'+field('E-mails geblokkeerd op bronbewijs',fmt(outreach?.sourceResearchHeld))+
@@ -370,9 +370,9 @@ function render(container,data){
     field('Eerstvolgende reguliere onderzoekscontrole',esc(date(outreach?.nextOriginalResearchAt)))+
     field('Verzendingen met vastgelegde Gmail-readback',fmt(outreach?.providerVerifiedSends))+'</div>'+
     '<p class="od-foot">Een SERP-resultaat of interne bronkandidaat is géén geverifieerd actueel bedrijfssignaal. Zonder onafhankelijk bron- en kwaliteitsbewijs blijft de e-mail tegen verzending beschermd.</p>'+ 
-    '<p class="od-foot">Ontbrekende actuele bedrijfsspecifieke bron → bestaande interne onderzoeksactie (dedupe) → originele tekstkwaliteitscontrole → geautoriseerde e-mail → onafhankelijke Gmail SENT-label/ontvanger-readback → Heartbeat action/readback. Bij ontbrekend bewijs blijft de lus AMBER en wordt er niets verzonnen. '+esc(outreach?.reason||'')+'</p></section>'+
+    '<p class="od-foot">Ontbrekende actuele bedrijfsspecifieke bron → bestaande interne onderzoeksactie (dedupe) → originele tekstkwaliteitscontrole → geautoriseerde e-mail → onafhankelijke Gmail SENT-label/ontvanger-readback → Leerlus action/readback. Bij ontbrekend bewijs blijft de lus AMBER en wordt er niets verzonnen. '+esc(outreach?.reason||'')+'</p></section>'+
     '<section class="od-card"><h3>ONE BRAIN · commerciële CRO-terugkoppeling</h3>'+
-    '<p>Originele Heartbeat → canonieke Brain-opslag, zonder tweede scheduler of losse registratie. Een technische readback bewijst nog geen verkoop of experimentele verbetering.</p>'+
+    '<p>Originele Leerlus → canonieke Brain-opslag, zonder tweede scheduler of losse registratie. Een technische readback bewijst nog geen verkoop of experimentele verbetering.</p>'+
     '<p>Commerciële lus: '+badge(data.commercialLoopStatus||'NOT_VERIFIED')+
     ' · Brain-bron: '+badge(source.brainProof?.status)+
     ' · Laatst waargenomen: '+esc(date(brain?.lastObservedAt))+
@@ -381,10 +381,10 @@ function render(container,data){
     field('Volwassen treatment',fmt(brain?.observed?.maturedTreatment))+
     field('Volwassen controlegroep',fmt(brain?.observed?.maturedHoldout))+'</div>'+
     '<div class="od-scroll"><table><thead><tr><th>Verificatiestap</th><th>Bewijsstatus</th></tr></thead><tbody>'+
-    (brainRows||'<tr><td colspan="2">Nog geen onafhankelijk teruggelezen natuurlijke Heartbeat-run.</td></tr>')+
+    (brainRows||'<tr><td colspan="2">Nog geen onafhankelijk teruggelezen natuurlijke Leerlus-run.</td></tr>')+
     '</tbody></table></div>'+
     '<p class="od-foot">Dit overzicht leest alleen het bestaande ONE BRAIN-registratiepad. Ontbrekende leads, orders en betalingen worden nooit groen gezet.</p></section>'+
-    '<section class="od-card"><h3>Powerhouse · stijgende lijn van bereik naar betaalde orders</h3>'+
+    '<section class="od-card"><h3>Bedrijfsgeheugen · stijgende lijn van bereik naar betaalde orders</h3>'+
     '<p>Één ONE BRAIN/CRO-scorecard: zeven volledig afgesloten UTC-dagen versus de zeven daarvoor. Website-sessies zijn bronheuristieken; social vergelijkt uitsluitend leeftijdsgelijke providerdata. Het doel is groei, niet een garantie of kunstmatig groen.</p>'+
     '<p>Brontoestand: '+badge(growth?.status||'UNVERIFIED')+' · Venster: '+esc(growth?.period||'Niet beschikbaar')+
     ' · GA4: '+badge(growth?.providers?.ga4?.state||'UNAVAILABLE')+
@@ -429,7 +429,7 @@ function render(container,data){
       (socialRows||'<tr><td colspan="8">Geen geverifieerde socialpostmetingen.</td></tr>')+'</tbody></table></div>':
       '<p class="od-warn">Socialmediabron niet onafhankelijk beschikbaar. Geen groei of daling vastgesteld.</p>')+
     '<p class="od-foot">Richtlijn: bereik en engagement zijn vroege signalen, geen orders. Gezaghebbende funnel: echte post/provider-ID → betrouwbaar gemeten interactie → toegeschreven website-CTA → gekwalificeerde lead → onafhankelijke betaling → toegepaste leerregel.</p></section>'+
-    '<section class="od-card" data-original-cro-measurement><h3>CTA- en meetdekking · originele Powerhouse-bron</h3>'+
+    '<section class="od-card" data-original-cro-measurement><h3>CTA- en meetdekking · originele Bedrijfsgeheugen-bron</h3>'+
     '<p>Vergelijk uitsluitend de 7-daagse waarden uit dezelfde bron: pagina-events zonder botvlag, CTA-events, dagaggregatie en formulierintenties. Zonder onafhankelijk gecontroleerde bezoeker, conversie en event-ID is een nulmeting geen bewezen 0% conversie.</p>'+
     '<p>Meetstatus: '+badge(coverage?.status||'UNVERIFIED')+' · Broncontrole: '+esc(date(coverage?.observedAt))+'</p>'+
     '<div class="od-grid">'+field('Pagina-events zonder botvlag (7d)',fmt(coverage?.pageviewsNonRobotFlag7d))+
@@ -461,7 +461,7 @@ function render(container,data){
     (behavior?(sectionRows||'<tr><td colspan="4">Geen bewezen sectie-exit-events binnen deze periode.</td></tr>'):'<tr><td colspan="4">Bron ontbreekt of is niet actueel.</td></tr>')+
     '</tbody></table></div></section>'+
     '<section class="od-card"><h3>CRO-experimentregister</h3>'+
-    (experiments?'<p>'+fmt(experiments.length)+' experimenten uit de canonieke Powerhouse-bron. Ook geplande, onvolledige en afgekeurde proeven blijven zichtbaar.</p>':'<p>De experimentbron is niet beschikbaar; conclusies blijven open.</p>')+
+    (experiments?'<p>'+fmt(experiments.length)+' experimenten uit de canonieke Bedrijfsgeheugen-bron. Ook geplande, onvolledige en afgekeurde proeven blijven zichtbaar.</p>':'<p>De experimentbron is niet beschikbaar; conclusies blijven open.</p>')+
     '<div class="od-controls"><label>Zoek experiment <input data-cro-search type="search" placeholder="Hypothese, pagina, experiment-ID"></label><label>Status <select data-cro-status><option value="">Alle statussen</option>'+
     (experiments?[...new Set(experiments.map(x=>x.status).filter(Boolean))].sort().map(x=>'<option value="'+esc(x)+'">'+esc(x)+'</option>').join(''):'')+
     '</select></label></div>'+
@@ -493,7 +493,7 @@ export function mountOtherData(container,{fetchImpl=globalThis.fetch}={}){
     }
     if(!active())return;
     if(!user){
-      container.innerHTML='<section class="cro-od"><h3>Andere data · toegang vereist</h3><p>Log in als Powerhouse-beheerder om de website- en CRO-gegevens te bekijken.</p><button type="button" data-cro-login>Inloggen</button></section>';
+      container.innerHTML='<section class="cro-od"><h3>Andere data · toegang vereist</h3><p>Log in als Bedrijfsgeheugen-beheerder om de website- en CRO-gegevens te bekijken.</p><button type="button" data-cro-login>Inloggen</button></section>';
       container.querySelector('[data-cro-login]')?.addEventListener('click',async()=>{const identity=await ensureIdentityWidget();identity?.open?.('login');});
       return;
     }
@@ -506,7 +506,7 @@ export function mountOtherData(container,{fetchImpl=globalThis.fetch}={}){
         credentials:'same-origin',cache:'no-store'
       });
       if(!active())return;
-      if(response.status===403){container.textContent='Alleen de Powerhouse-beheerder heeft toegang tot de globale website- en experimentgegevens.';return;}
+      if(response.status===403){container.textContent='Alleen de Bedrijfsgeheugen-beheerder heeft toegang tot de globale website- en experimentgegevens.';return;}
       if(response.status===401){container.textContent='De beheerderssessie is verlopen. Log opnieuw in.';return;}
       if(!response.ok){container.textContent='De gecontroleerde readback is niet beschikbaar (HTTP '+response.status+'). Er worden geen statistieken verzonnen.';return;}
       const data=await response.json();

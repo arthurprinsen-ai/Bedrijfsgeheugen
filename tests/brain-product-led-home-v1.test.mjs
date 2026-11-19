@@ -7,10 +7,10 @@ const netlify = readFileSync('netlify.toml','utf8');
 const skill = readFileSync('skills/powerhouse-product-led-growth.md','utf8');
 
 test('product-led homepage presents one platform with three product lines', () => {
-  assert.match(apply,/Powerhouse · één platform/);
-  assert.match(apply,/Powerhouse Intelligence/);
-  assert.match(apply,/Powerhouse Agents/);
-  assert.match(apply,/Powerhouse Connect/);
+  assert.match(apply,/Bedrijfsgeheugen · één platform/);
+  assert.match(apply,/Bedrijfsgeheugen Intelligence/);
+  assert.match(apply,/Bedrijfsgeheugen Agents/);
+  assert.match(apply,/Bedrijfsgeheugen Connect/);
   assert.match(apply,/Data[\s\S]*Context[\s\S]*Intelligence[\s\S]*Beslissing[\s\S]*Actie[\s\S]*Bewijs[\s\S]*Leren/);
 });
 
@@ -30,8 +30,8 @@ test('product-led homepage links use full canonical URLs', () => {
     'https://www.bedrijfsgeheugen.nl/zelfscan',
   ]) assert.ok(apply.includes(`href="${href}"`), `missing canonical href: ${href}`);
   assert.doesNotMatch(apply,/href="\//);
-  assert.doesNotMatch(apply,/Powerhouse closed loop/);
-  assert.match(apply,/Context[\s\S]*Powerhouse Intelligence[\s\S]*Beslissing/);
+  assert.doesNotMatch(apply,/Bedrijfsgeheugen closed loop/);
+  assert.match(apply,/Context[\s\S]*Bedrijfsgeheugen Intelligence[\s\S]*Beslissing/);
 });
 
 test('growth skill preserves product-led architecture', () => {

@@ -36,40 +36,40 @@ const section = `
   </style>
   <div class="pgl-in">
     <div class="pgl-head">
-      <span class="pgl-eyebrow">Powerhouse · één platform</span>
-      <h2 id="pgl-title">Je bedrijf hoeft niet méér software. Het heeft één brein nodig.</h2>
-      <p class="pgl-lead">Powerhouse verbindt wat je bedrijf weet, ziet en wil bereiken — en zet dat om in beslissingen en acties.</p>
+      <span class="pgl-eyebrow">Bedrijfsgeheugen · één platform</span>
+      <h2 id="pgl-title">Je bedrijf hoeft niet méér software. Het heeft één intelligentielaag nodig.</h2>
+      <p class="pgl-lead">Bedrijfsgeheugen verbindt wat je bedrijf weet, ziet en wil bereiken — en zet dat om in beslissingen en acties.</p>
     </div>
 
     <div class="pgl-grid">
       <article class="pgl-card">
         <span class="pgl-card-kicker">Zien &amp; begrijpen</span>
-        <h3>Powerhouse Intelligence</h3>
+        <h3>Bedrijfsgeheugen Intelligence</h3>
         <p>Brengt bedrijfsdata, kennis, benchmarks en externe signalen samen tot één actueel beeld van wat er speelt en waar de grootste kans ligt.</p>
         <a href="https://www.bedrijfsgeheugen.nl/product">Bekijk Intelligence →</a>
       </article>
       <article class="pgl-card">
         <span class="pgl-card-kicker">Beslissen &amp; doen</span>
-        <h3>Powerhouse Agents</h3>
+        <h3>Bedrijfsgeheugen Agents</h3>
         <p>Zet inzichten om in concrete acties voor sales, operations, finance, HR en management — binnen duidelijke guardrails en met bewijs van wat er is gebeurd.</p>
         <a href="https://www.bedrijfsgeheugen.nl/ai-ecosysteem">Bekijk Agents →</a>
       </article>
       <article class="pgl-card">
         <span class="pgl-card-kicker">Verbinden &amp; automatiseren</span>
-        <h3>Powerhouse Connect</h3>
+        <h3>Bedrijfsgeheugen Connect</h3>
         <p>Laat AFAS, Exact, Microsoft 365 en andere systemen samenwerken, zodat informatie één keer wordt vastgelegd en daarna doorstroomt.</p>
         <a href="https://www.bedrijfsgeheugen.nl/systemen-koppelen">Bekijk Connect →</a>
       </article>
     </div>
 
     <div class="pgl-flow">
-      <span>Data</span><i>→</i><span>Context</span><i>→</i><span>Powerhouse Intelligence</span><i>→</i><span>Beslissing</span><i>→</i><span>Actie</span><i>→</i><span>Bewijs</span><i>→</i><span>Leren</span>
+      <span>Data</span><i>→</i><span>Context</span><i>→</i><span>Bedrijfsgeheugen Intelligence</span><i>→</i><span>Beslissing</span><i>→</i><span>Actie</span><i>→</i><span>Bewijs</span><i>→</i><span>Leren</span>
     </div>
 
     <div class="pgl-trust">
       <div class="pgl-trust-copy">
         <b>Werkt bovenop de systemen die je al hebt.</b>
-        <span>Geen rip-and-replace. Powerhouse verbindt de bestaande werkelijkheid en maakt die bestuurbaar.</span>
+        <span>Geen rip-and-replace. Bedrijfsgeheugen verbindt de bestaande werkelijkheid en maakt die bestuurbaar.</span>
       </div>
       <div class="pgl-logos" aria-label="Ondersteunde ecosystemen">
         <span class="pgl-logo">AFAS</span><span class="pgl-logo">Exact</span><span class="pgl-logo">Microsoft 365</span><span class="pgl-logo">API</span>
@@ -78,7 +78,7 @@ const section = `
 
     <div class="pgl-actions">
       <a class="pgl-btn" href="https://www.bedrijfsgeheugen.nl/zelfscan">Start gratis met je Bedrijfslek-scan →</a>
-      <a class="pgl-btn secondary" href="https://www.bedrijfsgeheugen.nl/product">Bekijk Powerhouse</a>
+      <a class="pgl-btn secondary" href="https://www.bedrijfsgeheugen.nl/product">Bekijk Bedrijfsgeheugen</a>
     </div>
   </div>
 </section>`;
@@ -94,4 +94,4 @@ for (const file of files) {
   html = html.slice(0, insertAt) + '\n' + section + '\n' + html.slice(insertAt);
   await writeFile(file, html, 'utf8');
 }
-console.log('Powerhouse product-led homepage architecture applied');
+console.log('Bedrijfsgeheugen product-led homepage architecture applied');

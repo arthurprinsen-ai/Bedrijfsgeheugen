@@ -12,7 +12,7 @@ export const LEGACY_CAPABILITY_MAP = Object.freeze({
 /*
  * Compatibility manifest only. It deliberately contains identifiers, never
  * customer-facing values. Business truth is projected from canonical
- * Powerhouse state by modules/overview.js.
+ * Bedrijfsgeheugen state by modules/overview.js.
  */
 export const OVERVIEW_CAPABILITIES = Object.freeze([
   'maturity','manual-work-annual','fte','company-state','cmmi','adoption-curve','leakage','blockers','progress','advice'
@@ -25,7 +25,7 @@ export const GLOBAL_CAPABILITIES = Object.freeze([
 function ensureStyles(){if(document.querySelector('link[data-v2-parity-style]'))return;const l=document.createElement('link');l.rel='stylesheet';l.href='./legacy-parity.css';l.dataset.v2ParityStyle='true';document.head.appendChild(l)}
 
 /*
- * Het overzicht heeft één business-truth authority: de canonieke Powerhouse
+ * Het overzicht heeft één business-truth authority: de canonieke Bedrijfsgeheugen
  * state die via modules/overview.js wordt geprojecteerd. De parity-laag mag
  * daarom alleen de bestaande V2-oppervlakte markeren en nooit voorbeeld- of
  * fallbackgetallen injecteren.

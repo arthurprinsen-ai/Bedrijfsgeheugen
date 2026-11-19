@@ -39,8 +39,8 @@ function renderModelContext(data,state,saveStatus,activation){
  '<h4>AI-routes in het beveiligde register</h4><div class="trust-list">'+
  (arr(data?.aiRoutes).map(r=>'<details><summary><span><b>'+esc(r.name||r.useCaseId||'AI-toepassing')+'</b><small>'+esc(r.provider)+' · '+esc(r.modelId||'Model onbekend')+'</small></span><span class="trust-status warn">Geregistreerd; uitvoering niet bewezen</span></summary><div class="trust-detail">'+
  [['Doel',r.purpose],['Gegevens',arr(r.dataCategories).join(', ')],['Verwerking',r.processingScope],['Training',r.trainingUse],['Bewaren',r.retentionPolicy],['Doorgifte',r.crossBorderTransfer],['Subverwerkers',arr(r.subprocessors).join(', ')],['Beoordeeld',r.lastReviewedAt],['Herbeoordeling',r.nextReviewAt]].map(([label,value])=>'<p><b>'+label+':</b> '+esc(value||'Onbekend')+'</p>').join('')+evidenceLinks(r.evidenceUrls)+'</div></details>').join('')||'<p>Geen geregistreerde AI-routes beschikbaar; actief model niet bewezen.</p>')+
- '</div><p><b>Datapaspoort bronmoment:</b> '+esc(data?.generatedAt||'Onbekend')+' · <b>Brein / Powerhouse bronmoment:</b> '+esc(runtime.observability?.updatedAt||'Onbekend')+'</p>'+
- '<p>Het paspoort leest dezelfde klantstaat en beveiligde snapshots. De bestaande Heartbeat vernieuwt de provider-evidence; ontbrekend bewijs blijft onbekend.</p></section>';
+ '</div><p><b>Datapaspoort bronmoment:</b> '+esc(data?.generatedAt||'Onbekend')+' · <b>Intelligentielaag / Bedrijfsgeheugen bronmoment:</b> '+esc(runtime.observability?.updatedAt||'Onbekend')+'</p>'+
+ '<p>Het paspoort leest dezelfde klantstaat en beveiligde snapshots. De bestaande Leerlus vernieuwt de provider-evidence; ontbrekend bewijs blijft onbekend.</p></section>';
 }
 
 function renderSovereignty(root,data,security,scope,state={},saveStatus='idle',activation=null){

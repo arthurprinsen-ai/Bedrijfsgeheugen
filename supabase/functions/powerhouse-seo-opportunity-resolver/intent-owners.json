@@ -23,14 +23,14 @@
       }
     },
     {
-      "route": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "route": "https://www.bedrijfsgeheugen.nl/company-intelligence",
       "role": "pillar",
-      "primary_intent": "company brain",
-      "primary_keyword": "company brain",
+      "primary_intent": "company intelligence",
+      "primary_keyword": "company intelligence",
       "secondary_keywords": [
-        "company brain nederland",
-        "company brain mkb",
-        "ai company brain",
+        "company intelligence nederland",
+        "company intelligence mkb",
+        "ai company intelligence",
         "bedrijfsbrein ai"
       ],
       "funnel_stage": "consider",

@@ -520,7 +520,7 @@ def main():
                 "mainEntityOfPage": canonical,
                 "author": {"@type": "Person", "name": "Arthur Prinsen", "url": "https://www.bedrijfsgeheugen.nl/over-ons"},
                 "publisher": {"@id": "https://www.bedrijfsgeheugen.nl/#org"},
-                "articleSection": "Powerhouse",
+                "articleSection": "Bedrijfsgeheugen",
                 "keywords": focus_plain,
             },
             {
@@ -564,7 +564,7 @@ def main():
     assert_rendered_body_clean(body_markup)
     article = (
         f'<article class="artikel" data-content-id="{html.escape(data["content_id"], quote=True)}">'
-        f'<div class="artikelkop"><span class="eyebrow">Powerhouse · Dagelijkse learning</span>'
+        f'<div class="artikelkop"><span class="eyebrow">Bedrijfsgeheugen · Dagelijkse learning</span>'
         f'<h1>{title}</h1><div class="artikelmeta"><span>{business_date[8:10]}-{business_date[5:7]}-{business_date[:4]}</span>'
         f' · <span>Arthur Prinsen</span></div></div>'
         + body_markup
@@ -580,7 +580,7 @@ def main():
     excerpt_raw = re.sub(r"\s+", " ", data["body"]).strip()
     excerpt = html.escape(card_excerpt(excerpt_raw))
     card = (
-        f'  <a class="kaart" href="{canonical}"><span class="tag">Powerhouse</span><h2>{title}</h2>'
+        f'  <a class="kaart" href="{canonical}"><span class="tag">Bedrijfsgeheugen</span><h2>{title}</h2>'
         f'<p>{excerpt}</p><span class="lees">Lees het artikel &rarr;</span>'
         f'<span class="datum">{business_date[8:10]}-{business_date[5:7]}-{business_date[:4]} &middot; nieuw</span></a>'
     )

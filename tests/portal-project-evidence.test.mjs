@@ -19,6 +19,6 @@ test('verified vereist evidence en houdt expected observed verified outcomes apa
 
 test('trace activeert alleen evidence-backed runtimefasen',()=>{
   const html=renderProjectTrace({flow:{source:{status:'verified'},datahub:{status:'verified',evidence:['hub-run']},brain:{status:'waiting'},powerhouse:[],module:null,action:null,outcome:null,learning:{status:'idle'}}});
-  assert.match(html,/Offerte/);assert.match(html,/Datahub/);assert.match(html,/AI Brain/);assert.match(html,/Powerhouse/);assert.match(html,/Outcome/);assert.match(html,/Learning/);
+  assert.match(html,/Offerte/);assert.match(html,/Datahub/);assert.match(html,/AI Intelligence/);assert.match(html,/Bedrijfsgeheugen/);assert.match(html,/Outcome/);assert.match(html,/Learning/);
   assert.equal((html.match(/is-active/g)||[]).length,2);
 });

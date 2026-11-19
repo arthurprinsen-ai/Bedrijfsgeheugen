@@ -5,8 +5,8 @@ export function renderProjectTrace({flow={}}={}){
   const stages=[
     ['Offerte',{status:'verified',evidence:['source']}],
     ['Datahub',flow.datahub],
-    ['AI Brain',flow.brain],
-    ['Powerhouse',(flow.powerhouse||[]).find(item=>verified(item))||null],
+    ['AI Intelligence',flow.brain],
+    ['Bedrijfsgeheugen',(flow.powerhouse||[]).find(item=>verified(item))||null],
     ['Module',flow.module],
     ['Actie',flow.action],
     ['Outcome',flow.outcome],

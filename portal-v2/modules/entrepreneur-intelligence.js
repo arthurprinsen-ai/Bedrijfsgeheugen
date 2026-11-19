@@ -22,7 +22,7 @@ const VIEWS=Object.freeze({
 });
 
 function shell(title,subtitle,body){
-  return `<div class="eidash"><header class="eihero"><div><span>Powerhouse · externe intelligence</span><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div><button type="button" class="pvprimary" data-ei-refresh>Vernieuwen ↻</button></header>${body}</div>`;
+  return `<div class="eidash"><header class="eihero"><div><span>Bedrijfsgeheugen · externe intelligence</span><h3>${esc(title)}</h3><p>${esc(subtitle)}</p></div><button type="button" class="pvprimary" data-ei-refresh>Vernieuwen ↻</button></header>${body}</div>`;
 }
 function nav(){
   const links=[

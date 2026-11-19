@@ -54,7 +54,7 @@ function companyPanel(m,financial=null,financialStatus=''){
 }
 function opportunitiesPanel(m){
  const cats=Object.keys(categoryLabels);
- return `<p class="owner-intro">Powerhouse zoekt kansen in omzet, klantbehoud, marge, capaciteit en risico. Alleen tenantgebonden signalen met geldig bewijs zijn hier zichtbaar.</p>
+ return `<p class="owner-intro">Bedrijfsgeheugen zoekt kansen in omzet, klantbehoud, marge, capaciteit en risico. Alleen tenantgebonden signalen met geldig bewijs zijn hier zichtbaar.</p>
  <div class="owner-areas">${cats.map(key=>`<article><span>${esc(categoryLabels[key])}</span><strong>${m.categories[key].length}</strong><small>actuele signalen / acties</small></article>`).join('')}</div>
  <section><h3>Onderbouwde kansen</h3>${m.opportunities.length?m.opportunities.slice(0,10).map(x=>card(x,categoryLabels[x.ownerCategory]||'Kans')).join(''):empty('Er zijn nog geen geverifieerde verkoop-, marge- of klantbehoudkansen. Koppel CRM, ERP en verkoopgegevens om deze te onderzoeken.')}</section>${links('kansen')}`;
 }
@@ -83,7 +83,7 @@ function actionsPanel(m,runtime=null,decisionStatus='Nog niet opgehaald',valueRe
 function advisorPanel(){
  return `<p class="owner-intro">Stel een vraag in gewone taal. De bestaande beveiligde vraagfunctie gebruikt uitsluitend de toegestane bedrijfscontext. Ontbrekende data of een niet-geautoriseerd model leidt tot een duidelijke blokkade, nooit een stille fallback.</p>
  <div class="owner-prompts">${quickQuestions.map((q,i)=>`<button type="button" data-owner-question="${i}">${esc(q)}</button>`).join('')}</div>
- <form class="owner-question-form"><label for="ownerQuestion">Wat wil je weten of beslissen?</label><div><input id="ownerQuestion" name="question" maxlength="500" required placeholder="Vraag over je eigen bedrijf, risico's of doelen"><button type="submit">Vraag Powerhouse</button></div></form>
+ <form class="owner-question-form"><label for="ownerQuestion">Wat wil je weten of beslissen?</label><div><input id="ownerQuestion" name="question" maxlength="500" required placeholder="Vraag over je eigen bedrijf, risico's of doelen"><button type="submit">Vraag Bedrijfsgeheugen</button></div></form>
  <output class="owner-answer" aria-live="polite" data-owner-answer>Een antwoord wordt pas getoond na een geslaagde, geautoriseerde bronopvraag.</output>
  <div class="owner-links">${button('Bekijk scenario’s','os:scenario-simulator')}${button('Bekijk bronbewijs','os:evidence-health')}</div>`;
 }
@@ -94,9 +94,9 @@ function settingsPanel(){
 export function renderOwnerOperatingHtml(state={}, {compact=false,selected='bedrijf',now=Date.now(),financial=null,financialStatus='',decisionRuntime=null,decisionStatus='Nog niet opgehaald',valueReport=null}={}){
  const m=buildOwnerOperatingModel(state,{now});
  const status=m.ready?`${m.proof.verified} actuele brononderbouwde onderdelen · ${m.proof.stale} verouderd · ${m.proof.unavailable} zonder bewijs`:'Geen geauthenticeerde bedrijfsprojectie beschikbaar';
- if(compact)return `<div class="owner-heading"><div><span class="owner-eyebrow">POWERHOUSE · JOUW DIGITALE RECHTERHAND</span><h2>Jij onderneemt. Powerhouse helpt je vooruit.</h2><p>Wat vraagt jouw aandacht? Wat kan voorbereid worden? Wat is aantoonbaar afgerond?</p></div>${button('Open mijn bedrijfsbesturing','ondernemerscockpit')}</div><div class="owner-status" role="status">${esc(status)}</div><div class="owner-compact-grid">${OWNER_AREAS.map(a=>button(a.label,'ondernemerscockpit',a.id)).join('')}</div>${m.attention[0]?`<p class="owner-daily"><strong>Nu relevant:</strong> ${s(m.attention[0].title||m.attention[0].id)}</p>`:'<p class="owner-daily">Nog geen geverifieerde prioriteit. Begin bij je bedrijfsgegevens en koppelingen.</p>'}`;
+ if(compact)return `<div class="owner-heading"><div><span class="owner-eyebrow">BEDRIJFSGEHEUGEN · JOUW DIGITALE RECHTERHAND</span><h2>Jij onderneemt. Bedrijfsgeheugen helpt je vooruit.</h2><p>Wat vraagt jouw aandacht? Wat kan voorbereid worden? Wat is aantoonbaar afgerond?</p></div>${button('Open mijn bedrijfsbesturing','ondernemerscockpit')}</div><div class="owner-status" role="status">${esc(status)}</div><div class="owner-compact-grid">${OWNER_AREAS.map(a=>button(a.label,'ondernemerscockpit',a.id)).join('')}</div>${m.attention[0]?`<p class="owner-daily"><strong>Nu relevant:</strong> ${s(m.attention[0].title||m.attention[0].id)}</p>`:'<p class="owner-daily">Nog geen geverifieerde prioriteit. Begin bij je bedrijfsgegevens en koppelingen.</p>'}`;
  const bodies={bedrijf:companyPanel(m,financial,financialStatus),kansen:opportunitiesPanel(m),acties:actionsPanel(m,decisionRuntime,decisionStatus,valueReport),adviseur:advisorPanel(),instellingen:settingsPanel()};
- return `<div class="owner-heading"><div><span class="owner-eyebrow">BEDRIJFSGEHEUGEN · POWERHOUSE</span><h2>Mijn bedrijfsbesturing</h2><p>Meer omzet, betere marges, grip op uitvoering en minder handmatig werk — op basis van aantoonbaar beschikbare informatie.</p></div></div>
+ return `<div class="owner-heading"><div><span class="owner-eyebrow">BEDRIJFSGEHEUGEN</span><h2>Mijn bedrijfsbesturing</h2><p>Meer omzet, betere marges, grip op uitvoering en minder handmatig werk — op basis van aantoonbaar beschikbare informatie.</p></div></div>
  <div class="owner-status" role="status">${esc(status)}</div>
  <div role="tablist" class="owner-tabs" aria-label="Mijn bedrijfsbesturing">${OWNER_AREAS.map(a=>`<button type="button" role="tab" id="owner-tab-${a.id}" aria-controls="owner-panel-${a.id}" aria-selected="${selected===a.id}" data-owner-tab="${a.id}">${esc(a.label)}</button>`).join('')}</div>
  ${OWNER_AREAS.map(a=>`<section class="owner-panel" id="owner-panel-${a.id}" role="tabpanel" aria-labelledby="owner-tab-${a.id}" ${selected!==a.id?'hidden':''} data-owner-panel="${a.id}">${bodies[a.id]}</section>`).join('')}
@@ -113,7 +113,7 @@ export function mountOwnerOperatingSystem(root,{state={},compact=false,stateClie
  // Compact portal hydration can rebuild the dashboard for a different tenant.
  // Re-create its handler boundary instead of retaining callbacks to an old state.
  if(host&&compact){host.remove();host=null;}
- if(!host){host=doc.createElement('section');host.dataset.ownerOs='v1';host.className='owner-os';host.setAttribute('aria-label','Powerhouse ondernemersbesturing');if(compact&&root.querySelector('.topbar'))root.querySelector('.topbar').after(host);else root.prepend(host);}
+ if(!host){host=doc.createElement('section');host.dataset.ownerOs='v1';host.className='owner-os';host.setAttribute('aria-label','Bedrijfsgeheugen ondernemersbesturing');if(compact&&root.querySelector('.topbar'))root.querySelector('.topbar').after(host);else root.prepend(host);}
  host.dataset.ownerCompact=String(compact);
  let financial=null,financeStatus='Financiële gegevens nog niet ingelezen',decisionRuntime=null,valueReport=null,decisionStatus='Klik op vernieuwen om actuele besluiten op te halen',decisionLoading=false,financeLoading=false;
  const selected=OWNER_AREAS.some(a=>a.id===pendingOwnerArea)?pendingOwnerArea:'bedrijf';

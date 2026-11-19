@@ -25,15 +25,15 @@
       "schema_type": "WebPage"
     },
     {
-      "route": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "route": "https://www.bedrijfsgeheugen.nl/company-intelligence",
       "role": "pillar",
       "presentation": "native",
-      "primary_intent": "company brain",
-      "primary_keyword": "company brain",
+      "primary_intent": "company intelligence",
+      "primary_keyword": "company intelligence",
       "secondary_keywords": [
-        "company brain nederland",
-        "company brain mkb",
-        "ai company brain",
+        "company intelligence nederland",
+        "company intelligence mkb",
+        "ai company intelligence",
         "bedrijfsbrein ai"
       ],
       "funnel_stage": "consider",
@@ -47,7 +47,7 @@
         "https://www.bedrijfsgeheugen.nl/frisse-blik"
       ],
       "schema_type": "WebPage",
-      "positioning": "Een Company Brain is waar Bedrijfsgeheugen begint; Bedrijfsgeheugen verbindt context met impact, uitvoering, resultaat en leren."
+      "positioning": "Company Intelligence is waar Bedrijfsgeheugen begint; Bedrijfsgeheugen verbindt context met impact, uitvoering, resultaat en leren."
     },
     {
       "route": "https://www.bedrijfsgeheugen.nl/prijzen",
