@@ -34,3 +34,12 @@ test('composer feeds the relationship fact to the anchor check and keeps all oth
  assert.match(src,/relationship_fact:relationshipFact\(action\)\.text/);
  for(const gate of ['banned','factsOk','oneQuestion','lengthOk','topicLeak'])assert.ok(src.includes(gate));
 });
+test('18 Nov: role + company on the action itself count as two facts, bare name or company alone never',()=>{
+ const own={...base,role:'Owner & CEO',company_name:'DP Services Contact Center',evidence:{contract:'powerhouse-predictive-commercial-activation-v2'}};
+ const r=composerSourcePreflight(own,plan);
+ assert.equal(r.ok,true);assert.equal(r.via,'relationship_fact');
+ assert.deepEqual([...relationshipFact(own).facts],['role','company']);
+ assert.equal(composerSourcePreflight({...base,company_name:'DP Services'},plan).ok,false);
+ assert.equal(composerSourcePreflight({...base,role:'CEO'},plan).ok,false);
+ assert.equal(composerSourcePreflight(own,{human_readable_context:false}).ok,false);
+});
