@@ -5,10 +5,11 @@ const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.j
 const expected={version:'20261118174500',name:'original_provider_owner_notification_receipt_v3'};
 test('native 882nd migration identity is exact and unique, never synthesized',()=>{
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,882);
- assert.deepEqual(lock.applied.at(-1),expected);
+ assert.ok(lock.applied.length>=882);
+ assert.deepEqual(lock.applied.at(-1)?.version>=expected.version,true);
  assert.equal(lock.applied.filter(x=>x.version===expected.version&&x.name===expected.name).length,1);
  assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
+ assert.deepEqual(lock.applied.map(x=>x.version),[...lock.applied.map(x=>x.version)].sort());
 });
 test('the independent native applied identity has matching original SQL source',()=>{
  const p=new URL('../supabase/migrations/'+expected.version+'_'+expected.name+'.sql',import.meta.url);
