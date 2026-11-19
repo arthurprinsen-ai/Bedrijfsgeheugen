@@ -34,7 +34,7 @@ function firstPersonSignal(text: string) {
   return /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
 }
 function personalLifeContextSignal(text: string) {
-  return /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|pakket|bezorging|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport|winkel|app|afhaalpunt|scherm|schermtijd|offline|smartphone)\b/i.test(text);
+  return /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|pakket|bezorging|printer|telefoon|laptop|robotstofzuiger|dweilrobot|dweilrobots|dweilen|waterleiding|afvoer|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport|winkel|app|afhaalpunt|scherm|schermtijd|offline|smartphone)\b/i.test(text);
 }
 function concretePersonalLifeSignal(text: string) {
   const firstPerson = firstPersonSignal(text);

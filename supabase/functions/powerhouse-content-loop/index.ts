@@ -432,13 +432,18 @@ Deno.serve(async (req) => {
       }
     }
     // Exact original personal final-review 422, not a provider failure:
-    // one bounded rebootstrap after the shared observation lexicon was fixed.
+    // bounded same-owner rebootstrap after the shared observation lexicon
+    // OR verified first-person household context was fixed. Do not bypass
+    // the independent reviewer or publish a previously rejected artifact.
     // Both same-day original records and unconsumed authority must agree.
     let retryablePersonalObservationReview=false;
     const rejectedPersonalObservation=(initialDecisions||[]).find((d:any)=>
       clean(d.channel)==='linkedin_personal'&&clean(d.state)==='blocked'&&
       Number(d.delivery_evidence?.review_status)===422&&
-      d.delivery_evidence?.violations?.some((v:any)=>v?.code==='OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED'));
+      d.delivery_evidence?.violations?.some((v:any)=>[
+        'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED',
+        'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED'
+      ].includes(clean(v?.code))));
     if(rejectedPersonalObservation){
       const [obligationSource,capabilitySource]=await Promise.all([
         db.from('content_publication_obligations')

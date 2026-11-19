@@ -1661,7 +1661,26 @@ Deno.serve(async (req) => {
       await recordObligation(db, runDate, row.channel, 'BLOCKED', null, evidence, 'Repair canonical gate evidence before any dispatch.', 'PRE_PUBLISH_GATE_BLOCKED');
       results.push({ channel: row.channel, status: 'blocked', violations: gate.violations || [] }); continue;
     }
-    const gatePassedEvidence={...(row.delivery_evidence||{}),pre_publish_gate:'passed',identity_gate_version:GATE,final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY};
+    // The same original independent final review returned exact PASS/HTTP 200
+    // and confirmed the current SHA256 above. Old 422 evidence from a prior
+    // rejected draft is historical, never the CURRENT approval status.
+    // Preserve one bounded diagnostic without treating it as a live veto.
+    const earlierReview=row.delivery_evidence||{};
+    const priorRejectedReview=Number(earlierReview.review_status)===422
+      &&Array.isArray(earlierReview.violations)&&earlierReview.violations.length>0
+      ? {state:'SUPERSEDED_BY_EXACT_INDEPENDENT_REVIEW',review_status:422,
+          reviewed_text_hash:clean(earlierReview.reviewed_text_hash)||null,
+          violations:earlierReview.violations.slice(0,8),
+          current_approved_text_hash:textHash}
+      : null;
+    const gatePassedEvidence={
+      ...earlierReview,pre_publish_gate:'passed',identity_gate_version:GATE,
+      final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY,
+      review_status:gate.http,reviewed_text_hash:textHash,violations:[],
+      review_transport_error:null,independent_final_review_verified:true,
+      independent_final_review_verified_at:new Date().toISOString(),
+      ...(priorRejectedReview?{prior_rejected_review:priorRejectedReview}:{})
+    };
     if(prepareOnly){
       // An early independent review is PREPARATION, not an irrevocable approval.
       // Validate original LinkedIn auth without creating a post or claiming a lease.

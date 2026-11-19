@@ -1,0 +1,10 @@
+# 2026-11-18 — paid provider scope, last failure versus actual recovery (original #171)
+Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+A protected original Result Guardian version previously read actual #20 pg_net HTTP500 TAVILY_432 on 18 November, also original personal LinkedIn gpt-5-mini HTTP429 insufficient_quota. The owner supplied screenshots showing both provider accounts are paid, OpenAI API has positive usable-looking headroom, and Tavily PAYG is enabled, but no independently verified match to original stored Vault API keys. Do not publish account balance figures or secret material.
+
+Original #171 result guardian had continued asserting "Geen nieuwe geverifieerde bedrijfsnieuwsbron" while five post-error news rows existed; one passed base filters, none automatically make original Tavily #20 operational. The new v4 source computes last native #20 432 timestamp, count of any newer original news rows and count that pass base source filters, preserving separate SOURCE_SPECIFIC_EVIDENCE_REQUIRED legal outbound gate. The historical last error remains a tracked incident, but is explicitly labelled as NOT current provider health evidence. Exactly one existing original controller, no new owner/scheduler/secret, no calls to providers and no new sends.
+
+The personal LinkedIn 429 remains an actual historical provider result but without a new same-original-writer result or external LinkedIn URN, so content stays unproven; the original approval and retry-after remain enforced by original content orchestrator. Service-role-only function and original #171 detection stay active; any future native recovery must be proved by original approved key, approved project/model, exact provider receipt, consumer processed event, and real final delivery.
+
+Protected release: Required/CodeQL, exact main SQL and native Supabase version, next natural original #171 health readback showing `news_source_ingests_after_last_432`, subsequent same-original #20 proof if available, existing notification task result. No global green from migration-only proof.
