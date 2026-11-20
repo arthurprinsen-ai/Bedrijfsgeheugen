@@ -98,6 +98,26 @@
           "https://www.flypost.io/learn/linkedin-algorithm-study-data",
           "https://app.notion.com/p/3a5da36aac8a813799cee34689c26a10"
         ]
+      },
+      "trusted_advisor_approach": {
+        "role": "Independent advisor who diagnoses, implements, makes reliable, transfers and trains; explain relevant AI/data/BI/software/agentic trade-off in own verified human story when relevant.",
+        "themes": [
+          "real problem first",
+          "simple UX over complexity",
+          "model/tool independent architecture",
+          "robust recovery and human oversight",
+          "automation with evidence",
+          "training and adoption",
+          "scale without key-person dependency"
+        ],
+        "avoid": [
+          "marketing list of services",
+          "unverified first-person client outcome",
+          "claims that every product module is already live",
+          "forced portal plug",
+          "repeat all themes every day"
+        ],
+        "original_approval": "preserve source-backed personal source/review hash and provider auth"
       }
     },
     "linkedin_company": {
@@ -241,5 +261,23 @@
   ],
   "fallback_rule": "Static calendars are fallback only when no fresh eligible source-backed candidate exists.",
   "cross_channel_rule": "One source can create channel-specific candidates, but copy and CTA must be native to each channel; never copy-paste the same post across channels.",
-  "learning_rule": "Outcome learning updates source quality, problem priority, message angle, CTA, channel fit and next-best action."
+  "learning_rule": "Outcome learning updates source quality, problem priority, message angle, CTA, channel fit and next-best action.",
+  "trusted_advisor_positioning_20261120": {
+    "ref": "config/powerhouse-trusted-advisor-positioning-v1.json",
+    "status": "DIRECT_USER_DECISION_AND_PROPOSED_SERVICE_PACKAGING",
+    "channels": "One position, appropriate evidence-driven voice per channel: personal story != company website != client portal != training offer",
+    "external_context_status": "HYPOTHESIS_NOT_PERSONAL_OWN_EXPERIENCE",
+    "own_event_status": "ONLY_USER_GROUNDED_VERIFIED_ORIGINAL_SOURCE",
+    "person_training_rule": "Only describe actually given workshops and coaching when the individual event is verifiable; proposed new curricula are planned offers, not proven completed training.",
+    "personal_creative_rule": "One authentic lived problem, choice or tradeoff per post. Independent trusted advisor demonstrated through judgement and responsibility, not title or a list of AI tools. No forced commercial CTA or product stack inventory.",
+    "business_promise_rule": "Do not claim robust autonomous agentic implementation, customer impact or full portal module availability until exact destination security, deployment and provider readback and measured outcomes are established.",
+    "portal_rule": "User-language: what plays, what matters, what happens next; preserve existing Portal V2 and existing ONE BRAIN->Powerhouse->Heartbeat original path.",
+    "learning": "Use personal meaningful comments only if independently observed, CRM/portal sales only if real; no ROI guesses or fake training enrollments.",
+    "source_references": [
+      "https://app.notion.com/p/3beda36aac8a816ab448f9330f36464e",
+      "https://app.notion.com/p/41bda36aac8a816bb87dd6d68f789235",
+      "https://app.notion.com/p/41cda36aac8a8128ac53ca4b7470c359",
+      "https://app.notion.com/p/3b1da36aac8a81fba736c4897474902b"
+    ]
+  }
 }
