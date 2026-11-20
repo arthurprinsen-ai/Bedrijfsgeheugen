@@ -11,6 +11,38 @@ description: Enforce verified, first-person Arthur content: lived personal momen
 
 # Personal LinkedIn — authentic personal voice + evidenced technology leadership
 
+## 20 November 2026 — Trusted Advisor + simpel intelligent bedrijf, user-authorized latest editorial lens
+
+**User direction**: I want to be seen as a pragmatic trusted advisor who translates company friction into simple, robust, smart businesses, fixes failing processes, automates wisely with software+AI+BI+data+bounded agentic intelligence, scales for the future, prevents reliance on individual people or single vendors/models and makes it understandable through the existing portal. Offer AI training from basic through advanced, AI transformations and innovation implementation, responsible application integrations, EU AI Act and true data sovereignty. This is a strategic design and editorial direction **not proof** every service, connector, portal function, certification or client result exists.
+
+**Canonical distinction**:
+- Arthur's **personal profile**: one genuinely user-sourced choice, first-person workshop or technology-adviser lesson, engineer trade-off or honest weakness per post, in clear ordinary Dutch. Credible strategic thoughtfulness is *earned through concrete reasoning*, not through repeated “trusted advisor”, “ik fix alles” or sales claims. Rotate friction, theme, stakes, format, journey; no compulsory question, hashtags, CTA, success stats or out-of-source lived examples.
+- Company page, existing `/ai-adoptie`, `/ai-act`, `/data-soevereiniteit`, `/workshops`, `/ai-implementeren`, and **existing portal**: grounded packages, training curricula, Frisse Blik onboarding, limits, prerequisites and authorised lead route. Respect actual live-vs-proposed distinction. Do not add parallel service menus, publishers, agents, issue trackers or schedules.
+- Do not force any professional lesson or software angle into authentic private-life content. Keep previously verified personal story/privacy and source gates, including original pre-publish reviewer, last-mile publisher hash, provider URN dedupe and public readback.
+
+**Twelve angles to rotate, never all in one post**: (1) independence of trusted advice, including when NOT to use AI; (2) one integrated software+AI+BI+data workflow, not a stack of buzzwords; (3) agentic AI that checks permissions, waits for human decisions, can recover and stops safely; (4) robust fault recovery and continuous monitoring without fake “always works”; (5) application integrations with AFAS/Exact/Microsoft 365 through source-verified rights and actual data readback; (6) simplicity of the portal — what is happening, what decision is needed, what result was independently shown; (7) business continuity independent of one hero, vendor, model or custom script, with portable interfaces and named/backup owners; (8) AI fundamentals and staff confidence, not prompt tricks; (9) advanced agent tool-use, evaluation, red teaming and approvals; (10) AI transformation, behaviour change, operational adoption and measured implementation; (11) EU AI Act by purpose, role, risk and applicability date, plus privacy; (12) data sovereignty by access, lawful transfer, retention, export and exit, not just EU hosting. Distinguish problem hypothesis -> advice -> design -> deployed -> user adoption -> provider/business outcome.
+
+**Suggested service tracks — offers under development unless independent website/delivery proof exists**: Frisse Blik / Slimmer Bedrijf; AI Basis & veilig werken; AI Praktijk & procesautomatisering; Advanced AI / Agentic Engineering; AI-transformatie & innovatie; AI Act, AVG & datasoevereiniteit. Prior workshop/coaching experience has an existing Notion CV source, but do not create additional workshops, credentials, prices, reviews or existing customer cases from proposals.
+
+**Practical advisor checklist**: Which problem and owner? What is the cost of inaction? Which actual records and systems are in scope? Could a simple process rule solve it better than AI? Who approves agent side-effects? What are stop/recovery/idempotent paths? How does the person understand or override the decision? Are permissions least-privilege? Are evidence and metrics independent? Can the customer export data, substitute vendor/model, and maintain service when someone leaves? What does applicable law require, and who checks it?
+
+**Current legal facts (confirmed Nov 20 2026)**: The amended EU AI Act applies in phases: AI literacy and prohibitions 2 February 2025; GPAI obligations 2 August 2025; transparency and enforcement 2 August 2026; certain transition/new prohibitions 2 December 2026; Annex III high-risk 2 December 2027; Annex I embedded high-risk 2 August 2028. AI literacy is required but no universal prescribed employee proficiency level or specific mandatory certification. Do not conflate AI Act role/risk with GDPR legal basis, processor contracts, DPIA, international transfers, data retention or Data Act switching/portability. No “EU-hosted = sovereign”, “AI Act certified” or “automatically GDPR compliant.” Risk assessment and legal review are context-sensitive and may need specialist legal advice.
+
+Primary sources:
+- https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-act-implementation-timeline
+- https://digital-strategy.ec.europa.eu/en/policies/ai-talent-skills-and-literacy
+- https://digital-strategy.ec.europa.eu/en/factpages/data-act-explained
+- https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/rules-international-data-transfers_en
+- https://www.edpb.europa.eu/sme/be-compliant/be-compliant_en
+- https://genai.owasp.org/llm-top-10/
+- https://app.notion.com/p/41cda36aac8a8128ac53ca4b7470c359
+- https://app.notion.com/p/3bcda36aac8a811bbd4fc722ba833b3a
+- https://app.notion.com/p/3e5da36aac8a8145ab3bd925260276ef
+
+**Source veto remains binding**: User authorizes this **positioning** and proposed service taxonomy, not the assertion that a workshop has already been sold, specific project personally experienced, compliance guaranteed, automation self-healed in production, cost saved, customer system connected, or portaal UI deployed. Use a direct independently evidenced first-person source for each post; if none, don't publish. This editorial update must never re-send or “repair” an already published LinkedIn URN.
+
+
+
 ## 20 November 2026 — original v2 source-materializer verified founder exception (LATEST)
 
 The Nov-16 SQL materializer `powerhouse_materialize_source_backed_channel_candidates_v2` blindly quarantined ALL personal business content, including the 19/20-Nov explicit verified personal AI-native founder/builder exception; it even rewrote `personal_truth_verified=false`. This left original source candidate `41521982-5e5c-4f6d-9540-6a32912862b6` as `skipped/PERSONAL_BUSINESS_SOURCE_FORBIDDEN` despite user-authored Nov-20 design decisions. Original loop response 409/RED and orchestrator response `NO_PENDING_ARTIFACT` were observed. Neither is evidence of a LinkedIn post.
