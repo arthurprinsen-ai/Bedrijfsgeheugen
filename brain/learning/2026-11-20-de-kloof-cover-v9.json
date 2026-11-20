@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-18",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|lead-magnet-cover-badge-consistency|20261120-v9",
+  "failure_class": "CONTENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "De cover-badge zei 'Alleen voor leden' terwijl de PDF openbaar gratis is; de pagina toonde geen beeld van het magazine.",
+  "evidence": {
+    "at_utc": "2026-11-20T17:46:00Z",
+    "source": "review Arthur 20 nov 2026: badge 'Alleen voor leden' botst met gratis download; cover als beeld"
+  },
+  "fix": "Badge 'Gratis kennismaking No. 04' (NL) en 'Free introduction No. 04' (EN); echte cover als klikbare afbeelding op /de-kloof.",
+  "prevention_rule": "Elke belofte op de cover van een openbaar lead magnet wordt gecontroleerd tegen de manier van verspreiden; de pagina toont altijd de echte cover.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge",
+    "PDF NL en EN live, bytes gelijk aan repo"
+  ]
+}
