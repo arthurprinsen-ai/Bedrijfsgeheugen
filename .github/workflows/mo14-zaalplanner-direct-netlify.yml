@@ -1,3 +1,4 @@
+# MO14 defense-in-depth: preserve legacy homepage bytewise, restrict legacy same-origin page to self scripts and no remote webhook connections.
 # PW field mode complete: all screens, 13 players, shared backup, independent source and production tests; no Make.
 # PW MO14-1 canonical one-app v10: old /veldplanner/ bookmarks redirect to #field, same PWA app.
 # PW MO14-1 unified app v10: zaal and veld in one PWA, retained strict CSP, independent live assets readback, no Make.
@@ -211,6 +212,16 @@ jobs:
             echo "Legacy cross-page navigation found instead of unified mode" >&2
             exit 1
           fi
+          # The preserved legacy PW homepage shares localStorage origin with the coach.
+          # Forbid new or injected scripts and old remote webhook egress on the root.
+          curl -fLsSI --retry 2 --max-time 25 "${MO14_DOMAIN}/?security=${GITHUB_SHA}" -o /tmp/mo14-root-security-headers.txt
+          grep -iq "^content-security-policy: " /tmp/mo14-root-security-headers.txt
+          grep -iq "script-src 'self'; script-src-attr 'none'" /tmp/mo14-root-security-headers.txt
+          grep -iq "connect-src 'self'" /tmp/mo14-root-security-headers.txt
+          grep -iq "frame-ancestors 'none'" /tmp/mo14-root-security-headers.txt
+          grep -iq "^x-content-type-options: nosniff" /tmp/mo14-root-security-headers.txt
+          grep -iq "^x-robots-tag: noindex" /tmp/mo14-root-security-headers.txt
+          echo "PW legacy root security headers and blocked external webhook egress verified"
           # Provider-level verification of the exact-script-hash CSP and response headers.
           for route in zaalplanner veldplanner; do
             curl -fLsSI --retry 2 --max-time 25 "${MO14_DOMAIN}/${route}/?sha=${GITHUB_SHA}" -o "/tmp/mo14-${route}-security-headers.txt"
