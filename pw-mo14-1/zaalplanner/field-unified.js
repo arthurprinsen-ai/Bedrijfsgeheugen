@@ -72,7 +72,7 @@ showView=function(next,scrollTop=true,addHistory=true){
   button.setAttribute('aria-pressed',String(selected));
  }
 };
-window.PWCoachField={selectBlock,getSelectedBlock:()=>block,validate};
+window.PWCoachField={selectBlock,getSelectedBlock:()=>block,validate,players:PLAYERS,lineups:LINEUPS,windows:WINDOWS};
 render();
 showView(location.hash.slice(1)==='field'?'field':activeView,false,false);
 })();
