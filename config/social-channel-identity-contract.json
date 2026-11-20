@@ -9,15 +9,15 @@
       "type": "profile",
       "identity": "arthur",
       "personalMeansPersonal": true,
-      "businessContentDefault": "blocked_without_exception",
-      "businessExceptionScope": "none",
-      "requiresPersonalLifeTopic": true,
+      "businessContentDefault": "blocked_unless_verified_builder_source",
+      "businessExceptionScope": "verified_first_person_ai_data_software_automation_builder_event_only",
+      "requiresPersonalLifeTopic": false,
       "blocksCorporateVoice": true,
       "blocksForcedBusinessMoral": true,
       "blocksCompanyPageInterchangeableCopy": true,
       "requiresFirstPersonTruthClassification": true,
       "personalLifeOnlyPolicy": "personal-linkedin-personal-life-only-v1",
-      "requiresPersonalLifeOnlyVerified": true,
+      "requiresPersonalLifeOnlyVerified": false,
       "allowedTopicClasses": [
         "family",
         "parenting",
@@ -32,7 +32,13 @@
         "free_time",
         "daily_routines",
         "daily_frustrations",
-        "human_observations"
+        "human_observations",
+        "ai_native_builds",
+        "data_bi_intelligence",
+        "software_architecture",
+        "repetitive_process_automation",
+        "technical_tradeoffs",
+        "engineering_lessons"
       ],
       "blockedTopicClasses": [
         "companies",
@@ -40,19 +46,29 @@
         "mkb",
         "consultancy",
         "assignments",
-        "business_processes",
-        "organizational_ai",
-        "organizational_digitalization",
-        "bedrijfsgeheugen",
         "sales",
         "leads",
         "offers",
-        "cases",
-        "business_lessons",
-        "thought_leadership"
+        "cases"
       ],
       "externalSourcesMayOnlySuggestPersonalThemes": true,
-      "externalSourcesMayNotCreateArthurExperiences": true
+      "externalSourcesMayNotCreateArthurExperiences": true,
+      "requiresPersonalLifeTopicUnlessBuilder": true,
+      "requiresVerifiedBuilderPolicy": "personal-linkedin-ai-native-builder-v1",
+      "requiresVerifiedFirstPersonBuildEvent": true,
+      "personalEditorialPositioning": "ai-technology-leader-data-bi-software-intelligent-automation-20261120",
+      "expertTopicWeights": {
+        "real_building": 30,
+        "repetitive_process_automation": 20,
+        "technology_leadership_architecture": 15,
+        "bi_and_data_intelligence": 15,
+        "experiments_failures_lessons": 10,
+        "personal_founder_journey": 10
+      },
+      "blockedUnverifiedBusinessContent": true,
+      "blocksCompanyPageCopy": true,
+      "requiresPersonalLifeOnlyVerifiedUnlessBuilder": true,
+      "builderFirstPersonClaimMode": "builder_event_and_author_anchor_verified"
     },
     "linkedin_company": {
       "channelId": "6a70381699afb44349f0fb36",
@@ -139,5 +155,6 @@
     "conversation_starts",
     "relationship_warmth"
   ],
-  "personalLinkedInPolicyFingerprint": "personal-linkedin-personal-life-only-v1"
+  "personalLinkedInPolicyFingerprint": "personal-linkedin-personal-life-only-v1",
+  "personalLinkedInEditorialUpdatedAt": "2026-11-20"
 }

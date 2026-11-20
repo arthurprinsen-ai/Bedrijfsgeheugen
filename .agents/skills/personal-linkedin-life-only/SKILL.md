@@ -1,9 +1,27 @@
 ---
 name: personal-linkedin-life-only
-description: Enforce Arthur's personal LinkedIn as a strictly personal-life channel and route all business topics to the company page.
+description: Enforce verified, first-person Arthur content: lived personal moments and independently evidenced AI/data/software/automation builder leadership; never company-page copy.
 ---
 
-# Personal LinkedIn — personal life only
+# Personal LinkedIn — authentic personal voice + evidenced technology leadership
+
+## 20 november 2026 — ACTUEEL BINDEND contract (supersedes life-only / 15 November exclusion for verified builders)
+
+Goal: position Arthur as AI Technology Leader at the intersection of AI, BI/data intelligence, software engineering and intelligent automation, based on actual work and accountable engineering decisions. This user instruction explicitly changes the prior *personal life only* preference. Keep personal/company identity separation: personal author thought leadership is not company marketing.
+
+Two eligible personal source modes:
+- **Personal life:** original verified Arthur-authored first-person everyday event, original life-only gate intact.
+- **Builder / expert:** only actual verifiable first-person build/technical-decision event from the existing ONE BRAIN / Powerhouse / engineering source with `ai_native_builder_story_verified=true`, `ai_native_builder_policy=personal-linkedin-ai-native-builder-v1`, `build_event_verified=true`, `arthur_anchor_verified=true`, `source_backed=true`, `business_topic=true`, `corporate_voice=false`, `company_page_interchangeable=false`, `forced_business_moral=false`, first-person claim verification and traceable source lineage. No fabricated outcomes, clients, quotes, claims or conversations. Do not leak confidential client data.
+
+Editorial topic weights across a rolling content plan: 30% what I build with AI + software + data; 20% automating repetitive work; 15% technology leadership and architecture trade-offs; 15% BI, Power BI and data intelligence; 10% tests, mistakes, lessons and proof; 10% real personal founder journey. These are a diversity target, NOT a daily schedule or authority to fill unverified posts.
+
+Publishing style: first person, one grounded situation → actual technical choice, problem or tradeoff → what changed, was measured, or is still unverified → a practical insight for a leader or builder. Genuine expertise is shown through a reproducible design decision, not the title 'expert'. Technical detail is welcome where it informs the argument; internal run states, credentials and unverified metrics are not. Plain text, no generic AI mission statement, hashtags, URLs, emojis, fixed four-paragraph template, sales CTA, engagement bait, or near-duplicate opening. Never publish fictional user experiences or the company's marketing post on the profile.
+
+Execution: preserve exactly one original source decision, original editor, independent exact-text review, source revision and SHA-256 gates, personal provider identity, semantic/story-family dedupe, Composio owner authority, exact provider ID/readback and Heartbeat learning. Continue the original #140/#171 chain; no alternative publisher or scheduler. If source proof is absent, keep the obligation OPEN with a concrete owner and next step. Do not declare LIVE_PROVEN from a prompt/PR/cron result.
+
+**Historical rule chronology below is preserved for audit. Where older text prohibits ALL business/AI founder content, this 20 November verified builder exception takes precedence.**
+
+
 
 ## 18 november 2026 — nieuw werkelijk gebruikersfeit hervat de originele geblokkeerde bronbeslissing
 
@@ -17,7 +35,7 @@ Fingerprint: `personal-linkedin-personal-life-only-v1`.
 
 ## Hard rule
 
-Arthur's personal LinkedIn is exclusively for personal life and lived personal observations. It must not contain company, client, MKB, consultancy, assignment, business-process, organizational AI/digitalization, Bedrijfsgeheugen, sales, lead, offer, case, thought-leadership or business-lesson content.
+Historical life-only rule, now applicable ONLY to unverified business content and personal-life mode. The verified first-person builder/expert exception above permits source-backed AI/data/software/automation leadership while continuing to prohibit marketing copy, claims without proof and interchangeability with the company page.
 
 A personal anecdote may never be used as a wrapper or bridge to a business message.
 
