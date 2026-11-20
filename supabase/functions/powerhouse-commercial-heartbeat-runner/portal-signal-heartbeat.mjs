@@ -48,8 +48,10 @@ export function monitoringRuleCandidates(rows){
     const tenant=String(row?.tenant_id||'').trim();
     if(!tenant||tenant.length>180||!['canonical-brain','legacy-migration'].includes(row?.layer))continue;
     const data=layerData(row);
-    const rules=data?.portal?.signalering?.rules;
-    if(!Array.isArray(rules)||!rules.some(r=>r?.monitoring===true&&r?.enabled!==false))continue;
+    const rawRules=data?.portal?.signalering?.rules;
+    const rules=Array.isArray(rawRules)?rawRules:[];
+    // Keep the newest tenant layer even when monitoring was revoked. Otherwise
+    // older stored consent could be resurrected by a stale canonical row.
     const updated=safeIso(stamp(row));
     if(!updated)continue;
     const prev=grouped.get(tenant);
@@ -57,7 +59,7 @@ export function monitoringRuleCandidates(rows){
     if(!prev||score>prev.score||(score===prev.score&&row.layer==='canonical-brain'))
       grouped.set(tenant,{tenant,data,rules,sourceUpdatedAt:updated,score});
   }
-  return [...grouped.values()].slice(0,100);
+  return [...grouped.values()].filter(source=>source.rules.some(rule=>rule?.monitoring===true&&rule?.enabled!==false)).slice(0,100);
 }
 export async function planOriginalHeartbeatObservations(rows,{now=new Date().toISOString()}={}){
   if(!safeIso(now))throw new Error('PORTAL_SIGNAL_CLOCK_INVALID');
