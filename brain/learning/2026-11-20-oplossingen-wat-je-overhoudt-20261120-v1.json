@@ -1,0 +1,39 @@
+{
+  "fingerprint": "site|copy|oplossingen-wat-je-overhoudt|20261120-v1",
+  "date": "2026-11-20",
+  "owner": "agent-reliability",
+  "obligation_id": "site|copy|oplossingen-wat-je-overhoudt|20261120-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "SOLUTION_PAGE_WITHOUT_OUTCOME_FOR_VISITOR",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "De vier oplossingskaarten op /oplossingen beschrijven wat wij doen, maar niet wat de ondernemer er na afloop aan overhoudt. Daardoor ziet een bezoeker de oplossing niet als antwoord op zijn probleem.",
+  "correction": "Idempotente buildstap na lokalisatie zet boven de link van elke kaart één regel 'Wat je overhoudt' in gewone taal, NL en EN, zonder getallen of garanties.",
+  "prevention": [
+    "Elke oplossingskaart noemt de uitkomst voor de ondernemer, niet alleen de methode.",
+    "Geen verzonnen getallen in uitkomstregels; cijfers alleen met bron."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-site-shell-oplossingen-wat-je-overhoudt-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-site-shell-oplossingen-wat-je-overhoudt-20261120.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-site-shell-oplossingen-wat-je-overhoudt-20261120.test.mjs"
+    ],
+    "source": [
+      "tools/site-shell/apply-oplossingen-wat-je-overhoudt.mjs",
+      "tools/ci/netlify-build-entry.mjs"
+    ],
+    "outcome": "Lokaal: 4 van 4 tests groen. Live-readback na merge volgt."
+  }
+}
