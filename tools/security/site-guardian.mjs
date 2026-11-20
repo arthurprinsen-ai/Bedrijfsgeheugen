@@ -30,6 +30,7 @@ export function validateInventory(config){
 }
 export function classifyResponse(site,response){
  const status=Number(response.status),h=response.headers;
+ if(status>=300&&status<400)return {status:'WARN',code:'UNVERIFIED_REDIRECT'};
  if(site.mode==='protected'){
   if(status===401||status===403)return {status:'VERIFIED',code:'PROTECTED_GATE_OBSERVED'};
   if(status>=200&&status<400)return {status:'FAIL',code:'UNEXPECTED_PUBLIC_ACCESS'};
@@ -52,7 +53,7 @@ export function classifyResponse(site,response){
  return {status:'VERIFIED',code:'BOUNDED_HTTP_CHECK_PASSED'};
 }
 async function head(site,fetcher){
- const url=site.url,options={method:'HEAD',redirect:'follow',cache:'no-store',signal:AbortSignal.timeout(9000),headers:{'user-agent':'BG-Security-Operations-ReadOnly/1.0'}};
+ const url=site.url,options={method:'HEAD',redirect:'manual',cache:'no-store',signal:AbortSignal.timeout(9000),headers:{'user-agent':'BG-Security-Operations-ReadOnly/1.0'}};
  const first=await fetcher(url,options);
  if(first.status===405||first.status===501){await first.body?.cancel?.();return fetcher(url,{...options,method:'GET',headers:{...options.headers,range:'bytes=0-0'}});}
  return first;
