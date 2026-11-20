@@ -1,0 +1,55 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|user-authorized-magazine-giveaway-direct-link-style-conflict|20261120-v1",
+  "owner": "original-powerhouse-content-orchestrator-and-original-personal-review-publisher",
+  "event_date": "2026-11-20",
+  "user_instruction": "Zorg dat je hem morgenochtend post met een mooie ochtendgroet op zaterdag morgen",
+  "root_cause": "Existing original personal editorial and first-person copy gates hard-ban ALL URLs and all pictographic emoji, even when the owner explicitly asked to give away their own magazine directly via the official cover page with Saturday greeting. An already-existing one-off automation wrongly contained 'reageer met KLOOF' bait and unverified automated comment fulfilment. That prompt was replaced without adding a second automation.",
+  "prevention_rule": "Only exact verified owner-authored 21-Nov magazine source with known original content ID, event kind, first-party cover URL, direct user lineage, source truth and 09:00 local requested time may include exactly one cover-page URL and the single coffee emoji in its exact Saturday greeting; preserve default URL/emoji ban on all other personal posts, and all source/reviewer/hash/author/provider/idempotency gates. No forced comment keyword or DM.",
+  "compiler": {
+    "failure_class": "POLICY_CONFLICT",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-magazine-saturday-direct-link-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-magazine-saturday-direct-link-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-magazine-saturday-direct-link-20261120.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_magazine_source_recommendation": "5f7781ba-4570-42cb-912e-81b410672e52",
+    "source_state": "VERIFIED_USER_FOUNDER_SOURCE_PENDING_INDEPENDENT_FINAL_TEXT_REVIEW",
+    "original_one_off_task": "Automation_3e340c57d9388191aa4d79002eded822",
+    "original_one_off_scheduled": "2026-11-21T09:00:00+01:00",
+    "original_one_off_task_enabled": true,
+    "page_url": "https://www.bedrijfsgeheugen.nl/de-kloof",
+    "cover_url": "https://www.bedrijfsgeheugen.nl/assets/de-kloof-cover-nl.jpg",
+    "pdf_url": "https://www.bedrijfsgeheugen.nl/portal-v2/reports/de-kloof-no04-2026-q4.pdf",
+    "site_source": "site/inhoudspaginas.json",
+    "manifest_source": "portal-v2/reports/manifest.json",
+    "original_personal_gate": "supabase/functions/_shared/personal-first-person-story-gate.mjs",
+    "original_editorial_gate": "supabase/functions/_shared/personal-linkedin-editorial-contract.mjs",
+    "original_writer": "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "exact_post_review": "NOT_REVIEWED",
+    "provider_write_status": "NOT_CREATED",
+    "published_provider_urn": null,
+    "bait_prompt_replaced": true,
+    "no_new_publisher_or_cron": true
+  },
+  "boundaries": [
+    "Single canonical source and writer",
+    "No KLOOF keyword or comment bait",
+    "No alternate URL or second emoji",
+    "No direct provider create before Saturday",
+    "No bypass original independent review, text hash, original publisher",
+    "No success claim without post URN/readback"
+  ],
+  "implementation_state": "PROTECTED_CANDIDATE_NOT_YET_DEPLOYED"
+}
