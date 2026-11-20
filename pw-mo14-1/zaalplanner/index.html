@@ -130,6 +130,7 @@ html,body{max-width:100%;overflow-x:clip}
 a.menu-tile{text-decoration:none;color:inherit}a.field-menu-link{display:block;padding:13px 18px;margin:5px 12px;border-radius:13px;background:#f5e8ec;color:#59222d;font-weight:800;text-decoration:none;min-height:44px;}</style>
 <link rel="stylesheet" href="./coach-plus.css" />
 <link rel="stylesheet" href="./field-unified.css" />
+<link rel="stylesheet" href="./field-complete.css" />
 </head>
 <body>
 <header class="app-header">
@@ -143,7 +144,7 @@ a.menu-tile{text-decoration:none;color:inherit}a.field-menu-link{display:block;p
  <main id="appMain">
 <section class="view-panel is-active" id="screen-home" data-view-panel="home" role="tabpanel" aria-label="Start">
  <div class="view-head"><div><div class="eyebrow">Jouw wedstrijddag</div><h1>Jouw PW Coach</h1><p class="lead">Één app voor zaal en veld. Kies de spelvorm en open direct jouw opstellingen en wissels.</p></div></div>
- <div class="coach-home-choices" aria-label="Kies jouw spelvorm"><button type="button" data-go="plan"><span class="choice-emoji" aria-hidden="true">🏠</span><span><strong>Zaalhockey</strong><small>12 wedstrijden, keeper en wissels</small></span></button><button type="button" data-go="field"><span class="choice-emoji" aria-hidden="true">🏑</span><span><strong>Veldhockey</strong><small>6 opstellingen, Jackie op doel</small></span></button></div>
+ <div class="coach-home-choices" aria-label="Kies jouw spelvorm"><button type="button" data-go="plan"><span class="choice-emoji" aria-hidden="true">🏠</span><span><strong>Zaalhockey</strong><small>12 wedstrijden, keeper en wissels</small></span></button><button type="button" data-go="field"><span class="choice-emoji" aria-hidden="true">🏑</span><span><strong>Veldhockey</strong><small>Selectie, minuten en opstellingen</small></span></button></div>
  <div class="home-hero"><div class="home-hero-top"><span class="home-chip">● PW ENSCHEDE • MO14-1 ZAAL</span><span class="home-hero-round" id="homeRound">1 / 12</span></div><div class="home-heading" id="homeMatchTitle">Wedstrijd 1</div><p class="home-game-date" id="homeGameDate">Datum nog invullen</p><p id="homeKeeperText">Keeper: Coco</p><div class="home-facts"><div><b id="homePresent">10</b><span>Aanwezig</span></div><div><b id="homeBench">4</b><span>Op de bank</span></div><div><b id="homeBlocks">4</b><span>Wisselblokken</span></div></div><div class="home-hero-actions"><button type="button" class="home-primary" data-go="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg>Bekijk opstelling</button><button type="button" class="home-secondary" data-go="team">Selectie aanpassen</button></div></div>
  <div class="home-next"><div class="home-next-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></div><div><strong>Volgende wissel</strong><p id="homeNextText">Selecteer een wedstrijd om de wissels te zien.</p></div><button type="button" data-go="plan" aria-label="Bekijk volgende wissel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
  <div class="home-section-head"><div><h2 id="homeMatchesHeading">12 wedstrijden · 6 speeldagen</h2><p>Per speeldag staan alle wedstrijden met begintijd en tegenstander. Maak voor elke wedstrijd een apart wisselplan.</p></div><button type="button" class="btn small outline" id="addFixture">+ Wedstrijd toevoegen</button></div><div class="home-rounds" id="homeRounds" aria-label="Kies een wedstrijd"></div>
@@ -204,7 +205,7 @@ a.menu-tile{text-decoration:none;color:inherit}a.field-menu-link{display:block;p
     <p class="fc-status" id="fieldBlockStatus" role="status" aria-live="polite">Blok 1 van 6</p>
     <div id="fieldPrint" hidden aria-hidden="true"></div>
   </div>
-  <p class="fc-helper">Veld en Zaal hebben ieder hun eigen spelregels en opstellingen. De veldblokken zijn een vaste coachplanning; voor de zaal kun je keeper, afwezigheid en eerste vijf zelf aanpassen.</p>
+  <p class="fc-helper">Veld en Zaal hebben ieder hun eigen spelregels en opstellingen. Veld en zaal hebben elk een eigen teamselectie, keeper en wisselplanning. In Veld kun je tien beginposities instellen, minuten registreren en tactiek tekenen.</p>
 </section>
 </main>
  <footer class="footer">MO14-1 Coach · Zaal & Veld · Alleen lokaal opgeslagen · Speelduur zo nodig afstemmen met de wedstrijdorganisatie.</footer>
@@ -588,4 +589,6 @@ showView(activeView,false,false);updateChrome();renderHomeHub();
 <script src="./coach-core.js"></script>
 <script src="./coach-ui.js"></script>
 <script src="./field-unified.js"></script>
+<script src="./field-engine.js"></script>
+<script src="./field-complete.js"></script>
 </body></html>
