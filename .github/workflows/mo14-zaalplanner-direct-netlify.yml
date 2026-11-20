@@ -1,3 +1,4 @@
+# PW MO14-1 unified app v10: zaal and veld in one PWA, retained strict CSP, independent live assets readback, no Make.
 # MO14 security hardening: hash-based CSP + provider HTTP readback before declaring live.
 # PW MO14-1 Veldplanner: distinct 11-a-side field mode (Jackie GK, Coco-Mijn attack), preserve zaal and homepage; no Make.
 # MO14 V9: recorded actual field/goal minutes rebaseline future plans, portable backup, independent live readback; no Make.
@@ -39,7 +40,7 @@ jobs:
       - name: Verify planner and independent website source
         run: |
           set -euo pipefail
-          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs tests/mo14-site-security-headers-20261120.test.mjs
+          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs tests/mo14-site-security-headers-20261120.test.mjs tests/mo14-unified-zaal-veld-app-20261120.test.mjs
           test -s pw-mo14-1/zaalplanner/index.html
       - name: Preserve existing MO14 homepage and assets before deploy
         run: |
@@ -65,6 +66,8 @@ jobs:
           cp pw-mo14-1/zaalplanner/coach-core.js .mo14-stage/zaalplanner/coach-core.js
           cp pw-mo14-1/zaalplanner/coach-ui.js .mo14-stage/zaalplanner/coach-ui.js
           cp pw-mo14-1/zaalplanner/coach-plus.css .mo14-stage/zaalplanner/coach-plus.css
+          cp pw-mo14-1/zaalplanner/field-unified.js .mo14-stage/zaalplanner/field-unified.js
+          cp pw-mo14-1/zaalplanner/field-unified.css .mo14-stage/zaalplanner/field-unified.css
           mkdir -p .mo14-stage/zaalplanner/icons
           cp pw-mo14-1/zaalplanner/icons/icon-*.png .mo14-stage/zaalplanner/icons/
           # PW Enschede crest as used in the existing PW Hockey app; fail closed if source fails.
@@ -149,6 +152,16 @@ jobs:
           cmp -s pw-mo14-1/zaalplanner/coach-core.js /tmp/mo14-coach-core.js
           cmp -s pw-mo14-1/zaalplanner/coach-ui.js /tmp/mo14-coach-ui.js
           cmp -s pw-mo14-1/zaalplanner/coach-plus.css /tmp/mo14-coach-plus.css
+          curl -fLsS --retry 2 --max-time 25 "${MO14_DOMAIN}/zaalplanner/field-unified.js?sha=${GITHUB_SHA}" -o /tmp/mo14-field-unified.js
+          curl -fLsS --retry 2 --max-time 25 "${MO14_DOMAIN}/zaalplanner/field-unified.css?sha=${GITHUB_SHA}" -o /tmp/mo14-field-unified.css
+          cmp -s pw-mo14-1/zaalplanner/field-unified.js /tmp/mo14-field-unified.js
+          cmp -s pw-mo14-1/zaalplanner/field-unified.css /tmp/mo14-field-unified.css
+          grep -q 'PWCoachField' /tmp/mo14-field-unified.js
+          grep -q 'coach-sport-switch' /tmp/mo14-field-unified.css
+          grep -q 'data-view-panel="field"' /tmp/mo14-new.html
+          grep -q 'data-sport-choice="field"' /tmp/mo14-new.html
+          grep -q 'field-unified.js' /tmp/mo14-new.html
+          grep -q 'field-unified.css' /tmp/mo14-new.html
           grep -q 'coachActualMinutes' /tmp/mo14-coach-ui.js
           grep -q 'coachConfirmActual' /tmp/mo14-coach-ui.js
           grep -q 'coachBackupFile' /tmp/mo14-coach-ui.js
@@ -163,7 +176,7 @@ jobs:
           grep -q 'id="keeper"' /tmp/mo14-new.html
           curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/manifest.webmanifest?sha=${GITHUB_SHA}" -o /tmp/mo14-manifest.json
           node -e "const m=require('/tmp/mo14-manifest.json'); if(m.display!=='standalone'||m.scope!=='./'||m.icons.length<2||m.shortcuts?.length<3||m.theme_color!=='#59222d')process.exit(1)"
-          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/sw.js?sha=${GITHUB_SHA}" | grep -q 'mo14-zaalcoach-v9-actual-minutes-backup'
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/sw.js?sha=${GITHUB_SHA}" | grep -q 'mo14-unified-coach-v10-zaal-veld'
           curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/pw-logo.png?sha=${GITHUB_SHA}" -o /tmp/mo14-pw-crest.png
           file /tmp/mo14-pw-crest.png | grep -q 'PNG image data'
           cmp -s .mo14-stage/zaalplanner/pw-logo.png /tmp/mo14-pw-crest.png || { echo 'PW crest differs on production' >&2; exit 1; }
@@ -179,7 +192,11 @@ jobs:
           grep -q 'Coco-Mijn' /tmp/mo14-veld-new.html
           grep -q 'const LINEUPS=' /tmp/mo14-veld-new.html
           grep -q 'id="printAll"' /tmp/mo14-veld-new.html
-          grep -q 'href="https://pw-mo14-1.netlify.app/veldplanner/"' /tmp/mo14-new.html
+          grep -q 'data-go="field"' /tmp/mo14-new.html
+          if grep -q 'href="https://pw-mo14-1.netlify.app/veldplanner/"' /tmp/mo14-new.html; then
+            echo "Legacy cross-page navigation found instead of unified mode" >&2
+            exit 1
+          fi
           # Provider-level verification of the exact-script-hash CSP and response headers.
           for route in zaalplanner veldplanner; do
             curl -fLsSI --retry 2 --max-time 25 "${MO14_DOMAIN}/${route}/?sha=${GITHUB_SHA}" -o "/tmp/mo14-${route}-security-headers.txt"
@@ -200,5 +217,6 @@ jobs:
           console.log(route+': strict SHA-256 script CSP and security response headers verified');
           NODE_CSP
           done
+          echo "Unified PW Coach verified at ${MO14_DOMAIN}/zaalplanner/#field (veld mode without navigation)"
           echo "Fieldhockey planner verified at ${MO14_DOMAIN}/veldplanner/"
           echo "MO14 production planner verified at ${MO14_DOMAIN}/zaalplanner/"
