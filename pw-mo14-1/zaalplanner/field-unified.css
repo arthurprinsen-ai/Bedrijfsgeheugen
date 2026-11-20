@@ -60,3 +60,5 @@ html,body,.app-container,#appMain,#screen-field,#screen-field .fc-panel{display:
 #fieldPrint .aside .content{padding:8px}
 #fieldPrint .block-title{font-size:16pt;margin:0 0 5mm}
 }
+
+button.field-menu-link{display:block;width:calc(100% - 24px);margin:5px 12px;min-height:44px;border:0;background:#f5e8ec;color:#59222d;text-align:left;padding:13px 18px;border-radius:13px;font:inherit;font-weight:800;cursor:pointer}
