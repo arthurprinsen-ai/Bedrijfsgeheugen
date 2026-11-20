@@ -1,6 +1,13 @@
 name: Security Operations Proof
 
 on:
+  pull_request:
+    paths:
+      - '_redirects'
+      - '_headers'
+      - 'netlify.toml'
+      - 'tests/security-public-source-deny-20261120.test.mjs'
+      - '.github/workflows/security-operations-proof.yml'
   push:
     branches: [main]
     paths:
@@ -9,6 +16,10 @@ on:
       - 'powerhouse/assurance/security-operations-closure.json'
       - 'docs/powerhouse/POWERHOUSE_SECURITY_OPERATIONS_CLOSURE.md'
       - '.github/workflows/security-operations-proof.yml'
+      - '_redirects'
+      - '_headers'
+      - 'netlify.toml'
+      - 'tests/security-public-source-deny-20261120.test.mjs'
   schedule:
     - cron: '17 5 * * 1'
   workflow_dispatch:
@@ -36,7 +47,7 @@ jobs:
         with:
           node-version: '22'
       - name: Contract tests
-        run: node --test tests/security-operations-proof.test.mjs
+        run: node --test tests/security-operations-proof.test.mjs tests/security-public-source-deny-20261120.test.mjs
       - name: Structural fail-closed validation
         run: node scripts/security-operations-proof.mjs --check
       - name: Full closure gate when explicitly required
