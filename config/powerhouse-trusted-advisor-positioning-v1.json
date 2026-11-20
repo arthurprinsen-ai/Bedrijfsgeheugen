@@ -1,0 +1,206 @@
+{
+  "version": "2026-11-20.1",
+  "status": "APPROVED_POSITIONING_DESIGN_NOT_AUTOMATICALLY_LIVE_OFFER",
+  "decision_origin": "Direct user authored request on 2026-11-20: trusted advisor, smart business, AI and agentic, personally fixing/automating/robust scaling, simple understandable future-proof no person/vendor dependence, portal, training from basics to advanced, AI transformation and innovation implementation.",
+  "canonical_one_sentence": "Ik help ondernemers en organisaties hun bedrijf slimmer, eenvoudiger en toekomstbestendiger te maken door bedrijfsproblemen praktisch op te lossen en software, AI, BI en data als één betrouwbaar intelligent geheel te ontwerpen.",
+  "audience_outcome": "Rust, overzicht, regie, werkbare oplossingen en minder afhankelijkheid van personen of leveranciers.",
+  "role": "Independent trusted advisor, hands-on technology and transformation lead, implementation and knowledge transfer partner; not a product pusher or generic AI agency.",
+  "independence": "Use open interfaces, customer data ownership, documented decisions, replaceable components and model/tool choice when technically and contractually feasible. Never guarantee zero vendor lock-in.",
+  "differentiation": [
+    "Start with a concrete human/entrepreneur problem; no solution looking for a problem",
+    "Translate complex choices into plain language and one next step",
+    "Diagnose root cause, fix, test, deploy through existing protected delivery",
+    "Combine software, data, business intelligence, AI and appropriate agentic workflows within one governed system",
+    "Build reliable recovery: monitoring, ownership, bounded automation, human review and reversibility",
+    "Hand over knowledge and train people, preventing key-person dependence",
+    "Use existing software where sensible; replace only if supported by evidence",
+    "Make changes measurable; separate expected benefit from realized effect"
+  ],
+  "operating_sequence": [
+    "discover real friction",
+    "trace causes and risk",
+    "prioritize one defensible solution",
+    "build and integrate",
+    "test authorization/security/recovery",
+    "show in plain language via portal",
+    "measure independent effect",
+    "teach and transfer",
+    "improve and scale"
+  ],
+  "customer_portal": {
+    "existing_source": "https://app.notion.com/p/3beda36aac8a816ab448f9330f36464e",
+    "ux_source": "https://app.notion.com/p/41bda36aac8a816bb87dd6d68f789235",
+    "capability_source": "https://app.notion.com/p/3c2da36aac8a81e796abdc058064eb5d",
+    "state": "PROPOSED_PRESENTATION_MODEL_REUSE_EXISTING_PORTAL_NO_NEW_SIDEBAR_UNTIL_APPROVED_AND_VERIFIED",
+    "opening": "Hoe staat mijn bedrijf ervoor, wat vraagt aandacht en wat gebeurt er nu?",
+    "five_plain_language_steps": [
+      "Begrijpen: wat speelt er en waarom",
+      "Kiezen: wat levert een stap mogelijk op en welk risico heeft hij",
+      "Uitvoeren: wie of welke geautoriseerde agent doet wat",
+      "Bewijzen: wat is echt veranderd en wat is alleen verwacht",
+      "Borgen: hoe werkt dit door bij mensen, systemen en volgende stappen"
+    ],
+    "ux_constraints": [
+      "One clear next action per screen",
+      "Three short sentences before charts",
+      "Human-readable status and source/caveat for each material value",
+      "Never demo/sample data as customer reality",
+      "Accessible NL/EN simple language",
+      "No hidden irreversible agent action or unsupported promises",
+      "Data, decisions and knowledge belong to client",
+      "Keep existing portal v2, ONE BRAIN/Powerhouse/Heartbeat chain and 86-capability model as source of truth"
+    ]
+  },
+  "training_ladder": [
+    {
+      "id": "AI_START",
+      "title": "AI Basis — begrijpen en veilig gebruiken",
+      "audience": "all employees and business users",
+      "suggested_duration": "2-3 hours",
+      "modules": [
+        "AI in gewone taal",
+        "prompts and fact-checking",
+        "privacy, security, hallucination risks",
+        "daily work examples"
+      ],
+      "output": "safe use checklist and one validated own use case",
+      "state": "PROPOSED_PACKAGING"
+    },
+    {
+      "id": "AI_PRAKTIJK",
+      "title": "AI in je werk — van taak naar workflow",
+      "audience": "teams and process owners",
+      "suggested_duration": "1 day",
+      "modules": [
+        "spot repetitive work",
+        "map process and data",
+        "prototype one bounded workflow",
+        "human oversight and adoption"
+      ],
+      "output": "prioritized practical backlog, owner and simple measurable before/after",
+      "state": "PROPOSED_PACKAGING"
+    },
+    {
+      "id": "AI_ADVANCED_AGENTIC",
+      "title": "AI Advanced & Agentic — ontwerpen en besturen",
+      "audience": "tech leads, analysts, process and product owners",
+      "suggested_duration": "2 days",
+      "modules": [
+        "RAG and context quality",
+        "tools, APIs and interoperable design",
+        "agents: permissions, memory and orchestration",
+        "tests, observability, recovery and human approval",
+        "evals, security and cost control"
+      ],
+      "output": "tested design/spec for one governed agent (deployment only as separately scoped implementation)",
+      "state": "PROPOSED_PACKAGING"
+    },
+    {
+      "id": "AI_MT_TRANSFORMATIE",
+      "title": "AI-transformatie voor directie en MT",
+      "audience": "entrepreneurs, management teams and executives",
+      "suggested_duration": "half to full day workshop",
+      "modules": [
+        "business friction and outcomes",
+        "readiness and governance",
+        "prioritization, operating model, change adoption",
+        "portfolio and measurable roadmap"
+      ],
+      "output": "decision-ready prioritized 90-day opportunity plan",
+      "state": "PROPOSED_PACKAGING"
+    },
+    {
+      "id": "INNOVATIE_IMPLEMENTATIE",
+      "title": "Innovatie- en implementatielab",
+      "audience": "cross-functional delivery teams",
+      "suggested_duration": "timeboxed sprint to scope",
+      "modules": [
+        "select one validated opportunity",
+        "build with existing software/data/AI",
+        "test with users and protected delivery",
+        "transfer documentation, training, outcome measurement"
+      ],
+      "output": "bounded validated pilot or deployed capability ONLY when independently proven",
+      "state": "PROPOSED_PACKAGING"
+    }
+  ],
+  "commercial_routes": {
+    "principle": "Show need → clarity → pragmatic implementation → adoption/skills → measured continuity; do not replace pricing or current contracts silently.",
+    "step_labels": [
+      "Frisse blik/bedrijfs- en AI-scan",
+      "Werkende verbetering/sprint",
+      "Automatisering en agentic implementatie",
+      "AI-training en teamadoptie",
+      "Continu verbeteren en borgen"
+    ],
+    "existing_value_canvas": "https://app.notion.com/p/3b1da36aac8a81fba736c4897474902b",
+    "pricing_rule": "Existing canvas price amounts are positioning research, not proven live prices; do not publish a new price unless publicly verified and approved.",
+    "evidence_rule": "Do not claim services/portal modules are in production until original owner approval, live route, authorization and actual readback."
+  },
+  "editorial_channels": {
+    "personal_linkedin": {
+      "objective": "Demonstrate genuine earned trusted-advisor judgment through verified own decisions, tradeoffs, teaching/coaching facts, technology leadership and honest learning.",
+      "rotate_angles": [
+        "diagnose a recurring human friction",
+        "explain one architecture tradeoff",
+        "human vs agent approval boundary",
+        "simplicity and accessible UX",
+        "train/team handover",
+        "robustness/recovery/independence",
+        "innovation that reached verified implementation"
+      ],
+      "source_rule": "One self-verified own event/decision first, external frictions as external context ONLY. Experience, customer outcomes, personally coded changes must be independently sourced.",
+      "tone": "Ik, human, curious, professional, concrete; no sales CTA, forced question, repeated phrase, invented client scene, fake transformation results or generic motivational AI speech.",
+      "avoid": "Do not cram every pillar, technology or training program into every post; one personally grounded point per post."
+    },
+    "company_website": {
+      "objective": "Offer calm, plain language, outcomes-first trusted advice rather than technical capability catalog.",
+      "page_story": [
+        "Wat wil je oplossen?",
+        "Wat kan eenvoudiger of slimmer?",
+        "Hoe maken we het werkend?",
+        "Hoe hou je zelf grip?",
+        "Hoe kan je team het straks zelf?"
+      ],
+      "tone": "Outcome-first, trustworthy, calm, no hype; exact evidence for price, effectiveness, capability and availability."
+    },
+    "sales_training": {
+      "objective": "Offer scan/workshop and implementation/adoption as an integrated customer path, not five speculative SaaS capabilities.",
+      "proof": "Each outcome has owner, baseline, acceptance, provider-reported proof and transfer; no placeholder as success."
+    }
+  },
+  "metrics": {
+    "primary": [
+      "qualified_inbound_conversations",
+      "verified_customer_problems_validated",
+      "implementations_independently_live_proven",
+      "adoption_by_real_users",
+      "documented_owner_handover",
+      "measured_business_outcome"
+    ],
+    "secondary": [
+      "meaningful_linkedin_comments_if_observed",
+      "training_completion_if_observed",
+      "portal_task_completion_if_observed",
+      "mean_time_to_recovery_if_observed"
+    ],
+    "unknown": "NOT_MEASURED",
+    "never": "invent ROI, adoption, satisfaction, live project, trained client or agent autonomy"
+  },
+  "principles_of_agentic_ai": [
+    "Autonomy is conditional on risk and authorization",
+    "agents recommend or act only within delegated explicit scopes",
+    "human escalation for material irreversible actions",
+    "single accountable original owner",
+    "idempotency, replay, observation, tests, rollback, audit",
+    "safe failure and continued recovery not silent stop",
+    "portable data and composable model/tool choices where possible"
+  ],
+  "research": [
+    "https://learn.microsoft.com/en-us/agents/adoption-maturity-model",
+    "https://www.mckinsey.com/capabilities/mckinsey-technology/our-insights/building-the-foundations-for-agentic-ai-at-scale",
+    "https://aws.amazon.com/blogs/machine-learning/scaling-agentic-ai-enterprise-patterns-without-vendor-lock-in/",
+    "https://sfia-online.org/en/tools-and-resources/ai-skills-framework/ai-literacy",
+    "https://www.mckinsey.com/capabilities/people-and-organization/our-insights/how-to-close-the-agentic-adoption-gap"
+  ]
+}
