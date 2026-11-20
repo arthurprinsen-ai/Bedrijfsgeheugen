@@ -37,6 +37,17 @@ test('tenant isolation, explicit monitoring opt-in and no demo/unknown rules',as
   assert.deepEqual(await planOriginalHeartbeatObservations([{...row(),tenant_id:''}]),[]);
   assert.deepEqual(monitoringRuleCandidates([{...row(),layer:'unknown'}]),[]);
 });
+test('latest tenant revocation or deleted rule overrides stale active older layer',async()=>{
+  const old=row();
+  const newer={...row(),layer:'canonical-brain',source_updated_at:'2026-11-21T20:00:00.000Z'};
+  newer.payload={data:{portal:{metrics:{revenue:100},signalering:{rules:[]}}}};
+  assert.deepEqual(await planOriginalHeartbeatObservations([old,newer]),[]);
+  const disabled={...newer,payload:{data:data()}};
+  disabled.payload.data.portal.signalering.rules[0].monitoring=false;
+  assert.deepEqual(await planOriginalHeartbeatObservations([old,disabled]),[]);
+  const blank={...newer,payload:{data:{portal:{metrics:{revenue:100}}}}};
+  assert.deepEqual(await planOriginalHeartbeatObservations([old,blank]),[]);
+});
 test('same source revision creates one stable idempotency key; new revision renews',async()=>{
   const one=await planOriginalHeartbeatObservations([row()]);
   const two=await planOriginalHeartbeatObservations([row()]);
@@ -70,6 +81,8 @@ test('existing 5-minute runner owns the only observation and fails closed on del
   assert.equal(runner.split('Deno.serve(async(req:Request)=>{').length,2);
   assert.ok(runner.includes('const placeholders=outcome.keys.map('));
   assert.ok(runner.includes('portal_signal_observation:portalSignalObservation'));
+  assert.ok(runner.includes("where layer in ('legacy-migration','canonical-brain') "));
+  assert.doesNotMatch(runner,/jsonb_typeof\(payload#>/);
   assert.match(runner,/x-bg-service-token/);
   assert.doesNotMatch(runner,/cron\.schedule\(/);
   const browser=await readFile(new URL('../portal-v2/voice-signals.js',import.meta.url),'utf8');
