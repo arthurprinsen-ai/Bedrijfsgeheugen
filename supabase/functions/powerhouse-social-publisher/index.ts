@@ -1,5 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations,personalLastMilePublicationViolations,personalFounderDecisionSourceScopeViolations} from '../_shared/personal-first-person-story-gate.mjs';
+import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations,personalLastMilePublicationViolations,personalFounderDecisionSourceScopeViolations,isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact} from '../_shared/personal-first-person-story-gate.mjs';
 import {canRecoverExpiredCompanyClaim,canRecoverExpiredPersonalClaim} from '../_shared/social-publish-claim-recovery.mjs';
 import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
@@ -1527,6 +1527,10 @@ Deno.serve(async (req) => {
     if(row.channel==='linkedin_personal') {
       const editorialEvidence=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{};
       const violations=personalEditorialViolations(art.body,editorialEvidence);
+      // Redeploy original sender with the exact user-approved giveaway gate;
+      // missing, wrong or additional link is rejected before provider create.
+      if(isVerifiedPersonalMagazineGift(editorialEvidence)&&!magazineGiftLinkIsExact(art.body,editorialEvidence))
+        violations.push({code:'PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED',message:'Exacte gratis magazine-URL ontbreekt of wijkt af.'});
       const ownStoryViolations=personalFirstPersonCopyViolations(art.body,editorialEvidence,runDate);
       const currentPersonalSource=await verifyCurrentPersonalStorySource(db,row,art,runDate);
       if(!currentPersonalSource.ok)ownStoryViolations.push(currentPersonalSource.code,...(currentPersonalSource.violations||[]));
