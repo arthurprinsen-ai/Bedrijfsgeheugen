@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {SIGNAL_METRICS,parseSpokenRule,parseAmount,evaluateSignals,normalizeRule} from '../signal-detection.js';
+import {SIGNAL_METRICS,parseSpokenRule,parseAmount,evaluateSignals,normalizeRule,buildSignalTask} from '../signal-detection.js';
 
 test('spoken Dutch alerts become reviewable policies, not silent actions',()=>{
   assert.deepEqual(parseSpokenRule('Waarschuw me als omzet onder 50 duizend'),{metricId:'revenue',operator:'below',threshold:50000});
@@ -55,4 +55,17 @@ test('V2 mounts one capability in original portal runtime and experience',async(
   assert.match(ui,/stateClient\.isDemo/);
   assert.doesNotMatch(ui,/localStorage|sessionStorage|service_role/i);
   assert.doesNotMatch(ui,/new Worker|setInterval|Notification\.requestPermission/);
+});
+
+test('triggered signal creates an owned, dated task proposal only',()=>{
+  const result=evaluateSignals([{id:'shortfall',metricId:'revenue',operator:'below',threshold:200}],{portal:{metrics:{revenue:100}}},{authenticated:true})[0];
+  const task=buildSignalTask(result,{owner:'Eigenaar verkoop',due:'2026-11-30'});
+  assert.equal(task.id,'portal-signal-shortfall');
+  assert.equal(task.status,'Open');
+  assert.equal(task.owner,'Eigenaar verkoop');
+  assert.equal(task.evidence.sourcePath,'portal.metrics.revenue');
+  assert.match(task.description,/Aanbevolen/);
+  assert.throws(()=>buildSignalTask(result,{owner:'',due:'2026-11-30'}),/OWNER_REQUIRED/);
+  assert.throws(()=>buildSignalTask(result,{owner:'A',due:'2026-11-99'}));
+  assert.throws(()=>buildSignalTask({...result,triggered:false},{owner:'A',due:'2026-11-30'}),/NOT_TRIGGERED/);
 });
