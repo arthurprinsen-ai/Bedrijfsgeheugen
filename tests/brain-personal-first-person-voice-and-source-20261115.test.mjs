@@ -125,3 +125,18 @@ test('20 Nov builder editorial prompt cannot be overwritten by life-only assignm
  assert.match(gen,/P0 EXPERT-BOUWER/);
  assert.match(gen,/AI, data intelligence, BI, software engineering en slimme automatisering/);
 });
+
+test('20 November integrated software + AI + BI + data founder positioning is not a four-tool relay',()=>{
+ const orchestrator=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ const skill=readFileSync('.agents/skills/personal-linkedin-life-only/SKILL.md','utf8');
+ const identity=JSON.parse(readFileSync('config/social-channel-identity-contract.json','utf8')).channels.linkedin_personal;
+ assert.match(orchestrator,/AI-native intelligent business software is één samenhangend ontwerp/);
+ assert.match(orchestrator,/GEEN losse tools of opvolgende lagen|geen losse tools of opvolgende lagen|geen losse tools of opvolgende lagen maar delen één bedrijfscontext/i);
+ assert.match(orchestrator,/één gedeelde bedrijfscontext, feedback tussen inzichten/);
+ assert.match(orchestrator,/on-gerealiseerde|ongerealiseerde|onuitgevoerde/i);
+ assert.match(skill,/one intelligent system/);
+ assert.match(skill,/Do not.*software does X, then data does Y/);
+ assert.equal(identity.unifiedSystemEditorialContract.model,'one_integrated_intelligent_business_software');
+ assert.equal(identity.unifiedSystemEditorialContract.forbidsLinearFourSeparateToolsFraming,true);
+ assert.equal(identity.unifiedSystemEditorialContract.claimsRequireSourceProof,true);
+});
