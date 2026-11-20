@@ -1,0 +1,56 @@
+{
+  "contract": "ORIGINAL_POWERHOUSE_PRODUCTION_READBACK_LEARNING_V1",
+  "date": "2026-11-21",
+  "fingerprint": "powerhouse|portal-v2|hidden-boot-readiness-and-public-visual-cls-evidence|20261121-v1",
+  "source_commit": "c0f712b7f1fde4a99460ec049ec4e55e4ef70257",
+  "natural_production_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44833465589",
+  "natural_brand_shell_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44831421618",
+  "observed": {
+    "portal_v2_desktop_and_mobile": "VISIBLE_READINESS_TIMEOUT despite exact Netlify production READY and authenticated tenant proof, in normal UI route check",
+    "visibility": "291 routes × 3 viewports (873) real checks passed in separate original sitewide job",
+    "visual_regression": "/due-diligence phone initial failed CLS > 0.1 in independent original visual regression",
+    "root_cause_status": "UNCONFIRMED_PORTAL_MODULE_BOOT_CAUSE_AND_UNCONFIRMED_VISUAL_SHIFTING_ELEMENT",
+    "already_proven": "Portal parser-time v2-hydrating visibility guard and 5-second state-client fallback are coupled to JS module evaluation; a broken/stalled module graph can leave shell hidden",
+    "cannot_claim": "HTTP200, API auth PROVEN, Netlify deploy READY, sitewide visible routes or error fallback by themselves prove the mounted Portal app or the independent visual CLS contract"
+  },
+  "prevention": {
+    "portal": "Independent bounded 15-second classic-script watchdog shows accessible explicit error state without fake customer data, while app shell remains hidden until real app.js mount success; independent original release-readback requires actual app-ready marker and removal of loading/error state",
+    "output": "Log only public route and viewport, anonymous runtime bools and failure counts; no tenant/secret or raw HTML",
+    "visual": "Keep CLS threshold 0.1 and emit first 5 actual original PerformanceObserver layout-shift entries, selectors and rectangles; do not guess which element caused the shift",
+    "source_of_truth": "original ONE BRAIN Engineering -> protected GitHub branch/Required/CodeQL -> exact Netlify deploy -> production route+visual readback -> Heartbeat; no parallel agent, workflow, or tenant data",
+    "rollback": "protected revert only if real provider or public visibility worsens"
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "security_sensitive": true,
+    "requires_authorized_delivery": true,
+    "requires_independent_provider_readback": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-live-boot-recovery-20261121.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-live-boot-recovery-20261121.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-live-boot-recovery-20261121.test.mjs"
+    ]
+  },
+  "evidence": {
+    "portal_script": "portal-v2/portal-boot-watchdog.js",
+    "actual_mounted_app": "portal-v2/app.js",
+    "readback_script": "tools/site-shell/verify-targeted-website-routes.mjs",
+    "visual_script": "tools/site-shell/ui-visual-regression/browser-check.mjs",
+    "protected_regression": "tests/brain-portal-live-boot-recovery-20261121.test.mjs",
+    "original_agent_skills": [
+      ".agents/skills/portal-living-interface/SKILL.md",
+      ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+    ],
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "acknowledged_business_value": 0,
+    "original_innovations_closed": 0,
+    "original_innovations_remaining_open": 14,
+    "source_changes_live_proven": false
+  }
+}
