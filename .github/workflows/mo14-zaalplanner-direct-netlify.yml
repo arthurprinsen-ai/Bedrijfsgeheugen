@@ -195,7 +195,7 @@ jobs:
           if(match.length!==1)process.exit(1);
           const hash=crypto.createHash('sha256').update(match[0][2]).digest('base64');
           const headers=fs.readFileSync('/tmp/mo14-'+route+'-security-headers.txt','utf8');
-          if(!headers.includes("'sha256-"+hash+"'")||/script-src[^\r\n]*'unsafe-inline'/.test(headers))process.exit(2);
+          if(!headers.includes("'sha256-"+hash+"'")||/script-src[^;\r\n]*'unsafe-inline'/.test(headers))process.exit(2);
           console.log(route+': strict hash-based CSP and anti-clickjacking headers verified on live response');
           NODE_CSP
           done
