@@ -22,6 +22,9 @@ Existing decisions from 19–20 November require genuinely personal, varied post
 5. The original `personal-first-person-story-gate.mjs` now blocks narrow explicit bait in the original author copy and final original last-mile check. It does not block a sincere, source-relevant question or override original provider/truth/identity/final-hash gates.
 6. Keep personal-page content distinct from Mira and company posts. Never manufacture customer successes or pretend unmeasured product outcomes were proven.
 
+## Additional source-of-truth repair finding
+The bounded repair route independently contained hard-coded **150–175 words / four paragraphs** for both personal builder and observational revisions, plus the builder correction demanded **exactly one closing question**. These are now explicitly removed too. Regression checks cover first draft and post-rejection rewrite: a repair must not silently restore the rejected template.
+
 ## Owned learning
 The only suitable future proof is on Arthur's authorized personal LinkedIn provider posts and original unique URN lineage. Use genuine 24h/48h/72h impressions/comments if available; qualitative substantive comments and helpful practitioner counterexamples matter more than gross comments. Avoid statistical inferences from unverified sample sizes or stale September-2026 Buffer metrics. The original `social_experiments` owner tests one reversible variable at a time; unknown metric = NOT_MEASURED, not a positive lift.
 
