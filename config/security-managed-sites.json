@@ -1,0 +1,112 @@
+{
+  "version": 1,
+  "source": "Netlify management-plane inventory, 2026-11-20",
+  "owner": "Security Operations / ONE BRAIN",
+  "expected_projects": 16,
+  "monitor_interval_minutes": 15,
+  "expiry_minutes": 45,
+  "sites": [
+    {
+      "id": "bedrijfsgeheugen",
+      "url": "https://www.bedrijfsgeheugen.nl/",
+      "mode": "business",
+      "risk": "critical"
+    },
+    {
+      "id": "pw-zaalcoach",
+      "url": "https://pw-mo14-1.netlify.app/zaalplanner/",
+      "mode": "coach",
+      "risk": "critical"
+    },
+    {
+      "id": "pw-veldcoach",
+      "url": "https://pw-mo14-1.netlify.app/veldplanner/",
+      "mode": "coach",
+      "risk": "critical"
+    },
+    {
+      "id": "buurtfeeststokhorst",
+      "url": "https://buurtfeeststokhorst.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "governance-ai",
+      "url": "https://governance-ai.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "bg-portaal-bronsync",
+      "url": "https://bg-portaal-bronsync.netlify.app/",
+      "mode": "protected",
+      "risk": "sensitive"
+    },
+    {
+      "id": "fascinating-kataifi-09fd89",
+      "url": "https://fascinating-kataifi-09fd89.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "earnest-vacherin-acf2ba",
+      "url": "https://earnest-vacherin-acf2ba.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "elegant-melomakarona-56ed6f",
+      "url": "https://elegant-melomakarona-56ed6f.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "funny-monstera-c53f35",
+      "url": "https://funny-monstera-c53f35.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "magnificent-bonbon-0b87fc",
+      "url": "https://magnificent-bonbon-0b87fc.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "lively-chebakia-fd7569",
+      "url": "https://lively-chebakia-fd7569.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "stupendous-cocada-04bc27",
+      "url": "https://stupendous-cocada-04bc27.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "dashing-faun-ad16d3",
+      "url": "https://dashing-faun-ad16d3.netlify.app/",
+      "mode": "standard",
+      "risk": "normal"
+    },
+    {
+      "id": "archive-bg-portaal-wijzigingen",
+      "url": "https://archive-bg-portaal-wijzigingen.netlify.app/",
+      "mode": "archive",
+      "risk": "review"
+    },
+    {
+      "id": "archive-mo14-1-temp",
+      "url": "https://archive-mo14-1-temp.netlify.app/",
+      "mode": "archive",
+      "risk": "review"
+    },
+    {
+      "id": "archive-bedrijfsgeheugen-klantportaal-test",
+      "url": "https://archive-bedrijfsgeheugen-klantportaal-test.netlify.app/",
+      "mode": "archive",
+      "risk": "review"
+    }
+  ]
+}
