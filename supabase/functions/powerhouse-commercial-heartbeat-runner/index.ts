@@ -359,11 +359,10 @@ async function runOutboundLanes(){
   });
 }
 
+
 /**
- * Existing 5-minute Heartbeat: bounded server-side observations of opted-in,
- * tenant-owned portal thresholds in the ORIGINAL EU portal_state_layers.
- * Runs independently of expensive commercial scoring and never sends an email
- * or push, updates customer data or changes agent approval/consent.
+ * Tenant alert observations in the existing five-minute Powerhouse Heartbeat.
+ * No parallel scheduler, sender, customer state writer or approval bypass.
  */
 async function observePortalSignals(){
   try{
@@ -393,7 +392,7 @@ async function observePortalSignals(){
           "$3::jsonb,jsonb_build_object('contract',$4::text,'original_heartbeat_owner',true,'tenant_identifier_masked',true,'no_parallel_worker',true)) "+
           "on conflict(dedupe_key) do nothing returning event_id",
           [observation.dedupeKey,'tenant:'+observation.tenantFingerprint,
-            JSON.stringify(evidence),PORTAL_SIGNAL_HEARTBEAT_CONTRACT]
+           JSON.stringify(evidence),PORTAL_SIGNAL_HEARTBEAT_CONTRACT]
         );
         keys.push(observation.dedupeKey);
         inserted+=stored.length;
@@ -405,38 +404,7 @@ async function observePortalSignals(){
       state:outcome.state,observedSignalCount:outcome.planned||0,
       technicalReadbackVerified:false,notificationsSent:0,actionsExecuted:0,
       coverageTruncated:outcome.coverageTruncated||false};
-    // Independent readback after transaction commit: do not claim delivery or
-    // fresh measured KPI evidence from stored threshold observations.
-    const placeholders=outcome.keys.map((_:string,i:number)=>'
-  if(req.method!=="POST")return json({ok:false,error:"METHOD_NOT_ALLOWED"},405);
-
-  const provided=clean(req.headers.get("x-bg-service-token"));
-  if(!provided||await sha256(provided)!==SERVICE_TOKEN_HASH)return json({ok:false,error:"UNAUTHORIZED"},401);
-
-  // The outbound lanes are not coupled to the expensive Brain transaction.
-  // A failure/timeout of the commercial scoring cycle cannot starve email,
-  // DM, comments, or the honest unsupported-likes status.
-  const brainActionFeed=await materializeCommercialIntent();
-  const contactAuthorityReview=await reviewContactAuthority();
-  const outboundLanesResult=await runOutboundLanes();
-  const portalSignalObservation=await observePortalSignals();
-  try{
-    const result=await runHeartbeat();
-    const croCommercialEvidence=await observeCroCommercialProof();
-    return json({...result,cro_commercial_evidence:croCommercialEvidence,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult,portal_signal_observation:portalSignalObservation},result.state==="SKIPPED_OVERLAP"?202:200);
-  }catch(error){
-    console.error("POWERHOUSE_COMMERCIAL_HEARTBEAT_RUNNER_FAILED",error instanceof Error?error.message:String(error));
-    return json({
-      ok:false,
-      error:"COMMERCIAL_HEARTBEAT_FAILED",
-      contract:"powerhouse-commercial-heartbeat-external-v1",
-      brain_action_feed:brainActionFeed,
-      outbound_lanes:outboundLanesResult,
-      portal_signal_observation:portalSignalObservation
-    },503);
-  }
-});
-+(i+1)).join(',');
+    const placeholders=outcome.keys.map((_:string,i:number)=>'$'+(i+1)).join(',');
     const rows=await db().unsafe(
       "select dedupe_key,source,event_type,state,evidence->>'contract' as contract "+
       "from public.powerhouse_runtime_events where dedupe_key in ("+placeholders+")",
@@ -470,10 +438,11 @@ Deno.serve(async(req:Request)=>{
   const brainActionFeed=await materializeCommercialIntent();
   const contactAuthorityReview=await reviewContactAuthority();
   const outboundLanesResult=await runOutboundLanes();
+  const portalSignalObservation=await observePortalSignals();
   try{
     const result=await runHeartbeat();
     const croCommercialEvidence=await observeCroCommercialProof();
-    return json({...result,cro_commercial_evidence:croCommercialEvidence,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
+    return json({...result,cro_commercial_evidence:croCommercialEvidence,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult,portal_signal_observation:portalSignalObservation},result.state==="SKIPPED_OVERLAP"?202:200);
   }catch(error){
     console.error("POWERHOUSE_COMMERCIAL_HEARTBEAT_RUNNER_FAILED",error instanceof Error?error.message:String(error));
     return json({
@@ -481,7 +450,8 @@ Deno.serve(async(req:Request)=>{
       error:"COMMERCIAL_HEARTBEAT_FAILED",
       contract:"powerhouse-commercial-heartbeat-external-v1",
       brain_action_feed:brainActionFeed,
-      outbound_lanes:outboundLanesResult
+      outbound_lanes:outboundLanesResult,
+      portal_signal_observation:portalSignalObservation
     },503);
   }
 });
