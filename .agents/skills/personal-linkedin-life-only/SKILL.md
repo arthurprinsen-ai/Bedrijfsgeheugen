@@ -5,6 +5,31 @@ description: Enforce verified, first-person Arthur content: lived personal momen
 
 # Personal LinkedIn — authentic personal voice + evidenced technology leadership
 
+## 20 November 2026, 12:32 Amsterdam — Genuine substantive conversations (newest binding)
+
+**Purpose:** Personal stories deserve real reactions because they make people recognize a problem, question an assumption, compare approaches or add practitioner experience, NOT because a question is compulsorily put at the end. Root-cause repair: the original orchestrator still instructed "eindig met één oprechte open vraag", overriding newer no-forced-question decisions. No fixed 130–200-word template.
+
+**Research, directional hypotheses not guaranteed platform causality:**
+- [LinkedIn feed authenticity update, 12 March 2026](https://news.linkedin.com/2026/ImprovingTheFeed) favors original useful insight and combats generic recycled content, engagement pods and automated comments. [LinkedIn recommendation policy](https://www.linkedin.com/blog/content-recommendations-avoid) explicitly permits authentic requests for thoughts and feedback but discourages engagement demands solely to manipulate distribution.
+- [Metricool 2026, 673,658 posts](https://metricool.com/linkedin-trends-study/) reports an observational association between questions and 77% more comments; does not prove adding a forced closing question raises comments for Arthur.
+- [Flypost 2026, own-creator comparison](https://www.flypost.io/learn/linkedin-algorithm-study-data) found first-person openers and images associated with more reactions, question hooks and forced closing questions associated with lower typical reactions and zero typical increment in comments. Different study samples and outcomes explain uncertainty; do not present one universal rule.
+- [Existing internal 2026 LinkedIn research and playbook](https://app.notion.com/p/3a5da36aac8a813799cee34689c26a10) already warns against "typ VAKANTIE" bait. Reconcile with the newer personal-source and evidence requirements.
+
+**For the personal founder AI/BI/data/software-as-ONE-system story, choose at most one natural invitation mechanism:**
+1. Real, source-backed technical trade-off: safe human approval versus automated action; usable reporting versus continuously observing outcomes; speed versus proof of value.
+2. A genuine uncertainty or counterexample: an honest limit where other engineers/owners may have a different solution.
+3. A human frustration with a distinctive point: unconnected Excel work, cashflow surprise, one overloaded owner, knowledge held by a colleague; connect only to real verified technical design source, not fictitious client events.
+4. An unexpected proven lesson: the root cause may be ownership or workflows rather than the AI model; mark design hypothesis as hypothesis if not directly observed.
+5. Occasionally, a natural specific question *after* useful content, e.g. "Welke beslissing zou jij juist niet automatisch laten nemen?" Never default to a question opening or closing.
+
+**Conversation quality requirement:** Can a relevant entrepreneur, tech leader, BI/data specialist, engineer or operator contribute a real example, constructive disagreement or different trade-off? If not, revise the content: add concrete context, a defensible thesis or lived technical evidence, NOT a manufactured "what do you think?" footer. A post may end in a strong own conclusion without a question. Meaningful invitation is a reader benefit, not an enforced comment count or requirement to disclose private experiences.
+
+**Never:** "wat vinden jullie?", "herkenbaar?", "eens?", "typ JA", "reageer met EENS", like/share/follow/tag commands, comment-to-get-content gates, fake polarization, engagement pods, bot comments, identical hooks/closings, forced personal/client/family details or invented ROI. Avoid boilerplate "niet X maar Y" repeated in every post. Separate personal author thought leadership from corporate selling and Mira fiction.
+
+**Measure and learn in the ORIGINAL one-loop only:** source → independently approved final copy/source hash → unique provider post URN/readback → authorized meaningful comment data and real engagement when available → 24/48/72h outcomes where actually observed → ONE BRAIN/Heartbeat learning. Prefer quality of relevant human responses, true practitioner dialogue and qualified inbound over raw comment count; record comment rate/impressions only with independently real numerator and denominator. Test one reversible editorial choice in existing social_experiments per comparable published profile cohort. No new schedule, auto-commenter or engagement analytics scraper. Lack of current personal LinkedIn analytics means NOT_MEASURED, never an invented uplift.
+
+
+
 ## 20 November 2026 — CANONICAL MKB/HUMAN FRICTION -> PERSONAL BUILDER (newest binding)
 
 Keep ALL earlier approved personal LinkedIn decisions in their actual precedence, especially the 19 Nov personal founder/life/observation scope, 20 Nov first-person technology leadership and 20 Nov ONE unified AI-native intelligent software design. Never narrow the profile to four separate technologies, only commercial/problem posts, or life-only by accident.
