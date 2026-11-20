@@ -27,7 +27,7 @@ export function eligibleVoiceField(control){
   if(!isFormField(control)||control.disabled||control.readOnly)return false;
   const type=String(control.type||'text').toLowerCase();
   if(['password','file','hidden','checkbox','radio','submit','reset','button'].includes(type))return false;
-  const name=[control.name,control.id,control.autocomplete,control.getAttribute?.('aria-label')].filter(Boolean).join(' ');
+  const name=[control.name,control.id,control.autocomplete,control.getAttribute?.('aria-label'),...([...control.labels||[]].map(label=>label.textContent))].filter(Boolean).join(' ');
   return !SENSITIVE.test(name);
 }
 export function visibleVoiceControl(control){
