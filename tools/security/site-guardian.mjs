@@ -78,7 +78,8 @@ export async function checkPrivateSourceExposure(fetcher=fetch){
   try{
    const r=await fetcher('https://www.bedrijfsgeheugen.nl'+pathname,{method:'GET',redirect:'manual',cache:'no-store',signal:AbortSignal.timeout(9000)});
    try{
-    if(r.status!==404)issues.push({id:'bedrijfsgeheugen',mode:'critical',status:'FAIL',code:'PRIVATE_SOURCE_NOT_404',fingerprint:sha('PRIVATE_SOURCE:'+pathname),pathHash:sha(pathname),httpStatus:r.status});
+    if(r.status===404)issues.push({id:'bedrijfsgeheugen',mode:'critical',status:'VERIFIED',code:'PRIVATE_SOURCE_HIDDEN',fingerprint:sha('PRIVATE_SOURCE:'+pathname)});
+    else issues.push({id:'bedrijfsgeheugen',mode:'critical',status:'FAIL',code:'PRIVATE_SOURCE_NOT_404',fingerprint:sha('PRIVATE_SOURCE:'+pathname),pathHash:sha(pathname),httpStatus:r.status});
    }finally{await r.body?.cancel?.().catch(()=>{});}
   }catch{issues.push({id:'bedrijfsgeheugen',mode:'critical',status:'FAIL',code:'PRIVATE_SOURCE_PROBE_UNAVAILABLE',fingerprint:sha('PRIVATE_SOURCE_PROBE:'+pathname)});}
  }
