@@ -1,3 +1,9 @@
+## 20 November 2026 — redeploy original publisher when shared first-person last-mile gate changes (LATEST)
+
+P0 exact production verification after #6072: original `powerhouse-content-orchestrator` deployed version 1129 and independent `bg-pre-publish-review` deployed 1081, with `personalFounderDecisionSourceScopeViolations` present, but original `powerhouse-social-publisher` remained at 1347 and its live bundle lacked the new gate. A GitHub merge and updated reviewer cannot prove last-mile publication truth if the provider executor still runs an old bundled shared module. NO second publisher, no forced resend or manual approval.
+
+Bind the exact original final sender to the same source-bound guard by importing and invoking `personalFounderDecisionSourceScopeViolations(commentary,approval.evidence)` **before** the existing `personalLastMilePublicationViolations` and `LINKEDIN_CREATE_LINKED_IN_POST`. Redeploy and independently read back `powerhouse-content-orchestrator`, `bg-pre-publish-review`, and `powerhouse-social-publisher` as three separate production functions, verifying version and shared-code contents at the destination. Preserve last SHA, source verification, dedupe and provider/member consent. `PUBLISHED` post `urn:li:share:7529541605742018561` remains consumed and `verification_pending` because LinkedIn content GET returned 403; **never repost**. Code/source deploy green is not prior-post content/readback or engagement green.
+
 ---
 name: personal-linkedin-life-only
 description: Enforce verified, first-person Arthur content: lived personal moments and independently evidenced AI/data/software/automation builder leadership; never company-page copy.
