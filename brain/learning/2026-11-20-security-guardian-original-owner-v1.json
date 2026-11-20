@@ -11,14 +11,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/security-guardian-continuous.test.mjs",
+      "tests/brain-security-guardian-continuous-20261120.test.mjs",
       "tests/brain-security-live-headers-monitor-20261120.test.mjs"
     ],
     "canary": [
-      "tests/security-guardian-continuous.test.mjs"
+      "tests/brain-security-guardian-continuous-20261120.test.mjs"
     ],
     "shadow": [
-      "tests/security-guardian-continuous.test.mjs"
+      "tests/brain-security-guardian-continuous-20261120.test.mjs"
     ],
     "live_validation": "Only after protected PR merge, Netlify CURRENT/READY, actual GitHub main-branch OIDC POST readback and portal authenticated customer observation",
     "mode_note": "Branch CI and simulated-signed OIDC are not production proof; missed tick >45 min is UNKNOWN."
@@ -57,7 +57,7 @@
     "Never revoke known external cron RPC grants without tested server-only replacement."
   ],
   "tests": [
-    "tests/security-guardian-continuous.test.mjs"
+    "tests/brain-security-guardian-continuous-20261120.test.mjs"
   ],
   "status": "PR_CANDIDATE_NOT_LIVE",
   "next_action": "Protected Required + CodeQL review and merge, Netlify provider deploy/readback, exact main-branch GitHub OIDC consumer receipt, customer visible status; no green before evidence.",
