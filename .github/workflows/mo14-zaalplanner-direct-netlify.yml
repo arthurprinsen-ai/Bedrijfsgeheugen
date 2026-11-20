@@ -214,13 +214,15 @@ jobs:
           fi
           # The preserved legacy PW homepage shares localStorage origin with the coach.
           # Forbid new or injected scripts and old remote webhook egress on the root.
-          curl -fLsSI --retry 2 --max-time 25 "${MO14_DOMAIN}/?security=${GITHUB_SHA}" -o /tmp/mo14-root-security-headers.txt
-          grep -iq "^content-security-policy: " /tmp/mo14-root-security-headers.txt
-          grep -iq "script-src 'self'; script-src-attr 'none'" /tmp/mo14-root-security-headers.txt
-          grep -iq "connect-src 'self'" /tmp/mo14-root-security-headers.txt
-          grep -iq "frame-ancestors 'none'" /tmp/mo14-root-security-headers.txt
-          grep -iq "^x-content-type-options: nosniff" /tmp/mo14-root-security-headers.txt
-          grep -iq "^x-robots-tag: noindex" /tmp/mo14-root-security-headers.txt
+          for legacy_path in / /index.html; do
+            curl -fLsSI --retry 2 --max-time 25 "${MO14_DOMAIN}${legacy_path}?security=${GITHUB_SHA}" -o /tmp/mo14-root-security-headers.txt
+            grep -iq "^content-security-policy: " /tmp/mo14-root-security-headers.txt
+            grep -iq "script-src 'self'; script-src-attr 'none'" /tmp/mo14-root-security-headers.txt
+            grep -iq "connect-src 'self'" /tmp/mo14-root-security-headers.txt
+            grep -iq "frame-ancestors 'none'" /tmp/mo14-root-security-headers.txt
+            grep -iq "^x-content-type-options: nosniff" /tmp/mo14-root-security-headers.txt
+            grep -iq "^x-robots-tag: noindex" /tmp/mo14-root-security-headers.txt
+          done
           echo "PW legacy root security headers and blocked external webhook egress verified"
           # Provider-level verification of the exact-script-hash CSP and response headers.
           for route in zaalplanner veldplanner; do
