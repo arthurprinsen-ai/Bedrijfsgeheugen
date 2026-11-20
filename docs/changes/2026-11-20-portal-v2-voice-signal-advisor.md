@@ -9,8 +9,10 @@ Eigenaars: Portal V2 experience / oorspronkelijke tenantgebonden BusinessInput �
 - Eén zichtbaar toegangspunt voor spraak én signaleringen op bestaande V2, mobiel en desktop. Geen los dashboard of parallelle API.
 - Spraakherkenning start uitsluitend na expliciete microfoonactie. Nederlands (nl-NL) en schriftelijke fallback. Navigatie via de bestaande router en autorisatie/plan-gates. Vraagafhandeling via bestaande /api/portaalvraag met tenantgebonden context. Geen vrije code-executie, geen ongevraagde submit en geen audio-opslag door het portaal.
 - Geselecteerde, niet-gevoelige velden kunnen gedicteerd worden; gebruiker controleert en slaat zelf op. Browsergebaseerde spraakherkenning heeft beperkte dekking en kan browserdiensten gebruiken.
+- Opt-in voorlezen van het antwoord of de huidige signaleringen via browser-spraaksynthese; wordt gestopt bij sluiten of wisseling van account.
 - Signaleringen voor omzet, EBITDA, brutomarge, debiteurenbetaaltermijn, liquide middelen, verzuim, verloop en doorlooptijd. Regels: onder, boven of ontbrekende bronwaarde; instelbare grens en prioriteit; pauzeren of activeren.
 - Servergebonden opslag via bestaande domainState.patch('portal.signalering') → flush → authenticated readback. Niet in localStorage; geen rechtstreekse browsertoegang tot Supabase. Geen mutation zonder sessie; demo/preview zijn fail-closed.
+- Een geactiveerd signaal kan een **taak met eigenaar en deadline** voorbereiden; opslaan loopt via dezelfde bestaande domeinstate/Brain/verified-readback, zonder te claimen dat de taak al is uitgevoerd.
 - Afwijking, binnen grens, geen-data en uitgeschakeld zijn verschillende states. Signalering toont bronpad, meetwaarde/grens, expliciete actualiteitsonzekerheid, advies en een knop naar het bestaande analyses-/actieonderdeel. Er wordt geen actie als uitgevoerd gemarkeerd door navigatie.
 
 ## Grenzen / nog geen live-producer
