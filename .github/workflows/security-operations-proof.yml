@@ -6,7 +6,7 @@ on:
       - '_redirects'
       - '_headers'
       - 'netlify.toml'
-      - 'tests/site-shell-security-public-source-deny-20261120.test.mjs'
+      - 'tests/brain-site-security-source-exposure-20261120.test.mjs'
       - '.github/workflows/security-operations-proof.yml'
   push:
     branches: [main]
@@ -19,7 +19,7 @@ on:
       - '_redirects'
       - '_headers'
       - 'netlify.toml'
-      - 'tests/site-shell-security-public-source-deny-20261120.test.mjs'
+      - 'tests/brain-site-security-source-exposure-20261120.test.mjs'
   schedule:
     - cron: '17 5 * * 1'
   workflow_dispatch:
@@ -47,7 +47,7 @@ jobs:
         with:
           node-version: '22'
       - name: Contract tests
-        run: node --test tests/security-operations-proof.test.mjs tests/site-shell-security-public-source-deny-20261120.test.mjs
+        run: node --test tests/security-operations-proof.test.mjs tests/brain-site-security-source-exposure-20261120.test.mjs
       - name: Structural fail-closed validation
         run: node scripts/security-operations-proof.mjs --check
       - name: Detect publicly exposed internal source in actual production
