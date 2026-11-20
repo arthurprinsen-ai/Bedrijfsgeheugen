@@ -126,6 +126,10 @@
     "kruimel": "De Kloof",
     "h1": "De Kloof No. 04: wat iedereen wil, maar bijna niemand durft.",
     "intro": "Een kwartaalmagazine voor ondernemers die er echt een ochtend voor nemen. Negentig minuten, vijf stappen, je eigen bedrijf gewogen tegen het bewijs. Gratis, elke editie nieuw, met een eigen analyse op Europese en Nederlandse data.",
+    "covers": [
+      {"src": "/assets/de-kloof-cover-nl.jpg", "href": "/portal-v2/reports/de-kloof-no04-2026-q4.pdf", "tekst": "De Kloof No. 04, Nederlandse editie", "breed": 910, "hoog": 1287},
+      {"src": "/assets/de-kloof-cover-en.jpg", "href": "/portal-v2/reports/the-gap-no04-2026-q4.pdf", "tekst": "The Gap No. 04, Engelse editie", "breed": 910, "hoog": 1287}
+    ],
     "blokken": [
       {"kop": "Wat je erin vindt", "tekst": "Een eigen analyse op 27 EU-landen, acht lenzen (psychologie, strategie, wet, arbeid, politiek, energie, techniek en processen) en negen bouwblokken met een concrete maandagactie. De werkbladen vul je rechtstreeks in de PDF in."},
       {"kop": "Wat de cijfers laten zien", "tekst": "Landen waar kleine bedrijven 43% halen van het AI-gebruik van grote bedrijven, lopen voorop; achterblijvers zitten op 22%. Een inhaalslag is er niet: achterblijvers groeien in verhouding niet harder. En het AI-gebruik in Nederland varieert van 13,8% tot 70%, afhankelijk van definitie en populatie. Daarom staat bij elk cijfer wat er precies gemeten is."},
