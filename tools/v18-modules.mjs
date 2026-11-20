@@ -403,13 +403,24 @@ export const VERTREK = `<div class="bgx-vertrek" data-op>
 <button type="button">Laat Peter vertrekken</button>
 </div>`;
 
+const STREEP_STAND = [
+  { begin: 'Bedrijfsgeheugen kan zulke beslissingen verbinden', streep: false },
+  { begin: 'Bereid: Bron: Bedrijfsgeheugen-forecast', streep: true },
+];
+
 // de eerste zin na elke h2 krijgt de markeerstift
 export function zetStrepen(body) {
   let n = 0;
   return body.replace(/(<h2[^>]*>[\s\S]*?<\/h2>\s*)<p([^>]*)>([\s\S]*?)<\/p>/g, (heel, kop, attrs, tekst) => {
     if (n >= 4 || /<(a|span|strong)\b/.test(tekst.slice(0, 90))) return heel;
+    // De woordenlijst-wijziging (Powerhouse -> Bedrijfsgeheugen) verschoof de zinslengte over de
+    // drempel. De Engelse vertaalsleutels volgen de markering van vóór die wijziging, dus deze twee
+    // alinea's houden hun oude stand.
+    const vast = STREEP_STAND.find(v => tekst.startsWith(v.begin));
+    if (vast && !vast.streep) return heel;
     const punt = tekst.indexOf('. ');
-    if (punt < 25 || punt > 190) return heel;
+    if (!vast && (punt < 25 || punt > 190)) return heel;
+    if (punt < 0) return heel;
     n++;
     return `${kop}<p${attrs}><span class="bgx-streep">${tekst.slice(0, punt + 1)}</span>${tekst.slice(punt + 1)}</p>`;
   });
