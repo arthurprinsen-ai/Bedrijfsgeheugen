@@ -7,6 +7,8 @@
   Netlify-CDN-Cache-Control: public, max-age=30, stale-while-revalidate=30
   Vary: *
   X-Frame-Options: SAMEORIGIN
+  Content-Security-Policy: object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests
+  Content-Security-Policy-Report-Only: script-src 'self' https:; object-src 'none'; base-uri 'self'
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: geolocation=(), microphone=(), camera=()
@@ -44,3 +46,11 @@
 
 /*.html
   Cache-Control: public, max-age=0, must-revalidate
+
+# Defensive response headers on private staff routes. Authentication stays with existing intern-slot edge function.
+/intern/*
+  Cache-Control: private, no-store, max-age=0
+  X-Robots-Tag: noindex, nofollow, noarchive
+  X-Frame-Options: DENY
+  Referrer-Policy: no-referrer
+  Content-Security-Policy: object-src 'none'; base-uri 'self'; frame-ancestors 'none'; upgrade-insecure-requests
