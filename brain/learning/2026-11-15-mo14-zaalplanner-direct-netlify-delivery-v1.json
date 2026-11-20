@@ -139,6 +139,28 @@
         "no automatic Google Drive/cloud sync; backup is downloaded locally",
         "separate GH source PR #5875 remains open, not merged"
       ]
+    },
+    "mobile_app_same_origin_security": {
+      "verified_at": "2026-11-20",
+      "site": "https://pw-mo14-1.netlify.app/",
+      "release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44807759998",
+      "netlify_deploy_id": "6b00a782dc82e221d8ea0597",
+      "provider_state": "CURRENT_READY",
+      "scope": [
+        "/",
+        "/zaalplanner/",
+        "/veldplanner/"
+      ],
+      "initial_gap": "Legacy root homepage sharing the PWA browser origin lacked CSP, X-Frame-Options and nosniff and still referenced legacy remote webhook routes.",
+      "corrective_action": "Preserve exact original legacy HTML/JS bytes; add path-specific Netlify root CSP disallowing remote browser fetch, inline injection and framing; retain existing hash-based strict PWA CSP, without Make.",
+      "independent_browser_checks": [
+        "All three public pages HTTP 200 with Content-Security-Policy and X-Content-Type-Options nosniff",
+        "Root CSP script-src self, script-src-attr none, connect-src self, frame-ancestors none, X-Robots-Tag noindex",
+        "Inline script injection on root blocked with securitypolicyviolation script-src-elem and no execution",
+        "PWA player-name HTML injection rendered as escaped text, no injected <img> node, no script execution",
+        "Source homepage unchanged and GitHub direct Netlify protected workflow success"
+      ],
+      "caveat": "Previously exposed legacy provider webhook URL may be callable by external HTTP clients until revoked at provider; browser CSP does not revoke remote endpoints."
     }
   },
   "root_cause": "MO14 planner source was added to the business-system repository without its exact delivery-lane ownership, metadata and required one-loop learning artifacts; the independent Netlify site still requires its own authorized deploy and provider readback.",
@@ -158,7 +180,10 @@
     "Separate forecast versus confirmed actual minutes, validate both field and goalie totals (5× and 1× game length) before committing.",
     "Incorporate confirmed game minutes into subsequent game optimization and never infer real play from an unexecuted rotation plan.",
     "Validate portable JSON backups before any overwrite; reject malformed or oversized files, require explicit user confirmation.",
-    "Test release failure modes: unresolved JS identifiers and expired scoped provider tokens must fail closed before marking production green."
+    "Test release failure modes: unresolved JS identifiers and expired scoped provider tokens must fail closed before marking production green.",
+    "Treat all pages on a shared origin as one security boundary; enforce CSP on legacy root as well as modern PWA routes.",
+    "Never rely on CSP to revoke a historical public webhook endpoint; provider-level revocation is required.",
+    "Record provider deploy and independent HTTP header/functionality readback; no partial success from GitHub source tests alone."
   ],
   "tests": [
     "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs",
