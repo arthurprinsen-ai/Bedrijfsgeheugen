@@ -1,3 +1,4 @@
+# PW MO14-1 canonical one-app v10: old /veldplanner/ bookmarks redirect to #field, same PWA app.
 # PW MO14-1 unified app v10: zaal and veld in one PWA, retained strict CSP, independent live assets readback, no Make.
 # MO14 security hardening: hash-based CSP + provider HTTP readback before declaring live.
 # PW MO14-1 Veldplanner: distinct 11-a-side field mode (Jackie GK, Coco-Mijn attack), preserve zaal and homepage; no Make.
@@ -188,10 +189,12 @@ jobs:
           cmp -s .mo14-backup/index.html /tmp/mo14-home.html || { echo 'Original homepage not preserved' >&2; exit 1; }
           curl -fLsS --retry 3 --max-time 25 "${MO14_DOMAIN}/veldplanner/?sha=${GITHUB_SHA}" -o /tmp/mo14-veld-new.html
           cmp -s pw-mo14-1/veldplanner/index.html /tmp/mo14-veld-new.html || { echo "Incorrect field planner published" >&2; exit 1; }
-          grep -q 'Jackie' /tmp/mo14-veld-new.html
-          grep -q 'Coco-Mijn' /tmp/mo14-veld-new.html
-          grep -q 'const LINEUPS=' /tmp/mo14-veld-new.html
-          grep -q 'id="printAll"' /tmp/mo14-veld-new.html
+          grep -q 'window.location.replace' /tmp/mo14-veld-new.html
+          grep -q 'https://pw-mo14-1.netlify.app/zaalplanner/#field' /tmp/mo14-veld-new.html
+          grep -q 'const LINEUPS=' /tmp/mo14-field-unified.js
+          grep -q 'Jackie' /tmp/mo14-field-unified.js
+          grep -q 'Coco-Mijn' /tmp/mo14-field-unified.js
+          grep -q 'id="fieldPrint"' /tmp/mo14-new.html
           grep -q 'data-go="field"' /tmp/mo14-new.html
           if grep -q 'href="https://pw-mo14-1.netlify.app/veldplanner/"' /tmp/mo14-new.html; then
             echo "Legacy cross-page navigation found instead of unified mode" >&2
@@ -218,5 +221,5 @@ jobs:
           NODE_CSP
           done
           echo "Unified PW Coach verified at ${MO14_DOMAIN}/zaalplanner/#field (veld mode without navigation)"
-          echo "Fieldhockey planner verified at ${MO14_DOMAIN}/veldplanner/"
+          echo "Legacy /veldplanner/ successfully routes to unified ${MO14_DOMAIN}/zaalplanner/#field"
           echo "MO14 production planner verified at ${MO14_DOMAIN}/zaalplanner/"
