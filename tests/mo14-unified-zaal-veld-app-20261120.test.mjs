@@ -12,9 +12,10 @@ const manifest=JSON.parse(readFileSync(base+'manifest.webmanifest','utf8'));
 const oldField=readFileSync('pw-mo14-1/veldplanner/index.html','utf8');
 
 const data=(source,label,next)=>{
- const a=source.indexOf('const '+label+'='),b=source.indexOf(';\nconst '+next+'=',a);
+ const a=source.indexOf('const '+label+'='),b=source.indexOf('const '+next+'=',a);
  assert.ok(a>=0&&b>a,'missing '+label+' in source');
- return JSON.parse(source.slice(a+('const '+label+'=').length,b));
+ const raw=source.slice(a+('const '+label+'=').length,b).trim().replace(/;\s*$/,'');
+ return JSON.parse(raw);
 };
 const fieldPlayers=data(js,'PLAYERS','LINEUPS');
 const lineups=data(js,'LINEUPS','WINDOWS');
