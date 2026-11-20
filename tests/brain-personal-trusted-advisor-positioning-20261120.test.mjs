@@ -49,9 +49,11 @@ test('commercial offers share existing routes but are never made up as live sale
 
 test('legal and safety references are dated, sourced and prohibit fake sovereignty',()=>{
  const refs=lens.references;
- assert.ok(refs.includes('https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-act-implementation-timeline'));
- assert.ok(refs.includes('https://digital-strategy.ec.europa.eu/en/factpages/data-act-explained'));
- assert.ok(refs.includes('https://genai.owasp.org/llm-top-10/'));
+ const sourceUrls=refs.map(value=>new URL(value));
+ assert.ok(sourceUrls.every(url=>url.protocol==='https:'));
+ assert.ok(sourceUrls.some(url=>url.hostname==='ai-act-service-desk.ec.europa.eu'&&url.pathname==='/en/ai-act/eu-ai-act-implementation-timeline'));
+ assert.ok(sourceUrls.some(url=>url.hostname==='digital-strategy.ec.europa.eu'&&url.pathname==='/en/factpages/data-act-explained'));
+ assert.ok(sourceUrls.some(url=>url.hostname==='genai.owasp.org'&&url.pathname==='/llm-top-10/'));
  assert.ok(skill.includes('2 December 2027'));
  assert.ok(skill.includes('2 August 2028'));
  assert.ok(skill.includes('no universal prescribed employee proficiency level'));
