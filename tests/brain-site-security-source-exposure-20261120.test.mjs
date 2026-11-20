@@ -23,11 +23,12 @@ const protectedPaths=[
  '/node_modules/example/index.js',
  '/make/legacy-workflow.json',
  '/email/internal-template.html',
+ '/netlify.toml','/.gitignore','/.git/config','/.vscode/settings.json','/.devcontainer/devcontainer.json','/.editorconfig','/.bg-prebuilt-manifest.json','/.bg-prebuilt-deploy.json',
  '/package.json', '/package-lock.json', '/npm-shrinkwrap.json',
  '/pnpm-lock.yaml','/yarn.lock','/tsconfig.json','/AGENTS.md','/README.md'
 ];
 const expectedPublic=['/','/data/source-summary.json','/assets/kop.css','/assets/js/portaalslot.js','/portal-v2/','/portaal/demo','/blog/','/downloads/brochure.pdf','/.netlify/functions/public-api'];
-function matches(pattern,path){if(pattern.endsWith('/*'))return path.startsWith(pattern.slice(0,-1));return path===pattern;}
+function matches(pattern,path){if(pattern.endsWith('/*'))return path.startsWith(pattern.slice(0,-1));if(pattern.endsWith('*'))return path.startsWith(pattern.slice(0,-1));return path===pattern;}
 function firstMatch(path){return rules.find(line=>matches(line.split(/\s+/)[0],path));}
 
 test('security P0: all known internal source URLs get a forced 404 before application rewrites',()=>{

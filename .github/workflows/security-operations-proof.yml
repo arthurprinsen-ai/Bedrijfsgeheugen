@@ -56,7 +56,12 @@ jobs:
             /supabase/migrations/20261014124402_scoped_external_reconcile_auth_retry_20261014.sql \
             /scripts/security-operations-proof.mjs \
             /package.json \
-            /config/brain-delivery-system.json; do
+            /config/brain-delivery-system.json \
+            /netlify.toml \
+            /.gitignore \
+            /.git/config \
+            /.bg-prebuilt-manifest.json \
+            /.vscode/settings.json; do
             status="$(curl -sSL --max-time 25 -o /dev/null -w '%{http_code}' "$base$path")"
             if [ "$status" != 404 ]; then
               echo "::error::PRIVATE_SOURCE_EXPOSURE: route returned HTTP $status (must 404)"
