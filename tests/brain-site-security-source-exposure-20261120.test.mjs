@@ -23,6 +23,7 @@ const protectedPaths=[
  '/node_modules/example/index.js',
  '/make/legacy-workflow.json',
  '/email/internal-template.html',
+ '/netlify.toml','/.gitignore','/.git/config','/.vscode/settings.json','/.devcontainer/devcontainer.json','/.editorconfig','/.bg-prebuilt-manifest.json','/.bg-prebuilt-deploy.json',
  '/package.json', '/package-lock.json', '/npm-shrinkwrap.json',
  '/pnpm-lock.yaml','/yarn.lock','/tsconfig.json','/AGENTS.md','/README.md'
 ];
