@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|strict-verified-founder-materializer-exception|20261120-v1",
+  "compiler": {
+    "failure_class": "SOURCE_TRUTH_POLICY_CONFLICT",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-life-only-editorial-producer-20261116.test.mjs",
+      "tests/brain-personal-verified-founder-v2-source-producer-20261120.test.mjs",
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ]
+  },
+  "owner": "original-powerhouse-editorial-agents",
+  "event_date": "2026-11-20",
+  "root_cause": "The historical Nov-16 version of powerhouse_materialize_source_backed_channel_candidates_v2 quarantines every 'business_topic=true' and 'ai_native_builder_story_verified=true' personal candidate and falsely sets personal_truth_verified=false, even if the evidence is a later user-authored 20-Nov verified founder design decision. It contradicts explicit 19/20-Nov founder expertise policy and independent original JS gate. 20-Nov actual first-person candidate 41521982-5e5c-4f6d-9540-6a32912862b6 was reproducibly skipped with PERSONAL_BUSINESS_SOURCE_FORBIDDEN, original content loop 409/RED, content orchestrator NO_PENDING_ARTIFACT.",
+  "prevention_rule": "Original service-role-only v2 producer must preserve genuine user-fact-backed AI-native builder candidates ONLY with all source/truth/provenance/identity/builder/private truth checks, while quarantining all unverified generic founder marketing and preserving the original v1 all-channel source selection. It must not itself authorize, send or mark a LinkedIn post. Source recoveries must retain same recommendation ID and cannot override original editorial, exact-text-review, publisher consent or provider dedupe/readback.",
+  "user_instruction": "Akkoord ga door borg leg vast zet live",
+  "evidence": {
+    "original_sql": "supabase/migrations/20261116110100_personal_linkedin_life_only_producer_v1.sql",
+    "new_sql": "supabase/migrations/20261120143500_personal_verified_founder_source_v2_policy_alignment.sql",
+    "personal_candidate": "41521982-5e5c-4f6d-9540-6a32912862b6",
+    "verified_source_scope": "direct user product design directions of 20 Nov + individually verified GitHub #6063 #6064 #6067; NOT a claim user personally coded",
+    "original_tick_http_request_id": 37168,
+    "original_tick_http_status": 409,
+    "original_editor_http_request_id": 37172,
+    "original_editor_result": "NO_PENDING_ARTIFACT",
+    "review": "NOT_REVIEWED",
+    "provider_post_id": null,
+    "publication_status": "PLANNED",
+    "provider_readback_verified": false,
+    "regression": "tests/brain-personal-verified-founder-v2-source-producer-20261120.test.mjs"
+  },
+  "limitations": [
+    "private truth or AI implementation must not be invented",
+    "no generic founder/AI company content as personal",
+    "human source decision alone is not a completed LinkedIn post",
+    "no second publisher",
+    "pending protected SQL migration merge + exact production DB function readback",
+    "do not auto-create same-story duplicate if original candidate rejected"
+  ],
+  "implementation_state": "CANDIDATE_PROTECTED_MIGRATION_NOT_LIVE_YET"
+}
