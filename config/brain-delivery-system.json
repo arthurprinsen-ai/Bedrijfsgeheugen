@@ -270,6 +270,7 @@
         "tests/approved-blog-",
         "tests/approved-central-blog-",
         "tests/brain-",
+        "tests/brain-security-guardian-continuous-20261120.test.mjs",
         "tests/branch-delivery-",
         "tests/chat-learning-",
         "tests/chat-to-brain-",
