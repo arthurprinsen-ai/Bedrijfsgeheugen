@@ -41,7 +41,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     +'<div class="vs-speech-out"><button type="button" data-vs-read>🔊 Lees bericht voor</button><button type="button" data-vs-stop>Stop voorlezen</button></div><output data-vs-status role="status" aria-live="polite" class="vs-status"></output>'
     +'<section class="vs-center"><div class="vs-center-head"><div><h3>Mijn signaleringen</h3><p>Toetsing bij openen en bij het vernieuwen van geautoriseerde portaaldata. Geen claim van achtergrondmeldingen of e-mails.</p></div><span data-vs-counter>Geen regels</span></div><div data-vs-list class="vs-list"></div></section>'
     +'<form data-vs-action-form class="vs-form" hidden><h3>Actie aanmaken uit signaal</h3><p data-vs-action-context></p><div class="vs-form-grid"><label>Eigenaar<input name="owner" required maxlength="100" placeholder="Naam verantwoordelijke"></label><label>Deadline<input name="due" required type="date"></label></div><div class="vs-item-actions"><button type="submit" class="vs-save">Taak opslaan met bewijs</button><button type="button" data-vs-action-cancel>Annuleren</button></div></form>'
-    +'<form data-vs-form class="vs-form"><h3>Signalering instellen</h3><div class="vs-form-grid"><label>KPI<select name="metric" required></select></label><label>Als de waarde<select name="operator"><option value="below">Onder de grens komt</option><option value="above">Boven de grens komt</option><option value="missing">Ontbreekt</option></select></label><label>Grenswaarde<input name="threshold" inputmode="decimal" type="number" step="any" placeholder="Bijv. 7" required></label><label>Prioriteit<select name="severity"><option value="midden">Midden</option><option value="hoog">Hoog</option><option value="laag">Laag</option></select></label></div><p class="vs-form-hint">Eén grenswaarde is een eigen beleidskeuze, geen automatisch gevalideerde branchebenchmark. Je kunt de regel later uitschakelen.</p><button class="vs-save" type="submit">Signalering veilig opslaan</button></form>';
+    +'<form data-vs-form class="vs-form"><h3>Signalering instellen</h3><div class="vs-form-grid"><label>KPI<select name="metric" required></select></label><label>Als de waarde<select name="operator"><option value="below">Onder de grens komt</option><option value="above">Boven de grens komt</option><option value="missing">Ontbreekt</option></select></label><label>Grenswaarde<input name="threshold" inputmode="decimal" type="number" step="any" placeholder="Bijv. 7" required></label><label>Prioriteit<select name="severity"><option value="midden">Midden</option><option value="hoog">Hoog</option><option value="laag">Laag</option></select></label></div><fieldset class="vs-channel-intent"><legend>Bewaking en meldingen</legend><label><input type="checkbox" name="monitoring"> Vraag doorlopende controle aan via de bestaande Heartbeat</label><label><input type="checkbox" name="email"> Ik wil hiervoor e-mailmeldingen ontvangen (kanaal nog niet als geleverd geverifieerd)</label><label><input type="checkbox" name="push"> Ik wil pushmeldingen ontvangen (kanaal nog niet als geleverd geverifieerd)</label></fieldset><p class="vs-form-hint">Eén grenswaarde is jouw beleidskeuze, geen branchebenchmark. Een aangevraagd kanaal is geen verzendbewijs: alleen de oorspronkelijke provider met toestemming, suppressie en ontvangstcontrole mag verzenden.</p><button class="vs-save" type="submit">Signalering veilig opslaan</button></form>';
   for(const metric of SIGNAL_METRICS){const opt=document.createElement('option');opt.value=metric.id;opt.textContent=metric.label+' ('+metric.unit+')';dialog.querySelector('[name=metric]').append(opt);}
   document.body.append(dialog);
   const output=dialog.querySelector('[data-vs-status]'),input=dialog.querySelector('[data-vs-command]');
@@ -112,6 +112,11 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     if(result.triggered){
       const advice=document.createElement('p');advice.className='vs-advice';advice.textContent='Advies: '+result.advice;card.append(advice);
     }
+    const channels=document.createElement('small');channels.className='vs-evidence';
+    channels.textContent=result.monitoring
+      ?'Doorlopende controle aangevraagd · e-mail '+(result.channels?.email?'aangevraagd':'uit')+' · push '+(result.channels?.push?'aangevraagd':'uit')+' · geen afleverbevestiging'
+      :'Doorlopende controle uit · alleen beoordeling in het portaal';
+    card.append(channels);
     const actions=document.createElement('div');actions.className='vs-item-actions';
     const go=btn(result.actionLabel,'go');go.dataset.page=result.actionPage;
     const toggle=btn(result.enabled?'Pauzeren':'Activeren','toggle');toggle.dataset.rule=result.id;
@@ -239,6 +244,9 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
       mic.textContent='● Luistert…';r.start();
     }catch(error){stopListening();note(output,'De microfoon kon niet starten. Gebruik het tekstveld.',true);}
   });
+  for(const channel of ['email','push'])form.elements[channel].addEventListener('change',()=>{
+    if(form.elements[channel].checked)form.elements.monitoring.checked=true;
+  });
   operator.addEventListener('change',switchFormThreshold);switchFormThreshold();
   form.addEventListener('submit',async event=>{
     event.preventDefault();
@@ -251,7 +259,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
       if(existing.some(x=>x.metricId===metric.id&&x.operator===op&&x.threshold===amount&&x.enabled))
         throw Error('Deze actieve signalering bestaat al.');
       const id=globalThis.crypto?.randomUUID?.()||('rule-'+Date.now()+'-'+Math.random().toString(36).slice(2));
-      const rule=normalizeRule({id,metricId:metric.id,operator:op,threshold:amount,enabled:true,severity:form.elements.severity.value});
+      const rule=normalizeRule({id,metricId:metric.id,operator:op,threshold:amount,enabled:true,severity:form.elements.severity.value,monitoring:form.elements.monitoring.checked,channels:{email:form.elements.email.checked,push:form.elements.push.checked}});
       if(!rule)throw Error('ONGELDIGE_REGEL');
       await commitRules([...existing,rule],id);
     }catch(error){note(output,'Niet bevestigd: '+String(error?.message||error),true);}
