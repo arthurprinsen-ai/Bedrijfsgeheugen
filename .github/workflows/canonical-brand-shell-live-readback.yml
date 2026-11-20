@@ -75,17 +75,13 @@ jobs:
               safe="$(printf '%s\n' "$delta" | node --input-type=module -e '
                 import fs from "node:fs";
                 const paths=fs.readFileSync(0,"utf8").split(/\\r?\\n/).map(x=>x.trim()).filter(Boolean);
-                const prefixes=["docs/","tests/",".github/","brain/learning/"];
-                const exact=new Set([
-                  "brain/contracts/production-readback-v1.json",
-                  "tools/site-shell/contracts.mjs",
-                  "tools/site-shell/test-shell-components.mjs",
-                  "tools/site-shell/live-contract.mjs",
-                  "tools/site-shell/test-live-contract.mjs",
-                  "tools/site-shell/production-supersession.mjs",
-                  "tools/site-shell/standalone-visibility-check.mjs"
-                ]);
-                const ok=paths.every(p=>exact.has(p)||prefixes.some(prefix=>p.startsWith(prefix)));
+                // Canonical Netlify source-of-truth: browser verifiers and skills
+                // are governance, not deployed website/runtime artifacts.
+                // Preserve the exact deployed commit when the delta is governance-only.
+                const {NETLIFY_GOVERNANCE_EXACT:exact,NETLIFY_GOVERNANCE_PREFIXES:prefixes,
+                  NETLIFY_BUILD_RUNTIME_EXACT:buildRuntime}=
+                  await import("./tools/delivery/netlify-deployment-applicability.mjs");
+                const ok=paths.every(p=>!buildRuntime.has(p)&&(exact.has(p)||prefixes.some(prefix=>p.startsWith(prefix))));
                 process.stdout.write(String(ok));
               ')"
               if [ "$safe" = "true" ]; then
