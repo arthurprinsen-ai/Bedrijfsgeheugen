@@ -5,6 +5,22 @@ description: Enforce verified, first-person Arthur content: lived personal momen
 
 # Personal LinkedIn — authentic personal voice + evidenced technology leadership
 
+## 20 November 2026 — CANONICAL MKB/HUMAN FRICTION -> PERSONAL BUILDER (newest binding)
+
+Keep ALL earlier approved personal LinkedIn decisions in their actual precedence, especially the 19 Nov personal founder/life/observation scope, 20 Nov first-person technology leadership and 20 Nov ONE unified AI-native intelligent software design. Never narrow the profile to four separate technologies, only commercial/problem posts, or life-only by accident.
+
+**Source references, no new database:** [MKB Probleemradar](https://app.notion.com/p/3e5da36aac8a8145ab3bd925260276ef), [Voice of Customer](https://app.notion.com/p/3e5da36aac8a8115a86fdb9ae3882115), [Value Proposition Canvas](https://app.notion.com/p/3b1da36aac8a81fba736c4897474902b), [Three channels one story](https://app.notion.com/p/3c0da36aac8a81f589c1f34225dfcaf3), [Personal profile](https://app.notion.com/p/3b9da36aac8a81779e00ffecaa340fd5), and existing `config/powerhouse-problem-library.json` with canonical PH-P IDs. The existing original Supabase `powerhouse_mira_problem_signals_v1` is available as a *public problem-context evidence source only* for the original personal AI builder writer. Use original problem identity; do NOT create a duplicate problem library or separate calendar.
+
+**Coverage over time:** rotate across recurring owner/people frictions (work piling up on one person, repetitive copying, staffing and knowledge loss, chaotic planning, invoice chasing, cash flow surprises, scattered customer information, weak decision ownership, slow reporting, undocumented processes, too much IT/AI hype, customer churn, margin pressure, compliance and continuity risks, growth outpacing the systems) according to *actual matching firsthand builder evidence*. Do NOT cram all frictions into one post. Revisit the old archive to avoid semantic, angle, opening, closing, hero-problem and event-family duplicates. Value proposition claims are hypotheses until independently verified.
+
+**Personal post decision:** (a) choose a real Arthur-authored source-backed build event / architectural choice; (b) find a grounded business/human problem actually relevant to that event in the canonical problem radar/VoC; (c) connect the problem's human consequence to the integrated architecture of **ONE software+AI+BI+data system**; (d) share one candid technical choice, trade-off, uncertainty, lesson or verified change; (e) if useful explain a next design ambition, explicitly not as a current or customer-proven result. In lived-private posts, do NOT force an entrepreneur/business moral. In observational personal posts, do not impersonate first-hand builder or customer experiences; obey the currently deployed original review gate.
+
+**Truth/quality:** an external pain-point signal, model narrative or scenario is NOT first-person proof; no invented meetings, quotes, company names, metrics or provider/customer outcomes. Qualitative signals are not representative statistics. Business CTAs, product/price pitches and company identity copy belong only on the company channel. Unknown outcomes are NOT_MEASURED. Exact original source lineage, independently verified final-text hash, provider/member authority, semantic dedupe, unique post-URN/readback and Heartbeat remain mandatory.
+
+**Runtime bridge:** the existing content orchestrator used to mention `entrepreneur_problem_sources` but did not populate that model field. Its conditional, read-only builder-mode projection now selects recent eligible public problem signals, caps and deduplicates topics, explicitly labels them as context-not-author-evidence and preserves the sole original publisher. This is a release candidate until CI, protected merge and original production readback verify it.
+
+
+
 ## 20 november 2026, 11:15 — SAME SYSTEM, NOT FOUR DISCIPLINES (newer explicit user correction)
 
 **Primary founder positioning:** I build **AI-native Intelligent Business Software**: software, AI, BI and data are conceived, architected and improved as **one intelligent system** with a shared business context, rather than four stand-alone capabilities connected in a linear chain. Automation is a native part of this unified product, not a bolt-on workflow tool. BI is the live feedback/interpretation within the operating software, not merely a dashboard after the fact.

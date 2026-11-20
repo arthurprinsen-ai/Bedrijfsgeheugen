@@ -140,3 +140,27 @@ test('20 November integrated software + AI + BI + data founder positioning is no
  assert.equal(identity.unifiedSystemEditorialContract.forbidsLinearFourSeparateToolsFraming,true);
  assert.equal(identity.unifiedSystemEditorialContract.claimsRequireSourceProof,true);
 });
+
+test('20 November personal AI builder uses original external entrepreneur problem evidence ONLY as context',()=>{
+ const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ const skill=readFileSync('.agents/skills/personal-linkedin-life-only/SKILL.md','utf8');
+ const channels=JSON.parse(readFileSync('config/powerhouse-source-backed-channel-contract-v1.json','utf8'));
+ assert.ok(gen.includes("if(personalBuilder){"),'external source read is restricted to genuine builder mode');
+ assert.ok(gen.includes(".from('powerhouse_mira_problem_signals_v1')"),'reuse existing original problem source, no parallel table');
+ assert.ok(gen.includes(".eq('eligible',true)")&&gen.includes("seenTopics=new Set"),'eligible and deduplicated source filtering');
+ assert.ok(gen.includes("personalEntrepreneurProblemSources.length>=12"),'bounded optional evidence');
+ assert.ok(gen.includes("proof_of_arthur_experience:false"),'external source is not author proof');
+ assert.ok(gen.includes("entrepreneur_problem_sources:personalBuilder?personalEntrepreneurProblemSources:null"),'model actually receives sources; not just a prompt referencing missing input');
+ assert.ok(gen.includes("entrepreneur_problem_context_status:personalBuilder?"),'missing external sources remain visibly empty');
+ assert.ok(gen.includes("als LEESBARE externe inspiratie"),'strict editorial boundaries');
+ assert.ok(gen.includes("zonder geforceerde link")||gen.includes("maak geen geforceerde link"),'no irrelevant friction insertion');
+ assert.ok(skill.includes("MKB Probleemradar")&&skill.includes("Voice of Customer"));
+ assert.ok(skill.includes("no new database")||skill.includes("no new database".toUpperCase())||skill.includes("no new database".toLowerCase())||skill.includes("no new database"),'canonical source registry declared');
+ const policy=channels.channels.linkedin_personal.personal_builder_context_intake;
+ assert.equal(policy.require_one_integrated_software_ai_bi_data_architecture,true);
+ assert.equal(policy.no_parallel_producer_publisher_or_problem_catalog,true);
+ assert.equal(policy.no_forced_business_bridge_to_private_life,true);
+ assert.equal(policy.independent_provider_post_readback,true);
+ assert.equal(policy.source_event_truth,'public signals never verify a personal Arthur experience');
+ assert.equal(channels.channels.linkedin_company.source_classes.includes('mkb_problem_radar'),true);
+});
