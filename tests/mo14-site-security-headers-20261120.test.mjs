@@ -12,7 +12,7 @@ test('each public coach route receives an exact-script-hash CSP without unsafe-i
   assert.ok(headers.includes("script-src 'self' "+hashes.join(' ')));
  }
  assert.equal((headers.match(/Content-Security-Policy:/g)||[]).length,2);
- assert.doesNotMatch(headers,/script-src\s+[^\n]*'unsafe-inline'/);
+ assert.doesNotMatch(headers,/script-src\s+[^;\n]*'unsafe-inline'/);
  assert.doesNotMatch(headers,/script-src\s+[^\n]*'unsafe-eval'/);
  assert.match(headers,/frame-ancestors 'none'/);
  assert.match(headers,/X-Frame-Options: DENY/);
