@@ -56,7 +56,7 @@
       "requiresPersonalLifeTopicUnlessBuilder": true,
       "requiresVerifiedBuilderPolicy": "personal-linkedin-ai-native-builder-v1",
       "requiresVerifiedFirstPersonBuildEvent": true,
-      "personalEditorialPositioning": "ai-technology-leader-data-bi-software-intelligent-automation-20261120",
+      "personalEditorialPositioning": "ai-native-intelligent-business-software-unified-software-ai-bi-data-20261120",
       "expertTopicWeights": {
         "real_building": 30,
         "repetitive_process_automation": 20,
@@ -68,7 +68,23 @@
       "blockedUnverifiedBusinessContent": true,
       "blocksCompanyPageCopy": true,
       "requiresPersonalLifeOnlyVerifiedUnlessBuilder": true,
-      "builderFirstPersonClaimMode": "builder_event_and_author_anchor_verified"
+      "builderFirstPersonClaimMode": "builder_event_and_author_anchor_verified",
+      "unifiedSystemEditorialContract": {
+        "model": "one_integrated_intelligent_business_software",
+        "capabilities": [
+          "software_engineering",
+          "business_data",
+          "business_intelligence",
+          "ai_reasoning",
+          "safe_automation",
+          "closed_loop_measurement"
+        ],
+        "requiresSharedBusinessContextNarrative": true,
+        "requiresVerifiedBuildOrExplicitlyLabelledVision": true,
+        "forbidsLinearFourSeparateToolsFraming": true,
+        "claimsRequireSourceProof": true,
+        "companyPageSeparationPreserved": true
+      }
     },
     "linkedin_company": {
       "channelId": "6a70381699afb44349f0fb36",
