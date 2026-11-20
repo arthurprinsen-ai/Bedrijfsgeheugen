@@ -56,7 +56,7 @@ function blogReaderReadyViolations(artifact:any):string[]{
 }
 
 const PERSONAL_STEERING_STORY='In een geverifieerd persoonlijk bouwverhaal staat een herkenbaar probleem of frictie van mensen en ondernemers centraal. Software, AI, BI en data zijn één geïntegreerd intelligent systeem en geen vier losstaande tools. Externe ondernemersinzichten zijn inspiratie, nooit bewijs dat ik het zelf meemaakte. Mijn echte ontwerpkeuze, twijfel of les maakt het persoonlijk; onderscheid visie, bouwstatus en bewezen effect. Geen reclame, jargon of ongevraagde salespitch.';
-const OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT="Je bent eindredacteur van een strikt observerende, niet-zakelijke LinkedIn-post in natuurlijk Nederlands. Lever uitsluitend hetzelfde JSON-artifact. Schrijf 150 tot 175 woorden in vier korte alinea's. Gebruik uitsluitend de feiten uit verified_personal_source en source_text; beschrijf een herkenbaar alledaags voorval, de oorzaak en het concrete gevolg, zonder te doen alsof Arthur het zelf heeft meegemaakt. Geen ik/mijn/mij/me, geen eigen ervaringen, geen ondernemerschap, bedrijf, klant, Bedrijfsgeheugen, consultancy, zakelijke moraal, strategie, omzet, verkoop of oproep tot actie. Geen interne technische systemen of ongecontroleerde cijfers. Gebruik een alledaags kernwoord uit de bron letterlijk, zoals onlinebestelling of klantenservice wanneer die woorden daadwerkelijk in source_text staan; geen willekeurige dagelijkse situatie toevoegen. Verzin niets; als de bron onvoldoende is, blijft publicatie afgekeurd. De vorige afgekeurde tekst is uitsluitend negatieve context. Controleer voordat je afrondt of de tekst geen zakelijke signalen bevat.";
+const OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT="Je bent eindredacteur van een strikt observerende, niet-zakelijke LinkedIn-post in natuurlijk Nederlands. Lever uitsluitend hetzelfde JSON-artifact. Schrijf in een natuurlijke lengte en alinea-indeling die bij dit ene brongebonden voorval past, zonder verplichte eindvraag. Gebruik uitsluitend de feiten uit verified_personal_source en source_text; beschrijf een herkenbaar alledaags voorval, de oorzaak en het concrete gevolg, zonder te doen alsof Arthur het zelf heeft meegemaakt. Geen ik/mijn/mij/me, geen eigen ervaringen, geen ondernemerschap, bedrijf, klant, Bedrijfsgeheugen, consultancy, zakelijke moraal, strategie, omzet, verkoop of oproep tot actie. Geen interne technische systemen of ongecontroleerde cijfers. Gebruik een alledaags kernwoord uit de bron letterlijk, zoals onlinebestelling of klantenservice wanneer die woorden daadwerkelijk in source_text staan; geen willekeurige dagelijkse situatie toevoegen. Verzin niets; als de bron onvoldoende is, blijft publicatie afgekeurd. De vorige afgekeurde tekst is uitsluitend negatieve context. Controleer voordat je afrondt of de tekst geen zakelijke signalen bevat.";
 const PERSONAL_LIFE_CORRECTION_PROMPT="Je bent eindredacteur van Arthurs persoonlijke LinkedIn-verhaal. Lever hetzelfde JSON-artifact. Volg alleen het geverifieerde eerstehands persoonlijke voorval in verified_personal_source, zonder nieuwe feiten, privégegevens, emoties, dialogen of uitkomsten te bedenken. Geef een natuurlijk Nederlands verhaal zonder vaste lengte, alinea-aantal, grap, dramatische wending, les of slotvraag. Snijd overbodige zinnen weg. Schrijf nooit over bedrijven, klanten, AI, Bedrijfsgeheugen of verkoop. Zie recent_personal_post_patterns uitsluitend als negatieve stijlvoorbeelden: herhaal de openingsstructuur, afsluiting of template niet, gebruik hun feiten NOOIT als bewijs. Geen links, hashtags, emoji of engagementbait. Als er geen geldig nieuw feit is, laat de bestaande bron- en publicatiegate afkeuren.";
 
 function compactLinkedInCommentary(value:string,maxLength=2800):string{
@@ -1080,16 +1080,16 @@ Deno.serve(async (req) => {
           : personalSource?.evidence?.ai_native_builder_story_verified===true
             ? ('Je bent eindredacteur voor een authentieke Nederlandstalige LinkedIn-post van een ondernemer. '
           + 'Antwoord uitsluitend via het verplichte JSON-artifact met exact dezelfde velden. Schrijf de body '
-          + 'met 150 tot 175 normale Nederlandse woorden, precies vier natuurlijke alinea’s. '
+          + 'in een natuurlijke lengte en alinea-indeling passend bij de eigen, geverifieerde gebeurtenis. '
           + 'De eerste 140 tekens bevatten een herkenbaar, feitelijk ondernemersprobleem. '
           + 'Gebruik IK of MIJN binnen de eerste 260 tekens, vertel één eigen, controleerbaar bouwmoment '
           + 'uit verified_personal_source, daarna oorzaak, zakelijk gevolg en menselijke les. '
           + 'Alleen feiten uit de geverifieerde bron; verzin nooit klanten, acties, geldbedragen, successen of emoties. '
           + 'Gebruik geen internestatuscijfers, technische architectuurtermen, opsommingen, kopjes, links, emoji of sales-CTA. '
-          + 'Eindig met exact één oprechte open vraag met vraagteken. '
+          + 'Eindig natuurlijk met een echte pointe, technische afweging of les; vraag alleen iets specifieks wanneer die vraag inhoudelijk oprecht en nuttig is, maar verplicht nooit een slotvraag of vaste formule. '
           + 'De vorige afgekeurde tekst is alleen foutcontext, geen feitelijke bron. '
           + 'Bij onvoldoende geverifieerde nieuwe feiten: verzin niets; de bestaande redactiecontrole wijst dan af. '
-          + 'Controleer de woordtelling voor afronden.')
+          + 'Controleer de waarheid, leesbaarheid, variatie en inhoudelijke gesprekswaarde, zonder vast woordquotum.')
             : PERSONAL_LIFE_CORRECTION_PROMPT;
         const revisionInput={
           channel:'linkedin_personal',
