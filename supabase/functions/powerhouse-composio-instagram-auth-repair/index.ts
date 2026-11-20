@@ -1,3 +1,6 @@
+// INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+// Failures belong to the existing canonical Security Operations incident and learning lineage;
+// never log credentials, provider configuration, access tokens or stack details.
 // SECURITY: server-only authorization must precede ALL provider and database access.
 // This recovery inspector was formerly guarded by a static literal in the request header.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
