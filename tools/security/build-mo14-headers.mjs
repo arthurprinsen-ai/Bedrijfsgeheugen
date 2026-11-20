@@ -54,6 +54,19 @@ function policy(tokens){
 }
 export function securityHeadersForHtml(routes){
  const blocks=['# Auto-generated. Every script hash is calculated from the exact deployed HTML.'];
+ // Legacy PW root shares a browser origin with the coach. It has only four
+ // same-origin JS files and no inline scripts. Fail closed on old external
+ // webhook transfers; the current coach is entirely local and independent.
+ blocks.push('/');
+ blocks.push("  Content-Security-Policy: default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests");
+ blocks.push('  X-Frame-Options: DENY');
+ blocks.push('  X-Content-Type-Options: nosniff');
+ blocks.push('  Referrer-Policy: no-referrer');
+ blocks.push('  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()');
+ blocks.push('  X-Robots-Tag: noindex, nofollow, noarchive');
+ blocks.push('  Strict-Transport-Security: max-age=31536000');
+ blocks.push('  Cache-Control: no-store, max-age=0');
+ blocks.push('');
  for(const [path,html] of routes){
   const tokens=hashesForInlineScripts(html,path);
   blocks.push('/'+path+'/*');
