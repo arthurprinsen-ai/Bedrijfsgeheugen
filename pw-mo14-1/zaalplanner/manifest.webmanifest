@@ -1,7 +1,7 @@
 {
-  "name": "PW Enschede · MO14-1 Zaalcoach",
-  "short_name": "PW Zaalcoach",
-  "description": "PW Enschede MO14-1 zaal: 12 wedstrijden op 6 speeldagen, twee per datum, keeper, wissels en opstellingsplaten.",
+  "name": "PW Enschede · MO14-1 Coach",
+  "short_name": "PW MO14 Coach",
+  "description": "Eén app voor PW MO14-1: zaalhockey met keeper, wedstrijden en wissels én veldhockey met zes opstellingen en Jackie als keeper.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -36,8 +36,8 @@
       ]
     },
     {
-      "name": "Opstelling",
-      "short_name": "Veld",
+      "name": "Zaalhockey",
+      "short_name": "Zaal",
       "url": "./#plan",
       "icons": [
         {
@@ -47,7 +47,18 @@
       ]
     },
     {
-      "name": "Keeper & selectie",
+      "name": "Veldhockey",
+      "short_name": "Veld",
+      "url": "./#field",
+      "icons": [
+        {
+          "src": "./icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Selectie",
       "short_name": "Team",
       "url": "./#team",
       "icons": [
