@@ -39,5 +39,28 @@
   },
   "credentials_logged": false,
   "duplicate_executor": false,
-  "next_action": "Protected merge PR #6091 after Required and CodeQL; independently verify the ORIGINAL weekly/four-times-daily Security Operations workflow runs the new provider guard, and retain rollback prevention."
+  "next_action": "Protected merge PR #6091 after Required and CodeQL; independently verify the ORIGINAL weekly/four-times-daily Security Operations workflow runs the new provider guard, and retain rollback prevention.",
+  "compiler": {
+    "failure_class": "SECRET_EXPOSURE",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-instagram-repair-server-auth-20261121.test.mjs",
+      "tests/brain-security-instagram-repair-live-probe-20261121.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-instagram-repair-server-auth-20261121.test.mjs",
+      "tests/brain-security-instagram-repair-live-probe-20261121.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-instagram-repair-server-auth-20261121.test.mjs",
+      "tests/brain-security-instagram-repair-live-probe-20261121.test.mjs"
+    ],
+    "live_validation": "Independent deployed Supabase Edge v10 exact-source readback and unauthenticated GET 405 / POST 401 / invalid recovery header 401.",
+    "mode_note": "Historical, shadow and canary run safe fake-fetch or pure guard unit tests; no privileged provider action is performed."
+  }
 }
