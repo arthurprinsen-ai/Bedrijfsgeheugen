@@ -15,6 +15,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-portal-original-heartbeat-signal-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-original-heartbeat-signal-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-original-heartbeat-signal-contract.test.mjs"
     ]
   },
   "evidence": {
