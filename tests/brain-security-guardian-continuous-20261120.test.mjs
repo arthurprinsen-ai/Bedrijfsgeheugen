@@ -110,6 +110,8 @@ test('security agent remains one of 14 originals and only existing workflow owns
  assert.match(workflow,/agent/);
  const client=readFileSync('netlify/functions/security-trust.mjs','utf8');
  assert.match(client,/projectCustomerSecurityTrustResponse/);
- assert.match(client,/platform=|let platform=null/);
- assert.match(client,/SECURITY_HEARTBEAT/);
+ assert.match(client,/resolveIdentityTenant/);
+ assert.match(client,/return json\(admin\?response:projectCustomerSecurityTrustResponse\(response\)\)/);
+ const sql=readFileSync('supabase/migrations/20261007155500_data_ai_security_trust_center_v1.sql','utf8');
+ assert.match(sql,/tenant_id in\s*\(v_tenant\s*,\s*'canonical'\s*\)/i);
 });
