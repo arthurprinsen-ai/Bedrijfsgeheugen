@@ -2,7 +2,7 @@
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
   "date": "2026-11-20",
-  "status": "CODE_CANDIDATE",
+  "status": "LIVE_PROVIDER_PROVEN_PENDING_PROTECTED_SOURCE_MERGE",
   "obligation_id": "security-db-pooler-repair-auth-v1",
   "fingerprint": "supabase|db-pooler-repair-v1|unauthenticated-privileged-maintenance|20261120-v1",
   "owner": "Canonical Powerhouse Security Operations and Supabase backend",
@@ -34,7 +34,24 @@
       "supabase/functions/db-pooler-repair-v1/index.ts",
       "supabase/functions/db-pooler-repair-v1/security.mjs"
     ],
-    "provider_live": "PENDING_DEPLOY",
+    "provider_live": {
+      "status": "LIVE_PROVEN",
+      "project_id": "adhjwmvyoixzjtmiroln",
+      "function": "db-pooler-repair-v1",
+      "version": 7,
+      "provider_status": "ACTIVE",
+      "verify_jwt": false,
+      "source_readback": "index.ts and security.mjs exact functions retrieved; POST auth gate precedes DB URL read and SQL",
+      "external_http_readback": {
+        "get_unauthenticated": 405,
+        "post_unauthenticated": 401,
+        "post_error": "unauthorized",
+        "get_error": "method_not_allowed"
+      },
+      "node_regression": "4/4 source unit tests passed, 0 failed",
+      "execution_limit": "Did not invoke privileged maintenance using live secret; real caller success not tested",
+      "snapshot_at": "2026-11-20 22:45 UTC"
+    },
     "legitimate_caller_post_fix": "NOT_YET_ATTESTED"
   },
   "limitations": [
