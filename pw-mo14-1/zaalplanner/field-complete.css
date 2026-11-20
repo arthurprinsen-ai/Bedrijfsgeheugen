@@ -1,0 +1,48 @@
+/* One PWA, two complete independent sports: PW field workflow */
+.fc-newcard{margin:14px 0 18px;padding:17px;border:1px solid #e8d9df;border-radius:20px;background:#fff;box-shadow:0 5px 22px #59222d0b}
+.fc-newcard h3{color:#562a39;font-size:1.03rem;margin:3px 0 12px}
+.fc-newcard p{line-height:1.5}
+.fc-gamebar{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 10px;color:#583244;font-size:.87rem;font-weight:800}
+.fc-gamebar select{margin-left:6px;max-width:100%;min-height:44px;border:1px solid #ddcdd2;border-radius:10px;padding:7px;background:white;color:#3d2832;font:inherit}
+.fc-quick{display:flex;gap:9px;flex-wrap:wrap;margin:11px 0}
+.fc-action,.fc-board-tools button{display:inline-flex;align-items:center;justify-content:center;min-height:44px;border:1px solid #59222d;border-radius:12px;background:#59222d;color:#fff;padding:10px 13px;font:inherit;font-size:.83rem;font-weight:850;cursor:pointer}
+.fc-action.muted{background:white;color:#59222d}
+.fc-action:focus-visible,.fc-board-tools button:focus-visible,.fc-roster input:focus-visible,.fc-positions select:focus-visible{outline:3px solid #b57b91;outline-offset:2px}
+.fc-note{color:#76626b;font-size:.81rem;line-height:1.6}
+.fc-label{display:block;color:#553c47;font-size:.78rem;font-weight:850;margin:10px 0}
+.fc-label select,.fc-label input,.fc-label textarea{margin:6px 0 0;display:block;width:100%;font:inherit;font-size:16px;border:1px solid #dfcbd2;border-radius:10px;min-height:44px;background:white;padding:9px;color:#302832}
+.fc-roster{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:15px 0}
+.fc-roster label{display:flex;align-items:center;gap:9px;min-width:0;border:1px solid #e8dfe2;padding:10px;border-radius:11px;color:#342932;font-size:.82rem;font-weight:750}
+.fc-roster input{width:18px;height:18px;flex-shrink:0;accent-color:#7b3a4c}
+.fc-roster small{margin-left:auto;color:#725566}
+.fc-positions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:13px 0}
+.fc-positions label{display:grid;gap:5px;min-width:0;color:#694652;font-size:.75rem;font-weight:800}
+.fc-positions select{min-width:0;width:100%;min-height:44px;background:white;border:1px solid #dfcbd2;border-radius:10px;font-size:16px;padding:7px;color:#322731}
+.fc-minute-row{display:grid;grid-template-columns:minmax(88px,1.1fr) minmax(40px,2fr) 70px;align-items:center;gap:10px;border-bottom:1px solid #f0e5e9;padding:9px 0;font-size:.8rem;font-weight:700;color:#573742}
+.fc-minute-row strong{text-align:right;font-variant-numeric:tabular-nums}
+.fc-minute-bar{height:12px;background:#f2e6eb;overflow:hidden;border-radius:20px}
+.fc-minute-bar div{height:100%;background:#92495d;border-radius:20px}
+.fc-actual{display:grid;grid-template-columns:minmax(82px,1.2fr) 75px 75px;align-items:center;gap:7px;border-bottom:1px solid #eee3e7;padding:8px 0;font-size:.78rem;color:#48313d;font-weight:800}
+.fc-actual input{min-width:0;width:100%;font:inherit;font-size:16px;text-align:center;min-height:42px;background:white;border:1px solid #dcd0d4;border-radius:9px;font-variant-numeric:tabular-nums}
+.fc-textarea{min-height:170px;resize:vertical;font-size:16px!important;line-height:1.5}
+#fieldBoard{touch-action:none;cursor:crosshair;background:#e6f4eb;max-width:100%;width:100%;height:auto;border:2px solid #c8dccd;border-radius:14px}
+.fc-board-tools button{background:white;color:#59222d;border-color:#d8bdc9}
+.fc-board-tools button[aria-pressed=true]{background:#59222d;color:white}
+.fc-board-tools label{display:flex;align-items:center;gap:6px;font-size:.78rem;font-weight:800}
+.fc-board-tools input{width:40px;height:40px;border:1px solid #e7d8de;border-radius:9px}
+.fc-setup{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.fc-setup label,.fc-time-grid label{display:grid;gap:4px;font-size:.77rem;font-weight:800;color:#593a46}
+.fc-setup input,.fc-time-grid input{min-width:0;width:100%;min-height:44px;padding:9px;font:inherit;font-size:16px;border:1px solid #dccbd3;border-radius:10px;background:white;color:#382831}
+.fc-time-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}
+.fc-prefs>div{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:11px 0;border-bottom:1px solid #eee3e6;font-size:.8rem}
+.fc-prefs b{min-width:135px;color:#4c2c38}
+.fc-prefs label{display:flex;align-items:center;gap:5px}
+.fc-prefs input{width:17px;height:17px;accent-color:#59222d}
+.fc-menu{display:flex;flex-direction:column;gap:8px}
+.fc-menu .fc-action{width:100%;justify-content:flex-start;text-align:left;background:white;color:#59222d;border-color:#dccbd1}
+#screen-field .fc-newcard{margin-top:6px}
+#screen-field .fc-newcard .fc-quick{margin-bottom:0}
+#fieldPrint .print-page{margin:0}
+@media(max-width:680px){.fc-roster,.fc-positions,.fc-setup{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.fc-time-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:420px){.fc-newcard{padding:13px}.fc-roster{grid-template-columns:minmax(0,1fr)}.fc-positions{gap:8px}.fc-actual{grid-template-columns:minmax(0,1fr) 65px 65px}.fc-time-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{#screen-field-home,#screen-field-team,#screen-field-stats,#screen-field-tactics,#screen-field-export,#screen-field-settings,#screen-field-more{display:none!important}#fieldPrint{display:block!important}}
