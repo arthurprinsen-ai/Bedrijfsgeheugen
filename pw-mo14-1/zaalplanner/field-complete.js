@@ -32,7 +32,7 @@ const buttons=[...planSection.querySelectorAll('[data-field-block]')].map(button
 for(const id of ['fieldPrevious','fieldNext']){const old=q(id),fresh=old.cloneNode(true);old.replaceWith(fresh);}
 let selectedMode=localStorage.getItem('pw_mo14_mode')==='field'?'field':'zaal',tool='pen',color='#59222d',stroke=null,undo=[],notesFixture=null;
 function drawDownload(blob,filename){if(!blob)return;const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);}
-function showPlan(){const m=model(),p=plan();const title='Wedstrijd '+(m.selectedMatch+1)+' · '+(match().opponent||'tegenstander invullen');q('fieldPlanHeader').textContent=title+' · '+(match().date||'datum nog invullen')+' · '+(match().keeper)+' op doel';if(p.error){q('fieldCards').textContent=p.error;q('fieldPrint').textContent='';q('fieldPlanNotice').textContent=p.error;return;}
+function showPlan(){const m=model(),p=plan();const title='Wedstrijd '+(m.selectedMatch+1)+' · '+(match().opponent||'tegenstander invullen');q('fieldPlanHeader').textContent=title+' · '+(match().date||'datum nog invullen')+' · '+(match().keeper)+' op doel';if(p.error){q('fieldCards').textContent=p.error;q('fieldPrint').textContent='';q('fieldPlanNotice').textContent=p.error;q('fieldPng').disabled=true;q('fieldPdf').disabled=true;return;}q('fieldPng').disabled=false;q('fieldPdf').disabled=false;
  m.selectedBlock=Math.min(m.selectedBlock,p.blocks.length-1);const b=p.blocks[m.selectedBlock];
  q('fieldCards').innerHTML=card(b,p);
  q('fieldPrint').innerHTML=p.blocks.map(x=>card(x,p,true)).join('');
