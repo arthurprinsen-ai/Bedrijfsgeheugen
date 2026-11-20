@@ -1,3 +1,4 @@
+# MO14 security hardening: hash-based CSP + provider HTTP readback before declaring live.
 # PW MO14-1 Veldplanner: distinct 11-a-side field mode (Jackie GK, Coco-Mijn attack), preserve zaal and homepage; no Make.
 # MO14 V9: recorded actual field/goal minutes rebaseline future plans, portable backup, independent live readback; no Make.
 # MO14 V8: user-anchored first five, season-minute fairness, tactical whiteboard, no Make.
@@ -38,7 +39,7 @@ jobs:
       - name: Verify planner and independent website source
         run: |
           set -euo pipefail
-          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs
+          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs tests/mo14-site-security-headers-20261120.test.mjs
           test -s pw-mo14-1/zaalplanner/index.html
       - name: Preserve existing MO14 homepage and assets before deploy
         run: |
@@ -56,6 +57,9 @@ jobs:
           test "$(wc -c < .mo14-stage/index.html)" -gt 300
           cp pw-mo14-1/zaalplanner/index.html .mo14-stage/zaalplanner/index.html
           cp pw-mo14-1/veldplanner/index.html .mo14-stage/veldplanner/index.html
+          node tools/security/build-mo14-headers.mjs .mo14-stage
+          test -s .mo14-stage/_headers
+          grep -q "frame-ancestors 'none'" .mo14-stage/_headers
           cp pw-mo14-1/zaalplanner/manifest.webmanifest .mo14-stage/zaalplanner/manifest.webmanifest
           cp pw-mo14-1/zaalplanner/sw.js .mo14-stage/zaalplanner/sw.js
           cp pw-mo14-1/zaalplanner/coach-core.js .mo14-stage/zaalplanner/coach-core.js
@@ -176,5 +180,24 @@ jobs:
           grep -q 'const LINEUPS=' /tmp/mo14-veld-new.html
           grep -q 'id="printAll"' /tmp/mo14-veld-new.html
           grep -q 'href="https://pw-mo14-1.netlify.app/veldplanner/"' /tmp/mo14-new.html
+          # Provider-level verification of the exact-script-hash CSP and response headers.
+          for route in zaalplanner veldplanner; do
+            curl -fLsSI --retry 2 --max-time 25 "${MO14_DOMAIN}/${route}/?sha=${GITHUB_SHA}" -o "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "^content-security-policy: " "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "frame-ancestors 'none'" "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "^x-content-type-options: nosniff" "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "^x-frame-options: DENY" "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "^referrer-policy: no-referrer" "/tmp/mo14-${route}-security-headers.txt"
+            node - "${route}" <<'NODE_CSP'
+          const fs=require('node:fs'),crypto=require('node:crypto');
+          const route=process.argv[2],html=fs.readFileSync('pw-mo14-1/'+route+'/index.html','utf8');
+          const match=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)].filter(x=>!\bsrc\s*=/.test(x[1]));
+          if(match.length!==1)process.exit(1);
+          const hash=crypto.createHash('sha256').update(match[0][2]).digest('base64');
+          const headers=fs.readFileSync('/tmp/mo14-'+route+'-security-headers.txt','utf8');
+          if(!headers.includes("'sha256-"+hash+"'")||/script-src[^\r\n]*'unsafe-inline'/.test(headers))process.exit(2);
+          console.log(route+': strict hash-based CSP and anti-clickjacking headers verified on live response');
+          NODE_CSP
+          done
           echo "Fieldhockey planner verified at ${MO14_DOMAIN}/veldplanner/"
           echo "MO14 production planner verified at ${MO14_DOMAIN}/zaalplanner/"
