@@ -164,3 +164,40 @@ test('20 November personal AI builder uses original external entrepreneur proble
  assert.equal(policy.source_event_truth,'public signals never verify a personal Arthur experience');
  assert.equal(channels.channels.linkedin_company.source_classes.includes('mkb_problem_radar'),true);
 });
+
+
+test('20 November meaningful personal conversation: no forced ending question, rigid length or engagement-bait prompts',()=>{
+ const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ const skill=readFileSync('.agents/skills/personal-linkedin-life-only/SKILL.md','utf8');
+ const policy=JSON.parse(readFileSync('config/powerhouse-source-backed-channel-contract-v1.json','utf8')).channels.linkedin_personal.conversation_quality_20261120;
+ assert.ok(gen.includes('GESPREKSKWALITEIT — echte inhoud, geen engagementtruc'));
+ assert.ok(gen.includes('oprechte specifieke vraag')&&gen.includes('NOOIT standaard aan begin of einde'));
+ assert.ok(!gen.includes('eindig met één oprechte open vraag;'));
+ assert.ok(!gen.includes('blijft 130–200 woorden;'));
+ assert.ok(!gen.includes("Schrijf 150 tot 175 woorden in vier korte alinea's."),'observational repair stays natural');
+ assert.ok(!gen.includes('precies vier natuurlijke alinea’s.'),'builder repair stays natural');
+ assert.ok(!gen.includes('Eindig met exact één oprechte open vraag met vraagteken.'),'builder repair does not reimpose forced question');
+ assert.ok(gen.includes('Controleer de waarheid, leesbaarheid, variatie en inhoudelijke gesprekswaarde'),'repair checks substance rather than word count');
+ assert.ok(gen.includes("if(pending.channel==='linkedin_personal')"),'original editorial applies to all personal modes');
+ assert.ok(skill.includes('Genuine substantive conversations'));
+ assert.equal(policy.mandatory_question_in_every_post,false);
+ assert.equal(policy.mandatory_question_at_end,false);
+ assert.equal(policy.mandatory_word_quota,false);
+ assert.equal(policy.meaningful_standalone_value_without_any_comments,true);
+ assert.equal(policy.measurement.unavailable,'NOT_MEASURED');
+ assert.equal(policy.measurement.one_reversible_variable_at_a_time,true);
+ assert.equal(policy.independent_first_person_proof_unchanged,true);
+});
+
+test('20 November LinkedIn anti-bait guard preserves sincere specific experience questions',()=>{
+ const legitimate='Ik stond langs het veld en zag hoe anders een wedstrijd kan lopen. Welke ervaring heb jij als coach met zulke momenten?';
+ assert.deepEqual(personalFirstPersonCopyViolations(legitimate,e,date),[]);
+ for(const banned of [
+  'Ik stond langs het veld en zag hoe de wedstrijd liep. Typ JA in de reacties.',
+  'Ik stond langs het veld en keek naar de wedstrijd. Reageer met EENS.',
+  'Ik stond langs het veld bij een wedstrijd. Like als je dit ook hebt.',
+  'Ik stond langs het veld bij een wedstrijd. Deel deze post.'
+ ]){
+   assert.ok(personalFirstPersonCopyViolations(banned,e,date).includes('PERSONAL_ENGAGEMENT_BAIT_NOT_ALLOWED'),banned);
+ }
+});

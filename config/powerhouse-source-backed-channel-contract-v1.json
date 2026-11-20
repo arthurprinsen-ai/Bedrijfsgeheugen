@@ -43,6 +43,61 @@
         "no_forced_business_bridge_to_private_life": true,
         "no_parallel_producer_publisher_or_problem_catalog": true,
         "independent_provider_post_readback": true
+      },
+      "conversation_quality_20261120": {
+        "objective": "Genuine substantive discussion from evidence-grounded personal storytelling; comments are earned, never compelled.",
+        "eligible_invitation_mechanisms": [
+          "verified_technical_tradeoff",
+          "verified_learning_or_failure",
+          "recognizable_human_frustration",
+          "relevant_counterexample",
+          "specific_optional_open_question"
+        ],
+        "choose_one_natural_mechanism_when_justified": true,
+        "meaningful_standalone_value_without_any_comments": true,
+        "mandatory_question_in_every_post": false,
+        "mandatory_question_at_end": false,
+        "mandatory_question_opener": false,
+        "mandatory_word_quota": false,
+        "banned": [
+          "keyword_comment_gate",
+          "reaction_vote",
+          "like_share_follow_tag_demands",
+          "generic_wat_vinden_jullie",
+          "inauthentic_controversy",
+          "engagement_pods",
+          "comment_automation"
+        ],
+        "no_forced_business_bridge_for_personal_life": true,
+        "independent_first_person_proof_unchanged": true,
+        "measurement": {
+          "owner": "original ONE BRAIN and Heartbeat",
+          "source": "independently authorized original personal LinkedIn provider metrics only",
+          "comparison": "same personal profile / comparable posts",
+          "primary": "meaningful on-topic comments and real discussion quality",
+          "secondary": [
+            "verified_comments_per_impression_when_available",
+            "responses_and_counterexamples",
+            "profile_visits",
+            "follows",
+            "qualified_inbound_dm"
+          ],
+          "windows_hours": [
+            24,
+            48,
+            72
+          ],
+          "unavailable": "NOT_MEASURED",
+          "one_reversible_variable_at_a_time": true,
+          "no_causal_claim_from_observational_benchmark": true
+        },
+        "evidence_sources": [
+          "https://news.linkedin.com/2026/ImprovingTheFeed",
+          "https://www.linkedin.com/blog/content-recommendations-avoid",
+          "https://metricool.com/linkedin-trends-study/",
+          "https://www.flypost.io/learn/linkedin-algorithm-study-data",
+          "https://app.notion.com/p/3a5da36aac8a813799cee34689c26a10"
+        ]
       }
     },
     "linkedin_company": {

@@ -59,6 +59,11 @@ export function personalFirstPersonCopyViolations(text,evidence={},runDate){
  if(!firstPerson.test(body.slice(0,260)))out.push('PERSONAL_FIRST_PERSON_OPENING_REQUIRED');
  if(evidence?.ai_native_builder_story_verified!==true&&businessTopic.test(body))out.push('PERSONAL_COMPANY_COPY_NOT_ALLOWED');
  if(commercialCta.test(body))out.push('PERSONAL_SALES_CTA_NOT_ALLOWED');
+ // LinkedIn 2026: reject narrow explicit engagement bait while allowing
+ // sincere, source-relevant questions and debate. This applies at the original
+ // independent source/copy and last-mile provider gates, never as a bypass.
+ if(/\b(?:typ|reageer\s+met|comment)\s+['"“”]?(?:JA|NEE|EENS|ONEENS|1|2|3)['"“”]?(?=\s|[.!,?]|$)|\b(?:like\s+als|tag\s+iemand|deel\s+deze\s+post|volg\s+mij\s+voor)\b/iu.test(body))
+   out.push('PERSONAL_ENGAGEMENT_BAIT_NOT_ALLOWED');
  if(/#[\p{L}\p{N}_]+/u.test(body))out.push('PERSONAL_HASHTAGS_NOT_ALLOWED');
  if(/https?:\/\/|www\./iu.test(body))out.push('PERSONAL_PROMOTIONAL_URL_NOT_ALLOWED');
  if(!/\b(?:stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|dacht|dacht ik|maakte|kreeg|zei|had|heb|ben|was|sta|ga|doe|reed|coach|vertelde|zag|bouw|bouwde|bouwen|gebouwd|ontwikkel|ontwikkelde|ontwerp|ontwierp|implementeer|implementeerde|automatiseer|automatiseerde|testte)\b/iu.test(body))
