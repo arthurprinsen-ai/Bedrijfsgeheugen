@@ -4,7 +4,15 @@ import {readFileSync} from 'node:fs';
 
 const headers=readFileSync('_headers','utf8');
 const config=readFileSync('netlify.toml','utf8');
-const globalHeader=headers.split('\n\n').find(part=>part.startsWith('/*\n'));
+function scopedHeaders(path){
+ const lines=headers.split(/\r?\n/);
+ const index=lines.findIndex(line=>line===path);
+ if(index===-1)return undefined;
+ const block=[lines[index]];
+ for(let i=index+1;i<lines.length&&/^ {2}\S/.test(lines[i]);i++)block.push(lines[i]);
+ return block.join('\n');
+}
+const globalHeader=scopedHeaders('/*');
 const globalToml=config.match(/\[\[headers\]\]\s+for = "\/\*"\s+\[headers\.values\]([\s\S]*?)(?=\n\[\[headers\]\]|$)/)?.[1];
 const enforce="object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests";
 const report="script-src 'self' https:; object-src 'none'; base-uri 'self'";
@@ -18,7 +26,7 @@ test('global Bedrijfsgeheugen CSP is a conservative enforced boundary, consisten
  assert.match(globalToml,/X-Frame-Options = "SAMEORIGIN"/);
 });
 test('protected internal staff paths cannot be cached or framed by a third-party',()=>{
- const internal=headers.split('\n\n').find(part=>part.startsWith('/intern/*\n'));
+ const internal=scopedHeaders('/intern/*');
  assert.ok(internal,'internal-specific headers missing');
  for(const term of ["Cache-Control: private, no-store","X-Robots-Tag: noindex","X-Frame-Options: DENY","frame-ancestors 'none'","Referrer-Policy: no-referrer"])assert.ok(internal.includes(term),term);
  assert.match(config,/\[\[edge_functions\]\][\s\S]*function = "intern-slot"[\s\S]*path = "\/intern\/\*"/);
