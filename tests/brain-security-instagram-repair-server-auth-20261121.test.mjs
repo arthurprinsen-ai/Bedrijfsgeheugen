@@ -30,7 +30,7 @@ test('runtime guard occurs before any service-role DB or Composio API access, an
  const provider=index.indexOf('fetch("https://backend.composio.dev');
  assert.ok(guard>0&&credentials>guard&&provider>credentials);
  assert.match(index,/req.method!=="POST"/);
- assert.match(index,/status:401/);
+ assert.match(index,/error:"UNAUTHORIZED"},401/);
  assert.match(index,/auth_config_count/);
  assert.doesNotMatch(index,/req.headers.get\(['"]x-repair-key['"]\)/);
  assert.doesNotMatch(index,/auth_config_details:details/);
