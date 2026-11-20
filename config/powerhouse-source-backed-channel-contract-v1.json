@@ -98,6 +98,115 @@
           "https://www.flypost.io/learn/linkedin-algorithm-study-data",
           "https://app.notion.com/p/3a5da36aac8a813799cee34689c26a10"
         ]
+      },
+      "trusted_advisor_positioning_20261120": {
+        "status": "USER_AUTHORIZED_EDITORIAL_AND_SERVICE_DESIGN; NO_UNVERIFIED_DELIVERY_OR_CLIENT_IMPACT",
+        "statement_nl": "Ik help ondernemers en teams complexe bedrijfsfricties terugbrengen tot eenvoudige, robuuste en toekomstbestendige manieren van werken: technologie, software, AI, BI en data als één intelligent, veilig en menselijk beheersbaar systeem.",
+        "distinctive_promise": "First simplify the work; then connect its data, applications, intelligence and decisions. Deliver observable outcomes and clear ownership instead of another tool dependency.",
+        "principles": [
+          "Trusted advisor: onafhankelijke analyse, ook adviseren NIET te automatiseren wanneer risico of businesscase dat vraagt",
+          "Company Graph -> Context -> Intelligence -> Agents -> Actions -> Outcomes -> Learning: ONE integrated software/AI/BI/data operating model",
+          "Agentic AI is bounded execution with task-specific least-privilege tools, approvals, exception handling, human override, monitoring, audit evidence, idempotent retries and rollback; never a promise of autonomy without controls",
+          "Simple portal UX: Wat speelt er? Wat gebeurt er? Wat werkt aantoonbaar?; begrijpelijke taal and clear next action for busy owner",
+          "Person-independent and technology-portable: named plus backup process owners, documented decisions, open contracts/APIs, export, adapter isolation, model routing and substitution",
+          "Robust now and scalable later: reliability SLO, tests, fallback, observability, durable handovers, costs and service ownership",
+          "Responsible AI by design: AI/system register, intended purpose and AI Act role/risk assessment, GDPR/DPIA as relevant, transfer map, retention, access, vendor/subprocessor inventory, incident and evidence trails",
+          "Data sovereignty is demonstrated control over location, legal access, processing, portability and exits; EU hosting by itself is NOT sovereign or GDPR compliant",
+          "Train humans from AI fundamentals to advanced agentic implementation and adoption, with working examples, safe data and measurable skill transfer",
+          "Innovations are shipped, verified in real destinations and independently assessed; a demo, PR or plan is not a client outcome"
+        ],
+        "editorial_rules": {
+          "rotation": "One relevant personally evidenced decision, dilemma, surprise, challenge or learning per post; rotate angles and format, no catalog dump or repetitive trusted-advisor tagline",
+          "voice": "Arthur first-person practitioner and strategic adviser with grounded humility; explain why one tradeoff matters to a real entrepreneur; make technical sophistication understandable without condescension",
+          "guard": "Do not convert public MKB friction or imagined workshop/training experience into personal firsthand claims; no fake customer names, role details, metrics, client outcomes, qualifications or certifications",
+          "content_vs_offer": "Personal profile: observations, decisions, dilemmas and lessons; company page, site and portal: specific offerings, capability limits and valid CTA; never simply duplicate copy",
+          "meaningful_discussion": "Offer a genuine alternative/constraint/counterexample worth discussing; no generic closing question, bait, forced controversy or hard sell",
+          "claim_status": "Differentiate personally verified prior experience, currently verifiable Powerhouse feature, architectural target, proposed future service and user-confirmed intent"
+        },
+        "themes": [
+          {
+            "id": "advisor-simplicity",
+            "situation": "A busy owner wants fewer decisions and fewer dashboards",
+            "tradeoff": "what to automate vs leave with owner",
+            "service_context": "independent_advisory"
+          },
+          {
+            "id": "agentic-reliability",
+            "situation": "Autonomous process stops silently after API error",
+            "tradeoff": "bounded retry and human approval vs unchecked agent",
+            "service_context": "agentic_automation"
+          },
+          {
+            "id": "portal-understandability",
+            "situation": "Many systems produce views but no simple next step",
+            "tradeoff": "three clear states vs complex admin interface",
+            "service_context": "simple_portal"
+          },
+          {
+            "id": "person-independence",
+            "situation": "Key knowledge exists only in a person's head",
+            "tradeoff": "documentation+ownership vs personal heroics",
+            "service_context": "business_continuity"
+          },
+          {
+            "id": "tech-portability",
+            "situation": "AI provider/model change breaks business workflow",
+            "tradeoff": "portable data/contracts vs convenience of lock-in",
+            "service_context": "future_proof_architecture"
+          },
+          {
+            "id": "application-integration",
+            "situation": "AFAS/Exact/M365 data duplicated between systems",
+            "tradeoff": "scoped connector and controlled writes vs open-ended automation",
+            "service_context": "application_connectivity"
+          },
+          {
+            "id": "ai-training-basics",
+            "situation": "Employees use AI without shared practical boundaries",
+            "tradeoff": "useful literacy with own workflows vs generic prompt tricks",
+            "service_context": "ai_literacy_training"
+          },
+          {
+            "id": "agentic-advanced",
+            "situation": "A pilot demo is confused with an enterprise agent",
+            "tradeoff": "sandbox and simulation vs allowed real-world authority",
+            "service_context": "advanced_agentic_training"
+          },
+          {
+            "id": "ai-transformation",
+            "situation": "Endless pilot backlog and no process owner",
+            "tradeoff": "one measured use case vs oversized transformation programme",
+            "service_context": "transformation_delivery"
+          },
+          {
+            "id": "eu-ai-act",
+            "situation": "MKB firm cannot say which AI systems it uses",
+            "tradeoff": "proportionate AI inventory/risk vs generic legal-fear campaign",
+            "service_context": "responsible_ai"
+          },
+          {
+            "id": "data-sovereignty",
+            "situation": "A system runs in EU cloud but access/subprocessor/export unclear",
+            "tradeoff": "data control/evidence/exit vs region marketing",
+            "service_context": "data_governance"
+          },
+          {
+            "id": "innovation-scale",
+            "situation": "One-off clever automation becomes fragile in growth",
+            "tradeoff": "tests, observability and recovery before expanding",
+            "service_context": "engineering_excellence"
+          }
+        ],
+        "references": [
+          "https://app.notion.com/p/3b1da36aac8a81fba736c4897474902b",
+          "https://app.notion.com/p/3e5da36aac8a8145ab3bd925260276ef",
+          "https://app.notion.com/p/41cda36aac8a8128ac53ca4b7470c359",
+          "https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-act-implementation-timeline",
+          "https://digital-strategy.ec.europa.eu/en/policies/ai-talent-skills-and-literacy",
+          "https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/rules-international-data-transfers_en",
+          "https://digital-strategy.ec.europa.eu/en/factpages/data-act-explained",
+          "https://genai.owasp.org/llm-top-10/"
+        ]
       }
     },
     "linkedin_company": {
@@ -123,7 +232,46 @@
         "meetings",
         "orders",
         "revenue"
-      ]
+      ],
+      "advisory_and_services_20261120": {
+        "status": "OFFER_DESIGN_CANDIDATE_NOT_ALL_LIVE",
+        "connection": "Use the existing AI & Governance, AI-adoption, Workshops, portal and Koppelingen routes; do not create duplicate offer pages or advertise missing features as available",
+        "proposed_tracks": [
+          {
+            "id": "trusted-advisor",
+            "name": "Slimmer Bedrijf / Frisse Blik",
+            "output": "independent problem and technology scan, baseline, 90-day prioritised roadmap, risk/owner decisions"
+          },
+          {
+            "id": "ai-basics",
+            "name": "AI Basis & veilig werken",
+            "output": "literacy from basic to usable prompts, safe data, error spotting, role-appropriate practice"
+          },
+          {
+            "id": "ai-workflow",
+            "name": "AI Praktijk & procesautomatisering",
+            "output": "workflows, connectors, prompt/evaluation practice, human approvals"
+          },
+          {
+            "id": "ai-advanced-agentic",
+            "name": "Advanced AI & Agentic Engineering",
+            "output": "tool calling, RAG vs direct integration, permissions, evals, fallback, observability, red teaming"
+          },
+          {
+            "id": "ai-transformation",
+            "name": "AI-transformatie & innovatie realiseren",
+            "output": "prioritised use cases, build/rollout, user adoption, source-to-outcome evidence, repeatable operating model"
+          },
+          {
+            "id": "ai-governance",
+            "name": "AI Act, AVG & datasoevereiniteit",
+            "output": "AI inventory, provider/deployer responsibility, risk classification, transfer/data map, control and exit plans; no legal guarantee"
+          }
+        ],
+        "price_policy": "No invented prices or discounts. Link existing approved commercial pages only after destination and delivery verified.",
+        "conversion_path": "problem hypothesis -> Frisse Blik -> measurable business case -> permitted pilot -> production + training -> independent outcome + continuity through existing portal",
+        "claim_policy": "Do not claim fully autonomous portal, GDPR/AI-Act certified, EU-sovereign by location alone, or regulator-approved."
+      }
     },
     "blog": {
       "source_classes": [

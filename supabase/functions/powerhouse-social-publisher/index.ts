@@ -1,5 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations,personalLastMilePublicationViolations} from '../_shared/personal-first-person-story-gate.mjs';
+import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations,personalLastMilePublicationViolations,personalFounderDecisionSourceScopeViolations,isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact} from '../_shared/personal-first-person-story-gate.mjs';
 import {canRecoverExpiredCompanyClaim,canRecoverExpiredPersonalClaim} from '../_shared/social-publish-claim-recovery.mjs';
 import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
@@ -484,6 +484,13 @@ async function publishLinkedInPersonalViaComposio(db:any,art:any,approval:any){
   // This cannot be bypassed by a stale PASS, prior capability or accepted news.
   const commentary=clean(art.body);
   const exactFinalHash=await digest(commentary);
+  // Ensure THIS original publisher deployment carries the latest source-bound founder
+  // guard. The older production bundle preceded the protected reviewer update.
+  // A successful reviewer or consumed capability never permits unsupported
+  // first-person customer/team claims; veto before any provider POST.
+  const unverifiedFounderClaims=personalFounderDecisionSourceScopeViolations(commentary,approval?.evidence||{});
+  if(unverifiedFounderClaims.length)
+    throw new Error('PERSONAL_FOUNDER_SOURCE_SCOPE_LAST_MILE_VETO:'+unverifiedFounderClaims.join(','));
   const lastMileViolations=personalLastMilePublicationViolations({
     text:commentary,evidence:approval?.evidence,runDate:approval?.runDate,
     review:approval?.review,expectedTextHash:approval?.expectedTextHash,
@@ -1520,6 +1527,10 @@ Deno.serve(async (req) => {
     if(row.channel==='linkedin_personal') {
       const editorialEvidence=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{};
       const violations=personalEditorialViolations(art.body,editorialEvidence);
+      // Redeploy original sender with the exact user-approved giveaway gate;
+      // missing, wrong or additional link is rejected before provider create.
+      if(isVerifiedPersonalMagazineGift(editorialEvidence)&&!magazineGiftLinkIsExact(art.body,editorialEvidence))
+        violations.push({code:'PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED',message:'Exacte gratis magazine-URL ontbreekt of wijkt af.'});
       const ownStoryViolations=personalFirstPersonCopyViolations(art.body,editorialEvidence,runDate);
       const currentPersonalSource=await verifyCurrentPersonalStorySource(db,row,art,runDate);
       if(!currentPersonalSource.ok)ownStoryViolations.push(currentPersonalSource.code,...(currentPersonalSource.violations||[]));
