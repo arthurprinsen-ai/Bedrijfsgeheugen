@@ -373,9 +373,9 @@ async function observePortalSignals(){
       if(lock?.[0]?.held!==true)return {state:"ALREADY_CHECKED_BY_PEER",planned:0,keys:[],coverageTruncated:false};
       const rows=await tx.unsafe(
         "select tenant_id,layer,payload,source_updated_at,updated_at from public.portal_state_layers "+
-        "where layer in ('legacy-migration','canonical-brain') and ("+
-        "jsonb_typeof(payload#>'{data,portal,signalering,rules}')='array' or "+
-        "jsonb_typeof(payload#>'{portal,signalering,rules}')='array') "+
+        "where layer in ('legacy-migration','canonical-brain') "+
+        // Include revocations (including empty rules and missing portal data):
+        // excluding them would resurrect consent from older tenant layers.
         "order by updated_at desc limit 201"
       );
       const observations=await planOriginalHeartbeatObservations(rows.slice(0,200));
