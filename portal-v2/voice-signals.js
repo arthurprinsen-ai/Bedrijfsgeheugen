@@ -37,7 +37,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   dialog.innerHTML='<div class="vs-head"><div><small>BEDRIJFSGEHEUGEN · STUREN OP UITZONDERINGEN</small><h2>Spraak & signaleringen</h2></div><button type="button" data-vs-close aria-label="Sluiten">×</button></div>'
     +'<p class="vs-intro">Navigeer, stel vragen en stel signaleringen in met je stem of toetsenbord. Alleen ingelogde, werkelijk ingevoerde klantdata telt als meetbewijs.</p>'
     +'<section class="vs-voice"><h3>Wat wil je doen?</h3><div class="vs-voice-row"><input data-vs-command maxlength="500" aria-label="Spraakopdracht of getypte opdracht" placeholder="Bijv. open omzet, of waarschuw me als verzuim boven 7"><button type="button" data-vs-run>Uitvoeren</button><button type="button" data-vs-mic aria-label="Microfoon starten">🎙 Spreek</button></div><p class="vs-examples">Zeg bijvoorbeeld: “open bedrijfsgezondheid”, “wat moet ik vandaag doen?”, “toon signaleringen” of “waarschuw me als omzet onder 50 duizend”.</p><p class="vs-privacy">De microfoon luistert alleen na jouw klik. De browser kan spraak extern verwerken; de audio wordt niet door dit portaal opgeslagen. Bij onvoldoende browserondersteuning kun je typen.</p></section>'
-    +'<output data-vs-status role="status" aria-live="polite" class="vs-status"></output>'
+    +'<div class="vs-speech-out"><button type="button" data-vs-read>🔊 Lees bericht voor</button><button type="button" data-vs-stop>Stop voorlezen</button></div><output data-vs-status role="status" aria-live="polite" class="vs-status"></output>'
     +'<section class="vs-center"><div class="vs-center-head"><div><h3>Mijn signaleringen</h3><p>Toetsing bij openen en bij het vernieuwen van geautoriseerde portaaldata. Geen claim van achtergrondmeldingen of e-mails.</p></div><span data-vs-counter>Geen regels</span></div><div data-vs-list class="vs-list"></div></section>'
     +'<form data-vs-form class="vs-form"><h3>Signalering instellen</h3><div class="vs-form-grid"><label>KPI<select name="metric" required></select></label><label>Als de waarde<select name="operator"><option value="below">Onder de grens komt</option><option value="above">Boven de grens komt</option><option value="missing">Ontbreekt</option></select></label><label>Grenswaarde<input name="threshold" inputmode="decimal" type="number" step="any" placeholder="Bijv. 7" required></label><label>Prioriteit<select name="severity"><option value="midden">Midden</option><option value="hoog">Hoog</option><option value="laag">Laag</option></select></label></div><p class="vs-form-hint">Eén grenswaarde is een eigen beleidskeuze, geen automatisch gevalideerde branchebenchmark. Je kunt de regel later uitschakelen.</p><button class="vs-save" type="submit">Signalering veilig opslaan</button></form>';
   for(const metric of SIGNAL_METRICS){const opt=document.createElement('option');opt.value=metric.id;opt.textContent=metric.label+' ('+metric.unit+')';dialog.querySelector('[name=metric]').append(opt);}
@@ -47,6 +47,12 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   const mic=dialog.querySelector('[data-vs-mic]'),counter=dialog.querySelector('[data-vs-counter]');
   const threshold=form.elements.threshold,operator=form.elements.operator;
   let recognizer=null,busy=false,principal='',lastPortalField=null;
+  function stopSpeaking(){try{globalThis.speechSynthesis?.cancel?.();}catch{}}
+  function speak(text){
+    const t=String(text||'').trim();const Synth=globalThis.SpeechSynthesisUtterance;
+    if(!t||!Synth||!globalThis.speechSynthesis){note(output,'Voorlezen is in deze browser niet beschikbaar.',true);return;}
+    stopSpeaking();const item=new Synth(t.slice(0,1200));item.lang='nl-NL';item.rate=1;globalThis.speechSynthesis.speak(item);
+  }
   const rememberField=event=>{const field=event.target;if(!dialog.contains(field)&&/^(INPUT|TEXTAREA)$/.test(field?.tagName||'')&&!['password','hidden','file'].includes(field.type))lastPortalField=field;};
   document.addEventListener('focusin',rememberField);
   function authenticated(){
@@ -136,6 +142,12 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
       note(output,'Voorstel ingevuld. Controleer de grens en kies “Signalering veilig opslaan”.');
       return;
     }
+    if(/^lees (?:mijn |de )?(?:signaleringen|afwijkingen|meldingen)(?: voor)?$/.test(n)){
+      const snap=authenticated();if(!snap){note(output,'Log eerst in om je bedrijfsgegevens te laten voorlezen.',true);return;}
+      const signals=evaluateSignals(stateRules(snap.state),safe(snap.state),{authenticated:true});
+      const summary=signals.length?signals.map(x=>x.metric.label+': '+x.status+'. '+x.explanation+(x.triggered?' Advies: '+x.advice:'')).join(' '):'Er zijn nog geen signaleringen ingesteld.';
+      speak(summary);note(output,'Signaaloverzicht wordt voorgelezen.');return;
+    }
     if(/(?:signaal|afwijking|waarschuwing|melding)/.test(n)&&/^(?:toon|open|welke|bekijk|laat)/.test(n)){
       reveal();note(output,'Hier zie je je ingestelde regels, bewijs, advies en mogelijke vervolgstappen.');return;
     }
@@ -169,7 +181,9 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   voiceButton.addEventListener('click',()=>{reveal();input.focus();});
   alertsButton.addEventListener('click',reveal);
   dialog.querySelector('[data-vs-close]').addEventListener('click',()=>dialog.close());
-  dialog.addEventListener('close',stopListening);
+  dialog.addEventListener('close',()=>{stopListening();stopSpeaking();});
+  dialog.querySelector('[data-vs-read]').addEventListener('click',()=>speak(output.textContent));
+  dialog.querySelector('[data-vs-stop]').addEventListener('click',stopSpeaking);
   dialog.querySelector('[data-vs-run]').addEventListener('click',()=>{void runCommand(input.value);});
   input.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();void runCommand(input.value);}});
   mic.addEventListener('click',()=>{
@@ -218,12 +232,12 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   });
   const unsubscribe=stateClient.subscribe(snap=>{
     const next=String((['authenticated','empty'].includes(snap.mode)&&!stateClient.isDemo?.()?snap.user?.id:'')||'');
-    if(next!==principal){principal=next;stopListening();note(output,'');if(dialog.open)dialog.close();}
+    if(next!==principal){principal=next;stopListening();stopSpeaking();note(output,'');if(dialog.open)dialog.close();}
     render();
   });
   const boundary=()=>{stopListening();if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
   document.addEventListener('bg:portal-identity-boundary',boundary);
   const refreshed=()=>render();document.addEventListener('bg:portal-server-refreshed',refreshed);
   render();
-  return {render,runCommand,destroy(){unsubscribe?.();stopListening();document.removeEventListener('bg:portal-identity-boundary',boundary);document.removeEventListener('bg:portal-server-refreshed',refreshed);document.removeEventListener('focusin',rememberField);holder.remove();dialog.remove();}};
+  return {render,runCommand,destroy(){unsubscribe?.();stopListening();stopSpeaking();document.removeEventListener('bg:portal-identity-boundary',boundary);document.removeEventListener('bg:portal-server-refreshed',refreshed);document.removeEventListener('focusin',rememberField);holder.remove();dialog.remove();}};
 }
