@@ -5,6 +5,16 @@ description: Enforce verified, first-person Arthur content: lived personal momen
 
 # Personal LinkedIn — authentic personal voice + evidenced technology leadership
 
+## 20 november 2026, 11:15 — SAME SYSTEM, NOT FOUR DISCIPLINES (newer explicit user correction)
+
+**Primary founder positioning:** I build **AI-native Intelligent Business Software**: software, AI, BI and data are conceived, architected and improved as **one intelligent system** with a shared business context, rather than four stand-alone capabilities connected in a linear chain. Automation is a native part of this unified product, not a bolt-on workflow tool. BI is the live feedback/interpretation within the operating software, not merely a dashboard after the fact.
+
+For each genuinely source-backed personal builder story, prefer one verified architectural decision, interaction or trade-off showing why the unified combination adds more value than isolated software, AI, BI or data. Describe closed feedback between understanding the company, detecting change, reasoned decisions, permitted actions, effect measurement and learning. A hypothetical illustration must be visibly labelled as a design example, never a deployed customer outcome. Preserve all original personal source, confidentiality, final-text review, identity, uniqueness and provider verification gates. No forced architecture jargon, fixed templates or repetitive diagrams.
+
+**Do not** write “software does X, then data does Y, then BI does Z, then AI is added”. Do not assert the whole system is live/closed-loop proven based on individual repository commits, PRs, schedules or plans. This supersedes earlier editorial framing as an inventory or sequence of separate technologies without changing old historical records.
+
+
+
 ## 20 november 2026 — ACTUEEL BINDEND contract (supersedes life-only / 15 November exclusion for verified builders)
 
 Goal: position Arthur as AI Technology Leader at the intersection of AI, BI/data intelligence, software engineering and intelligent automation, based on actual work and accountable engineering decisions. This user instruction explicitly changes the prior *personal life only* preference. Keep personal/company identity separation: personal author thought leadership is not company marketing.
