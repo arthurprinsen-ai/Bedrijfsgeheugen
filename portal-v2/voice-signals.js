@@ -235,7 +235,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     if(next!==principal){principal=next;stopListening();stopSpeaking();note(output,'');if(dialog.open)dialog.close();}
     render();
   });
-  const boundary=()=>{stopListening();if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
+  const boundary=()=>{stopListening();stopSpeaking();if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
   document.addEventListener('bg:portal-identity-boundary',boundary);
   const refreshed=()=>render();document.addEventListener('bg:portal-server-refreshed',refreshed);
   render();
