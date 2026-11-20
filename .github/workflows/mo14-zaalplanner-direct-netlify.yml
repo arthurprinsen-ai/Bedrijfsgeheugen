@@ -188,15 +188,16 @@ jobs:
             grep -iq "^x-content-type-options: nosniff" "/tmp/mo14-${route}-security-headers.txt"
             grep -iq "^x-frame-options: DENY" "/tmp/mo14-${route}-security-headers.txt"
             grep -iq "^referrer-policy: no-referrer" "/tmp/mo14-${route}-security-headers.txt"
-            node - "${route}" <<'NODE_CSP'
-          const fs=require('node:fs'),crypto=require('node:crypto');
-          const route=process.argv[2],html=fs.readFileSync('pw-mo14-1/'+route+'/index.html','utf8');
-          const match=[...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi)].filter(x=>!\bsrc\s*=/.test(x[1]));
-          if(match.length!==1)process.exit(1);
-          const hash=crypto.createHash('sha256').update(match[0][2]).digest('base64');
-          const headers=fs.readFileSync('/tmp/mo14-'+route+'-security-headers.txt','utf8');
-          if(!headers.includes("'sha256-"+hash+"'")||/script-src[^;\r\n]*'unsafe-inline'/.test(headers))process.exit(2);
-          console.log(route+': strict hash-based CSP and anti-clickjacking headers verified on live response');
+            node --input-type=module - "${route}" <<'NODE_CSP'
+          import {readFileSync} from 'node:fs';
+          import {hashesForInlineScripts} from './tools/security/build-mo14-headers.mjs';
+          const route=process.argv[2];
+          const expected=hashesForInlineScripts(readFileSync('pw-mo14-1/'+route+'/index.html','utf8'),route)[0];
+          const headers=readFileSync('/tmp/mo14-'+route+'-security-headers.txt','utf8');
+          const csp=headers.split(/\r?\n/).find(line=>/^content-security-policy:/i.test(line))||'';
+          const scripts=csp.match(/(?:^|;\s*)script-src\s+([^;]+)/)?.[1]||'';
+          if(!scripts.includes(expected)||scripts.includes("'unsafe-inline'")||scripts.includes("'unsafe-eval'"))process.exit(2);
+          console.log(route+': strict SHA-256 script CSP and security response headers verified');
           NODE_CSP
           done
           echo "Fieldhockey planner verified at ${MO14_DOMAIN}/veldplanner/"
