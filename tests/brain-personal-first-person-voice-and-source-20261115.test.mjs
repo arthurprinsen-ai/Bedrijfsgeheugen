@@ -118,3 +118,10 @@ test('20 Nov owner exception: genuine first-person technology leadership may des
  assert.ok(personalFirstPersonCopyViolations(copy+' Boek nu een afspraak.',b,'2026-11-20').includes('PERSONAL_SALES_CTA_NOT_ALLOWED'));
  assert.ok(personalFirstPersonSourceViolations({...b,source_lineage:['powerhouse_content_artifacts:unverified']},'2026-11-20').includes('PERSONAL_GENERATED_OR_PUBLIC_ARTICLE_SOURCE_FORBIDDEN'));
 });
+
+test('20 Nov builder editorial prompt cannot be overwritten by life-only assignment',()=>{
+ const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ assert.match(gen,/if\(pending\.channel==='linkedin_personal' && !personalBuilder\)/);
+ assert.match(gen,/P0 EXPERT-BOUWER/);
+ assert.match(gen,/AI, data intelligence, BI, software engineering en slimme automatisering/);
+});
