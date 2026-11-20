@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|genuine-conversation-quality|20261120-v1",
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ]
+  },
+  "owner": "original-powerhouse-editorial-agents",
+  "event_date": "2026-11-20",
+  "root_cause": "The original personal content orchestrator contradicted explicit 19-20 November no-forced-question editorial rules by requiring every personal post to end with an open question and imposing a fixed 130–200-word quota. That template undermines natural, source-grounded discussion. No current authorized personal LinkedIn comment/impression metric baseline was demonstrated; older personal metric snapshots were from September 2026.",
+  "prevention_rule": "Treat substantive human/professional discussion as a byproduct of one truthful personal story/technical choice, not an obligatory question or engagement prompt. Provide one natural, grounded discussion mechanism (tradeoff, relevant practitioner counterexample, honest learning, human friction, or optional specific question). Reject clear 'typ JA/reageer met EENS', like/share/tag/follow bait in original personal copy and last-mile gates without banning sincere specific questions. Preserve all independent source, review, SHA, provider, identity and privacy gates. Only label performance PROVEN from real individual member metrics in original provider+Heartbeat lineage.",
+  "user_instruction": "Moeten zorgen wel dat de Posts iets oproept om te reageren wat werkt en niet werkt zoek dat op leg dat vast en gebruikt dat",
+  "design_contract": {
+    "standalone_value": true,
+    "at_most_one_natural_mechanism": true,
+    "mandatory_closing_question": false,
+    "mandatory_word_quota": false,
+    "spam_bait_gate": true,
+    "first_person_experience_required": true,
+    "one_integrated_software_ai_bi_data": true,
+    "no_parallel_executor": true,
+    "own_measured_comments_or_NOT_MEASURED": true
+  },
+  "evidence": {
+    "research_urls": [
+      "https://news.linkedin.com/2026/ImprovingTheFeed",
+      "https://www.linkedin.com/blog/content-recommendations-avoid",
+      "https://metricool.com/linkedin-trends-study/",
+      "https://www.flypost.io/learn/linkedin-algorithm-study-data"
+    ],
+    "original_notion_playbook": "https://app.notion.com/p/3a5da36aac8a813799cee34689c26a10",
+    "original_personal_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+    "regression_tests": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ],
+    "source_state": "protected_delivery_candidate_not_yet_product_readback"
+  },
+  "limitations": [
+    "Metricool question/comment observation is not causal",
+    "Flypost reaction comparisons are not the same outcome as comments",
+    "public research cannot substitute for this author's own provider data",
+    "no verified contemporary personal member metrics were available",
+    "never claim personal published post until provider URN/readback"
+  ],
+  "implementation_state": "candidate_requires_required_codeql_merge_and_edge_function_source_readback"
+}
