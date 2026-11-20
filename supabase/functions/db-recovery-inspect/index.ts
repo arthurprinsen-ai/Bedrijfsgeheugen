@@ -1,3 +1,6 @@
+// INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+// Security incidents and failed recovery operations must remain in the existing
+// canonical Brain/Powerhouse incident lineage; never disclose credentials in logs.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import postgres from "npm:postgres@3.4.7";
