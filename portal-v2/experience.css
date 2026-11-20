@@ -107,3 +107,5 @@ dialog,.portal-popover,.sheet{border-radius:18px;box-shadow:0 28px 90px rgba(7,1
 .vs-form-grid label{font-size:12px;font-weight:750;display:grid;gap:5px}
 .vs-save{margin-top:14px}
 @media(max-width:740px){.vs-trigger button{font-size:11px;padding:8px}.vs-dialog{width:97vw;max-height:92vh;border-radius:17px}.vs-head{padding:17px}.vs-intro{padding:0 16px}.vs-voice,.vs-center,.vs-form{margin:13px 12px;padding:13px}.vs-status{margin:7px 16px}.vs-form-grid{grid-template-columns:1fr}.vs-center-head{display:block}.vs-center-head>span{display:inline-block;margin:0 0 9px}}
+
+.vs-speech-out{display:flex;gap:8px;flex-wrap:wrap;margin:0 24px}.vs-speech-out button{min-height:44px;border:1px solid #b4cddd;background:#fff;border-radius:10px;padding:9px 12px;font:750 12px system-ui;color:#125b85;cursor:pointer}@media(max-width:740px){.vs-speech-out{margin:0 12px}}
