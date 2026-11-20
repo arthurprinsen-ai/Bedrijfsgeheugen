@@ -25,3 +25,6 @@ The underlying metrics have only partial real reactions. Exact comments and impr
 - https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6067
 - https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6068
 - https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2
+
+## CI preflight gate repair — 20 Nov 2026
+Exact-head Required #44748661697 failed original Supabase migration-history integrity: provider has 888 applied identities, source lock had 886. The two newer provider-applied migrations are 20261120134537 (hockey minor private-data RLS hardening) and 20261120143500 (original personal verified-founder materializer). Security hardening SQL source was absent from GitHub main, but the original Supabase applied migration log contains the exact statement. Source is restored byte-for-byte from that provider SQL log; original source lock is append-only for those **two** provider identities with its 886-row prefix unchanged. This PR does NOT re-run the SQL or relax any privacy/security rights. Recheck original Required + CodeQL and exact provider migration source parity before merge. Unrelated security migration is included only to restore original applied-source completeness, not alter its logic.
