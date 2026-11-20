@@ -3,7 +3,7 @@
 'use strict';
 const E=window.PWFieldEngine;if(!E)throw Error('Veldhockey-engine ontbreekt');
 const POS=E.POS,people=E.players(),q=id=>document.getElementById(id);
-const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;':'&quot;','"':'&quot;'}[c]||'&#39;')).replace(/'/g,'&#39;');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const OPTIONS=people.map(n=>'<option value="'+esc(n)+'">'+esc(n)+'</option>').join('');
 const prefix='field-';
 const MAP={home:'field-home',plan:'field',team:'field-team',stats:'field-stats',tactics:'field-tactics',more:'field-more',export:'field-export',settings:'field-settings'};
