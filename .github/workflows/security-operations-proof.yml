@@ -16,7 +16,7 @@ on:
       - 'tools/security/site-guardian.mjs'
       - 'tools/security/security-guardian-incidents.mjs'
       - 'config/security-managed-sites.json'
-      - 'tests/security-guardian-continuous.test.mjs'
+      - 'tests/brain-security-guardian-continuous-20261120.test.mjs'
       - 'netlify/functions/_security-guardian-oidc.mjs'
       - 'netlify/functions/security-guardian-ingest.mjs'
       - 'portal-v2/modules/security-trust-workspace.js'
@@ -54,7 +54,7 @@ jobs:
       - name: Contract tests
         run: node --test tests/security-operations-proof.test.mjs tests/brain-site-security-source-exposure-20261120.test.mjs
       - name: Verify continuous guardian and authenticated heartbeat ingestion
-        run: node --test tests/security-guardian-continuous.test.mjs
+        run: node --test tests/brain-security-guardian-continuous-20261120.test.mjs
       - name: HTTP browser defense regression tests
         run: node --test tests/brain-security-csp-web-boundary-20261120.test.mjs tests/brain-security-live-headers-monitor-20261120.test.mjs
       - name: Structural fail-closed validation
@@ -107,7 +107,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify authentic security monitor, OIDC and fail-closed portal contracts
-        run: node --test tests/security-guardian-continuous.test.mjs
+        run: node --test tests/brain-security-guardian-continuous-20261120.test.mjs
       - name: Probe all registered sites read-only with bounded retries
         id: probe
         run: node tools/security/site-guardian.mjs --output "$RUNNER_TEMP/security-guardian-report.json"
