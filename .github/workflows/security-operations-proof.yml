@@ -1,13 +1,6 @@
 name: Security Operations Proof
 
 on:
-  pull_request:
-    paths:
-      - '_redirects'
-      - '_headers'
-      - 'netlify.toml'
-      - 'tests/brain-site-security-source-exposure-20261120.test.mjs'
-      - '.github/workflows/security-operations-proof.yml'
   push:
     branches: [main]
     paths:
