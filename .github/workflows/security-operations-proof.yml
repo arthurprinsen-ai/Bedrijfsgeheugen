@@ -15,6 +15,8 @@ on:
       - 'tests/brain-site-security-source-exposure-20261120.test.mjs'
       - 'tests/brain-security-live-headers-monitor-20261120.test.mjs'
       - 'tools/security/verify-public-security-headers.mjs'
+      - 'tests/brain-security-instagram-repair-server-auth-20261121.test.mjs'
+      - 'supabase/functions/powerhouse-composio-instagram-auth-repair/**'
       - 'tests/brain-security-live-guard-contract-20261120.test.mjs'
   schedule:
     - cron: '17 5 * * 1'
@@ -46,6 +48,8 @@ jobs:
           node-version: '22'
       - name: Contract tests
         run: node --test tests/security-operations-proof.test.mjs tests/brain-site-security-source-exposure-20261120.test.mjs tests/brain-security-live-guard-contract-20261120.test.mjs
+      - name: Guard Instagram recovery inspector against static-token bypass
+        run: node --test tests/brain-security-instagram-repair-server-auth-20261121.test.mjs
       - name: HTTP browser defense regression tests
         run: node --test tests/brain-security-csp-web-boundary-20261120.test.mjs tests/brain-security-live-headers-monitor-20261120.test.mjs
       - name: Structural fail-closed validation
