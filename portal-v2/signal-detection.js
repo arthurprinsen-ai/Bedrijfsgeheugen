@@ -65,3 +65,24 @@ export function evaluateSignals(rules,state,{authenticated=false,demo=false}={})
     });
   }));
 }
+
+/** Prepare an owned follow-up task; the V2 canonical writer performs persistence.
+ * The source is a user-configured rule, not an automatically validated outcome.
+ */
+export function buildSignalTask(signal,{owner,due}={}){
+  const rule=normalizeRule(signal);
+  const metric=rule&&metricById(rule.metricId);
+  const assignee=String(owner||'').trim();
+  const date=String(due||'').trim();
+  if(!metric||!signal?.triggered)throw new Error('SIGNAL_NOT_TRIGGERED');
+  if(!assignee||assignee.length>100)throw new Error('SIGNAL_ACTION_OWNER_REQUIRED');
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)||new Date(date+'T00:00:00Z').toISOString().slice(0,10)!==date)throw new Error('SIGNAL_ACTION_DUE_DATE_REQUIRED');
+  return Object.freeze({
+    id:'portal-signal-'+rule.id,title:'Onderzoek signaal: '+metric.label,
+    department:'Bedrijfssturing',owner:assignee,due:date,status:'Open',
+    description:String(signal.explanation||'')+'\nAanbevolen: '+String(signal.advice||''),
+    signalRuleId:rule.id,
+    evidence:{kind:'PORTAL_USER_DEFINED_THRESHOLD',sourcePath:metric.path,checkedAt:signal.evidence?.checkedAt||null,sourceFreshness:'unknown'},
+    createdAt:new Date().toISOString()
+  });
+}
