@@ -1,0 +1,68 @@
+{
+  "fingerprint": "security|original-agent|multi-site-periodic-guardian-trust-evidence|20261120-v1",
+  "obligation_id": "security-guardian-continuous-20261120",
+  "owner": "existing agent-security, original Powerhouse Security Operations, Engineering, ONE BRAIN and Heartbeat",
+  "compiler": {
+    "failure_class": "SECURITY_MONITOR_FRESHNESS_INCIDENT_AND_HANDOFF_GAP",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/security-guardian-continuous.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/security-guardian-continuous.test.mjs"
+    ],
+    "shadow": [
+      "tests/security-guardian-continuous.test.mjs"
+    ],
+    "live_validation": "Only after protected PR merge, Netlify CURRENT/READY, actual GitHub main-branch OIDC POST readback and portal authenticated customer observation",
+    "mode_note": "Branch CI and simulated-signed OIDC are not production proof; missed tick >45 min is UNKNOWN."
+  },
+  "root_cause": "Original security owner had weekly public-site checks; no current all-managed-site inventory, signed minute-resolution heartbeat, automatic fail-closed customer status, or bounded incident-to-Engineering handoff.",
+  "source_evidence": {
+    "netlify_project_count": 16,
+    "route_count": 17,
+    "source_negative_probes": 4,
+    "original_security_workflow": ".github/workflows/security-operations-proof.yml",
+    "original_agent": "agent-security",
+    "portal": "portal-v2/?page=trust-center",
+    "supabase": "adhjwmvyoixzjtmiroln",
+    "security_advisor": {
+      "rls_no_policy_info": 188,
+      "anon_security_definer_warn": 1,
+      "intentional_external_rpc_token_check": true
+    },
+    "known_public_repo": true
+  },
+  "correction": {
+    "single_original_workflow": "7,22,37,52 * * * *",
+    "monitor": "tools/security/site-guardian.mjs",
+    "signed_ingestion": "netlify/functions/security-guardian-ingest.mjs",
+    "authentication": "GitHub Actions OIDC RS256 pinned issuer/audience/repo/workflow/ref",
+    "incidents": "tools/security/security-guardian-incidents.mjs",
+    "portal": "Existing tenant-authenticated Trust Center with per-minute 45-min-expiring guardian status",
+    "human_approval": "Protected Required/CodeQL and risky changes keep mandatory approval"
+  },
+  "prevention": [
+    "No new agents or duplicate runners; use existing owner and incidents.",
+    "A stale heartbeat or unverified source coverage never produces green.",
+    "Read-only bounded requests; no arbitrary URLs, SSRF or intrusive scans.",
+    "No public technical findings or exploit secrets; use generic fingerprinted tickets.",
+    "A review label/issue is a request, not an executed Engineering or Heartbeat receipt.",
+    "Never revoke known external cron RPC grants without tested server-only replacement."
+  ],
+  "tests": [
+    "tests/security-guardian-continuous.test.mjs"
+  ],
+  "status": "PR_CANDIDATE_NOT_LIVE",
+  "next_action": "Protected Required + CodeQL review and merge, Netlify provider deploy/readback, exact main-branch GitHub OIDC consumer receipt, customer visible status; no green before evidence.",
+  "independent_live_proven": false,
+  "no_new_agent": true,
+  "no_new_scheduler": true,
+  "sensitive_egress": "No vulnerability details, customer data or secrets in public GitHub issues or commit artifacts."
+}
