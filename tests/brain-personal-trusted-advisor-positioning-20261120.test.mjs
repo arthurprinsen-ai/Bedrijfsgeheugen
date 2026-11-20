@@ -81,7 +81,7 @@ test('new positioning DOES NOT transform founder vision into first-hand customer
   source_lineage:['current-chat:user-fact:2026-11-20:source-backed-architecture'],
   sensitive_private_detail:false
  };
- const safe='Ik kies ervoor om AI, BI, data en software als één systeem te ontwerpen. Ik wil dat het simpel blijft en dat een ondernemer beslissingen kan controleren; die klantresultaten zijn nog niet bewezen.';
+ const safe='Ik heb vandaag mijn ontwerpkeuze uitgesproken: AI, BI, data en software horen voor mij in één systeem. Ik wil dat het simpel blijft en dat een ondernemer beslissingen kan controleren; klantresultaten zijn nog niet bewezen.';
  assert.deepEqual(personalFounderDecisionSourceScopeViolations(safe,e),[]);
  assert.deepEqual(personalFirstPersonCopyViolations(safe,e,'2026-11-20'),[]);
  const invented='Ik zag bij een klant dat losse teams dashboards bouwden. Het resultaat was veel snellere inzichten dankzij mijn transformatie.';
