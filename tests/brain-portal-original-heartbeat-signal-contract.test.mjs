@@ -68,7 +68,7 @@ test('existing 5-minute runner owns the only observation and fails closed on del
     assert.ok(runner.includes(fragment),fragment);
   }
   assert.equal(runner.split('Deno.serve(async(req:Request)=>{').length,2);
-  assert.match(runner,/const placeholders=outcome\\.keys\\.map/);
+  assert.ok(runner.includes('const placeholders=outcome.keys.map('));
   assert.ok(runner.includes('portal_signal_observation:portalSignalObservation'));
   assert.match(runner,/x-bg-service-token/);
   assert.doesNotMatch(runner,/cron\.schedule\(/);
