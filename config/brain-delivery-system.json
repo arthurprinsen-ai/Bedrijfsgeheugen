@@ -490,6 +490,7 @@
         "tests/ai-model-",
         "tests/approved-blog-",
         "tests/approved-central-blog-",
+        "tests/brain-site-security-source-exposure-20261120.test.mjs",
         "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs",
         "tests/branche-applicaties-integraties.test.mjs",
         "tests/cms-",
