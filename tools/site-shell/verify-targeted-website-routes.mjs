@@ -95,6 +95,19 @@ export async function waitForRenderedBody(page,{timeout=10_000}={}){
   },undefined,{timeout});
 }
 
+/** Verify an actual mounted Portal V2 shell, not its HTML, loading text, or the watchdog's error panel. */
+export async function waitForPortalAppBoot(page,{timeout=25_000}={}){
+  if(!Number.isSafeInteger(timeout)||timeout<5_000||timeout>30_000)
+    throw new RangeError('PORTAL_BOOT_READBACK_TIMEOUT_INVALID');
+  return page.waitForFunction(() => {
+    const html=document.documentElement;
+    return html?.dataset?.bgPortalAppBoot==='ready'
+      && html?.dataset?.bgPortalBootState!=='failed'
+      && !html.classList.contains('v2-hydrating')
+      && !document.getElementById('portalStartupFailure');
+  },undefined,{timeout});
+}
+
 async function observeRouteAttempt(browser, baseUrl, route, viewport) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
@@ -113,7 +126,30 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
     const target = `${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`;
     const response = await navigateWithRetry(page, target);
     await page.locator('body').waitFor({ state:'attached', timeout:10_000 });
-    await waitForRenderedBody(page,{timeout:10_000});
+    try {
+      if((route==='/portal-v2/'||route==='/portal-v2'))
+        await waitForPortalAppBoot(page,{timeout:25_000});
+      await waitForRenderedBody(page,{timeout:10_000});
+    } catch(error) {
+      if((route==='/portal-v2/'||route==='/portal-v2')){
+        const boot=await page.evaluate(()=>({
+          hydrating:document.documentElement.classList.contains('v2-hydrating'),
+          appMounted:document.documentElement.dataset.bgPortalAppBoot==='ready',
+          recoveryShown:document.documentElement.dataset.bgPortalBootState==='failed',
+          recoveryVisible:Boolean(document.getElementById('portalStartupFailure')),
+          bodyTextLength:String(document.body?.innerText||'').length
+        })).catch(()=>({unavailable:true}));
+        // Only public shell-state booleans and counts. No tenant fields,
+        // provider tokens, HTML, private DOM or pageerror messages.
+        console.error('PORTAL_BOOT_READBACK_DIAGNOSTIC',JSON.stringify({
+          route,viewport_width:viewport.width,boot,
+          page_error_count:observedPageErrors.length,
+          failed_asset_count:failedAssets.length,
+          failure_class:error?.name==='TimeoutError'?'PORTAL_STARTUP_TIMEOUT':'PORTAL_STARTUP_ERROR'
+        }));
+      }
+      throw error;
+    }
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
