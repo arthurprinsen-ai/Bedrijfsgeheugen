@@ -33,9 +33,10 @@ export async function syncIncidents(report,{runId=process.env.GITHUB_RUN_ID,repo
  for(const label of labels)call(['label','create',label,'--force','--color',label==='security-guardian'?'9b2d30':'534caf','--description','Security Operations canonical incident']);
  const current=JSON.parse(call(['issue','list','--state','open','--limit','100','--label','security-guardian','--json','number,title,body']));
  let created=0,existing=0;
- for(const issue of report.issues.filter(x=>x.severity==='HIGH').concat(report.issues.filter(x=>x.severity!=='HIGH')).slice(0,6)){
+ for(const issue of report.issues.filter(x=>x.severity==='HIGH').concat(report.issues.filter(x=>x.severity!=='HIGH'))){
   const meta=publicIncidentSummary(issue,{repository:repo,runId});
   if(current.some(entry=>entry.title===meta.title||entry.body?.includes('Correlation-ID: '+issue.fingerprint))){existing++;continue;}
+  if(created>=6)continue; // Fixed per-run budget; later runs pick remaining fingerprints.
   call(['issue','create','--title',meta.title,'--body',meta.body,'--label',labels.join(',')]);
   current.push({title:meta.title,body:meta.body});
   created++;
