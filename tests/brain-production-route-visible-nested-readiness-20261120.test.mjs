@@ -19,11 +19,11 @@ const wrapper=()=>({
  innerText:'',style:{display:'contents',visibility:'visible',opacity:'1'},
  getBoundingClientRect:()=>({width:0,height:0})
 });
-function withBody(body,run){
+async function withBody(body,run){
  const prevDoc=globalThis.document,prevStyle=globalThis.getComputedStyle;
  globalThis.document={body};
  globalThis.getComputedStyle=el=>el.style;
- try{return run();}
+ try{return await run();}
  finally{
   if(prevDoc===undefined)delete globalThis.document;else globalThis.document=prevDoc;
   if(prevStyle===undefined)delete globalThis.getComputedStyle;else globalThis.getComputedStyle=prevStyle;
