@@ -80,6 +80,39 @@ export function personalFounderDecisionSourceScopeViolations(text,evidence={}){
  return [...new Set(out)];
 }
 
+// One original verified publication day, not a generic URL/CTA relaxation.
+// The user explicitly requested that their OWN quarterly magazine be given
+// away for free on their personal LinkedIn, with a direct link to its cover page.
+// The source, author, destination and date must remain independently checked.
+export const ORIGINAL_MAGAZINE_GIFT_CONTENT_ID='user-authored-founder:2026-11-21:de-kloof-q4-free-first-magazine';
+export const ORIGINAL_MAGAZINE_GIFT_URL='https://www.bedrijfsgeheugen.nl/de-kloof';
+export function isVerifiedPersonalMagazineGift(evidence={}){
+ const e=evidence||{};
+ return e.content_id===ORIGINAL_MAGAZINE_GIFT_CONTENT_ID
+  && e.ai_native_builder_story_verified===true
+  && e.ai_native_builder_policy==='personal-linkedin-ai-native-builder-v1'
+  && e.build_event_kind==='user_verified_owned_editorial_magazine_public_release'
+  && e.build_event_verified===true
+  && e.arthur_anchor_verified===true
+  && e.source_backed===true
+  && e.personal_truth_verified===true
+  && e.first_person_claims_verified===true
+  && e.business_topic===true
+  && e.corporate_voice===false
+  && e.company_page_interchangeable===false
+  && e.magazine_landing_url===ORIGINAL_MAGAZINE_GIFT_URL
+  && e.requested_scheduled_for==='2026-11-21T09:00:00+01:00'
+  && String(e.source_text||'').includes('20 november 2026')
+  && String(e.source_text||'').includes('21 november 2026')
+  && Array.isArray(e.source_lineage)
+  && e.source_lineage.some(v=>/^current-chat:user-fact:2026-11-20:saturday-morning-personal-post-free$/.test(String(v||'')));
+}
+export function magazineGiftLinkIsExact(text,evidence={}){
+ if(!isVerifiedPersonalMagazineGift(evidence))return false;
+ const urls=String(text??'').match(/https?:\/\/[^\s]+/giu)||[];
+ return urls.length===1&&urls[0]===ORIGINAL_MAGAZINE_GIFT_URL;
+}
+
 export function personalFirstPersonCopyViolations(text,evidence={},runDate){
  const out=personalFirstPersonSourceViolations(evidence,runDate);
  const body=clean(text);
@@ -93,7 +126,7 @@ export function personalFirstPersonCopyViolations(text,evidence={},runDate){
  if(/\b(?:typ|reageer\s+met|comment)\s+['"“”]?(?:JA|NEE|EENS|ONEENS|1|2|3)['"“”]?(?=\s|[.!,?]|$)|\b(?:like\s+als|tag\s+iemand|deel\s+deze\s+post|volg\s+mij\s+voor)\b/iu.test(body))
    out.push('PERSONAL_ENGAGEMENT_BAIT_NOT_ALLOWED');
  if(/#[\p{L}\p{N}_]+/u.test(body))out.push('PERSONAL_HASHTAGS_NOT_ALLOWED');
- if(/https?:\/\/|www\./iu.test(body))out.push('PERSONAL_PROMOTIONAL_URL_NOT_ALLOWED');
+ if(/https?:\/\/|www\./iu.test(body)&&!magazineGiftLinkIsExact(body,evidence))out.push('PERSONAL_PROMOTIONAL_URL_NOT_ALLOWED');
  if(!/\b(?:stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|dacht|dacht ik|maakte|kreeg|zei|had|heb|ben|was|sta|ga|doe|reed|coach|vertelde|zag|bouw|bouwde|bouwen|gebouwd|ontwikkel|ontwikkelde|ontwerp|ontwierp|implementeer|implementeerde|automatiseer|automatiseerde|testte)\b/iu.test(body))
    out.push('PERSONAL_CONCRETE_OWN_MOMENT_REQUIRED');
  return [...new Set(out)];
