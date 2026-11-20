@@ -70,7 +70,11 @@ test('existing owner and independent review invoke SAME amended shared validator
  assert.match(writer,/personalEditorialViolations/);
  assert.match(publisher,/personalLastMilePublicationViolations/);
  assert.match(publisher,/personalEditorialViolations/);
+ assert.match(publisher,/PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED/);
+ assert.match(publisher,/magazineGiftLinkIsExact/);
  assert.match(reviewer,/personalFirstPersonCopyViolations/);
+ assert.match(reviewer,/PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED/);
+ assert.match(reviewer,/magazineGiftLinkIsExact/);
  assert.match(reviewer,/personalEditorialViolations/);
  assert.ok(gate.includes('magazineGiftLinkIsExact'));
  assert.ok(editorial.includes('magazineGiftLinkIsExact'));
