@@ -1,7 +1,7 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import postgres from "npm:postgres@3.4.7";
-import { isAuthorizedRepairRequest } from "./security.mjs";
+import { isAuthorizedRepairRequest, matchesPrivateRecoveryToken } from "./security.mjs";
 const REF="adhjwmvyoixzjtmiroln", POOLER="aws-0-eu-central-1.pooler.supabase.com";
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{"content-type":"application/json","cache-control":"no-store"}});
 Deno.serve(async(req:Request)=>{
