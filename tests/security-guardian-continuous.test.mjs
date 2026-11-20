@@ -78,7 +78,7 @@ test('portal indicator blinks only with independently current evidence; stale, W
 test('ingest rejects forged green status and incomplete site sets',()=>{
  const good={schemaVersion:1,checkedAt:new Date(now).toISOString(),expiresAt:new Date(now+45*60000).toISOString(),
  status:'VERIFIED',total:21,verified:21,warning:0,failed:0,evidenceAvailable:true,
- sites:Array.from({length:21},(_,i)=>({id:i===0?'bedrijfsgeheugen':i===1?'pw-zaalcoach':i===2?'pw-veldcoach':'site-'+i,status:'VERIFIED',code:'BOUNDED_HTTP_CHECK_PASSED'})),issues:[]};
+ sites:[...cfg.sites.map(s=>({id:s.id,status:'VERIFIED',code:'BOUNDED_HTTP_CHECK_PASSED'})),...Array.from({length:4},()=>({id:'bedrijfsgeheugen',status:'VERIFIED',code:'BOUNDED_HTTP_CHECK_PASSED'}))],issues:[]};
  assert.doesNotThrow(()=>validateSecurityGuardianReport(good,now+1000));
  assert.throws(()=>validateSecurityGuardianReport({...good,verified:20},now+1000));
  assert.throws(()=>validateSecurityGuardianReport({...good,expiresAt:new Date(now+86400000).toISOString()},now+1000));
