@@ -6,6 +6,7 @@ import {validateInventory,classifyResponse,runSecurityGuardian,sha} from '../too
 import {assertGitHubClaims,verifyGitHubActionsOidc,OIDC_AUDIENCE} from '../netlify/functions/_security-guardian-oidc.mjs';
 import {validateSecurityGuardianReport} from '../netlify/functions/security-guardian-ingest.mjs';
 import {classifyGuardianHeartbeat} from '../portal-v2/modules/security-trust-workspace.js';
+import {publicIncidentSummary,syncIncidents} from '../tools/security/security-guardian-incidents.mjs';
 const cfg=JSON.parse(readFileSync('config/security-managed-sites.json','utf8'));
 const now=Date.parse('2026-11-20T22:00:00Z');
 const headers=new Headers({'x-content-type-options':'nosniff','strict-transport-security':'max-age=31536000','x-frame-options':'DENY','cache-control':'private, no-store',
@@ -82,4 +83,33 @@ test('ingest rejects forged green status and incomplete site sets',()=>{
  assert.doesNotThrow(()=>validateSecurityGuardianReport(good,now+1000));
  assert.throws(()=>validateSecurityGuardianReport({...good,verified:20},now+1000));
  assert.throws(()=>validateSecurityGuardianReport({...good,expiresAt:new Date(now+86400000).toISOString()},now+1000));
+});
+
+test('incident handoffs are sanitized, bounded, fingerprint-deduplicated and never auto-close',async()=>{
+ const issue={fingerprint:sha('example:unsafe'),severity:'HIGH',siteHash:sha('private-site-name'),code:'PRIVATE_SOURCE_NOT_404'};
+ const publicText=publicIncidentSummary(issue,{repository:'arthurprinsen-ai/Bedrijfsgeheugen',runId:'1234'});
+ assert.match(publicText.body,/Original|original|Engineering/);
+ assert.ok(!publicText.body.includes('private-site-name'));
+ assert.ok(!publicText.body.includes('PRIVATE_SOURCE_NOT_404'));
+ const calls=[];
+ const call=args=>{calls.push(args);if(args[0]==='issue'&&args[1]==='list')return JSON.stringify([]);return '';};
+ const report={issues:[issue,issue]};
+ const result=await syncIncidents(report,{runId:'1234',repo:'arthurprinsen-ai/Bedrijfsgeheugen',call});
+ assert.equal(result.created,1);
+ assert.ok(calls.some(a=>a[0]==='issue'&&a[1]==='create'));
+ assert.ok(!calls.some(a=>a[0]==='issue'&&a[1]==='close'));
+});
+test('security agent remains one of 14 originals and only existing workflow owns monitoring cadence',()=>{
+ const team=readFileSync('platform/agents/agent-team.mjs','utf8');
+ const workflow=readFileSync('.github/workflows/security-operations-proof.yml','utf8');
+ assert.equal((team.match(/id:'agent-security'/g)||[]).length,1);
+ assert.match(team,/monitor-all-authorized-managed-sites-every-15-minutes-in-original-security-operations-workflow/);
+ assert.match(workflow,/7,22,37,52 \* \* \* \*/);
+ assert.match(workflow,/id-token: write/);
+ assert.match(workflow,/refs\/heads\/main/);
+ assert.match(workflow,/agent/);
+ const client=readFileSync('netlify/functions/security-trust.mjs','utf8');
+ assert.match(client,/projectCustomerSecurityTrustResponse/);
+ assert.match(client,/platform=|let platform=null/);
+ assert.match(client,/SECURITY_HEARTBEAT/);
 });
