@@ -76,7 +76,7 @@ test('strict original first-person gate permits fact-backed own builder decision
   {...e,sensitive_private_detail:true},
   {...e,corporate_voice:true},
  ])assert.ok(personalFirstPersonSourceViolations(altered,'2026-11-20').length>0);
- const authentic='Ik wil dat software, AI, BI en data als één intelligent systeem worden ontworpen. Dat is een ontwerpkeuze, geen claim over klantresultaten.';
+ const authentic='Ik heb mijn ontwerpkeuze uitgesproken: software, AI, BI en data horen in één intelligent systeem. Ik benoem hier geen klantresultaten.';
  assert.deepEqual(personalFirstPersonCopyViolations(authentic,e,'2026-11-20'),[]);
 });
 test('newest personal builder policy supersedes only the obsolete blanket ban, not truth or author authority',()=>{
