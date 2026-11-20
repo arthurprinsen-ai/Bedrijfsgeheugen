@@ -65,3 +65,47 @@ dialog,.portal-popover,.sheet{border-radius:18px;box-shadow:0 28px 90px rgba(7,1
 .daily-steering-proof{margin:0;color:#dce8fc;border-top:1px solid #426092;padding-top:13px;font-size:12px;line-height:1.5}
 @media(max-width:1120px){.daily-steering-steps{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:720px){.daily-steering{border-radius:16px;padding:16px}.daily-steering-steps{grid-template-columns:1fr}.daily-steering-steps li{padding:14px}.daily-steering h2{font-size:26px}}
+
+
+/* Native Portal V2 voice and exception-based signal center */
+.vs-trigger{display:inline-flex;align-items:center;gap:6px;flex-wrap:wrap}
+.vs-trigger button{border:1px solid #c9d9ee;background:#fff;color:#12365a;border-radius:12px;padding:9px 13px;font:800 12px system-ui,sans-serif;min-height:44px;cursor:pointer}
+.vs-trigger button:focus-visible,.vs-dialog :focus-visible{outline:3px solid #f8b540;outline-offset:2px}
+.vs-dialog{width:min(93vw,780px);max-height:min(88vh,900px);overflow:auto;box-sizing:border-box;border:0;border-radius:23px;padding:0;background:#fff;color:#16324d;box-shadow:0 28px 90px #05182b5c;font:14px/1.55 system-ui,sans-serif}
+.vs-dialog::backdrop{background:#071b31a8;backdrop-filter:blur(3px)}
+.vs-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;padding:22px 24px;background:#103e50;color:#fff}
+.vs-head small{letter-spacing:.09em;font-weight:750;font-size:10px;color:#d7e9ef}
+.vs-head h2{margin:6px 0 0;font-size:clamp(21px,3vw,29px);line-height:1.2;color:#fff}
+.vs-head button{width:44px;height:44px;font-size:25px;color:#fff;background:#ffffff1c;border:1px solid #ffffff50;border-radius:13px;cursor:pointer}
+.vs-intro{padding:0 24px;margin:17px 0 5px;color:#536478}
+.vs-voice,.vs-center,.vs-form{margin:16px 24px;padding:18px;border:1px solid #dae5ed;border-radius:16px;background:#fbfdff}
+.vs-dialog h3{font-size:17px;line-height:1.25;margin:0 0 10px;color:#183b50}
+.vs-voice-row{display:flex;flex-wrap:wrap;gap:8px}
+.vs-voice-row input{flex:1 1 260px;min-width:0}
+.vs-voice-row input,.vs-form input,.vs-form select{min-height:44px;width:100%;box-sizing:border-box;border:1px solid #b7cada;border-radius:10px;padding:9px 12px;background:#fff;color:#183b50;font:inherit}
+.vs-voice-row button,.vs-save,.vs-item-actions button{min-height:44px;padding:9px 14px;border-radius:10px;border:1px solid #b4cddd;background:#fff;color:#125b85;font-weight:800;cursor:pointer}
+.vs-voice-row button:first-of-type,.vs-save{background:#116d72;border-color:#116d72;color:#fff}
+.vs-examples,.vs-privacy,.vs-form-hint{color:#52687b;font-size:12px;line-height:1.55;margin:10px 0 0}
+.vs-status{display:block;margin:9px 24px;color:#205c4e;min-height:20px;font-weight:650;white-space:pre-wrap;overflow-wrap:anywhere}
+.vs-status.vs-error{color:#a92d31}
+.vs-center-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.vs-center-head p{margin:0 0 10px;color:#5a6b7a;font-size:12px}
+.vs-center-head>span{font-size:11px;white-space:nowrap;color:#1e5e74;font-weight:800;padding:6px 10px;background:#e5f4fa;border-radius:30px}
+.vs-list{display:grid;gap:9px}
+.vs-empty{font-size:13px;color:#64748b;margin:4px 0}
+.vs-item{padding:14px;border:1px solid #d9e3ec;background:#fff;border-radius:13px}
+.vs-item[data-state=afwijking]{border-left:4px solid #ca5a21}
+.vs-item[data-state=geen-data]{border-left:4px solid #9ca3af}
+.vs-item[data-state=binnen-grens]{border-left:4px solid #238569}
+.vs-item-head{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.vs-item-head>span{font-size:11px;font-weight:800;color:#7f421f;background:#fff0e4;border-radius:100px;padding:4px 8px}
+.vs-item p{margin:8px 0;font-size:13px}
+.vs-item .vs-evidence{display:block;color:#6a7889;font-size:11px;overflow-wrap:anywhere}
+.vs-item .vs-advice{background:#edf8f7;border-radius:9px;padding:9px;color:#185c59}
+.vs-item-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.vs-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.vs-form-grid label{font-size:12px;font-weight:750;display:grid;gap:5px}
+.vs-save{margin-top:14px}
+@media(max-width:740px){.vs-trigger button{font-size:11px;padding:8px}.vs-dialog{width:97vw;max-height:92vh;border-radius:17px}.vs-head{padding:17px}.vs-intro{padding:0 16px}.vs-voice,.vs-center,.vs-form{margin:13px 12px;padding:13px}.vs-status{margin:7px 16px}.vs-form-grid{grid-template-columns:1fr}.vs-center-head{display:block}.vs-center-head>span{display:inline-block;margin:0 0 9px}}
+
+.vs-speech-out{display:flex;gap:8px;flex-wrap:wrap;margin:0 24px}.vs-speech-out button{min-height:44px;border:1px solid #b4cddd;background:#fff;border-radius:10px;padding:9px 12px;font:750 12px system-ui;color:#125b85;cursor:pointer}@media(max-width:740px){.vs-speech-out{margin:0 12px}}
