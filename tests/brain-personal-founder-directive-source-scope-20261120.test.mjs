@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {personalFounderDecisionSourceScopeViolations,personalFirstPersonCopyViolations} from '../supabase/functions/_shared/personal-first-person-story-gate.mjs';
+import {verifyAlreadyAppliedProvider888SourceLockRecovery,EXACT_PROVIDER_888_BASE,ORIGINAL_SECURITY_SQL_PATH} from '../tools/ci/verified-provider-888-personal-security-history-reconciliation.mjs';
 
 const e={
  content_id:'user-authored-founder:2026-11-20:unified-intelligent-software-and-authentic-conversations',
@@ -52,18 +53,29 @@ test('original writer and independent reviewer share the exact source-scoped pre
 });
 
 
-test('provider-applied security SQL source recovered exactly, immutable production lock is NOT predeclared in source-only PR',()=>{
- const lock=JSON.parse(readFileSync('supabase/migration-history.lock.json','utf8'));
- assert.equal(lock.source,'supabase_migration_history');
- assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.at(-1).version,'20261119090500');
- assert.equal(lock.applied.at(-1).name,'company_signal_word_boundary_verified_entity_v1');
- assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
- const security=readFileSync('supabase/migrations/20261120134537_security_pw_mo14_private_player_data_20261120.sql','utf8');
- assert.ok(security.startsWith('-- Security emergency 2026-11-20'));
- assert.match(security,/ALTER TABLE public\.pw_beoordelingen ENABLE ROW LEVEL SECURITY/);
- assert.match(security,/COMMIT;/);
- const personal=readFileSync('supabase/migrations/20261120143500_personal_verified_founder_source_v2_policy_alignment.sql','utf8');
- assert.match(personal,/is_verified_user_founder/);
- assert.match(personal,/TO service_role/);
+test('one-time, strict native-provider 888 reconciliation verifies historical prefix and exact SQL attestation',()=>{
+ const headLock=JSON.parse(readFileSync('supabase/migration-history.lock.json','utf8'));
+ const baseLock={...headLock,applied:headLock.applied.slice(0,-2),captured_at:'2026-11-19T09:35:00.000Z'};
+ assert.equal(baseLock.applied.length,886);
+ assert.equal(headLock.applied.length,888);
+ const securitySQL=readFileSync('supabase/migrations/20261120134537_security_pw_mo14_private_player_data_20261120.sql','utf8');
+ const founderSQL=readFileSync('supabase/migrations/20261120143500_personal_verified_founder_source_v2_policy_alignment.sql','utf8');
+ const args={
+  baseSha:EXACT_PROVIDER_888_BASE,baseLock,headLock,
+  changedMigrations:[{status:'A',file:ORIGINAL_SECURITY_SQL_PATH}],
+  securitySQL,founderSQL
+ };
+ const accepted=verifyAlreadyAppliedProvider888SourceLockRecovery(args);
+ assert.equal(accepted.ok,true,JSON.stringify(accepted));
+ assert.equal(accepted.hosted_preview_required,true);
+ assert.equal(accepted.provider_history_attested_by_candidate,false);
+ for(const wrong of [
+  {...args,baseSha:'1'.repeat(40)},
+  {...args,securitySQL:securitySQL+' '},
+  {...args,founderSQL:founderSQL.replace('TO service_role','TO authenticated')},
+  {...args,changedMigrations:[{status:'A',file:'supabase/migrations/unrelated.sql'}]},
+  {...args,headLock:{...headLock,applied:headLock.applied.slice(0,-2).concat(headLock.applied.at(-1))}},
+  {...args,headLock:{...headLock,applied:headLock.applied.map((x,i)=>i===0?{...x,name:'tampered'}:x)}},
+  {...args,headLock:{...headLock,project_ref:'wrong-project'}}
+ ])assert.equal(verifyAlreadyAppliedProvider888SourceLockRecovery(wrong).ok,false);
 });
