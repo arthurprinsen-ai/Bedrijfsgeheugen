@@ -7,6 +7,7 @@ import {pathToFileURL} from 'node:url';
 import {resolve} from 'node:path';
 export const TARGETS=[
  {name:'Bedrijfsgeheugen',url:'https://www.bedrijfsgeheugen.nl/',mode:'business'},
+ {name:'PW homepage (shared origin)',url:'https://pw-mo14-1.netlify.app/',mode:'legacy'},
  {name:'PW Zaalcoach',url:'https://pw-mo14-1.netlify.app/zaalplanner/',mode:'coach'},
  {name:'PW Veldcoach',url:'https://pw-mo14-1.netlify.app/veldplanner/',mode:'coach'}
 ];
@@ -24,6 +25,17 @@ export function evaluateHeaders(headers,mode){
   if(frame!=='deny')missing.push('X-Frame-Options DENY');
   if(!get('cache-control').includes('no-store'))missing.push('private no-store cache');
   if(!csp.includes("form-action 'self'"))missing.push('form-action');
+ }else if(mode==='legacy'){
+  // The preserved PW homepage shares origin and browser storage with the youth
+  // coach: no inline script, no off-site fetch, no cross-origin framing.
+  const scripts=csp.match(/(?:^|;\s*)script-src\s+([^;]+)/)?.[1]||'';
+  if(scripts.trim()!=="'self'"||!csp.includes("script-src-attr 'none'"))missing.push('legacy CSP script boundary');
+  const connections=csp.match(/(?:^|;\s*)connect-src\s+([^;]+)/)?.[1]||'';
+  if(connections.trim()!=="'self'")missing.push('legacy CSP outbound boundary');
+  if(!csp.includes("frame-ancestors 'none'"))missing.push('legacy CSP frame-ancestors');
+  if(frame!=='deny')missing.push('legacy X-Frame-Options DENY');
+  if(!get('cache-control').includes('no-store'))missing.push('legacy no-store');
+  if(!get('x-robots-tag').toLowerCase().includes('noindex'))missing.push('legacy noindex');
  }else{
   if(!csp.includes("frame-ancestors 'self'"))missing.push('CSP frame-ancestors');
   if(frame!=='sameorigin')missing.push('X-Frame-Options SAMEORIGIN');
