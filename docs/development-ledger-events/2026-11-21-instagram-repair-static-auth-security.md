@@ -23,3 +23,12 @@ An ACTIVE Supabase Edge Function (original slug `powerhouse-composio-instagram-a
 
 ## Scope and open items
 This patch does NOT rotate the Composio API key or the Supabase service-role credential, since no exposure of those values has been demonstrated. It also does not repair unrelated endpoints, prove account MFA, or assert a penetration test. The GitHub repository's public visibility remains a separately recorded governance decision.
+
+## Emergency production containment — independently observed
+
+- Supabase existing function `powerhouse-composio-instagram-auth-repair`: version 9 replaced by version **10**, provider `ACTIVE`, `verify_jwt=false` retained with in-function server-only authorization. Both provider source files independently read back **byte-identical** to this PR's `index.ts` and `security.mjs`.
+- Direct unauthenticated production HTTP readback: GET -> **405**; POST with no credential -> **401**; POST with invalid former-style recovery header -> **401**. No real privileged request was executed.
+- Checked that no fixed header literal is present in the deployed request guard and no raw provider auth configurations are returned.
+- Seven local security and monitor regressions passed. The new `tools/security/verify-instagram-repair-auth.mjs` also passed against the actual original Supabase endpoint with the same negative statuses.
+- **Important release boundary:** the provider hotfix is live, but the scheduled monitor is only a **PR candidate** until protected merge of changes to `.github/workflows/security-operations-proof.yml`. The current main-branch workflow must not be claimed to contain the new checker yet. Preserve original Security Operations ownership; avoid duplicate schedulers.
+- Rollback: do not restore the former static header credential. Revert through the existing original protected release owner to another verified server-only credential path if a documented consumer is affected.
