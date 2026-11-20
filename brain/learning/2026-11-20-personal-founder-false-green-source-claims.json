@@ -21,7 +21,7 @@
   "owner": "original-powerhouse-personal-editor-and-independent-publisher",
   "event_date": "2026-11-20",
   "root_cause": "Original personal founder writer extrapolated the user's verified design decision into personally experienced dashboard teams ('In de praktijk botste dat idee met ... teams'), realized business impacts ('Het resultaat was vertraging ...') and personally completed implementation ('Wat ik veranderde ... levert veel snellere inzichten'). Original independent reviewer passed HTTP200 and the original provider write reported PUBLISHED. The original source explicitly verified only the user's design direction, merged PRs and no client outcome or personal coding proof. LinkedIn exact-post GET returned provider 403 so independent final public copy parity remains unverified. Approval of an inferred source narrative constitutes a false-green review.",
-  "prevention_rule": "For original verified-user-directed founder-design-only source scope, reject personally experienced team/client claims and measured implementation or commercial outcome assertions unless the actual source provides independently direct first-person evidence. Wire same narrow high-confidence source-scope guard into independent prepublish and final provider last mile through original personalFirstPersonCopyViolations; require original generator to treat all unproved client/impact claims as hypothetical. Never reissue already consumed provider URN. Distinguish PUBLISHED with provider-create ID from LIVE_PROVEN independent content and author readback. Human remediation needed to correct or remove already-public misleading text when no safe original provider edit route is verified. Canonical provider-applied migration history must be source/lock paritied after original production promotion; never bypass preflight or fabricate applied records. Immutable provider history must not be modified in the same protected candidate that adds the exact missing security SQL source; once the SQL source is merged, reconcile historical provider-applied versions through a new protected reconciliation PR.",
+  "prevention_rule": "For original verified-user-directed founder-design-only source scope, reject personally experienced team/client claims and measured implementation or commercial outcome assertions unless the actual source provides independently direct first-person evidence. Wire same narrow high-confidence source-scope guard into independent prepublish and final provider last mile through original personalFirstPersonCopyViolations; require original generator to treat all unproved client/impact claims as hypothetical. Never reissue already consumed provider URN. Distinguish PUBLISHED with provider-create ID from LIVE_PROVEN independent content and author readback. Human remediation needed to correct or remove already-public misleading text when no safe original provider edit route is verified. Canonical provider-applied migration history must be source/lock paritied after original production promotion; never bypass preflight or fabricate applied records. Immutable provider history must not be modified in the same protected candidate that adds the exact missing security SQL source; once the SQL source is merged, reconcile historical provider-applied versions through a new protected reconciliation PR. Provider application of already-applied migrations must be reconciled with a SHA-pinned, provider-md5-attested one-time recovery in the original protected migrator if the baseline already contains a later executable SQL version not yet in the source lock. Never rely on a generic migration bypass or two-stage plan that leaves base-history tests permanently red.",
   "user_instruction": "Akkoord ga door borg leg vast zet live",
   "evidence": {
     "date": "2026-11-20",
@@ -56,12 +56,18 @@
       ],
       "source_recovered_from": "supabase_migrations.schema_migrations.statements of original provider",
       "exact_source_path": "supabase/migrations/20261120134537_security_pw_mo14_private_player_data_20261120.sql",
-      "updated_lock": "SEPARATE_RECONCILIATION_REQUIRED_AFTER_SOURCE_MERGE_NO_LOCK_CHANGE_IN_THIS_PR",
-      "only_append_existing_prefix_unchanged": "LOCK_UNCHANGED_IN_THIS_PR",
+      "updated_lock": "supabase/migration-history.lock.json; appended provider-verified 887,888 without changing first 886",
+      "only_append_existing_prefix_unchanged": true,
       "production_sql_replayed": false,
-      "ci_original_invariant": "PR candidate must not predeclare provider-applied versions in production lock while an executable provider SQL source is still being proposed; publish source first, then reconcile immutable lock in separate protected PR.",
+      "ci_original_invariant": "Exactly one added executable SQL source, exact immutable historical base SHA a5684e6b376271b37eb27853a826f147c7425d6a, exactly 886 previously protected migration identities and two provider-attested immutable 887/888 identities; native security SQL md5 87410f524c200d30bfaf64a4e72d02ee, original founder policy source and service-role boundaries. All other bases/sources/locks fail closed; full Supabase hosted preview still mandatory.",
       "first_attempt_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44749663564",
-      "first_attempt_failure_code": "UNEXPECTED_PROTECTED_BASE"
+      "first_attempt_failure_code": "UNEXPECTED_PROTECTED_BASE",
+      "recovery_revision": "PROTECTED_EXACT_PROVIDER_888_SAME_CANDIDATE_RECOVERY",
+      "previous_two_step_plan_superseded": true,
+      "recovery_contract": "tools/ci/verified-provider-888-personal-security-history-reconciliation.mjs",
+      "original_provider_verified_at": "2026-11-20",
+      "provider_887_sql_md5": "87410f524c200d30bfaf64a4e72d02ee",
+      "provider_888_sql_statements_md5": "3edddef80cde8dd13511dbe5dc8e8c1e"
     }
   },
   "boundaries": [
