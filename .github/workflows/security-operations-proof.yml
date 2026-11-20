@@ -50,6 +50,25 @@ jobs:
         run: node --test tests/security-operations-proof.test.mjs tests/site-shell-security-public-source-deny-20261120.test.mjs
       - name: Structural fail-closed validation
         run: node scripts/security-operations-proof.mjs --check
+      - name: Detect publicly exposed internal source in actual production
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        run: |
+          set -euo pipefail
+          base='https://www.bedrijfsgeheugen.nl'
+          public_status="$(curl -sSL --max-time 25 -o /dev/null -w '%{http_code}' "$base/" )"
+          test "$public_status" = 200 || { echo "::error::Homepage unavailable ($public_status)"; exit 1; }
+          for path in \
+            /supabase/migrations/20261014124402_scoped_external_reconcile_auth_retry_20261014.sql \
+            /scripts/security-operations-proof.mjs \
+            /package.json \
+            /config/brain-delivery-system.json; do
+            status="$(curl -sSL --max-time 25 -o /dev/null -w '%{http_code}' "$base$path")"
+            if [ "$status" != 404 ]; then
+              echo "::error::PRIVATE_SOURCE_EXPOSURE: route returned HTTP $status (must 404)"
+              exit 1
+            fi
+          done
+          echo "Private source routes verified HTTP 404; public homepage remains HTTP 200."
       - name: Full closure gate when explicitly required
         if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.require_live) }}
         run: node scripts/security-operations-proof.mjs --require-live
