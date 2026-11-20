@@ -50,3 +50,22 @@ test('original writer and independent reviewer share the exact source-scoped pre
  assert.ok(publisher.includes('personalLastMilePublicationViolations'));
  assert.ok(publisher.includes('verifyCurrentPersonalStorySource'));
 });
+
+
+test('two provider-applied migrations appended immutably and no source-replay invented',()=>{
+ const lock=JSON.parse(readFileSync('supabase/migration-history.lock.json','utf8'));
+ assert.equal(lock.source,'supabase_migration_history');
+ assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
+ assert.equal(lock.applied.at(-2).version,'20261120134537');
+ assert.equal(lock.applied.at(-2).name,'security_pw_mo14_private_player_data_20261120');
+ assert.equal(lock.applied.at(-1).version,'20261120143500');
+ assert.equal(lock.applied.at(-1).name,'personal_verified_founder_source_v2_policy_alignment');
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
+ const security=readFileSync('supabase/migrations/20261120134537_security_pw_mo14_private_player_data_20261120.sql','utf8');
+ assert.ok(security.startsWith('-- Security emergency 2026-11-20'));
+ assert.match(security,/ALTER TABLE public\.pw_beoordelingen ENABLE ROW LEVEL SECURITY/);
+ assert.match(security,/COMMIT;/);
+ const personal=readFileSync('supabase/migrations/20261120143500_personal_verified_founder_source_v2_policy_alignment.sql','utf8');
+ assert.match(personal,/is_verified_user_founder/);
+ assert.match(personal,/TO service_role/);
+});
