@@ -51,6 +51,13 @@
       "root_cause": "PR body used unsupported Candidate-Type: feature",
       "corrected_to": "Candidate-Type: implementation",
       "prevention": "Never use unsupported metadata type for feature-oriented implementation; preserve protected delivery-hygiene admission and rerun Required and CodeQL."
+    },
+    "pr_admission_learning_test_20261120": {
+      "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44775209580",
+      "failure": "LEARNING_CANONICALIZATION_FAILED: LEARNING_EVALUATION_FAILED:historical_replay:exit_1",
+      "underlying": "New regression's safe example used 'Ik kies' and lacked the existing exact verified first-person own-event verb; original guard correctly returned PERSONAL_CONCRETE_OWN_MOMENT_REQUIRED.",
+      "correction": "Use directly verified 'Ik heb vandaag mijn ontwerpkeuze uitgesproken' in safe fixture; preserve original source gate instead of weakening it.",
+      "prevention": "Personal-positioning safe-copy fixtures must honor original personalFirstPersonCopyViolations as an independent source/copy authority."
     }
   },
   "boundaries": [
