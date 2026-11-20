@@ -1,3 +1,33 @@
+# P0 PRODUCTION SECURITY — internal source artifacts must never be web-accessible.
+# Forced 404 overrides existing static files (publish = "."). Do not redirect to public homepage.
+/supabase/*  /404.html  404!
+/scripts/*  /404.html  404!
+/tools/*  /404.html  404!
+/tests/*  /404.html  404!
+/config/*  /404.html  404!
+/brain/*  /404.html  404!
+/automation/*  /404.html  404!
+/contracts/*  /404.html  404!
+/powerhouse/*  /404.html  404!
+/platform/*  /404.html  404!
+/docs/*  /404.html  404!
+/netlify/*  /404.html  404!
+/.github/*  /404.html  404!
+/.agents/*  /404.html  404!
+/.env*  /404.html  404!
+/.npmrc  /404.html  404!
+/node_modules/*  /404.html  404!
+/make/*  /404.html  404!
+/email/*  /404.html  404!
+/package.json  /404.html  404!
+/package-lock.json  /404.html  404!
+/npm-shrinkwrap.json  /404.html  404!
+/pnpm-lock.yaml  /404.html  404!
+/yarn.lock  /404.html  404!
+/tsconfig.json  /404.html  404!
+/AGENTS.md  /404.html  404!
+/README.md  /404.html  404!
+
 # Existing public brand asset aliases. Verified exact target assets returned 200 on original production 2026-11-10.
 # Keep the requested legacy paths valid without producing an invented social image.
 /og-image.png  /assets/merk/banner-instagram-tegel.jpg  301!
