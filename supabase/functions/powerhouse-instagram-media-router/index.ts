@@ -393,7 +393,7 @@ Deno.serve(async req=>{
   const row={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:'PROOF_VERIFIED',required_provider:policy?.required_provider||null,selected_provider:provider,asset_manifest:manifest,proof_manifest:proof,provider_connection_state:'READY',attempts:(job?.attempts||0)+1,last_error:null,next_action:'Proof verified; canonical orchestrator/publisher may use this exact manifest only.',updated_at:new Date().toISOString()};
   const jw=await db.from('powerhouse_instagram_media_jobs_v1').upsert(row,{onConflict:'tenant_id,publication_date,channel'});if(jw.error)throw new Error('MEDIA_JOB_WRITE_FAILED');
   const evidence={...(ob?.evidence||{}),...proof,instagram_media_proof:proof,provider_routing_policy:policy,media_job_status:'PROOF_VERIFIED'};
-  await db.from('content_publication_obligations').update({status:ob?.status==='BLOCKED'?'APPROVED':ob?.status,last_error:null,evidence,next_action:'Exact provider-routed media proof verified; continue canonical orchestration.',updated_at:new Date().toISOString()}).eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram');
+  await db.from('content_publication_obligations').update({status:(ob?.status==='BLOCKED'||(ob?.status==='FAILED'&&job?.asset_manifest?.owner_review_extra_verification?.approved_by==='arthur'))?'APPROVED':ob?.status,last_error:null,evidence,next_action:'Exact provider-routed media proof verified; continue canonical orchestration.',updated_at:new Date().toISOString()}).eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram');
   return json({ok:true,ready:true,runDate,postType,provider,proof});
  }
 
