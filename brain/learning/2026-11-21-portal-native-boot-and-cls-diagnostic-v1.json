@@ -52,5 +52,7 @@
     "original_innovations_closed": 0,
     "original_innovations_remaining_open": 14,
     "source_changes_live_proven": false
-  }
+  },
+  "root_cause": "PROVEN FAILURE MODE: Portal V2 hides all real app children at parser time using v2-hydrating, and its legacy timeout release is scheduled only when the portal-state ES module evaluates; the natural deployed route on mobile and desktop never met the original visible readiness predicate. The specific module/network/CSP failure (if any) is NOT YET PROVEN. Separately, the original public UI visual regression observed real phone initial CLS over 0.1 on /due-diligence; its shifting DOM element is NOT YET PROVEN.",
+  "prevention_rule": "Keep original fail-closed app-mounted readiness, loader/error-state exclusion, 15-second accessible native recovery for users, bounded anonymous public boot diagnostics, and original unchanged 0.1 CLS limit with raw source element geometry for cause-directed visual fixes. No automatic external actions, fake demo/tenant ACK or test-gate bypass."
 }
