@@ -17,7 +17,7 @@
       "blocksCompanyPageInterchangeableCopy": true,
       "requiresFirstPersonTruthClassification": true,
       "personalLifeOnlyPolicy": "personal-linkedin-personal-life-only-v1",
-      "requiresPersonalLifeOnlyVerified": true,
+      "requiresPersonalLifeOnlyVerified": false,
       "allowedTopicClasses": [
         "family",
         "parenting",
@@ -66,7 +66,9 @@
         "personal_founder_journey": 10
       },
       "blockedUnverifiedBusinessContent": true,
-      "blocksCompanyPageCopy": true
+      "blocksCompanyPageCopy": true,
+      "requiresPersonalLifeOnlyVerifiedUnlessBuilder": true,
+      "builderFirstPersonClaimMode": "builder_event_and_author_anchor_verified"
     },
     "linkedin_company": {
       "channelId": "6a70381699afb44349f0fb36",
