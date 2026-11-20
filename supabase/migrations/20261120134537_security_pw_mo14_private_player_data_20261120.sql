@@ -1,10 +1,6 @@
--- Supabase LIVE migration: version 20261120134537
--- 2026-11-20 emergency private-data correction.
--- PW MO14 youth assessments and lineup plans must NOT be world-readable/writable.
--- These tables already used RLS, but policies USING/WITH CHECK (true) exposed data to anon.
--- The public static app does not depend on these two Supabase Data API tables.
--- Service-role, server-authenticated operations remain supported.
-
+-- Security emergency 2026-11-20: avoid publishing evaluations about minor hockey players.
+-- Existing PW MO14 v7/v9 coach pages store their own plans locally and do not call these Data API tables.
+-- Preserve PostgreSQL service_role for server-authorized operations.
 BEGIN;
 ALTER TABLE public.pw_beoordelingen ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.pw_opstellingen ENABLE ROW LEVEL SECURITY;
