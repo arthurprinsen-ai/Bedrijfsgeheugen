@@ -1,5 +1,12 @@
 # P0 PRODUCTION SECURITY — internal source artifacts must never be web-accessible.
 # Forced 404 overrides existing static files (publish = "."). Do not redirect to public homepage.
+/netlify.toml  /404.html  404!
+/.gitignore  /404.html  404!
+/.git/*  /404.html  404!
+/.vscode/*  /404.html  404!
+/.devcontainer/*  /404.html  404!
+/.editorconfig  /404.html  404!
+/.bg-prebuilt-*  /404.html  404!
 /supabase/*  /404.html  404!
 /scripts/*  /404.html  404!
 /tools/*  /404.html  404!
