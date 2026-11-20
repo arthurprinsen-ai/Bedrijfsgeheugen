@@ -10,3 +10,5 @@
 - Fix: new source-scoped mandatory veto in existing shared personal gate for specific user-directive-only founder event; original writer prompt and historical+shadow+canary replay. Retain strict original review, final SHA, provider token/URN and dedupe. No new sender/publisher.
 - Already public post has no independent edit/delete confirmation. User-facing publication link and content caution mandatory. Never repost to correct without explicit safe original same-URN mechanism.
 - Status at PR creation: PROTECTED_CANDIDATE, not production; current post remediation OPEN.
+
+- Protected preflight failure: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44748661697 (six original migration-history tests failed). Original provider 888 applied migration records; immutable source lock 886. Restored exact provider-applied security migration 20261120134537 SQL from original provider statements and appended exactly original 20261120134537 + personal 20261120143500 identity records to existing lock, preserving old 886 rows. No SQL replay, no RLS change, no CI gate bypass. Re-test required.
