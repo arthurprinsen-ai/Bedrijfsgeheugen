@@ -1,0 +1,32 @@
+{
+  "fingerprint": "security|supabase-edge|instagram-repair-static-header-v1",
+  "date": "2026-11-21",
+  "owner": "Original Powerhouse Security Operations / Supabase Edge release writer",
+  "severity": "HIGH",
+  "status": "SOURCE_CANDIDATE",
+  "source": "Authorized Supabase Edge provider v9 source readback",
+  "failure_class": "PUBLIC_ENDPOINT_STATIC_HEADER_AUTH",
+  "root_cause": "A fixed request literal was used as the only authorization check on a verify_jwt=false privileged provider inspector; source/runtime drift omitted this function from main GitHub tree.",
+  "fix": [
+    "Replace static header comparison with server-only legacy service role or modern default secret apikey guard before environment or network access.",
+    "Never return raw provider auth_config_details; send bounded metadata and no-store.",
+    "Pin regression in original Security Operations Proof workflow; no duplicate agent or scheduler."
+  ],
+  "prevention": [
+    "Hardcoded inbound request tokens are never authorization, including in low-frequency repair endpoints.",
+    "Source checkout, provider function status, and independent readback must match.",
+    "Preserve fail-closed behavior for absent env credentials and public JWT/anon/API keys.",
+    "If a hotfix is provider-live before protected merge, record branch mismatch explicitly and prevent redeployment of old code."
+  ],
+  "tests": [
+    "tests/brain-security-instagram-repair-server-auth-20261121.test.mjs"
+  ],
+  "production_evidence": {
+    "provider_live_verified": false,
+    "unauthorized_post_401_verified": false,
+    "get_405_verified": false,
+    "protected_merge_verified": false
+  },
+  "credentials_logged": false,
+  "duplicate_executor": false
+}
