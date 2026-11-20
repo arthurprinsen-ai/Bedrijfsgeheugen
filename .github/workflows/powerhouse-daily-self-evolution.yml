@@ -127,7 +127,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs
+          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs tests/brain-innovation-public-release-readback-20261120.test.mjs
           node scripts/brain/innovation-original-delivery-continuity.mjs --reconcile
       - name: Persist exact-run daily agent-learning checkpoint even after a failed step
         if: always()
@@ -229,7 +229,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs
+          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs tests/brain-innovation-public-release-readback-20261120.test.mjs
           node scripts/brain/innovation-original-delivery-continuity.mjs --reconcile
 
   # The catalog remains fail-closed, but a stale supplier receipt must not

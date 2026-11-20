@@ -1,0 +1,93 @@
+{
+  "fingerprint": "security|pw-mo14|anonymous-select-insert-youth-assessments|20261120",
+  "obligation_id": "SECURITY_PW_MINOR_DATA_RLS_DENY_20261120",
+  "owner": "existing Powerhouse Security Operations / original Supabase backend data owner",
+  "compiler": {
+    "failure_class": "ANONYMOUS_MINOR_ASSESSMENTS_DATA_API_EXPOSURE",
+    "scope": "BACKEND_SECURITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-pw-minors-rls-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-pw-minors-rls-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-pw-minors-rls-20261120.test.mjs"
+    ],
+    "live_provider_probe": [
+      "Supabase read-only has_table_privilege('anon','public.pw_beoordelingen','SELECT') = false",
+      "Supabase read-only has_table_privilege('service_role','public.pw_beoordelingen','SELECT') = true"
+    ],
+    "mode_note": "Historical, shadow and CI-canary run source-owned security regression tests. Provider runtime validation is separate and must not be inferred from CI-only tests."
+  },
+  "root_cause": "2026-09-03 legacy PW MO14 assessment intake created SELECT/INSERT RLS policies with true predicates for anon and authenticated roles, causing broad public Data API read/write access to player assessment and lineup tables. The table contained 5 actual assessments on audit day.",
+  "source_evidence": {
+    "date": "2026-11-20",
+    "supabase_project": "adhjwmvyoixzjtmiroln",
+    "source_migration": "supabase/migrations/20260903085305_pw_mo14_beoordelingen_intake.sql",
+    "before": {
+      "pw_beoordelingen": {
+        "rows": 5,
+        "anon_select": true,
+        "anon_insert": true
+      },
+      "pw_opstellingen": {
+        "rows": 0,
+        "anon_select": true,
+        "anon_insert": true
+      }
+    },
+    "applied_provider_migration": {
+      "version": "20261120134537",
+      "name": "security_pw_mo14_private_player_data_20261120"
+    },
+    "after": {
+      "pw_beoordelingen": {
+        "rls_enabled": true,
+        "anon_select": false,
+        "anon_insert": false,
+        "authenticated_select": false,
+        "authenticated_insert": false,
+        "service_select": true,
+        "service_insert": true,
+        "public_policy_count": 0
+      },
+      "pw_opstellingen": {
+        "rls_enabled": true,
+        "anon_select": false,
+        "anon_insert": false,
+        "authenticated_select": false,
+        "authenticated_insert": false,
+        "service_select": true,
+        "service_insert": true,
+        "public_policy_count": 0
+      }
+    },
+    "client_compatibility_review": "Existing public pw-mo14-1.netlify.app original homepage JS data.js/player.js/team.js/sync.js did not reference either table; the active zaal/veld coach uses local device state, not these data API paths.",
+    "risk_after": "Legacy direct-anonymous review submission is no longer permitted. Future shared coaching assessment requires a server-authorized, authenticated, row-scoped API; do not silently regrant anon."
+  },
+  "correction": {
+    "sql": "supabase/migrations/20261120134537_security_pw_mo14_private_player_data_20261120.sql",
+    "approach": "reversible REVOKE ALL from anon and authenticated, DROP permissive select and insert policies, preserve all data and service_role privileges",
+    "verification": "Supabase direct readback of effective table privileges and policies after migration"
+  },
+  "prevention": [
+    "Never expose named minor player assessment/observations through anon SELECT.",
+    "Do not use TO anon/authenticated WITH CHECK true for write access to youth player evaluation data.",
+    "Require authenticated user plus tenant/team row ownership for any future data API access; service role only on trusted backend.",
+    "Check effective database grants and RLS policy expressions, not just relrowsecurity flags.",
+    "For emergency fixes, record exact provider migration and synchronize the original GitHub migration-history lock; protected source merge remains independently OPEN."
+  ],
+  "tests": [
+    "tests/brain-security-pw-minors-rls-20261120.test.mjs"
+  ],
+  "status": "SUPABASE_PROVIDER_ACL_VERIFIED_SOURCE_PR_PENDING",
+  "next_action": "Protect source migration through existing branch and PR checks; for shared review capabilities create user-bound Auth/RLS with server-side rate limits and abuse monitoring, not generic anonymous policies.",
+  "independent_provider_privilege_readback_proven": true,
+  "independent_original_git_source_merge_proven": false
+}

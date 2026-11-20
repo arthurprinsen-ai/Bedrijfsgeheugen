@@ -1,0 +1,62 @@
+{
+  "fingerprint": "powerhouse|personal-linkedin|verified-ai-data-software-builder-leadership|20261120-v1",
+  "event_date": "2026-11-20",
+  "source": "explicit-user-editorial-intent",
+  "channel": "linkedin_personal",
+  "owner": "canonical-powerhouse-content-orchestrator-and-original-personal-publisher",
+  "observation": "Verified AI-native founder stories were overwritten by later unconditional personal-life-only system prompt and categorically vetoed by last-mile source validator.",
+  "user_authorized_change": "Make real source-backed AI/data/BI/software engineering and repetitive-process automation a core subject of personal LinkedIn, with genuine personal first-person voice.",
+  "positioning": "AI Technology Leader | Data & BI | Software Engineering | Intelligent Automation",
+  "topical_weights_percent": {
+    "building": 30,
+    "automation": 20,
+    "technology_leadership": 15,
+    "bi_data_intelligence": 15,
+    "engineering_lessons": 10,
+    "founder_journey": 10
+  },
+  "correction": "Route source-proven builder stories through original authoring branch and independent pre-publish checks; non-builder personal anecdotes retain original personal-life requirements.",
+  "preventive_guards": [
+    "source revision and first-person truth",
+    "build event source-backed and identity verified",
+    "no fake experience or client outcomes",
+    "no interchangeability with company page",
+    "exact final text hash and independent review",
+    "semantic story family uniqueness",
+    "single original authorized provider create",
+    "provider-native ID and independent readback",
+    "no false green",
+    "keep original executor running"
+  ],
+  "implementation_state": "proposed_on_feature_branch_not_production_verified",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "safety_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "An unconditional personal life editorialSystem assignment overwrote a verified AI-native builder prompt and a later first-person gate categorically vetoed all builder stories.",
+  "prevention_rule": "Select verified first-person builder and personal-life modes through the original publisher with source-proof gates, no synthetic user experience, exact hash and independent provider readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ]
+  },
+  "observed_evidence": {
+    "source_inspection": "generator prompt overwrite and last-mile categorical builder veto confirmed",
+    "test_authority": "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs",
+    "original_publication_state": "2026-11-20 personal blocked; not marked published"
+  },
+  "evidence": {
+    "root_cause_readback": "supabase/functions/powerhouse-content-orchestrator/index.ts: later unconditional life-only prompt assignment followed verified builder branch",
+    "safety_gate_readback": "supabase/functions/_shared/personal-first-person-story-gate.mjs: categorical builder reject before original publisher",
+    "canonical_ci": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44705660500 (protected admission: learning compiler passed; semantic closure required evidence shape)",
+    "regression_tests": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ],
+    "live_provider_outcome": "NOT_PROVEN; 2026-11-20 personal obligation blocked"
+  }
+}
