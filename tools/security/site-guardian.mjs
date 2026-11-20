@@ -22,7 +22,7 @@ export function validateInventory(config){
   const u=new URL(s.url);
   if(!/^[a-z0-9-]{3,75}$/.test(s.id)||ids.has(s.id)||urls.has(s.url)||u.protocol!=='https:'||!allowedHost(u.hostname)||u.username||u.password||u.search||u.hash)
    throw Error('INVALID_SITE_OR_DUPLICATE_INVENTORY');
-  if(!['critical','standard','protected','archive'].includes(s.mode))throw Error('INVALID_MONITORING_MODE');
+  if(!['critical','coach','standard','protected','archive'].includes(s.mode))throw Error('INVALID_MONITORING_MODE');
   ids.add(s.id);urls.add(s.url);
  }
  if(!ids.has('bedrijfsgeheugen')||!ids.has('pw-zaalcoach')||!ids.has('pw-veldcoach'))throw Error('REQUIRED_PRODUCTION_SITE_MISSING');
@@ -44,7 +44,7 @@ export function classifyResponse(site,response){
  const u=new URL(response.url||site.url);
  if(!allowedHost(u.hostname)||u.protocol!=='https:')return {status:'FAIL',code:'UNEXPECTED_REDIRECT'};
  const checked=evaluateHeaders(h,site.mode==='coach'?'coach':'business');
- if(site.mode==='critical'&&!checked.passed)return {status:'FAIL',code:'CRITICAL_HEADERS_INCOMPLETE',missing:checked.missing};
+ if((site.mode==='critical'||site.mode==='coach')&&!checked.passed)return {status:'FAIL',code:'CRITICAL_HEADERS_INCOMPLETE',missing:checked.missing};
  if(site.mode==='standard'){
   if((h.get('x-content-type-options')||'').toLowerCase()!=='nosniff'||!(h.get('strict-transport-security')||'').includes('max-age='))
    return {status:'WARN',code:'STANDARD_SECURITY_HEADERS_INCOMPLETE'};
