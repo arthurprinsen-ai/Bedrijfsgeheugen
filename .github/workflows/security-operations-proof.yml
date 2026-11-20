@@ -9,6 +9,16 @@ on:
       - 'powerhouse/assurance/security-operations-closure.json'
       - 'docs/powerhouse/POWERHOUSE_SECURITY_OPERATIONS_CLOSURE.md'
       - '.github/workflows/security-operations-proof.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '_headers'
+      - 'netlify.toml'
+      - 'tools/security/verify-public-security-headers.mjs'
+      - 'tests/brain-security-csp-web-boundary-20261120.test.mjs'
+      - 'tests/brain-security-live-headers-monitor-20261120.test.mjs'
+      - 'brain/learning/*security*'
+      - '.github/workflows/security-operations-proof.yml'
   schedule:
     - cron: '17 5 * * 1'
   workflow_dispatch:
@@ -37,8 +47,13 @@ jobs:
           node-version: '22'
       - name: Contract tests
         run: node --test tests/security-operations-proof.test.mjs
+      - name: HTTP browser defense regression tests
+        run: node --test tests/brain-security-csp-web-boundary-20261120.test.mjs tests/brain-security-live-headers-monitor-20261120.test.mjs
       - name: Structural fail-closed validation
         run: node scripts/security-operations-proof.mjs --check
+      - name: Independent weekly production HTTP security proof
+        if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.require_live) }}
+        run: node tools/security/verify-public-security-headers.mjs
       - name: Full closure gate when explicitly required
         if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.require_live) }}
         run: node scripts/security-operations-proof.mjs --require-live
