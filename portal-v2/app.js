@@ -519,6 +519,10 @@ addEventListener('keydown',e=>{
  else if(!e.shiftKey&&(active===last||!sheet.contains(active))){e.preventDefault();first.focus();}
 });
 addEventListener('resize',render);render();
+// One original mounted-shell signal for the parser-time boot watchdog.
+// This is shell readiness only, never an authenticated tenant/Brain receipt.
+document.documentElement.dataset.bgPortalAppBoot='ready';
+globalThis.__bgMarkPortalBootReady?.();
 // Revalidate when the user returns and every 15 minutes while the portal is
 // visible. Domain refresh rejects dirty state and never overwrites a pending ACK.
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void revalidateVisibleCustomer();});
