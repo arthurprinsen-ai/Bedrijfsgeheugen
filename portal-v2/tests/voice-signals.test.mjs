@@ -69,3 +69,10 @@ test('triggered signal creates an owned, dated task proposal only',()=>{
   assert.throws(()=>buildSignalTask(result,{owner:'A',due:'2026-11-99'}));
   assert.throws(()=>buildSignalTask({...result,triggered:false},{owner:'A',due:'2026-11-30'}),/NOT_TRIGGERED/);
 });
+
+test('cash alert reads the actual V2 financing source, not an orphan KPI field',()=>{
+  const found=evaluateSignals([{id:'cash-low',metricId:'cash',operator:'below',threshold:1000}],{portal:{valueFinance:{cash:500}}},{authenticated:true})[0];
+  assert.equal(found.value,500);
+  assert.equal(found.triggered,true);
+  assert.equal(found.evidence.sourcePath,'portal.valueFinance.cash');
+});
