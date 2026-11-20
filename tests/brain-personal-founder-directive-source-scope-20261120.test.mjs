@@ -50,6 +50,12 @@ test('original writer and independent reviewer share the exact source-scoped pre
  assert.ok(reviewer.includes('personalFirstPersonCopyViolations'));
  assert.ok(publisher.includes('personalLastMilePublicationViolations'));
  assert.ok(publisher.includes('verifyCurrentPersonalStorySource'));
+ // The production publisher must deploy the new shared guard too, rather
+ // than relying on a reviewer bundle with a different deployment revision.
+ const direct='personalFounderDecisionSourceScopeViolations(commentary,approval?.evidence||{})';
+ assert.ok(publisher.includes(direct));
+ assert.ok(publisher.indexOf(direct) < publisher.indexOf("LINKEDIN_CREATE_LINKED_IN_POST"));
+ assert.match(publisher,/PERSONAL_FOUNDER_SOURCE_SCOPE_LAST_MILE_VETO/);
 });
 
 
