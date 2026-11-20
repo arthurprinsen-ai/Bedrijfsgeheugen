@@ -21,29 +21,7 @@ export default async request=>{
  const tenantId=wantsCanonical?'canonical':ownTenant;
  try{
   const response=await client.get(tenantId);
-  if(admin)return json(response);
-  // Tenant isolation remains on the server. Read only the platform heartbeat
-  // from canonical scope and project its non-sensitive verification metadata.
-  // NEVER expose provider URLs, evidence payloads, incidents or tenant data.
-  const projected=projectCustomerSecurityTrustResponse(response);
-  let platform=null;
-  try{
-   const own=await client.get('canonical');
-   const rows=Array.isArray(own?.snapshot?.managementObservations)?own.snapshot.managementObservations:[];
-   const heartbeat=rows.find(row=>String(row.provider_key||row.providerKey||'')==='WEBSITE'
-    &&String(row.control_key||row.controlKey||'')==='SECURITY_HEARTBEAT');
-   if(heartbeat)platform={
-    provider_key:'WEBSITE',control_key:'SECURITY_HEARTBEAT',status:heartbeat.status,
-    evidence_available:heartbeat.evidence_available??heartbeat.evidenceAvailable??false,
-    observed_at:heartbeat.observed_at??heartbeat.observedAt??null,
-    expires_at:heartbeat.expires_at??heartbeat.expiresAt??null
-   };
-  }catch{ /* Unavailable canonical status must remain UNKNOWN, never green. */ }
-  projected.snapshot.managementObservations=(projected.snapshot.managementObservations||[])
-   .filter(row=>String(row.provider_key||row.providerKey||'')!=='WEBSITE'
-    ||String(row.control_key||row.controlKey||'')!=='SECURITY_HEARTBEAT');
-  if(platform)projected.snapshot.managementObservations.push(platform);
-  return json(projected);
+  return json(admin?response:projectCustomerSecurityTrustResponse(response));
  }
  catch(error){return json({error:error?.code||'SECURITY_TRUST_READ_FAILED'},502);}
 };
