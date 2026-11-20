@@ -1,4 +1,5 @@
 import postgres from "npm:postgres@3.4.7";
+import {planOriginalHeartbeatObservations,planNotificationSafety,PORTAL_SIGNAL_HEARTBEAT_CONTRACT} from "./portal-signal-heartbeat.mjs";
 
 const DB_REF="adhjwmvyoixzjtmiroln";
 const DB_POOLER_HOST="aws-0-eu-central-1.pooler.supabase.com";
@@ -358,6 +359,73 @@ async function runOutboundLanes(){
   });
 }
 
+
+/**
+ * Tenant alert observations in the existing five-minute Powerhouse Heartbeat.
+ * No parallel scheduler, sender, customer state writer or approval bypass.
+ */
+async function observePortalSignals(){
+  try{
+    const outcome=await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '10000ms'");
+      await tx.unsafe("set local lock_timeout = '1200ms'");
+      const lock=await tx.unsafe("select pg_try_advisory_xact_lock(hashtextextended('portal-voice-alert-heartbeat-v1',0)) as held");
+      if(lock?.[0]?.held!==true)return {state:"ALREADY_CHECKED_BY_PEER",planned:0,keys:[],coverageTruncated:false};
+      const rows=await tx.unsafe(
+        "select tenant_id,layer,payload,source_updated_at,updated_at from public.portal_state_layers "+
+        "where layer in ('legacy-migration','canonical-brain') "+
+        // Include revocations (including empty rules and missing portal data):
+        // excluding them would resurrect consent from older tenant layers.
+        "order by updated_at desc limit 201"
+      );
+      const observations=await planOriginalHeartbeatObservations(rows.slice(0,200));
+      const keys=[];
+      let inserted=0;
+      for(const observation of observations.slice(0,35)){
+        const delivery=planNotificationSafety(observation);
+        const evidence={...observation.evidence,notificationState:delivery.state,
+          externalMessagesSent:0,actionExecutionVerified:false};
+        const stored=await tx.unsafe(
+          "insert into public.powerhouse_runtime_events "+
+          "(dedupe_key,event_type,source,subject_key,channel,occurred_at,state,data_quality,evidence,context) "+
+          "values($1,'portal_user_signal_observed','powerhouse-commercial-heartbeat-runner',$2,'portal',now(),'observed','OBSERVED',"+
+          "$3::jsonb,jsonb_build_object('contract',$4::text,'original_heartbeat_owner',true,'tenant_identifier_masked',true,'no_parallel_worker',true)) "+
+          "on conflict(dedupe_key) do nothing returning event_id",
+          [observation.dedupeKey,'tenant:'+observation.tenantFingerprint,
+           JSON.stringify(evidence),PORTAL_SIGNAL_HEARTBEAT_CONTRACT]
+        );
+        keys.push(observation.dedupeKey);
+        inserted+=stored.length;
+      }
+      return {state:observations.length?"OBSERVED_INPUT_THRESHOLD_NOT_PROVIDER_OUTCOME":"NO_CONFIGURED_TRIGGER",
+        planned:observations.length,inserted,keys,coverageTruncated:rows.length>200||observations.length>35};
+    });
+    if(!outcome.keys?.length)return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
+      state:outcome.state,observedSignalCount:outcome.planned||0,
+      technicalReadbackVerified:false,notificationsSent:0,actionsExecuted:0,
+      coverageTruncated:outcome.coverageTruncated||false};
+    const placeholders=outcome.keys.map((_:string,i:number)=>'$'+(i+1)).join(',');
+    const rows=await db().unsafe(
+      "select dedupe_key,source,event_type,state,evidence->>'contract' as contract "+
+      "from public.powerhouse_runtime_events where dedupe_key in ("+placeholders+")",
+      outcome.keys
+    );
+    const exact=new Set(rows.filter((row:any)=>row.source==="powerhouse-commercial-heartbeat-runner"&&
+      row.event_type==="portal_user_signal_observed"&&row.state==="observed"&&
+      row.contract===PORTAL_SIGNAL_HEARTBEAT_CONTRACT).map((row:any)=>row.dedupe_key));
+    return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
+      state:exact.size===outcome.keys.length?"OBSERVATION_READBACK_VERIFIED":"OBSERVATION_READBACK_DUE",
+      observedSignalCount:outcome.planned,insertedObservations:outcome.inserted,
+      technicalReadbackVerified:exact.size===outcome.keys.length,
+      coverageTruncated:outcome.coverageTruncated,
+      measurementFreshnessVerified:false,notificationsSent:0,actionsExecuted:0};
+  }catch(error){
+    console.error("ORIGINAL_PORTAL_SIGNAL_HEARTBEAT_FAILED",error instanceof Error?error.message:String(error));
+    return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,state:"RETRYABLE_OBSERVATION_ERROR",
+      technicalReadbackVerified:false,notificationsSent:0,actionsExecuted:0};
+  }
+}
+
 Deno.serve(async(req:Request)=>{
   if(req.method!=="POST")return json({ok:false,error:"METHOD_NOT_ALLOWED"},405);
 
@@ -370,10 +438,11 @@ Deno.serve(async(req:Request)=>{
   const brainActionFeed=await materializeCommercialIntent();
   const contactAuthorityReview=await reviewContactAuthority();
   const outboundLanesResult=await runOutboundLanes();
+  const portalSignalObservation=await observePortalSignals();
   try{
     const result=await runHeartbeat();
     const croCommercialEvidence=await observeCroCommercialProof();
-    return json({...result,cro_commercial_evidence:croCommercialEvidence,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult},result.state==="SKIPPED_OVERLAP"?202:200);
+    return json({...result,cro_commercial_evidence:croCommercialEvidence,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult,portal_signal_observation:portalSignalObservation},result.state==="SKIPPED_OVERLAP"?202:200);
   }catch(error){
     console.error("POWERHOUSE_COMMERCIAL_HEARTBEAT_RUNNER_FAILED",error instanceof Error?error.message:String(error));
     return json({
@@ -381,7 +450,8 @@ Deno.serve(async(req:Request)=>{
       error:"COMMERCIAL_HEARTBEAT_FAILED",
       contract:"powerhouse-commercial-heartbeat-external-v1",
       brain_action_feed:brainActionFeed,
-      outbound_lanes:outboundLanesResult
+      outbound_lanes:outboundLanesResult,
+      portal_signal_observation:portalSignalObservation
     },503);
   }
 });
