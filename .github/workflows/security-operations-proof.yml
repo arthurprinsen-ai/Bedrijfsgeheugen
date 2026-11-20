@@ -20,12 +20,6 @@ on:
     - cron: '17 5 * * 1'
     # Frequent lightweight live guard for both original Netlify sites.
     - cron: '47 1,7,13,19 * * *'
-  pull_request:
-    paths:
-      - '.github/workflows/security-operations-proof.yml'
-      - 'tools/security/verify-public-security-headers.mjs'
-      - 'tests/brain-security-live-headers-monitor-20261120.test.mjs'
-      - 'tests/brain-security-live-guard-contract-20261120.test.mjs'
   workflow_dispatch:
     inputs:
       require_live:
