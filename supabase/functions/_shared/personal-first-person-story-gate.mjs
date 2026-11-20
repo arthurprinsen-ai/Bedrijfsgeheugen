@@ -18,19 +18,35 @@ export function isPersonalPublicationDay(runDate){
 export function personalFirstPersonSourceViolations(evidence={},runDate){
  const e=evidence||{};const out=[];
  const fail=condition=>out.push(condition);
+ const builder=e.ai_native_builder_story_verified===true;
  if(!isPersonalPublicationDay(runDate))fail('PERSONAL_SUNDAY_OR_INVALID_DATE');
- if(e.personal_truth_verified!==true||e.arthur_anchor_verified!==true||e.first_person_claims_verified!==true)
-   fail('PERSONAL_USER_EXPERIENCE_NOT_VERIFIED');
- if(e.observational_personal_theme_verified===true||e.ai_native_builder_story_verified===true||e.public_theme_source_verified===true)
-   fail('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN');
- if(e.personal_life_topic!==true||e.business_topic!==false||e.corporate_voice!==false||e.company_page_interchangeable!==false||e.forced_business_moral!==false)
-   fail('PERSONAL_COMPANY_SEPARATION_REQUIRED');
- if(e.personal_life_only_policy!==PERSONAL_LIFE_POLICY)fail('PERSONAL_LIFE_POLICY_NOT_VERIFIED');
+ if(builder) {
+   // First-person technology leadership is permitted ONLY for an independently
+   // verified Arthur build event, never a synthetic case, company ad or news.
+   if(e.ai_native_builder_policy!=='personal-linkedin-ai-native-builder-v1'
+      ||e.build_event_verified!==true||e.arthur_anchor_verified!==true
+      ||e.source_backed!==true||e.business_topic!==true
+      ||e.corporate_voice!==false||e.company_page_interchangeable!==false
+      ||e.forced_business_moral!==false||e.first_person_claims_verified!==true)
+     fail('PERSONAL_VERIFIED_BUILDER_SOURCE_REQUIRED');
+   if(e.observational_personal_theme_verified===true||e.public_theme_source_verified===true)
+     fail('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN');
+ } else {
+   if(e.personal_truth_verified!==true||e.arthur_anchor_verified!==true||e.first_person_claims_verified!==true)
+     fail('PERSONAL_USER_EXPERIENCE_NOT_VERIFIED');
+   if(e.observational_personal_theme_verified===true||e.public_theme_source_verified===true)
+     fail('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN');
+   if(e.personal_life_topic!==true||e.business_topic!==false||e.corporate_voice!==false||e.company_page_interchangeable!==false||e.forced_business_moral!==false)
+     fail('PERSONAL_COMPANY_SEPARATION_REQUIRED');
+   if(e.personal_life_only_policy!==PERSONAL_LIFE_POLICY)fail('PERSONAL_LIFE_POLICY_NOT_VERIFIED');
+ }
  if(e.sensitive_private_detail===true&&e.sensitive_private_approval!==true)fail('PERSONAL_PRIVATE_DETAIL_NOT_APPROVED');
  const text=clean(e.source_text);
  if(text.length<70)fail('PERSONAL_USER_FACT_SOURCE_TOO_SHORT');
  const lineage=Array.isArray(e.source_lineage)?e.source_lineage.map(clean):[clean(e.source_lineage)];
- if(!lineage.some(x=>userFactOrigin.test(x)))fail('PERSONAL_USER_AUTHORED_PROVENANCE_REQUIRED');
+ if(builder) {
+   if(!lineage.some(Boolean))fail('PERSONAL_VERIFIED_BUILD_LINEAGE_REQUIRED');
+ } else if(!lineage.some(x=>userFactOrigin.test(x)))fail('PERSONAL_USER_AUTHORED_PROVENANCE_REQUIRED');
  if(lineage.some(x=>/powerhouse_content_artifacts:|powerhouse_mira_problem_signals_v1:|bg_externe_signalen:|google\.com\/goto/i.test(x)))
    fail('PERSONAL_GENERATED_OR_PUBLIC_ARTICLE_SOURCE_FORBIDDEN');
  if(unwantedStoryFamily.test(clean(e.content_id)))fail('PERSONAL_EXCLUDED_OLD_STORY_FAMILY');
@@ -41,11 +57,11 @@ export function personalFirstPersonCopyViolations(text,evidence={},runDate){
  const out=personalFirstPersonSourceViolations(evidence,runDate);
  const body=clean(text);
  if(!firstPerson.test(body.slice(0,260)))out.push('PERSONAL_FIRST_PERSON_OPENING_REQUIRED');
- if(businessTopic.test(body))out.push('PERSONAL_COMPANY_COPY_NOT_ALLOWED');
+ if(evidence?.ai_native_builder_story_verified!==true&&businessTopic.test(body))out.push('PERSONAL_COMPANY_COPY_NOT_ALLOWED');
  if(commercialCta.test(body))out.push('PERSONAL_SALES_CTA_NOT_ALLOWED');
  if(/#[\p{L}\p{N}_]+/u.test(body))out.push('PERSONAL_HASHTAGS_NOT_ALLOWED');
  if(/https?:\/\/|www\./iu.test(body))out.push('PERSONAL_PROMOTIONAL_URL_NOT_ALLOWED');
- if(!/\b(?:stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|dacht|dacht ik|maakte|kreeg|zei|had|heb|ben|was|sta|ga|doe|reed|coach|vertelde|zag)\b/iu.test(body))
+ if(!/\b(?:stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|dacht|dacht ik|maakte|kreeg|zei|had|heb|ben|was|sta|ga|doe|reed|coach|vertelde|zag|bouw|bouwde|bouwen|gebouwd|ontwikkel|ontwikkelde|ontwerp|ontwierp|implementeer|implementeerde|automatiseer|automatiseerde|testte)\b/iu.test(body))
    out.push('PERSONAL_CONCRETE_OWN_MOMENT_REQUIRED');
  return [...new Set(out)];
 }
