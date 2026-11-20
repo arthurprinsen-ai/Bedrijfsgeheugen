@@ -14,9 +14,16 @@
       "tests/brain-security-pw-minors-rls-20261120.test.mjs"
     ],
     "canary": [
+      "tests/brain-security-pw-minors-rls-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-pw-minors-rls-20261120.test.mjs"
+    ],
+    "live_provider_probe": [
       "Supabase read-only has_table_privilege('anon','public.pw_beoordelingen','SELECT') = false",
       "Supabase read-only has_table_privilege('service_role','public.pw_beoordelingen','SELECT') = true"
-    ]
+    ],
+    "mode_note": "Historical, shadow and CI-canary run source-owned security regression tests. Provider runtime validation is separate and must not be inferred from CI-only tests."
   },
   "root_cause": "2026-09-03 legacy PW MO14 assessment intake created SELECT/INSERT RLS policies with true predicates for anon and authenticated roles, causing broad public Data API read/write access to player assessment and lineup tables. The table contained 5 actual assessments on audit day.",
   "source_evidence": {
