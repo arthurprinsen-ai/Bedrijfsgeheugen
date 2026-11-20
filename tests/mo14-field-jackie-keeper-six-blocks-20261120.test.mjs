@@ -1,17 +1,20 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
-const source=readFileSync('pw-mo14-1/veldplanner/index.html','utf8');
+const source=readFileSync('pw-mo14-1/zaalplanner/field-unified.js','utf8');
+const page=readFileSync('pw-mo14-1/zaalplanner/index.html','utf8');
+const oldPage=readFileSync('pw-mo14-1/veldplanner/index.html','utf8');
+const styles=readFileSync('pw-mo14-1/zaalplanner/field-unified.css','utf8');
 const extract=(name,next)=>{const begin=source.indexOf('const '+name+'=');const end=source.indexOf(';\nconst '+next+'=',begin);assert.ok(begin>=0&&end>begin,name);return JSON.parse(source.slice(begin+('const '+name+'=').length,end))};
 const roster=extract('PLAYERS','LINEUPS'),plans=extract('LINEUPS','WINDOWS');
 const winStart=source.indexOf('const WINDOWS='),winEnd=source.indexOf(';\n',winStart);
 const windows=JSON.parse(source.slice(winStart+'const WINDOWS='.length,winEnd));
 test('field mode is distinct from indoor mode and has six accurate annotated blocks',()=>{
  assert.equal(plans.length,6);assert.deepEqual(windows,[[0,12],[12,24],[24,35],[35,47],[47,59],[59,70]]);
- assert.match(source,/href="https:\/\/pw-mo14-1\.netlify\.app\/zaalplanner\/"/);
- assert.match(source,/href="https:\/\/pw-mo14-1\.netlify\.app\/veldplanner\/"/);
- assert.match(source,/#printAll\{display:block!important\}/);
- assert.match(source,/id="png"/);assert.match(source,/id="pdf"/);
+ assert.match(oldPage,/href="https:\/\/pw-mo14-1\.netlify\.app\/zaalplanner\/#field"/);
+ assert.match(oldPage,/window\.location\.replace/);
+ assert.match(styles,/#fieldPrint\{display:block!important\}/);
+ assert.match(page,/id="fieldPng"/);assert.match(page,/id="fieldPdf"/);
 });
 test('Jackie is GK all match; Coco-Mijn exclusively forward or on bench',()=>{
  const positions=['LV','RV','AM','LM','RM','VM','LA','LC','RC','RA','K'];
@@ -40,7 +43,8 @@ test('field playing minutes balance and names appear exactly once on bench',()=>
  assert.equal(min.Jackie,70);
  for(const name of Object.keys(roster).filter(x=>x!=='Jackie')){assert.ok([58,59].includes(min[name]),name);assert.equal(bank.get(name),1,name);}
 });
-test('static inline JavaScript parses so the 6-card field app is interactive',()=>{
- const js=source.slice(source.indexOf('<script>')+8,source.indexOf('</script>'));
- assert.doesNotThrow(()=>new Function(js));
+test('integrated field module JavaScript parses and is bundled in the unified app',()=>{
+ assert.doesNotThrow(()=>new Function(source));
+ assert.match(page,/field-unified\.js/);
+ assert.match(page,/data-view-panel="field"/);
 });
