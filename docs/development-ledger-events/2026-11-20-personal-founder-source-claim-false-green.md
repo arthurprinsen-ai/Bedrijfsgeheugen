@@ -12,3 +12,10 @@
 - Status at PR creation: PROTECTED_CANDIDATE, not production; current post remediation OPEN.
 
 - Protected preflight failure: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44748661697 (six original migration-history tests failed). Original provider 888 applied migration records; immutable source lock 886. Restored exact provider-applied security migration 20261120134537 SQL from original provider statements and appended exactly original 20261120134537 + personal 20261120143500 identity records to existing lock, preserving old 886 rows. No SQL replay, no RLS change, no CI gate bypass. Re-test required.
+
+
+## Original migration lock preflight reconciliation (20 Nov, current source candidate)
+
+The existing Required preflight rejected two premature attempts to change `supabase/migration-history.lock.json` together with the missing executable SQL under `supabase/migrations/20261120134537_security_pw_mo14_private_player_data_20261120.sql`: `UNEXPECTED_PROTECTED_BASE`. The immutable lock remains **exactly as protected main** in this source-only PR. The new security SQL source is byte-for-byte reconstructed from the original provider's `supabase_migrations.schema_migrations.statements` for the already applied native migration, not a newly invented or rerun migration. The other provider-applied personal source migration `20261120143500` is already committed to main in #6068.
+
+The original provider attested 888 applied versions with two new identities after the protected 886-entry source lock. **After** a protected PR merges the exact missing executable SQL source, the source-lock 888-entry append must be handled as a separate canonical reconciliation PR with the unchanged 886-prefix and independent native provider check. Do not waive the protected migration gate or predeclare a new migration as applied. Until both steps are proven, the migration-history reconciliation remains OPEN. This does not undo or re-send the existing LinkedIn post.
