@@ -52,14 +52,12 @@ test('original writer and independent reviewer share the exact source-scoped pre
 });
 
 
-test('two provider-applied migrations appended immutably and no source-replay invented',()=>{
+test('provider-applied security SQL source recovered exactly, immutable production lock is NOT predeclared in source-only PR',()=>{
  const lock=JSON.parse(readFileSync('supabase/migration-history.lock.json','utf8'));
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.at(-2).version,'20261120134537');
- assert.equal(lock.applied.at(-2).name,'security_pw_mo14_private_player_data_20261120');
- assert.equal(lock.applied.at(-1).version,'20261120143500');
- assert.equal(lock.applied.at(-1).name,'personal_verified_founder_source_v2_policy_alignment');
+ assert.equal(lock.applied.at(-1).version,'20261119090500');
+ assert.equal(lock.applied.at(-1).name,'company_signal_word_boundary_verified_entity_v1');
  assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
  const security=readFileSync('supabase/migrations/20261120134537_security_pw_mo14_private_player_data_20261120.sql','utf8');
  assert.ok(security.startsWith('-- Security emergency 2026-11-20'));
