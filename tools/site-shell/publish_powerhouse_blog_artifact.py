@@ -141,7 +141,7 @@ def seo_focus(data):
             return candidate
     return "Bedrijfsgeheugen"
 
-def seo_title(title, focus):
+def _seo_title_raw(title, focus):
     title = re.sub(r"\s+", " ", title).strip()
     # Source-bound question-title normalization: do not turn the first verb
     # ("bereid") into a generic "wat verandert er voor jou" SEO headline.
@@ -165,6 +165,12 @@ def seo_title(title, focus):
         if len(candidate) <= 60:
             return candidate
     return focus[:60].rstrip(" :-")
+
+def seo_title(title, focus):
+    # A published title never starts lowercase: the focus keyword is lowercase,
+    # and "focus: suffix" / "focus: title" were published as-is (20261120).
+    value = _seo_title_raw(title, focus)
+    return value[:1].upper() + value[1:] if value else value
 
 def seo_meta(meta, focus):
     value = re.sub(r"\s+", " ", meta).strip()
