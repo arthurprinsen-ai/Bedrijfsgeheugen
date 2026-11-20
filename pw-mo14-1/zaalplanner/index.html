@@ -456,7 +456,7 @@ render();
 
 
 // === Mobile app shell (without replacing the proven lineup/export algorithm) ===
-const VIEW_IDS=['home','plan','field','team','stats','more','export','settings'];
+const VIEW_IDS=['home','plan','field','team','stats','more','export','settings','field-home','field-team','field-stats','field-tactics','field-export','field-settings','field-more'];
 let activeView = VIEW_IDS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'home';
 function showView(next, scrollTop=true, addHistory=true){
   if(!VIEW_IDS.includes(next))return;
