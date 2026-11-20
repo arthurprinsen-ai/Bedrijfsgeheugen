@@ -32,7 +32,7 @@ test('latest 20-Nov trusted advisor lens in original personal source-backed auth
  assert.ok(generator.includes('zonder vast woordquotum. '+"'+PERSONAL_TRUSTED_ADVISOR_DIRECTION_20261120"));
  assert.ok(!generator.includes("if(pending.channel==='linkedin_personal' && !personalBuilder) {\n      editorialSystem += ' ' + PERSONAL_TRUSTED_ADVISOR_DIRECTION_20261120"));
  assert.match(skill,/Trusted Advisor \+ simpel intelligent bedrijf/);
- assert.match(skill,/geen bewijs.*elke service/iu);
+ assert.match(skill,/not proof.*every service/iu);
 });
 
 test('commercial offers share existing routes but are never made up as live sales or certified service',()=>{
