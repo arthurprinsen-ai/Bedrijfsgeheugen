@@ -4,7 +4,7 @@ export const OVERVIEW_BLOCKS=Object.freeze([
   Object.freeze({id:'legacy-complete',selector:'[data-legacy-complete]',label:'Prioriteit, waarde & capaciteit',defaultSize:'full'}),
   Object.freeze({id:'kpis',selector:'.kpis',label:'Kerncijfers',defaultSize:'full'}),
   Object.freeze({id:'insights',selector:'[data-legacy-overview-insights]',label:'Stand van je bedrijf',defaultSize:'full'}),
-  Object.freeze({id:'intelligence',selector:'.dashboard',label:'Brein & management',defaultSize:'full'}),
+  Object.freeze({id:'intelligence',selector:'.dashboard',label:'Intelligentielaag & management',defaultSize:'full'}),
   Object.freeze({id:'execution',selector:'.lower',label:'Roadmap, kansen & impact',defaultSize:'full'}),
   Object.freeze({id:'questions',selector:'.dv-houder',label:'Verdiepende vragen',defaultSize:'full'}),
   Object.freeze({id:'activities',selector:'.activities',label:'Recente activiteiten',defaultSize:'full'})

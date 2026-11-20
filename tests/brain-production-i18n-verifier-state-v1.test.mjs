@@ -16,7 +16,7 @@ test('production locale verifier proves route and html lang state after a commit
 
 test('production locale verifier retains translated-content and round-trip assertions', async () => {
   const src=await readFile(verifierPath,'utf8');
-  assert.match(src,/English route has no visible Powerhouse SaaS text/);
+  assert.match(src,/English route has no visible Bedrijfsgeheugen SaaS text/);
   assert.match(src,/English route still shows Dutch pricing hero copy/);
   assert.match(src,/deprecated \/nl\/\* route/);
   assert.match(src,/switchPublicLocale\(page, 'en'/);

@@ -48,8 +48,8 @@
       "mode": "presence-seo"
     },
     {
-      "route": "/company-brain",
-      "file": "company-brain.html",
+      "route": "/company-intelligence",
+      "file": "company-intelligence.html",
       "mode": "presence-seo"
     },
     {

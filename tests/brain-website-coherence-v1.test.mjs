@@ -19,11 +19,11 @@ test('pricing, ai ecosystem and integrations have route-scoped layout guards',()
   assert.match(css,/data-bg-route="\/systemen-koppelen"/);
 });
 
-test('product page gets canonical Powerhouse website portal parity section',()=>{
+test('product page gets canonical Bedrijfsgeheugen website portal parity section',()=>{
   assert.match(finalizer,/data-bg-product-truth-v1/);
-  assert.match(finalizer,/Powerhouse Intelligence/);
-  assert.match(finalizer,/Powerhouse Agents/);
-  assert.match(finalizer,/Powerhouse Connect/);
+  assert.match(finalizer,/Bedrijfsgeheugen Intelligence/);
+  assert.match(finalizer,/Bedrijfsgeheugen Agents/);
+  assert.match(finalizer,/Bedrijfsgeheugen Connect/);
 });
 
 test('portal loads the parity stylesheet',()=>{
@@ -48,9 +48,9 @@ test('pricing composer preserves canonical visual-regression hero hooks',()=>{
 test('product proposition is contextual rather than internal implementation copy',()=>{
   assert.doesNotMatch(finalizer,/Website en portaal vertellen voortaan exact hetzelfde verhaal/);
   assert.match(finalizer,/Eén platform\. Drie lagen die samenwerken\./);
-  assert.match(finalizer,/Powerhouse Intelligence/);
-  assert.match(finalizer,/Powerhouse Agents/);
-  assert.match(finalizer,/Powerhouse Connect/);
+  assert.match(finalizer,/Bedrijfsgeheugen Intelligence/);
+  assert.match(finalizer,/Bedrijfsgeheugen Agents/);
+  assert.match(finalizer,/Bedrijfsgeheugen Connect/);
   assert.match(finalizer,/\/ai-modelwijzer/);
   assert.match(finalizer,/\/portaal-demo/);
 });
@@ -68,10 +68,10 @@ test('package advisor and professional portal demo are real routes',()=>{
   assert.match(pricing,/\/pakketadvies\?/);
   assert.match(pricing,/id="pkgGo"/);
   assert.match(advisor,/PAKKETADVIES/);
-  assert.match(advisor,/Powerhouse Intelligence|Intelligence/);
+  assert.match(advisor,/Bedrijfsgeheugen Intelligence|Intelligence/);
   assert.match(demo,/INTERACTIEVE PORTAAL-DEMO/);
-  assert.match(demo,/Powerhouse Agents/);
-  assert.match(demo,/Powerhouse Connect/);
+  assert.match(demo,/Bedrijfsgeheugen Agents/);
+  assert.match(demo,/Bedrijfsgeheugen Connect/);
 });
 
 test('pricing CTAs and portal visuals are layout-contained',()=>{
@@ -83,12 +83,12 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
   assert.match(portalCss,/overflow:hidden/);
 });
 
-test('product page keeps one primary hero and embeds Powerhouse model in context',()=>{
+test('product page keeps one primary hero and embeds Bedrijfsgeheugen model in context',()=>{
   const productTruth=finalizer.match(/const productTruth=`([\s\S]*?)`;/);
   assert.ok(productTruth,'canonical Dutch product truth block must exist');
-  assert.doesNotMatch(productTruth[1],/POWERHOUSE · HET ACTUELE PRODUCT/);
+  assert.doesNotMatch(productTruth[1],/BEDRIJFSGEHEUGEN · HET ACTUELE PRODUCT/);
   assert.doesNotMatch(productTruth[1],/Website en portaal spreken nu dezelfde taal/);
-  assert.match(productTruth[1],/ZO WERKT POWERHOUSE/);
+  assert.match(productTruth[1],/ZO WERKT BEDRIJFSGEHEUGEN/);
   assert.match(productTruth[1],/Eén platform\. Drie lagen die samenwerken\./);
   assert.match(finalizer,/legacySection/);
   assert.match(finalizer,/firstSection/);
@@ -109,9 +109,9 @@ test('final pixel polish locks pricing, header and responsive portal geometry',(
 test('key route metadata is source-owned and the finalizer no longer rewrites it',()=>{
   // cb18f875 retired the finalizer's metadata/hero rewriting; the route sources own title, description and canonical.
   const routes={
-    'prijzen.html':['Kosten digitalisering mkb | Powerhouse prijzen','/prijzen'],
-    'pakketadvies.html':['Welk Powerhouse-pakket past bij mij? | Bedrijfsgeheugen','/pakketadvies'],
-    'portaal-demo.html':['Interactieve Powerhouse portaal-demo | Bedrijfsgeheugen','/portaal-demo']
+    'prijzen.html':['Kosten digitalisering mkb | Bedrijfsgeheugen prijzen','/prijzen'],
+    'pakketadvies.html':['Welk Bedrijfsgeheugen-pakket past bij mij? | Bedrijfsgeheugen','/pakketadvies'],
+    'portaal-demo.html':['Interactieve Bedrijfsgeheugen portaal-demo | Bedrijfsgeheugen','/portaal-demo']
   };
   for(const [file,[title,route]] of Object.entries(routes)){
     const html=readFileSync(file,'utf8');

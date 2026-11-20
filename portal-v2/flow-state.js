@@ -31,7 +31,7 @@ export function statusLabel(state) {
 }
 
 /* ---------------------------------------------------------------------------
- * Powerhouse-route, geport uit portal-next/portal-flow-renderer.js.
+ * Bedrijfsgeheugen-route, geport uit portal-next/portal-flow-renderer.js.
  *
  * De rest van die flowlaag was hier al gedekt, en strenger: deriveFlowState
  * hierboven weigert stroom te tonen zonder runtime-bewijs, waar portal-next een
@@ -56,7 +56,7 @@ export function agentStatus(agent = {}) {
 }
 
 /**
- * De route door het Powerhouse in vaste volgorde, tot en met de eerste agent
+ * De route door het Bedrijfsgeheugen in vaste volgorde, tot en met de eerste agent
  * die vastloopt. Stille agenten komen er niet in: die doen niets.
  */
 export function powerhouseRoute(agents = []) {

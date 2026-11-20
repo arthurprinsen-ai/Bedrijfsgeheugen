@@ -60,7 +60,7 @@ test('typed zero is a valid measured outcome but does not automatically prove ca
  const row=outcomeFeedbackRows([item])[0];
  assert.equal(row.realized,0);
  assert.equal(row.verified,true);
- assert.match(outcomeFeedbackMarkup([item]),/niet automatisch door Powerhouse veroorzaakte winst/);
+ assert.match(outcomeFeedbackMarkup([item]),/niet automatisch door Bedrijfsgeheugen veroorzaakte winst/);
 });
 
 test('genuine measured evidence and learning proof are visible in one coherent cockpit and advisor',()=>{

@@ -24,7 +24,7 @@ export function renderEntrepreneurJourney(host,journey){
     add(card,'strong','',item.label);
     add(card,'p','',item.detail);
   }
-  // Show what Powerhouse has verifiably proposed, measured and learned.
+  // Show what Bedrijfsgeheugen has verifiably proposed, measured and learned.
   // Counts use the existing tenant-authorized owner projection; absent data is
   // not presented as zero, and no progress bar can imply self-driving success.
   const pilot=journey.autopilot;
@@ -64,7 +64,7 @@ export function renderEntrepreneurJourney(host,journey){
   add(cockpit,'strong','','Mijn ondernemerscockpit');
   add(cockpit,'p','',journey.cockpit.ready
     ?journey.cockpit.verified+' brononderbouwde onderdelen, '+journey.cockpit.actions+' mogelijke acties en '+journey.cockpit.outcomes+' bewezen uitkomsten. Actievoorstellen zijn geen uitvoeringen.'
-    :'De ondernemerscockpit gebruikt alleen mijn geauthenticeerde Powerhouse-gegevens. Zonder projectie blijven resultaten onbekend.');
+    :'De ondernemerscockpit gebruikt alleen mijn geauthenticeerde Bedrijfsgeheugen-gegevens. Zonder projectie blijven resultaten onbekend.');
   const cockpitButton=add(cockpit,'button','eh-text-action','Open mijn cockpit →');
   cockpitButton.type='button';cockpitButton.dataset.entrepreneurPage='ondernemerscockpit';
   const forecast=add(bottom,'article','eh-journey-panel');
@@ -87,8 +87,8 @@ export function renderEntrepreneurJourney(host,journey){
     }
   }
   const sources=add(shell,'p','eh-journey-facts',journey.heartbeat==='TENANT_RUNTIME_OBSERVED'
-    ?'Recente tenantgebonden Brain-runtime gezien. Dit is geen bewijs dat iedere Heartbeat-bron, Notion-pagina, GitHub-taak of externe connector beschikbaar is.'
-    :'De actuele tenantgebonden Brain/Heartbeat-runtime is nog niet bevestigd. Notion, GitHub en Netlify zijn beheer- en bewijsbronnen; alleen geautoriseerde klantprojecties zijn bedrijfsgegevens.');
+    ?'Recente tenantgebonden Brain-runtime gezien. Dit is geen bewijs dat iedere Leerlus-bron, Notion-pagina, GitHub-taak of externe connector beschikbaar is.'
+    :'De actuele tenantgebonden Brain/Leerlus-runtime is nog niet bevestigd. Notion, GitHub en Netlify zijn beheer- en bewijsbronnen; alleen geautoriseerde klantprojecties zijn bedrijfsgegevens.');
   sources.setAttribute('role','status');
   return shell;
 }

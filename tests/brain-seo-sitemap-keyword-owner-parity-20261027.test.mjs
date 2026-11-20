@@ -17,7 +17,7 @@ test("every SEO keyword owner route is listed in sitemap.xml", () => {
 });
 
 test("the routes added with the 27 oct baseline change are present", () => {
-  for (const route of ["/ai-modelwijzer", "/company-brain"]) {
+  for (const route of ["/ai-modelwijzer", "/company-intelligence"]) {
     assert.ok(sitemap.includes(`<loc>https://www.bedrijfsgeheugen.nl${route}</loc>`), route);
   }
 });

@@ -104,7 +104,7 @@ test('het Command Center rekent met de engine zodra er controls zijn', () => {
   assert.ok(pageMetrics('compliance-command-center', {}).every(([, w]) => w === METRIC_EMPTY));
 });
 
-/* ---- Powerhouse-route, geport uit portal-next ---- */
+/* ---- Bedrijfsgeheugen-route, geport uit portal-next ---- */
 import { powerhouseRoute, routeOverzicht, agentStatus } from '../flow-state.js';
 import { pageVisual } from '../page-visuals.js';
 
@@ -145,6 +145,6 @@ test('het overzicht markeert waar de route stopt', () => {
 
 test('de route komt op het scherm en tekent niets zonder gegevens', () => {
   const state = { portal: { runtime: { agents: { items: [{ healthy: true }], route: AGENTEN } } } };
-  assert.match(pageVisual('agentstatus', state), /Route door het Powerhouse/);
+  assert.match(pageVisual('agentstatus', state), /Route door het Bedrijfsgeheugen/);
   assert.equal(pageVisual('agentstatus', {}), '');
 });

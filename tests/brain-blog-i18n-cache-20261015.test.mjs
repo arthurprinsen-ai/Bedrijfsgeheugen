@@ -26,7 +26,7 @@ test('source-specific numbers, amounts, dates and URLs are retained',()=>{
 test('blog SEO and approved attributed facts remain present in EN translation',()=>{
   assert.ok(entries.some(([k,v])=>k.includes('Digitalisering MKB: wat verandert') && v.includes('SME digitalization')));
   assert.ok(entries.some(([k,v])=>k.includes('TKI Bouw en Techniek') && v.includes('€3 million') && v.includes('Bouwend Nederland')));
-  assert.ok(entries.some(([k,v])=>k.includes('Powerhouse') && v.includes('Powerhouse') && v.includes('explicit approval')));
+  assert.ok(entries.some(([k,v])=>k.includes('Bedrijfsgeheugen') && v.includes('Bedrijfsgeheugen') && v.includes('explicit approval')));
   // Parse and match the attributed source URL by protocol, host and exact path.
   // A substring match is vulnerable to lookalike URLs on unrelated hosts.
   const officialSource=urlText=>{

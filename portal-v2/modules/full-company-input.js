@@ -65,7 +65,7 @@ function completionMarkup(schema,state){
 
 function groupedForm(groups,state){
  const completion=calculateCompletion(fullCompanyInputSchema(),state);
- return `<section class="v2inputgroup"><header><h2>Je gegevens invullen</h2></header><p>Alles wat je hier invult rekent door in analyse, conclusie en advies. Ontbrekende gegevens blijven zichtbaar ontbrekend.</p></section>${completionMarkup(fullCompanyInputSchema(),state)}<div class="v2fullinput">${groups.map(group=>`<section class="v2inputgroup" data-input-group="${esc(group.id)}"><header><h3>${esc(displayGroupLabel(group))}</h3><span>${group.fields.length} velden</span></header><div class="v2formgrid">${group.fields.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?2:''))).join('')}</div></section>`).join('')}</div><section class="v2inputgroup"><header><h3>Wat hieruit blijkt</h3></header><p>${completion.percentage}% van de verplichte bedrijfsgegevens is ingevuld. Wat ontbreekt wordt niet als feit gebruikt.</p></section><div class="v2formactions"><button type="button" class="pvprimary" data-save-full-input>Alles opslaan</button><span data-full-input-status>Wijzigingen worden tenant-scoped in dezelfde Powerhouse-state opgeslagen.</span></div>`;
+ return `<section class="v2inputgroup"><header><h2>Je gegevens invullen</h2></header><p>Alles wat je hier invult rekent door in analyse, conclusie en advies. Ontbrekende gegevens blijven zichtbaar ontbrekend.</p></section>${completionMarkup(fullCompanyInputSchema(),state)}<div class="v2fullinput">${groups.map(group=>`<section class="v2inputgroup" data-input-group="${esc(group.id)}"><header><h3>${esc(displayGroupLabel(group))}</h3><span>${group.fields.length} velden</span></header><div class="v2formgrid">${group.fields.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?2:''))).join('')}</div></section>`).join('')}</div><section class="v2inputgroup"><header><h3>Wat hieruit blijkt</h3></header><p>${completion.percentage}% van de verplichte bedrijfsgegevens is ingevuld. Wat ontbreekt wordt niet als feit gebruikt.</p></section><div class="v2formactions"><button type="button" class="pvprimary" data-save-full-input>Alles opslaan</button><span data-full-input-status>Wijzigingen worden tenant-scoped in dezelfde Bedrijfsgeheugen-state opgeslagen.</span></div>`;
 }
 
 function groupedReview(groups,state){
@@ -88,7 +88,7 @@ export function mountFullCompanyInput(root,{domainState,reviewOnly=false,onSaveS
   const save=root.querySelector('[data-save-full-input]');
   save?.addEventListener('click',async()=>{
    const status=root.querySelector('[data-full-input-status]');
-   try{onSaveStatus?.('saving');if(status)status.textContent='Opslaan…';await domainState?.flush?.();onSaveStatus?.('saved');if(status)status.textContent='Opgeslagen en server-bevestigd in Powerhouse.';}
+   try{onSaveStatus?.('saving');if(status)status.textContent='Opslaan…';await domainState?.flush?.();onSaveStatus?.('saved');if(status)status.textContent='Opgeslagen en server-bevestigd in Bedrijfsgeheugen.';}
    catch(error){onSaveStatus?.('error');if(status)status.textContent='Opslaan mislukt — geen serverbevestiging; wijzigingen worden niet als bewezen opgeslagen gemeld.';}
   });
   return unbind;

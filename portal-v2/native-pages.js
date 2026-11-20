@@ -99,7 +99,7 @@ function specialistContent(pageId,model,navigation){
     const nextStages=(business.journey.next||[]).map(id=>[projection.stages[id]?.label||id,'Waarschijnlijke volgende bedrijfsfase wanneer de huidige context verandert']);
     const nowRows=(business.priorities||[]).map(id=>[id,'Nu relevant op basis van fase, gebeurtenis en doel']);
     const modelRows=(business.models||[]).map(name=>[name,'Actief/relevant in deze bedrijfscontext']);
-    const pageRows=(business.pages||[]).map(id=>[id,'Wordt door Powerhouse vanuit dezelfde context aangestuurd']);
+    const pageRows=(business.pages||[]).map(id=>[id,'Wordt door Bedrijfsgeheugen vanuit dezelfde context aangestuurd']);
     const overlayRows=overlays.length?overlays.map(x=>[x,'Actieve context-overlay']):[['—','Geen aanvullende gebeurtenis of ondernemersdoel vastgelegd']];
     const blocks=[
       {type:'metrics',title:'Contextstatus',items:[['Primaire fase',stageLabel],['Actieve overlays',overlays.length?String(overlays.length):'—'],['Plan',projection.plan.code||'—'],['Contextbewijs',primaryKnown?Math.round((business.primary.confidence||0)*100)+'%':'—']],derived:primaryKnown},
@@ -110,13 +110,13 @@ function specialistContent(pageId,model,navigation){
       {type:'worklist',title:'Volwassenheid per capability',items:maturityRows,derived:Object.values(business.maturity).some(v=>v!=null)},
       {type:'worklist',title:'Relevante modellen',items:modelRows,derived:true},
       {type:'worklist',title:'Verbonden portaalonderdelen',items:pageRows,derived:true},
-      {type:'worklist',title:'Powerhouse-verbindingen',items:connected,derived:true},
+      {type:'worklist',title:'Bedrijfsgeheugen-verbindingen',items:connected,derived:true},
       {type:'worklist',title:'Bedrijfsreis — historie',items:historyRows.length?historyRows:[['—','Nog geen eerdere contextmomenten vastgelegd']],derived:historyRows.length>0},
       {type:'worklist',title:'Bedrijfsreis — wat kan hierna komen?',items:nextStages.length?nextStages:[['—','Geen volgende fase afgeleid']],derived:primaryKnown},
       {type:'worklist',title:'Scale — volledige kernintelligentie',items:SCALE_CORE_SURFACES.map(name=>[name,'Dezelfde intelligence-kern; pakketgrenzen sturen schaal, snelheid, autonomie, governance en begeleiding.']),derived:false},
       {type:'actions',title:'Volgende acties',items:actions}
     ];
-    if(!primaryKnown)blocks.splice(1,0,{type:'empty',title:'Bedrijfsfase nog niet bewezen',copy:'Powerhouse gebruikt geen fase als feit zonder expliciete invoer of voldoende klantdata. Gebeurtenissen, doelen, gezondheid en modellen kunnen wel afzonderlijk zichtbaar zijn zodra daar bewijs voor is.'});
+    if(!primaryKnown)blocks.splice(1,0,{type:'empty',title:'Bedrijfsfase nog niet bewezen',copy:'Bedrijfsgeheugen gebruikt geen fase als feit zonder expliciete invoer of voldoende klantdata. Gebeurtenissen, doelen, gezondheid en modellen kunnen wel afzonderlijk zichtbaar zijn zodra daar bewijs voor is.'});
     return {primaryAction,blocks,derived:primaryKnown||overlays.length>0,lifecycle:projection,businessContext:business};
   }
   if(pageId==='learning-writeback'){
@@ -141,7 +141,7 @@ function specialistContent(pageId,model,navigation){
         ['Nog te verifiëren',items.length?String(items.length-proven.length):'—'],
         ['Laatste bronupdate',String(learning.updatedAt||'—')]
       ],derived:items.length>0},
-      {type:'worklist',title:'Zo verbetert Powerhouse aantoonbaar',items:[
+      {type:'worklist',title:'Zo verbetert Bedrijfsgeheugen aantoonbaar',items:[
         ['Incident vastleggen','Eén fingerprint, oorzaak, eigenaar en bewijs in het bestaande Brain-register.'],
         ['Herstel en preventie','Gerichte oplossing, regressietest en veilige herhaling binnen dezelfde verplichting.'],
         ['Dagelijks slimmer','Vergelijk herstelduur, herhaling en kwaliteit vóór een verbetering wordt vrijgegeven.'],
@@ -163,10 +163,10 @@ function specialistContent(pageId,model,navigation){
     const updated=runtime?.sources?.updatedAt||runtime?.observability?.updatedAt||'—';
     const blocks=[
       {type:'metrics',title:'Vertrouwensbasis',items:[['Bronnen gezond',sources.length?healthy+'/'+sources.length:'—'],['Auditbewijzen',audit.length?String(audit.length):'—'],['Geverifieerde outcomes',outcomes.length?verified+'/'+outcomes.length:'—'],['Laatste bronupdate',String(updated)]],derived:Boolean(sources.length||audit.length||outcomes.length)},
-      {type:'worklist',title:'Wat Powerhouse altijd controleerbaar maakt',items:[['Feit ≠ afleiding','Klantfeit, berekening, hypothese en voorspelling krijgen een verschillende bewijsstatus.'],['Geen nepzekerheid','Geen confidence-percentage zonder gekalibreerd modelbewijs.'],['Bron en actualiteit','Materiële AI-output toont herkomst, freshness en evidence-status.'],['Tegenspraak zichtbaar','Conflicterende bronnen en ontbrekend bewijs worden niet weggepoetst.'],['Actie pas bewezen na readback','Een agentactie telt pas als uitgevoerd na provider/runtime-verificatie.'],['Leren van uitkomsten','Werkelijk resultaat en correcties beïnvloeden volgend advies.']],derived:false},
+      {type:'worklist',title:'Wat Bedrijfsgeheugen altijd controleerbaar maakt',items:[['Feit ≠ afleiding','Klantfeit, berekening, hypothese en voorspelling krijgen een verschillende bewijsstatus.'],['Geen nepzekerheid','Geen confidence-percentage zonder gekalibreerd modelbewijs.'],['Bron en actualiteit','Materiële AI-output toont herkomst, freshness en evidence-status.'],['Tegenspraak zichtbaar','Conflicterende bronnen en ontbrekend bewijs worden niet weggepoetst.'],['Actie pas bewezen na readback','Een agentactie telt pas als uitgevoerd na provider/runtime-verificatie.'],['Leren van uitkomsten','Werkelijk resultaat en correcties beïnvloeden volgend advies.']],derived:false},
       {type:'actions',title:'Controleer zelf',items:actions}
     ];
-    if(!sources.length&&!audit.length&&!outcomes.length)blocks.splice(1,0,{type:'empty',title:'Nog geen runtime-bewijs geladen',copy:'Het Trust Center blijft bewust leeg waar bron-, audit- of outcomebewijs ontbreekt. Powerhouse presenteert dit niet als bewezen.'});
+    if(!sources.length&&!audit.length&&!outcomes.length)blocks.splice(1,0,{type:'empty',title:'Nog geen runtime-bewijs geladen',copy:'Het Trust Center blijft bewust leeg waar bron-, audit- of outcomebewijs ontbreekt. Bedrijfsgeheugen presenteert dit niet als bewezen.'});
     return {primaryAction,blocks,derived:Boolean(sources.length||audit.length||outcomes.length)};
   }
   if(pageId==='billing'){

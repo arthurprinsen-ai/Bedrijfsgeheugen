@@ -49,7 +49,7 @@ export function strategicAdviceItems(model={}){
 
 export function strategicAdvisorMarkup(model={}){
  const items=strategicAdviceItems(model);
- const heading='<header class="os-strategy-head"><div><small>Strategisch adviseur · één Powerhouse-brein</small><h3>Welk besluit levert jouw onderneming het meeste op?</h3></div><p>Van diagnose en opties naar een uitvoerbaar besluit en bewezen resultaat. AI-schattingen zijn geen gerealiseerde omzet.</p></header>';
+ const heading='<header class="os-strategy-head"><div><small>Strategisch adviseur · één Bedrijfsgeheugen-brein</small><h3>Welk besluit levert jouw onderneming het meeste op?</h3></div><p>Van diagnose en opties naar een uitvoerbaar besluit en bewezen resultaat. AI-schattingen zijn geen gerealiseerde omzet.</p></header>';
  if(!items.length)return '<section class="os-strategy-advisor" data-strategy-status="evidence-due" aria-label="Strategisch ondernemersadvies">'+heading+'<div class="os-strategy-empty"><strong>Strategisch advies wacht op betrouwbare bedrijfsgegevens</strong><p>Leg je doelen vast en verbind relevante bronnen. Zonder onderbouwde kansen of acties doen we geen alsof-advies.</p><button type="button" data-os-page="evidence-health" aria-pressed="false">Bekijk benodigde gegevens →</button></div></section>';
  const cards=items.map((item,index)=>{
    const opts=item.options.length
@@ -62,7 +62,7 @@ export function strategicAdvisorMarkup(model={}){
     +'<details><summary>Welke opties en afwegingen zijn er?</summary>'+opts+'<p>Referentieoptie: nog geen wijziging uitvoeren. De effecten daarvan zijn niet berekend.</p></details>'
     +'<p class="os-strategy-next"><b>Volgende stap:</b> '+escapeHTML(item.next||'Bekijk de onderbouwing en beslis of nader onderzoek nodig is.')+'</p>'
     +'<p class="os-strategy-status">'+(item.requiresApproval?'Besluit of toestemming vereist vóór uitvoering.':'Dit advies geeft geen automatische uitvoeringsbevoegdheid.')+' · '+(item.verifiedOutcomes?'Gekoppelde geverifieerde uitkomsten: '+item.verifiedOutcomes:'Zakelijk resultaat van deze actie nog niet bewezen.')+'</p>'
-    +'<details><summary>Waarom vertrouwt Powerhouse dit advies?</summary><p>Bronnen: '+item.sourceRefs.map(escapeHTML).join(' · ')+'</p>'+(item.problemId?'<p>Probleemradar: '+escapeHTML(item.problemId)+'</p>':'')+'</details>'
+    +'<details><summary>Waarom vertrouwt Bedrijfsgeheugen dit advies?</summary><p>Bronnen: '+item.sourceRefs.map(escapeHTML).join(' · ')+'</p>'+(item.problemId?'<p>Probleemradar: '+escapeHTML(item.problemId)+'</p>':'')+'</details>'
     +'<button type="button" data-os-page="next-best-actions" aria-pressed="false">Bekijk besluit en actie →</button></article>';
  }).join('');
  return '<section class="os-strategy-advisor" data-strategy-status="evidence-backed" aria-label="Strategisch ondernemersadvies">'+heading+'<div class="os-strategy-grid">'+cards+'</div></section>';

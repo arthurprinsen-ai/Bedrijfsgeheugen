@@ -15,16 +15,16 @@ export function reorderRoadmapItems(items,sourceId,targetId){
 
 function intelligenceMarkup(item){
  const chips=[];
- if(item.managementAccountingDerived||item.sourceFingerprint)chips.push('Powerhouse-afgeleid');
+ if(item.managementAccountingDerived||item.sourceFingerprint)chips.push('Bedrijfsgeheugen-afgeleid');
  const impact=Number(item.expected_value??item.expectedValue);if(Number.isFinite(impact)&&impact>0)chips.push('Impact '+new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(impact));
  const effort=Number(item.effort_score??item.effortScore);if(Number.isFinite(effort))chips.push('Effort '+Math.round(effort)+'/100');
- return chips.length?'<div class="v2roadmapintel" aria-label="Powerhouse context">'+chips.map(chip=>'<span>'+esc(chip)+'</span>').join('')+'</div>':'';
+ return chips.length?'<div class="v2roadmapintel" aria-label="Bedrijfsgeheugen context">'+chips.map(chip=>'<span>'+esc(chip)+'</span>').join('')+'</div>':'';
 }
 
 function cardMarkup(item){
  const sprint=clampSprint(item.sprint);
  const intel=[
-  item.managementAccountingDerived?'Powerhouse-afgeleid':'',
+  item.managementAccountingDerived?'Bedrijfsgeheugen-afgeleid':'',
   item.expected_value!=null?`Impact ${new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(item.expected_value)||0)}`:'',
   item.effort_score!=null?`Effort ${Math.round(Number(item.effort_score)||0)}/100`:''
  ].filter(Boolean);

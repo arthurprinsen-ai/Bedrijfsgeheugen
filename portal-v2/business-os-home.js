@@ -13,8 +13,8 @@ const DOMAINS=Object.freeze([
 const STAGES=Object.freeze([
   ['source','Bron & context'],
   ['brain','ONE BRAIN'],
-  ['execution','Powerhouse'],
-  ['outcome','Heartbeat'],
+  ['execution','Bedrijfsgeheugen'],
+  ['outcome','Leerlus'],
   ['learning','Leren']
 ]);
 const freeze=x=>Object.freeze(x);

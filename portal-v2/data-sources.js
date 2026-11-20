@@ -10,7 +10,7 @@ import { BREIN_STAPPEN } from './runtime-evidence.js';
  * Het portaal wordt door vier soorten data gevoed: eigen klantdata, runtime,
  * modellen en externe bronnen. Resource Intelligence hoort bewust bij runtime:
  * het is geen los ESG-dashboard maar gemeten/verifieerbare telemetry uit dezelfde
- * tenant-scoped Powerhouse-state.
+ * tenant-scoped Bedrijfsgeheugen-state.
  */
 
 const arr = value => (Array.isArray(value) ? value : []);
@@ -20,7 +20,7 @@ const vandaag = () => new Date().toISOString().slice(0, 10);
 
 export const SOORTEN = Object.freeze({
   eigen: 'Wat de klant zelf invult',
-  runtime: 'Wat het brein meet',
+  runtime: 'Wat de intelligentielaag meet',
   model: 'Wat het portaal uitrekent',
   extern: 'Wat de buitenwereld zegt'
 });
@@ -60,11 +60,11 @@ export function dataBronnen(state = {}, peil = vandaag()) {
     bron('klantinvoer', 'eigen', 'Ingevulde onderdelen', ingevuld, 'onderdelen', ingevuld > 0,
       ingevuld ? `${ingevuld} onderdelen bevatten gegevens` : 'Nog niets ingevuld; het portaal rekent daarom niets door'),
 
-    bron('operating-loop', 'runtime', 'Operating loop van het brein',
+    bron('operating-loop', 'runtime', 'Operating loop van de intelligentielaag',
       Number(runtime.brain?.loops) || 0, 'lussen', Number(runtime.brain?.loops) > 0,
       lussen.length
         ? `${stappenOpOrde} van de ${BREIN_STAPPEN.length} stappen rond over ${runtime.brain?.loops || 0} lussen`
-        : 'Geen runtime-evidence; de Brein- en Powerhouse-pagina\'s blijven daarom leeg',
+        : 'Geen runtime-evidence; de Intelligentie- en Bedrijfsgeheugen-pagina\'s blijven daarom leeg',
       { bijgewerkt: runtime.brain?.updatedAt || '' }),
 
     bron('koppelingen', 'runtime', 'Aangesloten bronsystemen',

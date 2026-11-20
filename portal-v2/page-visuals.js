@@ -270,7 +270,7 @@ const BUILDERS=Object.freeze({
   },
 
 
-  /* Brein en Powerhouse: beeld op de projectie van de operating loop. */
+  /* Intelligentielaag en Bedrijfsgeheugen: beeld op de projectie van de operating loop. */
   bronnenstatus:state=>{
     const bronnen=dataBronnen(state||{});
     const sam=bronnenSamenvatting(state||{});
@@ -291,7 +291,7 @@ const BUILDERS=Object.freeze({
 
   agentstatus:state=>{const items=arr(at(state,'portal.runtime.agents.items'));
     const route=routeOverzicht(arr(at(state,'portal.runtime.agents.route')));
-    return [route.length?ladder(route,{title:'Route door het Powerhouse, tot waar hij komt'}):'',
+    return [route.length?ladder(route,{title:'Route door het Bedrijfsgeheugen, tot waar hij komt'}):'',
       curve(items.slice(-24).map((x,i)=>({label:String(i+1),value:x.healthy?1:0})),{title:'Doorloop van agentruns',valueLabel:'ok'})
     ].filter(Boolean).join('');},
 

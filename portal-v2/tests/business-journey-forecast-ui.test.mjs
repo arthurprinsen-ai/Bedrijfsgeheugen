@@ -7,11 +7,11 @@ const overview=fs.readFileSync(new URL('../modules/overview.js',import.meta.url)
 const css=fs.readFileSync(new URL('../business-context.css',import.meta.url),'utf8');
 
 test('business context workspace exposes interactive destination and measurable goals',()=>{
-  for(const token of ['data-context-target-stage','Waar sta je en waar wil je heen?','data-goal-current','data-goal-target','data-goal-date','Opslaan & Powerhouse bijwerken']) assert.ok(workspace.includes(token),token);
+  for(const token of ['data-context-target-stage','Waar sta je en waar wil je heen?','data-goal-current','data-goal-target','data-goal-date','Opslaan & Bedrijfsgeheugen bijwerken']) assert.ok(workspace.includes(token),token);
 });
 
 test('goal cockpit makes forecast evidence state explicit',()=>{
-  for(const token of ['Nog geen betrouwbare forecast','3 historische meetpunten','Powerhouse verzint geen waarschijnlijkheid zonder trendbewijs.','Liggen je doelen op koers?','benodigd tempo']) assert.ok(workspace.includes(token),token);
+  for(const token of ['Nog geen betrouwbare forecast','3 historische meetpunten','Bedrijfsgeheugen verzint geen waarschijnlijkheid zonder trendbewijs.','Liggen je doelen op koers?','benodigd tempo']) assert.ok(workspace.includes(token),token);
 });
 
 test('overview surfaces company journey and goal progress',()=>{

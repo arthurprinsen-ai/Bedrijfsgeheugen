@@ -18,7 +18,7 @@ const PAGE_HINTS=Object.freeze({
   overig:'Controleer hoe de conclusie zich verhoudt tot je doel, de brongegevens en mogelijke risico’s.'
 });
 
-// One read-only projection of the existing, tenant-scoped Powerhouse outcome chain.
+// One read-only projection of the existing, tenant-scoped Bedrijfsgeheugen outcome chain.
 // This never schedules work, persists data, grants approvals or asserts an
 // autonomous execution on the strength of a proposal or an outcome alone.
 export function buildAutopilotEvidence(owner,heartbeat='UNKNOWN'){
@@ -90,7 +90,7 @@ export function buildEntrepreneurJourneyModel(state={},{
     steps:Object.freeze([
       Object.freeze({id:'scan',label:'Frisse Blik',confirmed:home.scan.verified,detail:home.scan.verified?'Gekoppeld aan je eigen bedrijf; antwoorden hoeven niet opnieuw':'Nog geen gecontroleerde koppeling met je eigen bedrijf'}),
       Object.freeze({id:'goal',label:'Mijn doel',confirmed:stateConfirmed,detail:stateConfirmed?'Voorkeur vastgelegd, niet je hele bedrijfsdiagnose':'Kies een doel; andere bedrijfsgegevens blijven onveranderd'}),
-      Object.freeze({id:'evidence',label:'Mijn bedrijfsgegevens',confirmed:owner.ready&&owner.proof.verified>0,detail:owner.ready?owner.proof.verified+' onderdelen met bronbewijs':'Een actuele klantgebonden Powerhouse-projectie is nog niet bewezen'}),
+      Object.freeze({id:'evidence',label:'Mijn bedrijfsgegevens',confirmed:owner.ready&&owner.proof.verified>0,detail:owner.ready?owner.proof.verified+' onderdelen met bronbewijs':'Een actuele klantgebonden Bedrijfsgeheugen-projectie is nog niet bewezen'}),
       Object.freeze({id:'decision',label:'Mijn vervolgstap',confirmed:home.next.kind==='verified-proposal',detail:home.next.kind==='verified-proposal'?'Onderbouwd voorstel, uitvoering vraagt eigen bewijs':'Begeleidingsstap; geen gerealiseerd financieel effect'}),
       Object.freeze({id:'outcome',label:'Gemeten resultaat',confirmed:verifiedOutcomes>0,detail:verifiedOutcomes?verifiedOutcomes+' uniek brongeverifieerd(e) resultaat/resultaten':'Nog geen gerealiseerde uitkomst met voldoende bewijs'})
     ]),

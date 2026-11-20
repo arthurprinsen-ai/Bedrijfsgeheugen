@@ -36,8 +36,8 @@ const PAGE_COPY={
   'taken-werkstromen':['Taken & werkstromen','Stuur acties, eigenaarschap, deadlines, blokkades en bewijs.'],
   bronnenstatus:['Bronnenstatus','Bekijk verbinding, toestemming, actualiteit en datakwaliteit per bron.'],
   datahubstatus:['Datahubstatus','Bekijk normalisatie, verrijking, structuur en herkomst.'],
-  'brain-verwerking':['Brain-verwerking','Bekijk welke context het AI Brain verwerkt en op basis waarvan.'],
-  agentstatus:['Agentstatus','Bekijk Powerhouse-agenten, bevoegdheden, status en bewijs.'],
+  'brain-verwerking':['Brain-verwerking','Bekijk welke context het AI Intelligence verwerkt en op basis waarvan.'],
+  agentstatus:['Agentstatus','Bekijk Bedrijfsgeheugen-agenten, bevoegdheden, status en bewijs.'],
   'actieve-acties':['Actieve acties','Bekijk alleen acties die aantoonbaar actief of toegewezen zijn.'],
   'recovery-obligations':['Open recovery obligations','Houd herstelverplichtingen open tot verificatie en veilige afronding.'],
   'outcomes-evidence':['Outcomes & evidence','Scheid expected, observed en verified outcome en toon bewijs.'],
@@ -74,7 +74,7 @@ export function portalPageUrl(pageId,search=typeof location!=='undefined'?locati
   const suffix=next.toString();return `/portal-next/${suffix?`?${suffix}`:''}`;
 }
 
-function pageTrace(page){return `<div class="native-trace-chain"><span>Bron</span><i>→</i><span>Datahub</span><i>→</i><span>AI Brain</span><i>→</i><span>Powerhouse</span><i>→</i><span>${page.label}</span><i>→</i><span>Actie</span><i>→</i><span>Outcome</span><i>→</i><span>Learning</span></div>`;}
+function pageTrace(page){return `<div class="native-trace-chain"><span>Bron</span><i>→</i><span>Datahub</span><i>→</i><span>AI Intelligence</span><i>→</i><span>Bedrijfsgeheugen</span><i>→</i><span>${page.label}</span><i>→</i><span>Actie</span><i>→</i><span>Outcome</span><i>→</i><span>Learning</span></div>`;}
 function neutralPageContent(page){return `<section class="native-live-content native-live-content--new"><div class="native-live-head"><div><span class="eyebrow">Native Business OS-module</span><h3>${page.label}</h3><p>Deze pagina blijft fail-closed wanneer geautoriseerde bron- of runtimegegevens ontbreken. Er wordt geen voorbeeldwaarheid als klantfeit ingevuld.</p></div></div></section>`;}
 function projectStateContent(pageId){
   if(projectResult.state==='loading')return `<section class="project-empty" role="status"><strong>Projectgegevens laden…</strong><p>De klantcontext wordt server-side gecontroleerd.</p></section>`;

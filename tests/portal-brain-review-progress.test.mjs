@@ -15,7 +15,7 @@ test('customer AI/CSRD status follows existing tenant Brain review without claim
   }},summary:{},violations:[]};
   panel.snapshot={...base,brainReview:{status:'OPEN',verifiedOutcome:false,aiRuntimeApproved:false}};
   panel.render();
-  assert.match(panel.innerHTML,/Opvolging door het Brein:/);
+  assert.match(panel.innerHTML,/Opvolging door de intelligentielaag:/);
   assert.match(panel.innerHTML,/Open — bewijs en beoordeling nodig/);
   assert.match(panel.innerHTML,/niet dat CSRD voor jouw organisatie verplicht is/);
   assert.doesNotMatch(panel.innerHTML,/internal-reviewer-private/);

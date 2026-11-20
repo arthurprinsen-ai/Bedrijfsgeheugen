@@ -23,7 +23,7 @@ test('all mapped portal pages are rendered as primary navigable pages',()=>{
 });
 
 test('new portal keeps evidence trace visible on native page views',()=>{
-  for(const label of ['Managementbeeld','Operationele details','Trace & evidence','Bron','Datahub','AI Brain','Powerhouse','Actie','Outcome','Learning']) assert.match(js,new RegExp(label));
+  for(const label of ['Managementbeeld','Operationele details','Trace & evidence','Bron','Datahub','AI Intelligence','Bedrijfsgeheugen','Actie','Outcome','Learning']) assert.match(js,new RegExp(label));
 });
 
 test('project-backed pages render natively without a visible legacy bridge',()=>{

@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 
 test('canonical pricing source contains SaaS and consulting offers before build transforms', async()=>{
   const html=await readFile('prijzen.html','utf8');
-  for(const token of ['Powerhouse SaaS','Starter','Pro','Groei','Enterprise','Directie & AI Workshop','Bedrijfsgeheugen Scan','Build Sprint','Transformation / Fractional Lead','Combineer zonder dubbel te betalen']){
+  for(const token of ['Bedrijfsgeheugen SaaS','Starter','Pro','Groei','Enterprise','Directie & AI Workshop','Bedrijfsgeheugen Scan','Build Sprint','Transformation / Fractional Lead','Combineer zonder dubbel te betalen']){
     assert.ok(html.includes(token), 'missing '+token);
   }
   assert.match(html,/data-tab="saas"/);

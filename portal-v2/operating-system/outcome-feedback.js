@@ -86,7 +86,7 @@ export function outcomeFeedbackMarkup(items=[]){
    ?'<p><strong>Bronnen:</strong> '+row.refs.map(escapeHtml).join(' · ')+'</p>'+(row.measuredAt?'<p><strong>Gemeten:</strong> '+escapeHtml(row.measuredAt)+'</p>':'')
    :'<p>Een status, verzonden bericht of providerbevestiging is geen meetbaar bedrijfsresultaat. Controleer actie-ID, waarde, eenheid, KPI, nulmeting, meetperiode en onafhankelijke bron.</p>';
   const learn=row.learned
-   ?'<p class="os-outcome-next"><strong>Powerhouse leerde:</strong> '+escapeHtml(row.learningSummary)+' · Volgende beslissing: '+escapeHtml(row.nextDecision)+'</p>'
+   ?'<p class="os-outcome-next"><strong>Bedrijfsgeheugen leerde:</strong> '+escapeHtml(row.learningSummary)+' · Volgende beslissing: '+escapeHtml(row.nextDecision)+'</p>'
    :'<p class="os-outcome-next">Leereffect nog niet geverifieerd. ONE BRAIN mag een onbewezen uitkomst niet als succes gebruiken.</p>';
   const compare=row.comparable
    ?'<div><dt>Verschil</dt><dd>'+escapeHtml(valueLabel(row.delta,row.actualUnit))+'</dd></div>'
@@ -96,7 +96,7 @@ export function outcomeFeedbackMarkup(items=[]){
    +(row.actionId?'<p class="os-outcome-action">Gekoppelde actie: '+escapeHtml(row.actionId)+'</p>':'')
    +'<dl class="os-outcome-compare"><div><dt>Vooraf verwacht</dt><dd>'+escapeHtml(valueLabel(row.expected,row.expectedUnit))+'</dd></div>'
    +'<div><dt>Werkelijk gerealiseerd</dt><dd>'+escapeHtml(valueLabel(row.realized,row.actualUnit))+'</dd></div>'+compare+'</dl>'
-   +'<p class="os-outcome-scope">Geverifieerd meeteffect is niet automatisch door Powerhouse veroorzaakte winst, omzet of een betaalde order.</p>' +learn+'<details><summary>Hoe weten we dit?</summary>'+evidence+'</details><button type="button" class="os-outcome-more" data-os-page="monitoring-learning" aria-pressed="false">Bekijk resultaat en bewijs →</button></article>';
+   +'<p class="os-outcome-scope">Geverifieerd meeteffect is niet automatisch door Bedrijfsgeheugen veroorzaakte winst, omzet of een betaalde order.</p>' +learn+'<details><summary>Hoe weten we dit?</summary>'+evidence+'</details><button type="button" class="os-outcome-more" data-os-page="monitoring-learning" aria-pressed="false">Bekijk resultaat en bewijs →</button></article>';
  }).join('');
  return '<section class="os-outcome-feedback" data-outcome-feedback="results" aria-label="Effect van acties">'+intro+'<div class="os-outcome-cards">'+cards+'</div></section>';
 }

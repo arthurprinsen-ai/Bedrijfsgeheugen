@@ -4,7 +4,7 @@ export const TRUST_STATES = Object.freeze({
   verified:{label:'Geverifieerd',description:'Deze uitkomst heeft aantoonbaar verificatie- of outcomebewijs.'},
   grounded:{label:'Brongebonden',description:'Deze uitkomst is gebaseerd op herleidbare klant- of brondata.'},
   derived:{label:'Afgeleid',description:'Deze uitkomst is berekend of afgeleid uit beschikbare gegevens.'},
-  insufficient_evidence:{label:'Onvoldoende bewijs',description:'Powerhouse heeft te weinig bewijs om dit betrouwbaar als conclusie te presenteren.'},
+  insufficient_evidence:{label:'Onvoldoende bewijs',description:'Bedrijfsgeheugen heeft te weinig bewijs om dit betrouwbaar als conclusie te presenteren.'},
   unverified:{label:'Niet onafhankelijk geverifieerd',description:'De broncontext is bekend, maar de inhoud is nog niet onafhankelijk geverifieerd.'}
 });
 
@@ -36,7 +36,7 @@ export function buildPageAssurance({pageId,state={}}={}){
   if(!updatedAt) uncertainty.push('Actualiteit van runtime-bewijs is niet vastgesteld.');
   if(pageId==='outcomes-evidence'&&outcomes.length&&!verified) uncertainty.push('Niet alle getoonde uitkomsten hebben onafhankelijke verificatie én een bewijsreferentie.');
   if(!hasCustomerState&&!hasRuntime) uncertainty.push('Nog onvoldoende klant- of runtimegegevens voor een onderbouwde conclusie.');
-  return {pageId,status,statusLabel:TRUST_STATES[status].label,description:TRUST_STATES[status].description,sourceCount:sources.length,healthySourceCount:healthy.length,updatedAt,provenance:hasRuntime?'Canonieke Powerhouse runtime/evidence-projectie':hasCustomerState?'Tenantgebonden klantstate':'Geen bewezen broncontext',uncertainty};
+  return {pageId,status,statusLabel:TRUST_STATES[status].label,description:TRUST_STATES[status].description,sourceCount:sources.length,healthySourceCount:healthy.length,updatedAt,provenance:hasRuntime?'Canonieke Bedrijfsgeheugen runtime/evidence-projectie':hasCustomerState?'Tenantgebonden klantstate':'Geen bewezen broncontext',uncertainty};
 }
 
 export function normalizeAnswerAssurance(assurance={}){
@@ -71,7 +71,7 @@ export function mountTrustedAdvisorAssurance(root,{pageId='overzicht',state={},o
   const m=buildPageAssurance({pageId,state});
   const section=document.createElement('section');
   section.className='ta-assurance'; section.dataset.trustedAdvisorAssurance='true'; section.dataset.trustStatus=m.status;
-  section.innerHTML='<div class="ta-summary"><div><span class="ta-kicker">Bronnen en zekerheid</span><h3>'+esc(m.statusLabel)+'</h3><p>'+esc(m.description)+'</p></div><button type="button" class="ta-why" data-ta-toggle>Bekijk onderbouwing</button></div><div class="ta-detail" data-ta-detail hidden><div class="ta-grid"><article><small>Herkomst</small><strong>'+esc(m.provenance)+'</strong></article><article><small>Bronnen</small><strong>'+(m.sourceCount?m.healthySourceCount+'/'+m.sourceCount+' gezond':'Niet bewezen')+'</strong></article><article><small>Actualiteit</small><strong>'+esc(fmtDate(m.updatedAt))+'</strong></article><article><small>Status</small><strong>'+esc(m.statusLabel)+'</strong></article></div><div class="ta-gaps"><b>Wat weet Powerhouse nog niet zeker?</b>'+(m.uncertainty.length?'<ul>'+m.uncertainty.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p>Geen open evidence-gap voor deze status geregistreerd.</p>')+'</div><div class="ta-links"><button data-ta-page="bronnenstatus">Bronnen controleren →</button><button data-ta-page="rekenwijze">Rekenwijze →</button><button data-ta-page="audittrail">Audittrail →</button><button data-ta-page="outcomes-evidence">Outcomes & bewijs →</button></div><p class="ta-rule">Een hypothese mag nooit als feit worden gepresenteerd. Ontbrekend bewijs blijft zichtbaar en blokkeert stellige conclusies.</p></div>';
+  section.innerHTML='<div class="ta-summary"><div><span class="ta-kicker">Bronnen en zekerheid</span><h3>'+esc(m.statusLabel)+'</h3><p>'+esc(m.description)+'</p></div><button type="button" class="ta-why" data-ta-toggle>Bekijk onderbouwing</button></div><div class="ta-detail" data-ta-detail hidden><div class="ta-grid"><article><small>Herkomst</small><strong>'+esc(m.provenance)+'</strong></article><article><small>Bronnen</small><strong>'+(m.sourceCount?m.healthySourceCount+'/'+m.sourceCount+' gezond':'Niet bewezen')+'</strong></article><article><small>Actualiteit</small><strong>'+esc(fmtDate(m.updatedAt))+'</strong></article><article><small>Status</small><strong>'+esc(m.statusLabel)+'</strong></article></div><div class="ta-gaps"><b>Wat weet Bedrijfsgeheugen nog niet zeker?</b>'+(m.uncertainty.length?'<ul>'+m.uncertainty.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<p>Geen open evidence-gap voor deze status geregistreerd.</p>')+'</div><div class="ta-links"><button data-ta-page="bronnenstatus">Bronnen controleren →</button><button data-ta-page="rekenwijze">Rekenwijze →</button><button data-ta-page="audittrail">Audittrail →</button><button data-ta-page="outcomes-evidence">Outcomes & bewijs →</button></div><p class="ta-rule">Een hypothese mag nooit als feit worden gepresenteerd. Ontbrekend bewijs blijft zichtbaar en blokkeert stellige conclusies.</p></div>';
   root.prepend(section);
   const detail=section.querySelector('[data-ta-detail]');
   section.querySelector('[data-ta-toggle]')?.addEventListener('click',()=>{detail.hidden=!detail.hidden;});

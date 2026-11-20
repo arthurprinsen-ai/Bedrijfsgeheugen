@@ -17,7 +17,7 @@ test("every seo-status.json keyword is owned by the same route in the baseline",
 
 test("seo-status.json tracks the renamed and new cluster keywords", () => {
   const words = new Set(status.zoekwoorden.map((k) => k.zoekwoord));
-  for (const w of ["ai governance", "ai modellen vergelijken", "company brain", "data soevereiniteit"]) {
+  for (const w of ["ai governance", "ai modellen vergelijken", "company intelligence", "data soevereiniteit"]) {
     assert.ok(words.has(w), w);
   }
   assert.ok(!words.has("ai governance mkb"));

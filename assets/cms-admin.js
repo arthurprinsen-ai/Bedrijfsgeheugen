@@ -25,7 +25,7 @@ function renderCmsLoop(){
   if(!host||!summary||!stages)return;
   var loop=cmsLoop;
   if(!loop||loop.status==='UNAVAILABLE'){
-    host.dataset.status='UNAVAILABLE';summary.textContent='CMS- en Heartbeat-bronbewijs niet beschikbaar.';stages.replaceChildren();return;
+    host.dataset.status='UNAVAILABLE';summary.textContent='CMS- en meetbronbewijs niet beschikbaar.';stages.replaceChildren();return;
   }
   host.dataset.status=loop.status;
   var t=loop.totals||{};

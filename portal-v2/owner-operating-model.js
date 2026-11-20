@@ -1,5 +1,5 @@
 /**
- * Powerhouse · één ondernemerservaring boven de bestaande tenantgebonden OS-projectie.
+ * Bedrijfsgeheugen · één ondernemerservaring boven de bestaande tenantgebonden OS-projectie.
  * Geen eigen database, geen tweede actieketen en geen sample-cijfers in klantweergaven.
  */
 import {buildExecutiveProjection} from './operating-system/executive-projection.js';

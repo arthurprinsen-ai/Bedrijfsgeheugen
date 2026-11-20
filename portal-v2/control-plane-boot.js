@@ -1,5 +1,5 @@
 /**
- * Attach the EXISTING Powerhouse Control Plane cockpit to the actual portal
+ * Attach the EXISTING Bedrijfsgeheugen Control Plane cockpit to the actual portal
  * lifecycle. No new endpoint, scheduler, state store or privileged shortcut.
  * The existing Netlify Identity/JWT and server admin check remain authoritative.
  */

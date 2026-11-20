@@ -73,7 +73,7 @@ test('single point, duplicate date and invalid value cannot authorize forecast',
  assert.equal(model.available,0);
 });
 
-test('no cross-tenant global Powerhouse and no raw platform Heartbeat promotion',()=>{
+test('no cross-tenant global Bedrijfsgeheugen and no raw platform Leerlus promotion',()=>{
  const alien={
   ...state,
   powerhouse_forecasts:[{scope:'platform',predicted_event:'SALE',confidence:1}],
@@ -83,7 +83,7 @@ test('no cross-tenant global Powerhouse and no raw platform Heartbeat promotion'
  };
  const model=buildForesightStudioModel(alien,{metric:'revenue_growth'});
  assert.equal(model.available,1);
- assert.equal(model.intelligence.heartbeat,'Tenantgebonden Heartbeat nog niet geverifieerd');
+ assert.equal(model.intelligence.heartbeat,'Tenantgebonden Leerlus nog niet geverifieerd');
  assert.equal(model.active.source,'Klantgebonden historie in bestaande portaalcontext');
  assert.ok(model.metrics.every(x=>x.label!=='SALE'));
 });

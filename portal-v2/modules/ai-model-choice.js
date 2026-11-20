@@ -1,5 +1,5 @@
 /*
- * POWERHOUSE customer model shortlist. ALL 110 catalogue records can be requested,
+ * BEDRIJFSGEHEUGEN customer model shortlist. ALL 110 catalogue records can be requested,
  * but this module cannot grant API access, change live inference routes or waive governance.
  * Authentication + portal-domain-state are required to persist a tenant preference.
  */
@@ -12,14 +12,14 @@ const STATUS_LABELS=Object.freeze({
 const ACT_STATES=new Set(['eol','retired','deprecated']);
 const FEATURED_MODELS=Object.freeze([
  ['gpt-6-luna','Dagelijkse taken','Snelle standaardverwerking'],
- ['gpt-6-sol','Bedrijfsbrein','Strategie en adviezen'],
+ ['gpt-6-sol','intelligentielaag','Strategie en adviezen'],
  ['mistral-medium-3-5','Zakelijke analyse','Alternatief met mogelijke eigen hosting'],
  ['gpt-oss-20b','Eigen omgeving','Open gewichten, afzonderlijk te hosten'],
  ['mistral-ocr-3','Documentverwerking','OCR en documenten structureren'],
  ['text-embedding-3-small','Bedrijfskennis','Semantisch zoeken']
 ]);
 const WORKLOADS=Object.freeze([
- ['brain','Bedrijfsbrein en adviezen','gpt-6-sol'],
+ ['brain','intelligentielaag en adviezen','gpt-6-sol'],
  ['routine','Dagelijkse standaardtaken','gpt-6-luna'],
  ['analysis','Analyses en prognoses','mistral-medium-3-5'],
  ['documents','Documenten en OCR','mistral-ocr-3'],
@@ -106,7 +106,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  form.append(policyWrap,riskWrap,useWrap);settings.append(form);
  settings.append(el('p','hint','EU AI Act: AI-geletterdheid en verboden toepassingen gelden al sinds 2 februari 2025; transparantieverplichtingen voor bepaalde AI-systemen sinds 2 augustus 2026. Hoog-risicoverplichtingen worden per concrete toepassing, rol en ingangsdatum beoordeeld. Kies je model pas voor productie na toetsing van de toepassing, menselijke controle, AVG en contracten. Dit is geen compliance-certificering.'));
  const links=el('p','path');const a1=el('a',null,'EU AI Act – officiële EU-tijdlijn'),a2=el('a',null,'EDPB – internationale doorgifte');a1.href='https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-act-implementation-timeline';a2.href='https://www.edpb.europa.eu/sme/be-compliant/international-data-transfers_en';a1.target=a2.target='_blank';a1.rel=a2.rel='noopener';links.append(a1,' · ',a2);settings.append(links);parent.append(settings);
- const defaultSection=el('section');defaultSection.append(el('h3',null,'Mijn standaard AI-model'),el('p','hint','Kies één model als standaard voor geschikte AI-taken. Dit bepaalt de gewenste route voor Bedrijfsbrein en toekomstige AI-functies, maar verandert geen bestaande voorspellingen of rekenregels. Activering blijft afhankelijk van geverifieerde klant- en providerrechten.'));
+ const defaultSection=el('section');defaultSection.append(el('h3',null,'Mijn standaard AI-model'),el('p','hint','Kies één model als standaard voor geschikte AI-taken. Dit bepaalt de gewenste route voor intelligentielaag en toekomstige AI-functies, maar verandert geen bestaande voorspellingen of rekenregels. Activering blijft afhankelijk van geverifieerde klant- en providerrechten.'));
  const defaultField=el('label','field','Standaardmodel voor mijn bedrijf'),defaultSelect=el('select');defaultField.append(defaultSelect);defaultSection.append(defaultField);
  const routeField=el('label','field','Gewenste verwerkingsroute voor standaardmodel'),defaultRoute=el('select');routeField.append(defaultRoute);defaultSection.append(routeField);
  const defaultInfo=el('p','hint');defaultSection.append(defaultInfo);parent.append(defaultSection);
@@ -127,7 +127,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  parent.append(footer);
  const activation=el('section');activation.append(
   el('h3',null,'Model aansluiten en activeren'),
-  el('p',null,'1. Bewaar het model en de route. 2. Vraag aansluiting aan. 3. POWERHOUSE controleert provideraccount, dataverwerking en goedkeuringen. 4. Test na aantoonbare vrijgave.'),
+  el('p',null,'1. Bewaar het model en de route. 2. Vraag aansluiting aan. 3. BEDRIJFSGEHEUGEN controleert provideraccount, dataverwerking en goedkeuringen. 4. Test na aantoonbare vrijgave.'),
   el('p','warn','Voer hier nooit API-sleutels, wachtwoorden of contractdocumenten in. Een aanvraag activeert geen provider.'));
  const activationConsent=el('input');activationConsent.type='checkbox';
  const consentRow=el('label','row');consentRow.append(activationConsent,el('span',null,'Ik ben bevoegd deze aanvraag voor mijn organisatie in te dienen. Onafhankelijke controle blijft verplicht.'));activation.append(consentRow);
@@ -135,7 +135,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
  requestActivation.type=refreshButton.type='button';activationActions.append(requestActivation,refreshButton);activation.append(activationActions);
  const activationSummary=el('p','status','Status nog niet gecontroleerd.');activationSummary.setAttribute('aria-live','polite');
  const activationChecks=el('div','amc-activation-checks');activation.append(activationSummary,activationChecks);parent.append(activation);
- const trial=el('section');trial.append(el('h3',null,'Test jouw goedgekeurde Bedrijfsbrein-model'),
+ const trial=el('section');trial.append(el('h3',null,'Test jouw goedgekeurde intelligentielaag-model'),
  el('p','hint','Optionele, handmatig gestarte modeltest. Alleen jouw ingetypte tekst wordt verstuurd; portaalbestanden en bedrijfscontext gaan niet mee. Een provider wordt uitsluitend aangeroepen na de server-side controle van modelkeuze, tenant, leverancier, regio en ondertekend runtimebewijs. Een geslaagde test kan verbruikskosten hebben.'));
  const trialForm=el('div','tools'),trialQuestion=el('input');
  trialQuestion.type='text';trialQuestion.maxLength=500;
@@ -148,7 +148,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   if(dirty){trialOutcome.textContent='Sla eerst je modelkeuzes en functietoewijzingen op.';return}
   const activeBrainId=draft.assignments.brain||draft.defaultModelId;
    if(!activeBrainId||!draft.models.some(x=>x.modelId===activeBrainId&&x.routeId)){
-   trialOutcome.textContent='Kies een standaardmodel of Bedrijfsbrein-uitzondering en selecteer een providerroute. Bewaar de instellingen eerst.';return;
+   trialOutcome.textContent='Kies een standaardmodel of intelligentielaag-uitzondering en selecteer een providerroute. Bewaar de instellingen eerst.';return;
   }
   const question=trialQuestion.value.trim();
   if(question.length<3){trialOutcome.textContent='Vul een testvraag van minimaal drie tekens in.';return}
@@ -206,7 +206,7 @@ export async function mountAiModelChoice(root,{domainState,stateClient,openPage,
   const id=draft.assignments.brain||draft.defaultModelId;
   const target=draft.models.find(m=>m.modelId===id);
   if(!id||!target?.routeId){
-   activationSummary.textContent='Bewaar eerst een standaardmodel of Bedrijfsbrein-model met providerroute.';return;
+   activationSummary.textContent='Bewaar eerst een standaardmodel of intelligentielaag-model met providerroute.';return;
   }
   requestActivation.disabled=true;activationSummary.textContent='Aanvraag in je klantomgeving vastleggen…';
   try{

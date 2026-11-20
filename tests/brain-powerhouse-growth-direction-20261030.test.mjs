@@ -70,7 +70,7 @@ test('original owner-only API and portal retain 15-loop, social and CRO gates al
  assert.match(api,/select=reply_event_id,occurred_at,provider,reply_class/);
  assert.match(api,/oneLoopAssurance,outreachActions:datasets\[11\],outreachResearch:datasets\[12\]/);
  assert.match(api,/growthDaily:datasets\[13\],emailReplies:datasets\[14\]/);
- assert.match(ui,/Powerhouse · stijgende lijn van bereik naar betaalde orders/);
+ assert.match(ui,/Bedrijfsgeheugen · stijgende lijn van bereik naar betaalde orders/);
  assert.match(ui,/Social CRO · LinkedIn persoonlijk, bedrijf en Instagram/);
  assert.match(ui,/ONE BRAIN · commerciële CRO-terugkoppeling/);
  assert.doesNotMatch(ui,/reply_text|sender_email|recipient_email/);

@@ -4,7 +4,7 @@ import {verifyPricingProductionContent} from '../tools/delivery/verify-pricing-p
 
 const page=(starter='<h3 class="plan-title">Starter</h3>')=>`
 <html><body>
-<button data-tab="saas">Powerhouse SaaS</button>
+<button data-tab="saas">Bedrijfsgeheugen SaaS</button>
 <button class="tab" data-tab='consulting'>Consulting & workshops</button>
 ${starter}
 <h3>Pro</h3><h3>Groei</h3><h3>Enterprise</h3>

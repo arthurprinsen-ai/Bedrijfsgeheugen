@@ -84,7 +84,7 @@ function renderCopy(flow){
  const source=selectedSource(),module=selectedModule();
  el('flowNowTitle').textContent=source?`Nu geselecteerd: ${source[2]}`:'Geen bron geselecteerd';
  el('flowNow').textContent=source?`${source[3]}. ${flow.sourceFlow?'Voorbeeldroute zichtbaar.':'Selectie alleen; zonder runtime-evidence wordt geen live stroom geclaimd.'}`:'Kies een bron.';
- el('flowBrain').textContent=flow.processingFlow?'Voorbeeld: Datahub, AI Brain en Powerhouse verwerken deze route.':flow.status==='blocked'?'De route is geblokkeerd en stopt vóór verdere verwerking.':'Geen bewezen verwerking actief.';
+ el('flowBrain').textContent=flow.processingFlow?'Voorbeeld: Datahub, AI Intelligence en Bedrijfsgeheugen verwerken deze route.':flow.status==='blocked'?'De route is geblokkeerd en stopt vóór verdere verwerking.':'Geen bewezen verwerking actief.';
  el('flowResultTitle').textContent=module?`Bestemming: ${module[2]}`:'Geen portaalmodule geselecteerd';
  el('flowResult').textContent=module?(flow.outputFlow?`Voorbeeldoutput landt in ${module[2]}.`:`${module[2]} is geselecteerd, maar er loopt geen bewezen outputflow.`):'Kies een portaalmodule.';
  const pill=document.querySelector('.livepill');if(pill)pill.textContent=`● ${statusLabel(flow.status)}`;

@@ -113,3 +113,6 @@
 # Public conversion/demo tools use clean URLs.
 /pakketadvies  /pakketadvies.html  200
 /portaal-demo  /portaal-demo.html  200
+
+# Company Brain heet voortaan Company Intelligence (19 nov 2026)
+/company-brain  /company-intelligence  301!

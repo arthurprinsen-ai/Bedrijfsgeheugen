@@ -60,7 +60,7 @@ test('strictly verified value can be compared with forecast without treating var
  assert.match(html,/Verschil/);
  assert.match(html,/20 uur/);
  assert.match(html,/source:customer:1/);
- assert.match(html,/Powerhouse leerde/);
+ assert.match(html,/Bedrijfsgeheugen leerde/);
  assert.match(html,/Volgende beslissing: decision:6/);
 });
 

@@ -167,7 +167,7 @@ test('panel is embedded in existing cockpit and can never claim green',()=>{
   assert.match(html,/powerhouse-integration-health/);
   assert.match(html,/Bronnen LIVE: <strong>14 \/ 14<\/strong>/);
   assert.match(html,/NIET BEWEZEN/);
-  assert.match(html,/Heartbeat/);
+  assert.match(html,/Leerlus/);
   assert.match(html,/bron-omzet/);
 });
 
@@ -195,7 +195,7 @@ test('the original commercial Brain register is separate from the repaired sourc
   assert.ok(p.gapCodes.includes('ACTIVE_COMMERCIAL_BRAIN_INCIDENT_REQUIRES_READBACK'));
   const html=powerhouseIntegrationMarkup(p);
   assert.match(html,/data-bg-original-commercial-incidents="true"/);
-  assert.match(html,/Brein · commerciële incidenten/);
+  assert.match(html,/Intelligentie · commerciële incidenten/);
   assert.match(html,/onbewezen\/verlopen 10/);
   assert.ok(html.includes('href="https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"'));
   assert.match(html,/NIET BEWEZEN/);

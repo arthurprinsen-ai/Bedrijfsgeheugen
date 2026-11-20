@@ -1349,7 +1349,7 @@ Fingerprint: `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-lo
 
 Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales- en productnodes:
 - `Company Brain` is categorie-/zoektaal en acquisitie-ingang, niet de merknaam of productnaam;
-- de canonieke eigenaar is `https://www.bedrijfsgeheugen.nl/company-brain`; geen duplicate intent-route;
+- de canonieke eigenaar is `https://www.bedrijfsgeheugen.nl/company-intelligence`; geen duplicate intent-route;
 - canonieke categoriezin: **Een Company Brain is waar Bedrijfsgeheugen begint.**
 - canoniek onderscheid: Company Brain ontsluit kennis/context; Bedrijfsgeheugen verbindt context met signalen, impact, beslissing, actie, resultaat en leren;
 - merkbelofte: **Uit hoofden, in je bedrijf. En dan werkend.**

@@ -402,7 +402,7 @@ var LAATSTE_SCORE=null, LAATSTE_RISICO=null;
 var BG_SCAN_KEY=null;
 function bgMaakScanKey(){return 'bedrijfslek-'+(globalThis.crypto&&crypto.randomUUID?crypto.randomUUID():Date.now()+'-'+Math.random().toString(36).slice(2))}
 function bgScanNaarBrein(score,per){
-  // Eén anonieme nulmeting naar de bestaande Powerhouse scan-store. Geen naam, mail of telefoon.
+  // Eén anonieme nulmeting naar de bestaande Bedrijfsgeheugen scan-store. Geen naam, mail of telefoon.
   var dimensions={};Object.keys(per).forEach(function(k){dimensions[k]=Math.round(per[k].p/(per[k].n*3)*500)/100});
   var key=BG_SCAN_KEY||(BG_SCAN_KEY=bgMaakScanKey());
   var payload={submission_key:key,canonical:'https://www.bedrijfsgeheugen.nl/zelfscan',scan:{score:score,niveau:Math.max(1,Math.ceil(score/20)),dimAvg:dimensions,source_kind:'bedrijfslek_scan',stempel:'bedrijfslek-selfscan-v1',datum:new Date().toISOString().slice(0,10)}};

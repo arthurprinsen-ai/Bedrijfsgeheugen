@@ -1,0 +1,41 @@
+{
+  "fingerprint": "site|copy|woordenlijst-intelligentie-powerhouse-brein-heartbeat|20261119-v1",
+  "date": "2026-11-19",
+  "owner": "agent-reliability",
+  "obligation_id": "site|copy|woordenlijst-intelligentie|20261119-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Interne architectuurtermen (Powerhouse, brein, Heartbeat) lekten naar de publieke site, blog, vertalingen en het portaal en voelden te zwaar voor Nederlandse mkb-bezoekers.",
+  "correction": "Eén deterministische vervanging in generatoren, pagina's, vertaalbestanden en portaal, met redirect en SEO-configuratie voor de hernoemde pagina en bijgewerkte tests.",
+  "policy": "Publieke taal volgt de woordenlijst: Bedrijfsgeheugen (product), intelligentielaag, Company Intelligence, leerlus. Interne identifiers blijven ongewijzigd.",
+  "prevention": [
+    "Nieuwe publieke tekst gebruikt de woordenlijst in docs/changes/woordenlijst-intelligentie-20261119-v1.md",
+    "Wijzig altijd de generator en de vertaalsleutels samen, anders valt de Engelse versie terug op Nederlands",
+    "Draai de buildketen op een schone kopie, nooit in de repo-map zelf"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "docs/changes/woordenlijst-intelligentie-20261119-v1.md"
+    ],
+    "outcome": "Lokaal groen; live-readback open."
+  }
+}

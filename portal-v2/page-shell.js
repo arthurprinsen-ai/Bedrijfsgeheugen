@@ -88,11 +88,11 @@ const COPY = {
   audit:['Audit','Maak besluiten, wijzigingen, bewijs, controles en verantwoordelijkheden auditbaar.'],
   bronnenstatus:['Bronnenstatus','Zie welke bronnen beschikbaar zijn, welke aandacht vragen en waar bewijs ontbreekt.'],
   datahubstatus:['Datahubstatus','Volg structurering, verrijking en verbinding van bedrijfsdata zonder onbewezen live-status te tonen.'],
-  'brain-verwerking':['Brain-verwerking','Het Brein verbindt jouw invoer, bronnen en geleerde lessen. Powerhouse vertaalt die context naar beslissingen en acties; Heartbeat verwerkt geplande taken. Dit scherm toont de vastgelegde stappen en hun bewijsstatus.'],
+  'brain-verwerking':['Brain-verwerking','De intelligentielaag verbindt jouw invoer, bronnen en geleerde lessen. Bedrijfsgeheugen vertaalt die context naar beslissingen en acties; Leerlus verwerkt geplande taken. Dit scherm toont de vastgelegde stappen en hun bewijsstatus.'],
   agentstatus:['Agenta · jouw data & acties','Bekijk welke bedrijfsdata de agents gebruiken, welke acties zijn uitgevoerd en welk bewijs daarvan beschikbaar is.'],
   rekenwijze:['Hoe dit portaal rekent','Bekijk de formule, benodigde invoer en uitkomst van de getoonde berekeningen. Dit zijn berekeningen op basis van beschikbare gegevens; een berekende baat is nog geen gerealiseerde winst en een scenario is geen gemeten resultaat.'],
   'andere-data':['Andere data','Websitebezoeken, interactiekwaliteit, geregistreerde CRO-experimenten, hypotheses, controlevarianten en resultaten met betrouwbaarheidsstatus.'],
-  'powerhouse-control-center':['Powerhouse Control Center','Volg dagelijks wat AI, chats, agents, workflows en infrastructuur doen: activiteit, fouten, learnings, skills, delivery, kosten en bewijs in één filterbare cockpit.'],
+  'powerhouse-control-center':['Bedrijfsgeheugen Control Center','Volg dagelijks wat AI, chats, agents, workflows en infrastructuur doen: activiteit, fouten, learnings, skills, delivery, kosten en bewijs in één filterbare cockpit.'],
   'actieve-acties':['Actieve acties','Van inzicht naar concrete uitvoering, eigenaar, voortgang en bewijs.'],
   'recovery-obligations':['Open recovery obligations','Elke containment of blokkade blijft zichtbaar totdat root cause, fix, test en heractivatie aantoonbaar gesloten zijn.'],
   'outcomes-evidence':['Outcomes & evidence','Koppel acties aan gemeten resultaat en bewijs zodat effect niet op aannames rust.'],
@@ -143,7 +143,7 @@ export function configurePortalShell(context={}){
   return portalContext;
 }
 
-/* De Brein- en Powerhouse-pagina's tonen niets zolang er geen runtime-evidence
+/* De Intelligentie- en Bedrijfsgeheugen-pagina's tonen niets zolang er geen runtime-evidence
    is. Die evidence komt uit de projectie van de operating loop. Eén keer per
    sessie ophalen; faalt het, dan blijven die pagina's eerlijk leeg. */
 let runtimeGeladen=false;
@@ -522,7 +522,7 @@ export function enhancePortalShell(){
       const root=document.getElementById('portalView');
       if(root?.classList.contains('open'))scheduleVisiblePageRebuild(root);
     });
-    // The original Powerhouse bridge emits this ONLY for a changed, tenant-
+    // The original Bedrijfsgeheugen bridge emits this ONLY for a changed, tenant-
     // authenticated runtime projection. No second poller or scheduler.
     globalThis.addEventListener?.('bg:runtime-evidence',event=>{
       if(event?.detail?.source!=='brain-operating-loop')return;

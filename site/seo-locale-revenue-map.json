@@ -121,7 +121,7 @@
       "measured_at": "2026-09-30"
     },
     {
-      "keyword": "company brain",
+      "keyword": "company intelligence",
       "locale": "en",
       "market": "United States",
       "search_volume": 210,
@@ -608,32 +608,32 @@
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "source_route": "https://www.bedrijfsgeheugen.nl/company-intelligence",
       "role": "pillar",
       "funnel_stage": "consider",
       "revenue_priority": "support",
       "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
       "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/company-brain",
-        "primary_keyword": "company brain",
+        "route": "https://www.bedrijfsgeheugen.nl/company-intelligence",
+        "primary_keyword": "company intelligence",
         "secondary_keywords": [
-          "company brain nederland",
-          "company brain mkb",
-          "ai company brain",
+          "company intelligence nederland",
+          "company intelligence mkb",
+          "ai company intelligence",
           "bedrijfsbrein ai"
         ]
       },
       "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/company-brain",
-        "primary_keyword": "company brain",
+        "route": "https://www.bedrijfsgeheugen.nl/en/company-intelligence",
+        "primary_keyword": "company intelligence",
         "secondary_keywords": [
-          "AI company brain",
-          "company brain for SMEs",
+          "AI company intelligence",
+          "company intelligence for SMEs",
           "business brain AI"
         ],
-        "title": "Company Brain for SMEs | Bedrijfsgeheugen",
-        "description": "Build a shared company brain that connects knowledge, decisions, signals and actions so people and AI work from the same context.",
-        "h1": "Build a Company Brain for people and AI"
+        "title": "Company Intelligence for SMEs | Bedrijfsgeheugen",
+        "description": "Build a shared company intelligence that connects knowledge, decisions, signals and actions so people and AI work from the same context.",
+        "h1": "Build a Company Intelligence for people and AI"
       }
     },
     {

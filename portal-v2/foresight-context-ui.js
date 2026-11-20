@@ -59,7 +59,7 @@ async function loadPredictionQuality(fetchImpl=globalThis.fetch){
 function qualityPanel(q={}){
   const state=String(q.prediction_state||'UNKNOWN');
   const tone=state==='CALIBRATED_LEARNING'?'good':state.includes('DEGRADED')||state.includes('CRITICAL')?'warn':'unknown';
-  return '<article class="fsv-quality"><header><div><span class="fsv-kicker">Voorspelkwaliteit</span><h4>Leert Powerhouse aantoonbaar beter vooruitkijken?</h4></div><b class="fsv-pill '+tone+'">'+esc(state.replaceAll('_',' '))+'</b></header>'+
+  return '<article class="fsv-quality"><header><div><span class="fsv-kicker">Voorspelkwaliteit</span><h4>Leert Bedrijfsgeheugen aantoonbaar beter vooruitkijken?</h4></div><b class="fsv-pill '+tone+'">'+esc(state.replaceAll('_',' '))+'</b></header>'+
     '<div class="fsv-quality-grid"><span><small>Brier-score</small><b>'+num(q.brier_score,4)+'</b></span><span><small>Calibratiefout</small><b>'+num(q.calibration_error,4)+'</b></span><span><small>Timingfout</small><b>'+num(q.timing_mae_days,1)+' dagen</b></span><span><small>Resolved</small><b>'+num(q.resolved_total,0)+' / '+num(q.forecast_total,0)+'</b></span><span><small>Signalen</small><b>'+num(q.signal_total,0)+'</b></span><span><small>Brontypen</small><b>'+num(q.independent_source_types,0)+'</b></span></div>'+
     '<p>Deze metingen bepalen of forecast-methodes mogen promoveren. Slechtere challengers blijven buiten productie.</p></article>';
 }
@@ -74,10 +74,10 @@ function selfImprovementPanel(s={}){
   const ready=Number(s.compiler_ready)||0,evidencePending=Number(s.compiler_evidence_pending)||0,regressionPending=Number(s.compiler_regression_pending)||0;
   const modelIssues=(Number(s.model_health_degraded)||0)+(Number(s.model_health_unknown)||0);
   const defects=Number(s.escaped_defects_without_regression)||0;
-  return '<article class="fsv-improvement"><header><div><span class="fsv-kicker">Compound Intelligence</span><h4>Wordt Powerhouse aantoonbaar slimmer?</h4></div><b class="fsv-pill '+tone+'">'+esc(state.replaceAll('_',' '))+'</b></header>'+
+  return '<article class="fsv-improvement"><header><div><span class="fsv-kicker">Compound Intelligence</span><h4>Wordt Bedrijfsgeheugen aantoonbaar slimmer?</h4></div><b class="fsv-pill '+tone+'">'+esc(state.replaceAll('_',' '))+'</b></header>'+
     '<div class="fsv-loop" aria-label="Zelfverbeteringslus">'+loop.map((step,index)=>'<span><b>'+esc(step)+'</b>'+(index<loop.length-1?'<i>→</i>':'')+'</span>').join('')+'</div>'+
     '<div class="fsv-quality-grid"><span><small>Geverifieerde outcomes</small><b>'+num(verified,0)+'</b></span><span><small>Lerende bedrijven</small><b>'+num(companies,0)+'</b></span><span><small>Gemeten kandidaten</small><b>'+num(measured,0)+' / '+num(total,0)+'</b></span><span><small>Klaar voor evaluatie</small><b>'+num(ready,0)+'</b></span><span><small>Evidence/regressie open</small><b>'+num(evidencePending+regressionPending,0)+'</b></span><span><small>Model/guardrail issues</small><b>'+num(modelIssues+defects,0)+'</b></span></div>'+
-    '<p>Alleen bewezen verbeteringen mogen via evaluatie, regressie- en security-gates promoveren. Powerhouse herschrijft productie nooit ongecontroleerd.</p></article>';
+    '<p>Alleen bewezen verbeteringen mogen via evaluatie, regressie- en security-gates promoveren. Bedrijfsgeheugen herschrijft productie nooit ongecontroleerd.</p></article>';
 }
 function ensureStyles(doc=document){
   if(!doc||doc.querySelector('link[data-foresight-context-ui]'))return;
@@ -107,8 +107,8 @@ function sectionMarkup({pageId,state,quality,overview=false}={}){
   const scenarioCards=showScenario?scenarios.slice(0,3).map(scenarioCard).join(''):'';
   if(!predictionCards&&!scenarioCards&&!showQuality)return '';
   return '<section class="fsv-context" data-foresight-context="true" data-page="'+esc(pageId||'overzicht')+'">'+
-    '<div class="fsv-head"><div><span class="fsv-kicker">Powerhouse Foresight</span><h3>'+(overview?'Wat zien we aankomen?':'Vooruitblik in deze context')+'</h3><p>Waarschijnlijkheden en scenario’s naast de actuele bedrijfscontext — met onzekerheid zichtbaar, nooit als zekerheid.</p></div><span class="fsv-live">Predict → Act → Learn</span></div>'+
-    (predictionCards?'<div class="fsv-grid">'+predictionCards+'</div>':'<div class="fsv-empty"><b>Nog geen onderbouwde bedrijfsforecast.</b><span>Leg doelen, actuele waarden en minimaal drie historiepunten vast; Powerhouse vult hier geen voorbeeldvoorspellingen in.</span></div>')+
+    '<div class="fsv-head"><div><span class="fsv-kicker">Bedrijfsgeheugen Foresight</span><h3>'+(overview?'Wat zien we aankomen?':'Vooruitblik in deze context')+'</h3><p>Waarschijnlijkheden en scenario’s naast de actuele bedrijfscontext — met onzekerheid zichtbaar, nooit als zekerheid.</p></div><span class="fsv-live">Predict → Act → Learn</span></div>'+
+    (predictionCards?'<div class="fsv-grid">'+predictionCards+'</div>':'<div class="fsv-empty"><b>Nog geen onderbouwde bedrijfsforecast.</b><span>Leg doelen, actuele waarden en minimaal drie historiepunten vast; Bedrijfsgeheugen vult hier geen voorbeeldvoorspellingen in.</span></div>')+
     (scenarioCards?'<div class="fsv-scenarios">'+scenarioCards+'</div>':'')+
     (showQuality&&quality?qualityPanel(quality)+selfImprovementPanel(quality.self_improvement):'')+
     '</section>';

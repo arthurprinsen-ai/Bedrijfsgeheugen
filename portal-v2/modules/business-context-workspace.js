@@ -29,7 +29,7 @@ function statusLabel(context){
 function renderSummary(context){
   const overlays=[...context.eventLabels,...context.goalLabels];
   const health=Object.entries(context.health).map(([key,value])=>'<span><b>'+esc(key)+'</b> '+esc(value)+'</span>').join('');
-  return '<section class="v2contextsummary"><div><span class="v2workspaceeyebrow">Powerhouse-context</span><h3>'+esc(context.primary.label)+'</h3><p>'+esc(statusLabel(context))+(overlays.length?' · '+esc(overlays.join(' · ')):'')+'</p></div><div class="v2contexthealth">'+health+'</div></section>';
+  return '<section class="v2contextsummary"><div><span class="v2workspaceeyebrow">Bedrijfsgeheugen-context</span><h3>'+esc(context.primary.label)+'</h3><p>'+esc(statusLabel(context))+(overlays.length?' · '+esc(overlays.join(' · ')):'')+'</p></div><div class="v2contexthealth">'+health+'</div></section>';
 }
 
 function renderJourney(state,context){
@@ -41,14 +41,14 @@ function renderJourney(state,context){
 function renderGoalTargets(state,goals){
   if(!goals.length)return '<section class="v2goalempty"><h3>Doelen & voorspellingen</h3><p>Kies eerst één of meer doelen. Daarna kun je per doel een meetbare huidige stand, doelwaarde en doeldatum vastleggen.</p></section>';
   const targets=state?.portal?.business_context?.goal_targets||{};
-  return '<section class="v2goaltargets"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Doelen</span><h3>Maak doelen meetbaar</h3></div><p>Powerhouse voorspelt alleen met minimaal 3 historische meetpunten. Zonder bewijs toont het benodigde tempo, maar geen schijnforecast.</p></div><div class="v2goaleditgrid">'+goals.map(id=>{const metric=GOAL_METRICS[id];const target=targets[id]||{};if(!metric)return '';return '<article data-goal-editor="'+esc(id)+'"><h4>'+esc(USER_GOALS[id]?.label||id)+'</h4><small>'+esc(metric.label)+' · '+esc(metric.unit)+'</small><label>Huidige stand<input type="number" step="any" data-goal-current="'+esc(id)+'" value="'+esc(target.current_value??'')+'"></label><label>Doelwaarde<input type="number" step="any" data-goal-target="'+esc(id)+'" value="'+esc(target.target_value??'')+'"></label><label>Doeldatum<input type="date" data-goal-date="'+esc(id)+'" value="'+esc(String(target.target_date||'').slice(0,10))+'"></label></article>';}).join('')+'</div></section>';
+  return '<section class="v2goaltargets"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Doelen</span><h3>Maak doelen meetbaar</h3></div><p>Bedrijfsgeheugen voorspelt alleen met minimaal 3 historische meetpunten. Zonder bewijs toont het benodigde tempo, maar geen schijnforecast.</p></div><div class="v2goaleditgrid">'+goals.map(id=>{const metric=GOAL_METRICS[id];const target=targets[id]||{};if(!metric)return '';return '<article data-goal-editor="'+esc(id)+'"><h4>'+esc(USER_GOALS[id]?.label||id)+'</h4><small>'+esc(metric.label)+' · '+esc(metric.unit)+'</small><label>Huidige stand<input type="number" step="any" data-goal-current="'+esc(id)+'" value="'+esc(target.current_value??'')+'"></label><label>Doelwaarde<input type="number" step="any" data-goal-target="'+esc(id)+'" value="'+esc(target.target_value??'')+'"></label><label>Doeldatum<input type="date" data-goal-date="'+esc(id)+'" value="'+esc(String(target.target_date||'').slice(0,10))+'"></label></article>';}).join('')+'</div></section>';
 }
 function renderForecasts(state,goals){
   const forecasts=buildGoalForecasts(state,goals);
   if(!forecasts.length)return '';
   return '<section class="v2forecastsection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Forecast</span><h3>Liggen je doelen op koers?</h3></div><p>Verwachting en bandbreedte worden alleen getoond als de tijdreeks voldoende bewijs bevat.</p></div><div class="v2forecastgrid">'+forecasts.map(item=>{
     const pct=item.progress==null?null:Math.round(item.progress);
-    const forecast=item.forecast?'<div class="v2forecastband"><b>Verwachting '+fmt(item.forecast.expected,item.unit)+'</b><span>band '+fmt(item.forecast.lower,item.unit)+' – '+fmt(item.forecast.upper,item.unit)+'</span><small>'+item.forecast.points+' meetpunten · '+esc(item.forecast.method)+'</small></div>':'<div class="v2forecastband unavailable"><b>Nog geen betrouwbare forecast</b><span>'+item.historyPoints+'/3 historische meetpunten beschikbaar</span><small>Powerhouse verzint geen waarschijnlijkheid zonder trendbewijs.</small></div>';
+    const forecast=item.forecast?'<div class="v2forecastband"><b>Verwachting '+fmt(item.forecast.expected,item.unit)+'</b><span>band '+fmt(item.forecast.lower,item.unit)+' – '+fmt(item.forecast.upper,item.unit)+'</span><small>'+item.forecast.points+' meetpunten · '+esc(item.forecast.method)+'</small></div>':'<div class="v2forecastband unavailable"><b>Nog geen betrouwbare forecast</b><span>'+item.historyPoints+'/3 historische meetpunten beschikbaar</span><small>Bedrijfsgeheugen verzint geen waarschijnlijkheid zonder trendbewijs.</small></div>';
     const pace=item.requiredPace?fmt(item.requiredPace.perMonth,item.unit)+' per maand':'—';
     return '<article class="v2forecastcard" data-track="'+esc(item.trackStatus||'unknown')+'"><div class="v2forecasttitle"><div><h4>'+esc(USER_GOALS[item.goalId]?.label||item.goalId)+'</h4><small>'+esc(item.label)+'</small></div><span>'+esc(trackLabel(item.trackStatus))+'</span></div><div class="v2goalnumbers"><div><small>Nu</small><b>'+fmt(item.current,item.unit)+'</b></div><div><small>Doel</small><b>'+fmt(item.target,item.unit)+'</b></div><div><small>Datum</small><b>'+dateLabel(item.targetDate)+'</b></div></div><div class="v2progress"><i style="width:'+(pct==null?0:pct)+'%"></i></div><small class="v2progresslabel">'+(pct==null?'Voortgang nog niet berekenbaar':pct+'% van doel')+' · benodigd tempo '+pace+'</small>'+forecast+'<div class="v2milestones">'+item.milestones.map(m=>'<span><i></i><b>'+esc(m.label)+'</b><small>'+dateLabel(m.date)+'</small></span>').join('')+'</div></article>';
   }).join('')+'</div></section>';
@@ -57,7 +57,7 @@ function renderForecasts(state,goals){
 function renderGoalScenarios(state,goals){
   const scenarios=buildGoalScenarios(state,goals);
   if(!scenarios.length)return '';
-  return '<section class="v2scenariosection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Wat-als</span><h3>Welke hefbomen brengen je dichter bij je doel?</h3></div><p>Effecten hieronder zijn scenario-aannames, geen voorspellingen. Koppel bewijs aan een aanname voordat Powerhouse haar als onderbouwd behandelt.</p></div><div class="v2scenariogrid">'+scenarios.map(item=>{
+  return '<section class="v2scenariosection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Wat-als</span><h3>Welke hefbomen brengen je dichter bij je doel?</h3></div><p>Effecten hieronder zijn scenario-aannames, geen voorspellingen. Koppel bewijs aan een aanname voordat Bedrijfsgeheugen haar als onderbouwd behandelt.</p></div><div class="v2scenariogrid">'+scenarios.map(item=>{
     const levers=(GOAL_LEVERS[item.goalId]||[]);
     const actionRows=(item.nextBestActions||[]).map(action=>'<div class="v2nextbestrow"><button type="button" data-scenario-open="'+esc(action.page)+'"><span><b>'+esc(action.label)+'</b><small>'+esc(action.action)+'</small></span><i>→</i></button><button type="button" class="v2roadmapadd" data-scenario-roadmap="'+esc(item.goalId)+'" data-lever-id="'+esc(action.leverId)+'">+ Roadmap</button></div>').join('');
     const leverInputs=levers.map(lever=>{
@@ -74,7 +74,7 @@ function renderGoalScenarios(state,goals){
 
 function renderOutcomeLearning(context){
   const learning=context?.goalOutcomeLearning;
-  if(!learning||(!learning.records.length&&!learning.calibrations.length))return '<section class="v2learningempty"><div><span class="v2workspaceeyebrow">Leren van resultaat</span><h3>Wat werkte echt?</h3><p>Nog geen gemeten goal-scenario outcomes beschikbaar. Voeg na uitvoering bewijs toe in Outcomes & evidence; daarna vergelijkt Powerhouse verwacht en werkelijk effect.</p></div><button type="button" data-outcome-open="outcomes-evidence">Meet resultaat →</button></section>';
+  if(!learning||(!learning.records.length&&!learning.calibrations.length))return '<section class="v2learningempty"><div><span class="v2workspaceeyebrow">Leren van resultaat</span><h3>Wat werkte echt?</h3><p>Nog geen gemeten goal-scenario outcomes beschikbaar. Voeg na uitvoering bewijs toe in Outcomes & evidence; daarna vergelijkt Bedrijfsgeheugen verwacht en werkelijk effect.</p></div><button type="button" data-outcome-open="outcomes-evidence">Meet resultaat →</button></section>';
   const calibrationRows=learning.calibrations.map(item=>{
     const factor=item.calibrationFactor==null?'—':new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2}).format(item.calibrationFactor)+'×';
     const status=item.calibrationStatus==='available'?'Gekalibreerd':'Nog leren';
@@ -86,7 +86,7 @@ function renderOutcomeLearning(context){
     const label=({'overperformed':'Beter dan verwacht','within-range':'Zoals verwacht','underperformed':'Minder dan verwacht','opposite-direction':'Tegengesteld effect','unquantified':'Niet kwantificeerbaar'})[item.classification]||item.classification;
     return '<article class="v2outcomerow"><div><b>'+esc(item.goalId)+' · '+esc(item.leverId)+'</b><small>'+esc(label)+(item.verified?' · geverifieerd':' · nog niet geverifieerd')+'</small></div><span>verwacht '+expected+' → werkelijk '+realized+'</span></article>';
   }).join('');
-  return '<section class="v2learningsection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Learning loop</span><h3>Wat werkte echt?</h3></div><button type="button" data-outcome-open="outcomes-evidence">Open Outcomes & evidence</button></div><p>Pas vanaf 3 geverifieerde uitkomsten per hefboom gebruikt Powerhouse een historische correctiefactor. Tot die tijd blijft het scenario een aanname.</p><div class="v2calibrationgrid">'+calibrationRows+'</div><div class="v2outcomelist">'+recent+'</div></section>';
+  return '<section class="v2learningsection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Learning loop</span><h3>Wat werkte echt?</h3></div><button type="button" data-outcome-open="outcomes-evidence">Open Outcomes & evidence</button></div><p>Pas vanaf 3 geverifieerde uitkomsten per hefboom gebruikt Bedrijfsgeheugen een historische correctiefactor. Tot die tijd blijft het scenario een aanname.</p><div class="v2calibrationgrid">'+calibrationRows+'</div><div class="v2outcomelist">'+recent+'</div></section>';
 }
 
 function collectGoalScenarios(root,goals,previous={}){
@@ -122,8 +122,8 @@ function renderForm(root,state,message){
   const events=Array.isArray(stored.events)?stored.events:context.events;
   const goals=Array.isArray(stored.goals)?stored.goals:context.goals;
   root.innerHTML=renderSummary(context)+renderJourney(state,context)+renderForecasts(state,goals)+renderGoalScenarios(state,goals)+renderOutcomeLearning(context)
-    +'<section class="v2legacyprofilecard"><h3>Klopt deze bedrijfssituatie?</h3><p>Powerhouse gebruikt deze context om analyses, modellen, scenario’s, prioriteiten en portaalonderdelen te ordenen. Je kunt meerdere gebeurtenissen en doelen tegelijk kiezen.</p><div class="v2contextconfirm"><button type="button" class="pvprimary" data-context-confirm>Dit klopt</button><button type="button" data-context-edit>Pas situatie aan</button><span data-context-message>'+esc(message||'')+'</span></div></section>'
-    +'<section class="v2legacyprofilecard" data-context-editor hidden><label class="v2contextfield"><span>Primaire bedrijfsfase</span><select data-context-stage>'+stageOptions(stage)+'</select></label><div class="v2contextgroup"><h4>Wat speelt er tegelijk?</h4>'+checkboxGrid(STRATEGIC_EVENTS,events,'events')+'</div><div class="v2contextgroup"><h4>Wat wil je bereiken?</h4>'+checkboxGrid(USER_GOALS,goals,'goals')+'</div>'+renderGoalTargets(state,goals)+'<div class="v2formactions"><button type="button" class="pvprimary" data-context-save>Opslaan & Powerhouse bijwerken</button><span data-context-save-message>De context en meetbare doelen worden tenant-scoped opgeslagen en gebruikt door het brein.</span></div></section>';
+    +'<section class="v2legacyprofilecard"><h3>Klopt deze bedrijfssituatie?</h3><p>Bedrijfsgeheugen gebruikt deze context om analyses, modellen, scenario’s, prioriteiten en portaalonderdelen te ordenen. Je kunt meerdere gebeurtenissen en doelen tegelijk kiezen.</p><div class="v2contextconfirm"><button type="button" class="pvprimary" data-context-confirm>Dit klopt</button><button type="button" data-context-edit>Pas situatie aan</button><span data-context-message>'+esc(message||'')+'</span></div></section>'
+    +'<section class="v2legacyprofilecard" data-context-editor hidden><label class="v2contextfield"><span>Primaire bedrijfsfase</span><select data-context-stage>'+stageOptions(stage)+'</select></label><div class="v2contextgroup"><h4>Wat speelt er tegelijk?</h4>'+checkboxGrid(STRATEGIC_EVENTS,events,'events')+'</div><div class="v2contextgroup"><h4>Wat wil je bereiken?</h4>'+checkboxGrid(USER_GOALS,goals,'goals')+'</div>'+renderGoalTargets(state,goals)+'<div class="v2formactions"><button type="button" class="pvprimary" data-context-save>Opslaan & Bedrijfsgeheugen bijwerken</button><span data-context-save-message>De context en meetbare doelen worden tenant-scoped opgeslagen en gebruikt door de intelligentielaag.</span></div></section>';
   return context;
 }
 function checkedValues(root,name){
@@ -207,7 +207,7 @@ export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onU
         const current=buildBusinessContext(domainState?.get?.()||{});
         await persistContext(domainState,{stage:current.primary.stage,events:[...current.events],goals:[...current.goals],targetStage:domainState?.get?.('portal.business_context.target_stage')||null,goalTargets:domainState?.get?.('portal.business_context.goal_targets')||{},goalScenarios:domainState?.get?.('portal.business_context.goal_scenarios')||{}});
         onSaveStatus?.('saved');
-        draw('Bevestigd en teruggeschreven naar Powerhouse.');
+        draw('Bevestigd en teruggeschreven naar Bedrijfsgeheugen.');
         onUpdated?.();
       }catch(error){
         onSaveStatus?.('error');
@@ -227,7 +227,7 @@ export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onU
         if(message)message.textContent='Opslaan…';
         await persistContext(domainState,{stage,events,goals,targetStage,goalTargets,goalScenarios});
         onSaveStatus?.('saved');
-        draw('Situatie aangepast en Powerhouse opnieuw gevoed.');
+        draw('Situatie aangepast en Bedrijfsgeheugen opnieuw gevoed.');
         onUpdated?.();
       }catch(error){
         onSaveStatus?.('error');

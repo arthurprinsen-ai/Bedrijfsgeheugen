@@ -119,7 +119,7 @@ function nextStep(state,{pc,dc,ac,rc}){
  if(ac.self<ac.total)return {title:`Beantwoord de laatste ${Math.max(0,ac.total-ac.self)} AI-capabilities`,why:'Wat je openlaat, telt niet mee en verdwijnt dus uit je advies.',page:'ai-capabilities'};
  if(!rc.total)return {title:'Zet je eerste acties klaar',why:'Een beeld zonder acties verandert niets. Onder Advies staat wat het meeste oplevert.',page:'advies'};
  if(rc.done<rc.total)return {title:`Rond ${rc.total-rc.done} openstaande acties af`,why:'Dit is het deel dat je voortgang en gerealiseerde waarde aantoonbaar beweegt.',page:'roadmap'};
- return {title:'Je bent rond — houd het actueel',why:'Nieuwe cijfers, besluiten en veranderingen moeten in de Powerhouse-state terugkomen.',page:'actueel-houden'};
+ return {title:'Je bent rond — houd het actueel',why:'Nieuwe cijfers, besluiten en veranderingen moeten in de Bedrijfsgeheugen-state terugkomen.',page:'actueel-houden'};
 }
 
 export function legacyOverviewCompleteModel(state={}){
@@ -220,7 +220,7 @@ function latestImpactMarkup(){
  const changes=(impact.changes||[]).slice(0,8);
  const reasons=[...(impact.effectRules||[]).map(rule=>rule.reason),...(impact.organism?.impacts||[]).slice(1,4).flatMap(item=>item.reasons?.slice(-1)||[])];
  return `<div class="legacy-impact-map" data-latest-impact>
-   <div class="legacy-impact-head"><div><h3>Wat verandert mee?</h3><p>Laatste wijziging verspreidt zich automatisch door berekeningen, afhankelijkheden en het Powerhouse-organisme.</p></div><code>${esc(impact.path)}</code></div>
+   <div class="legacy-impact-head"><div><h3>Wat verandert mee?</h3><p>Laatste wijziging verspreidt zich automatisch door berekeningen, afhankelijkheden en het Bedrijfsgeheugen-organisme.</p></div><code>${esc(impact.path)}</code></div>
    ${changes.length?`<div class="legacy-impact-deltas">${changes.map(change=>`<span><small>${esc(change.id)}</small><b>${impactDeltaText(change)}</b></span>`).join('')}</div>`:''}
    <div class="legacy-impact-pages">${pages.map(detail=>`<button type="button" data-legacy-page="${esc(detail.page)}" data-relation="${esc(detail.relation||'dependency')}" title="${esc([...(detail.viaCalculation||[]),...(detail.viaRule||[])].join(' · '))}">${esc(detail.label||detail.page)}</button>`).join('')}</div>
    ${reasons.length?`<div class="legacy-impact-reason"><b>Waarom dit doorwerkt:</b> ${esc([...new Set(reasons)].slice(0,3).join(' · '))}</div>`:''}

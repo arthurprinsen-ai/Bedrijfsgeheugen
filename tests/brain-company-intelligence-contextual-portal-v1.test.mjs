@@ -11,7 +11,7 @@ const shell=fs.readFileSync('portal-v2/page-shell.js','utf8');
 const styles=fs.readFileSync('portal-v2/company-intelligence-context.css','utf8');
 
 test('Company Intelligence OS is projected contextually instead of as a separate dashboard',()=>{
- assert.match(context,/Powerhouse ziet nu/);
+ assert.match(context,/Bedrijfsgeheugen ziet nu/);
  assert.match(context,/tenant-scoped/);
  assert.match(context,/Outcome Memory/);
  assert.match(context,/Company Graph context/);

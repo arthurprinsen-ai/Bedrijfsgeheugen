@@ -8,10 +8,10 @@ const runner = readFileSync('tools/ci/netlify-build-entry.mjs','utf8');
 const skill = readFileSync('skills/powerhouse-product-led-growth.md','utf8');
 
 test('product-led homepage presents one platform with three product lines', () => {
-  assert.match(apply,/Powerhouse · één platform/);
-  assert.match(apply,/Powerhouse Intelligence/);
-  assert.match(apply,/Powerhouse Agents/);
-  assert.match(apply,/Powerhouse Connect/);
+  assert.match(apply,/Bedrijfsgeheugen · één platform/);
+  assert.match(apply,/Bedrijfsgeheugen Intelligence/);
+  assert.match(apply,/Bedrijfsgeheugen Agents/);
+  assert.match(apply,/Bedrijfsgeheugen Connect/);
   assert.match(apply,/Data[\s\S]*Context[\s\S]*Intelligence[\s\S]*Beslissing[\s\S]*Actie[\s\S]*Bewijs[\s\S]*Leren/);
 });
 

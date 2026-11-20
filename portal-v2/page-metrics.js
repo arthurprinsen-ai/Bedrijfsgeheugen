@@ -476,7 +476,7 @@ const RUNTIME_PAGES=Object.freeze({
 });
 
 /**
- * Kerncijfers per Brein- en Powerhouse-pagina, afgeleid uit de projectie van de
+ * Kerncijfers per Intelligentie- en Bedrijfsgeheugen-pagina, afgeleid uit de projectie van de
  * operating loop (zie runtime-evidence.js). Elke pagina krijgt cijfers die bij
  * zijn eigen onderwerp horen, niet vier keer hetzelfde. Zonder evidence: leeg.
  */

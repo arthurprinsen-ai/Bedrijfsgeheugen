@@ -6,7 +6,7 @@ test('Brain contract projects review state without compliance, privacy or AI app
  const source=await readFile(new URL('../portal-next/data-sovereignty-panel.js',import.meta.url),'utf8');
  assert.match(source,/const brainReview=s\.brainReview/);
  assert.match(source,/Object\.prototype\.hasOwnProperty\.call\(reviewStates,brainReview\.status\)/);
- assert.match(source,/Opvolging door het Brein:/);
+ assert.match(source,/Opvolging door de intelligentielaag:/);
  assert.match(source,/FULFILLED:'Administratief afgerond; inhoudelijk bewijs blijft vereist'/);
  assert.match(source,/Nog geen bevestigde Brain-status/);
  assert.match(source,/niet dat CSRD voor jouw organisatie verplicht is/);

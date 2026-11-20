@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import { reducePortalSelection, withCustomer, legacyTabForPage, buildLegacyPortalUrl, activateLegacyTabInDocument } from '../portal-next/portal-next.js';
 const html=fs.readFileSync(new URL('../portal-next/index.html',import.meta.url),'utf8');
 const js=fs.readFileSync(new URL('../portal-next/portal-next.js',import.meta.url),'utf8');
-const required=['Bedrijfsgezondheid','Kennisborging','Processen','Data & systemen','AI-volwassenheid','AI Management Summary','Aanbevelingen','Roadmap & voortgang','Kansen & bedreigingen','Impact','Activiteit','Snelle links','Het brein van je bedrijf'];
+const required=['Bedrijfsgezondheid','Kennisborging','Processen','Data & systemen','AI-volwassenheid','AI Management Summary','Aanbevelingen','Roadmap & voortgang','Kansen & bedreigingen','Impact','Activiteit','Snelle links','De intelligentielaag van je bedrijf'];
 test('nieuwe cockpit behoudt alle bestaande overzichtsblokken',()=>{for(const label of required)assert.ok(html.includes(label),`missing overview block: ${label}`)});
 test('mobile cockpit heeft bottom sheet en touch selectors',()=>{assert.ok(html.includes('data-mobile-flow-sheet'));assert.ok(html.includes('data-source-selector'));assert.ok(html.includes('data-module-selector'))});
 test('mobiel laat één bron en één module tegelijk actief zijn',()=>{const a=reducePortalSelection({source:null,module:null},{type:'SELECT_SOURCE',id:'documenten',mobile:true});const b=reducePortalSelection(a,{type:'SELECT_SOURCE',id:'processen',mobile:true});assert.equal(b.source,'processen')});

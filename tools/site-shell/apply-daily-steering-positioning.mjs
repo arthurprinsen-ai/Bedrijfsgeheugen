@@ -6,24 +6,24 @@ const COPY = Object.freeze({
   nl: {
     headline:'Een week vrij, <span class="mark">en je bedrijf loopt door.</span>',
     lead:'Je weet wat er in je bedrijf gebeurt, maar het zit in <strong>je hoofd, je mailbox en losse Excel-bestanden</strong>. Bedrijfsgeheugen legt vast wie wat doet, waarom je iets besloot en wat er daarna moet gebeuren. Wat vandaag niet wordt vastgelegd, is morgen weg. Zo blus je minder brandjes en houd je weer tijd voor jezelf. <strong>Geen extra AI-tool: een laag bovenop AFAS, Exact Online en Microsoft 365.</strong> Begin gratis: in 3 minuten zie je waar tijd en kennis weglekken.',
-    eyebrow:'POWERHOUSE · DAGELIJKSE ONDERNEMINGSSTURING',
+    eyebrow:'BEDRIJFSGEHEUGEN · DAGELIJKSE ONDERNEMINGSSTURING',
     kicker:'Voor ondernemers die de leiding houden',
     benefitsLabel:'Wat je terugkrijgt',
     benefits:['Kansen eerder herkennen','Risico’s tijdig begrijpen','Keuzes onderbouwen','Acties met eigenaar','Effecten meten','Continu verbeteren'],
     technologyCta:'Ontdek hoe het geheugen werkt →',
     sectionHeading:'Niet alleen inzicht. <span class="mark">Van verandering naar actie en resultaat.</span>',
-    sectionLead:'Een chatbot geeft antwoord. Een dashboard toont cijfers. Een automatisering voert een losse stap uit. Bedrijfsgeheugen verbindt juist interne en externe signalen met je strategie en bedrijfssituatie, helpt gevolgen en prioriteiten bepalen, zet acties uit met een eigenaar en gebruikt de gemeten uitkomst voor de volgende beslissing. POWERHOUSE is de motor; betere ondernemingssturing is het doel.'
+    sectionLead:'Een chatbot geeft antwoord. Een dashboard toont cijfers. Een automatisering voert een losse stap uit. Bedrijfsgeheugen verbindt juist interne en externe signalen met je strategie en bedrijfssituatie, helpt gevolgen en prioriteiten bepalen, zet acties uit met een eigenaar en gebruikt de gemeten uitkomst voor de volgende beslissing. BEDRIJFSGEHEUGEN is de motor; betere ondernemingssturing is het doel.'
   },
   en: {
     headline:'A week off, <span class="mark">and your business keeps running.</span>',
     lead:'You know what is going on in your business, but it lives in <strong>your head, your inbox and loose spreadsheets</strong>. Bedrijfsgeheugen records who does what, why you decided something and what has to happen next. What is not captured today is gone tomorrow. Fewer fires to put out, and time for yourself again. <strong>Not another AI tool: a layer on top of AFAS, Exact Online and Microsoft 365.</strong> Start free: in 3 minutes you see where time and knowledge leak away.',
-    eyebrow:'POWERHOUSE · EVERYDAY BUSINESS STEERING',
+    eyebrow:'BEDRIJFSGEHEUGEN · EVERYDAY BUSINESS STEERING',
     kicker:'For owners who stay in charge',
     benefitsLabel:'What you get back',
     benefits:['Spot opportunities sooner','Understand emerging risks','Make informed decisions','Assign accountable actions','Measure real outcomes','Keep improving'],
     technologyCta:'See how the memory works →',
     sectionHeading:'Beyond insights. <span class="mark">From change to action and results.</span>',
-    sectionLead:'A chatbot answers questions. A dashboard displays figures. An automation executes one predefined step. Bedrijfsgeheugen instead connects internal and external signals to your strategy and business context, helps assess impact and priorities, assigns actions and feeds measured results into the next decision. POWERHOUSE is the engine; better daily steering is the outcome.'
+    sectionLead:'A chatbot answers questions. A dashboard displays figures. An automation executes one predefined step. Bedrijfsgeheugen instead connects internal and external signals to your strategy and business context, helps assess impact and priorities, assigns actions and feeds measured results into the next decision. BEDRIJFSGEHEUGEN is the engine; better daily steering is the outcome.'
   }
 });
 
