@@ -20,7 +20,7 @@
       "tests/brain-security-db-pooler-repair-auth-20261120.test.mjs"
     ],
     "shadow": [
-      "tests/supabase-public-rls-regression-guard.test.mjs"
+      "tests/brain-security-db-pooler-repair-auth-20261120.test.mjs"
     ],
     "canary": [
       "tests/brain-security-db-pooler-repair-auth-20261120.test.mjs"
