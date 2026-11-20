@@ -20,6 +20,18 @@ export function validateSecurityGuardianReport(body,now=Date.now()){
  (d.status==='FAIL')!==(d.failed>0))throw Error('INVALID_SECURITY_HEARTBEAT_COUNTS');
  if(!Array.isArray(d.sites)||d.sites.length!==21||!Array.isArray(d.issues)||d.issues.length!==d.failed+d.warning)
   throw Error('INVALID_SECURITY_HEARTBEAT_EVIDENCE');
+ const tallied={VERIFIED:0,WARN:0,FAIL:0};
+ for(const item of d.sites)tallied[item.status]=(tallied[item.status]||0)+1;
+ if(tallied.VERIFIED!==d.verified||tallied.WARN!==d.warning||tallied.FAIL!==d.failed)
+  throw Error('SECURITY_STATUS_COUNT_MISMATCH');
+ const counts=new Map();for(const item of d.sites)counts.set(item.id,(counts.get(item.id)||0)+1);
+ if(counts.size!==17||counts.get('bedrijfsgeheugen')!==5||
+  [...counts].some(([id,n])=>id!=='bedrijfsgeheugen'&&n!==1))
+  throw Error('SECURITY_INVENTORY_COVERAGE_INCOMPLETE');
+ if(d.issues.filter(x=>x.severity==='HIGH').length!==d.failed||
+  d.issues.filter(x=>x.severity==='REVIEW').length!==d.warning||
+  d.issues.some(x=>!(/^[a-f0-9]{16}$/.test(String(x.fingerprint||'')))))
+  throw Error('SECURITY_ISSUE_EVIDENCE_MISMATCH');
  const ids=d.sites.map(s=>String(s?.id||''));
  if(!ids.includes('bedrijfsgeheugen')||!ids.includes('pw-zaalcoach')||!ids.includes('pw-veldcoach')||
  ids.some(id=>!(/^[a-z0-9-]{3,75}$/.test(id)))||
