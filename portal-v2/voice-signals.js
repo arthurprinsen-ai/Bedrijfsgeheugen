@@ -5,7 +5,7 @@
 import {listPortalGroups} from './page-registry.js';
 import {navigatePortal} from './router.js';
 import {askPortal} from './ask-portal.js';
-import {SIGNAL_METRICS,metricById,parseSpokenRule,normalizeRule,evaluateSignals} from './signal-detection.js';
+import {SIGNAL_METRICS,metricById,parseSpokenRule,normalizeRule,evaluateSignals,buildSignalTask} from './signal-detection.js';
 
 const norm=value=>String(value||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ');
 const safe=state=>state&&typeof state==='object'&&!Array.isArray(state)?state:{};
@@ -39,11 +39,13 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     +'<section class="vs-voice"><h3>Wat wil je doen?</h3><div class="vs-voice-row"><input data-vs-command maxlength="500" aria-label="Spraakopdracht of getypte opdracht" placeholder="Bijv. open omzet, of waarschuw me als verzuim boven 7"><button type="button" data-vs-run>Uitvoeren</button><button type="button" data-vs-mic aria-label="Microfoon starten">🎙 Spreek</button></div><p class="vs-examples">Zeg bijvoorbeeld: “open bedrijfsgezondheid”, “wat moet ik vandaag doen?”, “toon signaleringen” of “waarschuw me als omzet onder 50 duizend”.</p><p class="vs-privacy">De microfoon luistert alleen na jouw klik. De browser kan spraak extern verwerken; de audio wordt niet door dit portaal opgeslagen. Bij onvoldoende browserondersteuning kun je typen.</p></section>'
     +'<div class="vs-speech-out"><button type="button" data-vs-read>🔊 Lees bericht voor</button><button type="button" data-vs-stop>Stop voorlezen</button></div><output data-vs-status role="status" aria-live="polite" class="vs-status"></output>'
     +'<section class="vs-center"><div class="vs-center-head"><div><h3>Mijn signaleringen</h3><p>Toetsing bij openen en bij het vernieuwen van geautoriseerde portaaldata. Geen claim van achtergrondmeldingen of e-mails.</p></div><span data-vs-counter>Geen regels</span></div><div data-vs-list class="vs-list"></div></section>'
+    +'<form data-vs-action-form class="vs-form" hidden><h3>Actie aanmaken uit signaal</h3><p data-vs-action-context></p><div class="vs-form-grid"><label>Eigenaar<input name="owner" required maxlength="100" placeholder="Naam verantwoordelijke"></label><label>Deadline<input name="due" required type="date"></label></div><div class="vs-item-actions"><button type="submit" class="vs-save">Taak opslaan met bewijs</button><button type="button" data-vs-action-cancel>Annuleren</button></div></form>'
     +'<form data-vs-form class="vs-form"><h3>Signalering instellen</h3><div class="vs-form-grid"><label>KPI<select name="metric" required></select></label><label>Als de waarde<select name="operator"><option value="below">Onder de grens komt</option><option value="above">Boven de grens komt</option><option value="missing">Ontbreekt</option></select></label><label>Grenswaarde<input name="threshold" inputmode="decimal" type="number" step="any" placeholder="Bijv. 7" required></label><label>Prioriteit<select name="severity"><option value="midden">Midden</option><option value="hoog">Hoog</option><option value="laag">Laag</option></select></label></div><p class="vs-form-hint">Eén grenswaarde is een eigen beleidskeuze, geen automatisch gevalideerde branchebenchmark. Je kunt de regel later uitschakelen.</p><button class="vs-save" type="submit">Signalering veilig opslaan</button></form>';
   for(const metric of SIGNAL_METRICS){const opt=document.createElement('option');opt.value=metric.id;opt.textContent=metric.label+' ('+metric.unit+')';dialog.querySelector('[name=metric]').append(opt);}
   document.body.append(dialog);
   const output=dialog.querySelector('[data-vs-status]'),input=dialog.querySelector('[data-vs-command]');
   const form=dialog.querySelector('[data-vs-form]'),list=dialog.querySelector('[data-vs-list]');
+  const actionForm=dialog.querySelector('[data-vs-action-form]');let selectedSignalId='';
   const mic=dialog.querySelector('[data-vs-mic]'),counter=dialog.querySelector('[data-vs-counter]');
   const threshold=form.elements.threshold,operator=form.elements.operator;
   let recognizer=null,busy=false,principal='',lastPortalField=null;
@@ -112,6 +114,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     const actions=document.createElement('div');actions.className='vs-item-actions';
     const go=btn(result.actionLabel,'go');go.dataset.page=result.actionPage;
     const toggle=btn(result.enabled?'Pauzeren':'Activeren','toggle');toggle.dataset.rule=result.id;
+    if(result.triggered){const create=btn('Taak met eigenaar aanmaken','create-task');create.dataset.rule=result.id;actions.append(create);}
     actions.append(go,toggle);card.append(actions);
     return card;
   }
@@ -221,6 +224,13 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     if(control.dataset.vsAction==='go'){
       dialog.close();openPage(control.dataset.page);return;
     }
+    if(control.dataset.vsAction==='create-task'){
+      const signal=evaluateSignals(stateRules(authenticated()?.state),safe(authenticated()?.state),{authenticated:!!authenticated()}).find(x=>x.id===control.dataset.rule);
+      if(!signal?.triggered){note(output,'Dit signaal is niet langer actief of meetbaar.',true);return;}
+      selectedSignalId=signal.id;actionForm.hidden=false;
+      actionForm.querySelector('[data-vs-action-context]').textContent=signal.metric.label+': '+signal.explanation+' Advies: '+signal.advice;
+      actionForm.querySelector('[name=owner]').focus();return;
+    }
     if(control.dataset.vsAction==='toggle'){
       try{
         const current=stateRules(authenticated()?.state).map(normalizeRule).filter(Boolean);
@@ -230,12 +240,37 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
       }catch(error){note(output,'Niet bevestigd: '+String(error?.message||error),true);}
     }
   });
+  dialog.querySelector('[data-vs-action-cancel]').addEventListener('click',()=>{actionForm.hidden=true;selectedSignalId='';});
+  actionForm.addEventListener('submit',async event=>{
+    event.preventDefault();
+    const snap=authenticated();
+    if(!snap){note(output,'Log eerst in om een taak te maken.',true);return;}
+    if(busy||!domainState.initialized?.()||!['idle','saved'].includes(domainState.status?.())){note(output,'Gegevens zijn nog niet klaar om op te slaan.',true);return;}
+    const ownerId=String(snap.user.id);
+    const result=evaluateSignals(stateRules(snap.state),safe(snap.state),{authenticated:true}).find(x=>x.id===selectedSignalId);
+    try{
+      const task=buildSignalTask(result,{owner:actionForm.elements.owner.value,due:actionForm.elements.due.value});
+      const existing=domainState.get('portal.tasks.items')||[];
+      if(!Array.isArray(existing))throw Error('TAAKREGISTER_ONGELDIG');
+      if(existing.some(x=>x?.id===task.id))throw Error('Voor dit signaal bestaat al een gekoppelde taak. Bekijk de takenlijst.');
+      busy=true;actionForm.querySelector('[type=submit]').disabled=true;
+      domainState.patch('portal.tasks',{items:[...existing,task]});
+      const receipt=await domainState.flush();
+      const readback=authenticated();
+      const persisted=readback?.state?.portal?.tasks?.items?.find(x=>x?.id===task.id);
+      if(String(readback?.user?.id||'')!==ownerId||receipt?.status!=='saved'||!persisted||persisted.owner!==task.owner||persisted.due!==task.due)
+        throw Error('Taak is niet onafhankelijk teruggelezen; er is geen succesvolle registratie bevestigd.');
+      note(output,'Taak voor '+task.owner+' opgeslagen en teruggelezen. Open Taken & werkstromen voor de voortgang.');
+      selectedSignalId='';actionForm.hidden=true;render();
+    }catch(error){note(output,'Actie niet bevestigd: '+String(error?.message||error),true);}
+    finally{busy=false;actionForm.querySelector('[type=submit]').disabled=false;}
+  });
   const unsubscribe=stateClient.subscribe(snap=>{
     const next=String((['authenticated','empty'].includes(snap.mode)&&!stateClient.isDemo?.()?snap.user?.id:'')||'');
-    if(next!==principal){principal=next;stopListening();stopSpeaking();note(output,'');if(dialog.open)dialog.close();}
+    if(next!==principal){principal=next;stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;note(output,'');if(dialog.open)dialog.close();}
     render();
   });
-  const boundary=()=>{stopListening();stopSpeaking();if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
+  const boundary=()=>{stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
   document.addEventListener('bg:portal-identity-boundary',boundary);
   const refreshed=()=>render();document.addEventListener('bg:portal-server-refreshed',refreshed);
   render();
