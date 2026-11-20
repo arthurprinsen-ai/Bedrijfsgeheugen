@@ -20,7 +20,7 @@
   },
   "evidence": {
     "source": "Original Portal V2 and Supabase portal_state_layers + powerhouse-commercial-heartbeat-runner, 2026-11-20",
-    "candidate_pr": "PENDING_PROTECTED_PR",
+    "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6087",
     "regression_tests": [
       "portal-v2/tests/voice-control-policy.test.mjs",
       "tests/brain-portal-original-heartbeat-signal-contract.test.mjs"
