@@ -9,7 +9,7 @@
     {
       "id": "bedrijfsgeheugen",
       "url": "https://www.bedrijfsgeheugen.nl/",
-      "mode": "business",
+      "mode": "critical",
       "risk": "critical"
     },
     {
