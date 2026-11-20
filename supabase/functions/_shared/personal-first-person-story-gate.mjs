@@ -53,9 +53,37 @@ export function personalFirstPersonSourceViolations(evidence={},runDate){
  if(!clean(e.content_id))fail('PERSONAL_SOURCE_CONTENT_ID_REQUIRED');
  return [...new Set(out)];
 }
+// The original 20-Nov user-fact is an authenticated FOUNDER DESIGN DECISION,
+// not proof of a personally observed client team, implementation or customer
+// result. High-confidence unsupported claims must fail the SAME independent
+// copy reviewer and final provider write gate, not just a prompting guideline.
+// Other genuine first-hand builder events retain their existing source rules.
+export function personalFounderDecisionSourceScopeViolations(text,evidence={}){
+ const out=[];
+ if(evidence?.ai_native_builder_story_verified!==true
+    ||evidence?.build_event_kind!=='founder_directed_verified_product_design_decision_and_merged_delivery')
+   return out;
+ const copy=String(text??'').trim();
+ const source=String(evidence?.source_text??'').toLowerCase();
+ const sourceDescribesTeams=/(?:zelf meegemaakt|persoonlijk gezien|eigen team|mijn team|met een klant|klantgesprek|teams die dashboards)/iu.test(source)
+   && !/(?:niet geverifieerd|no claim|niet bevestigd)/iu.test(source);
+ const sourceProvesOutcome=/(?:klantresultaten? (?:zijn|werd|is) geverifieerd|meetbaar bewezen resultaat|gerealiseerde besparing|snellere inzichten bewezen)/iu.test(source)
+   && !/(?:niet geverifieerd|niet gemeten|geen klantresultaat)/iu.test(source);
+ if(!sourceDescribesTeams
+   && /(?:\bin de praktijk botste\b|\b(?:ik|mijn|wij)\s+(?:zag|merkte|ervoer|hoorde)\b.{0,120}\b(?:teams|klanten?|processen)\b|\b(?:losse|andere)\s+teams die\b|\bbij een klant\b)/iu.test(copy))
+   out.push('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM');
+ if(!sourceProvesOutcome && (
+   /\bhet resultaat was\b/iu.test(copy)
+   || /\b(?:lever(?:t|de|en)|bracht|bespaarde|zorgde voor|leidde tot)\b.{0,80}\b(?:snellere?|betere?|meer|minder|effici[eë]nter|winst|omzet|tijd|geld|resultaten?|inzichten)\b/iu.test(copy)
+   || /\bwat ik veranderde\b/iu.test(copy)
+ ))out.push('PERSONAL_FOUNDER_UNVERIFIED_IMPLEMENTATION_OR_IMPACT_CLAIM');
+ return [...new Set(out)];
+}
+
 export function personalFirstPersonCopyViolations(text,evidence={},runDate){
  const out=personalFirstPersonSourceViolations(evidence,runDate);
  const body=clean(text);
+ out.push(...personalFounderDecisionSourceScopeViolations(body,evidence));
  if(!firstPerson.test(body.slice(0,260)))out.push('PERSONAL_FIRST_PERSON_OPENING_REQUIRED');
  if(evidence?.ai_native_builder_story_verified!==true&&businessTopic.test(body))out.push('PERSONAL_COMPANY_COPY_NOT_ALLOWED');
  if(commercialCta.test(body))out.push('PERSONAL_SALES_CTA_NOT_ALLOWED');
