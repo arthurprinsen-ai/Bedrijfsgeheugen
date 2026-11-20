@@ -15,7 +15,7 @@ export function parsePortalVoiceControl(raw){
   match=n.match(/^(?:klik op|druk op|activeer|gebruik knop|selecteer knop) (.+)$/);
   if(match)return {kind:'activate',label:match[1]};
   match=n.match(/^(?:vul|schrijf in|zet in|stel in) (?:veld |het veld )?(.+?) (?:in met|op|met|naar) (.+)$/);
-  if(match)return {kind:'fill',label:match[1],value:text.slice(text.toLowerCase().indexOf(match[2])).trim()};
+  if(match){const original=text.match(/^(?:vul|schrijf in|zet in|stel in)\\s+(?:veld\\s+|het veld\\s+)?(.+?)\\s+(?:in met|op|met|naar)\\s+(.+)$/i);return {kind:'fill',label:match[1],value:original?.[2]?.trim()||match[2]};}
   match=n.match(/^(?:kies|selecteer) (.+?) (?:bij|in) (.+)$/);
   if(match)return {kind:'choose',label:match[2],value:match[1]};
   return null;
