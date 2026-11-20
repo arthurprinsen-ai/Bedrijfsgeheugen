@@ -27,6 +27,8 @@ test('critical CSP regression fails and protected site may not return public 200
  assert.equal(classifyResponse({mode:'protected'},fakeResponse(200)).code,'UNEXPECTED_PUBLIC_ACCESS');
  assert.equal(classifyResponse({mode:'protected'},fakeResponse(401)).status,'VERIFIED');
  assert.equal(classifyResponse({mode:'archive'},fakeResponse(200)).status,'WARN');
+ assert.equal(classifyResponse({mode:'critical',url:'https://www.bedrijfsgeheugen.nl/'},fakeResponse(302)).code,'UNVERIFIED_REDIRECT');
+ const source=readFileSync('tools/security/site-guardian.mjs','utf8');assert.match(source,/method:'HEAD',redirect:'manual'/);assert.doesNotMatch(source,/redirect:'follow'/);
  const weakened=new Headers(headers);weakened.delete('content-security-policy');
  assert.equal(classifyResponse({mode:'coach'},fakeResponse(200,'https://pw-mo14-1.netlify.app/zaalplanner/',weakened)).status,'FAIL');
 });
