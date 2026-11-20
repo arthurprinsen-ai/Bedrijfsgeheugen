@@ -99,8 +99,57 @@
     "tests/brain-security-live-headers-monitor-20261120.test.mjs"
   ],
   "status": "PR_CANDIDATE_NOT_LIVE",
-  "next_action": "Run protected checks on exact head, merge via original protected path, verify Netlify CURRENT/READY and independent live HTTP response. Review Supabase anonymous function and legacy PW table grants separately; do not interrupt cron or client workflows.",
+  "next_action": "Merge follow-up source metadata deny rules via original protected website lane and independently check new Netlify production HTTP 404s. Plan server-only authenticated replacement of token-guarded cron RPC without disabling current external cron, and migrate publish='.' to an allowlisted output in a separately proven rollout.",
   "independent_business_live_proven": false,
   "independent_mo14_live_proven": false,
-  "no_new_scheduler": true
+  "no_new_scheduler": true,
+  "production_readback_20261120": {
+    "source": "Independent browser/network response inspection against original production hosts",
+    "business": {
+      "url": "https://www.bedrijfsgeheugen.nl/",
+      "http_home": 200,
+      "private_paths_checked": 7,
+      "private_http_status": 404,
+      "public_portal_http_status": 200,
+      "enforced_csp": "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests",
+      "script_csp": "report-only",
+      "observed": true
+    },
+    "pw": {
+      "url": "https://pw-mo14-1.netlify.app/zaalplanner/",
+      "http_zaal": 200,
+      "http_field": 200,
+      "strict_csp_hashes": true,
+      "inline_javascript_injection_blocked": true,
+      "violation_events": 1,
+      "observed": true
+    },
+    "historic_deploy": {
+      "sample_legacy_url_redirected_to_netlify_team_protection": true,
+      "all_historic_deploys_checked": false
+    },
+    "supabase": {
+      "project": "adhjwmvyoixzjtmiroln",
+      "pw_tables": [
+        "pw_opstellingen",
+        "pw_beoordelingen"
+      ],
+      "pw_rls_enabled": true,
+      "anon_select": false,
+      "anon_insert": false,
+      "authenticated_select": false,
+      "authenticated_insert": false,
+      "info_rls_no_policy": 188,
+      "warning_anon_token_guarded_security_definer_rpc": 1
+    },
+    "note": "Observed original live controls are verified; added config/meta-file deny rules in this follow-up PR remain CANDIDATE until protected merge and exact deploy readback.",
+    "github_repository": {
+      "name": "arthurprinsen-ai/Bedrijfsgeheugen",
+      "visibility": "public",
+      "private": false,
+      "evidence": "GitHub REST repository metadata, 2026-11-20",
+      "caveat": "Website 404 controls do not protect public GitHub source history; private migration requires access and CI impact assessment.",
+      "not_changed_by_this_pr": true
+    }
+  }
 }
