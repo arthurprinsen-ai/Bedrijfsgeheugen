@@ -14,6 +14,8 @@
 /netlify/*  /404.html  404!
 /.github/*  /404.html  404!
 /.agents/*  /404.html  404!
+/.env*  /404.html  404!
+/.npmrc  /404.html  404!
 /node_modules/*  /404.html  404!
 /make/*  /404.html  404!
 /email/*  /404.html  404!
