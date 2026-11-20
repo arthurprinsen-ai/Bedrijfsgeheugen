@@ -67,6 +67,20 @@ test('existing 5-minute runner owns the only observation and fails closed on del
     "from public.portal_state_layers","technicalReadbackVerified","notificationsSent:0","actionsExecuted:0"]){
     assert.ok(runner.includes(fragment),fragment);
   }
+  // Regression: constructing a patch with a literal dollar-apostrophe in
+  // String.replace replacement text can inject the remainder of the source.
+  assert.equal(runner.split('Deno.serve(async(req:Request)=>{').length,2);
+  assert.ok(runner.includes("const placeholders=outcome.keys.map((_:string,i:number)=>'
+  assert.doesNotMatch(runner,/cron\.schedule\(/);
+  const browser=await readFile(new URL('../portal-v2/voice-signals.js',import.meta.url),'utf8');
+  assert.match(browser,/name="monitoring"/);
+  assert.match(browser,/name="email"/);
+  assert.match(browser,/name="push"/);
+  assert.match(browser,/parsePortalVoiceControl/);
+  assert.match(browser,/stageVoiceFieldValue/);
+});
++(i+1)).join(',');"));
+  assert.ok(runner.includes('portal_signal_observation:portalSignalObservation'));
   assert.match(runner,/x-bg-service-token/);
   assert.doesNotMatch(runner,/cron\.schedule\(/);
   const browser=await readFile(new URL('../portal-v2/voice-signals.js',import.meta.url),'utf8');
