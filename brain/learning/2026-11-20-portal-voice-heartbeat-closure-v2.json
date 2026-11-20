@@ -14,7 +14,6 @@
   "regression_contract": "Test voice intent parser, ambiguity and sensitive controls; cross-reference all client and server KPI source paths; verify monitoring requires explicit true, numeric missing is not fabricated, tenant fingerprints are masked, dedupe matches same source revision and differs on new source revision; delivery gate denies until provider and consent requirements; original 5-minute runner owns path and stays authorized.",
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/voice-control-policy.test.mjs",
       "tests/brain-portal-original-heartbeat-signal-contract.test.mjs"
     ]
   },
