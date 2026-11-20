@@ -18,7 +18,7 @@ test('original canonical brand shell reuses exact provider deploy classifier, no
   assert.match(workflow,/NETLIFY_GOVERNANCE_EXACT:exact/);
   assert.match(workflow,/NETLIFY_GOVERNANCE_PREFIXES:prefixes/);
   assert.match(workflow,/NETLIFY_BUILD_RUNTIME_EXACT:buildRuntime/);
-  assert.match(workflow,/paths\.every\(p=>!buildRuntime\.has\(p)&&\(exact\.has\(p\)\|\|prefixes\.some\(prefix=>p\.startsWith\(prefix\)\)\)\)/);
+  assert.equal(workflow.includes('const ok=paths.every(p=>!buildRuntime.has(p)&&(exact.has(p)||prefixes.some(prefix=>p.startsWith(prefix))));'),true);
   assert.doesNotMatch(workflow,/const prefixes=\["docs\/","tests\/","\.github\/","brain\/learning\/"\]/);
 });
 test('real PR 6085 original source-only innovation browser repair remains non-deployment governance',()=>{
