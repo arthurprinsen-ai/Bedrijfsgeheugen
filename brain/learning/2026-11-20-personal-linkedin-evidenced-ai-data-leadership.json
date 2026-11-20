@@ -49,5 +49,14 @@
     "source_inspection": "generator prompt overwrite and last-mile categorical builder veto confirmed",
     "test_authority": "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs",
     "original_publication_state": "2026-11-20 personal blocked; not marked published"
+  },
+  "evidence": {
+    "root_cause_readback": "supabase/functions/powerhouse-content-orchestrator/index.ts: later unconditional life-only prompt assignment followed verified builder branch",
+    "safety_gate_readback": "supabase/functions/_shared/personal-first-person-story-gate.mjs: categorical builder reject before original publisher",
+    "canonical_ci": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44705660500 (protected admission: learning compiler passed; semantic closure required evidence shape)",
+    "regression_tests": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ],
+    "live_provider_outcome": "NOT_PROVEN; 2026-11-20 personal obligation blocked"
   }
 }
