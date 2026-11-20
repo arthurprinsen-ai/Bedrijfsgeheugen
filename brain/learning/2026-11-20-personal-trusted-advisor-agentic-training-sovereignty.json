@@ -44,7 +44,14 @@
     "tests": [
       "tests/brain-personal-trusted-advisor-positioning-20261120.test.mjs"
     ],
-    "prior_original_publisher_guard_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6073"
+    "prior_original_publisher_guard_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6073",
+    "pr_admission_20261120": {
+      "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44774818217",
+      "result": "PR_MACHINE_METADATA_INVALID:CANDIDATE_TYPE_INVALID",
+      "root_cause": "PR body used unsupported Candidate-Type: feature",
+      "corrected_to": "Candidate-Type: implementation",
+      "prevention": "Never use unsupported metadata type for feature-oriented implementation; preserve protected delivery-hygiene admission and rerun Required and CodeQL."
+    }
   },
   "boundaries": [
     "No second agent/publisher/scheduler or social URN",
