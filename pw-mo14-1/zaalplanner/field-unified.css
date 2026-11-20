@@ -1,0 +1,62 @@
+
+/* Unified PW Coach — zaal & veld in one application, mobile-first */
+.coach-sport-switch{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0 16px;padding:5px;background:#f5edf0;border:1px solid #ead9df;border-radius:19px}
+.coach-sport-switch button{display:flex;align-items:center;justify-content:center;gap:10px;border:1px solid transparent;border-radius:14px;min-height:62px;background:transparent;font:inherit;font-weight:850;color:#784b5a;cursor:pointer;padding:9px 12px;transition:background .17s ease,color .17s ease}
+.coach-sport-switch button.is-current{background:#59222d;border-color:#59222d;color:white;box-shadow:0 3px 12px #59222d23}
+.coach-sport-switch .mode-symbol{font-size:1.35rem;line-height:1}
+.coach-sport-switch .mode-copy{display:flex;flex-direction:column;align-items:flex-start;line-height:1.3;gap:3px}
+.coach-sport-switch .mode-copy small{font-size:.72rem;font-weight:600;opacity:.83}
+.coach-sport-switch button:focus-visible{outline:3px solid #b67e91;outline-offset:3px}
+.coach-hidden{display:none!important}
+.coach-home-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0}
+.coach-home-choices button{display:flex;gap:9px;text-align:left;align-items:center;border:1px solid #e4ced6;background:white;border-radius:16px;padding:14px;min-height:76px;cursor:pointer;color:#472433;box-shadow:0 4px 17px #59222d09}
+.coach-home-choices .choice-emoji{font-size:1.6rem;flex-shrink:0}
+.coach-home-choices strong,.coach-home-choices small{display:block}.coach-home-choices strong{font-size:.95rem}.coach-home-choices small{font-size:.73rem;margin-top:3px;color:#806873;line-height:1.4}
+#screen-field{--field-ink:#542838;--field-grass:#126f4b}
+#screen-field .fc-callout{display:flex;gap:11px;flex-wrap:wrap;margin:14px 0}
+#screen-field .fc-callout span{display:inline-flex;background:#f5e8ed;color:#633044;border-radius:999px;padding:7px 11px;font-size:.77rem;font-weight:750}
+#screen-field .fc-panel{background:white;border:1px solid #e6d9df;border-radius:20px;padding:15px;box-shadow:0 6px 25px #59222d0a}
+#screen-field .fc-controls{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:8px 0 17px}
+#screen-field .fc-controls button{display:block;background:#faf7f8;color:#612b40;border:1px solid #e1ccd4;border-radius:11px;min-height:57px;padding:9px 3px;font:inherit;font-size:.82rem;font-weight:850;cursor:pointer}
+#screen-field .fc-controls button[aria-current]{background:#59222d;color:white;border-color:#59222d}
+#screen-field .fc-controls small{display:block;font-size:.65rem;font-weight:600;margin-top:3px}
+#screen-field .block-title{color:#54283a;font-weight:850;font-size:1.2rem;margin:8px 0 14px;line-height:1.25}
+#screen-field .field-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(245px,.75fr);gap:15px}
+#screen-field .field-svg{width:100%;height:auto;display:block;border-radius:16px;max-width:100%}
+#screen-field .aside{display:grid;align-content:start;gap:12px}
+#screen-field .aside section{background:white;border:1px solid #eadfe3;border-radius:15px;overflow:hidden}
+#screen-field .aside h3{background:#59222d;color:white;font-size:.88rem;padding:12px 14px;margin:0}
+#screen-field .aside .content{padding:13px}
+#screen-field .bench-name{display:flex;gap:9px;align-items:center;margin:0 0 9px;font-weight:750;font-size:.88rem}
+#screen-field .num{width:34px;height:34px;flex:0 0 34px;display:grid;place-items:center;border-radius:50%;background:#165caf;color:white;font-weight:850}
+#screen-field .change{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#screen-field .change strong{display:block;border-radius:8px;margin-bottom:9px;padding:6px;font-size:.82rem}
+#screen-field .change .out strong{background:#fce6e7;color:#99313b}
+#screen-field .change .in strong{background:#e3f2e7;color:#167846}
+#screen-field .change p{margin:8px 0;font-size:.83rem;font-weight:650;line-height:1.5;overflow-wrap:anywhere}
+#screen-field .tips{font-size:.79rem;color:#674e59;line-height:1.7}
+#screen-field .tips b{color:#54283a}
+#screen-field .fc-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:16px}
+#screen-field .fc-actions button{min-height:44px;padding:10px 13px;border-radius:11px;background:#59222d;border:1px solid #59222d;color:white;font:inherit;font-size:.85rem;font-weight:800;cursor:pointer}
+#screen-field .fc-actions button.alt{background:white;color:#59222d;border-color:#dbc7cf}
+#screen-field .fc-status{margin:12px 0 0;color:#725966;font-size:.82rem;line-height:1.4;font-weight:700}
+#screen-field .fc-helper{font-size:.75rem;color:#766874;line-height:1.6;margin:14px 2px}
+#fieldPrint{display:none}
+@media(max-width:720px){#screen-field .field-layout{grid-template-columns:minmax(0,1fr)}#screen-field .aside{grid-template-columns:repeat(2,minmax(0,1fr))}#screen-field .aside .wide{grid-column:1/-1}#screen-field .fc-panel{padding:12px}#screen-field .fc-controls{gap:5px}}
+@media(max-width:440px){#screen-field .aside{grid-template-columns:1fr}#screen-field .aside .wide{grid-column:auto}#screen-field .fc-controls button{min-height:49px;font-size:.74rem;padding:7px 1px}#screen-field .fc-controls small{font-size:.59rem}.coach-sport-switch button{min-height:58px;padding:7px}.coach-home-choices button{padding:10px;gap:7px}.coach-home-choices .choice-emoji{font-size:1.26rem}.coach-home-choices strong{font-size:.86rem}.coach-home-choices small{font-size:.68rem}}
+@media(prefers-reduced-motion:reduce){.coach-sport-switch button{transition:none}}
+@media print{
+@page{size:A4 portrait;margin:8mm}
+body>.app-header,body>.bottom-nav,body>.progress,body>#appDrawer,.app-container>.matchbar,.app-container>.tab-nav,.app-container>.footer,.app-container>.coach-sport-switch,.app-container>.bottom-nav,.app-container>.app-matchbar,#screen-field .view-head,#screen-field .fc-callout,#screen-field .fc-controls,#screen-field .fc-actions,#screen-field .fc-status,#screen-field .fc-helper,#fieldCards,#appMain>section:not(#screen-field){display:none!important}
+html,body,.app-container,#appMain,#screen-field,#screen-field .fc-panel{display:block!important;overflow:visible!important;margin:0!important;padding:0!important;max-width:none!important;width:100%!important;background:white!important;border:0!important;box-shadow:none!important}
+#fieldPrint{display:block!important}
+#fieldPrint .print-page{display:block!important;page-break-after:always;break-after:page;padding:0 2mm 2mm}
+#fieldPrint .print-page:last-child{page-break-after:auto;break-after:auto}
+#fieldPrint .field-layout{display:grid!important;grid-template-columns:minmax(0,1.4fr) minmax(0,.7fr)!important;gap:7mm}
+#fieldPrint .field-svg{height:auto;max-height:240mm}
+#fieldPrint .aside{display:block!important}
+#fieldPrint .aside section{break-inside:avoid;margin-bottom:5mm}
+#fieldPrint .aside h3{padding:8px}
+#fieldPrint .aside .content{padding:8px}
+#fieldPrint .block-title{font-size:16pt;margin:0 0 5mm}
+}
