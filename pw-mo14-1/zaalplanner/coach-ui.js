@@ -201,7 +201,7 @@ el('coachBackupFile').addEventListener('change',async e=>{
   }
   if(!confirm('Herstel '+next.matches.length+' wedstrijden en '+next.roster.length+' speelsters uit de back-up? De huidige gegevens op dit apparaat worden vervangen.')){feedback.textContent='Herstellen geannuleerd.';return;}
   state=next;state.selectedMatch=Math.max(0,Math.min(Number(state.selectedMatch)||0,state.matches.length-1));
-  cache={};save();lastId=null;render();showView('home',false);
+  cache={};save();lastId=null;render();window.PWFieldComplete?.renderAll?.();showView('home',false);
   feedback.textContent='Back-up succesvol hersteld.';
  }catch(err){feedback.textContent='Herstellen geweigerd: '+err.message;feedback.classList.add('warn');}
  finally{e.target.value='';}
