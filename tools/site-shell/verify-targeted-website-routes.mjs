@@ -127,11 +127,11 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
     const response = await navigateWithRetry(page, target);
     await page.locator('body').waitFor({ state:'attached', timeout:10_000 });
     try {
-      if(route.replace(/\\/+$/,'')==='/portal-v2')
+      if((route==='/portal-v2/'||route==='/portal-v2'))
         await waitForPortalAppBoot(page,{timeout:25_000});
       await waitForRenderedBody(page,{timeout:10_000});
     } catch(error) {
-      if(route.replace(/\\/+$/,'')==='/portal-v2'){
+      if((route==='/portal-v2/'||route==='/portal-v2')){
         const boot=await page.evaluate(()=>({
           hydrating:document.documentElement.classList.contains('v2-hydrating'),
           appMounted:document.documentElement.dataset.bgPortalAppBoot==='ready',
