@@ -3,7 +3,7 @@
   "date": "2026-11-21",
   "owner": "Original Powerhouse Security Operations / Supabase Edge release writer",
   "severity": "HIGH",
-  "status": "SOURCE_CANDIDATE",
+  "status": "HOTFIX_PROVIDER_LIVE_SOURCE_PR_OPEN",
   "source": "Authorized Supabase Edge provider v9 source readback",
   "failure_class": "PUBLIC_ENDPOINT_STATIC_HEADER_AUTH",
   "root_cause": "A fixed request literal was used as the only authorization check on a verify_jwt=false privileged provider inspector; source/runtime drift omitted this function from main GitHub tree.",
@@ -19,14 +19,25 @@
     "If a hotfix is provider-live before protected merge, record branch mismatch explicitly and prevent redeployment of old code."
   ],
   "tests": [
-    "tests/brain-security-instagram-repair-server-auth-20261121.test.mjs"
+    "tests/brain-security-instagram-repair-server-auth-20261121.test.mjs",
+    "tests/brain-security-instagram-repair-live-probe-20261121.test.mjs"
   ],
   "production_evidence": {
-    "provider_live_verified": false,
-    "unauthorized_post_401_verified": false,
-    "get_405_verified": false,
-    "protected_merge_verified": false
+    "provider_live_verified": true,
+    "provider_version": 10,
+    "provider_status": "ACTIVE",
+    "source_matches_pr": true,
+    "unauthorized_post_401_verified": true,
+    "get_405_verified": true,
+    "invalid_legacy_header_401_verified": true,
+    "protected_merge_verified": false,
+    "existing_main_schedule_updated": false,
+    "monitor_candidate_tests_7_pass": true,
+    "monitor_live_manual_pass": true,
+    "observed_at": "2026-11-21",
+    "authorized_privileged_request_executed": false
   },
   "credentials_logged": false,
-  "duplicate_executor": false
+  "duplicate_executor": false,
+  "next_action": "Protected merge PR #6091 after Required and CodeQL; independently verify the ORIGINAL weekly/four-times-daily Security Operations workflow runs the new provider guard, and retain rollback prevention."
 }
