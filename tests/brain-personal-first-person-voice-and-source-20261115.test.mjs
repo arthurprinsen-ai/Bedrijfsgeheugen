@@ -186,13 +186,13 @@ test('20 November meaningful personal conversation: no forced ending question, r
 });
 
 test('20 November LinkedIn anti-bait guard preserves sincere specific experience questions',()=>{
- const legitimate='Ik keek naar het dilemma van veilig automatiseren. Ik bleef nadenken over wie het besluit nog moet controleren. Welke beslissing laat jij liever bij een mens?';
+ const legitimate='Ik stond langs het veld en zag hoe anders een wedstrijd kan lopen. Welke ervaring heb jij als coach met zulke momenten?';
  assert.deepEqual(personalFirstPersonCopyViolations(legitimate,e,date),[]);
  for(const banned of [
-  'Ik keek naar de techniek en zag iets interessants. Typ JA in de reacties.',
-  'Ik keek naar het probleem en maakte een keuze. Reageer met EENS.',
-  'Ik zag een fout en heb iets geleerd. Like als je dit ook hebt.',
-  'Ik stond erbij en zag het gebeuren. Deel deze post.'
+  'Ik stond langs het veld en zag hoe de wedstrijd liep. Typ JA in de reacties.',
+  'Ik stond langs het veld en keek naar de wedstrijd. Reageer met EENS.',
+  'Ik stond langs het veld bij een wedstrijd. Like als je dit ook hebt.',
+  'Ik stond langs het veld bij een wedstrijd. Deel deze post.'
  ]){
    assert.ok(personalFirstPersonCopyViolations(banned,e,date).includes('PERSONAL_ENGAGEMENT_BAIT_NOT_ALLOWED'),banned);
  }
