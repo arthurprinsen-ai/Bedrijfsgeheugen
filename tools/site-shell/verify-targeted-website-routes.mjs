@@ -69,6 +69,32 @@ export async function navigateWithRetry(page, url, { attempts = 2, timeout = 20_
   throw lastError;
 }
 
+// Playwright waitForFunction signature is (predicate, arg, options). Passing
+// {timeout} as the SECOND argument silently uses its default 30-second budget.
+// Keep the original fail-closed visible-text + layout check, but recognize
+// nested content when a top-level app wrapper uses display:contents/zero box.
+export async function waitForRenderedBody(page,{timeout=10_000}={}){
+  if(!Number.isSafeInteger(timeout)||timeout<1_000||timeout>30_000)
+    throw new RangeError('TARGETED_ROUTE_VISIBLE_TIMEOUT_INVALID');
+  return page.waitForFunction(() => {
+    const body=document.body;
+    if(!body || !String(body.innerText||'').trim()) return false;
+    const hasBox=el=>{
+      const style=getComputedStyle(el);
+      const rect=el.getBoundingClientRect();
+      return style.display!=='none'
+        && style.visibility!=='hidden'
+        && Number.parseFloat(style.opacity||'1')>0
+        && rect.width>0&&rect.height>0;
+    };
+    if([...body.children].some(hasBox)) return true;
+    // A zero-box app wrapper must not hide genuinely rendered descendants.
+    // This is a fallback only; no positive outcome from source/HTML alone.
+    return [...body.querySelectorAll('main,article,section,h1,h2,h3,p,a,button,[role="main"]')]
+      .some(el=>hasBox(el)&&String(el.innerText||'').trim());
+  },undefined,{timeout});
+}
+
 async function observeRouteAttempt(browser, baseUrl, route, viewport) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
@@ -87,19 +113,7 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
     const target = `${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`;
     const response = await navigateWithRetry(page, target);
     await page.locator('body').waitFor({ state:'attached', timeout:10_000 });
-    await page.waitForFunction(() => {
-      const body=document.body;
-      if(!body || !String(body.innerText||'').trim()) return false;
-      return [...body.children].some(el => {
-        const style=getComputedStyle(el);
-        const rect=el.getBoundingClientRect();
-        return style.display!=='none'
-          && style.visibility!=='hidden'
-          && Number.parseFloat(style.opacity||'1')>0
-          && rect.width>0
-          && rect.height>0;
-      });
-    }, { timeout:10_000 });
+    await waitForRenderedBody(page,{timeout:10_000});
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
@@ -137,6 +151,12 @@ async function observeRoute(browser, baseUrl, route, viewport, { attempts = 3 } 
       await new Promise(resolve => setTimeout(resolve, 750 * attempt));
     } catch (error) {
       lastError = error;
+      // Preserve exact public route and viewport in the original job logs;
+      // never misclassify an exhausted visibility budget as an HTTP 5xx.
+      console.error('TARGETED_ROUTE_READINESS_ATTEMPT',JSON.stringify({
+        route,viewport_width:viewport.width,attempt,attempts,
+        failure_class:error?.name==='TimeoutError'?'VISIBLE_READINESS_TIMEOUT':'ROUTE_OBSERVATION_FAILURE'
+      }));
       if (attempt >= attempts || error?.name !== 'TimeoutError') throw error;
       await new Promise(resolve => setTimeout(resolve, 1_000 * attempt));
     }
