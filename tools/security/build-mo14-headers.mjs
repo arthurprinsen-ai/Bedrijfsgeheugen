@@ -57,7 +57,8 @@ export function securityHeadersForHtml(routes){
  // Legacy PW root shares a browser origin with the coach. It has only four
  // same-origin JS files and no inline scripts. Fail closed on old external
  // webhook transfers; the current coach is entirely local and independent.
- blocks.push('/');
+ for(const legacyPath of ['/', '/index.html']){
+ blocks.push(legacyPath);
  blocks.push("  Content-Security-Policy: default-src 'none'; script-src 'self'; script-src-attr 'none'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; upgrade-insecure-requests");
  blocks.push('  X-Frame-Options: DENY');
  blocks.push('  X-Content-Type-Options: nosniff');
@@ -67,6 +68,7 @@ export function securityHeadersForHtml(routes){
  blocks.push('  Strict-Transport-Security: max-age=31536000');
  blocks.push('  Cache-Control: no-store, max-age=0');
  blocks.push('');
+ }
  for(const [path,html] of routes){
   const tokens=hashesForInlineScripts(html,path);
   blocks.push('/'+path+'/*');
