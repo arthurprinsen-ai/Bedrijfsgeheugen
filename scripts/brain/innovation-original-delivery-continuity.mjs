@@ -5,6 +5,7 @@ import {readCanonicalRows,evaluateOriginalOwnerHandoff} from './innovation-origi
 import {trustedBrainReadConfig} from './planned-action-review-audit.mjs';
 import {readOriginalSalesExecutionAudit} from '../../platform/portal/powerhouse-existing-integration-read-model.mjs';
 import {CONTRACT as QUALITY_CONTRACT,QUALITY_NEXT} from './innovation-original-evidence-reconciliation.mjs';
+import {readCanonicalProductionReleaseIdentity} from '../../tools/ci/portal-canonical-browser-release-fence.mjs';
 
 // Same original daily agent, no separate scheduler or Brain.
 // All writes are nonterminal evidence updates on original versioned operations.
@@ -324,7 +325,10 @@ export function planOriginalContinuity({snapshot,report,githubPrByCandidate={},p
 function gh(args){return JSON.parse(execFileSync('gh',args,{encoding:'utf8',timeout:25000,maxBuffer:3000000}));}
 async function netlifyProduction({fetchImpl=fetch,env=process.env}={}){
   const token=string(env.NETLIFY_AUTH_TOKEN),site=string(env.NETLIFY_SITE_ID);
-  if(!token||!site)return null;
+  // The original read-only GitHub job intentionally has no Netlify API secrets.
+  // Use existing strict two-manifest public proof; GitHub merge ancestry is
+  // checked separately before any code-in-production classification.
+  if(!token||!site)return readCanonicalProductionReleaseIdentity({fetchImpl});
   assert(/^[a-zA-Z0-9-]+$/.test(site),'NETLIFY_SITE_ID_INVALID');
   const response=await fetchImpl('https://api.netlify.com/api/v1/sites/'+site+'/deploys?per_page=8',{
     headers:{Authorization:'Bearer '+token,Accept:'application/json'},signal:AbortSignal.timeout(20000)});
