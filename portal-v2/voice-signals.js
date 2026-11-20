@@ -10,12 +10,14 @@ import {SIGNAL_METRICS,metricById,parseSpokenRule,normalizeRule,evaluateSignals}
 const norm=value=>String(value||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ');
 const safe=state=>state&&typeof state==='object'&&!Array.isArray(state)?state:{};
 const pages=listPortalGroups().flatMap(group=>group.pages);
+const PAGE_ALIASES=Object.freeze({'bedrijfsgezondheid':'profiel','omzet':'cijfers-maatstaven','kpi':'cijfers-maatstaven','kpis':'cijfers-maatstaven','financien':'waarde-financiering','acties':'actieve-acties','risicos':'advies','mijn bedrijf':'ondernemerscockpit','data':'data-ai'});
 const stateRules=state=>Array.isArray(state?.portal?.signalering?.rules)?state.portal.signalering.rules:[];
 const btn=(label,action)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.vsAction=action;return b;};
 const note=(el,content,error=false)=>{el.textContent=content;el.classList.toggle('vs-error',Boolean(error));};
 export function findSpokenPage(text){
   const query=norm(text).replace(/^(?:de|het|mijn|pagina|onderdeel)\s+/,'');
   if(!query)return null;
+  if(PAGE_ALIASES[query])return pages.find(p=>p.id===PAGE_ALIASES[query])||null;
   const exact=pages.filter(p=>norm(p.label)===query||norm(p.id.replace(/-/g,' '))===query);
   if(exact.length===1)return exact[0];
   const partial=pages.filter(p=>norm(p.label).includes(query));
@@ -44,7 +46,9 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   const form=dialog.querySelector('[data-vs-form]'),list=dialog.querySelector('[data-vs-list]');
   const mic=dialog.querySelector('[data-vs-mic]'),counter=dialog.querySelector('[data-vs-counter]');
   const threshold=form.elements.threshold,operator=form.elements.operator;
-  let recognizer=null,busy=false,principal='';
+  let recognizer=null,busy=false,principal='',lastPortalField=null;
+  const rememberField=event=>{const field=event.target;if(!dialog.contains(field)&&/^(INPUT|TEXTAREA)$/.test(field?.tagName||'')&&!['password','hidden','file'].includes(field.type))lastPortalField=field;};
+  document.addEventListener('focusin',rememberField);
   function authenticated(){
     const snap=stateClient.getSnapshot?.()||{};
     const subject=String(snap.user?.id||'');
@@ -155,9 +159,9 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     // Universal, low-risk dictation: edit only the currently focused input.
     // Never submit forms, execute arbitrary buttons, or trigger privileged changes.
     const dictation=text.match(/^(?:schrijf|vul in|dicteer)\s+(.+)$/i);
-    const target=document.activeElement;
-    if(dictation&&target&&/^(INPUT|TEXTAREA)$/.test(target.tagName)&&!['password','hidden','file'].includes(target.type)){
-      target.value=dictation[1];target.dispatchEvent(new Event('input',{bubbles:true}));
+    const target=lastPortalField;
+    if(dictation&&target?.isConnected&&!target.disabled&&!target.readOnly&&!target.closest('[hidden],[aria-hidden="true"]')){
+      dialog.close();target.focus();target.value=dictation[1];target.dispatchEvent(new Event('input',{bubbles:true}));target.dispatchEvent(new Event('change',{bubbles:true}));
       note(output,'Tekst ingevuld. Controleer de inhoud en sla zelf op.');return;
     }
     note(output,'Niet herkende opdracht. Probeer “open [onderdeel]”, een vraag of “waarschuw me als [KPI] boven/onder [waarde]”.',true);
@@ -221,5 +225,5 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   document.addEventListener('bg:portal-identity-boundary',boundary);
   const refreshed=()=>render();document.addEventListener('bg:portal-server-refreshed',refreshed);
   render();
-  return {render,runCommand,destroy(){unsubscribe?.();stopListening();document.removeEventListener('bg:portal-identity-boundary',boundary);document.removeEventListener('bg:portal-server-refreshed',refreshed);holder.remove();dialog.remove();}};
+  return {render,runCommand,destroy(){unsubscribe?.();stopListening();document.removeEventListener('bg:portal-identity-boundary',boundary);document.removeEventListener('bg:portal-server-refreshed',refreshed);document.removeEventListener('focusin',rememberField);holder.remove();dialog.remove();}};
 }
