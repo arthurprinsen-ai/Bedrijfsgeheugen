@@ -1,3 +1,4 @@
+# PW MO14-1 Veldplanner: distinct 11-a-side field mode (Jackie GK, Coco-Mijn attack), preserve zaal and homepage; no Make.
 # MO14 V9: recorded actual field/goal minutes rebaseline future plans, portable backup, independent live readback; no Make.
 # MO14 V8: user-anchored first five, season-minute fairness, tactical whiteboard, no Make.
 # MO14 V7 source test retry: documented bug fix in rotation generator after fail-closed CI.
@@ -37,12 +38,12 @@ jobs:
       - name: Verify planner and independent website source
         run: |
           set -euo pipefail
-          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs
+          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs
           test -s pw-mo14-1/zaalplanner/index.html
       - name: Preserve existing MO14 homepage and assets before deploy
         run: |
           set -euo pipefail
-          mkdir -p .mo14-stage/zaalplanner/icons .mo14-backup
+          mkdir -p .mo14-stage/zaalplanner/icons .mo14-stage/veldplanner .mo14-backup
           for f in index.html style.css data.js player.js team.js sync.js; do
             curl -fLsS --retry 3 --connect-timeout 10 --max-time 40 "${MO14_DOMAIN}/${f}?preserve=${GITHUB_SHA}" -o ".mo14-stage/${f}"
             test -s ".mo14-stage/${f}"
@@ -54,6 +55,7 @@ jobs:
           done
           test "$(wc -c < .mo14-stage/index.html)" -gt 300
           cp pw-mo14-1/zaalplanner/index.html .mo14-stage/zaalplanner/index.html
+          cp pw-mo14-1/veldplanner/index.html .mo14-stage/veldplanner/index.html
           cp pw-mo14-1/zaalplanner/manifest.webmanifest .mo14-stage/zaalplanner/manifest.webmanifest
           cp pw-mo14-1/zaalplanner/sw.js .mo14-stage/zaalplanner/sw.js
           cp pw-mo14-1/zaalplanner/coach-core.js .mo14-stage/zaalplanner/coach-core.js
@@ -167,4 +169,12 @@ jobs:
           done
           curl -fLsS --max-time 25 "${MO14_DOMAIN}/?sha=${GITHUB_SHA}" -o /tmp/mo14-home.html
           cmp -s .mo14-backup/index.html /tmp/mo14-home.html || { echo 'Original homepage not preserved' >&2; exit 1; }
+          curl -fLsS --retry 3 --max-time 25 "${MO14_DOMAIN}/veldplanner/?sha=${GITHUB_SHA}" -o /tmp/mo14-veld-new.html
+          cmp -s pw-mo14-1/veldplanner/index.html /tmp/mo14-veld-new.html || { echo "Incorrect field planner published" >&2; exit 1; }
+          grep -q 'Jackie' /tmp/mo14-veld-new.html
+          grep -q 'Coco-Mijn' /tmp/mo14-veld-new.html
+          grep -q 'const LINEUPS=' /tmp/mo14-veld-new.html
+          grep -q 'id="printAll"' /tmp/mo14-veld-new.html
+          grep -q 'href="https://pw-mo14-1.netlify.app/veldplanner/"' /tmp/mo14-new.html
+          echo "Fieldhockey planner verified at ${MO14_DOMAIN}/veldplanner/"
           echo "MO14 production planner verified at ${MO14_DOMAIN}/zaalplanner/"
