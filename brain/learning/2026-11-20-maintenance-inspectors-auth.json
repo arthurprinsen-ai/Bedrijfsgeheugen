@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-20",
+  "status": "LIVE_CODE_PROVEN_HTTP_PENDING_SOURCE_MERGE_PENDING",
+  "obligation_id": "security-maintenance-inspectors-auth-20261120",
+  "fingerprint": "supabase|maintenance-inspectors|hardcoded-token-or-empty-token-acceptance|20261120",
+  "owner": "Canonical Powerhouse Security Operations / Supabase backend",
+  "compiler": {
+    "failure_class": "PRIVILEGED_MAINTENANCE_CREDENTIAL_GATE_WEAK",
+    "scope": "BACKEND_SECURITY",
+    "security_sensitive": true,
+    "machine_enforceable": true,
+    "repeat_count": 2
+  },
+  "root_cause": "One active Edge Function accepted a hard-coded repair token embedded in source. Another compared the caller header with an empty default when a recovery secret was unset, potentially accepting missing credentials.",
+  "prevention_rule": "Privileged diagnostics must authorize before connecting to Netlify or Postgres. Hard-coded repair tokens are forbidden. A missing or weak environment secret must NEVER match an empty header. Accept only service-owned credentials or an explicitly configured strong legacy recovery token, verify with constant-time digest comparison, and suppress raw backend exceptions.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-maintenance-inspectors-auth-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-maintenance-inspectors-auth-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-maintenance-inspectors-auth-20261120.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider": {
+      "netlify_live_repair_inspector": {
+        "version": 9,
+        "status": "ACTIVE",
+        "hard_coded_secret_removed": true,
+        "authorization_before_proxy": true
+      },
+      "db_recovery_inspect": {
+        "version": 9,
+        "status": "ACTIVE",
+        "missing_expected_secret_rejected": true,
+        "authorization_before_db": true
+      }
+    },
+    "regression": {
+      "passed": 3,
+      "failed": 0
+    },
+    "known_caller_evidence": "0 pg_cron references for either slug; no confirmed external caller attribution",
+    "external_http_readback": "PENDING — browser service usage limit and sandbox network unavailable",
+    "legitimate_authorized_call": "NOT_ATTESTED"
+  },
+  "proof_boundary": "Live source is deployed and verified. Do not claim external 401/405 response tested or a safe authorized call completed; old consumers using hard-coded x-repair-token may need credential migration.",
+  "customer_outcome": "Make two sensitive repair/inspection endpoints fail closed while keeping production website and hockey PWA unchanged."
+}
