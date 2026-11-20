@@ -80,7 +80,7 @@ const PLATFORM_SECURITY_REQUIREMENTS=[
  {provider:'GITHUB',label:'GitHub',checks:['CODEQL','BRANCH_PROTECTION','SECRET_SCANNING']},
  {provider:'SUPABASE',label:'Supabase',checks:['DATABASE_ADVISOR','RLS','PRIVILEGED_FUNCTIONS']},
  {provider:'NETLIFY',label:'Netlify',checks:['PREVIEW_ACCESS','ARCHIVE_PREVIEW_ACCESS','SECRET_SCAN','DEPLOY_PROVENANCE']},
- {provider:'WEBSITE',label:'Website & portaal',checks:['HTTPS_HEADERS','AUTHORIZATION','DEPENDENCY_AUDIT','SECURITY_HEARTBEAT']}
+ {provider:'WEBSITE',label:'Website & portaal',checks:['HTTPS_HEADERS','AUTHORIZATION','DEPENDENCY_AUDIT']}
 ];
 const upper=v=>String(v??'').trim().toUpperCase();
 // A cached PASS/VERIFIED is not security evidence after its original expiry.
@@ -123,7 +123,7 @@ const SAFETY_AREAS=Object.freeze([
  {id:'toegang',title:'Toegang & identiteit',meaning:'Wie kan de omgeving en jouw gegevens benaderen?',checks:[['NETLIFY','PREVIEW_ACCESS'],['NETLIFY','TEAM_MFA'],['WEBSITE','AUTHORIZATION']]},
  {id:'gegevens',title:'Gegevens & privacy',meaning:'Wordt toegang tot opgeslagen gegevens beperkt?',checks:[['SUPABASE','RLS'],['SUPABASE','PRIVILEGED_FUNCTIONS']]},
  {id:'code',title:'Code & updates',meaning:'Worden wijzigingen en kwetsbaarheden gecontroleerd?',checks:[['GITHUB','CODEQL'],['GITHUB','BRANCH_PROTECTION'],['GITHUB','SECRET_SCANNING'],['WEBSITE','DEPENDENCY_AUDIT']]},
- {id:'website',title:'Website & verbinding',meaning:'Worden verkeer en productiereleases beveiligd?',checks:[['WEBSITE','HTTPS_HEADERS'],['WEBSITE','SECURITY_HEARTBEAT'],['NETLIFY','DEPLOY_PROVENANCE']]},
+ {id:'website',title:'Website & verbinding',meaning:'Worden verkeer en productiereleases beveiligd?',checks:[['WEBSITE','HTTPS_HEADERS'],['NETLIFY','DEPLOY_PROVENANCE']]},
  {id:'leveranciers',title:'Leveranciers & omgevingen',meaning:'Worden databronnen en tijdelijke omgevingen gecontroleerd?',checks:[['SUPABASE','DATABASE_ADVISOR'],['NETLIFY','SECRET_SCAN'],['NETLIFY','ARCHIVE_PREVIEW_ACCESS']]}
 ]);
 // This is an explanation of the independently observed controls, never a safety score.
