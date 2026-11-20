@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-20",
+  "status": "LIVE_PROVIDER_PROVEN_PENDING_PROTECTED_SOURCE_MERGE",
+  "obligation_id": "security-db-pooler-repair-auth-v1",
+  "fingerprint": "supabase|db-pooler-repair-v1|unauthenticated-privileged-maintenance|20261120-v1",
+  "owner": "Canonical Powerhouse Security Operations and Supabase backend",
+  "compiler": {
+    "failure_class": "UNAUTHENTICATED_PRIVILEGED_EDGE_FUNCTION",
+    "scope": "BACKEND_SECURITY",
+    "security_sensitive": true,
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Deployed verify_jwt=false edge function invoked privileged Postgres maintenance operation without a bearer, secret-key or signed request check. A public request could run a service-authority command.",
+  "prevention_rule": "Before any privileged DB URL read, connection or write, require POST and a verified server-only credential (legacy service_role Bearer or modern Supabase default secret apikey). Reject anon/publishable/user JWT and malformed/missing secrets; never reflect raw database errors. Record independent Supabase runtime and unauthenticated 401/405 readbacks; never accept a successful deployment alone as proof.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-db-pooler-repair-auth-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-db-pooler-repair-auth-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-db-pooler-repair-auth-20261120.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Supabase deployed function db-pooler-repair-v1 version 6, verify_jwt false; 789 bytes of source with no authentication guard",
+    "scheduler_query": "0 cron.job.command references to db-pooler-repair-v1",
+    "log_query": "0 function name matches in last 24h unified logs, not proof of absence",
+    "fixed_source": [
+      "supabase/functions/db-pooler-repair-v1/index.ts",
+      "supabase/functions/db-pooler-repair-v1/security.mjs"
+    ],
+    "provider_live": {
+      "status": "LIVE_PROVEN",
+      "project_id": "adhjwmvyoixzjtmiroln",
+      "function": "db-pooler-repair-v1",
+      "version": 7,
+      "provider_status": "ACTIVE",
+      "verify_jwt": false,
+      "source_readback": "index.ts and security.mjs exact functions retrieved; POST auth gate precedes DB URL read and SQL",
+      "external_http_readback": {
+        "get_unauthenticated": 405,
+        "post_unauthenticated": 401,
+        "post_error": "unauthorized",
+        "get_error": "method_not_allowed"
+      },
+      "node_regression": "4/4 source unit tests passed, 0 failed",
+      "execution_limit": "Did not invoke privileged maintenance using live secret; real caller success not tested",
+      "snapshot_at": "2026-11-20 22:45 UTC"
+    },
+    "legitimate_caller_post_fix": "NOT_YET_ATTESTED"
+  },
+  "limitations": [
+    "Other unauthenticated Edge Functions remain subject to separate authorization assessment.",
+    "Do not place service_role or secret keys into client code.",
+    "Do not claim complete attack protection or auto-run a privileged DB tick to prove successful authorized behavior."
+  ]
+}
