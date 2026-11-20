@@ -14,8 +14,8 @@
   },
   "owner": "original-powerhouse-editorial-agents",
   "event_date": "2026-11-20",
-  "root_cause": "The original personal content orchestrator contradicted explicit 19-20 November no-forced-question editorial rules by requiring every personal post to end with an open question and imposing a fixed 130–200-word quota. That template undermines natural, source-grounded discussion. No current authorized personal LinkedIn comment/impression metric baseline was demonstrated; older personal metric snapshots were from September 2026.",
-  "prevention_rule": "Treat substantive human/professional discussion as a byproduct of one truthful personal story/technical choice, not an obligatory question or engagement prompt. Provide one natural, grounded discussion mechanism (tradeoff, relevant practitioner counterexample, honest learning, human friction, or optional specific question). Reject clear 'typ JA/reageer met EENS', like/share/tag/follow bait in original personal copy and last-mile gates without banning sincere specific questions. Preserve all independent source, review, SHA, provider, identity and privacy gates. Only label performance PROVEN from real individual member metrics in original provider+Heartbeat lineage.",
+  "root_cause": "The original personal content orchestrator contradicted explicit 19-20 November no-forced-question editorial rules by requiring every personal post to end with an open question and imposing a fixed 130–200-word quota. That template undermines natural, source-grounded discussion. No current authorized personal LinkedIn comment/impression metric baseline was demonstrated; older personal metric snapshots were from September 2026. The bounded AI repair prompts independently reintroduced the same contradiction: fixed four-paragraph lengths for builder and observational posts, and an EXACT one-question ending for the builder retry.",
+  "prevention_rule": "Treat substantive human/professional discussion as a byproduct of one truthful personal story/technical choice, not an obligatory question or engagement prompt. Provide one natural, grounded discussion mechanism (tradeoff, relevant practitioner counterexample, honest learning, human friction, or optional specific question). Reject clear 'typ JA/reageer met EENS', like/share/tag/follow bait in original personal copy and last-mile gates without banning sincere specific questions. Preserve all independent source, review, SHA, provider, identity and privacy gates. Only label performance PROVEN from real individual member metrics in original provider+Heartbeat lineage. Regression MUST verify that both the original writer and all builder/observational repair prompts do not restore forced question endings or rigid paragraph/word counts.",
   "user_instruction": "Moeten zorgen wel dat de Posts iets oproept om te reageren wat werkt en niet werkt zoek dat op leg dat vast en gebruikt dat",
   "design_contract": {
     "standalone_value": true,
@@ -26,7 +26,8 @@
     "first_person_experience_required": true,
     "one_integrated_software_ai_bi_data": true,
     "no_parallel_executor": true,
-    "own_measured_comments_or_NOT_MEASURED": true
+    "own_measured_comments_or_NOT_MEASURED": true,
+    "repair_prompts_have_natural_length_and_optional_question": true
   },
   "evidence": {
     "research_urls": [
