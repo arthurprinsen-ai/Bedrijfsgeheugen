@@ -302,6 +302,7 @@
         "tests/revenue-content-",
         "tests/revenue-learning-",
         "tests/saas-",
+        "tests/security-guardian-continuous.test.mjs",
         "tests/security-operations-proof.test.mjs",
         "tests/seo-growth-",
         "tests/social-learning-",
