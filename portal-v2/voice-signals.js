@@ -5,6 +5,7 @@
 import {listPortalGroups} from './page-registry.js';
 import {navigatePortal} from './router.js';
 import {askPortal} from './ask-portal.js';
+import {parsePortalVoiceControl,eligibleVoiceField,visibleVoiceControl,voiceControlLabel,resolveVoiceControl,stageVoiceFieldValue} from './voice-control-policy.js';
 import {SIGNAL_METRICS,metricById,parseSpokenRule,normalizeRule,evaluateSignals,buildSignalTask} from './signal-detection.js';
 
 const norm=value=>String(value||'').toLocaleLowerCase('nl-NL').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim().replace(/\s+/g,' ');
@@ -36,11 +37,11 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   dialog.setAttribute('aria-label','Spraakbediening en signaleringen');
   dialog.innerHTML='<div class="vs-head"><div><small>BEDRIJFSGEHEUGEN · STUREN OP UITZONDERINGEN</small><h2>Spraak & signaleringen</h2></div><button type="button" data-vs-close aria-label="Sluiten">×</button></div>'
     +'<p class="vs-intro">Navigeer, stel vragen en stel signaleringen in met je stem of toetsenbord. Alleen ingelogde, werkelijk ingevoerde klantdata telt als meetbewijs.</p>'
-    +'<section class="vs-voice"><h3>Wat wil je doen?</h3><div class="vs-voice-row"><input data-vs-command maxlength="500" aria-label="Spraakopdracht of getypte opdracht" placeholder="Bijv. open omzet, of waarschuw me als verzuim boven 7"><button type="button" data-vs-run>Uitvoeren</button><button type="button" data-vs-mic aria-label="Microfoon starten">🎙 Spreek</button></div><p class="vs-examples">Zeg bijvoorbeeld: “open bedrijfsgezondheid”, “wat moet ik vandaag doen?”, “toon signaleringen” of “waarschuw me als omzet onder 50 duizend”.</p><p class="vs-privacy">De microfoon luistert alleen na jouw klik. De browser kan spraak extern verwerken; de audio wordt niet door dit portaal opgeslagen. Bij onvoldoende browserondersteuning kun je typen.</p></section>'
+    +'<section class="vs-voice"><h3>Wat wil je doen?</h3><div class="vs-voice-row"><input data-vs-command maxlength="500" aria-label="Spraakopdracht of getypte opdracht" placeholder="Bijv. open omzet, of waarschuw me als verzuim boven 7"><button type="button" data-vs-run>Uitvoeren</button><button type="button" data-vs-mic aria-label="Microfoon starten">🎙 Spreek</button></div><p class="vs-examples">Zeg bijvoorbeeld: “open bedrijfsgezondheid”, “wat moet ik vandaag doen?”, “toon signaleringen”, “focus op veld omzet”, “vul veld klantnaam met Jansen” of “waarschuw me als omzet onder 50 duizend”.</p><p class="vs-privacy">De microfoon luistert alleen na jouw klik. De browser kan spraak extern verwerken; de audio wordt niet door dit portaal opgeslagen. Bij onvoldoende browserondersteuning kun je typen.</p></section>'
     +'<div class="vs-speech-out"><button type="button" data-vs-read>🔊 Lees bericht voor</button><button type="button" data-vs-stop>Stop voorlezen</button></div><output data-vs-status role="status" aria-live="polite" class="vs-status"></output>'
     +'<section class="vs-center"><div class="vs-center-head"><div><h3>Mijn signaleringen</h3><p>Toetsing bij openen en bij het vernieuwen van geautoriseerde portaaldata. Geen claim van achtergrondmeldingen of e-mails.</p></div><span data-vs-counter>Geen regels</span></div><div data-vs-list class="vs-list"></div></section>'
     +'<form data-vs-action-form class="vs-form" hidden><h3>Actie aanmaken uit signaal</h3><p data-vs-action-context></p><div class="vs-form-grid"><label>Eigenaar<input name="owner" required maxlength="100" placeholder="Naam verantwoordelijke"></label><label>Deadline<input name="due" required type="date"></label></div><div class="vs-item-actions"><button type="submit" class="vs-save">Taak opslaan met bewijs</button><button type="button" data-vs-action-cancel>Annuleren</button></div></form>'
-    +'<form data-vs-form class="vs-form"><h3>Signalering instellen</h3><div class="vs-form-grid"><label>KPI<select name="metric" required></select></label><label>Als de waarde<select name="operator"><option value="below">Onder de grens komt</option><option value="above">Boven de grens komt</option><option value="missing">Ontbreekt</option></select></label><label>Grenswaarde<input name="threshold" inputmode="decimal" type="number" step="any" placeholder="Bijv. 7" required></label><label>Prioriteit<select name="severity"><option value="midden">Midden</option><option value="hoog">Hoog</option><option value="laag">Laag</option></select></label></div><p class="vs-form-hint">Eén grenswaarde is een eigen beleidskeuze, geen automatisch gevalideerde branchebenchmark. Je kunt de regel later uitschakelen.</p><button class="vs-save" type="submit">Signalering veilig opslaan</button></form>';
+    +'<form data-vs-form class="vs-form"><h3>Signalering instellen</h3><div class="vs-form-grid"><label>KPI<select name="metric" required></select></label><label>Als de waarde<select name="operator"><option value="below">Onder de grens komt</option><option value="above">Boven de grens komt</option><option value="missing">Ontbreekt</option></select></label><label>Grenswaarde<input name="threshold" inputmode="decimal" type="number" step="any" placeholder="Bijv. 7" required></label><label>Prioriteit<select name="severity"><option value="midden">Midden</option><option value="hoog">Hoog</option><option value="laag">Laag</option></select></label></div><fieldset class="vs-channel-intent"><legend>Bewaking en meldingen</legend><label><input type="checkbox" name="monitoring"> Vraag doorlopende controle aan via de bestaande Heartbeat</label><label><input type="checkbox" name="email"> Ik wil hiervoor e-mailmeldingen ontvangen (kanaal nog niet als geleverd geverifieerd)</label><label><input type="checkbox" name="push"> Ik wil pushmeldingen ontvangen (kanaal nog niet als geleverd geverifieerd)</label></fieldset><p class="vs-form-hint">Eén grenswaarde is jouw beleidskeuze, geen branchebenchmark. Een aangevraagd kanaal is geen verzendbewijs: alleen de oorspronkelijke provider met toestemming, suppressie en ontvangstcontrole mag verzenden.</p><button class="vs-save" type="submit">Signalering veilig opslaan</button></form>';
   for(const metric of SIGNAL_METRICS){const opt=document.createElement('option');opt.value=metric.id;opt.textContent=metric.label+' ('+metric.unit+')';dialog.querySelector('[name=metric]').append(opt);}
   document.body.append(dialog);
   const output=dialog.querySelector('[data-vs-status]'),input=dialog.querySelector('[data-vs-command]');
@@ -111,6 +112,11 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     if(result.triggered){
       const advice=document.createElement('p');advice.className='vs-advice';advice.textContent='Advies: '+result.advice;card.append(advice);
     }
+    const channels=document.createElement('small');channels.className='vs-evidence';
+    channels.textContent=result.monitoring
+      ?'Doorlopende controle aangevraagd · e-mail '+(result.channels?.email?'aangevraagd':'uit')+' · push '+(result.channels?.push?'aangevraagd':'uit')+' · geen afleverbevestiging'
+      :'Doorlopende controle uit · alleen beoordeling in het portaal';
+    card.append(channels);
     const actions=document.createElement('div');actions.className='vs-item-actions';
     const go=btn(result.actionLabel,'go');go.dataset.page=result.actionPage;
     const toggle=btn(result.enabled?'Pauzeren':'Activeren','toggle');toggle.dataset.rule=result.id;
@@ -179,7 +185,44 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
       dialog.close();target.focus();target.value=dictation[1];target.dispatchEvent(new Event('input',{bubbles:true}));target.dispatchEvent(new Event('change',{bubbles:true}));
       note(output,'Tekst ingevuld. Controleer de inhoud en sla zelf op.');return;
     }
-    note(output,'Niet herkende opdracht. Probeer “open [onderdeel]”, een vraag of “waarschuw me als [KPI] boven/onder [waarde]”.',true);
+
+    const controlCommand=parsePortalVoiceControl(text);
+    if(controlCommand){
+      if(!authenticated()){note(output,'Log eerst in om portaalvelden te bedienen.',true);return;}
+      const controls=[...document.querySelectorAll('input,textarea,select,button,a[href],[role="button"]')]
+        .filter(visibleVoiceControl).filter(control=>controlCommand.kind==='activate'
+          ?(control.tagName==='BUTTON'||control.tagName==='A'||control.getAttribute?.('role')==='button')
+          :eligibleVoiceField(control)).slice(0,450)
+        .map(control=>({control,label:voiceControlLabel(control)}));
+      const chosen=resolveVoiceControl(controls,controlCommand.label);
+      if(chosen.status!=='found'){
+        note(output,chosen.status==='ambiguous'
+          ?'Meerdere bedieningen komen overeen. Gebruik de volledige zichtbare veld- of knopnaam.'
+          :'Dit zichtbare veld of deze knop is niet eenduidig gevonden.',true);return;
+      }
+      const target=chosen.control;
+      if(controlCommand.kind==='choose'&&target.tagName!=='SELECT'){
+        note(output,'Gebruik “kies [optie] in [veld]” uitsluitend voor een keuzelijst.',true);return;
+      }
+      if(['fill','choose'].includes(controlCommand.kind)){
+        const changed=stageVoiceFieldValue(target,controlCommand.value);
+        if(!changed.ok){note(output,'Niet ingevuld: '+changed.reason+'.',true);return;}
+        dialog.close();
+        target.focus({preventScroll:false});
+        speak('Invoer aangepast. Controleer de waarde en sla zelf op.');
+        return;
+      }
+      // Every ordinary button/link is findable by voice, but never auto-clicked:
+      // provider writes, purchases, deletes, grants and approvals must retain
+      // their native explicit click/confirmation and tenant authorization.
+      dialog.close();
+      target.focus({preventScroll:false});
+      speak(controlCommand.kind==='activate'
+        ?'De bediening heeft focus. Bevestig de handeling met de gewone knop; er is niets automatisch uitgevoerd.'
+        :'Het veld heeft focus. Je kunt het nu invullen.');
+      return;
+    }
+    note(output,'Niet herkende opdracht. Probeer “open [onderdeel]”, “focus op [veld]”, “vul veld [naam] met [waarde]”, een vraag of een KPI-signalering.',true);
   }
   voiceButton.addEventListener('click',()=>{reveal();input.focus();});
   alertsButton.addEventListener('click',reveal);
@@ -201,6 +244,9 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
       mic.textContent='● Luistert…';r.start();
     }catch(error){stopListening();note(output,'De microfoon kon niet starten. Gebruik het tekstveld.',true);}
   });
+  for(const channel of ['email','push'])form.elements[channel].addEventListener('change',()=>{
+    if(form.elements[channel].checked)form.elements.monitoring.checked=true;
+  });
   operator.addEventListener('change',switchFormThreshold);switchFormThreshold();
   form.addEventListener('submit',async event=>{
     event.preventDefault();
@@ -213,7 +259,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
       if(existing.some(x=>x.metricId===metric.id&&x.operator===op&&x.threshold===amount&&x.enabled))
         throw Error('Deze actieve signalering bestaat al.');
       const id=globalThis.crypto?.randomUUID?.()||('rule-'+Date.now()+'-'+Math.random().toString(36).slice(2));
-      const rule=normalizeRule({id,metricId:metric.id,operator:op,threshold:amount,enabled:true,severity:form.elements.severity.value});
+      const rule=normalizeRule({id,metricId:metric.id,operator:op,threshold:amount,enabled:true,severity:form.elements.severity.value,monitoring:form.elements.monitoring.checked,channels:{email:form.elements.email.checked,push:form.elements.push.checked}});
       if(!rule)throw Error('ONGELDIGE_REGEL');
       await commitRules([...existing,rule],id);
     }catch(error){note(output,'Niet bevestigd: '+String(error?.message||error),true);}

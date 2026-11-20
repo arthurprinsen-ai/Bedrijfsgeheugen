@@ -42,7 +42,12 @@ export function normalizeRule(value){
   if(operator!=='missing'&&threshold===null)return null;
   const id=String(value.id||'').slice(0,96);
   if(!id)return null;
-  return Object.freeze({id,metricId:value.metricId,operator,threshold,enabled:value.enabled!==false,severity:['hoog','midden','laag'].includes(value.severity)?value.severity:'midden'});
+  const monitoring=value.monitoring===true;
+  const channels=value.channels&&typeof value.channels==='object'&&!Array.isArray(value.channels)?value.channels:{};
+  // Channel flags describe explicit user intent, not actual provider delivery.
+  return Object.freeze({id,metricId:value.metricId,operator,threshold,enabled:value.enabled!==false,
+    severity:['hoog','midden','laag'].includes(value.severity)?value.severity:'midden',
+    monitoring,channels:Object.freeze({portal:true,email:monitoring&&channels.email===true,push:monitoring&&channels.push===true})});
 }
 export function evaluateSignals(rules,state,{authenticated=false,demo=false}={}){
   if(!authenticated||demo)return Object.freeze([]);
