@@ -9,8 +9,8 @@
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "root_cause": "The first Portal voice/threshold release only evaluated state when the browser opened or refreshed. There was no server-owned periodic observation of user-enabled rules, no explicit opt-in per channel, and generic spoken controls were limited. It would be false to equate stored threshold rules or a timer with 24/7 verified source freshness, delivered notification or executed business action.",
-  "prevention_rule": "Original Portal V2 owns all voice commands; only unambiguous currently visible native controls may be focused or locally edited and original user confirmation/authorization persists. Portal State + BusinessInput remain the only customer writer. The existing original five-minute Heartbeat may observe explicit opted-in tenant thresholds on allowlisted paths and write only idempotent OBSERVED evidence with postcommit readback. Unknown KPI measurement freshness, absent recipient consent, suppressed recipients, missing provider-ID, unsupported push, missing action approvals and unobserved outcomes MUST remain OPEN; never add parallel schedulers, provider senders, stores or false GREEN claims.",
+  "root_cause": "The first Portal voice/threshold release only evaluated state when the browser opened or refreshed. There was no server-owned periodic observation of user-enabled rules, no explicit opt-in per channel, and generic spoken controls were limited. It would be false to equate stored threshold rules or a timer with 24/7 verified source freshness, delivered notification or executed business action. The first same-PR Heartbeat patch failed GitHub prebuild because a JS String.replace replacement contained the special sequence dollar-apostrophe, which expanded the remainder of the source and produced malformed TypeScript. Source was reconstructed from the immutable base and repaired without weakening admission.",
+  "prevention_rule": "Original Portal V2 owns all voice commands; only unambiguous currently visible native controls may be focused or locally edited and original user confirmation/authorization persists. Portal State + BusinessInput remain the only customer writer. The existing original five-minute Heartbeat may observe explicit opted-in tenant thresholds on allowlisted paths and write only idempotent OBSERVED evidence with postcommit readback. Unknown KPI measurement freshness, absent recipient consent, suppressed recipients, missing provider-ID, unsupported push, missing action approvals and unobserved outcomes MUST remain OPEN; never add parallel schedulers, provider senders, stores or false GREEN claims. Never insert source code as a literal String.replace replacement containing substitution tokens; use a callback replacement and verify a single Deno.serve entrypoint, valid TS transform, and exact-source CI.",
   "regression_contract": "Test voice intent parser, ambiguity and sensitive controls; cross-reference all client and server KPI source paths; verify monitoring requires explicit true, numeric missing is not fabricated, tenant fingerprints are masked, dedupe matches same source revision and differs on new source revision; delivery gate denies until provider and consent requirements; original 5-minute runner owns path and stays authorized.",
   "evaluation": {
     "historical_replay": [
@@ -29,7 +29,8 @@
     "natural_heartbeat_tenant_readback": "EVIDENCE_DUE",
     "email_push_provider_delivery": "NOT_DELIVERED",
     "autonomous_business_action_outcome": "NOT_PROVEN",
-    "source_value_freshness": "unknown until independent origin measurement"
+    "source_value_freshness": "unknown until independent origin measurement",
+    "prebuild_failure": "FIRST_TIME_RIGHT_PREBUILD_BLOCKED:TYPESCRIPT_TRANSFORM_FAILED:supabase/functions/powerhouse-commercial-heartbeat-runner/index.ts; corrected in PR #6087"
   },
   "outcome": {
     "implementation": "SOURCE_CANDIDATE",
