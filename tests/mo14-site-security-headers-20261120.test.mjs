@@ -11,7 +11,7 @@ test('each public coach route receives an exact-script-hash CSP without unsafe-i
   assert.ok(headers.includes('/'+path+'/*'));
   assert.ok(headers.includes("script-src 'self' "+hashes.join(' ')));
  }
- assert.equal((headers.match(/Content-Security-Policy:/g)||[]).length,3);
+ assert.equal((headers.match(/Content-Security-Policy:/g)||[]).length,4);
  assert.doesNotMatch(headers,/script-src\s+[^;\n]*'unsafe-inline'/);
  assert.doesNotMatch(headers,/script-src\s+[^\n]*'unsafe-eval'/);
  assert.match(headers,/frame-ancestors 'none'/);
@@ -37,6 +37,9 @@ test('no dangerous inline event handlers or foreign script src in actual coach H
 test('shared-origin legacy PW homepage rejects external webhook transfer and inline scripts',()=>{
  const root=headers.match(/(?:^|\n)\/\n  Content-Security-Policy: ([^\n]+)/)?.[1];
  assert.ok(root,'root homepage security header required because it shares origin with youth coach');
+ const direct=headers.match(/(?:^|\n)\/index\.html\n  Content-Security-Policy: ([^\n]+)/)?.[1];
+ assert.ok(direct,'direct /index.html must not bypass root CSP');
+ assert.equal(direct,root,'root and index.html must apply identical security rules');
  assert.match(root,/script-src 'self'; script-src-attr 'none'/);
  assert.match(root,/connect-src 'self'/);
  assert.match(root,/frame-ancestors 'none'/);
