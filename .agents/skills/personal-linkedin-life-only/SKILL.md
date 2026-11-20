@@ -5,6 +5,16 @@ description: Enforce verified, first-person Arthur content: lived personal momen
 
 # Personal LinkedIn — authentic personal voice + evidenced technology leadership
 
+## 20 November 2026 — original v2 source-materializer verified founder exception (LATEST)
+
+The Nov-16 SQL materializer `powerhouse_materialize_source_backed_channel_candidates_v2` blindly quarantined ALL personal business content, including the 19/20-Nov explicit verified personal AI-native founder/builder exception; it even rewrote `personal_truth_verified=false`. This left original source candidate `41521982-5e5c-4f6d-9540-6a32912862b6` as `skipped/PERSONAL_BUSINESS_SOURCE_FORBIDDEN` despite user-authored Nov-20 design decisions. Original loop response 409/RED and orchestrator response `NO_PENDING_ARTIFACT` were observed. Neither is evidence of a LinkedIn post.
+
+**New strict v2 exception:** the *same service-role-only* SQL materializer still quarantines unverified business founder content, generic company promotions, generated client stories, and the old `daily-dream-journey` feed. The exception applies only to genuinely user-fact-lineaged personal AI-native builder decisions with exact original identity, author anchor, source-backed and build-event proof, no privacy leaks, no fabricated customer results and no reuse of external problem signals as personal experience. It does NOT grant publication approval. The original JavaScript source gate, final review + exact SHA, provider member identity, idempotent URN and independently verified readback remain necessary. Keep 15–16 November rules for personal-life posts and all user-truth/privacy boundaries; their blanket ban on fact-backed builder stories is superseded by explicit Nov-19/20 decisions.
+
+**Recovery:** after native protected migration and actual DB function readback, an already quarantined *exact* user-fact candidate can be re-reviewed and reactivated under the original same recommendation ID only if unconsumed and no provider write exists. Never simply flip all skipped founder records to accepted, never create a new candidate with the same story family or manually post from an alternate provider. Invoke only the original content-orchestrator and original publisher. Measure comments/reactions only when genuinely observed; do not mark a release, cron, PR or source as a live LinkedIn post.
+
+
+
 ## 20 November 2026, 12:32 Amsterdam — Genuine substantive conversations (newest binding)
 
 **Purpose:** Personal stories deserve real reactions because they make people recognize a problem, question an assumption, compare approaches or add practitioner experience, NOT because a question is compulsorily put at the end. Root-cause repair: the original orchestrator still instructed "eindig met één oprechte open vraag", overriding newer no-forced-question decisions. No fixed 130–200-word template.
