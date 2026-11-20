@@ -1,5 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal,personalObservationalLifeContextSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {personalFirstPersonCopyViolations} from '../_shared/personal-first-person-story-gate.mjs';
+import {personalFirstPersonCopyViolations,isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact} from '../_shared/personal-first-person-story-gate.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
 const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -62,6 +62,10 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(Array.isArray(body.source_lineage) ? body.source_lineage.length > 0 : !!body.source_lineage, 'SOURCE_LINEAGE_REQUIRED', 'Bron/evidence-lineage ontbreekt.');
   // Unconditional post-content review. Neither an accepted article excerpt nor a
   // founder-business claim may impersonate Arthur's own lived experience.
+  // Exact approved magazine gift must have the one direct cover-page link;
+  // keep the normal personal no-URL rule for every other source and copy.
+  if(isVerifiedPersonalMagazineGift(body))
+    require(magazineGiftLinkIsExact(text,body),'PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED','Deze exact geautoriseerde gratis magazinepost moet één correcte landingspaginalink bevatten.');
   for(const code of personalFirstPersonCopyViolations(text,body,body.calendar_date)){
     require(false,code,'Alleen een eigen, geverifieerd ik-verhaal uit een door Arthur aangeleverde bron mag op zijn persoonlijke profiel.');
   }
