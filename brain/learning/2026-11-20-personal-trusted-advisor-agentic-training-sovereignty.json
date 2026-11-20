@@ -23,7 +23,7 @@
   },
   "root_cause": "Existing personal LinkedIn founder positioning emphasized ONE integrated software+AI+BI+data technical system, but did not sufficiently convey the user's desired trusted independent strategic adviser role, operable simplicity, resilient bounded agentic execution, customer/vendor independence, AI basic-to-advanced training, transformation, innovation implementation, current EU AI Act and genuine data sovereignty. Adding every service to every post would be spammy and conflict with the personal truth gate.",
   "correction": "In the original source-backed channel policy add twelve rotational trusted-adviser topics and a separate six-track company offering design, clearly marked PROPOSED. Update the existing original builder writer and correction prompt with one optional source-grounded adviser tradeoff, with no company CTA, fake client case or forced question. Update original personal skill, human design blueprint and ledger; preserve founder direct user-fact constraints and original publisher.",
-  "prevention_rule": "One verified original Arthur decision/experience and only one of twelve responsible adviser lenses per personal builder post. Differentiate ambition vs delivered feature vs provider-proof outcome; never attribute public MKB problems as personal customer experience, claim agentic autonomy without authorization/fallback, or guarantee AI Act/GDPR compliance or sovereignty because of EU hosting. Company offers are only proposed until destination, authorization and delivery verification. The EU Omnibus legal timetable must be explicitly sourced and dated if cited.",
+  "prevention_rule": "One verified original Arthur decision/experience and only one of twelve responsible adviser lenses per personal builder post. Differentiate ambition vs delivered feature vs provider-proof outcome; never attribute public MKB problems as personal customer experience, claim agentic autonomy without authorization/fallback, or guarantee AI Act/GDPR compliance or sovereignty because of EU hosting. Company offers are only proposed until destination, authorization and delivery verification. The EU Omnibus legal timetable must be explicitly sourced and dated if cited. Official legal/source references must be verified against exact parsed scheme, hostname and pathname in machine assertions; partial URL string matching is not a trusted source-authority check.",
   "evidence": {
     "personal_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
     "personal_profile": "https://app.notion.com/p/3b9da36aac8a81779e00ffecaa340fd5",
@@ -58,6 +58,17 @@
       "underlying": "New regression's safe example used 'Ik kies' and lacked the existing exact verified first-person own-event verb; original guard correctly returned PERSONAL_CONCRETE_OWN_MOMENT_REQUIRED.",
       "correction": "Use directly verified 'Ik heb vandaag mijn ontwerpkeuze uitgesproken' in safe fixture; preserve original source gate instead of weakening it.",
       "prevention": "Personal-positioning safe-copy fixtures must honor original personalFirstPersonCopyViolations as an independent source/copy authority."
+    },
+    "pr_codeql_review_20261120": {
+      "related_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6076",
+      "alerts": [
+        "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/security/code-scanning/300",
+        "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/security/code-scanning/301",
+        "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/security/code-scanning/302"
+      ],
+      "diagnosis": "Three CodeQL review threads reported incomplete URL substring sanitization for source assertions in the newly introduced legal reference regression test. Incomplete substring matches of URLs are not a safe provenance/authority guard.",
+      "correction": "Replace literal URL substring membership checks with parsed URL objects and exact HTTPS protocol, hostname and pathname checks. Preserve review threads until latest protected CodeQL rerun confirms resolution; do not bypass required checks.",
+      "prevention": "Trust-source validation must use exact parsed origins and paths, not URL string substring membership."
     }
   },
   "boundaries": [
