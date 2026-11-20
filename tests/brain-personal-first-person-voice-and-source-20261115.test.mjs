@@ -174,6 +174,10 @@ test('20 November meaningful personal conversation: no forced ending question, r
  assert.ok(gen.includes('oprechte specifieke vraag')&&gen.includes('NOOIT standaard aan begin of einde'));
  assert.ok(!gen.includes('eindig met één oprechte open vraag;'));
  assert.ok(!gen.includes('blijft 130–200 woorden;'));
+ assert.ok(!gen.includes("Schrijf 150 tot 175 woorden in vier korte alinea's."),'observational repair stays natural');
+ assert.ok(!gen.includes('precies vier natuurlijke alinea’s.'),'builder repair stays natural');
+ assert.ok(!gen.includes('Eindig met exact één oprechte open vraag met vraagteken.'),'builder repair does not reimpose forced question');
+ assert.ok(gen.includes('Controleer de waarheid, leesbaarheid, variatie en inhoudelijke gesprekswaarde'),'repair checks substance rather than word count');
  assert.ok(gen.includes("if(pending.channel==='linkedin_personal')"),'original editorial applies to all personal modes');
  assert.ok(skill.includes('Genuine substantive conversations'));
  assert.equal(policy.mandatory_question_in_every_post,false);
