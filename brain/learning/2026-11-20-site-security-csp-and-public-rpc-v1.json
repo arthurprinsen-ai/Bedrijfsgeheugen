@@ -12,15 +12,23 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-security-csp-web-boundary-20261120.test.mjs",
-      "tests/brain-security-live-headers-monitor-20261120.test.mjs",
-      "tests/security-operations-proof.test.mjs"
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
     ],
     "canary": [
+      "tests/brain-security-csp-web-boundary-20261120.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "live_validation": "existing weekly .github/workflows/security-operations-proof.yml, only after protected main merge and provider LIVE readback",
+    "shadow": [
+      "tests/brain-security-csp-web-boundary-20261120.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "live_provider_probe": [
       "https://www.bedrijfsgeheugen.nl/",
       "https://pw-mo14-1.netlify.app/zaalplanner/",
       "https://pw-mo14-1.netlify.app/veldplanner/"
     ],
-    "live_validation": "existing weekly .github/workflows/security-operations-proof.yml, only after protected main merge and provider LIVE readback"
+    "mode_note": "Historical, shadow and CI-canary run source-owned security regression tests. Provider runtime validation is separate and must not be inferred from CI-only tests."
   },
   "root_cause": "Static public Bedrijfsgeheugen deploy had HSTS/nosniff/X-Frame-Options but no general CSP. The separate existing PW deploy lacked CSP, frame and MIME HTTP controls for its coach routes. Existing browser JS requires a gradual CSP approach; wholesale script-src enforcement would break legacy public pages.",
   "source_evidence": {
