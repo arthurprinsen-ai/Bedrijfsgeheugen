@@ -9,16 +9,6 @@ on:
       - 'powerhouse/assurance/security-operations-closure.json'
       - 'docs/powerhouse/POWERHOUSE_SECURITY_OPERATIONS_CLOSURE.md'
       - '.github/workflows/security-operations-proof.yml'
-  pull_request:
-    branches: [main]
-    paths:
-      - '_headers'
-      - 'netlify.toml'
-      - 'tools/security/verify-public-security-headers.mjs'
-      - 'tests/brain-security-csp-web-boundary-20261120.test.mjs'
-      - 'tests/brain-security-live-headers-monitor-20261120.test.mjs'
-      - 'brain/learning/*security*'
-      - '.github/workflows/security-operations-proof.yml'
   schedule:
     - cron: '17 5 * * 1'
   workflow_dispatch:
