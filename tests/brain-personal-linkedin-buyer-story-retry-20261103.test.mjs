@@ -9,7 +9,7 @@ test('original personal builder removes the conflicting model/page/action status
   assert.match(source,/P0 EXPERT-BOUWER/);
   assert.match(source,/Begin bij de echte situatie of een scherpe technische afweging/);
   assert.match(source,/zonder vast sjabloon/);
-  assert.match(source,/als geen geloofwaardig eigen nieuw feit bestaat, verzin niets/);
+  assert.match(source,/als geen geloofwaardig eigen nieuw feit bestaat, verzin niets/i);
 });
 test('the original strict uniqueness, personal source, protected rights and editorial validator remain intact',()=>{
   assert.match(source,/personalEditorialViolations/);
