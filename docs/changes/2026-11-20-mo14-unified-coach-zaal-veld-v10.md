@@ -35,3 +35,14 @@ De canonieke PW MO14-1 Coach heeft nu één startscherm, een bovenste Zaal/Veld-
 4. Oud-veld-link was een aparte app; nu een HTML fallback met duidelijke volledige URL en directe clientredirect naar het ene canonieke appscherm, met eigen exact gehashte CSP.
 
 **Niet claimen:** volledige bescherming tegen alle hacks, cloudsync of een dynamische veld-uitvalplanner. De huidige veldblokken zijn een bewezen vaste basis; de zaalplanner heeft de aanpasbare selectie. De bredere parent-repository-PR blijft een eigen beveiligde mergehandeling en is niet door de sitepublicatie afgerond.
+
+
+## Shared-origin legacy homepage — beveiligingsgrens 20 november 2026
+
+Een onafhankelijke audit stelde vast dat de oude root-homepage `/` op exact dezelfde browser-origin als `/zaalplanner/` staat, maar zelf nog geen CSP, X-Frame-Options of nosniff had. De homepage heeft vier scripts van hetzelfde domein en geen inline JavaScript. De historische code noemt wel nog een vroegere externe Make-webhook voor beoordeling- en opstellingssync. De actuele Zaalcoach slaat per wedstrijd lokaal op en gebruikt deze externe route niet. De eigenaar heeft aangegeven geen Make te willen gebruiken.
+
+**Gerichte beveiligingsmaatregel:** de bestaande, exact brongecontroleerde Netlify-`_headers` generator maakt een extra pagina-eigen `/`-regel met `script-src 'self'`, `script-src-attr 'none'`, `connect-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, `base-uri 'none'`, noindex, HSTS en nosniff. Daarmee kunnen scripts op de oude homepage geen externe Make-webhook meer aanspreken en geen nieuw inline script laden. De oorspronkelijke HTML/JS-assets worden byte-identiek behouden om de lokale coachfuncties en herstelbaarheid niet onverwacht te verliezen. Een eventuele oude externe synchronisatiefunctie van de legacy-homepage kan hierdoor niet langer werken; dit is in lijn met de expliciete No-Make-grens.
+
+**Restpunt:** reeds eerder openbaar gemaakte webhook-URL's blijven buiten de browser mogelijk bruikbaar totdat de eigenaar van de externe provider de betreffende endpoint daadwerkelijk heeft uitgeschakeld/geroteerd. Een CSP blokkeert geen afzonderlijke HTTP-clients. Daarom niet als volledige webhook-revocatie, authenticatie of totale beveiliging claimen. De bestaande Zaalcoach en Veldcoach blijven separaat met SHA-256-gehashte script-CSP's beschermd.
+
+**Controlepoort:** uitrol is pas geslaagd na tests in `tests/mo14-site-security-headers-20261120.test.mjs` én onafhankelijke Netlify provider HEAD-readback voor `/`, `/zaalplanner/` en `/veldplanner/`, naast de bestaande onveranderde homepage-bytecheck. De originele GitHub→Netlify-workflow wordt gebruikt, zonder Make.
