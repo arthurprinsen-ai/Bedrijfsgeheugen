@@ -40,6 +40,6 @@ No long-lived browser token, frontend service_role key, arbitrary URL scanning, 
 - Netlify security and rate limiting: https://docs.netlify.com/manage/security/secure-access-to-sites/rate-limiting/
 - Supabase production checklist: https://supabase.com/docs/guides/security/production-checklist
 - Security implementation: tools/security/site-guardian.mjs, tools/security/security-guardian-incidents.mjs, netlify/functions/security-guardian-ingest.mjs, netlify/functions/_security-guardian-oidc.mjs, existing security-trust.mjs and portal-v2/modules/security-trust-workspace.js.
-- Tests: tests/security-guardian-continuous.test.mjs, existing source-exposure/CSP/security trust contract tests.
+- Tests: tests/brain-security-guardian-continuous-20261120.test.mjs, existing source-exposure/CSP/security trust contract tests.
 
 Closure only when protected merge, real GitHub schedule run, Netlify CURRENT/READY, signed EU observation/readback, verified customer-visible fresh status, incident dedupe and named Engineering consumer evidence all have independent proof. Until then this remains **CANDIDATE / NOT FULLY LIVE**.
