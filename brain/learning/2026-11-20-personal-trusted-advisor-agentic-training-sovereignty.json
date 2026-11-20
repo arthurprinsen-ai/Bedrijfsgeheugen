@@ -1,0 +1,59 @@
+{
+  "fingerprint": "powerhouse|personal-trusted-advisor-agentic-training-sovereignty|20261120-v1",
+  "event_date": "2026-11-20",
+  "owner": "original-powerhouse-editorial-agents",
+  "user_instruction": "Ga door basis is goed. Dit toevoegen: ... trusted advisor ... slimme intelligentie ... agentic ... robuust ... schaalbaar ... simpel via portaal ... trainingen AI basis tot advanced ... transformatie, innovatie ... AI Act, data soevereiniteit.",
+  "compiler": {
+    "failure_class": "CONTENT_POSITIONING_GAP",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-trusted-advisor-positioning-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-trusted-advisor-positioning-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-trusted-advisor-positioning-20261120.test.mjs"
+    ]
+  },
+  "root_cause": "Existing personal LinkedIn founder positioning emphasized ONE integrated software+AI+BI+data technical system, but did not sufficiently convey the user's desired trusted independent strategic adviser role, operable simplicity, resilient bounded agentic execution, customer/vendor independence, AI basic-to-advanced training, transformation, innovation implementation, current EU AI Act and genuine data sovereignty. Adding every service to every post would be spammy and conflict with the personal truth gate.",
+  "correction": "In the original source-backed channel policy add twelve rotational trusted-adviser topics and a separate six-track company offering design, clearly marked PROPOSED. Update the existing original builder writer and correction prompt with one optional source-grounded adviser tradeoff, with no company CTA, fake client case or forced question. Update original personal skill, human design blueprint and ledger; preserve founder direct user-fact constraints and original publisher.",
+  "prevention_rule": "One verified original Arthur decision/experience and only one of twelve responsible adviser lenses per personal builder post. Differentiate ambition vs delivered feature vs provider-proof outcome; never attribute public MKB problems as personal customer experience, claim agentic autonomy without authorization/fallback, or guarantee AI Act/GDPR compliance or sovereignty because of EU hosting. Company offers are only proposed until destination, authorization and delivery verification. The EU Omnibus legal timetable must be explicitly sourced and dated if cited.",
+  "evidence": {
+    "personal_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+    "personal_profile": "https://app.notion.com/p/3b9da36aac8a81779e00ffecaa340fd5",
+    "problem_radar": "https://app.notion.com/p/3e5da36aac8a8145ab3bd925260276ef",
+    "cv_training_source": "https://app.notion.com/p/41cda36aac8a8128ac53ca4b7470c359",
+    "ai_adoption_existing": "https://app.notion.com/p/3bcda36aac8a814f8693f1c5137b8517",
+    "ai_governance_existing": "https://app.notion.com/p/3bcda36aac8a811bbd4fc722ba833b3a",
+    "legal_2026_timeline": "https://ai-act-service-desk.ec.europa.eu/en/ai-act/eu-ai-act-implementation-timeline",
+    "ai_literacy": "https://digital-strategy.ec.europa.eu/en/policies/ai-talent-skills-and-literacy",
+    "sovereignty": "https://commission.europa.eu/law/law-topic/data-protection/international-dimension-data-protection/rules-international-data-transfers_en",
+    "data_act": "https://digital-strategy.ec.europa.eu/en/factpages/data-act-explained",
+    "agentic_risk": "https://genai.owasp.org/llm-top-10/",
+    "code": [
+      "config/powerhouse-source-backed-channel-contract-v1.json",
+      ".agents/skills/personal-linkedin-life-only/SKILL.md",
+      "supabase/functions/powerhouse-content-orchestrator/index.ts"
+    ],
+    "tests": [
+      "tests/brain-personal-trusted-advisor-positioning-20261120.test.mjs"
+    ],
+    "prior_original_publisher_guard_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6073"
+  },
+  "boundaries": [
+    "No second agent/publisher/scheduler or social URN",
+    "No forced professional lesson for verified private-life content",
+    "No external problem as Arthur personal source",
+    "No unverified delivered services or clients",
+    "No legal certification or compliance guarantee",
+    "No production deployment claim until native source readback",
+    "No automatic sending of new personal post from this proposal"
+  ],
+  "implementation_state": "SOURCE_CANDIDATE_PROTECTED_CI_PENDING"
+}
