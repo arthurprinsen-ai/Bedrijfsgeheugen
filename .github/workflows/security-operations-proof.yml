@@ -53,6 +53,8 @@ jobs:
           node-version: '22'
       - name: Contract tests
         run: node --test tests/security-operations-proof.test.mjs tests/brain-site-security-source-exposure-20261120.test.mjs
+      - name: Verify continuous guardian and authenticated heartbeat ingestion
+        run: node --test tests/security-guardian-continuous.test.mjs
       - name: HTTP browser defense regression tests
         run: node --test tests/brain-security-csp-web-boundary-20261120.test.mjs tests/brain-security-live-headers-monitor-20261120.test.mjs
       - name: Structural fail-closed validation
@@ -90,7 +92,7 @@ jobs:
 
   guardian:
     name: Security Guardian — 16 managed sites and platform proof
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
     runs-on: ubuntu-latest
     timeout-minutes: 8
     permissions:
