@@ -78,9 +78,10 @@ jobs:
                 // Canonical Netlify source-of-truth: browser verifiers and skills
                 // are governance, not deployed website/runtime artifacts.
                 // Preserve the exact deployed commit when the delta is governance-only.
-                const {NETLIFY_GOVERNANCE_EXACT:exact,NETLIFY_GOVERNANCE_PREFIXES:prefixes}=
+                const {NETLIFY_GOVERNANCE_EXACT:exact,NETLIFY_GOVERNANCE_PREFIXES:prefixes,
+                  NETLIFY_BUILD_RUNTIME_EXACT:buildRuntime}=
                   await import("./tools/delivery/netlify-deployment-applicability.mjs");
-                const ok=paths.every(p=>exact.has(p)||prefixes.some(prefix=>p.startsWith(prefix)));
+                const ok=paths.every(p=>!buildRuntime.has(p)&&(exact.has(p)||prefixes.some(prefix=>p.startsWith(prefix))));
                 process.stdout.write(String(ok));
               ')"
               if [ "$safe" = "true" ]; then
