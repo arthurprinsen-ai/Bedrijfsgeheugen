@@ -1,0 +1,67 @@
+{
+  "fingerprint": "security|supabase|master-control-and-pooler-introspect-unauthenticated|20261121",
+  "owner": "existing Security Operations / backend release",
+  "obligation_id": "SECURITY_PRIVILEGED_EDGE_AUTH_20261121",
+  "risk": "PUBLIC_EDGE_PRIVILEGED_DB_AUTHORIZATION_MISSING",
+  "input_evidence": {
+    "functions": [
+      {
+        "slug": "bg-master-control",
+        "previous_version": 9,
+        "current_version": 10,
+        "status": "ACTIVE",
+        "client_auth": "server-only POST"
+      },
+      {
+        "slug": "db-pooler-introspect-v1",
+        "previous_version": 14,
+        "current_version": 15,
+        "status": "ACTIVE",
+        "client_auth": "server-only POST"
+      }
+    ]
+  },
+  "change": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6102",
+    "prior_pattern": "supabase/functions/db-pooler-repair-v1/security.mjs",
+    "auth": "legacy service_role Bearer or modern sb_secret_ apikey",
+    "guards": [
+      "method POST only",
+      "reject public user/anon credentials",
+      "auth before DB connection",
+      "sanitized service failure",
+      "no-store and nosniff"
+    ]
+  },
+  "live_proof": {
+    "provider_source_readback_exact": true,
+    "provider_active_versions": [
+      10,
+      15
+    ],
+    "unauth_get_status": 405,
+    "unauth_post_status": 401,
+    "headers": [
+      "Cache-Control: no-store",
+      "X-Content-Type-Options: nosniff"
+    ],
+    "six_site_monitor_passed": 6,
+    "regression_tests_passed": 11,
+    "regression_tests_failed": 0
+  },
+  "future_guard": {
+    "source": "tools/security/verify-public-security-headers.mjs",
+    "existing_scheduler": ".github/workflows/security-operations-proof.yml",
+    "activation": "only after protected main merge; never describe branch CI as live recurring",
+    "monitor_requires_no_secret": true
+  },
+  "limitations": [
+    "No evidence of actual compromise or exfiltration",
+    "Authenticated privileged successful execution was not performed as a test",
+    "Public GitHub repository and past commits still publicly readable",
+    "One token-gated anon SECURITY DEFINER RPC needs phased external-caller migration",
+    "Many verify_jwt=false functions require individual custom authorization review",
+    "PW team/player information stays publicly accessible until an access-policy decision"
+  ],
+  "status": "PROVIDER_HOTFIX_LIVE_SOURCE_PR_OPEN"
+}
