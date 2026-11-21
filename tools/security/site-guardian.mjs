@@ -12,15 +12,38 @@ import {evaluateHeaders} from './verify-public-security-headers.mjs';
 const HERE=dirname(fileURLToPath(import.meta.url));
 const inventoryPath=resolve(HERE,'../../config/security-managed-sites.json');
 export const sha=value=>createHash('sha256').update(value).digest('hex').slice(0,16);
-const allowedHost=h=>h==='www.bedrijfsgeheugen.nl'||h==='bedrijfsgeheugen.nl'||h.endsWith('.netlify.app');
+// Fixed, reviewed inventory: a config-only change cannot silently replace a site
+// with another Netlify-hosted destination or omit a monitored project.
+export const AUTHORIZED_SITE_URLS=Object.freeze({
+  "bedrijfsgeheugen": "https://www.bedrijfsgeheugen.nl/",
+  "pw-zaalcoach": "https://pw-mo14-1.netlify.app/zaalplanner/",
+  "pw-veldcoach": "https://pw-mo14-1.netlify.app/veldplanner/",
+  "buurtfeeststokhorst": "https://buurtfeeststokhorst.netlify.app/",
+  "governance-ai": "https://governance-ai.netlify.app/",
+  "bg-portaal-bronsync": "https://bg-portaal-bronsync.netlify.app/",
+  "fascinating-kataifi-09fd89": "https://fascinating-kataifi-09fd89.netlify.app/",
+  "earnest-vacherin-acf2ba": "https://earnest-vacherin-acf2ba.netlify.app/",
+  "elegant-melomakarona-56ed6f": "https://elegant-melomakarona-56ed6f.netlify.app/",
+  "funny-monstera-c53f35": "https://funny-monstera-c53f35.netlify.app/",
+  "magnificent-bonbon-0b87fc": "https://magnificent-bonbon-0b87fc.netlify.app/",
+  "lively-chebakia-fd7569": "https://lively-chebakia-fd7569.netlify.app/",
+  "stupendous-cocada-04bc27": "https://stupendous-cocada-04bc27.netlify.app/",
+  "dashing-faun-ad16d3": "https://dashing-faun-ad16d3.netlify.app/",
+  "archive-bg-portaal-wijzigingen": "https://archive-bg-portaal-wijzigingen.netlify.app/",
+  "archive-mo14-1-temp": "https://archive-mo14-1-temp.netlify.app/",
+  "archive-bedrijfsgeheugen-klantportaal-test": "https://archive-bedrijfsgeheugen-klantportaal-test.netlify.app/"
+});
+const REVIEWED_SITE_COUNT=Object.keys(AUTHORIZED_SITE_URLS).length;
+const AUTHORIZED_HOSTS=new Set(Object.values(AUTHORIZED_SITE_URLS).map(value=>new URL(value).hostname));
+const allowedHost=h=>AUTHORIZED_HOSTS.has(h);
 const readable=e=>String(e?.name||'PROBE_FAILED').replace(/[^A-Z0-9 _-]/gi,'').slice(0,45);
 export function validateInventory(config){
- if(!config||config.version!==1||!Array.isArray(config.sites)||config.sites.length<config.expected_projects)
+ if(!config||config.version!==1||config.expected_projects!==16||!Array.isArray(config.sites)||config.sites.length!==REVIEWED_SITE_COUNT)
   throw Error('INCOMPLETE_SECURITY_INVENTORY');
  const ids=new Set(),urls=new Set();
  for(const s of config.sites){
   const u=new URL(s.url);
-  if(!/^[a-z0-9-]{3,75}$/.test(s.id)||ids.has(s.id)||urls.has(s.url)||u.protocol!=='https:'||!allowedHost(u.hostname)||u.username||u.password||u.search||u.hash)
+  if(!/^[a-z0-9-]{3,75}$/.test(s.id)||ids.has(s.id)||urls.has(s.url)||u.protocol!=='https:'||!allowedHost(u.hostname)||AUTHORIZED_SITE_URLS[s.id]!==s.url||u.username||u.password||u.search||u.hash)
    throw Error('INVALID_SITE_OR_DUPLICATE_INVENTORY');
   if(!['critical','coach','standard','protected','archive'].includes(s.mode))throw Error('INVALID_MONITORING_MODE');
   ids.add(s.id);urls.add(s.url);
