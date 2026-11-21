@@ -8,6 +8,8 @@ import {createHash} from 'node:crypto';
 import {verifyPortalPublicRuntime} from '../tools/site-shell/verify-targeted-website-routes.mjs';
 import {buildPortalPublicRuntime,PUBLIC_PORTAL_BROWSER_SOURCES} from '../tools/ci/build-portal-public-runtime.mjs';
 
+import {NETLIFY_BUILD_RUNTIME_EXACT,deriveNetlifyDeploymentApplicability} from '../tools/delivery/netlify-deployment-applicability.mjs';
+
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 async function fixture(){
   const temporary=await mkdtemp(path.join(tmpdir(),'portal-safe-publish-'));
@@ -80,7 +82,8 @@ test('unreviewed tools module is fail-closed and never copied into public asset 
 });
 test('real original observable portal imports canonical release classifier; private /tools remain denied',async()=>{
   const original=await readFile(path.join(root,'portal-v2/modules/powerhouse-observability.js'),'utf8');
-  assert.equal(original.includes("from '../../tools/netlify/release-status.mjs'"),true);
+  assert.equal(original.includes("from '../browser-runtime/tools/netlify/release-status.mjs'"),true);
+  assert.equal(original.includes("from '../../tools/netlify/release-status.mjs'"),false);
   assert.equal(PUBLIC_PORTAL_BROWSER_SOURCES.filter(x=>x.startsWith('tools/')).length,1);
   const redirects=await readFile(path.join(root,'_redirects'),'utf8');
   assert.equal(redirects.includes('/tools/*'),true);
@@ -102,6 +105,17 @@ test('original Netlify build invokes this guard and never opens private route ca
   assert.equal(PUBLIC_PORTAL_BROWSER_SOURCES.length,8);
 });
 
+test('actual Portal browser vendor build is classified as Netlify runtime and requires independent live deployment',async()=>{
+  const builder='tools/ci/build-portal-public-runtime.mjs';
+  assert.equal(NETLIFY_BUILD_RUNTIME_EXACT.has(builder),true);
+  const policy=JSON.parse(await readFile(path.join(root,'config/brain-delivery-system.json'),'utf8'));
+  const actual=deriveNetlifyDeploymentApplicability({
+    changedPaths:[builder],headSha:'a'.repeat(40),policy
+  });
+  assert.equal(actual.deploymentRequired,true);
+  assert.equal(actual.netlifyRuntimeRequired,true);
+  assert.equal(actual.runtimeChangedPaths.includes(builder),true);
+});
 test('first-party release readback hashes exact public module bytes and rejects one missing script',async()=>{
   const sources=await Promise.all(PUBLIC_PORTAL_BROWSER_SOURCES.map(async source=>{
     const bytes=await readFile(path.join(root,source));
