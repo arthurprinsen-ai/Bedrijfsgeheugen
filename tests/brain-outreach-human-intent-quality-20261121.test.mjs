@@ -49,3 +49,14 @@ test('original sender and quality gates remain intact',()=>{
   for(const key of ['assessHumanOutreachCopy','sourceSpecificEvidenceOk','semanticNoveltyOk','newFollowupEvidenceOk','powerhouse_message_quality_v1'])assert.ok(composer.includes(key),key);
   for(const key of ['verifyRecipientAuthority','providerUncertaintyNoResend','provider_readback_verified:true'])assert.ok(sender.includes(key),key);
 });
+
+// LAST_MILE_HUMAN_COPY_CHECK_REGRESSION: existing prepared drafts must not bypass the gate.
+test('original Gmail sender rechecks natural copy before provider claim and send',()=>{
+  const sender=fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
+  const lastMile=sender.indexOf('const humanCopy=assessHumanOutreachCopy(');
+  const claim=sender.indexOf('const sendIntent=');
+  assert.ok(lastMile>0&&claim>lastMile,'copy gate precedes durable provider claim');
+  assert.match(sender,/HUMAN_OUTREACH_COPY_REJECTED/);
+  assert.match(sender,/rejection_codes:humanCopy.reasons/);
+  assert.match(sender,/role,message_draft,evidence/);
+});
