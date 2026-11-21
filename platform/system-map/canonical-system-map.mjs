@@ -2240,7 +2240,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   providerSnapshot:Object.freeze({
     supabase:Object.freeze({tables:255,views:136,functions:250,activeCronJobs:51,projectId:'adhjwmvyoixzjtmiroln'}),
     github:Object.freeze({workflows:123,skills:46,agentFabricModules:8}),
-    netlify:Object.freeze({functions:101}),
+    netlify:Object.freeze({functions:102}),
     notion:Object.freeze({canonicalSystemMap:true,humanHandbook:true,latestVerifiedState:true,agentActivityLog:true})
   }),
   agentRegistrationContract:Object.freeze({
