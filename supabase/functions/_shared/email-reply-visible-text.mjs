@@ -27,7 +27,12 @@ export function extractVisibleEmailReply(raw){
   return visible.join('\n').trim().slice(0,6000);
 }
 export function isExplicitUnsubscribeReply(raw){
-  const text=extractVisibleEmailReply(raw).replace(/\s+/g,' ').toLowerCase().trim();
+  // Even inline references to the original sender's own opt-out instruction
+  // are not recipient instructions. Remove the exact quoted instruction before
+  // testing recipient-authored opt-out intent.
+  const text=extractVisibleEmailReply(raw)
+    .replace(/wil je geen (?:berichten|mail|e-mails?) meer van mij\?\s*antwoord met\s*["'“”]?afmelden["'“”]?(?:\s+en ik mail je niet meer)?\.?/gi,'')
+    .replace(/\s+/g,' ').toLowerCase().trim();
   if(!text)return false;
   // A mention of the unsubscribe instructions is not a request to unsubscribe.
   if(/\b(?:niet|no|don't|do not)\s+(?:me |mij )?(?:afmelden|uitschrijven|unsubscribe)\b/i.test(text))
