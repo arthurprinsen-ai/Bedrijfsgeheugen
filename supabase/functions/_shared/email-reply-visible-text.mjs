@@ -50,9 +50,11 @@ export function extractVisibleEmailReply(raw){
   // Some Gmail/Composio payloads use HTML instead of plain text. Strip the
   // quoted HTML subtree BEFORE parsing allowlisted tags or matching intent.
   const unquotedHtml=topPost.split(/<(?:div\b[^>]*\b(?:gmail_quote|yahoo_quoted)\b|blockquote\b)[^>]*>/i)[0];
-  const normalized=unquotedHtml.includes('<')||unquotedHtml.includes('>')
-    ?strictlyVisibleHtmlText(unquotedHtml)
-    :unquotedHtml;
+  // A mathematical comparison (e.g. 'SLA < 10 minuten') or a plain
+  // email address in angle brackets is not markup. Recognize actual tag
+  // syntax, including a malformed start tag, before strict HTML parsing.
+  const looksLikeHtml=/<\/?[a-z][a-z0-9]*(?=[\s/>]|$)/i.test(unquotedHtml);
+  const normalized=looksLikeHtml?strictlyVisibleHtmlText(unquotedHtml):unquotedHtml;
   const lines=normalized.split('\n');
   const visible=[];
   for(const line of lines){
