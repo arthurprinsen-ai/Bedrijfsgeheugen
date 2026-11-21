@@ -76,3 +76,19 @@ test('cash alert reads the actual V2 financing source, not an orphan KPI field',
   assert.equal(found.triggered,true);
   assert.equal(found.evidence.sourcePath,'portal.valueFinance.cash');
 });
+
+test('original Heartbeat proof is visible only after authenticated on-demand tenant readback',async()=>{
+  const ui=await readFile(new URL('../voice-signals.js',import.meta.url),'utf8');
+  const css=await readFile(new URL('../experience.css',import.meta.url),'utf8');
+  assert.match(ui,/\/api\/portal-signal-status/);
+  assert.match(ui,/data-vs-proof-refresh/);
+  assert.match(ui,/lastOriginalHeartbeatAt/);
+  assert.match(ui,/lastTenantScanAt/);
+  assert.match(ui,/proofEpoch\+\+/);
+  assert.match(ui,/String\(authenticated\(\)\?\.user\?\.id/);
+  assert.match(ui,/eligibleVoiceField\(target\)&&visibleVoiceControl\(target\)/);
+  assert.match(ui,/stageVoiceFieldValue\(target,dictation\[1\]\)/);
+  assert.match(css,/\.vs-proof/);
+  assert.doesNotMatch(ui,/new Worker|setInterval|Notification\.requestPermission/);
+  assert.doesNotMatch(ui,/GMAIL_SEND_EMAIL|service_role/);
+});

@@ -1,5 +1,5 @@
 import postgres from "npm:postgres@3.4.7";
-import {planOriginalHeartbeatObservations,planNotificationSafety,PORTAL_SIGNAL_HEARTBEAT_CONTRACT} from "./portal-signal-heartbeat.mjs";
+import {planOriginalHeartbeatObservations,planOriginalHeartbeatScans,planNotificationSafety,PORTAL_SIGNAL_HEARTBEAT_CONTRACT} from "./portal-signal-heartbeat.mjs";
 
 const DB_REF="adhjwmvyoixzjtmiroln";
 const DB_POOLER_HOST="aws-0-eu-central-1.pooler.supabase.com";
@@ -379,9 +379,10 @@ async function observePortalSignals(){
         "order by updated_at desc limit 201"
       );
       const observations=await planOriginalHeartbeatObservations(rows.slice(0,200));
+      const scans=await planOriginalHeartbeatScans(rows.slice(0,200));
       const keys=[];
-      let inserted=0;
-      for(const observation of observations.slice(0,35)){
+      let inserted=0,scansInserted=0;
+      for(const observation of observations.slice(0,15)){
         const delivery=planNotificationSafety(observation);
         const evidence={...observation.evidence,notificationState:delivery.state,
           externalMessagesSent:0,actionExecutionVerified:false};
@@ -397,11 +398,27 @@ async function observePortalSignals(){
         keys.push(observation.dedupeKey);
         inserted+=stored.length;
       }
-      return {state:observations.length?"OBSERVED_INPUT_THRESHOLD_NOT_PROVIDER_OUTCOME":"NO_CONFIGURED_TRIGGER",
-        planned:observations.length,inserted,keys,coverageTruncated:rows.length>200||observations.length>35};
+      // Durable tenant observation that an enabled policy was checked, even
+      // when no anomaly fired. Never claim fresh measurements or delivery.
+      for(const scan of scans.slice(0,20)){
+        const stored=await tx.unsafe(
+          "insert into public.powerhouse_runtime_events "+
+          "(dedupe_key,event_type,source,subject_key,channel,occurred_at,state,data_quality,evidence,context) "+
+          "values($1,'portal_user_signal_scan','powerhouse-commercial-heartbeat-runner',$2,'portal',now(),'observed','OBSERVED',"+
+          "$3::jsonb,jsonb_build_object('contract',$4::text,'original_heartbeat_owner',true,'tenant_identifier_masked',true,'no_parallel_worker',true)) "+
+          "on conflict(dedupe_key) do nothing returning event_id",
+          [scan.dedupeKey,'tenant:'+scan.tenantFingerprint,
+            JSON.stringify(scan.evidence),PORTAL_SIGNAL_HEARTBEAT_CONTRACT]
+        );
+        keys.push(scan.dedupeKey);
+        scansInserted+=stored.length;
+      }
+      return {state:scans.length?"SCANS_AND_TRIGGERS_OBSERVED":"NO_CONFIGURED_MONITORING",
+        planned:observations.length,scanned:scans.length,inserted,scansInserted,keys,
+        coverageTruncated:rows.length>200||observations.length>15||scans.length>20};
     });
     if(!outcome.keys?.length)return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
-      state:outcome.state,observedSignalCount:outcome.planned||0,
+      state:outcome.state,observedSignalCount:outcome.planned||0,scannedTenantCount:outcome.scanned||0,
       technicalReadbackVerified:false,notificationsSent:0,actionsExecuted:0,
       coverageTruncated:outcome.coverageTruncated||false};
     const placeholders=outcome.keys.map((_:string,i:number)=>'$'+(i+1)).join(',');
@@ -411,11 +428,12 @@ async function observePortalSignals(){
       outcome.keys
     );
     const exact=new Set(rows.filter((row:any)=>row.source==="powerhouse-commercial-heartbeat-runner"&&
-      row.event_type==="portal_user_signal_observed"&&row.state==="observed"&&
+      ["portal_user_signal_observed","portal_user_signal_scan"].includes(row.event_type)&&row.state==="observed"&&
       row.contract===PORTAL_SIGNAL_HEARTBEAT_CONTRACT).map((row:any)=>row.dedupe_key));
     return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
       state:exact.size===outcome.keys.length?"OBSERVATION_READBACK_VERIFIED":"OBSERVATION_READBACK_DUE",
       observedSignalCount:outcome.planned,insertedObservations:outcome.inserted,
+      scannedTenantCount:outcome.scanned,insertedScans:outcome.scansInserted,
       technicalReadbackVerified:exact.size===outcome.keys.length,
       coverageTruncated:outcome.coverageTruncated,
       measurementFreshnessVerified:false,notificationsSent:0,actionsExecuted:0};

@@ -112,3 +112,36 @@ export function planNotificationSafety(observation,{providerVerified=false,recip
   // still own the write, exact message ID, consumer ACK and Heartbeat outcome.
   return Object.freeze({state:'ORIGINAL_PROVIDER_DISPATCH_APPROVAL_DUE',maySend:false});
 }
+
+
+/** Auditable tenant scans: a trigger-free scan still needs independent proof.
+ * One receipt per tenant / UTC hour / exact source revision, with no values or
+ * plaintext tenant IDs; a scan never implies source freshness or a delivery.
+ */
+export async function planOriginalHeartbeatScans(rows,{now=new Date().toISOString()}={}){
+  const current=safeIso(now);
+  if(!current)throw new Error('PORTAL_SIGNAL_CLOCK_INVALID');
+  const hour=current.slice(0,13);
+  const result=[];
+  for(const source of monitoringRuleCandidates(rows)){
+    const rules=source.rules.slice(0,50).map(normalizeServerRule).filter(Boolean);
+    if(!rules.length)continue;
+    const triggeredCount=rules.reduce((n,rule)=>n+(evaluatePersistedRule(rule,source.data).triggered?1:0),0);
+    const absentCount=rules.reduce((n,rule)=>n+(evaluatePersistedRule(rule,source.data).value===null?1:0),0);
+    const fingerprint=(await digest(source.tenant)).slice(0,24);
+    const key=(await digest([source.tenant,source.sourceUpdatedAt,hour].join('\\u001f'))).slice(0,48);
+    result.push(Object.freeze({
+      dedupeKey:'portal-signal-scan:'+key,
+      eventType:'portal_user_signal_scan',
+      tenantFingerprint:fingerprint,
+      sourceRevision:source.sourceUpdatedAt,
+      evidence:Object.freeze({
+        contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,checkedAt:current,sourceRevision:source.sourceUpdatedAt,
+        enabledRuleCount:rules.length,thresholdTriggersObserved:triggeredCount,missingSourceValues:absentCount,
+        sourceMeasurementFreshness:'UNKNOWN',channelDeliveryVerified:false,
+        executedActionsVerified:false,tenantReadbackRequired:true
+      })
+    }));
+  }
+  return Object.freeze(result.slice(0,35));
+}
