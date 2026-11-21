@@ -176,6 +176,72 @@ el('coachClear').addEventListener('click',()=>{if(!confirm('Wis alle tekeningen 
 el('coachDownloadBoard').addEventListener('click',()=>{paintBoard();board.toBlob(blob=>{if(blob)download(blob,'PW_MO14-1_tactiek_wedstrijd_'+(state.selectedMatch+1)+'.png');},'image/png');});
 
 /* Explicit portable offline backup: no external transmission and no silent overwrite. */
+// SECURITY: a valid JSON blob is not necessarily a safe drawing or app state.
+function validateCoachBackupSafety(next){
+ const invalid=(reason)=>{throw Error('Ongeldige back-up: '+reason);};
+ const record=o=>o!==null&&typeof o==='object'&&!Array.isArray(o);
+ const plain=o=>record(o)&&Object.getPrototypeOf(o)===Object.prototype;
+ const blocked=new Set(['__proto__','constructor','prototype']);
+ const pos=new Set(['AL','AR','M','VL','VR']);
+ const ids=new Set(next.roster.map(p=>p.id));
+ if(!Number.isInteger(next.half)||next.half<5||next.half>40||
+    !Number.isInteger(next.step)||next.step<1||next.step>20||next.half%next.step!==0)
+   invalid('ongeldige wedstrijd- of blokduur');
+ if(!Number.isInteger(next.selectedMatch)||next.selectedMatch<0||next.selectedMatch>=next.matches.length)
+   invalid('ongeldige geselecteerde wedstrijd');
+ if(next.roster.some(p=>blocked.has(p.id)||!plain(p)||p.name.length>40))
+   invalid('ongeldige spelerslijst');
+ let totalPoints=0,totalStrokes=0;
+ for(const match of next.matches){
+  if(!plain(match)||typeof match.fixtureId!=='string'||match.fixtureId.length>100||
+     typeof match.time!=='string'||match.time.length>5||typeof match.date!=='string'||match.date.length>10)
+    invalid('ongeldige wedstrijd');
+  if(match.coachNotes!==undefined&&(typeof match.coachNotes!=='string'||match.coachNotes.length>5000))
+    invalid('aantekeningen te groot of ongeldig');
+  if(match.firstLineup!==undefined){
+   if(!plain(match.firstLineup))invalid('ongeldige opstelling');
+   for(const [position,id] of Object.entries(match.firstLineup))
+     if(!pos.has(position)||!ids.has(id)||id===match.keeper)invalid('ongeldige beginpositie');
+  }
+  if(match.actualConfirmed){
+   if(!plain(match.actualField)||!plain(match.actualGoal))invalid('ongeldige werkelijk gespeelde minuten');
+   let field=0,goal=0;
+   for(const p of next.roster){
+    const f=match.actualField[p.id],g=match.actualGoal[p.id];
+    if(!Number.isInteger(f)||!Number.isInteger(g)||f<0||g<0||f+g>2*next.half||
+       match.absent.includes(p.id)&&f+g>0)
+      invalid('ongeldige minuten per speelster');
+    field+=f;goal+=g;
+   }
+   if(field!==5*2*next.half||goal!==2*next.half)invalid('totaal speelminuten klopt niet');
+  }
+  if(match.coachBoard===undefined)continue;
+  const board=match.coachBoard;
+  if(!plain(board)||!Array.isArray(board.strokes)||!plain(board.tokens)||
+     board.strokes.length>150||Object.keys(board.tokens).length>12)
+     invalid('tekening te groot of ongeldig');
+  totalStrokes+=board.strokes.length;
+  for(const [id,point] of Object.entries(board.tokens)){
+   if(blocked.has(id)||!ids.has(id)||!Array.isArray(point)||point.length!==2||
+      point.some(x=>!Number.isFinite(x)||x<0||x>1))
+     invalid('ongeldige pioncoördinaten');
+  }
+  for(const stroke of board.strokes){
+   if(!plain(stroke)||!['pen','arrow','circle'].includes(stroke.tool)||
+      typeof stroke.color!=='string'||!/^#[0-9a-f]{6}$/i.test(stroke.color)||
+      !Number.isFinite(stroke.width)||stroke.width<1||stroke.width>16||
+      !Array.isArray(stroke.points)||stroke.points.length<1||stroke.points.length>400)
+     invalid('ongeldige tekenlijn');
+   totalPoints+=stroke.points.length;
+   if(totalPoints>20000||totalStrokes>900)invalid('te veel tekenpunten');
+   for(const pt of stroke.points)
+    if(!Array.isArray(pt)||pt.length!==2||pt.some(x=>!Number.isFinite(x)||x<0||x>1))
+     invalid('ongeldige tekenpunten');
+  }
+ }
+ return next;
+}
+
 const BACKUP_MAGIC='PW-MO14-1-ZAALCOACH';
 el('coachExportBackup').addEventListener('click',()=>{
  const data=JSON.stringify({app:BACKUP_MAGIC,version:1,exportedAt:new Date().toISOString(),state},null,2);
@@ -199,6 +265,7 @@ el('coachBackupFile').addEventListener('change',async e=>{
    if(m.firstLineup){const pinned=Object.values(m.firstLineup);if(pinned.some(id=>!ids.has(id))||new Set(pinned).size!==pinned.length)throw Error('Ongeldige vastgezette startopstelling.');}
    if(m.actualConfirmed){if(!m.actualField||!m.actualGoal)throw Error('Onvolledig gespeelde-minutenoverzicht.');for(const id of ids){const a=Number(m.actualField[id]||0),b=Number(m.actualGoal[id]||0);if(!Number.isFinite(a)||!Number.isFinite(b)||a<0||b<0||a+b>120)throw Error('Ongeldige gespeelde minuten.');}}
   }
+  validateCoachBackupSafety(next);
   if(!confirm('Herstel '+next.matches.length+' wedstrijden en '+next.roster.length+' speelsters uit de back-up? De huidige gegevens op dit apparaat worden vervangen.')){feedback.textContent='Herstellen geannuleerd.';return;}
   state=next;state.selectedMatch=Math.max(0,Math.min(Number(state.selectedMatch)||0,state.matches.length-1));
   cache={};save();lastId=null;render();window.PWFieldComplete?.renderAll?.();showView('home',false);
