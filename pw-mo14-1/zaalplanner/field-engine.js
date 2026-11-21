@@ -7,7 +7,7 @@ const GROUP=p=>['LA','LC','RC','RA'].includes(p)?'A':['LV','RV'].includes(p)?'V'
 const DEFAULT_PREFS={'Jackie':['A','M','V'],'Coco-Mijn':['V'],Isis:['A'],Cato:['A'],Tess:['A'],Ella:['A','M'],Bobbi:['A','M'],Eline:['M'],Steffie:['M'],Lidewij:['M','V'],Lizzy:['M','V'],Nine:['V'],Femke:['V']};
 const DEF_WINDOWS=[[0,12],[12,24],[24,35],[35,47],[47,59],[59,70]];
 const FIRST={LA:'Isis',LC:'Cato',RC:'Tess',RA:'Ella',VM:'Eline',LM:'Steffie',RM:'Lizzy',AM:'Lidewij',LV:'Nine',RV:'Coco-Mijn'};
-function makeModel(){return {version:2,selectedMatch:0,selectedBlock:0,windows:DEF_WINDOWS.map(v=>v.slice()),prefs:structuredClone(DEFAULT_PREFS),matches:[{fixtureId:'field-1',date:'',time:'',opponent:'',keeper:'Jackie',absent:[],first:{...FIRST},notes:'',board:[],actual:null}]};}
+function makeModel(){return {version:2,selectedMatch:0,selectedBlock:0,windows:DEF_WINDOWS.map(v=>v.slice()),prefs:structuredClone(DEFAULT_PREFS),matches:[{fixtureId:'field-1',date:'',time:'',opponent:'',keeper:'Jackie',absent:[],first:{...FIRST},notes:'',board:[],actual:null,live:null}]};}
 function players(){return Object.keys(DEFAULT_PREFS);}
 function hardAllowed(name,p){return !(name==='Coco-Mijn'&&GROUP(p)!=='V')&&!(name==='Isis'&&(p==='LC'||p==='RC'))&&!(name==='Eline'&&(p==='LC'||p==='RC'));}
 function sanitize(model){
@@ -23,6 +23,22 @@ function sanitize(model){
   if(m.first&&typeof m.first==='object'){base.first={};for(const pos of POS)if(typeof m.first[pos]==='string'&&players().includes(m.first[pos]))base.first[pos]=m.first[pos];}
   if(m.actual&&typeof m.actual==='object'&&m.actual.confirmed===true){const field={},goal={};for(const name of players()){field[name]=Number(m.actual.field?.[name]||0);goal[name]=Number(m.actual.goal?.[name]||0);}if(Object.values(field).every(v=>Number.isInteger(v)&&v>=0&&v<=70)&&Object.values(goal).every(v=>Number.isInteger(v)&&v>=0&&v<=70)&&Object.values(field).reduce((a,b)=>a+b,0)===700&&Object.values(goal).reduce((a,b)=>a+b,0)===70)base.actual={confirmed:true,field,goal};}
   base.board=Array.isArray(m.board)?m.board.slice(0,250).filter(st=>st&&['pen','arrow','circle'].includes(st.tool)&&/^#[a-f0-9]{6}$/i.test(st.color||'')&&Array.isArray(st.points)&&st.points.length<=800&&st.points.every(p=>Array.isArray(p)&&p.length===2&&p.every(q=>typeof q==='number'&&Number.isFinite(q)&&q>=0&&q<=1))):[];
+  // Preserve only a fully validated, bounded local match log. Never trust imported JSON.
+  const l=m.live;
+  if(l&&l.version===1&&Number.isInteger(l.minute)&&l.minute>=0&&l.minute<=70&&Array.isArray(l.events)&&l.events.length<=160&&l.initial&&typeof l.initial==='object'){
+   const startNames=POS.map(p=>l.initial[p]),members=new Set(startNames);
+   if(members.size===10&&startNames.every((n,i)=>players().includes(n)&&!base.absent.includes(n)&&hardAllowed(n,POS[i]))&&l.keeper===base.keeper&&!members.has(l.keeper)&&!base.absent.includes(l.keeper)){
+    let previousMinute=0,valid=true;
+    const copyMap=Object.fromEntries(POS.map((p,i)=>[p,startNames[i]]));
+    const copyMembers=new Set(startNames),events=[];
+    for(const event of l.events){
+     if(!event||!Number.isInteger(event.minute)||event.minute<previousMinute||event.minute>l.minute||!POS.includes(event.position)||!players().includes(event.out)||!players().includes(event.in)||copyMap[event.position]!==event.out||copyMembers.has(event.in)||event.in===l.keeper||base.absent.includes(event.in)||!hardAllowed(event.in,event.position)){valid=false;break;}
+     events.push({minute:event.minute,position:event.position,out:event.out,in:event.in});
+     copyMembers.delete(event.out);copyMembers.add(event.in);copyMap[event.position]=event.in;previousMinute=event.minute;
+    }
+    if(valid)base.live={version:1,minute:l.minute,keeper:l.keeper,initial:Object.fromEntries(POS.map((p,i)=>[p,startNames[i]])),events,finished:l.finished===true&&l.minute===70};
+   }
+  }
   return base;
  });
  return {version:2,selectedMatch:Math.min(matches.length-1,Math.max(0,Number(model.selectedMatch)||0)),selectedBlock:Math.min((valid?w:DEF_WINDOWS).length-1,Math.max(0,Number(model.selectedBlock)||0)),windows:valid?w.map(x=>x.slice()):DEF_WINDOWS.map(x=>x.slice()),prefs,matches};
