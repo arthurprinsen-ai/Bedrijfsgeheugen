@@ -1,13 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {hasDocumentedCommercialEmailAuthority} from '../supabase/functions/_shared/outreach-human-copy-guard.mjs';
 
 const source=readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
 const map=readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
 const contract=source.match(/async function verifyRecipientAuthority\(db:any,a:any,to:string\):Promise<boolean>\{[\s\S]*?\n\}/)?.[0];
 assert.ok(contract,'CRM permission guard must exist as a bounded pure DB-check function');
 const js=contract.replace('db:any,a:any,to:string):Promise<boolean>','db,a,to)').replace('(c:any)=>','(c)=>');
-const verify=new Function('s',js+'\nreturn verifyRecipientAuthority;')((v)=>String(v??'').trim());
+const verify=new Function('s','hasDocumentedCommercialEmailAuthority',js+'\nreturn verifyRecipientAuthority;')((v)=>String(v??'').trim(),hasDocumentedCommercialEmailAuthority);
 
 function fakeDb(rows=[],error=null){
  let queried=false;
@@ -29,8 +30,11 @@ test('sender refuses unapproved CRM contact even if prepared action says human a
 
 test('sender requires same recipient, same CRM person and double affirmative approval',async()=>{
  const approved={person_key:'person-1',evidence:{recipient_email:'a@example.org',human_approved:true}};
- const row={sleutel:'person-1',extra:{human_approved:true}};
+ const permission={basis:'explicit_opt_in',granted:true,purpose:'commercial_email',granted_at:'2026-11-20T09:00:00Z',evidence_ref:'crm:consent:record-99'};
+ const row={sleutel:'person-1',extra:{human_approved:true,email_marketing_permission:permission}};
  assert.equal(await verify(fakeDb([row]).db,approved,'a@example.org'),true);
+ assert.equal(await verify(fakeDb([{...row,extra:{human_approved:true}}]).db,approved,'a@example.org'),false);
+ assert.equal(await verify(fakeDb([{...row,extra:{...row.extra,approval_revoked:{on:'2026-10-27',reason:'do not contact'}}}]).db,approved,'a@example.org'),false);
  assert.equal(await verify(fakeDb([row]).db,{...approved,evidence:{...approved.evidence,human_approved:false}},'a@example.org'),false);
  assert.equal(await verify(fakeDb([{...row,sleutel:'different-person'}]).db,approved,'a@example.org'),false);
  assert.equal(await verify(fakeDb([row]).db,approved,'other@example.org'),false);
