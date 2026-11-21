@@ -1,5 +1,5 @@
 import postgres from "npm:postgres@3.4.7";
-import {planOriginalHeartbeatObservations,planNotificationSafety,PORTAL_SIGNAL_HEARTBEAT_CONTRACT} from "./portal-signal-heartbeat.mjs";
+import {planOriginalHeartbeatObservations,planOriginalHeartbeatScans,planNotificationSafety,PORTAL_SIGNAL_HEARTBEAT_CONTRACT} from "./portal-signal-heartbeat.mjs";
 
 const DB_REF="adhjwmvyoixzjtmiroln";
 const DB_POOLER_HOST="aws-0-eu-central-1.pooler.supabase.com";
@@ -379,9 +379,10 @@ async function observePortalSignals(){
         "order by updated_at desc limit 201"
       );
       const observations=await planOriginalHeartbeatObservations(rows.slice(0,200));
+      const scans=await planOriginalHeartbeatScans(rows.slice(0,200));
       const keys=[];
-      let inserted=0;
-      for(const observation of observations.slice(0,35)){
+      let inserted=0,scansInserted=0;
+      for(const observation of observations.slice(0,15)){
         const delivery=planNotificationSafety(observation);
         const evidence={...observation.evidence,notificationState:delivery.state,
           externalMessagesSent:0,actionExecutionVerified:false};
