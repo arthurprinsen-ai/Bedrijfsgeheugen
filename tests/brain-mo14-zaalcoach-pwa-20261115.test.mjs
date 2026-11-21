@@ -26,7 +26,7 @@ test('standalone app declares scoped offline resources and actual icons',()=>{
    assert.ok(data.length>1000);
  }
  const sw=readFileSync(base+'sw.js','utf8');
- assert.match(sw,/mo14-unified-coach-v10-zaal-veld/);
+ assert.match(sw,/mo14-unified-coach-v11-live-wissels/);
  assert.match(sw,/self\.registration\.scope/);
  assert.doesNotMatch(sw,/make\.com|buffer\.com/);
 });
@@ -62,7 +62,7 @@ test('PW Enschede branding and independent editable match dates share the existi
  assert.ok(html.includes('canvasMatchDate(matchIndex)'));
  const sw=readFileSync(base+'sw.js','utf8');
  assert.ok(sw.includes('./pw-logo.png'));
- assert.match(sw,/mo14-unified-coach-v10-zaal-veld/);
+ assert.match(sw,/mo14-unified-coach-v11-live-wissels/);
 });
 
 test('12 screenshot-grounded PW fixtures across six days have separate time, opponent and keepers',()=>{
