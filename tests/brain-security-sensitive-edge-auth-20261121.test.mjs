@@ -36,7 +36,7 @@ test('both deployed entrypoints check server-only auth before constructing privi
  assert.ok(masterGuard<master.indexOf("Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')"));
  assert.ok(masterGuard<master.indexOf('createClient(url,key'));
  assert.ok(introGuard<introspect.indexOf('postgres(url()'));
- assert.ok(introGuard<introspect.indexOf('Deno.env.get("SUPABASE_DB_URL")'), 'guard must run before DB connection is used in handler');
+ assert.ok(introGuard<introspect.indexOf('sql=postgres(url()'), 'guard must run before DB connection is opened in handler');
  for(const source of [master,introspect]){
   assert.ok(source.includes("req.method!=='POST'"));
   assert.ok(source.includes("'UNAUTHORIZED'")||source.includes('"UNAUTHORIZED"'));
