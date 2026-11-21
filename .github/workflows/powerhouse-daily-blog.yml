@@ -404,6 +404,17 @@ jobs:
           node --test tests/brain-daily-blog-production-closure-v1.test.mjs
           node tools/content-growth/reconcile-merged-blog-live.mjs "$BUSINESS_DATE"
 
+      - name: Reconcile one previous-day original blog PR behind main (bounded, no publish)
+        if: always() && github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BUSINESS_DATE: ${{ steps.day.outputs.date }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          set -euo pipefail
+          node --test tests/brain-blog-stale-branch-recovery-20261117.test.mjs
+          node tools/content-growth/reconcile-stale-blog-branch.mjs
+
   security_export_probe:
     # Reuse this canonical workflow: no additional scheduler, public PR or publisher.
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.security_probe_only == true }}
