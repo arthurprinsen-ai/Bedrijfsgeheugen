@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "github|janitor|rerun-history-failure-disappears-after-green|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "NATIVE_GITHUB_RUN_ATTEMPT_HISTORY_SHADOWED_BY_LATEST_SUCCESS"
+  },
+  "root_cause": "The existing read-only hourly Janitor scanned GitHub GET /actions/runs status=completed which projects the most recent attempt for each workflow run; after GitHub Required run 44061313845 attempt 1 failed and attempt 2 succeeded, only the latest success is visible in this listing. GitHub separately preserves GET /actions/runs/44061313845/attempts/1 with conclusion=failure and original head SHA. An hourly scan can therefore miss the initial error after a fast rerun; earlier durable-window repair alone cannot correct that.",
+  "prevention": [
+    "Within original same hourly Janitor, when source workflow run's run_attempt > 1, read separately each older native attempt by exact run_id and attempt index, verify workflow_id/head_sha/event/attempt/status all match native parent identity, classify as NATIVE_FAILURE only for genuine failed original attempt.",
+    "Reuse the exact existing classifyActionsRun native payloadSHA256 / brain_observe_failure + original read-after-write, so manually backfilled run/attempt with matching provider identity remains deduplicated and hash conflicts fail closed.",
+    "Limit historic attempts per run <=51 and prior-attempt source reads <=100 per complete four-hour source window. Overflow or missing native history never produces global green, and previous verified windows remain durable even when later reads fail.",
+    "Do not change the sole existing Janitor cron, provider sender, source registry, access controls or branch protection; original recovery supervisor retains native CAS and short terminal leases."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-actions-rerun-attempt-history-20261117.test.mjs",
+      "tests/brain-github-actions-observer-durable-window-20261117.test.mjs",
+      "tests/brain-github-actions-failure-observer-20261104.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44061313845",
+    "https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44061313845/attempts/1",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://docs.github.com/en/rest/actions/workflow-runs",
+    "https://docs.github.com/en/rest/actions/workflow-jobs"
+  ],
+  "acceptance": "Original exact-head Required/CodeQL PASS, protected main merge, next natural original hourly Janitor scan, original ONE BRAIN confirmed native failed attempt occurrence with exact provider evidence SHA and later identical rerun ALREADY_VERIFIED. Any unmet stage remains OPEN; not proof that all historical errors have been recovered.",
+  "validation_limits": "This covers native attempt history on the 48-hour bounded repository-run scan. Older errors outside bounded source retention require separately authorized owner replay. Max provider-read budget may fail closed; this is a safe source coverage alarm, not silent completion."
+}
