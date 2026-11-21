@@ -1,0 +1,73 @@
+{
+  "contract": "POWERHOUSE_ORIGINAL_PORTAL_SAFE_BROWSER_MODULES_V1",
+  "date": "2026-11-21",
+  "fingerprint": "powerhouse|portal-v2|private-brain-platform-module-import-blocked-404|20261121-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "security_sensitive": true,
+    "requires_authorized_delivery": true,
+    "requires_independent_provider_readback": true
+  },
+  "root_cause": "Original Portal V2 ES modules imported browser-pure calculation sources directly from /brain/* and /platform/*, while existing public Netlify _redirects intentionally enforce /brain/* /404.html 404! and /platform/* /404.html 404!. Native Netlify HTTP404 request logs prove both private path groups were blocked on the exact new deployed commit. The original watchdog correctly showed an error and original browser readiness correctly failed. Source was present in the repository but forbidden to anonymous browser requests.",
+  "prevention": "Never expose private Brain/Platform trees or relax forced 404s. Single original Netlify build stage copies exactly seven explicitly reviewed pure browser-safe calculations from canonical source to portal-v2/browser-runtime, rejects unexpected/transitive imports or sensitive code/symlinks, rewrites only browser JS imports in generated website files. Preserve independent source-SHA256 exact deployed byte readback and genuine mounted-app identity; no dummy auth, no disabled gate.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_owner": "ONE BRAIN Engineering / original Portal Living Interface and Delivery Self Optimization agents",
+    "github_original_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44839827784",
+    "original_main_sha": "7688234b36e41a476988cf6d30024a76cb351c3f",
+    "netlify_live_deploy_id": "6b00dd064a3808ba8466f1a2",
+    "production_authenticated_tenant_proof": "SIGNED_2_TENANT_HTTP200_VERIFIED_BEFORE_BROWSER_FAILURE",
+    "actual_boot_report": {
+      "hydrating": true,
+      "appMounted": false,
+      "recoveryShown": true,
+      "failed_first_party_assets_per_viewport": "2–5",
+      "failure_class": "PORTAL_STARTUP_TIMEOUT"
+    },
+    "netlify_404_window_utc": "2026-11-20T23:53:00Z/2026-11-20T23:56:30Z",
+    "netlify_independent_not_found": {
+      "/brain/context/business-context-engine.mjs": 12,
+      "/platform/organism/organism-graph.mjs": 12,
+      "/brain/context/goal-forecast-engine.mjs": 6,
+      "/brain/economics/management-accounting-intelligence.mjs": 5,
+      "/brain/context/goal-scenario-engine.mjs": 3,
+      "/brain/revenue/need-discovery.mjs": 2
+    },
+    "intentional_private_redirects_unchanged": [
+      "/brain/*  /404.html  404!",
+      "/platform/*  /404.html  404!"
+    ],
+    "public_module_build_source": "tools/ci/build-portal-public-runtime.mjs",
+    "original_netlify_build_source": "tools/ci/netlify-build-entry.mjs",
+    "original_live_route_readback": "tools/site-shell/verify-targeted-website-routes.mjs",
+    "regression": "tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs",
+    "original_agent_skills": [
+      ".agents/skills/portal-living-interface/SKILL.md",
+      ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+    ],
+    "independent_new_deploy_verified": false,
+    "independent_live_ui_verified": false,
+    "original_innovation_obligations_open": 14,
+    "measured_business_outcomes": 0,
+    "no_parallel_scheduler": true
+  },
+  "safety": {
+    "secret_sources_blocked": true,
+    "private_route_blocks_preserved": true,
+    "source_code_canonical": true,
+    "copy_generated_only": true,
+    "paid_provider_calls": false,
+    "unsolicited_external_send": false
+  },
+  "expected_close": "Protected Required, CodeQL, Netlify build parity + deploy preview, protected squash, exact provider production READY and native original production readback with exact seven module SHA256 bytes + app-mounted TRUE, then separate original visual CLS readback. No business success until independently measured."
+}
