@@ -43,7 +43,7 @@ jobs:
       - name: Verify planner and independent website source
         run: |
           set -euo pipefail
-          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs tests/mo14-site-security-headers-20261120.test.mjs tests/mo14-unified-zaal-veld-app-20261120.test.mjs tests/mo14-field-complete-integration-20261120.test.mjs tests/mo14-live-substitutions-20261121.test.mjs
+          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs tests/mo14-site-security-headers-20261120.test.mjs tests/mo14-backup-safety-20261121.test.mjs tests/mo14-unified-zaal-veld-app-20261120.test.mjs tests/mo14-field-complete-integration-20261120.test.mjs tests/mo14-live-substitutions-20261121.test.mjs
           test -s pw-mo14-1/zaalplanner/index.html
       - name: Preserve existing MO14 homepage and assets before deploy
         run: |
