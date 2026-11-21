@@ -65,13 +65,67 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     const actual=String(stateClient.currentUser?.()?.id||'');
     return subject&&actual===subject&&['authenticated','empty'].includes(snap.mode)&&!stateClient.isDemo?.()?snap:null;
   }
+  const proofOutput=dialog.querySelector('[data-vs-server-proof]');
+  const proofList=dialog.querySelector('[data-vs-proof-events]');
+  const displayTime=value=>{
+    const time=Date.parse(value||'');
+    return Number.isFinite(time)?new Date(time).toLocaleString('nl-NL',{dateStyle:'short',timeStyle:'short'}):'niet bevestigd';
+  };
+  async function loadServerProof(){
+    const snapshot=authenticated(),owner=String(snapshot?.user?.id||'');
+    const generation=++proofEpoch;
+    proofList.replaceChildren();
+    if(!owner){note(proofOutput,'Log in om uitsluitend de controles van jouw organisatie terug te lezen.');return;}
+    note(proofOutput,'Oorspronkelijke Heartbeat-waarnemingen worden gecontroleerd…');
+    try{
+      const token=await stateClient.currentUser?.()?.jwt?.();
+      if(!token)throw Error('LOGIN_REQUIRED');
+      const response=await fetchImpl('/api/portal-signal-status',{
+        method:'GET',credentials:'same-origin',
+        headers:{accept:'application/json',authorization:'Bearer '+token}
+      });
+      const data=await response.json().catch(()=>null);
+      if(generation!==proofEpoch||String(authenticated()?.user?.id||'')!==owner)return;
+      if(!response.ok||data?.contract!=='portal-signal-tenant-readback-v1'||!Array.isArray(data?.events))
+        throw Error('GEEN_GEVERIFIEERDE_MONITORING_READBACK');
+      const configured=stateRules(authenticated()?.state).filter(rule=>rule?.monitoring===true&&rule?.enabled!==false).length;
+      const header='Heartbeat systeem: '+displayTime(data.lastOriginalHeartbeatAt)
+        +' · Jouw laatste tenantcontrole: '+displayTime(data.lastTenantScanAt)
+        +' · Laatste vastgelegde grensafwijking: '+displayTime(data.lastTenantTriggerAt)+'. ';
+      const conclusion=!configured?'Er zijn geen actieve doorlopende regels ingesteld.'
+        :!data.lastTenantScanAt?'Voor deze tenant is nog geen servercontrole teruggelezen. Dit is niet groen.'
+        :'Er is een controlebewijs. De actualiteit van de KPI-bron is nog niet onafhankelijk vastgesteld.';
+      note(proofOutput,header+conclusion+' E-mail/push: niet als bezorgd bevestigd. Autonome actie: niet als uitgevoerd bevestigd.');
+      for(const event of data.events.slice(0,10)){
+        const item=document.createElement('p');
+        item.className='vs-evidence';
+        item.textContent=event.kind==='scan'
+          ?'✓ Technische controle '+displayTime(event.observedAt)+' · '
+            +String(event.enabledRuleCount??'?')+' regel(s) gecontroleerd · '
+            +String(event.thresholdTriggersObserved??'?')+' grensoverschrijding(en) · bronversheid niet bewezen'
+          :'⚑ Geregistreerde drempelafwijking '+displayTime(event.observedAt)
+            +' · KPI: '+String(event.metricId||'onbekend')
+            +' · geen verzend- of uitvoeringsbewijs';
+        proofList.append(item);
+      }
+      if(data.eventsTruncated){
+        const warning=document.createElement('p');warning.textContent='Er zijn meer controles; het overzicht toont alleen de recentste.';
+        proofList.append(warning);
+      }
+    }catch(error){
+      if(generation===proofEpoch&&String(authenticated()?.user?.id||'')===owner)
+        note(proofOutput,'Serverbewijzen zijn niet beschikbaar. Dit onderdeel is niet geverifieerd; probeer opnieuw.',true);
+    }
+  }
   function stopListening(){
     if(recognizer){try{recognizer.abort();}catch{}recognizer=null;}
     mic.disabled=false;mic.textContent='🎙 Spreek';
   }
   function reveal(){
-    if(!dialog.open)dialog.showModal();
+    const opening=!dialog.open;
+    if(opening)dialog.showModal();
     render();
+    if(opening)void loadServerProof();
   }
   function switchFormThreshold(){
     threshold.disabled=operator.value==='missing';
@@ -227,6 +281,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     }
     note(output,'Niet herkende opdracht. Probeer “open [onderdeel]”, “focus op [veld]”, “vul veld [naam] met [waarde]”, een vraag of een KPI-signalering.',true);
   }
+  dialog.querySelector('[data-vs-proof-refresh]').addEventListener('click',()=>{void loadServerProof();});
   voiceButton.addEventListener('click',()=>{reveal();input.focus();});
   alertsButton.addEventListener('click',reveal);
   dialog.querySelector('[data-vs-close]').addEventListener('click',()=>dialog.close());
@@ -316,10 +371,10 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   });
   const unsubscribe=stateClient.subscribe(snap=>{
     const next=String((['authenticated','empty'].includes(snap.mode)&&!stateClient.isDemo?.()?snap.user?.id:'')||'');
-    if(next!==principal){principal=next;stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;note(output,'');if(dialog.open)dialog.close();}
+    if(next!==principal){principal=next;proofEpoch++;lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na aanmelden.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;note(output,'');if(dialog.open)dialog.close();}
     render();
   });
-  const boundary=()=>{stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
+  const boundary=()=>{proofEpoch++;lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na accountwissel.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
   document.addEventListener('bg:portal-identity-boundary',boundary);
   const refreshed=()=>render();document.addEventListener('bg:portal-server-refreshed',refreshed);
   render();
