@@ -292,3 +292,21 @@ Leerregel voor iedere Powerhouse/Brein/Heartbeat/agent: pg_cron succeeded of pg_
 **Agentoverdracht:** voor modellen, sentiment, CRO en revenue learning is eigen outbound marketingcopy altijd een OUTBOUND_TEMPLATE, nooit een INBOUND_INTENT. Alleen de onbewerkte, zichtbaar nieuwe tekst van de afzender is kandidaat-klantbewijs; de status wordt pas waar na echte providerreadback.
 
 **HTML-veiligheidsregel na CodeQL-review:** splits eerst de platte-tekst mailheader waarin een gequote afzender als <email> kan staan. Bij echte HTML mogen daarna alleen expliciet allowlisted structurele opmaaktags worden gelezen. Iedere onbekende tag, onvolledige <script of onverwachte markup = FAIL CLOSED: geen intentclassificatie, replyevent of suppressie. Geen regex die willekeurige HTML-tags onvolledig verwijdert. De scheiding en negatieve injectietests zijn onderdeel van dezelfde historische replay.
+
+
+## 21 november 2026 — originele reply-loop herstellen op bestaande scheduler #116
+
+**P0-lusfout:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/6098
+
+Een draaiende commerciële scheduler en live Edge Function vormen nog geen gesloten keten. Productie: cron #116 draaide laatste 24 uur 336/336 keer succesvol; zijn 14 commerciële stages bevatten GEEN aanroep van de live powerhouse-email-reply-loop v1216. Er was geen andere productie-SQL-functie die die Edge-slug aanriep. De verwijderde zelfstandige reply-cron had geen opvolger. Laatste bewezen Gmail-reply-loop-gezondheidsmeting was 20 oktober 2026 om 16:57 UTC; vier historische replyevents, geen nieuw resultaat.
+
+**Bindende regels voor bestaande agents:**
+1. Reliability / integration-engineer: herstel uitsluitend de BESTAANDE cron.job #116 via protected Supabase-migratie en cron.alter_job command ONLY. Behoud jobid=116, active=true, alle 14 originele stagecalls en het minutenrooster. Alleen stage14 (40 UTC) gebruikt bestaande public.bg_roep_functie('powerhouse-email-reply-loop'). Geen tweede cron, writer, queue, account of provider.
+2. Integratie/Composio-agent: bestaande bg_roep_functie haalt Vault-token op en registreert pg_net request-ID in bg_functie_aanroep. Ontbrekende token of SQL-fout: getypeerd in powerhouse_ops.enqueue('commercial_email_reply_dispatch_review', ...), nooit stil succes of resending. Een request-ID bewijst geen provider-ACK.
+3. Data-quality / Heartbeat: na de ECHTE volgende cron116-stage14 moet een NIEUW provider-request-ID, onafhankelijke net._http_response HTTP2xx en verse bg_gezondheid van powerhouse-email-reply-loop bestaan. Daarna alleen echt nieuw Gmail message/thread-ID + reply event + outcome/paid-order bewijs als commerciële uitkomst. Geen positieve reply/omzet uit een bronrelease afleiden.
+4. Reply-agent: hergebruik uitsluitend de oorspronkelijke Gmail HTML/plain quote-filter van PR #6096; eigen geciteerde opt-outvoet is nooit afmeldintentie; echte afmeldingen direct onderdrukken; geen geautoriseerde marketingcontacten uit LinkedIn eerstegraads netwerk fantaseren. CRM: 605 bekende e-mailadressen, nul bewijs van aparte email_marketing_permission.
+5. Alle agents en skills: aantoonbare bereikbaarheid is vereist van enige scheduler -> originele Edge -> provider -> reply/outcome -> ONE BRAIN/Heartbeat. False green vastgelegd in brain/learning/2026-11-21-original-commercial-email-reply-scheduler-disconnected.json.
+
+**Acceptatie:** supabase/migrations/20261121090000_reconnect_original_email_reply_in_commercial_stage14.sql en tests/brain-original-email-reply-116-reconnect-20261121.test.mjs, protected Required+CodeQL, originele migratieautoriteit, onafhankelijke cron.command readback, natuurlijke stage14-uitvoering, onafhankelijk provider/health-bewijs. Zonder deze resultaten CANDIDATE_NOT_LIVE, ook als de commit groen is.
+
+**Bronnen:** https://supabase.com/docs/guides/cron/quickstart en https://supabase.com/docs/guides/functions/schedule-functions.
