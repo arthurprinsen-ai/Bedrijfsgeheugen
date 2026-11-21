@@ -4,6 +4,8 @@ import {mkdtemp,mkdir,readFile,writeFile,rm,symlink,stat} from 'node:fs/promises
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
+import {createHash} from 'node:crypto';
+import {verifyPortalPublicRuntime} from '../tools/site-shell/verify-targeted-website-routes.mjs';
 import {buildPortalPublicRuntime,PUBLIC_PORTAL_BROWSER_SOURCES} from '../tools/ci/build-portal-public-runtime.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -72,4 +74,32 @@ test('original Netlify build invokes this guard and never opens private route ca
   assert.match(redirects,/^\/brain\/\*\s+\/404\.html\s+404!/m);
   assert.match(redirects,/^\/platform\/\*\s+\/404\.html\s+404!/m);
   assert.equal(PUBLIC_PORTAL_BROWSER_SOURCES.length,7);
+});
+
+test('first-party release readback hashes exact public module bytes and rejects one missing script',async()=>{
+  const sources=await Promise.all(PUBLIC_PORTAL_BROWSER_SOURCES.map(async source=>{
+    const bytes=await readFile(path.join(root,source));
+    return {source,url:'/portal-v2/browser-runtime/'+source,sha256:createHash('sha256').update(bytes).digest('hex'),bytes};
+  }));
+  const manifest={contract:'PUBLIC_PORTAL_READ_ONLY_MODULE_V1',sources:sources.map(({source,url,sha256})=>({source,url,sha256})),imports_rewritten:3};
+  const responses=[];
+  const page={request:{get:async url=>{
+    const route=new URL(url).pathname;
+    responses.push(route);
+    if(route.endsWith('/manifest.json'))return {ok:()=>true,json:async()=>manifest,status:()=>200};
+    const item=sources.find(x=>x.url===route);
+    return item?{ok:()=>true,body:async()=>item.bytes,status:()=>200}:{ok:()=>false,status:()=>404};
+  }}};
+  assert.deepEqual(await verifyPortalPublicRuntime(page,{baseUrl:'https://www.bedrijfsgeheugen.nl',sourceRoot:root}),{
+    contract:'PORTAL_PUBLIC_RUNTIME_PROVEN',count:7
+  });
+  assert.equal(responses.length,8);
+  manifest.sources[0].sha256='f'.repeat(64);
+  await assert.rejects(()=>verifyPortalPublicRuntime(page,{baseUrl:'https://www.bedrijfsgeheugen.nl',sourceRoot:root}),/PORTAL_PUBLIC_RUNTIME_SOURCE_IDENTITY_MISMATCH/);
+  manifest.sources[0].sha256=sources[0].sha256;
+  const missing={request:{get:async url=>{
+    if(new URL(url).pathname.endsWith('/manifest.json'))return {ok:()=>false,status:()=>404};
+    return {ok:()=>true,status:()=>200};
+  }}};
+  await assert.rejects(()=>verifyPortalPublicRuntime(missing,{baseUrl:'https://www.bedrijfsgeheugen.nl',sourceRoot:root}),/PORTAL_PUBLIC_RUNTIME_MANIFEST_NOT_LIVE:404/);
 });
