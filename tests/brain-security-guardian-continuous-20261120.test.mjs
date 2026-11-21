@@ -18,7 +18,7 @@ test('all 16 owned Netlify sites and both PW routes have strict read-only invent
  assert.equal(validateInventory(cfg).sites.length,17);
  assert.equal(cfg.expected_projects,16);
  for(const s of cfg.sites)assert.match(s.url,/^https:\/\//);
- assert.throws(()=>validateInventory({...cfg,sites:[...cfg.sites,{id:'local',url:'http://localhost/',mode:'standard'}]}),/INVALID_SITE/);
+ assert.throws(()=>validateInventory({...cfg,sites:[...cfg.sites,{id:'local',url:'http://localhost/',mode:'standard'}]}),/INCOMPLETE_SECURITY_INVENTORY|INVALID_SITE/);
  assert.throws(()=>validateInventory({...cfg,sites:cfg.sites.slice(1)}),/INCOMPLETE|REQUIRED/);
 });
 test('cannot quietly drop a project or substitute an attacker-controlled Netlify URL',()=>{
