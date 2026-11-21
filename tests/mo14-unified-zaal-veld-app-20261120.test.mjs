@@ -56,7 +56,7 @@ test('field data exactly retained: Jackie keeper, Coco forward, six blocks and t
 test('PWA offline manifest and safe style scoping cover both modes',()=>{
  assert.doesNotThrow(()=>new Function(js));
  for(const asset of ['field-unified.js','field-unified.css'])assert.ok(sw.includes("'./"+asset+"'"),asset+' missing from offline cache');
- assert.match(sw,/mo14-unified-coach-v10/);
+ assert.match(sw,/mo14-unified-coach-v11/);
  assert.equal(manifest.display,'standalone');
  assert.equal(manifest.scope,'./');
  assert.ok(manifest.shortcuts.some(s=>s.url==='./#field'));
