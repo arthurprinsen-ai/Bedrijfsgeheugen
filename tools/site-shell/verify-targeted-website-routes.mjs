@@ -1,4 +1,6 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { PUBLIC_PORTAL_BROWSER_SOURCES } from '../ci/build-portal-public-runtime.mjs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -108,6 +110,37 @@ export async function waitForPortalAppBoot(page,{timeout=25_000}={}){
   },undefined,{timeout});
 }
 
+/** Prove the precise read-only public dependency set, never loosen /brain or /platform. */
+export async function verifyPortalPublicRuntime(page,{baseUrl,sourceRoot=process.cwd()}={}){
+  if(!baseUrl)throw new Error('PORTAL_PUBLIC_RUNTIME_BASE_URL_REQUIRED');
+  const manifestUrl=new URL('/portal-v2/browser-runtime/manifest.json',baseUrl).toString();
+  const response=await page.request.get(manifestUrl,{timeout:12_000});
+  if(!response.ok())throw new Error('PORTAL_PUBLIC_RUNTIME_MANIFEST_NOT_LIVE:'+response.status());
+  const manifest=await response.json();
+  if(manifest?.contract!=='PUBLIC_PORTAL_READ_ONLY_MODULE_V1'
+    || !Array.isArray(manifest.sources)
+    || manifest.sources.length!==PUBLIC_PORTAL_BROWSER_SOURCES.length
+    || manifest.imports_rewritten<1)
+    throw new Error('PORTAL_PUBLIC_RUNTIME_MANIFEST_CONTRACT_INVALID');
+  for(const source of PUBLIC_PORTAL_BROWSER_SOURCES){
+    const item=manifest.sources.find(row=>row.source===source);
+    const expected='/portal-v2/browser-runtime/'+source;
+    if(!item||item.url!==expected||!/^[0-9a-f]{64}$/.test(String(item.sha256||'')))
+      throw new Error('PORTAL_PUBLIC_RUNTIME_ENTRY_INVALID:'+source);
+    const sourceBytes=await readFile(sourceRoot+'/'+source);
+    const nativeHash=createHash('sha256').update(sourceBytes).digest('hex');
+    if(item.sha256!==nativeHash)
+      throw new Error('PORTAL_PUBLIC_RUNTIME_SOURCE_IDENTITY_MISMATCH:'+source);
+    const moduleResponse=await page.request.get(new URL(expected,baseUrl).toString(),{timeout:12_000});
+    if(!moduleResponse.ok())
+      throw new Error('PORTAL_PUBLIC_RUNTIME_MODULE_NOT_LIVE:'+source+':'+moduleResponse.status());
+    const deployedHash=createHash('sha256').update(await moduleResponse.body()).digest('hex');
+    if(deployedHash!==nativeHash)
+      throw new Error('PORTAL_PUBLIC_RUNTIME_MODULE_BYTES_MISMATCH:'+source);
+  }
+  return {contract:'PORTAL_PUBLIC_RUNTIME_PROVEN',count:PUBLIC_PORTAL_BROWSER_SOURCES.length};
+}
+
 async function observeRouteAttempt(browser, baseUrl, route, viewport) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
@@ -127,8 +160,10 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
     const response = await navigateWithRetry(page, target);
     await page.locator('body').waitFor({ state:'attached', timeout:10_000 });
     try {
-      if((route==='/portal-v2/'||route==='/portal-v2'))
+      if((route==='/portal-v2/'||route==='/portal-v2')){
+        await verifyPortalPublicRuntime(page,{baseUrl});
         await waitForPortalAppBoot(page,{timeout:25_000});
+      }
       await waitForRenderedBody(page,{timeout:10_000});
     } catch(error) {
       if((route==='/portal-v2/'||route==='/portal-v2')){
