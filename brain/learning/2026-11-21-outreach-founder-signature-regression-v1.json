@@ -21,5 +21,28 @@
     "https://hunter.io/the-state-of-cold-email",
     "https://www.gong.io/blog/do-execs-really-reply-to-cold-email-here-s-what-the-data-says",
     "https://ddma.nl/legal/wetgeving/e-mail/"
-  ]
+  ],
+  "obligation_id": "powerhouse|commercial|human-outreach-intent-regression|20261121-v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outreach-human-intent-quality-20261121.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outreach-human-intent-quality-20261121.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-outreach-human-intent-quality-20261121.test.mjs"
+  ],
+  "prevention_rule": "Personal first-contact mail requires a legitimate recipient, concrete relevance and human curiosity. A verified LinkedIn connection is context not permission; do not invent familiarity, customer pain or results. Source-bound founder introduction and non-pushy interest CTA, no AI editorial labels. Original Gmail sender owns final signature, suppression and provider readback.",
+  "research_validity": "Hunter and Gong aggregate correlations guide testable copy; no Bedrijfsgeheugen reply or revenue uplift has been measured."
 }
