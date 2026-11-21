@@ -63,5 +63,32 @@
     "Many verify_jwt=false functions require individual custom authorization review",
     "PW team/player information stays publicly accessible until an access-policy decision"
   ],
-  "status": "PROVIDER_HOTFIX_LIVE_SOURCE_PR_OPEN"
+  "status": "PROVIDER_HOTFIX_LIVE_SOURCE_PR_OPEN",
+  "compiler": {
+    "failure_class": "PRIVILEGED_EDGE_AUTHORIZATION_BYPASS",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-sensitive-edge-auth-20261121.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-sensitive-edge-auth-20261121.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-sensitive-edge-auth-20261121.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "live_validation": "Supabase deployed v10/v15 and live external GET 405 + POST 401, scoped original security-operations-proof monitor after protected main merge",
+    "live_provider_probe": [
+      "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-master-control",
+      "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/db-pooler-introspect-v1"
+    ],
+    "mode_note": "No privileged credential provided to regression probes; source-level simulation uses fictional credentials."
+  }
 }
