@@ -54,8 +54,30 @@ export async function verifyTargets(targets=TARGETS,fetcher=fetch){
  }
  return results;
 }
+// Fail-closed read-only proof for two privileged Supabase endpoints.
+// Calls are deliberately UNAUTHENTICATED; never send privileged API keys in a monitor.
+export const PRIVILEGED_EDGE_TARGETS=[
+ {name:'Master Control',url:'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-master-control'},
+ {name:'Postgres Introspection',url:'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/db-pooler-introspect-v1'}
+];
+export async function verifyPrivilegedEdgeAuth(targets=PRIVILEGED_EDGE_TARGETS,fetcher=fetch){
+ const results=[];
+ for(const target of targets){
+  const failures=[];
+  for(const [method,expected] of [['GET',405],['POST',401]]){
+   try{
+    const response=await fetcher(target.url,{method,redirect:'error',cache:'no-store',signal:AbortSignal.timeout(12000),...(method==='POST'?{headers:{'content-type':'application/json'},body:'{}'}:{})});
+    if(response.status!==expected)failures.push(method+' returned HTTP '+response.status+' instead of '+expected);
+    if(!(response.headers.get('cache-control')||'').includes('no-store'))failures.push(method+' missing no-store');
+    if((response.headers.get('x-content-type-options')||'').toLowerCase()!=='nosniff')failures.push(method+' missing nosniff');
+   }catch(error){failures.push(method+' request unavailable: '+String(error?.message||error).slice(0,100));}
+  }
+  results.push({site:target.name,passed:failures.length===0,missing:failures});
+ }
+ return results;
+}
 if(process.argv[1]&&pathToFileURL(resolve(process.argv[1])).href===import.meta.url){
- const r=await verifyTargets();
+ const r=[...await verifyTargets(),...await verifyPrivilegedEdgeAuth()];
  r.forEach(x=>console.log((x.passed?'PASS':'FAIL')+' '+x.site+(x.missing.length?' — '+x.missing.join(', '):'')));
  if(r.some(x=>!x.passed))process.exitCode=1;
 }
