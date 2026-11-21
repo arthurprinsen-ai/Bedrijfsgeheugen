@@ -36,8 +36,8 @@
   "live_proof": {
     "provider_source_readback_exact": true,
     "provider_active_versions": [
-      10,
-      15
+      11,
+      16
     ],
     "unauth_get_status": 405,
     "unauth_post_status": 401,
@@ -47,13 +47,19 @@
     ],
     "six_site_monitor_passed": 6,
     "regression_tests_passed": 11,
-    "regression_tests_failed": 0
+    "regression_tests_failed": 0,
+    "previous_provider_versions": [
+      10,
+      15
+    ]
   },
   "future_guard": {
     "source": "tools/security/verify-public-security-headers.mjs",
     "existing_scheduler": ".github/workflows/security-operations-proof.yml",
     "activation": "only after protected main merge; never describe branch CI as live recurring",
-    "monitor_requires_no_secret": true
+    "monitor_requires_no_secret": true,
+    "incident_protocol_marker": "INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1",
+    "marker_not_in_request_writeback": true
   },
   "limitations": [
     "No evidence of actual compromise or exfiltration",
@@ -107,8 +113,8 @@
     "unauthorized_get": 405,
     "unauthorized_post": 401,
     "provider_active_versions": [
-      10,
-      15
+      11,
+      16
     ],
     "checks_passed": 11,
     "live_checks_passed": 6,
