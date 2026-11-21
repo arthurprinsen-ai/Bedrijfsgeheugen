@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse-commercial-email-human-intent-leak-20261121-v1",
+  "observed_at": "2026-11-21",
+  "status": "CANDIDATE_NOT_DEPLOYED",
+  "problem": "An original autonomous email included internal editorial labels and a role-only personalization, yet passed message composer quality with score 1.0 and was provider-sent.",
+  "root_cause": "A generic editorial-council trusted-advisor checklist for longform content was applied verbatim to one-to-one commercial email; existing quality gate checked role/company anchoring but not a meaningful unique contact reason or natural-language quality.",
+  "failed_approaches": [
+    "Treat role and company as a unique observed reason for mailing",
+    "Expose editorial hypothesis and limitation disclaimers in recipient copy",
+    "Treat score 1.0 as proof of human readability"
+  ],
+  "fix": "Separate email-intent instruction by channel, add deterministic human-copy and substantive-evidence guard inside original composer, retain original send permissions and independent provider verification.",
+  "verification_required": [
+    "exact-head required/backend tests including failed production case",
+    "CodeQL and protected review",
+    "real production function version/source readback",
+    "independently verified next eligible copy outcome; no resend"
+  ],
+  "measurement": {
+    "baseline_human_copy_false_positive": true,
+    "baseline_quality_score": 1,
+    "target_robotic_copy_escapes": 0,
+    "target_role_only_personalization_passes": 0,
+    "revenue_impact": "NOT_MEASURED"
+  },
+  "boundaries": [
+    "No new scheduler, sender, queue or model service",
+    "No claim that PR equals deployed fix",
+    "Explicit consent/legal basis remains separately required under existing rules",
+    "No provider resend of already completed action"
+  ]
+}
