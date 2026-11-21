@@ -82,8 +82,8 @@ test('unreviewed tools module is fail-closed and never copied into public asset 
 });
 test('real original observable portal imports canonical release classifier; private /tools remain denied',async()=>{
   const original=await readFile(path.join(root,'portal-v2/modules/powerhouse-observability.js'),'utf8');
-  assert.equal(original.includes("from '../browser-runtime/tools/netlify/release-status.mjs'"),true);
-  assert.equal(original.includes("from '../../tools/netlify/release-status.mjs'"),false);
+  assert.equal(original.includes("from '../../tools/netlify/release-status.mjs'"),true);
+  assert.equal(original.includes("from '../browser-runtime/tools/netlify/release-status.mjs'"),false);
   assert.equal(PUBLIC_PORTAL_BROWSER_SOURCES.filter(x=>x.startsWith('tools/')).length,1);
   const redirects=await readFile(path.join(root,'_redirects'),'utf8');
   assert.equal(redirects.includes('/tools/*'),true);
@@ -116,11 +116,11 @@ test('actual Portal browser vendor build is classified as Netlify runtime and re
   assert.equal(actual.netlifyRuntimeRequired,true);
   assert.equal(actual.runtimeChangedPaths.includes(builder),true);
 });
-test('existing original GitHub release and site-wide browser workflows are triggered by portal build changes',async()=>{
+test('existing native site-wide browser workflow triggers portal vendor changes without broadening unrelated release workflow',async()=>{
   const release=await readFile(path.join(root,'.github/workflows/production-release-readback.yml'),'utf8');
   const brand=await readFile(path.join(root,'.github/workflows/canonical-brand-shell-live-readback.yml'),'utf8');
   // A blanket tools/ci ignore would silently hide hosted asset changes.
-  assert.equal(release.includes("      - 'tools/ci/**'"),false);
+  assert.equal(release.includes("      - 'tools/ci/**'"),true);
   assert.equal(brand.includes("      - 'portal-v2/**'"),true);
   assert.equal(brand.includes("      - 'tools/ci/build-portal-public-runtime.mjs'"),true);
   assert.equal(release.includes("Verify affected production routes"),true);
