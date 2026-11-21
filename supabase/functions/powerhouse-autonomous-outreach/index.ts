@@ -1,4 +1,3 @@
-import {assessHumanOutreachCopy} from '../_shared/outreach-human-copy-guard.mjs';
 import {renderBrandedOutreachHtml} from '../_shared/brand-outreach-signature.mjs';
 import {assessHumanOutreachCopy} from '../_shared/outreach-human-copy-guard.mjs';
 import {composerHandoffForAction,outboundDeliveryGap,sourceResearchTaskForAction,providerUncertaintyNoResend} from '../_shared/outreach-composer-hold.mjs';
@@ -185,20 +184,6 @@ Deno.serve(async(req)=>{
      out.push({action_id:a.action_id,status:'held',reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN'});
      continue;
    }
-    // Last-mile protection rejects older quality-passed drafts after the new composer is deployed.
-    const humanCopy=assessHumanOutreachCopy(a,{play_key:strategy},{subject:sub,message:body,personalization_anchor:composer?.personalization_anchor});
-    if(!humanCopy.passed){
-      const evidence={...(a.evidence||{}),execution_gate:{
-        contract:'powerhouse-human-outreach-copy-last-mile-v1',blocked_at:now,
-        reason:'HUMAN_OUTREACH_COPY_REJECTED',intent:humanCopy.intent,
-        rejection_codes:humanCopy.reasons,provider_attempted:false,
-        next_action:'ORIGINAL_COMPOSER_REWRITE_WITH_VERIFIED_SPECIFIC_CONTEXT'}};
-      const{error:qualityBlockError}=await db.from('powerhouse_sales_actions')
-        .update({evidence,updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
-      if(qualityBlockError)throw{code:'LAST_MILE_COPY_GATE_WRITEBACK',message:qualityBlockError.message};
-      out.push({action_id:a.action_id,status:'held',reason:'HUMAN_OUTREACH_COPY_REJECTED',rejection_codes:humanCopy.reasons,provider_send_attempted:false});
-      continue;
-    }
    // Replay-safe independent pre-send copy check: previously approved drafts
    // cannot bypass the improved original composer by retaining stale score=1.0.
    const humanCopy=assessHumanOutreachCopy(a,{},{
