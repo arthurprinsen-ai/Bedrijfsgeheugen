@@ -72,3 +72,14 @@ test('canonical reply ingestion strips quotation BEFORE classifier, permanent su
   assert.match(replySource,/onConflict:'dedupe_key'/);
   assert.doesNotMatch(replySource,/\[' uitschrijven',' afmelden'/);
 });
+
+
+test('HTML-format Gmail reply excludes complete gmail_quote subtree and preserves HTML direct optout',()=>{
+  const reply='<div dir="ltr">Interessant. Stuur de PDF maar.</div>'+
+    '<div class="gmail_quote"><div>On Sat Arthur wrote:</div>'+
+    '<p>Wil je geen berichten meer van mij? Antwoord met &quot;afmelden&quot;.</p></div>';
+  assert.equal(extractVisibleEmailReply(reply),'Interessant. Stuur de PDF maar.');
+  assert.equal(isExplicitUnsubscribeReply(reply),false);
+  assert.equal(extractVisibleEmailReply('<p>Afmelden</p>'),'Afmelden');
+  assert.equal(isExplicitUnsubscribeReply('<p>Afmelden</p>'),true);
+});
