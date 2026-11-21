@@ -29,3 +29,13 @@ De coach wijkt tijdens een veldhockeywedstrijd geregeld af van de zes voorbereid
 - Eerste extra CI-run `44901406565` faalde op vaste oude cacheversie-tests en één verkeerde testverwachting (voorkeurspositie ten onrechte als harde verbodspositie behandeld). Tests gerepareerd; andere vaardigheden van het startschema ongewijzigd.
 - Run `44901580291`: bron 45/45 tests groen, provider upload HTTP 401 vanwege verlopen site-specifieke tijdelijke credential. Autorisatie veilig opnieuw uitgegeven, met GitHub publieke sleutel/libsodium versleuteld in `MO14_NETLIFY_PROXY_TEMP` opgeslagen; hetzelfde canonieke direct-to-Netlify-proces herstart, zonder een tweede executor.
 - Never mark secure/ready solely on code/CI: require provider ID, byte-identical live readback, security-header readback and interactive browser proof.
+
+
+## 2026-11-21: security-bound backup import proof
+
+- Threat mitigated: untrusted imported JSON could include abusive line/arrow arrays, nonsensical coordinates, forged player keys or invalid recorded minutes. The earlier generic 5 MB limit was insufficient to prevent excessive canvas work and corrupted client state.
+- Source: `pw-mo14-1/zaalplanner/coach-ui.js`; fail-closed `validateCoachBackupSafety(next)` runs **before** import confirmation or `state=next`. Validates bounded strokes/points/tokens, numeric coordinates in [0,1], tool/color/line width, note length, reserved object keys, valid roster positions, goalie/field time totals, step length and selected match. Malicious imports keep existing local state untouched.
+- Regression: `tests/mo14-backup-safety-20261121.test.mjs` added to existing original `mo14-zaalplanner-direct-netlify.yml` pipeline; no parallel deploy writer.
+- GitHub original run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44904024823 **SUCCESS** including full test and independent live readback.
+- Existing Netlify PW site `1c4fa5ce-45ae-45dc-b3e2-11f90587c474`, production deploy `6b018e63b22273b9a2d9291e` **CURRENT/READY** on 21 November 2026. No Make.
+- Actual production browser `https://pw-mo14-1.netlify.app/zaalplanner/`: validated enforced hashed script CSP, frame DENY, nosniff, HSTS; deliberately malformed test JSON with 401 drawing points was rejected, generated feedback indicated invalid stroke, and localStorage remained byte-for-byte unchanged. Public website still has no password protection: user-facing authorization/privacy choice outstanding. Scoped header and JSON validation are not a comprehensive penetration test.
