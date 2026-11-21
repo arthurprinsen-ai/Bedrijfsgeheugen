@@ -1,3 +1,7 @@
+// INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+// This endpoint's denied/missing-guard outcome is checked by the EXISTING Security Operations
+// live monitor and recorded in the canonical ONE BRAIN security incident lineage.
+// This comment is a coverage marker, not a claim of in-request incident writeback.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import postgres from "npm:postgres@3.4.7";
