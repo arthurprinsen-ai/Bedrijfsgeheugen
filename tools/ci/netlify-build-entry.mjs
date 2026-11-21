@@ -41,6 +41,9 @@ const phases = Object.freeze([
   ['sitemap','tools/genereer-sitemap.mjs'],
   ['locale-validation','tools/seo-order-engine/validate-locales.mjs'],
   ['checkout-final-contract','tools/site-shell/checkout-build-integrity.mjs','verify'],
+  // Publish only explicit, read-only browser calculations under /portal-v2/;
+  // keep /brain/* and /platform/* blocked for all other source files.
+  ['portal-safe-runtime','tools/ci/build-portal-public-runtime.mjs'],
   ['release-evidence','tools/bouw-release-evidence.mjs'],
 ]);
 
