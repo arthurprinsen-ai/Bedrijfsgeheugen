@@ -1,0 +1,37 @@
+name: MO14 Unified Coach Security and Field Integration Checks
+on:
+  push:
+    branches: ['feature/mo14-zaalplanner-20261115']
+    paths:
+      - 'pw-mo14-1/**'
+      - 'tests/mo14-*.test.mjs'
+      - '.github/workflows/mo14-integration-security-check.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mo14-field-integration-security-check
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Prove integration and security before any Netlify upload
+        run: |
+          set -euo pipefail
+          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs tests/mo14-site-security-headers-20261120.test.mjs tests/mo14-unified-zaal-veld-app-20261120.test.mjs tests/mo14-field-complete-integration-20261120.test.mjs
+          node --check pw-mo14-1/zaalplanner/field-unified.js
+          node --check pw-mo14-1/zaalplanner/field-engine.js
+          node --check pw-mo14-1/zaalplanner/field-complete.js
+          node --check pw-mo14-1/zaalplanner/coach-core.js
+          node --check pw-mo14-1/zaalplanner/coach-ui.js
+          grep -q 'field-complete.css' pw-mo14-1/zaalplanner/index.html
+          grep -q 'field-complete.js' pw-mo14-1/zaalplanner/sw.js
+          echo 'MO14 field + indoor integrated source checks proven; no production deployment from this workflow.'

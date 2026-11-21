@@ -1,0 +1,208 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-15",
+  "status": "CANDIDATE",
+  "obligation_id": "mo14-zaalplanner-netlify-release-20261115",
+  "fingerprint": "mo14|zaalplanner|independent-site-delivery-gate-and-provider-proof|20261115-v1",
+  "failure_class": "MO14_INDEPENDENT_SITE_DELIVERY_UNVERIFIED",
+  "observed_evidence": {
+    "source_paths": [
+      "pw-mo14-1/zaalplanner/index.html",
+      "config/brain-delivery-system.json"
+    ],
+    "observation": "PR #5875 initially failed Required hygiene due to missing machine PR metadata; after repair it failed on unclassified path pw-mo14-1/zaalplanner/index.html. After registering only the owned planner prefix, hygiene admitted the candidate but rejected the missing activity ledger, human change documentation and structured Brain learning. The existing pw-mo14-1 Netlify site continued to report the August 2026 production deploy.",
+    "proof_limits": "Code in GitHub and successful previews of the Bedrijfsgeheugen repo are not evidence that the independent MO14 Netlify site has been updated.",
+    "independent_site_production": {
+      "status": "LIVE_PROVEN",
+      "site_id": "1c4fa5ce-45ae-45dc-b3e2-11f90587c474",
+      "deploy_id": "6af9d8a86acb2f10f6e00ed4",
+      "published_at": "2026-11-15T16:09:25.135Z",
+      "github_actions_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43733598207",
+      "readback": "HTTP /zaalplanner/ contains keeper and PDF-export inputs; original / index.html byte-equal to predeployment backup",
+      "scope_limit": "Source PR remains open and broader Bedrijfsgeheugen CI has independent failure; live browser input interaction not yet independently automated"
+    },
+    "mobile_app_v3": {
+      "status": "LIVE_PROVEN_STATIC_AND_LOCAL_FUNCTIONAL",
+      "provider": "Netlify",
+      "site_id": "1c4fa5ce-45ae-45dc-b3e2-11f90587c474",
+      "deploy_id": "6af9ebcb463f126a95c7f903",
+      "provider_state": "CURRENT_READY",
+      "published_at": "2026-11-15T17:29:09.047Z",
+      "ci_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43741276076",
+      "artifacts": [
+        "index.html",
+        "manifest.webmanifest",
+        "sw.js",
+        "icons/icon-192.png",
+        "icons/icon-512.png"
+      ],
+      "qa": "Playwright local mobile 390x844: all tabs, goalkeeper, absence, 7 distinct starting lineups, PDF+PNG downloads, zero browser page errors",
+      "preservation": "original homepage byte-for-byte equal after production release",
+      "limitations": "full interactive production browser acceptance and broad Bedrijfsgeheugen source PR merge not yet proven"
+    },
+    "mobile_app_v7": {
+      "root_cause": "A two-column parent grid placed entire matchdays side-by-side; initial rotation targeted many small tactical changes instead of one near-complete line change per interval.",
+      "source": "User iPhone screenshot, 2026-11-15",
+      "release_status": "LIVE_PROVEN",
+      "production_url": "https://pw-mo14-1.netlify.app/zaalplanner/",
+      "netlify_site_id": "1c4fa5ce-45ae-45dc-b3e2-11f90587c474",
+      "deploy_id": "6afa004b5ef62b6927e8863e",
+      "published_at": "2026-11-15T18:56:16.327Z",
+      "actions_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43749505438",
+      "runtime_browser_checks": {
+        "matchdays": 6,
+        "fixtures": 12,
+        "blocks": 4,
+        "block_minutes": 10,
+        "fields": 5,
+        "keeper": "Coco",
+        "available_field_players": 9,
+        "simultaneous_subs": 4,
+        "holdover": 1,
+        "transition_count": 3,
+        "viewport_px": [
+          320,
+          360,
+          375,
+          390,
+          430,
+          650,
+          768,
+          820
+        ],
+        "horizontal_overflow": false,
+        "mobile_day_cards_stacked": true,
+        "day_pdf_inside_width": true,
+        "alternate_keeper_test": {
+          "keeper": "Eline",
+          "field_players": 8,
+          "swaps": 3,
+          "holdover": 2
+        },
+        "interactive_navigation": true
+      },
+      "failed_checks_and_repair": [
+        {
+          "run": 43749220401,
+          "issue": "Unterminated inline comment swallowed 'groups/last' declarations",
+          "resolution": "Restore declaration on separate line and enforce actual rotation engine regression"
+        },
+        {
+          "run": 43749353214,
+          "issue": "401 Unauthorized due to expiring scoped Netlify deploy proxy",
+          "resolution": "Request new site-specific deploy capability, seal via GitHub repo public key/libsodium, update encrypted Actions secret; retry same canonical workflow"
+        }
+      ],
+      "guardrails": [
+        "No Make",
+        "Existing Netlify website unchanged until atomic deploy ready",
+        "Current homepage preserved byte-identical",
+        "No false assertions about protected merge PR #5875"
+      ]
+    },
+    "mobile_app_v9": {
+      "status": "LIVE_PROVEN",
+      "site": "https://pw-mo14-1.netlify.app/zaalplanner/",
+      "provider_deploy": "6afa1f5f9413c94b90d228cd",
+      "provider_state": "CURRENT/READY",
+      "published_at": "2026-11-15T21:08:52.203Z",
+      "verified_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43761982007",
+      "use_case": "Coach-selected lineup, near-equal season playing time, actual minute accounting, tactical board and portable user data backup",
+      "production_acceptance": [
+        "12 fixtures, six doubleheader matchdays remain intact",
+        "10-player selection / 4×10 minute blocks / 4-at-once substitutions with one stay-in",
+        "20 visible field/goal actual-minute inputs per game; illegal player/game total rejected before writing",
+        "valid 200 field + 40 goalie real-minute allocation confirmed and preserved across full browser reload",
+        "confirmed actual field/goal minute values feed cumulative scorer for later games",
+        "full JSON export includes all 12 fixtures, notes, goal keeper and actual data",
+        "malformed backup rejected without mutation; valid backup imports and restores notes and actuals",
+        "original homepage independently read back unchanged and PWA now caches updated assets"
+      ],
+      "observed_incidents": [
+        {
+          "run": 43761657728,
+          "symptom": "allIds is not defined",
+          "root_cause": "missed helper in refactor of planned vs confirmed minutes",
+          "repair": "restore roster-id helper and retain actual-minute engine regression"
+        },
+        {
+          "run": 43761773180,
+          "symptom": "401 Unauthorized",
+          "root_cause": "short-lived Netlify deploy credential expired",
+          "repair": "rotate scoped Netlify proxy as encrypted GitHub Actions repository secret and retry one canonical pipeline"
+        }
+      ],
+      "proof_boundaries": [
+        "not every player can have identical total minutes when same keeper stays 40 min every game",
+        "actual minutes require explicit coach confirmation and are not inferred from planned figures",
+        "no automatic Google Drive/cloud sync; backup is downloaded locally",
+        "separate GH source PR #5875 remains open, not merged"
+      ]
+    },
+    "mobile_app_same_origin_security": {
+      "verified_at": "2026-11-20",
+      "site": "https://pw-mo14-1.netlify.app/",
+      "release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44807759998",
+      "netlify_deploy_id": "6b00a782dc82e221d8ea0597",
+      "provider_state": "CURRENT_READY",
+      "scope": [
+        "/",
+        "/zaalplanner/",
+        "/veldplanner/"
+      ],
+      "initial_gap": "Legacy root homepage sharing the PWA browser origin lacked CSP, X-Frame-Options and nosniff and still referenced legacy remote webhook routes.",
+      "corrective_action": "Preserve exact original legacy HTML/JS bytes; add path-specific Netlify root CSP disallowing remote browser fetch, inline injection and framing; retain existing hash-based strict PWA CSP, without Make.",
+      "independent_browser_checks": [
+        "All three public pages HTTP 200 with Content-Security-Policy and X-Content-Type-Options nosniff",
+        "Root CSP script-src self, script-src-attr none, connect-src self, frame-ancestors none, X-Robots-Tag noindex",
+        "Inline script injection on root blocked with securitypolicyviolation script-src-elem and no execution",
+        "PWA player-name HTML injection rendered as escaped text, no injected <img> node, no script execution",
+        "Source homepage unchanged and GitHub direct Netlify protected workflow success"
+      ],
+      "caveat": "Previously exposed legacy provider webhook URL may be callable by external HTTP clients until revoked at provider; browser CSP does not revoke remote endpoints."
+    }
+  },
+  "root_cause": "MO14 planner source was added to the business-system repository without its exact delivery-lane ownership, metadata and required one-loop learning artifacts; the independent Netlify site still requires its own authorized deploy and provider readback.",
+  "fix": "Register only pw-mo14-1/zaalplanner/ under the canonical website delivery lane, add pure regression and full machine/ledger/human learning records to the same PR, retain GitHub branch protection, and publish the existing MO14 Netlify project using direct GitHub/Netlify authority only (never Make).",
+  "prevention_rules": [
+    "Register new separately hosted UI source paths in the canonical delivery planner and assert exact ownership before first PR CI.",
+    "Require real PR Obligation-ID, Delivery-Lane, Candidate-Type and immutable Base-SHA before PR admission.",
+    "Keep the original MO14 static site unchanged unless the deploy includes its existing files and the new planner.",
+    "Do not weaken protected GitHub checks or use Make for MO14 production releases.",
+    "Only mark LIVE_PROVEN after a new provider deploy ID, correct site ID, successful HTTP readback of /zaalplanner/ and functional keeper/absent/export verification.",
+    "MO14 Netlify credentials are short-lived; check actual provider authorization and refuse a 401 rather than marking LIVE, and never use Make.",
+    "A standalone mobile PWA must ship manifest, scoped service worker, icons and cached application shell with actual route readback.",
+    "Rotate 5 field slots by exactly 5 cyclic places between blocks to guarantee maximum simultaneous field changes with N available field players.",
+    "With N=9, 4 players leave and enter at each of 3 boundaries across 4×10-minute blocks; show the one player staying and the keeper.",
+    "Render each matchday full width on phones with cards stacked, independently verify no horizontal overflow at 320–820 px.",
+    "Fail closed on incomplete runtime rotation tests or expiring Netlify credentials; never claim READY without provider deploy ID and browser/HTTP readback.",
+    "Separate forecast versus confirmed actual minutes, validate both field and goalie totals (5× and 1× game length) before committing.",
+    "Incorporate confirmed game minutes into subsequent game optimization and never infer real play from an unexecuted rotation plan.",
+    "Validate portable JSON backups before any overwrite; reject malformed or oversized files, require explicit user confirmation.",
+    "Test release failure modes: unresolved JS identifiers and expired scoped provider tokens must fail closed before marking production green.",
+    "Treat all pages on a shared origin as one security boundary; enforce CSP on legacy root as well as modern PWA routes.",
+    "Never rely on CSP to revoke a historical public webhook endpoint; provider-level revocation is required.",
+    "Record provider deploy and independent HTTP header/functionality readback; no partial success from GitHub source tests alone."
+  ],
+  "tests": [
+    "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs",
+    "tests/brain-mo14-max-turnover-ux-20261115.test.mjs",
+    "tests/brain-mo14-coach-plus-20261115.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs",
+      "tests/brain-mo14-max-turnover-ux-20261115.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "MO14_INDEPENDENT_SITE_DELIVERY_UNVERIFIED",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "owner": "original MO14-1 website protected delivery lane",
+  "terminal_rule": "Isolated MO14 V9 Netlify production LIVE_PROVEN after provider CURRENT/READY and browser actual-minute and backup acceptance. Do not assert total-time parity including a permanent keeper or that parent repo protected merge #5875 is complete."
+}

@@ -1,0 +1,255 @@
+# MO14 defense-in-depth: preserve legacy homepage bytewise, restrict legacy same-origin page to self scripts and no remote webhook connections.
+# PW field mode complete: all screens, 13 players, shared backup, independent source and production tests; no Make.
+# PW MO14-1 canonical one-app v10: old /veldplanner/ bookmarks redirect to #field, same PWA app.
+# PW MO14-1 unified app v10: zaal and veld in one PWA, retained strict CSP, independent live assets readback, no Make.
+# MO14 security hardening: hash-based CSP + provider HTTP readback before declaring live.
+# PW MO14-1 Veldplanner: distinct 11-a-side field mode (Jackie GK, Coco-Mijn attack), preserve zaal and homepage; no Make.
+# MO14 V9: recorded actual field/goal minutes rebaseline future plans, portable backup, independent live readback; no Make.
+# MO14 V8: user-anchored first five, season-minute fairness, tactical whiteboard, no Make.
+# MO14 V7 source test retry: documented bug fix in rotation generator after fail-closed CI.
+# MO14 V7: responsive iPhone one-column day cards; four 10-minute blocks; exchange all possible field players; readback, no Make.
+# MO14 fixture-first release v6: 12 separate games, 2 matches per date, same-day PDF, independent readback.
+# ImageMagick/Pillow absence fixed: pinned sharp resizer on GitHub runner; retain fail-closed PNG checks.
+# PW Enschede bordeaux crest, seven editable dates; direct independent Netlify site, no Make.
+# PR #5875 app-menu v4: repeat canonical release after correcting test regex (no Make).
+# V4 app-style menus, five real tabs and native startup hub; release rechecked on exact MO14 site.
+# MO14 PWA mobile-app v3 production release: 2026-11-15 18:xx NL
+# Renewed Netlify deployment authority for MO14 app experience, 2026-11-15
+name: MO14-1 zaalplanner direct Netlify deploy
+on:
+  push:
+    branches: ['feature/mo14-zaalplanner-20261115']
+    paths: ['.github/workflows/mo14-zaalplanner-direct-netlify.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: mo14-zaalplanner-direct-netlify-production
+  cancel-in-progress: false
+jobs:
+  deploy-mo14:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[deploy-mo14]')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      MO14_SITE_ID: 1c4fa5ce-45ae-45dc-b3e2-11f90587c474
+      MO14_DOMAIN: https://pw-mo14-1.netlify.app
+      MO14_NETLIFY_PROXY_PATH: ${{ secrets.MO14_NETLIFY_PROXY_TEMP }}
+    steps:
+      - uses: actions/checkout@v4
+        with: {persist-credentials: false}
+      - uses: actions/setup-node@v4
+        with: {node-version: '22'}
+      - name: Verify planner and independent website source
+        run: |
+          set -euo pipefail
+          node --test tests/brain-mo14-zaalplanner-direct-netlify-delivery-20261115.test.mjs tests/brain-mo14-zaalcoach-pwa-20261115.test.mjs tests/brain-mo14-max-turnover-ux-20261115.test.mjs tests/brain-mo14-coach-plus-20261115.test.mjs tests/mo14-field-jackie-keeper-six-blocks-20261120.test.mjs tests/mo14-site-security-headers-20261120.test.mjs tests/mo14-backup-safety-20261121.test.mjs tests/mo14-unified-zaal-veld-app-20261120.test.mjs tests/mo14-field-complete-integration-20261120.test.mjs tests/mo14-live-substitutions-20261121.test.mjs
+          test -s pw-mo14-1/zaalplanner/index.html
+      - name: Preserve existing MO14 homepage and assets before deploy
+        run: |
+          set -euo pipefail
+          mkdir -p .mo14-stage/zaalplanner/icons .mo14-stage/veldplanner .mo14-backup
+          for f in index.html style.css data.js player.js team.js sync.js; do
+            curl -fLsS --retry 3 --connect-timeout 10 --max-time 40 "${MO14_DOMAIN}/${f}?preserve=${GITHUB_SHA}" -o ".mo14-stage/${f}"
+            test -s ".mo14-stage/${f}"
+            if grep -Eiq '<!doctype html>|<html[ >]' ".mo14-stage/${f}" && test "${f}" != index.html; then
+              echo "Old site asset ${f} returned HTML; abort." >&2
+              exit 1
+            fi
+            cp ".mo14-stage/${f}" ".mo14-backup/${f}"
+          done
+          test "$(wc -c < .mo14-stage/index.html)" -gt 300
+          cp pw-mo14-1/zaalplanner/index.html .mo14-stage/zaalplanner/index.html
+          cp pw-mo14-1/veldplanner/index.html .mo14-stage/veldplanner/index.html
+          node tools/security/build-mo14-headers.mjs .mo14-stage
+          test -s .mo14-stage/_headers
+          grep -q "frame-ancestors 'none'" .mo14-stage/_headers
+          cp pw-mo14-1/zaalplanner/manifest.webmanifest .mo14-stage/zaalplanner/manifest.webmanifest
+          cp pw-mo14-1/zaalplanner/sw.js .mo14-stage/zaalplanner/sw.js
+          cp pw-mo14-1/zaalplanner/coach-core.js .mo14-stage/zaalplanner/coach-core.js
+          cp pw-mo14-1/zaalplanner/coach-ui.js .mo14-stage/zaalplanner/coach-ui.js
+          cp pw-mo14-1/zaalplanner/coach-plus.css .mo14-stage/zaalplanner/coach-plus.css
+          cp pw-mo14-1/zaalplanner/field-unified.js .mo14-stage/zaalplanner/field-unified.js
+          cp pw-mo14-1/zaalplanner/field-unified.css .mo14-stage/zaalplanner/field-unified.css
+          cp pw-mo14-1/zaalplanner/field-engine.js .mo14-stage/zaalplanner/field-engine.js
+          cp pw-mo14-1/zaalplanner/field-complete.js .mo14-stage/zaalplanner/field-complete.js
+          cp pw-mo14-1/zaalplanner/field-complete.css .mo14-stage/zaalplanner/field-complete.css
+          for file in field-live-engine.js field-live.js field-live.css; do cp "pw-mo14-1/zaalplanner/${file}" ".mo14-stage/zaalplanner/${file}"; done
+          mkdir -p .mo14-stage/zaalplanner/icons
+          cp pw-mo14-1/zaalplanner/icons/icon-*.png .mo14-stage/zaalplanner/icons/
+          # PW Enschede crest as used in the existing PW Hockey app; fail closed if source fails.
+          if ! curl -fLsS --retry 2 --connect-timeout 10 --max-time 35 "https://cdn.aptoide.com/imgs/f/7/8/f783f40b61eb7a802a6c325305bc825a_icon.png" -o .mo14-stage/zaalplanner/pw-logo.png; then
+            curl -fLsS --retry 2 --connect-timeout 10 --max-time 35 "https://lirp.cdn-website.com/dcf7ef47/dms3rep/multi/opt/logolustrum-B-1920w.png" -o .mo14-stage/zaalplanner/pw-logo.png
+          fi
+          file .mo14-stage/zaalplanner/pw-logo.png | grep -q 'PNG image data'
+          test "$(wc -c < .mo14-stage/zaalplanner/pw-logo.png)" -gt 1200
+          if command -v magick >/dev/null 2>&1; then
+            magick .mo14-stage/zaalplanner/pw-logo.png -resize 192x192 -background white -gravity center -extent 192x192 .mo14-stage/zaalplanner/icons/icon-192.png
+            magick .mo14-stage/zaalplanner/pw-logo.png -resize 512x512 -background white -gravity center -extent 512x512 .mo14-stage/zaalplanner/icons/icon-512.png
+          elif command -v convert >/dev/null 2>&1; then
+            convert .mo14-stage/zaalplanner/pw-logo.png -resize 192x192 -background white -gravity center -extent 192x192 .mo14-stage/zaalplanner/icons/icon-192.png
+            convert .mo14-stage/zaalplanner/pw-logo.png -resize 512x512 -background white -gravity center -extent 512x512 .mo14-stage/zaalplanner/icons/icon-512.png
+          elif python3 -c 'from PIL import Image' >/dev/null 2>&1; then
+            python3 - <<'PYICON'
+          from PIL import Image
+          img=Image.open('.mo14-stage/zaalplanner/pw-logo.png').convert('RGBA')
+          for size in (192,512):
+              icon=img.copy()
+              icon.thumbnail((size,size))
+              bg=Image.new('RGBA',(size,size),'white')
+              bg.alpha_composite(icon,((size-icon.width)//2,(size-icon.height)//2))
+              bg.convert('RGB').save(f'.mo14-stage/zaalplanner/icons/icon-{size}.png')
+          PYICON
+          else
+            # Pinned image renderer: never assume ImageMagick or Pillow is preinstalled.
+            npm install --silent --no-audit --no-fund --prefix /tmp/mo14-pw-icon sharp@0.34.5
+            node - <<'JSPNG'
+          const sharp=require('/tmp/mo14-pw-icon/node_modules/sharp');
+          const source='.mo14-stage/zaalplanner/pw-logo.png';
+          (async()=>{
+            for (const size of [192,512]){
+              await sharp(source).resize(size,size,{fit:'contain',background:'#ffffff'}).png().toFile('.mo14-stage/zaalplanner/icons/icon-'+size+'.png');
+            }
+          })().catch(error=>{console.error(error);process.exit(1)});
+          JSPNG
+          fi
+          for size in 192 512; do
+            file ".mo14-stage/zaalplanner/icons/icon-${size}.png" | grep -q 'PNG image data'
+          done
+          sha256sum .mo14-stage/index.html .mo14-stage/zaalplanner/index.html > .mo14-backup/manifest.sha256
+          echo "Original files backed up and planner staged."
+      - name: Save original MO14 site artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mo14-predeploy-${{ github.sha }}
+          path: .mo14-backup/
+          retention-days: 30
+          if-no-files-found: error
+          include-hidden-files: true
+      - name: Direct Netlify production upload (no Make)
+        run: |
+          set -euo pipefail
+          if [[ -z "${MO14_NETLIFY_PROXY_PATH}" || "${MO14_NETLIFY_PROXY_PATH}" != https://netlify-mcp.netlify.app/proxy/* ]]; then
+            echo 'MO14 Netlify credential absent or invalid; no upload.' >&2
+            exit 1
+          fi
+          cd .mo14-stage
+          npx -y @netlify/mcp@latest --site-id "${MO14_SITE_ID}" --proxy-path "${MO14_NETLIFY_PROXY_PATH}"
+      - name: Independent live readback of planner and preserved homepage
+        run: |
+          set -euo pipefail
+          for attempt in 1 2 3 4 5 6; do
+            if curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/?sha=${GITHUB_SHA}" -o /tmp/mo14-new.html && grep -q 'id="keeper"' /tmp/mo14-new.html
+          grep -q 'data-view-panel="home"' /tmp/mo14-new.html
+          grep -q 'id="appDrawer"' /tmp/mo14-new.html
+          grep -q 'data-go="settings"' /tmp/mo14-new.html
+          grep -q 'Clublogo PW Hockey Enschede' /tmp/mo14-new.html
+          grep -q 'data-fixture-field=' /tmp/mo14-new.html
+          grep -q 'data-day-pdf=' /tmp/mo14-new.html
+          grep -q 'OFFICIAL_FIXTURES' /tmp/mo14-new.html
+          grep -q '2027-02-13' /tmp/mo14-new.html
+          grep -q 'id="pdfDay"' /tmp/mo14-new.html
+          grep -q 'id="switchSummary"' /tmp/mo14-new.html
+          grep -q 'coach-core.js' /tmp/mo14-new.html
+          grep -q 'coach-ui.js' /tmp/mo14-new.html
+          grep -q 'coach-plus.css' /tmp/mo14-new.html
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/coach-core.js?sha=${GITHUB_SHA}" -o /tmp/mo14-coach-core.js
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/coach-ui.js?sha=${GITHUB_SHA}" -o /tmp/mo14-coach-ui.js
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/coach-plus.css?sha=${GITHUB_SHA}" -o /tmp/mo14-coach-plus.css
+          cmp -s pw-mo14-1/zaalplanner/coach-core.js /tmp/mo14-coach-core.js
+          cmp -s pw-mo14-1/zaalplanner/coach-ui.js /tmp/mo14-coach-ui.js
+          cmp -s pw-mo14-1/zaalplanner/coach-plus.css /tmp/mo14-coach-plus.css
+          curl -fLsS --retry 2 --max-time 25 "${MO14_DOMAIN}/zaalplanner/field-unified.js?sha=${GITHUB_SHA}" -o /tmp/mo14-field-unified.js
+          curl -fLsS --retry 2 --max-time 25 "${MO14_DOMAIN}/zaalplanner/field-unified.css?sha=${GITHUB_SHA}" -o /tmp/mo14-field-unified.css
+          cmp -s pw-mo14-1/zaalplanner/field-unified.js /tmp/mo14-field-unified.js
+          cmp -s pw-mo14-1/zaalplanner/field-unified.css /tmp/mo14-field-unified.css
+          for f in field-engine.js field-complete.js field-complete.css field-live-engine.js field-live.js field-live.css; do
+            curl -fLsS --retry 2 --max-time 25 "${MO14_DOMAIN}/zaalplanner/${f}?sha=${GITHUB_SHA}" -o "/tmp/mo14-${f}"
+            cmp -s "pw-mo14-1/zaalplanner/${f}" "/tmp/mo14-${f}"
+          done
+          grep -q 'PWFieldComplete' /tmp/mo14-field-complete.js
+          grep -q 'field-hockey' /tmp/mo14-field-complete.js || grep -q 'field-tactics' /tmp/mo14-field-complete.js
+          grep -q 'field-complete.js' /tmp/mo14-new.html
+          grep -q 'field-live-engine.js' /tmp/mo14-new.html
+          grep -q 'field-live.js' /tmp/mo14-new.html
+          grep -q 'PWFieldLiveEngine' /tmp/mo14-field-live-engine.js
+          grep -q 'flCounts' /tmp/mo14-field-live.js
+          grep -q 'flUndo' /tmp/mo14-field-live.js
+          grep -q 'PWCoachField' /tmp/mo14-field-unified.js
+          grep -q 'coach-sport-switch' /tmp/mo14-field-unified.css
+          grep -q 'data-view-panel="field"' /tmp/mo14-new.html
+          grep -q 'data-sport-choice="field"' /tmp/mo14-new.html
+          grep -q 'field-unified.js' /tmp/mo14-new.html
+          grep -q 'field-unified.css' /tmp/mo14-new.html
+          grep -q 'coachActualMinutes' /tmp/mo14-coach-ui.js
+          grep -q 'coachConfirmActual' /tmp/mo14-coach-ui.js
+          grep -q 'coachBackupFile' /tmp/mo14-coach-ui.js
+          grep -q 'actualConfirmed' /tmp/mo14-coach-core.js
+          grep -q 'playersStaying:5-theoreticalSwaps' /tmp/mo14-new.html
+          grep -q 'home-rounds{display:block!important' /tmp/mo14-new.html
+          grep -q 'half:20,step:10' /tmp/mo14-new.html
+          node -e "const html=require('fs').readFileSync('/tmp/mo14-new.html','utf8');const m=html.match(/const OFFICIAL_FIXTURES=(\\[[\\s\\S]*?\\]);\\nconst toMatch/);if(!m||JSON.parse(m[1]).length!==12)process.exit(1)"
+          grep -q 'formatMatchDate(i)' /tmp/mo14-new.html && grep -q 'id="pdfAll"' /tmp/mo14-new.html; then break; fi
+            sleep 10
+          done
+          grep -q 'id="keeper"' /tmp/mo14-new.html
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/manifest.webmanifest?sha=${GITHUB_SHA}" -o /tmp/mo14-manifest.json
+          node -e "const m=require('/tmp/mo14-manifest.json'); if(m.display!=='standalone'||m.scope!=='./'||m.icons.length<2||m.shortcuts?.length<3||m.theme_color!=='#59222d')process.exit(1)"
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/sw.js?sha=${GITHUB_SHA}" | grep -q 'mo14-unified-coach-v11-live-wissels'
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/pw-logo.png?sha=${GITHUB_SHA}" -o /tmp/mo14-pw-crest.png
+          file /tmp/mo14-pw-crest.png | grep -q 'PNG image data'
+          cmp -s .mo14-stage/zaalplanner/pw-logo.png /tmp/mo14-pw-crest.png || { echo 'PW crest differs on production' >&2; exit 1; }
+          for size in 192 512; do
+            curl -fLsS --max-time 25 "${MO14_DOMAIN}/zaalplanner/icons/icon-${size}.png?sha=${GITHUB_SHA}" -o "/tmp/mo14-icon-${size}.png"
+            file "/tmp/mo14-icon-${size}.png" | grep -q 'PNG image data'
+          done
+          curl -fLsS --max-time 25 "${MO14_DOMAIN}/?sha=${GITHUB_SHA}" -o /tmp/mo14-home.html
+          cmp -s .mo14-backup/index.html /tmp/mo14-home.html || { echo 'Original homepage not preserved' >&2; exit 1; }
+          curl -fLsS --retry 3 --max-time 25 "${MO14_DOMAIN}/veldplanner/?sha=${GITHUB_SHA}" -o /tmp/mo14-veld-new.html
+          cmp -s pw-mo14-1/veldplanner/index.html /tmp/mo14-veld-new.html || { echo "Incorrect field planner published" >&2; exit 1; }
+          grep -q 'window.location.replace' /tmp/mo14-veld-new.html
+          grep -q 'https://pw-mo14-1.netlify.app/zaalplanner/#field' /tmp/mo14-veld-new.html
+          grep -q 'const LINEUPS=' /tmp/mo14-field-unified.js
+          grep -q 'Jackie' /tmp/mo14-field-unified.js
+          grep -q 'Coco-Mijn' /tmp/mo14-field-unified.js
+          grep -q 'id="fieldPrint"' /tmp/mo14-new.html
+          grep -q 'data-go="field"' /tmp/mo14-new.html
+          if grep -q 'href="https://pw-mo14-1.netlify.app/veldplanner/"' /tmp/mo14-new.html; then
+            echo "Legacy cross-page navigation found instead of unified mode" >&2
+            exit 1
+          fi
+          # The preserved legacy PW homepage shares localStorage origin with the coach.
+          # Forbid new or injected scripts and old remote webhook egress on the root.
+          for legacy_path in / /index.html; do
+            curl -fLsSI --retry 2 --max-time 25 "${MO14_DOMAIN}${legacy_path}?security=${GITHUB_SHA}" -o /tmp/mo14-root-security-headers.txt
+            grep -iq "^content-security-policy: " /tmp/mo14-root-security-headers.txt
+            grep -iq "script-src 'self'; script-src-attr 'none'" /tmp/mo14-root-security-headers.txt
+            grep -iq "connect-src 'self'" /tmp/mo14-root-security-headers.txt
+            grep -iq "frame-ancestors 'none'" /tmp/mo14-root-security-headers.txt
+            grep -iq "^x-content-type-options: nosniff" /tmp/mo14-root-security-headers.txt
+            grep -iq "^x-robots-tag: noindex" /tmp/mo14-root-security-headers.txt
+          done
+          echo "PW legacy root security headers and blocked external webhook egress verified"
+          # Provider-level verification of the exact-script-hash CSP and response headers.
+          for route in zaalplanner veldplanner; do
+            curl -fLsSI --retry 2 --max-time 25 "${MO14_DOMAIN}/${route}/?sha=${GITHUB_SHA}" -o "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "^content-security-policy: " "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "frame-ancestors 'none'" "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "^x-content-type-options: nosniff" "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "^x-frame-options: DENY" "/tmp/mo14-${route}-security-headers.txt"
+            grep -iq "^referrer-policy: no-referrer" "/tmp/mo14-${route}-security-headers.txt"
+            node --input-type=module - "${route}" <<'NODE_CSP'
+          import {readFileSync} from 'node:fs';
+          import {hashesForInlineScripts} from './tools/security/build-mo14-headers.mjs';
+          const route=process.argv[2];
+          const expected=hashesForInlineScripts(readFileSync('pw-mo14-1/'+route+'/index.html','utf8'),route)[0];
+          const headers=readFileSync('/tmp/mo14-'+route+'-security-headers.txt','utf8');
+          const csp=headers.split(/\r?\n/).find(line=>/^content-security-policy:/i.test(line))||'';
+          const scripts=csp.match(/(?:^|;\s*)script-src\s+([^;]+)/)?.[1]||'';
+          if(!scripts.includes(expected)||scripts.includes("'unsafe-inline'")||scripts.includes("'unsafe-eval'"))process.exit(2);
+          console.log(route+': strict SHA-256 script CSP and security response headers verified');
+          NODE_CSP
+          done
+          echo "Unified PW Coach verified at ${MO14_DOMAIN}/zaalplanner/#field (veld mode without navigation)"
+          echo "Legacy /veldplanner/ successfully routes to unified ${MO14_DOMAIN}/zaalplanner/#field"
+          echo "MO14 production planner verified at ${MO14_DOMAIN}/zaalplanner/"
