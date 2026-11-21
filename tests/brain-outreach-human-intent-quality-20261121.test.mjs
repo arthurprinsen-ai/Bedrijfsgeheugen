@@ -88,7 +88,17 @@ test('HTML signature has official logo, website and visible text without trackin
   const html=renderBrandedOutreachHtml('Hoi Manuela,\n\nWe zijn via LinkedIn verbonden.');
   const plain=renderBrandedOutreachPlainText('Hoi Manuela');
   assert.match(html,/<img src="https:\/\/www\.bedrijfsgeheugen\.nl\/assets\/merk\/logo-merk\.png"/);
-  assert.match(html,/<a href="https:\/\/www\.bedrijfsgeheugen\.nl\/"/);
+  // Review closure: parse each complete href rather than trusting a URL substring.
+  const hrefs=[...html.matchAll(/\\shref="([^"]+)"/g)].map(match=>match[1]);
+  const httpsHrefs=hrefs.filter(href=>new URL(href).protocol==='https:');
+  assert.deepEqual(httpsHrefs,[BEDRIJFSGEHEUGEN_SITE,BEDRIJFSGEHEUGEN_SITE]);
+  for(const href of httpsHrefs){
+    const parsed=new URL(href);
+    assert.equal(parsed.hostname,'www.bedrijfsgeheugen.nl');
+    assert.equal(parsed.pathname,'/');
+    assert.equal(parsed.username,'');
+    assert.equal(parsed.password,'');
+  }
   assert.match(html,/<strong>Bedrijfsgeheugen<\/strong>/);
   assert.match(html,/Arthur Prinsen/);
   assert.match(html,/afmelden/);
