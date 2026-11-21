@@ -1,6 +1,6 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
 import { classifyPowerhouseTone as tone } from './powerhouse-status-tone.mjs';
-import { deriveReleaseStatus } from '../browser-runtime/tools/netlify/release-status.mjs';
+import { deriveReleaseStatus } from '../../tools/netlify/release-status.mjs';
 import { ensureIdentityWidget } from '../portal-state.js';
 import { agentIntelligenceMarkup } from './agent-intelligence-analytics.js';
 import { experimentChangesMarkup } from './experiment-changes.js';
