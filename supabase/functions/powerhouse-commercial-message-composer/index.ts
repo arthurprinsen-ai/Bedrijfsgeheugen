@@ -267,21 +267,29 @@ Deno.serve(async(req:Request)=>{
             if(enriched)workingAction=enriched;
           }
         }
-        // Enrich the existing action from the user's own LinkedIn connection export.
-        // A profile URL or named role is not proof of a LinkedIn connection.
-        if(['email','e-mail','reply_email'].includes(clean(workingAction.channel_norm)) &&
-          /^https:\/\/www\.linkedin\.com\/in\//i.test(clean(workingAction.source_url))){
-          const {data:connection,error:connectionError}=await db.from('bg_connecties')
-            .select('linkedin_url,bron,extra').eq('linkedin_url',clean(workingAction.source_url))
-            .limit(1).maybeSingle();
-          if(connectionError)throw new Error('LINKEDIN_CONNECTION_EVIDENCE_READ:'+connectionError.message);
-          const connectedOn=clean(connection?.extra?.verbonden_op);
-          if(connection?.bron==='linkedin-export'&&connectedOn){
-            workingAction={...workingAction,evidence:{...(workingAction.evidence||{}),
-              relationship_evidence:{...(workingAction.evidence?.relationship_evidence||{}),
-                linkedin_connection:{verified:true,connected_on:connectedOn,
-                  source:'canonical_bg_connecties_linkedin_export',
-                  linkedin_url:clean(connection.linkedin_url)}}}};
+        // Original CRM LinkedIn export is the authoritative first-degree relationship source.
+        // Do not require the action's source_url to be a profile: it can be a news link.
+        // Match BOTH canonical person key and exact recipient email so a bare LinkedIn
+        // URL/role/claim never creates false relationship identity or send permission.
+        if(['email','e-mail','reply_email'].includes(clean(workingAction.channel_norm))){
+          const recipientEmail=clean(workingAction.evidence?.recipient_email);
+          const personKey=clean(workingAction.person_key);
+          if(personKey&&recipientEmail){
+            const {data:connection,error:connectionError}=await db.from('bg_connecties')
+              .select('sleutel,email,linkedin_url,bron,extra')
+              .eq('sleutel',personKey).eq('email',recipientEmail).limit(1).maybeSingle();
+            if(connectionError)throw new Error('LINKEDIN_CONNECTION_EVIDENCE_READ:'+connectionError.message);
+            const connectedOn=clean(connection?.extra?.verbonden_op);
+            const profileUrl=clean(connection?.linkedin_url);
+            if(connection?.bron==='linkedin-export'&&connectedOn&&
+              /^https:\/\/www\.linkedin\.com\/in\//i.test(profileUrl)){
+              workingAction={...workingAction,evidence:{...(workingAction.evidence||{}),
+                relationship_evidence:{...(workingAction.evidence?.relationship_evidence||{}),
+                  linkedin_connection:{verified:true,connected_on:connectedOn,
+                    source:'canonical_bg_connecties_linkedin_export',
+                    linkedin_url:profileUrl,
+                    matching_basis:'person_key_and_recipient_email'}}}};
+            }
           }
         }
 
