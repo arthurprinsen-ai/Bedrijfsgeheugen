@@ -52,8 +52,9 @@ export function assessHumanOutreachCopy(action={},plan={},output={}){
   if(intent==='FIRST_CONTACT'&&!hasSubstantiveOutreachEvidence(action))reasons.push('ROLE_ONLY_CONTEXT');
   if(intent==='LINKEDIN_CONNECTION_RECONNECT'){
     if(!/\blinkedin\b/i.test(message))reasons.push('LINKEDIN_CONNECTION_NOT_ACKNOWLEDGED');
-    if(!/\b(?:ik (?:ben|heb)|mijn)\b[\s\S]{0,90}\b(?:bedrijfsgeheugen|bedrijf)\b/i.test(message)||
-       !/\b(?:gestart|begonnen|opgericht|opgestart|opgezet)\b/i.test(message))reasons.push('FOUNDER_INTRODUCTION_MISSING');
+    const founder=/\b(?:gestart|begonnen|opgericht|opgestart|opgezet)\b/i.test(message) &&
+      /\b(?:bedrijfsgeheugen|mijn bedrijf)\b/i.test(message);
+    if(!founder)reasons.push('FOUNDER_INTRODUCTION_MISSING');
     if(/\b(?:we kennen elkaar|we hebben elkaar gesproken|goed dat we elkaar kennen)\b/i.test(message)&&
       !clean(action?.evidence?.relationship_evidence?.specific_conversation))reasons.push('UNVERIFIED_PERSONAL_FAMILIARITY');
   }
