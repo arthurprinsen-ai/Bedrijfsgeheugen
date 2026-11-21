@@ -82,4 +82,8 @@ test('HTML-format Gmail reply excludes complete gmail_quote subtree and preserve
   assert.equal(isExplicitUnsubscribeReply(reply),false);
   assert.equal(extractVisibleEmailReply('<p>Afmelden</p>'),'Afmelden');
   assert.equal(isExplicitUnsubscribeReply('<p>Afmelden</p>'),true);
+  assert.equal(extractVisibleEmailReply('<p>Interessant</p><script>alert(1)</script>'),'');
+  assert.equal(extractVisibleEmailReply('<div>Afmelden</div><script'),'');
+  assert.equal(isExplicitUnsubscribeReply('<div>Afmelden</div><script'),false);
+  assert.equal(extractVisibleEmailReply('<div>Afmelden</div><img src=x onerror=alert(1)>'),'');
 });
