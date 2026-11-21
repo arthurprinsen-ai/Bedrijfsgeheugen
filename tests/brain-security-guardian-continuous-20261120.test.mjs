@@ -21,6 +21,16 @@ test('all 16 owned Netlify sites and both PW routes have strict read-only invent
  assert.throws(()=>validateInventory({...cfg,sites:[...cfg.sites,{id:'local',url:'http://localhost/',mode:'standard'}]}),/INVALID_SITE/);
  assert.throws(()=>validateInventory({...cfg,sites:cfg.sites.slice(1)}),/INCOMPLETE|REQUIRED/);
 });
+test('cannot quietly drop a project or substitute an attacker-controlled Netlify URL',()=>{
+ const dropped=structuredClone(cfg);dropped.sites=dropped.sites.filter(site=>site.id!=='governance-ai');
+ assert.throws(()=>validateInventory(dropped),/INCOMPLETE_SECURITY_INVENTORY/);
+ const substituted=structuredClone(cfg);substituted.sites.find(site=>site.id==='governance-ai').url='https://attacker-has-control.netlify.app/';
+ assert.throws(()=>validateInventory(substituted),/INVALID_SITE_OR_DUPLICATE_INVENTORY/);
+ const alternatePath=structuredClone(cfg);alternatePath.sites.find(site=>site.id==='pw-zaalcoach').url='https://pw-mo14-1.netlify.app/untrusted/';
+ assert.throws(()=>validateInventory(alternatePath),/INVALID_SITE_OR_DUPLICATE_INVENTORY/);
+ const extra=structuredClone(cfg);extra.sites.push({id:'another',url:'https://new-unreviewed.netlify.app/',mode:'standard'});
+ assert.throws(()=>validateInventory(extra),/INCOMPLETE_SECURITY_INVENTORY/);
+});
 test('critical CSP regression fails and protected site may not return public 200',()=>{
  assert.equal(classifyResponse({mode:'coach',url:'https://pw-mo14-1.netlify.app/zaalplanner/'},fakeResponse(200)).status,'VERIFIED');
  assert.equal(classifyResponse({mode:'critical',url:'https://www.bedrijfsgeheugen.nl/'},fakeResponse(200,'https://www.bedrijfsgeheugen.nl/',businessHeaders)).status,'VERIFIED');
