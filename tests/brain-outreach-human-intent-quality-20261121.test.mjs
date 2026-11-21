@@ -170,6 +170,7 @@ test('commercial email requires documented permission separately from LinkedIn a
   assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:consent}),true);
   assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:{...consent,granted:false}}),false);
   assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:consent,approval_revoked:true}),false);
+  assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:consent,approval_revoked:{on:'2026-10-27',reason:'outside permitted audience'}}),false);
   assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:{...consent,revoked:true}}),false);
   const customer={basis:'existing_customer_soft_opt_in',recorded_at:'2026-11-18',
     evidence_ref:'invoice:verified:2026-180',transaction_ref:'INV-2026-180',
