@@ -28,5 +28,27 @@
     "No claim that PR equals deployed fix",
     "Explicit consent/legal basis remains separately required under existing rules",
     "No provider resend of already completed action"
-  ]
+  ],
+  "obligation_id": "powerhouse|commercial|human-outreach-intent-regression|20261121-v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outreach-human-intent-quality-20261121.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outreach-human-intent-quality-20261121.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-outreach-human-intent-quality-20261121.test.mjs"
+  ],
+  "prevention_rule": "A score 1.0 cannot bypass observed prospect-specific reasons and natural language; no internal editorial labels, no invented buying intent. Keep original consent and provider truth gates."
 }
