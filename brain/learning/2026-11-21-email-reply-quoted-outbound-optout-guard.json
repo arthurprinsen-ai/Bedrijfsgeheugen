@@ -25,7 +25,8 @@
     "Preserve explicit direct unsubscribes as immediate suppressions and honor historical suppressed contacts.",
     "Preserve provider message/thread IDs, reply-event exactly-once replay and existing ONE BRAIN -> Powerhouse -> Heartbeat lineage.",
     "Keep legal marketing email authorization strict; classification repair creates no send permission, new scheduler or bulk emails.",
-    "Measure real provider reply outcomes separately from code deployment and synthetic regression success."
+    "Measure real provider reply outcomes separately from code deployment and synthetic regression success.",
+    "First split the plain top-post from quoted 'On ... wrote <email>' headers, then parse only allowlisted HTML structural tags; reject incomplete/unknown script or image tags before any classification."
   ],
   "compiler": {
     "failure_class": "FALSE_GREEN",
@@ -50,6 +51,6 @@
     "tests/brain-email-reply-quoted-footer-20261121.test.mjs",
     "tests/brain-autonomous-outreach-optout-line-20261027.test.mjs"
   ],
-  "prevention_rule": "Only the recipient's newly authored visible text may classify commercial Gmail reply intent. Prior outbound optout footer is a template, never incoming unsubscribe evidence. Empty/quoted-only reply produces no response or suppression. Provider and real contact-response readback are separate from technical deploy truth.",
+  "prevention_rule": "Only the recipient's newly authored visible text may classify commercial Gmail reply intent. Prior outbound optout footer is a template, never incoming unsubscribe evidence. Empty/quoted-only reply produces no response or suppression. Provider and real contact-response readback are separate from technical deploy truth. CodeQL: never use a generic partial HTML tag stripping regexp for untrusted Gmail payloads; malformed or unknown HTML must hold rather than classify or suppress.",
   "rollout": "Protected Required + CodeQL -> protected main -> original Supabase GitHub Integration -> 1:1 provider source parity -> subsequent authorized Gmail reply source confirmation. Never claim a false historical unsubscribe without direct evidence."
 }
