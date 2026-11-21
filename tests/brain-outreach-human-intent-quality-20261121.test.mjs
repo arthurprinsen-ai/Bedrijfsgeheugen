@@ -58,7 +58,7 @@ test('original Gmail sender rechecks natural copy before provider claim and send
   assert.ok(lastMile>0&&claim>lastMile,'copy gate precedes durable provider claim');
   assert.match(sender,/HUMAN_OUTREACH_COPY_REJECTED/);
   assert.match(sender,/rejection_codes:humanCopy.reasons/);
-  assert.match(sender,/role,message_draft,evidence/);
+  assert.match(sender,/role,source_url,message_draft,evidence/);
 });
 
 import {renderBrandedOutreachHtml,renderBrandedOutreachPlainText,BEDRIJFSGEHEUGEN_LOGO,BEDRIJFSGEHEUGEN_SITE}
