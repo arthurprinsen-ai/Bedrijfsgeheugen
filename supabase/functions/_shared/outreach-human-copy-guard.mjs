@@ -77,7 +77,8 @@ export function assessHumanOutreachCopy(action={},plan={},output={}){
 // be recorded for this exact e-mail purpose and source. Never infer permission
 // from employee title, company address, user instruction or LinkedIn export.
 export function hasDocumentedCommercialEmailAuthority(extra={}){
-  if(!extra||typeof extra!=='object'||extra.approval_revoked===true)return false;
+  if(!extra||typeof extra!=='object'||extra.approval_revoked===true||
+    (extra.approval_revoked&&typeof extra.approval_revoked==='object'&&Object.keys(extra.approval_revoked).length>0))return false;
   const p=extra.email_marketing_permission;
   if(!p||typeof p!=='object'||p.revoked===true||p.status==='revoked')return false;
   const observedAt=Date.parse(clean(p.observed_at||p.granted_at||p.recorded_at));
