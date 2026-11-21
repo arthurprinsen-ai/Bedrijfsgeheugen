@@ -29,7 +29,8 @@ export function hasSubstantiveOutreachEvidence(action={}){
   const ev=action?.evidence||{},pub=ev?.public_source_evidence?.evidence||{},rel=ev?.relationship_evidence||{};
   // Job title, company name and LinkedIn URL alone cannot evidence a prospect's
   // internal problem, nor produce a unique reason to interrupt their inbox.
-  if(rel?.linkedin_connection?.verified===true&&clean(rel.linkedin_connection?.connected_on))return true;
+  // First-degree LinkedIn membership is a genuine relationship fact, but no
+  // proof that a particular business problem is relevant to that person.
   const anchors=[
     pub.headline,pub.summary,pub.observed_fact,pub.excerpt,
     ev.headline,ev.summary,ev.inbound?.message,ev.reply_text,
@@ -50,6 +51,12 @@ export function assessHumanOutreachCopy(action={},plan={},output={}){
   const reasons=INTERNAL_COPY.filter(([,pattern])=>pattern.test(message)).map(([code])=>code);
   if(/^(?:een )?korte? observatie\b/i.test(subject))reasons.push('GENERIC_SUBJECT');
   if(intent==='FIRST_CONTACT'&&!hasSubstantiveOutreachEvidence(action))reasons.push('ROLE_ONLY_CONTEXT');
+  if(intent==='LINKEDIN_CONNECTION_RECONNECT'&&!hasSubstantiveOutreachEvidence(action))
+    reasons.push('LINKEDIN_RELATIONSHIP_ONLY_CONTEXT');
+  if((message.match(/\?/g)||[]).length>1)reasons.push('MULTIPLE_UNRELATED_QUESTIONS');
+  if(['FIRST_CONTACT','LINKEDIN_CONNECTION_RECONNECT'].includes(intent)&&
+    /(?:kunnen we|zullen we|boek|plan|inplannen|afspreken).{0,65}(?:meeting|afspraak|call|gesprek|kennismaking)/i.test(message))
+    reasons.push('PUSHY_MEETING_CTA_FIRST_TOUCH');
   if(intent==='LINKEDIN_CONNECTION_RECONNECT'){
     if(!/\blinkedin\b/i.test(message))reasons.push('LINKEDIN_CONNECTION_NOT_ACKNOWLEDGED');
     const founder=/\b(?:gestart|begonnen|opgericht|opgestart|opgezet)\b/i.test(message) &&
@@ -62,4 +69,37 @@ export function assessHumanOutreachCopy(action={},plan={},output={}){
   const anchor=fold(output?.personalization_anchor),role=fold(action?.role),company=fold(action?.company_name);
   if(intent==='FIRST_CONTACT'&&anchor&&(anchor===role||anchor===company))reasons.push('ROLE_ONLY_PERSONALIZATION_ANCHOR');
   return {passed:reasons.length===0,intent,reasons};
+}
+
+
+// Marketing-mail authority is separate from CRM operator approval and from
+// LinkedIn first-degree membership. External consent/exception evidence must
+// be recorded for this exact e-mail purpose and source. Never infer permission
+// from employee title, company address, user instruction or LinkedIn export.
+export function hasDocumentedCommercialEmailAuthority(extra={}){
+  if(!extra||typeof extra!=='object'||extra.approval_revoked===true)return false;
+  const p=extra.email_marketing_permission;
+  if(!p||typeof p!=='object'||p.revoked===true||p.status==='revoked')return false;
+  const observedAt=Date.parse(clean(p.observed_at||p.granted_at||p.recorded_at));
+  if(!Number.isFinite(observedAt)||observedAt>Date.now())return false;
+  if(clean(p.evidence_ref).length<12)return false;
+  if(p.basis==='explicit_opt_in')
+    return p.granted===true&&p.purpose==='commercial_email';
+  if(p.basis==='existing_customer_soft_opt_in')
+    return p.existing_customer_verified===true&&
+      p.similar_products_or_services===true&&
+      p.opt_out_offered_at_collection===true&&
+      p.opt_out_available_now===true&&clean(p.transaction_ref).length>=5;
+  return false;
+}
+
+// Segment hints change editorial relevance ONLY; they do not prove a buyer
+// pain, predict interest, raise send volume or change sender permissions.
+export function classifyFounderOutreachSegment(action={}){
+  const role=fold(action.role||action.evidence?.relationship_evidence?.role);
+  if(/(?:cfo|chief financial|controller|finance|financieel|accountan|treasurer)/.test(role))return 'FINANCE';
+  if(/(?:cto|cio|chief technology|it manager|data|analytics|bi lead|informatie|innovation|innovatie|digital|technology)/.test(role))return 'DATA_IT_INNOVATION';
+  if(/(?:hr|human resources|people|talent|operations|operatie|operationeel|procesmanager|organisatieontwikkeling)/.test(role))return 'HR_OPERATIONS';
+  if(/(?:ceo|chief executive|directeur|ondernemer|eigenaar|founder|oprichter|managing director|bestuurder)/.test(role))return 'FOUNDER_LEADERSHIP';
+  return 'GENERAL_UNVERIFIED';
 }
