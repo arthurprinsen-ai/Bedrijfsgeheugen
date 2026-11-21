@@ -5,6 +5,17 @@ description: Operate the existing Bedrijfsgeheugen social post → engagement �
 
 # Powerhouse social CRO — één bewijsgestuurde lus (30 oktober 2026)
 
+## 21 november 2026 — menselijk relatiebericht bij bewezen LinkedIn-connectie
+
+**Defect:** de originele outreach stuurde letterlijk "Praktische les", "(probleem)", "Beperking" en "Alternatief is niets doen" naar een echte prospect. De quality-score 1,0 was een false positive. Herstel binnen de ENIGE `powerhouse-commercial-message-composer` en `powerhouse-autonomous-outreach`, niet met extra writers.
+
+**Vaste norm:** verifieer eerst het contactdoel en de echte bron (persoonlijke LinkedIn-connectie uitsluitend via `bg_connecties.extra.verbonden_op`, geen profielsuggestie). Voor LinkedIn-connecties: noem de link met Arthur natuurlijk, vertel alleen in een eerste passende reactivatie dat Arthur Bedrijfsgeheugen heeft opgericht en waarom, maak relevant voor het werk van de persoon en eindig met één waardevolle, ontspannen vraag. Bij een reply antwoord op de concrete vraag; bij follow-up uitsluitend een nieuwe onderbouwde aanleiding. Geen geveinsde kennismaking, geen verzonnen bedrijfspijn, geen opdringerige afspraak-CTA.
+
+**Signature en beveiliging:** in de originele Gmail-aflevering één compacte HTML-handtekening met officieel logo en volledige HTTPS-href naar `https://www.bedrijfsgeheugen.nl/`, Arthur Prinsen, Oprichter Bedrijfsgeheugen en zichtbaar tekstalternatief. Geen trackingpixel, geen AI-agentnaam of dubbele ondertekening in gegenereerde tekst. Een externe afbeelding mag niet noodzakelijk zijn om de afzender te herkennen. Kopie wordt zowel in composer als vóór provider-claim deterministisch gekeurd. Bestaande toestemming, wettelijke uitzondering waar aantoonbaar, suppressie, rate/pressure, idempotentie, provider-ACK en onafhankelijke Gmail-readback blijven verplicht; een LinkedIn-connectie verleent geen e-mailtoestemming.
+
+**Bronnen:** Hunter 2026 (https://hunter.io/the-state-of-cold-email), Gong 2026 (https://www.gong.io/blog/do-execs-really-reply-to-cold-email-here-s-what-the-data-says), DDMA wetgeving (https://ddma.nl/legal/wetgeving/e-mail/). Geen empirisch bewezen eigen reply-uplift claimen. Regressie `tests/brain-outreach-human-intent-quality-20261121.test.mjs`. PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6094. Bronwaar leren: `brain/learning/2026-11-21-outreach-founder-signature-regression-v1.json`. Alleen LIVE na beschermde release en onafhankelijke oorspronkelijke function/provider-readback.
+
+
 ## 18 november 2026 — betekenisvolle brongebonden SEO-titels vóór blogpublicatie
 
 Fingerprint: `powerhouse|daily-blog|seo-action-verb-generic-title|20261118-v1`; oorspronkelijke blogpublicatie `content-publication:2026-11-18:blog`, writer `.github/workflows/powerhouse-daily-blog.yml`, originele writer-CI op PR #6028. De bestaande titelgenerator behandelde het werkwoord `bereid` uit de brontitel `Hoe bereid je je MKB-boekhouding voor op integratie met mobiele betaalapps ...` als SEO-onderwerp en genereerde de nietszeggende titel `bereid: wat verandert er voor jou?`; de beschermde SEO-preflight blokkeerde dit terecht.
