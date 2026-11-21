@@ -60,3 +60,55 @@ test('original Gmail sender rechecks natural copy before provider claim and send
   assert.match(sender,/rejection_codes:humanCopy.reasons/);
   assert.match(sender,/role,message_draft,evidence/);
 });
+
+import {renderBrandedOutreachHtml,renderBrandedOutreachPlainText,BEDRIJFSGEHEUGEN_LOGO,BEDRIJFSGEHEUGEN_SITE}
+  from '../supabase/functions/_shared/brand-outreach-signature.mjs';
+
+test('verified LinkedIn network reconnection states the real tie and founder introduction',()=>{
+  const contact={...roleOnly,evidence:{relationship_evidence:{
+    linkedin_connection:{verified:true,connected_on:'28 Sep 2016',source:'canonical_bg_connecties_linkedin_export'}
+  }}};
+  const good={
+    subject:'Onze LinkedIn-connectie en een vraag',
+    personalization_anchor:'LinkedIn',
+    message:'Hoi Manuela,\n\nWe zijn via LinkedIn verbonden. Ik ben Bedrijfsgeheugen begonnen omdat ik bedrijven wil helpen kennis, beslissingen en acties beter met elkaar te verbinden. Bij leiderschapswisselingen lijkt het me interessant hoe die kennis in een organisatie blijft. Speelt dat onderwerp bij jullie ook?'
+  };
+  assert.equal(inferObservedOutreachIntent(contact,{}),'LINKEDIN_CONNECTION_RECONNECT');
+  assert.equal(assessHumanOutreachCopy(contact,{},good).passed,true);
+  assert.equal(assessHumanOutreachCopy(contact,{},{
+    ...good,message:good.message.replace('We zijn via LinkedIn verbonden. ','')
+  }).reasons.includes('LINKEDIN_CONNECTION_NOT_ACKNOWLEDGED'),true);
+  assert.equal(assessHumanOutreachCopy(contact,{},{
+    ...good,message:good.message.replace('Ik ben Bedrijfsgeheugen begonnen','Ik denk')
+  }).reasons.includes('FOUNDER_INTRODUCTION_MISSING'),true);
+  assert.equal(assessHumanOutreachCopy(roleOnly,{},good).passed,false);
+});
+test('HTML signature has official logo, website and visible text without tracking',()=>{
+  const html=renderBrandedOutreachHtml('Hoi Manuela,\n\nWe zijn via LinkedIn verbonden.');
+  const plain=renderBrandedOutreachPlainText('Hoi Manuela');
+  assert.match(html,/<img src="https:\/\/www\.bedrijfsgeheugen\.nl\/assets\/merk\/logo-merk\.png"/);
+  assert.match(html,/<a href="https:\/\/www\.bedrijfsgeheugen\.nl\/"/);
+  assert.match(html,/<strong>Bedrijfsgeheugen<\/strong>/);
+  assert.match(html,/Arthur Prinsen/);
+  assert.match(html,/afmelden/);
+  assert.ok(!/pixel|utm_|tracking|redirector/i.test(html));
+  assert.ok(plain.includes('https://www.bedrijfsgeheugen.nl/'));
+  assert.ok(plain.includes('Bedrijfsgeheugen'));
+  assert.equal(BEDRIJFSGEHEUGEN_SITE,'https://www.bedrijfsgeheugen.nl/');
+  assert.equal(BEDRIJFSGEHEUGEN_LOGO,'https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png');
+});
+test('original Gmail sender sends HTML with strict independent copy and recipient gates',()=>{
+  const sender=fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
+  const composer=fs.readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
+  assert.match(sender,/is_html:true/);
+  assert.match(sender,/renderBrandedOutreachHtml\(body\)/);
+  assert.match(sender,/assessHumanOutreachCopy\(a,\{\},/);
+  assert.match(sender,/composer\?\.natural_copy_ok!==true/);
+  assert.match(sender,/verifyRecipientAuthority/);
+  assert.match(sender,/CONTACT_SUPPRESSED/);
+  assert.match(sender,/RECIPIENT_CONTACT_PRESSURE_14D/);
+  assert.match(sender,/providerUncertaintyNoResend/);
+  assert.match(composer,/LINKEDIN_CONNECTION_EVIDENCE_READ/);
+  assert.match(composer,/canonical_bg_connecties_linkedin_export/);
+  assert.match(composer,/natural_copy_ok:qv\.checks\.natural_copy_ok/);
+});
