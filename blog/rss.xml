@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
+<item><title>REST API Exact Online: praktische gids voor developers</title><link>https://www.bedrijfsgeheugen.nl/blog/rest-api-exact-online-koppelen/</link><guid>https://www.bedrijfsgeheugen.nl/blog/rest-api-exact-online-koppelen/</guid><pubDate>Fri, 20 Nov 2026 00:00:00 +0000</pubDate><description>Leer hoe je met de REST API van Exact Online koppelingen bouwt: authenticatie, endpoints en praktijkvoorbeelden.</description></item>
+
 <item><title>MKB-boekhouding koppelen aan mobiele betaalapps</title><link>https://www.bedrijfsgeheugen.nl/blog/hoe-bereid-je-je-mkb-boekhouding-voor-op-integratie-met-mobiele-betaal/</link><guid>https://www.bedrijfsgeheugen.nl/blog/hoe-bereid-je-je-mkb-boekhouding-voor-op-integratie-met-mobiele-betaal/</guid><pubDate>Wed, 18 Nov 2026 12:02:52 +0000</pubDate><description>Praktische 7-stappenchecklist voor MKB: hoe je je boekhouding voorbereidt op koppeling met mobiele betaalapps, inclusief beslisser, risico’s en meetbare...</description></item>
 
 <item><title>Bereid: wat verandert er voor jou?</title><link>https://www.bedrijfsgeheugen.nl/blog/bereid-je-boekhouding-voor-op-mobiele-betalingen-praktische-integratie/</link><guid>https://www.bedrijfsgeheugen.nl/blog/bereid-je-boekhouding-voor-op-mobiele-betalingen-praktische-integratie/</guid><pubDate>Tue, 17 Nov 2026 13:12:39 +0000</pubDate><description>Praktisch stappenplan voor MKB: hoe je je administratie en processen voorbereidt op mobiele betaalintegratie (readiness-audit, mapping, POC, risico&#x27;s en...</description></item>
