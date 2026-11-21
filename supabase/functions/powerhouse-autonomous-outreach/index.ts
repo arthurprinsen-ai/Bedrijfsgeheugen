@@ -192,7 +192,7 @@ Deno.serve(async(req)=>{
    if(composer?.natural_copy_ok!==true||!humanCopy.passed){
      const ev={...(a.evidence||{}),execution_gate:{
        contract:'human-outreach-natural-copy-presend-v1',blocked_at:now,
-       reason:'HUMAN_OUTREACH_COPY_NOT_VERIFIED',
+       reason:'HUMAN_OUTREACH_COPY_REJECTED',
        rejections:humanCopy.reasons,observed_contact_intent:humanCopy.intent,
        owner:'existing-powerhouse-commercial-message-composer',
        next_action:'RECOMPOSE_SAME_ACTION_AFTER_VERIFIED_CONTEXT',
@@ -201,7 +201,7 @@ Deno.serve(async(req)=>{
      const{error:copyErr}=await db.from('powerhouse_sales_actions')
        .update({evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
      if(copyErr)throw{code:'HUMAN_COPY_HOLD_WRITEBACK',message:copyErr.message};
-     out.push({action_id:a.action_id,status:'held',reason:'HUMAN_OUTREACH_COPY_NOT_VERIFIED',
+     out.push({action_id:a.action_id,status:'held',reason:'HUMAN_OUTREACH_COPY_REJECTED',
        rejections:humanCopy.reasons,provider_send_attempted:false});
      continue;
    }
