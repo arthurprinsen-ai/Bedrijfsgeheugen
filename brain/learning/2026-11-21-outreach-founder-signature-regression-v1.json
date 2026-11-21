@@ -16,7 +16,8 @@
     "LinkedIn relationship alone does not prove individual topical relevance; require independent fact or actual conversation before composing",
     "Original Gmail sender requires independently documented e-mail opt-in or verified existing-customer soft opt-in on the exact CRM person; generic human approval is insufficient",
     "Founder role segmentation only guides topic selection; no invented buyer problem, early meeting pressure or multiple questions",
-    "Only provider-verified replies, complaints, qualified meetings and paid orders prove real channel outcomes; evaluate one experimental variable at a time"
+    "Only provider-verified replies, complaints, qualified meetings and paid orders prove real channel outcomes; evaluate one experimental variable at a time",
+    "For HTML email signature, use complete URL parsing and exact HTTPS host/path comparisons, never a substring-only domain assertion; protect against arbitrary host prefix/suffix."
   ],
   "learning_evidence": "Gmail sent message ID 1a1fccc860948474; action_id d90d9a5b-49f5-4bdc-b55f-509248e0a8a5; observed composer quality score=1",
   "quality_regression": "tests/brain-outreach-human-intent-quality-20261121.test.mjs",
@@ -50,6 +51,6 @@
   "tests": [
     "tests/brain-outreach-human-intent-quality-20261121.test.mjs"
   ],
-  "prevention_rule": "Human founder email requires a verified individual topic beyond first-degree LinkedIn membership; no fabricated buyer pain or pressuring meeting CTA. Original sender has independently proven recipient-specific commercial email authority, suppression, provider idempotence and readback. Generic CRM approvals do not establish legal authority. Source-based replies, optouts and separately confirmed revenue determine outcomes.",
+  "prevention_rule": "Human founder email requires a verified individual topic beyond first-degree LinkedIn membership; no fabricated buyer pain or pressuring meeting CTA. Original sender has independently proven recipient-specific commercial email authority, suppression, provider idempotence and readback. Generic CRM approvals do not establish legal authority. Source-based replies, optouts and separately confirmed revenue determine outcomes. Logo and website href acceptance must use complete URL parsing and exact allowlisted destination comparison, not partial URL matching.",
   "research_validity": "Hunter 2026 (31m sent in 2025), Gong and published Google sender rules plus DDMA/ACM: external observational evidence only. Actual CRM audit shows 23,284 first-degree LinkedIn export entries, 605 emails, 123 internal approvals and zero records with independent email_marketing_permission evidence. No causal Bedrijfsgeheugen uplift observed."
 }
