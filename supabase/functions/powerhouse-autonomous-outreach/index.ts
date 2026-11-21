@@ -190,7 +190,11 @@ Deno.serve(async(req)=>{
      subject:sub,message:body,personalization_anchor:s(composer?.personalization_anchor)
    });
    if(composer?.natural_copy_ok!==true||!humanCopy.passed){
-     const ev={...(a.evidence||{}),execution_gate:{
+     const originalCi=a.evidence?.commercial_intelligence||{};
+     const rejectedComposer={...(originalCi.composer||{}),quality_passed:false,
+       rejected_previous_message_hash:s(composer.message_hash)};
+     const ev={...(a.evidence||{}),commercial_intelligence:{...originalCi,
+       quality_passed:false,composer:rejectedComposer},execution_gate:{
        contract:'human-outreach-natural-copy-presend-v1',blocked_at:now,
        reason:'HUMAN_OUTREACH_COPY_REJECTED',
        rejection_codes:humanCopy.reasons,observed_contact_intent:humanCopy.intent,
@@ -199,7 +203,7 @@ Deno.serve(async(req)=>{
        provider_attempted:false,duplicate_send_forbidden:true
      }};
      const{error:copyErr}=await db.from('powerhouse_sales_actions')
-       .update({evidence:ev,updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
+       .update({evidence:ev,message_draft:'',updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
      if(copyErr)throw{code:'HUMAN_COPY_HOLD_WRITEBACK',message:copyErr.message};
      out.push({action_id:a.action_id,status:'held',reason:'HUMAN_OUTREACH_COPY_REJECTED',
        rejection_codes:humanCopy.reasons,provider_send_attempted:false});
