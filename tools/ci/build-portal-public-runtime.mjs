@@ -12,6 +12,8 @@ export const PUBLIC_PORTAL_BROWSER_SOURCES=Object.freeze([
   'brain/economics/management-accounting-intelligence.mjs',
   'brain/revenue/need-discovery.mjs',
   'platform/organism/organism-graph.mjs',
+  // Browser-pure release status contract, never publish the rest of /tools.
+  'tools/netlify/release-status.mjs',
 ]);
 const approved=new Set(PUBLIC_PORTAL_BROWSER_SOURCES);
 const publishedRoot='portal-v2/browser-runtime';
@@ -34,7 +36,7 @@ function replacePrivateImports({file,source}){
   let changed=0;
   const updated=source.replace(importPattern,(match,prefix,quote,spec)=>{
     const candidate=normalizeImport(file,spec);
-    if(!(candidate.startsWith('brain/')||candidate.startsWith('platform/')))return match;
+    if(!(candidate.startsWith('brain/')||candidate.startsWith('platform/')||candidate.startsWith('tools/')))return match;
     if(!approved.has(candidate))
       throw new Error('PORTAL_BROWSER_PRIVATE_IMPORT_NOT_APPROVED:'+candidate);
     changed++;
