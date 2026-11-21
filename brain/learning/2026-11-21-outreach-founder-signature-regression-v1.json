@@ -1,0 +1,25 @@
+{
+  "fingerprint": "commercial-email|generic-editorial-brief-leaked-into-linked-in-connection-email|20261121-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "owner": "powerhouse-commercial-message-composer",
+  "sender": "powerhouse-autonomous-outreach",
+  "detected_at": "2026-11-21",
+  "root_cause": "Generic trusted-advisor longform editorial policy was applied to personal B2B outreach; deterministic quality allowed role-only context and leakage of analysis labels, and the plain-text sender lacked official company signature.",
+  "prevention": [
+    "verified real conversation or LinkedIn link from source export",
+    "founder intro where relevant",
+    "real business relevance without invented pain",
+    "reject AI editorial labels and internal signatures",
+    "one canonical logo+full-url HTML signature",
+    "recheck copy at original sender before provider claim",
+    "preserve legal recipient/suppression/duplicate/provider readback gates"
+  ],
+  "learning_evidence": "Gmail sent message ID 1a1fccc860948474; action_id d90d9a5b-49f5-4bdc-b55f-509248e0a8a5; observed composer quality score=1",
+  "quality_regression": "tests/brain-outreach-human-intent-quality-20261121.test.mjs",
+  "rollout": "protected PR #6094 pending, no live claim",
+  "refs": [
+    "https://hunter.io/the-state-of-cold-email",
+    "https://www.gong.io/blog/do-execs-really-reply-to-cold-email-here-s-what-the-data-says",
+    "https://ddma.nl/legal/wetgeving/e-mail/"
+  ]
+}
