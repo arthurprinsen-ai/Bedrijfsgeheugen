@@ -91,7 +91,7 @@ begin
 
   if position(v_old in v_job.command)=0
      or position('powerhouse_ops.enqueue(' in v_job.command)=0
-     or position('do $commercial$' in v_job.command)=0 then
+     or position('v_stage integer := array_position' in v_job.command)=0 then
     raise exception 'CANONICAL_EMAIL_REPLY_REWIRE_COMMAND_MISMATCH_JOB_116';
   end if;
 
