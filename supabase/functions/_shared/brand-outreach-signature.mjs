@@ -14,6 +14,7 @@ export function renderBrandedOutreachHtml(body,{includeOptOut=true}={}){
  if(!message)throw new Error('OUTREACH_BRAND_EMPTY_BODY');
  return '<div style="font:15px/1.55 Arial,Helvetica,sans-serif;color:#172338;max-width:620px">'+
    contentParagraphs(message)+
+   '<p style="margin:0 0 8px 0;line-height:1.5">Groet,</p>'+
    '<table role="presentation" cellspacing="0" cellpadding="0" style="border-collapse:collapse;margin-top:18px"><tr>'+
    '<td style="vertical-align:middle;padding:0 12px 0 0">'+
    '<a href="'+BEDRIJFSGEHEUGEN_SITE+'" style="text-decoration:none">'+
@@ -29,6 +30,6 @@ export function renderBrandedOutreachHtml(body,{includeOptOut=true}={}){
    '</div>';
 }
 export function renderBrandedOutreachPlainText(body,{includeOptOut=true}={}){
- return String(body??'').trim()+'\n\nArthur Prinsen\nOprichter · Bedrijfsgeheugen\n'+
+ return String(body??'').trim()+'\n\nGroet,\nArthur Prinsen\nOprichter · Bedrijfsgeheugen\n'+
  BEDRIJFSGEHEUGEN_SITE+'\narthur@bedrijfsgeheugen.nl'+(includeOptOut?'\n\n'+OPT_OUT_TEXT:'');
 }
