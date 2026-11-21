@@ -66,7 +66,8 @@ import {renderBrandedOutreachHtml,renderBrandedOutreachPlainText,BEDRIJFSGEHEUGE
 
 test('verified LinkedIn network reconnection states the real tie and founder introduction',()=>{
   const contact={...roleOnly,evidence:{relationship_evidence:{
-    linkedin_connection:{verified:true,connected_on:'28 Sep 2016',source:'canonical_bg_connecties_linkedin_export'}
+    linkedin_connection:{verified:true,connected_on:'28 Sep 2016',source:'canonical_bg_connecties_linkedin_export'},
+    confirmed_event:'Boardtrust begeleidt familiebedrijven bij leiderschaps- en opvolgingsvraagstukken'
   }}};
   const good={
     subject:'Onze LinkedIn-connectie en een vraag',
@@ -121,4 +122,61 @@ test('first-degree connection comes from matching CRM identity, not action sourc
   assert.match(composer,/connection\?\.bron==='linkedin-export'/);
   assert.match(composer,/connectedOn&&/);
   assert.ok(!composer.includes("/^https:\\/\\/www\\.linkedin\\.com\\/in\\//i.test(clean(workingAction.source_url))"),'no action source URL-only connection requirement');
+});
+
+
+import {hasDocumentedCommercialEmailAuthority,classifyFounderOutreachSegment}
+  from '../supabase/functions/_shared/outreach-human-copy-guard.mjs';
+
+test('LinkedIn first-degree membership alone is not specific recipient topic evidence',()=>{
+  const contact={...roleOnly,evidence:{relationship_evidence:{
+    linkedin_connection:{verified:true,connected_on:'28 Sep 2016'}
+  }}};
+  const message={
+    subject:'Kennis en besluiten',
+    message:'Hoi Manuela, we zijn via LinkedIn verbonden. Ik ben Bedrijfsgeheugen begonnen omdat kennis belangrijk is. Mag ik je iets sturen?'
+  };
+  const judged=assessHumanOutreachCopy(contact,{},message);
+  assert.equal(judged.passed,false);
+  assert.ok(judged.reasons.includes('LINKEDIN_RELATIONSHIP_ONLY_CONTEXT'));
+});
+
+test('first founder outreach avoids meeting pressure and multiple unrelated questions',()=>{
+  const contact={...roleOnly,evidence:{headline:'Gepubliceerde aankondiging van een nieuwe dienstverlening voor opvolging'}};
+  const msg={subject:'Vraag over opvolging',
+    message:'Hoi Manuela, ik zag de aangekondigde dienstverlening. Zullen we volgende week een afspraak inplannen? Heb je dinsdag tijd?'};
+  const judged=assessHumanOutreachCopy(contact,{},msg);
+  assert.equal(judged.passed,false);
+  assert.ok(judged.reasons.includes('PUSHY_MEETING_CTA_FIRST_TOUCH'));
+  assert.ok(judged.reasons.includes('MULTIPLE_UNRELATED_QUESTIONS'));
+});
+
+test('founder segmentation is a role-only hypothesis, never permission or invented buyer pain',()=>{
+  assert.equal(classifyFounderOutreachSegment({role:'CFO'}),'FINANCE');
+  assert.equal(classifyFounderOutreachSegment({role:'Lead Data Engineer'}),'DATA_IT_INNOVATION');
+  assert.equal(classifyFounderOutreachSegment({role:'HR manager'}),'HR_OPERATIONS');
+  assert.equal(classifyFounderOutreachSegment({role:'CEO en oprichter'}),'FOUNDER_LEADERSHIP');
+  assert.equal(classifyFounderOutreachSegment({role:''}),'GENERAL_UNVERIFIED');
+  const composer=fs.readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
+  assert.match(composer,/founder_audience_hypothesis:classifyFounderOutreachSegment/);
+});
+
+test('commercial email requires documented permission separately from LinkedIn and internal human approval',()=>{
+  const internalOnly={human_approved:true,approval:{basis:'bestaande relatie resp. zakelijk adres'}};
+  assert.equal(hasDocumentedCommercialEmailAuthority(internalOnly),false);
+  assert.equal(hasDocumentedCommercialEmailAuthority({linkedin_connection:{verified:true}}),false);
+  const consent={basis:'explicit_opt_in',granted:true,purpose:'commercial_email',
+    granted_at:'2026-11-20T09:00:00Z',evidence_ref:'crm:consent:independent-audit-123'};
+  assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:consent}),true);
+  assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:{...consent,granted:false}}),false);
+  assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:consent,approval_revoked:true}),false);
+  assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:{...consent,revoked:true}}),false);
+  const customer={basis:'existing_customer_soft_opt_in',recorded_at:'2026-11-18',
+    evidence_ref:'invoice:verified:2026-180',transaction_ref:'INV-2026-180',
+    existing_customer_verified:true,similar_products_or_services:true,
+    opt_out_offered_at_collection:true,opt_out_available_now:true};
+  assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:customer}),true);
+  assert.equal(hasDocumentedCommercialEmailAuthority({email_marketing_permission:{...customer,opt_out_offered_at_collection:false}}),false);
+  const sender=fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
+  assert.match(sender,/c\?\.extra\?\.human_approved===true&&hasDocumentedCommercialEmailAuthority\(c\.extra\)/);
 });
