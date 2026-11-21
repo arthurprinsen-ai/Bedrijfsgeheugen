@@ -43,3 +43,14 @@ No long-lived browser token, frontend service_role key, arbitrary URL scanning, 
 - Tests: tests/brain-security-guardian-continuous-20261120.test.mjs, existing source-exposure/CSP/security trust contract tests.
 
 Closure only when protected merge, real GitHub schedule run, Netlify CURRENT/READY, signed EU observation/readback, verified customer-visible fresh status, incident dedupe and named Engineering consumer evidence all have independent proof. Until then this remains **CANDIDATE / NOT FULLY LIVE**.
+
+
+## 2026-11-21: fail-closed authorized inventory and source/runtime gap
+
+- Agent-security's existing 15-minute monitoring candidate now pins exact, reviewed **17 URL+ID pairs across 16 Netlify projects**, not just a broad `*.netlify.app` suffix. Missing projects, swapped site IDs, attacker-controlled lookalike Netlify destinations or unapproved additional sites fail closed. Future real sites need management-plane confirmation and explicit code/inventory change.
+- Source: `tools/security/site-guardian.mjs`; tests extended in `tests/brain-security-guardian-continuous-20261120.test.mjs`. Original GitHub Security Operations contract run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44904107071 **SUCCESS** after correcting one legitimate legacy test that expected an older failure message.
+- **NOT LIVE:** PR #6084 remains open/unmerged, so the 15-minute guardian and exact website inventory protections cannot be represented as active production controls. No new scheduler, Make or app writer.
+- 2026-11-21 read-only production browser review: `https://www.bedrijfsgeheugen.nl/` and `/portal-v2/` returned HTTP 200; checked `/package.json`, SQL migration, security CI script and `/netlify.toml` returned HTTP 404. Active CSP blocks objects/base-framing, while script restrictions remain report-only for legacy compatibility; strict global XSS protection remains an open migration.
+- Supabase `adhjwmvyoixzjtmiroln`: all audited public tables already have RLS; advisor currently has 188 INFO no-policy findings (deny by default in many cases) and 1 WARN for a deliberate `anon EXECUTE` + ≥40-character digest-gated privileged cron function. Revoke only after provider caller migration to server-only identity.
+- Read-only Supabase function source on 2026-11-21 confirmed live server-side credential guards at the start of four privileged repair endpoints. Their GitHub source PRs #6089, #6090 and #6091 are still open/unmerged despite live patched code. Treat future release rollback/source drift as OPEN until protected merges, migration and readbacks.
+- GitHub repository is public: HTTP 404 on website source routes does not make GitHub source/history private. Public source classification, secrets scan, MFA, WAF/rate limiting, old deploy/preview exposure and real restore drills require independent verification. Do not claim complete hack immunity or global GREEN.
