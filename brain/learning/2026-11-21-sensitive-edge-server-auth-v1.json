@@ -90,5 +90,28 @@
       "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/db-pooler-introspect-v1"
     ],
     "mode_note": "No privileged credential provided to regression probes; source-level simulation uses fictional credentials."
+  },
+  "root_cause": "Two ACTIVE Supabase Edge Functions were deployed with verify_jwt=false and executed service-role or privileged Postgres reads before verifying a caller; one returned internal business metrics, the other raw SQL exceptions.",
+  "prevention": [
+    "Never create a privileged DB client or use database credentials before server-only request authorization.",
+    "For verify_jwt=false Edge Functions, explicitly verify server-only bearer or sb_secret_ credentials before any privileged operation; deny ordinary JWT/anon/publishable keys.",
+    "Require no-store, nosniff, sanitized errors, POST-only semantics and independent 401/405 provider readback.",
+    "Reuse the original Security Operations scheduled monitor to detect future anonymous access regression; never claim main protection from unmerged PR sources."
+  ],
+  "tests": [
+    "tests/brain-security-sensitive-edge-auth-20261121.test.mjs",
+    "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+  ],
+  "evidence": {
+    "source": "Exact Supabase provider v10/v15 readback, external no-credential HTTP probes on both endpoints, 11 Node regressions and 6-site independent monitor.",
+    "unauthorized_get": 405,
+    "unauthorized_post": 401,
+    "provider_active_versions": [
+      10,
+      15
+    ],
+    "checks_passed": 11,
+    "live_checks_passed": 6,
+    "protected_main_merge": false
   }
 }
