@@ -22,7 +22,7 @@ function makeGame(fieldCount=9,numGames=12,keeper='coco'){
 test('v9 scripts are syntactically valid, linked by the real app and cached offline',()=>{
  assert.doesNotThrow(()=>new Function(source));assert.doesNotThrow(()=>new Function(ui));
  for(const name of ['coach-core.js','coach-ui.js','coach-plus.css']){assert.ok(html.includes(name),'missing asset '+name);assert.ok(sw.includes(name),'offline not cached: '+name);}
- assert.match(sw,/mo14-unified-coach-v10-zaal-veld/);
+ assert.match(sw,/mo14-unified-coach-v11-live-wissels/);
  assert.match(css,/touch-action:none/);
  assert.match(ui,/pointerdown/);assert.match(ui,/pointermove/);assert.match(ui,/pointercancel/);
  assert.match(ui,/coachUndo/);assert.match(ui,/coachRedo/);
