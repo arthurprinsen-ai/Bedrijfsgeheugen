@@ -129,6 +129,13 @@ main input[type=range]:focus-visible {outline:3px solid #2742d6;outline-offset:3
     box-shadow:none!important;background:#fff!important;overflow:hidden!important;
     z-index:2050!important;box-sizing:border-box!important
   }
+  /* Shared drilldown loads its CSS asynchronously: a closed panel can never occlude the page. */
+  body > #bgSharedMobileNav[aria-hidden="true"]{
+    visibility:hidden!important;opacity:0!important;pointer-events:none!important
+  }
+  body > #bgSharedMobileNav[aria-hidden="false"]:not([hidden]){
+    visibility:visible!important;opacity:1!important;pointer-events:auto!important
+  }
   #bgMobileNav .bg-mobile-shell,#bgSharedMobileNav .bg-shared-mobile-shell{
     width:100%!important;max-width:560px!important;height:100%!important;
     box-sizing:border-box!important;padding:18px 20px max(24px,env(safe-area-inset-bottom,0px))!important
