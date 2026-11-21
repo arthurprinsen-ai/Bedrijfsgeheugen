@@ -113,3 +113,12 @@ test('original Gmail sender sends HTML with strict independent copy and recipien
   assert.match(composer,/canonical_bg_connecties_linkedin_export/);
   assert.match(composer,/natural_copy_ok:qv\.checks\.natural_copy_ok/);
 });
+
+test('first-degree connection comes from matching CRM identity, not action source URL',()=>{
+  const composer=fs.readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
+  assert.match(composer,/matching_basis:'person_key_and_recipient_email'/);
+  assert.match(composer,/\.eq\('sleutel',personKey\)\.eq\('email',recipientEmail\)/);
+  assert.match(composer,/connection\?\.bron==='linkedin-export'/);
+  assert.match(composer,/connectedOn&&/);
+  assert.doesNotMatch(composer,/&&\s*\/\^https:\\\/\\\/www\\\.linkedin\\\.com\\\/in\\\/\/i\.test\(clean\(workingAction\.source_url\)\)/);
+});
