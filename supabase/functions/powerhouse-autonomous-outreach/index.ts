@@ -109,7 +109,7 @@ Deno.serve(async(req)=>{
   const composerBody:any=await composerResponse.json().catch(()=>({}));
   if(!composerResponse.ok||composerBody?.ok!==true)throw{code:'HUMAN_COMPOSER_UNAVAILABLE',status:composerResponse.status,payload:safe(composerBody),retryable:true};
   await db.rpc('powerhouse_refresh_message_plans_v1',{p_limit:100});
-  const{data:acts,error}=await db.from('powerhouse_sales_actions').select('action_id,person_key,company_key,person_name,company_name,role,message_draft,evidence,priority,updated_at').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);if(error)throw{code:'OUTREACH_READ',message:error.message};
+  const{data:acts,error}=await db.from('powerhouse_sales_actions').select('action_id,person_key,company_key,person_name,company_name,role,source_url,message_draft,evidence,priority,updated_at').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);if(error)throw{code:'OUTREACH_READ',message:error.message};
   
   for(const a of acts||[]){
    // P0: the original SQL watchdog can return an uncertain provider send
