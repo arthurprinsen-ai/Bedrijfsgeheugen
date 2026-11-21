@@ -101,7 +101,8 @@ test('original Gmail sender sends HTML with strict independent copy and recipien
   const sender=fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
   const composer=fs.readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
   assert.match(sender,/is_html:true/);
-  assert.match(sender,/renderBrandedOutreachHtml\(body\)/);
+  assert.match(sender,/renderBrandedOutreachHtml\(body/);
+  assert.match(sender,/send\(key,acct,to,sub,withOptOutLine\(body\)\)/);
   assert.match(sender,/assessHumanOutreachCopy\(a,\{\},/);
   assert.match(sender,/composer\?\.natural_copy_ok!==true/);
   assert.match(sender,/verifyRecipientAuthority/);
