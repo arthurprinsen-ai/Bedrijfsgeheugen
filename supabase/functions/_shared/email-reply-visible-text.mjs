@@ -14,16 +14,35 @@ const QUOTE_HEADER=[
 ];
 const OUR_OPT_OUT_FOOTER=/^wil je geen (?:berichten|mail|e-mails?) meer van mij\?\s*antwoord met\s*["'“”]?afmelden/i;
 
+// This is not an HTML sanitizer or renderer. If markup is present, accept
+// ONLY harmless structural tags and reject the entire reply on any unknown,
+// incomplete, or malformed token. Never pass a partially stripped HTML string.
+function strictlyVisibleHtmlText(html){
+  let output='',offset=0;
+  while(offset<html.length){
+    const open=html.indexOf('<',offset);
+    const plain=html.slice(offset,open<0?html.length:open);
+    if(plain.includes('>'))return '';
+    output+=plain;
+    if(open<0)break;
+    const close=html.indexOf('>',open+1);
+    if(close<0)return '';
+    const token=html.slice(open+1,close).trim();
+    if(!/^\/?(?:div|p|span|br|li)\b(?:\s+(?:class|dir|style|id)\s*=\s*(?:"[^"<>]*"|'[^'<>]*'))*\s*\/?$/i.test(token))return '';
+    if(/^\/(?:div|p|li)\b/i.test(token)||/^br\b/i.test(token))output+='\n';
+    offset=close+1;
+  }
+  return output.replace(/&nbsp;|&#160;/gi,' ')
+    .replace(/&quot;|&#34;/gi,'"').replace(/&amp;/gi,'&');
+}
+
 export function extractVisibleEmailReply(raw){
   const body=clean(raw).slice(0,24000);
   // Some Gmail/Composio payloads use HTML instead of plain text. Strip the
   // quoted HTML subtree BEFORE flattening tags or matching unsubscribe terms.
   const unquotedHtml=body.split(/<(?:div\b[^>]*\b(?:gmail_quote|yahoo_quoted)\b|blockquote\b)[^>]*>/i)[0];
-  const htmlLike=/<\/?(?:div|p|span|br|blockquote)\b/i.test(unquotedHtml);
-  const normalized=htmlLike
-    ?unquotedHtml.replace(/<br\s*\/?>/gi,'\n').replace(/<\/(?:div|p|li)>/gi,'\n')
-      .replace(/<[^>]*>/g,'').replace(/&nbsp;|&#160;/gi,' ')
-      .replace(/&quot;|&#34;/gi,'"').replace(/&amp;/gi,'&')
+  const normalized=unquotedHtml.includes('<')||unquotedHtml.includes('>')
+    ?strictlyVisibleHtmlText(unquotedHtml)
     :unquotedHtml;
   const lines=normalized.split('\n');
   const visible=[];
