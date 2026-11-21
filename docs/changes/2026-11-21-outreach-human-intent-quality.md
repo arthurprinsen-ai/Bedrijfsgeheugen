@@ -26,3 +26,16 @@ The existing `editorial-council-context.mjs` appends its longform trusted-adviso
 - Production function version/hash readback and real provider + reply outcome evidence establish operational effect. Until then this remains `CANDIDATE_NOT_LIVE`.
 
 No new outreach sends or re-sends are authorized by this code change. A database incident is recorded with status `guard_required`, not `verified`.
+
+## Research-to-code addendum: startup email (21 November 2026)
+Sources: Hunter 2026 State of Email Outreach (31m messages from 2025, observational targeting/response relationships), Gong on interest calls to action, DDMA and ACM Dutch anti-spam requirements, Google Gmail sender requirements, and public Bedrijfsgeheugen privacy policy. Sources: https://hunter.io/the-state-of-cold-email ; https://www.gong.io/blog/this-surprising-cold-email-cta-will-help-you-book-a-lot-more-meetings ; https://ddma.nl/legal/wetgeving/e-mail/ ; https://www.acm.nl/nl/verkoop-aan-consumenten/reclame-en-verleiden/spam-voorkomen-uw-reclame ; https://support.google.com/mail/answer/81126 ; https://www.bedrijfsgeheugen.nl/en/privacy .
+
+Read-only evidence: 23,284 dated first-degree LinkedIn export records, 605 known emails, 123 human_approved. Of the 605, 356 have a generic approval.basis claiming existing LinkedIn relationship or business address as justification, none contain email_marketing_permission proof. 231 contacts imported from Notion have can_send=false. No assumption these records are legally reachable.
+
+Source candidate implementation: (1) relationship identity by exact person key + recipient email; (2) recipient-specific verified thematic hook, not role-only or LinkedIn membership; (3) role-hypothesis for content segment only, no imagined pain; (4) reject early meeting-pressure, multiple questions and AI editorial artifacts; (5) original Gmail sender additionally requires exact CRM human approval and a specifically documented opt-in or verified existing-customer soft opt-in, keeping original suppressions, 14-day cadence and provider no-resend barriers.
+
+Proof schema: bg_connecties.extra.email_marketing_permission with basis explicit_opt_in, granted=true, purpose commercial_email, date and evidence_ref; OR basis existing_customer_soft_opt_in, verified original transaction, similar products or services, documented opt-out offered at collection and in current send, date and evidence_ref. The evidence must be real; creating a field with unsupported claims is forbidden. Existing generic approval fields do not satisfy this contract. No automatic bulk emails.
+
+Operational KPIs, all unique-person based: authorized_contacts, verified_provider_sent, positive_reply, negative_reply, unsubscribe, delivery_failure, meeting, qualified_opportunity, independently_paid_order. Open rate is secondary/uncertain. Hypotheses are evaluated by single-variable cohort tests, logged sample size and baseline; never use generic Hunter/Gong percentages as achieved result. Heartbeat only marks outcomes green on independent source readback.
+
+Rollout remains CANDIDATE_NOT_LIVE until exact HEAD Required + CodeQL + backend, authorized protected merge, deployed edge version and genuine authorized provider canary readback. Sender withholds commercial email with absent legal authority even if code is deployed.
