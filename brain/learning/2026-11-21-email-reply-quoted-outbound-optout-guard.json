@@ -41,6 +41,9 @@
     ],
     "canary": [
       "tests/brain-email-reply-quoted-footer-20261121.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-email-reply-quoted-footer-20261121.test.mjs"
     ]
   },
   "tests": [
