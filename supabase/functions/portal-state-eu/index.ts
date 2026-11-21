@@ -169,7 +169,7 @@ Deno.serve(async(req:Request)=>{
       client.from('powerhouse_runtime_events')
         .select('occurred_at,state,data_quality')
         .eq('event_type','commercial_heartbeat')
-        .eq('source','powerhouse-commercial-heartbeat-runner')
+        .eq('source','powerhouse-commercial-heartbeat-v1')
         .order('occurred_at',{ascending:false}).limit(1)
     ]);
     if(entryError||heartbeatError)return json({error:'PORTAL_MONITORING_READ_FAILED'},503);
