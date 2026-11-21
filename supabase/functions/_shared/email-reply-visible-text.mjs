@@ -15,7 +15,17 @@ const QUOTE_HEADER=[
 const OUR_OPT_OUT_FOOTER=/^wil je geen (?:berichten|mail|e-mails?) meer van mij\?\s*antwoord met\s*["'“”]?afmelden/i;
 
 export function extractVisibleEmailReply(raw){
-  const lines=clean(raw).slice(0,24000).split('\n');
+  const body=clean(raw).slice(0,24000);
+  // Some Gmail/Composio payloads use HTML instead of plain text. Strip the
+  // quoted HTML subtree BEFORE flattening tags or matching unsubscribe terms.
+  const unquotedHtml=body.split(/<(?:div\b[^>]*\b(?:gmail_quote|yahoo_quoted)\b|blockquote\b)[^>]*>/i)[0];
+  const htmlLike=/<\/?(?:div|p|span|br|blockquote)\b/i.test(unquotedHtml);
+  const normalized=htmlLike
+    ?unquotedHtml.replace(/<br\s*\/?>/gi,'\n').replace(/<\/(?:div|p|li)>/gi,'\n')
+      .replace(/<[^>]*>/g,'').replace(/&nbsp;|&#160;/gi,' ')
+      .replace(/&quot;|&#34;/gi,'"').replace(/&amp;/gi,'&')
+    :unquotedHtml;
+  const lines=normalized.split('\n');
   const visible=[];
   for(const line of lines){
     const t=line.trim();
