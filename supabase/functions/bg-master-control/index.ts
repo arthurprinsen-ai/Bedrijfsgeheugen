@@ -1,3 +1,7 @@
+// INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+// This endpoint's denied/missing-guard outcome is checked by the EXISTING Security Operations
+// live monitor and recorded in the canonical ONE BRAIN security incident lineage.
+// This comment is a coverage marker, not a claim of in-request incident writeback.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { isAuthorizedRepairRequest } from './security.mjs';
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store','x-content-type-options':'nosniff'}});
