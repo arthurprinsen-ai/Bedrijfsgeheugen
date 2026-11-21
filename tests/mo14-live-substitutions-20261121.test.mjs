@@ -47,8 +47,12 @@ test('second substitution updates both counters and known players total on/off e
 });
 test('hard roles, bench membership and changing past timestamps fail closed with no mutation',()=>{
  const {E,L}=harness();let live=L.start(E.planOne(E.makeModel(),0));
- assert.match(L.substitute(live,'LA','Coco-Mijn').error,/bank/);
- assert.match(L.substitute(live,'LC','Femke').error,/positie/);
+ const offensive=L.substitute(live,'RV','Femke');assert.ok(!offensive.error);
+ assert.match(L.substitute(offensive,'LA','Coco-Mijn').error,/positie/);
+ const defensive=L.substitute(live,'LA','Bobbi');assert.ok(!defensive.error);
+ assert.match(L.substitute(defensive,'LC','Isis').error,/positie/);
+ // A playing preference is advisory: Femke is allowed at central defense if a coach decides.
+ assert.ok(!L.substitute(live,'LC','Femke').error);
  assert.match(L.substitute(live,'LV','Jackie').error,/bank/);
  assert.match(L.clock(live,71).error,/tussen 0 en 70/);
  live=L.clock(live,16);live=L.substitute(live,'LA','Bobbi');
