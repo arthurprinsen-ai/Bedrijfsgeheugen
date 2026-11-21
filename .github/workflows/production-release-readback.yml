@@ -16,8 +16,7 @@ on:
       - 'config/powerhouse-agent-delivery-scheduler-v1.json'
       - 'tools/site-shell/verify-targeted-website-routes.mjs'
       - 'tools/delivery/**'
-      # Keep native public Portal runtime build changes in existing live readback.
-      # Other tools/ci changes remain classified by the canonical deploy impact gate.
+      - 'tools/ci/**'
       - 'brain/policies/**'
       - 'AGENTS.md'
       - 'platform/system-map/canonical-system-map.mjs'
