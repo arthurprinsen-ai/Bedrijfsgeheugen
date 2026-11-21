@@ -1,0 +1,57 @@
+{
+  "contract": "POWERHOUSE_ORIGINAL_PORTAL_RELEASE_STATUS_IMPORT_404_V1",
+  "date": "2026-11-21",
+  "fingerprint": "powerhouse|portal-v2|canonical-tools-release-classifier-private-404-breaks-app-boot|20261121-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "security_sensitive": true,
+    "requires_authorized_delivery": true,
+    "requires_independent_provider_readback": true
+  },
+  "root_cause": "Original portal-v2/modules/powerhouse-observability.js imported pure deriveReleaseStatus directly from ../../tools/netlify/release-status.mjs. Original Netlify _redirects intentionally serves /tools/* /404.html 404! to forbid publishing internal tools. Even after exactly seven approved Brain/Platform modules were separately published, the unrecognized eighth pure dependency still fetched https://www.bedrijfsgeheugen.nl/tools/netlify/release-status.mjs (HTTP404). This aborts original Portal V2 ESM module evaluation before app boot; watchdog correctly reports failure.",
+  "prevention": "Keep all three private /tools, /brain and /platform forced 404 gates. Extend ONLY existing audited original portal-safe-runtime build whitelist with exact pure tools/netlify/release-status.mjs; copy its unchanged canonical bytes into /portal-v2/browser-runtime/tools/netlify/release-status.mjs, preserve original canonical Node-compatible source import, rewrite that import exclusively in the generated browser build into its portal-only public path, and fail closed for any unlisted tools import. Verify SHA256 public bytes against canonical source, real app mount, two mobile/desktop viewports, original immutable deploy and original CI/browser readback. Never blanket publish /tools or bypass browser boot gate.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_owner": "Original ONE BRAIN Engineering / Portal Living Interface and Delivery Self Optimization",
+    "original_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44906714441",
+    "original_failed_job_id": 136855593141,
+    "github_exact_main_sha": "9e0f5a0c64782ce319779e1a723b01e34bc661d4",
+    "netlify_live_deploy_id": "6b0196081d286bc840e104e8",
+    "netlify_observed_from_utc": "2026-11-21T13:08:00Z",
+    "netlify_observed_to_utc": "2026-11-21T13:11:00Z",
+    "status_code": 404,
+    "missing_url": "https://www.bedrijfsgeheugen.nl/tools/netlify/release-status.mjs",
+    "observed_404_count": 7,
+    "old_browser_runtime_source_count": 7,
+    "new_browser_runtime_source_count": 8,
+    "affected_original_import": "portal-v2/modules/powerhouse-observability.js",
+    "original_security_gate": "/tools/*  /404.html  404!",
+    "original_browser_recovery": "PORTAL_STARTUP_TIMEOUT on mobile 390 and desktop 1440, hydrated true, mounted false; failed_asset_count 1",
+    "already_original_scoped_recovery": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44909907123",
+    "original_innovation_obligations_open": 14,
+    "independently_measured_business_outcomes": 0,
+    "new_protected_pr_live_proven": false,
+    "post_merge_original_browser_green": false
+  },
+  "safety": {
+    "private_source_roots_remain_blocked": true,
+    "public_whitelist_exact": true,
+    "canonical_source_unchanged": true,
+    "secret_sources_excluded": true,
+    "no_new_scheduler": true,
+    "no_new_agent": true,
+    "no_external_send": true,
+    "no_approval_bypass": true
+  },
+  "expected_close": "Protected Required and CodeQL, exact Netlify provider READY SHA + canonical unsigned public modules copied from true canonical source, original production-release-readback proves all eight exact SHA256 bytes, mounted portal app on mobile and desktop, no existing failure panel. Separate Heartbeat and customer outcome proof still mandatory before innovational closure."
+}

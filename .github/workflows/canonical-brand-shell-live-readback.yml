@@ -17,6 +17,8 @@ on:
       - 'sitemap.xml'
       - 'netlify.toml'
       - 'tools/site-shell/**'
+      - 'portal-v2/**'
+      - 'tools/ci/build-portal-public-runtime.mjs'
       - 'tools/seo-order-engine/**'
       - 'netlify/functions/growth-event.mjs'
       - 'tests/site-shell-*.test.mjs'
