@@ -38,9 +38,18 @@ function strictlyVisibleHtmlText(html){
 
 export function extractVisibleEmailReply(raw){
   const body=clean(raw).slice(0,24000);
+  // Plain-text "Op ... schreef <person@email>:" is not HTML; discard the
+  // quoted block before strict HTML validation, so genuine top-post replies
+  // are never lost merely because the quote header contains angle brackets.
+  const newlyWrittenLines=[];
+  for(const line of body.split('\n')){
+    if(QUOTE_HEADER.some(regex=>regex.test(line.trim())))break;
+    newlyWrittenLines.push(line);
+  }
+  const topPost=newlyWrittenLines.join('\n');
   // Some Gmail/Composio payloads use HTML instead of plain text. Strip the
-  // quoted HTML subtree BEFORE flattening tags or matching unsubscribe terms.
-  const unquotedHtml=body.split(/<(?:div\b[^>]*\b(?:gmail_quote|yahoo_quoted)\b|blockquote\b)[^>]*>/i)[0];
+  // quoted HTML subtree BEFORE parsing allowlisted tags or matching intent.
+  const unquotedHtml=topPost.split(/<(?:div\b[^>]*\b(?:gmail_quote|yahoo_quoted)\b|blockquote\b)[^>]*>/i)[0];
   const normalized=unquotedHtml.includes('<')||unquotedHtml.includes('>')
     ?strictlyVisibleHtmlText(unquotedHtml)
     :unquotedHtml;
