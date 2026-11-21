@@ -116,6 +116,17 @@ test('actual Portal browser vendor build is classified as Netlify runtime and re
   assert.equal(actual.netlifyRuntimeRequired,true);
   assert.equal(actual.runtimeChangedPaths.includes(builder),true);
 });
+test('existing original GitHub release and site-wide browser workflows are triggered by portal build changes',async()=>{
+  const release=await readFile(path.join(root,'.github/workflows/production-release-readback.yml'),'utf8');
+  const brand=await readFile(path.join(root,'.github/workflows/canonical-brand-shell-live-readback.yml'),'utf8');
+  // A blanket tools/ci ignore would silently hide hosted asset changes.
+  assert.equal(release.includes("      - 'tools/ci/**'"),false);
+  assert.equal(brand.includes("      - 'portal-v2/**'"),true);
+  assert.equal(brand.includes("      - 'tools/ci/build-portal-public-runtime.mjs'"),true);
+  assert.equal(release.includes("Verify affected production routes"),true);
+  assert.equal(brand.includes("Verify every public production page is visibly rendered"),true);
+  assert.equal(brand.includes("Production UI visual regression readback"),true);
+});
 test('first-party release readback hashes exact public module bytes and rejects one missing script',async()=>{
   const sources=await Promise.all(PUBLIC_PORTAL_BROWSER_SOURCES.map(async source=>{
     const bytes=await readFile(path.join(root,source));
