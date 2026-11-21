@@ -1,5 +1,5 @@
 import {renderBrandedOutreachHtml} from '../_shared/brand-outreach-signature.mjs';
-import {assessHumanOutreachCopy} from '../_shared/outreach-human-copy-guard.mjs';
+import {assessHumanOutreachCopy,hasDocumentedCommercialEmailAuthority} from '../_shared/outreach-human-copy-guard.mjs';
 import {composerHandoffForAction,outboundDeliveryGap,sourceResearchTaskForAction,providerUncertaintyNoResend} from '../_shared/outreach-composer-hold.mjs';
 import {verifiedGmailReadback} from '../_shared/verified-gmail-readback.mjs';
 import {createClient} from 'npm:@supabase/supabase-js@2';
@@ -46,7 +46,8 @@ async function verifyRecipientAuthority(db:any,a:any,to:string):Promise<boolean>
  if(!recipient||!person||s(a?.evidence?.recipient_email)!==recipient||a?.evidence?.human_approved!==true)return false;
  const{data,error}=await db.from('bg_connecties').select('sleutel,linkedin_url,extra').eq('email',recipient).limit(10);
  if(error)throw{code:'RECIPIENT_AUTHORITY_READ',message:error.message};
- return (data||[]).some((c:any)=>(s(c?.sleutel)===person||s(c?.linkedin_url)===person)&&c?.extra?.human_approved===true);
+ return (data||[]).some((c:any)=>(s(c?.sleutel)===person||s(c?.linkedin_url)===person)&&
+   c?.extra?.human_approved===true&&hasDocumentedCommercialEmailAuthority(c.extra));
 }
 // Every autonomous mail carries a plain opt-out; the reply loop turns it into an active suppression.
 const OPT_OUT_LINE='Wil je geen mail meer van mij? Antwoord met "afmelden" en ik mail je niet meer.';
