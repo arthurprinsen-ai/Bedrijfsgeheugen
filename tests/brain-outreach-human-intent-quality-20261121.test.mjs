@@ -89,7 +89,7 @@ test('HTML signature has official logo, website and visible text without trackin
   const plain=renderBrandedOutreachPlainText('Hoi Manuela');
   assert.match(html,/<img src="https:\/\/www\.bedrijfsgeheugen\.nl\/assets\/merk\/logo-merk\.png"/);
   // Review closure: parse each complete href rather than trusting a URL substring.
-  const hrefs=[...html.matchAll(/\\shref="([^"]+)"/g)].map(match=>match[1]);
+  const hrefs=[...html.matchAll(/\shref="([^"]+)"/g)].map(match=>match[1]);
   const httpsHrefs=hrefs.filter(href=>new URL(href).protocol==='https:');
   assert.deepEqual(httpsHrefs,[BEDRIJFSGEHEUGEN_SITE,BEDRIJFSGEHEUGEN_SITE]);
   for(const href of httpsHrefs){
@@ -103,7 +103,10 @@ test('HTML signature has official logo, website and visible text without trackin
   assert.match(html,/Arthur Prinsen/);
   assert.match(html,/afmelden/);
   assert.ok(!/pixel|utm_|tracking|redirector/i.test(html));
-  assert.ok(plain.includes('https://www.bedrijfsgeheugen.nl/'));
+  const plainUrlLines=plain.split(/\r?\n/).map(line=>line.trim());
+  assert.ok(plainUrlLines.some(line=>{
+    try{return new URL(line).href===BEDRIJFSGEHEUGEN_SITE;}catch{return false;}
+  }),'text signature contains exactly the allowed canonical complete site URL');
   assert.ok(plain.includes('Bedrijfsgeheugen'));
   assert.equal(BEDRIJFSGEHEUGEN_SITE,'https://www.bedrijfsgeheugen.nl/');
   assert.equal(BEDRIJFSGEHEUGEN_LOGO,'https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png');
