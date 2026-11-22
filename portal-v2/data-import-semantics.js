@@ -50,19 +50,19 @@ export const IMPORT_ROLES=Object.freeze([
  {id:"unknown",label:"Nog te bepalen"}
 ]);
 const categorySignals=Object.freeze({
- sales:/\b(omzet|revenue|verkoop|sales|orders?|bestellingen|orderwaarde|turnover)\b/i,
- invoices:/\b(factuur|facturen|invoice|invoices|debiteur|debiteuren|vervaldatum|betaaltermijn|outstanding)\b/i,
- customers:/\b(klant|klanten|customer|customers|crm|contactpersoon|relatiebeheer|leads?|accountnaam)\b/i,
- service:/\b(incident|incidenten|tickets?|servicenow|cases?|storingen?|afhandeltijd|responstijd|sla|mttc|mtt[cr])\b/i,
- inventory:/\b(voorraad|stock|inventory|sku|artikelen?|magazijn|warehouse|leveringen?)\b/i,
+ sales:/\b(omzet\w*|revenue\w*|verkoop\w*|sales|orders?|order\w*|bestellingen|turnover)\b/i,
+ invoices:/\b(factuur\w*|invoice\w*|debiteur\w*|vervaldatum|betaaltermijn|outstanding)\b/i,
+ customers:/\b(klant\w*|customer\w*|crm|contactpersoon|relatiebeheer|leads?|accountnaam)\b/i,
+ service:/\b(incident\w*|ticket\w*|servicenow|cases?|caseid|storingen?|afhandeltijd|responstijd|sla|mttc|mtt[cr])\b/i,
+ inventory:/\b(voorraad\w*|stock\w*|inventory|sku|artikel\w*|magazijn|warehouse|leveringen?)\b/i,
  finance:/\b(kosten|cost|costs|budget|grootboek|winst|profit|verlies|ebitda|balans|cashflow)\b/i,
- people:/\b(medewerker|medewerkers|employee|employees|personeel|fte|verzuim|dienstverband|salaris|payroll)\b/i,
+ people:/\b(medewerker\w*|employee\w*|personeel|fte|verzuim|dienstverband|salaris|payroll)\b/i,
  marketing:/\b(campagne|campaign|utm|impressions|clicks|advertentie|advertenties|conversies?|sessions|pageviews)\b/i,
  energy:/\b(kwh|energie|energy|gasverbruik|stroomverbruik|teruglevering|zonnepanelen|vermogen)\b/i,
  projects:/\b(project|projecten|planning|mijlpaal|milestone|resourceplanning|begrotingsuren)\b/i
 });
 const hardRestricted=/(^|[^a-z])(bsn|burgerservicenummer|paspoortnummer|passportnumber|wachtwoord|password|api.?key|secret.?key|access.?token|medische.?diagnose|diagnose|medisch|gezondheid|health.?record)([^a-z]|$)/i;
-const personalPattern=/\b(naam|voornaam|achternaam|name|firstname|lastname|e.?mail|email|telefoon|phone|mobiel|adres|address|postcode|geboortedatum|dateofbirth|iban|bankrekening|salaris|salary|klantnummer|customerid|medewerkernummer|employeeid)\b/i;
+const personalPattern=/\b(naam|voornaam|achternaam|name|firstname|lastname|e.?mail|email|telefoon|phone|mobiel|adres|address|postcode|geboortedatum|dateofbirth|iban|bankrekening|salaris|salary|klantnummer|klant id|customerid|customer id|medewerkernummer|medewerker id|employeeid|employee id)\b/i;
 const DATE=/\b(datum|date|tijd|time|created|updated|verval|deadline|maand|month|jaar|year|periode|period)\b/i;
 const IDENTIFIER=/\b(id|nummer|number|nr|code|uuid|reference|referentie|sku|ticketid|caseid)\b/i;
 const AMOUNT=/\b(bedrag|amount|omzet|revenue|kosten|cost|prijs|price|waarde|value|saldo|balance|budget|eur|euro|usd)\b/i;
@@ -178,7 +178,7 @@ export function confirmImportContext(analysis,form={}){
     version:"portal-file-semantic-context-v1",
     kind,area,grain,purpose,sourceSystem:system||"Handmatige bestandsimport",
     columnMappings:mappings,
-    period:analysis.period,
+    period:analysis.period&&mappings.some(m=>m.column===analysis.period.column&&m.role==="date")?analysis.period:null,
     quality:analysis.quality,
     sensitivity:analysis.personalColumns?.length||mappings.some(m=>m.role==="personal")?"personal":"business",
     detection:{suggestedKind:analysis.suggestedKind,confidence:analysis.confidence,matchedColumns:analysis.matchedColumns},
