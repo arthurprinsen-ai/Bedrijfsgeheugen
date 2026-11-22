@@ -223,9 +223,11 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     fieldLabels[0].hidden=p.mode!=='INCREMENTAL_UPSERT'&&p.direction!=='BIDIRECTIONAL';
     fieldLabels[1].hidden=p.mode!=='INCREMENTAL_UPSERT';
     const runtime=box.querySelector('[data-bg-policy-availability]');
-    const pattern=transferSummary(p);
-    runtime.textContent=pattern.direction+' · '+pattern.cadence+
-      ' · dit is een ontwerp. Een interval, webhook of tweerichtingskeuze start niet zelf een synchronisatie.';
+    try{
+      const pattern=transferSummary(p);
+      runtime.textContent=pattern.direction+' · '+pattern.cadence+
+        ' · dit is een ontwerp. Een interval, webhook of tweerichtingskeuze start niet zelf een synchronisatie.';
+    }catch(error){runtime.textContent='Onvolledig: kies een unieke sleutel en een wijzigingsveld voordat je kunt opslaan. '+String(error?.code||'');}
   };
 
 
@@ -438,7 +440,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   });
   root.addEventListener('click',async event=>{
     const answerKey=event.target?.dataset?.bgAnswerButton;
-    if(answerKey&&state){invalidateEvidence(undefined,true);state=applyAnswer(state,answerKey,true);definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);renderQuestion(root,state);return;}
+    if(answerKey&&state){invalidateEvidence(undefined,true);state=applyAnswer(state,answerKey,true);showDefinition();renderQuestion(root,state);return;}
     if(event.target?.matches('[data-bg-safe-test]')&&state){
       try{
         if(!state.answers.selectedFields?.length){say('Kies minimaal één gegevensveld.');return;}
