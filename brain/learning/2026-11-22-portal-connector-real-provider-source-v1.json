@@ -1,0 +1,67 @@
+{
+  "fingerprint": "portal-connectors|sample-test-is-not-real-source-ingestion|20261122-v1",
+  "owner": "Existing Portal V2 Koppeling Studio → Netlify connector API → Supabase → customer pages",
+  "date": "2026-11-22",
+  "status": "CANDIDATE_NOT_LIVE",
+  "rootCause": "Connector Studio could save drafts and run SAMPLE_ONLY safe-tests but real provider source adapters, per-tenant credential storage, source persistence and customer page values were not implemented; zero stored connectors, no live customer sync.",
+  "preventionRule": "Provider verified is TRUE only after authenticated actual GET on pinned provider host, full response/field validation, encrypted per-tenant credential storage, exact saved source snapshot with server readback and same-version receipt. Never infer live from preview, safe test, Active configuration or scheduled interval. Only approved source fields can be shown on selected portal page. Never auto-write KPI results.",
+  "implementation": {
+    "provider": "AFAS Profit REST GetConnector read-only",
+    "host": "numeric-env.rest.afas.online",
+    "mode": "explicit user token / approved fields / manual sync",
+    "token": "Supabase Vault via service-role-only RPC, revoked locally on user request",
+    "recordStore": "public.connector_source_snapshots_v1, tenant composite PK, RLS, service_role only",
+    "pageData": "GET /api/connectors/page-records, signed-in tenant + authorized route + same-version verified source receipt",
+    "externalWrites": false,
+    "scheduling": "no new scheduler; manual sync; existing original Heartbeat integration still requires independent execution proof",
+    "enabledProviders": [
+      "afas"
+    ],
+    "notYetEnabled": [
+      "exact",
+      "microsoft-365",
+      "sharepoint",
+      "salesforce",
+      "shopify",
+      "sql",
+      "generic-api"
+    ],
+    "risk": "MFA/OAuth and provider-user authorization never bypassed"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-connector-real-afas-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-connector-real-afas-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-connector-real-afas-v1.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED_REAL_PROVIDER"
+    ]
+  },
+  "proofGates": [
+    "Required/CodeQL exact head",
+    "Supabase original project migration applied and RLS verified",
+    "protected GitHub merge",
+    "Netlify exact merge SHA READY",
+    "public portal/Studio controls readback",
+    "real customer AFAS token consent, source rows persisted, page rendered, independent readback",
+    "named Brain/Heartbeat consumer acknowledgment for downstream automation"
+  ],
+  "incidentClass": "SAMPLE_ONLY_CONNECTOR_MISREPRESENTED_AS_LIVE",
+  "noNewScheduler": true,
+  "noParallelWriter": true,
+  "noFabricatedData": true,
+  "root_cause": "Connector Studio could save drafts and run SAMPLE_ONLY safe-tests but real provider source adapters, per-tenant credential storage, source persistence and customer page values were not implemented; zero stored connectors, no live customer sync.",
+  "prevention_rule": "Provider verified is TRUE only after authenticated actual GET on pinned provider host, full response/field validation, encrypted per-tenant credential storage, exact saved source snapshot with server readback and same-version receipt. Never infer live from preview, safe test, Active configuration or scheduled interval. Only approved source fields can be shown on selected portal page. Never auto-write KPI results.",
+  "compiler": {
+    "failure_class": "SAMPLE_ONLY_CONNECTOR_MISREPRESENTED_AS_LIVE",
+    "scope": "PORTAL_CONNECTOR_PROVIDER_INGESTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

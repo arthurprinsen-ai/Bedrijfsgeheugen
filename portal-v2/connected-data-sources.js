@@ -103,7 +103,9 @@ export async function mountConnectedDataSources(container,{pageId,fetchFn=global
   const action=create('div','bg-sourcejourney__action');
   const link=set(create('a','bg-sourcejourney__button'),'Koppeling beheren →');link.href=PORTAL_STUDIO_URL;link.setAttribute('data-open-page','koppelingen');
   action.append(link,set(create('p','bg-sourcejourney__footnote'),'Geen geschatte omzet, voorbeeldcijfers of AI-conclusies zonder toestemming en echte broncontrole.'));
-  panel.append(action);return panel;
+  panel.append(action);
+  if(container.querySelector('[data-connector-live-rows]'))panel.remove();
+  return panel;
  }catch{
   set(intro,'We kunnen je broninstellingen momenteel niet controleren. Er worden geen cijfers aangenomen.');
   const link=set(create('a','bg-sourcejourney__button'),'Bekijk koppelingen →');link.href=PORTAL_STUDIO_URL;link.setAttribute('data-open-page','koppelingen');panel.append(link);
