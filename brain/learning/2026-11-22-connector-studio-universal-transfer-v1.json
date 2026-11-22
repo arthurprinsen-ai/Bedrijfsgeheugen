@@ -14,8 +14,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-connector-studio-universal-transfer-v1.test.mjs",
-      "tests/connector-koppelingen-wizard.test.mjs"
+      "tests/brain-connector-studio-universal-transfer-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-connector-studio-universal-transfer-v1.test.mjs"
@@ -32,7 +31,11 @@
     "automatic_scheduler_added": false,
     "new_writer_added": false,
     "versions_bound": true,
-    "source_readback_required": true
+    "source_readback_required": true,
+    "baselineRegressions": [
+      "tests/connector-koppelingen-wizard.test.mjs",
+      "tests/brain-portal-connector-real-afas-v1.test.mjs"
+    ]
   },
   "gates": [
     "protected PR/Required/CodeQL",
