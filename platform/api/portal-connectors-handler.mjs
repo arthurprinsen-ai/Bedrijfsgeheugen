@@ -137,6 +137,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     try{
       const selected=connector.routing?.selectedFields||[];
       const hasSelected=Array.isArray(selected)&&selected.length>0;
+      const connectionOnly=connector.dataUse?.mode==='CONNECTION_ONLY'&&connector.target?.type==='source-only';
       const result=await afasReader({
         source:connector.source,credential,selectedFields:hasSelected?selected:null,
         personalAuthorized:connector.source?.personalDataAuthorized===true,probeOnly:!hasSelected
@@ -147,15 +148,15 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
         if(!await store.setAfasCredential(tenantId,id,credential))return json({error:'AFAS_VAULT_WRITE_UNCONFIRMED'},503);
       }
       const probe=afasSafeProbe(result,{selectedFields:hasSelected?selected:[]});
-      if(!hasSelected)return json({status:'FIELD_SELECTION_REQUIRED',...probe,
+      if(!hasSelected&&!connectionOnly)return json({status:'FIELD_SELECTION_REQUIRED',...probe,
         message:'AFAS werkt. Kies de benodigde velden en bevestig de portaalbestemming voordat je activeert.'});
-      if(!await store.checkSourceStorage(tenantId))return json({error:'CONNECTOR_SOURCE_STORE_NOT_CONFIGURED'},503);
+      if(!connectionOnly&&!await store.checkSourceStorage(tenantId))return json({error:'CONNECTOR_SOURCE_STORE_NOT_CONFIGURED'},503);
       const evidence={
         configVersion:connector.version,testExecutionId:'afas-probe-'+Date.now(),
         sourceReadSuccess:true,proofLevel:'PROVIDER_VERIFIED',
         extractionResult:{ok:true,mode:'real-provider-read',documentType:'record'},
         validationResult:{ok:true,selectedColumns:selected.length},
-        targetSafeTestResult:{ok:true,reference:'connector-source-storage-availability-verified'},
+        targetSafeTestResult:{ok:true,reference:connectionOnly?'provider-connection-only-no-portal-data':'connector-source-storage-availability-verified'},
         sourceHash:result.sourceHash,recordCount:result.recordCount,
         rowValuesStored:false
       };
@@ -183,6 +184,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
     if(connector.state!=='Active'||connector?.source?.type!=='afas')
       return json({error:'ACTIVE_AFAS_CONNECTOR_REQUIRED'},409);
+    if(connector.dataUse?.mode==='CONNECTION_ONLY')return json({error:'PORTAL_DATA_USE_NOT_AUTHORIZED'},409);
     const guard=connectorDataUseActivationGuard(connector);
     if(!guard.allowed)return json({error:guard.reason},409);
     if(typeof sovereignty?.assertConnectorAllowed==='function'){
