@@ -18,7 +18,8 @@ export const DATA_USE_CSS=`.bg-kw__privacy{margin:1.2rem 0;padding:1rem;border:1
 export const ROUTING_CSS=`.bg-kw__routing{border:1px solid #cad4df;border-radius:16px;padding:1rem;margin:.8rem 0;background:#fff}.bg-kw__routing legend{font-weight:800}.bg-kw__routechoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem}.bg-kw__routechoices label{display:flex;align-items:flex-start;gap:.55rem;border:1px solid #d8e0e9;border-radius:12px;padding:.7rem;cursor:pointer}.bg-kw__routechoices input{min-width:20px;min-height:20px;accent-color:#2742d6}.bg-kw__routechoices label:has(input:checked){background:#f1f5ff;border-color:#2742d6}.bg-kw__routechoices small{display:block;color:#4b5563}.bg-kw__routing[hidden]{display:none}.bg-kw__repair{padding:.9rem;border:1px solid #dfbb80;border-radius:12px;background:#fffaf0;margin-top:1rem}.bg-kw__repair h3{margin:0 0 .3rem}.bg-kw__repair p{margin:.35rem 0}@media(max-width:700px){.bg-kw__routechoices{grid-template-columns:1fr}}`;
 export const TRUST_CSS=`.bg-kw__trust{margin:.75rem 0;padding:1rem;background:#f7faff;border:1px solid #d2dff0;border-radius:16px}.bg-kw__trust-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:.75rem 0;border-top:1px solid #dde5ee}.bg-kw__trust-row strong{color:#223b60}.bg-kw__trust-row p{font-size:.8rem;color:#526078;line-height:1.5}.bg-kw__trust-badge{border-radius:999px;border:1px solid #e0bf88;background:#fff1da;color:#75460d;padding:.35rem .65rem;font-size:.73rem;white-space:nowrap}.bg-kw__trust-badge[data-proof="CONFIGURED"],.bg-kw__trust-badge[data-proof="CONTROL_PRESENT"],.bg-kw__trust-badge[data-proof="DISABLED"]{background:#edf2fa;border-color:#c7d6e5;color:#355477}.bg-kw__trust-summary{font-weight:750;color:#774c15}@media(max-width:390px){.bg-kw__trust-row{display:block}.bg-kw__trust-badge{display:inline-block;margin:.5rem 0}}@media(prefers-reduced-motion:reduce){.bg-kw__trust *{animation:none!important;transition:none!important}}`;
 export const DESIGN_CSS=`.bg-kw__custom,.bg-kw__transfer{border:1px solid #c5d7d8;border-radius:16px;padding:1rem;margin:1rem 0;background:#f8fbfb}.bg-kw__custom h3,.bg-kw__transfer legend{font-size:1.06rem;font-weight:800}.bg-kw__customgrid,.bg-kw__transfergrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.bg-kw__customgrid label,.bg-kw__transfergrid label{display:grid;gap:.35rem;font-size:.86rem;font-weight:650}.bg-kw__customgrid input,.bg-kw__customgrid select,.bg-kw__transfergrid input,.bg-kw__transfergrid select{box-sizing:border-box;min-width:0;width:100%;min-height:44px;border:1px solid #b7cacf;background:#fff;border-radius:9px;padding:8px 10px;color:#183c48}.bg-kw__custom button{margin-top:.8rem}.bg-kw__custom p,.bg-kw__transfer p{font-size:.82rem;max-width:80ch;color:#4b6170}.bg-kw__custom [data-bg-custom-status]{padding:.75rem;border-radius:10px;background:#eaf2f7}.bg-kw__transfer .bg-kw__transfer-note{color:#73551b;font-weight:600;margin-top:.8rem}.bg-kw__transfer label[data-bg-interval-wrap][hidden],.bg-kw__transfer label[data-bg-key-wrap][hidden]{display:none}.bg-kw__custom[hidden],.bg-kw__transfer[hidden]{display:none}.bg-kw__transfer span[data-bg-policy-availability]{display:block;background:#f0f5f4;border-radius:9px;padding:.6rem;margin-top:.55rem;font-size:.78rem}@media(max-width:700px){.bg-kw__custom,.bg-kw__transfer{padding:.8rem}.bg-kw__customgrid,.bg-kw__transfergrid{grid-template-columns:1fr}}`;
-export const wizardStyles=()=>WIZARD_CSS+DATA_USE_CSS+ROUTING_CSS+TRUST_CSS+DESIGN_CSS;
+export const MONITOR_CSS=`.bg-kw__saved-actions{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.55rem 0}.bg-kw__saved-actions button{min-height:44px;max-width:100%;border-radius:9px}.bg-kw__live-monitor{border:1px solid #cededa;border-radius:12px;padding:12px;margin-top:10px;background:#f4faf8}.bg-kw__live-monitor strong{display:block}.bg-kw__live-monitor p{font-size:.84rem;line-height:1.5}.bg-kw__live-monitor p[data-proof="true"]{color:#115d45}.bg-kw__live-monitor p[data-proof="false"]{color:#745318}.bg-kw__saved li{padding:.65rem 0;border-bottom:1px solid #dbe6e6}.bg-kw__saved li>p{font-size:.82rem}.bg-kw__draft-edit-note{font-size:.8rem;color:#615519}.bg-kw__saved-actions .knop{min-height:44px}@media(max-width:650px){.bg-kw__saved-actions button{width:100%}}`;
+export const wizardStyles=()=>WIZARD_CSS+DATA_USE_CSS+ROUTING_CSS+TRUST_CSS+DESIGN_CSS+MONITOR_CSS;
 
 export function renderEvidenceFlow(result={}){
   const stages=Array.isArray(result.stages)?result.stages:[];
@@ -233,6 +234,76 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
 
   const say=text=>{message.textContent=text||'';};
   const savedList=root.querySelector('[data-bg-saved-list]');
+  const restoreEditableCustom=(item)=>{
+    if(!String(item?.templateId||'').startsWith('custom-'))return false;
+    const sourceId=item.source?.providerId,targetId=item.target?.providerId;
+    const fieldNames=(item.documentSchema?.fields||[]).map(field=>typeof field==='string'?field:field?.key);
+    if(!sourceId||!targetId||!fieldNames.length||fieldNames.some(field=>typeof field!=='string'))return false;
+    let template;
+    try{template=buildCustomConnectorTemplate({sourceId,targetId,fields:fieldNames});}
+    catch{return false;}
+    if(state&&(!draft||draftDirty)
+      &&!window.confirm('Er zijn niet-opgeslagen wijzigingen. Wil je deze verlaten om de gekozen koppeling te bewerken?'))return false;
+    let restored=createWizardState(template);
+    restored=applyAnswer(restored,'selectedFields',Array.isArray(item.routing?.selectedFields)
+      ?item.routing.selectedFields.filter(field=>fieldNames.includes(field)):[]);
+    restored=applyAnswer(restored,'portalPages',Array.isArray(item.routing?.portalPages)?item.routing.portalPages:[]);
+    const mode=['CONNECTION_ONLY','PORTAL_INSIGHTS','PORTAL_AI'].includes(item.dataUse?.mode)
+      ?item.dataUse.mode:'CONNECTION_ONLY';
+    restored=applyAnswer(restored,'dataUseMode',mode);
+    restored=applyAnswer(restored,'transferPolicy',item.transferPolicy||restored.answers.transferPolicy);
+    if(item.source?.connectionId)restored=applyAnswer(restored,'connection',item.source.connectionId);
+    state=restored;draft=item;lastTest=null;draftDirty=false;dataUseMode=mode;
+    root.querySelectorAll('input[name="bgDataUseMode"]').forEach(radio=>{
+      radio.checked=radio.value===mode;
+    });
+    // Editing the old version is NEVER new proof; original PUT rechecks
+    // policy and invalidates activated/version-bound execution evidence.
+    invalidateEvidence('Bestaande instelling geopend. Wijzigingen eerst opslaan als concept; eerdere activatie- of testbewijzen tellen niet opnieuw.',true);
+    customBox.hidden=true;
+    renderQuestion(root,state);renderRouting();showDefinition();
+    say('Je bewerkt '+String(item.name||'de koppeling')+' (versie '+String(item.version)+
+      '). Bewaar je wijziging; de provider en frequentie moeten daarna opnieuw worden gecontroleerd.');
+    root.querySelector('[data-bg-transfer]')?.scrollIntoView?.({behavior:'smooth',block:'center'});
+    return true;
+  };
+  const monitorEntry=async(item,region)=>{
+    region.replaceChildren();
+    const heading=document.createElement('h4');heading.textContent='Echte uitvoeringscontrole';
+    region.append(heading);
+    try{
+      const report=await api.health(item.id);
+      if(report?.contract!=='CONNECTOR_PROOF_HEALTH_V1'||report.connectorId!==item.id)
+        throw new Error('INVALID_MONITOR_RECEIPT');
+      const add=(label,value)=>{
+        const p=document.createElement('p');
+        const bold=document.createElement('strong');bold.textContent=label;
+        p.append(bold,document.createTextNode(' '+String(value)));region.append(p);
+        return p;
+      };
+      add('Ingesteld:',report.requestedDirection+' · '+report.requestedCadence+' · '+report.requestedMode);
+      add('Configuratie:',report.configurationState==='Active'?'Actief opgeslagen ontwerp':report.configurationState||'Concept');
+      const proof=add('Werkelijke brondata:',report.actualSourceDataVerified
+        ?String(report.sourceRecordCount)+' rij(en) bevestigd via echte provider, serveropslag en teruglezing.'
+        :report.connectionVerified?'Providerverbinding bevestigd; nog geen bronrijen bewezen.'
+        :'Geen echt provider- en bronopslagbewijs voor deze versie.');
+      proof.dataset.proof=String(report.actualSourceDataVerified===true);
+      if(report.lastSourceReadAt){
+        add('Laatst bewezen opgehaald:',new Date(report.lastSourceReadAt).toLocaleString('nl-NL'));
+      }
+      if(report.lastExecutionState)add('Laatste uitvoering:',report.lastExecutionState);
+      add('Automatische verversing:',report.automaticExecutionVerified
+        ?'Onafhankelijk bevestigd'
+        :'Nog niet bewezen; een ingesteld interval of webhook is geen draaiende uitvoerder.');
+      if(report.automaticExecutionVerified!==true&&report.requestedCadence!=='Handmatig'){
+        add('Vervolgactie:','De canonieke uitvoerder moet dit interval eerst kunnen verwerken, met provider- en doelreadback.');
+      }
+    }catch{
+      const p=document.createElement('p');
+      p.textContent='De actuele bron- en uitvoeringsbewijzen konden niet veilig worden teruggelezen. Geen betrouwbare status beschikbaar.';
+      region.append(p);
+    }
+  };
   const refreshSaved=async()=>{
     try{
       const items=await api.list();
@@ -249,6 +320,28 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
         description.textContent=item.state==='Active'?'Configuratie actief. Echte brondata niet bewezen.':item.state==='Paused'?'Gepauzeerd':'Concept';
         li.append(name,description);
         if(typeof item.id==='string'&&item.id){
+          const buttons=document.createElement('div');buttons.className='bg-kw__saved-actions';
+          const monitorButton=document.createElement('button');
+          monitorButton.type='button';monitorButton.className='knop licht';
+          monitorButton.textContent='Bekijk echte synchronisatiestatus';
+          const monitor=document.createElement('section');monitor.className='bg-kw__live-monitor';
+          monitor.hidden=true;monitor.setAttribute('aria-label','Aantoonbare verwerking per connector');
+          monitorButton.setAttribute('aria-expanded','false');
+          monitorButton.addEventListener('click',async()=>{
+            if(!monitor.hidden){monitor.hidden=true;monitorButton.setAttribute('aria-expanded','false');return;}
+            monitor.hidden=false;monitorButton.setAttribute('aria-expanded','true');
+            monitor.textContent='Bron- en uitvoeringsbewijzen teruglezen…';
+            await monitorEntry(item,monitor);
+          });
+          buttons.append(monitorButton);
+          if(String(item.templateId||'').startsWith('custom-')){
+            const editButton=document.createElement('button');editButton.type='button';
+            editButton.className='knop licht';editButton.textContent='Bewerk richting en frequentie';
+            editButton.addEventListener('click',()=>{if(!restoreEditableCustom(item))
+              say('Dit ontwerp kan niet veilig als bewerkbare koppeling worden hersteld. Er is niets gewijzigd.');});
+            buttons.append(editButton);
+          }
+          li.append(buttons,monitor);
           const checkButton=document.createElement('button');
           checkButton.type='button';checkButton.className='knop licht';checkButton.textContent='Bekijk veiligheid en bronbewijs';
           const proof=document.createElement('section');proof.className='bg-kw__trust';proof.hidden=true;
