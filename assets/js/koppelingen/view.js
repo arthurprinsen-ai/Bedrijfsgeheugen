@@ -168,6 +168,66 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   const activate=root.querySelector('[data-bg-activate]');
   const activateReason=root.querySelector('[data-bg-activate-reason]');
   let state=null,draft=null,lastTest=null,draftDirty=false,dataUseMode='CONNECTION_ONLY';
+  const showDefinition=()=>{
+    if(!state){definitionOut.textContent='Nog geen bron en doel geselecteerd.';return;}
+    try{definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);}
+    catch(error){definitionOut.textContent='Kies eerst de vereiste unieke sleutel en wijzigingsvelden. '+String(error?.code||'Inrichting onvolledig');}
+  };
+  const customBox=root.querySelector('[data-bg-custom]');
+  const makeCustomSelect=(selector)=>{
+    const node=customBox.querySelector(selector);
+    for(const group of CONNECTOR_PROVIDER_GROUPS){
+      const tag=document.createElement('optgroup');tag.label=group;
+      for(const p of CONNECTOR_PROVIDER_CATALOG.filter(x=>x.group===group)){
+        const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;
+        tag.append(opt);
+      }
+      node.append(tag);
+    }
+    return node;
+  };
+  const customSource=makeCustomSelect('[data-bg-custom-source]');
+  const customTarget=makeCustomSelect('[data-bg-custom-target]');
+  customSource.value='salesforce';customTarget.value='datahub';
+  customBox.querySelector('[data-bg-custom-fields]').value='recordId, wijzigingsdatum, bedrag';
+  const noteCustom=()=>{
+    const from=findConnectorProvider(customSource.value),to=findConnectorProvider(customTarget.value);
+    customBox.querySelector('[data-bg-custom-status]').textContent=
+      (from?.name||'Bron')+' → '+(to?.name||'Doel')+
+      ' · '+providerCapabilityLabel(customSource.value)+
+      '. De koppeling is pas echt actief na aanbiederautorisatie, provideradapter, bron- en doelbewijs.';
+  };
+  customSource.addEventListener('change',noteCustom);
+  customTarget.addEventListener('change',noteCustom);
+  noteCustom();
+  const renderTransfer=()=>{
+    const box=root.querySelector('[data-bg-transfer]');
+    box.hidden=!state;if(!state)return;
+    const p=state.answers.transferPolicy||{};
+    for(const field of box.querySelectorAll('[data-bg-transfer-key]')){
+      const key=field.dataset.bgTransferKey;
+      if(key==='primaryKey'||key==='cursorField'){
+        const old=field.value;field.replaceChildren();
+        const none=document.createElement('option');none.value='';none.textContent='Kies veld…';field.append(none);
+        for(const f of state.template.fields||[]){
+          const name=typeof f==='string'?f:f.key;
+          const opt=document.createElement('option');opt.value=name;opt.textContent=name;field.append(opt);
+        }
+      }
+      const value=p[key]==null?'':String(p[key]);
+      field.value=value;
+    }
+    const interval=box.querySelector('[data-bg-interval-wrap]');
+    interval.hidden=p.trigger!=='INTERVAL';
+    const fieldLabels=box.querySelectorAll('[data-bg-key-wrap]');
+    fieldLabels[0].hidden=p.mode!=='INCREMENTAL_UPSERT'&&p.direction!=='BIDIRECTIONAL';
+    fieldLabels[1].hidden=p.mode!=='INCREMENTAL_UPSERT';
+    const runtime=box.querySelector('[data-bg-policy-availability]');
+    const pattern=transferSummary(p);
+    runtime.textContent=pattern.direction+' · '+pattern.cadence+
+      ' · dit is een ontwerp. Een interval, webhook of tweerichtingskeuze start niet zelf een synchronisatie.';
+  };
+
 
   const say=text=>{message.textContent=text||'';};
   const savedList=root.querySelector('[data-bg-saved-list]');
@@ -232,6 +292,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   const renderRouting=()=>{
     const fieldsRoot=root.querySelector('[data-bg-fields]');
     const pagesRoot=root.querySelector('[data-bg-pages]');
+    renderTransfer();
     fieldsRoot.hidden=!state;
     pagesRoot.hidden=!state||dataUseMode==='CONNECTION_ONLY';
     const readout=root.querySelector('[data-bg-journey-readout]');
@@ -251,7 +312,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   const chooseTemplate=template=>{
     invalidateEvidence('Eerst deze gekozen koppeling veilig testen.');
     state=applyAnswer(createWizardState(template),'dataUseMode',dataUseMode);
-    definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+    showDefinition();
     renderQuestion(root,state);
     renderRouting();
     say(`${template.title} gekozen. Alleen ontbrekende keuzes worden nog gevraagd.`);
@@ -259,9 +320,9 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
 
   root.querySelector('[data-bg-save-draft]').addEventListener('click',async()=>{
     if(!state){say('Kies eerst een systeem of maak een AI-voorstel.');return;}
-    const definition=toConnectorDefinition(state);
-    if(!definition.mappings.length){say('Selecteer minimaal één gegevensveld.');return;}
     try{
+      const definition=toConnectorDefinition(state);
+      if(!definition.mappings.length){say('Selecteer minimaal één gegevensveld.');return;}
       if(draft){draft=await api.saveDraft(draft.id||draft.connectorId,definition);}
       else draft=await api.createDraft(definition);
       draftDirty=false;
@@ -279,7 +340,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     root.querySelector('[data-bg-template-list]').innerHTML=templateListHtml();
     root.querySelectorAll('[data-template-id]').forEach(item=>item.addEventListener('click',()=>chooseTemplate(findTemplate(item.dataset.templateId))));
     renderRouting();
-    definitionOut.textContent='Nog geen nieuwe koppeling geselecteerd.';
+    showDefinition();
     say('Kies een volgend systeem. Bestaande concepten blijven bewaard.');
   });
   void refreshSaved();
@@ -290,13 +351,31 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   });
   root.querySelectorAll('[data-bg-route]').forEach(button=>button.addEventListener('click',()=>{
     const route=button.dataset.bgRoute;
-    if(route==='template'||route==='manual'){
+    if(route==='manual'){
+      customBox.hidden=false;noteCustom();customSource.focus();
+      say('Kies twee systemen onafhankelijk en leg daarna richting, frequentie, veldbetekenis en veiligheid vast. Dit is eerst een ontwerp.');
+    }else if(route==='template'){
+      customBox.hidden=true;
       const list=root.querySelector('[data-bg-template-list]');
       list.hidden=false;list.innerHTML=templateListHtml();
       list.querySelectorAll('[data-template-id]').forEach(item=>item.addEventListener('click',()=>chooseTemplate(findTemplate(item.dataset.templateId))));
       say(route==='manual'?'Kies eerst de bron die het dichtst bij je situatie ligt. Technische details kun je later aanpassen.':'Kies een voorbeeld dat het meest lijkt op wat je wilt bereiken.');
     }else root.querySelector('[data-bg-intent]').focus();
   }));
+  customBox.querySelector('[data-bg-custom-create]').addEventListener('click',()=>{
+    const fields=customBox.querySelector('[data-bg-custom-fields]').value.split(',').map(x=>x.trim()).filter(Boolean);
+    try{
+      const template=buildCustomConnectorTemplate({
+        sourceId:customSource.value,targetId:customTarget.value,fields
+      });
+      chooseTemplate(template);
+      customBox.hidden=true;
+      say('Ontwerp gemaakt: '+template.title+'. Configureer richting en frequentie en bewaar het als concept. Een aanbiederadapter en gebruikersautorisatie ontbreken nog.');
+    }catch(error){
+      customBox.querySelector('[data-bg-custom-status]').textContent=
+        'Controleer verschillende bron en doel, een geldig doel en 1–40 unieke veldnamen zonder spaties. '+String(error?.code||'');
+    }
+  });
   root.querySelector('[data-bg-make]').addEventListener('click',async()=>{
     const intent=root.querySelector('[data-bg-intent]').value.trim();
     if(!intent){say('Omschrijf eerst wat je automatisch wilt laten gebeuren.');return;}
@@ -313,12 +392,27 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     }catch(error){say(error.code==='UNAUTHORIZED'?'Log opnieuw in om AI-begeleiding te gebruiken.':'AI-begeleiding is nu niet beschikbaar. Je kunt direct een voorbeeld kiezen.');}
   });
   root.addEventListener('change',event=>{
+    const transferKey=event.target?.dataset?.bgTransferKey;
+    if(state&&transferKey){
+      const p={...(state.answers.transferPolicy||{})};
+      let value=event.target.value;
+      if(transferKey==='intervalMinutes')value=Number(value);
+      if(transferKey==='primaryKey'||transferKey==='cursorField')value=value||null;
+      p[transferKey]=value;
+      if(transferKey==='trigger')
+        p.intervalMinutes=value==='INTERVAL'?1440:null;
+      invalidateEvidence('Richting, schema of verversbeleid is gewijzigd. Bestaand testbewijs is niet meer geldig.',true);
+      state=applyAnswer(state,'transferPolicy',p);
+      showDefinition();renderRouting();
+      say('Ontwerp aangepast. De werkelijke mogelijkheden en het abonnement worden bij activeren opnieuw gecontroleerd.');
+      return;
+    }
     if(event.target?.name==='bgDataUseMode'){
       dataUseMode=event.target.value;
       if(state){
         invalidateEvidence('Het toegestane datagebruik is gewijzigd. Een nieuwe test en nieuwe toestemming zijn nodig.',true);
         state=applyAnswer(state,'dataUseMode',dataUseMode);
-        definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+        showDefinition();
       }
       renderRouting();
       say(dataUseMode==='CONNECTION_ONLY'?'Alleen koppelen gekozen. Datahub-activatie vereist eerst je uitdrukkelijke keuze voor portaalgebruik.':'Jouw datagebruik wordt uitsluitend voor deze koppeling vastgelegd.');
@@ -332,14 +426,14 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
       if(event.target.checked)values.add(event.target.dataset[prop]);else values.delete(event.target.dataset[prop]);
       invalidateEvidence('Je gegevenskeuze is gewijzigd. Een nieuwe veilige test is nodig.',true);
       state=applyAnswer(state,key,[...values]);
-      definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+      showDefinition();
       renderRouting();
       return;
     }
     const key=event.target?.dataset?.bgAnswer;if(!key||!state)return;
     invalidateEvidence(undefined,true);
     state=applyAnswer(state,key,event.target.value);
-    definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+    showDefinition();
     renderQuestion(root,state);
   });
   root.addEventListener('click',async event=>{
