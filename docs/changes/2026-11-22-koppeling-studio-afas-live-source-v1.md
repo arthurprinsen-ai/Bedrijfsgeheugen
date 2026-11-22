@@ -35,7 +35,7 @@ Bestaande beschikbare connectorbestemmingen: Cijfers & KPI's, Waarde & financier
 
 ## Database en beveiliging
 
-Migration `20261122162000_portal_connector_real_afas_source_readback_v1.sql` voegt twee tenantgebonden componenten toe *binnen* de bestaande Supabase-projectdatabase: Vault-koppeling voor credentials en de laatste geverifieerde bron-snapshot. RLS staat aan; `public`, `anon` en `authenticated` krijgen geen tabelrechten. Alleen de oorspronkelijke server-service role mag de storage-RPC gebruiken. Vault-secretfuncties geven plaintext nooit terug aan de browser.
+Migration `20261122162147_portal_connector_real_afas_source_readback_v1.sql` voegt twee tenantgebonden componenten toe *binnen* de bestaande Supabase-projectdatabase: Vault-koppeling voor credentials en de laatste geverifieerde bron-snapshot. RLS staat aan; `public`, `anon` en `authenticated` krijgen geen tabelrechten. Alleen de oorspronkelijke server-service role mag de storage-RPC gebruiken. Vault-secretfuncties geven plaintext nooit terug aan de browser.
 
 ## Verplicht eindbewijs
 
