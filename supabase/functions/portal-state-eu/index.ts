@@ -191,6 +191,9 @@ Deno.serve(async(req:Request)=>{
         sourceRevision:String(e.sourceRevision||'').slice(0,40),
         metricId:scan?null:String(e.metricId||'').slice(0,48),
         sourcePath:scan?null:String(e.sourcePath||'').slice(0,120),
+        sourceKind:scan?null:e.sourceKind==='connector'?'connector':'portal',
+        connectorRuleCount:scan&&Number.isSafeInteger(Number(e.connectorRuleCount))?Math.max(0,Number(e.connectorRuleCount)):null,
+        connectorMeasurementsMatched:scan&&Number.isSafeInteger(Number(e.connectorMeasurementsMatched))?Math.max(0,Number(e.connectorMeasurementsMatched)):null,
         enabledRuleCount:scan&&Number.isSafeInteger(Number(e.enabledRuleCount))?Math.max(0,Number(e.enabledRuleCount)):null,
         thresholdTriggersObserved:scan&&Number.isSafeInteger(Number(e.thresholdTriggersObserved))?Math.max(0,Number(e.thresholdTriggersObserved)):null,
         measurementFreshnessVerified:false,notificationDeliveryVerified:false,actionExecutionVerified:false
