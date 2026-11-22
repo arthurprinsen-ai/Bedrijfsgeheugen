@@ -52,7 +52,7 @@ function normalizedCell(value){
  if(typeof value==='string')return value.slice(0,VALUE_LIMIT);
  return null; // reject complex source structures from tabular context.
 }
-export async function readAfasGetConnector({source,credential,fetchFn=globalThis.fetch,selectedFields=null,personalAuthorized=false}={}){
+export async function readAfasGetConnector({source,credential,fetchFn=globalThis.fetch,selectedFields=null,personalAuthorized=false,probeOnly=false}={}){
  const verified=validateAfasSource(source);
  const header=afasAuthHeader(credential); // NEVER emit, log, or persist the header.
  const controller=new AbortController();
@@ -78,13 +78,14 @@ export async function readAfasGetConnector({source,credential,fetchFn=globalThis
   const discovered=[...new Set(rawRows.flatMap(row=>Object.keys(row)))].filter(key=>FIELD.test(key));
   if(!discovered.length)throw failure('AFAS_NO_SUPPORTED_COLUMNS',422);
   const available=discovered.slice(0,FIELD_LIMIT);
-  const wanted=Array.isArray(selectedFields)?selectedFields:available;
+  const wanted=probeOnly?available.filter(key=>!BLOCKED_FIELD.test(key)):Array.isArray(selectedFields)?selectedFields:available;
   if(wanted.length>FIELD_LIMIT||new Set(wanted).size!==wanted.length
       ||wanted.some(key=>!FIELD.test(key)||!available.includes(key)))throw failure('AFAS_FIELD_SELECTION_INVALID');
   if(wanted.some(key=>BLOCKED_FIELD.test(key)))throw failure('AFAS_RESTRICTED_FIELDS_BLOCKED',403);
-  if(!personalAuthorized&&wanted.some(key=>PERSONAL_FIELD.test(key)))
+  if(!probeOnly&&!personalAuthorized&&wanted.some(key=>PERSONAL_FIELD.test(key)))
     throw failure('AFAS_PERSONAL_FIELDS_NEED_CONSENT',403);
-  const fields=wanted.length?wanted:available;
+  if(!wanted.length)throw failure('AFAS_NO_ALLOWED_COLUMNS',422);
+  const fields=wanted;
   const rows=rawRows.map(row=>fields.map(key=>normalizedCell(row[key])));
   const digest=createHash('sha256').update(JSON.stringify({fields,rows})).digest('hex');
   return Object.freeze({
