@@ -35,7 +35,7 @@ export const CONNECTOR_PROVIDER_CATALOG=Object.freeze([
  provider('ga4','Google Analytics 4','Marketing & analytics','api','oauth2'),
  provider('google-ads','Google Ads','Marketing & analytics','api','oauth2'),
  provider('meta-ads','Meta Ads','Marketing & analytics','api','oauth2'),
- provider('postgreSQL','PostgreSQL','Databases & datawarehouse','database','service-credential'),
+ provider('postgresql','PostgreSQL','Databases & datawarehouse','database','service-credential'),
  provider('sqlserver','Microsoft SQL Server','Databases & datawarehouse','sql','service-credential'),
  provider('mysql','MySQL','Databases & datawarehouse','sql','service-credential'),
  provider('snowflake','Snowflake','Databases & datawarehouse','api','service-credential'),
