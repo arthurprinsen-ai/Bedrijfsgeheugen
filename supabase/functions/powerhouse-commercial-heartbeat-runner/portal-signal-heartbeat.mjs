@@ -140,7 +140,13 @@ export async function planOriginalHeartbeatScans(rows,{now=new Date().toISOStrin
     const connectorRuleCount=rules.filter(rule=>rule.source.type==='connector').length;
     const connectorMeasurementsMatched=checked.filter(value=>value.linked!==null).length;
     const fingerprint=(await digest(source.tenant)).slice(0,24);
-    const key=(await digest([source.tenant,source.sourceUpdatedAt,hour].join('\\u001f'))).slice(0,48);
+    // Recheck in the same UTC hour when the actual connector source revision
+    // changes; otherwise the old scan dedupe could hide a newly ingested value.
+    const connectorRevisions=rules.filter(rule=>rule.source.type==='connector').map(rule=>{
+      const linked=measurementForConnectorRule(connectorMeasurements,source.tenant,rule);
+      return [rule.id,linked?.sourceRevision||'SOURCE_NOT_VERIFIED'].join(':');
+    }).sort();
+    const key=(await digest([source.tenant,source.sourceUpdatedAt,hour,...connectorRevisions].join('\\u001f'))).slice(0,48);
     result.push(Object.freeze({
       dedupeKey:'portal-signal-scan:'+key,
       eventType:'portal_user_signal_scan',
