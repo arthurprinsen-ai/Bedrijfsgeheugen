@@ -86,6 +86,12 @@ test('source hash, version, tenant, provider and selected fields must match befo
  assert.equal(health({executions:[badProof]}).actualSourceDataVerified,false);
  assert.equal(health({connector:{...connector,state:'Draft'}}).actualSourceDataVerified,false);
 });
+test('old execution receipts cannot falsely validate a newly overwritten identical-hash snapshot',()=>{
+ const older={...sourceExecution,afgerond_op:'2026-11-22T14:00:00Z'};
+ const outcome=health({executions:[older],snapshot});
+ assert.equal(outcome.actualSourceDataVerified,false);
+ assert.equal(outcome.lastSourceReadAt,null);
+});
 test('identity mismatch and unversioned configuration fail closed',()=>{
  assert.throws(()=>health({tenantId:otherTenant}),/CONNECTOR_SCOPE_INVALID/);
  assert.throws(()=>health({connector:{...connector,version:0}}),/CONNECTOR_VERSION_INVALID/);
