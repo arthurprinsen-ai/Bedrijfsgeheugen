@@ -41,8 +41,7 @@ create or replace function public.connector_afas_vault_write(
 set search_path = '' as $$
 declare v_id uuid;
 begin
-  if p_token is null or length(p_token)<35 or length(p_token)>5000
-     or position(chr(0) in p_token)>0 then
+  if p_token is null or length(p_token)<35 or length(p_token)>5000 then
     raise exception 'INVALID_AFAS_CREDENTIAL';
   end if;
   if not exists (
