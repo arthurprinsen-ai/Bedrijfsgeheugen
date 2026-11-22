@@ -44,6 +44,7 @@ test('protected migration admission invokes this ONLY for exactly pinned provide
  assert.match(guard,/base===EXACT_AFAS_BASE_SHA&&changedMigrations.length===2/);
  assert.match(guard,/verifyOriginalAfas890VersionReconciliation/);
  assert.match(guard,/originalAfas890Reconciliation/);
- assert.match(guard,/if\(!nativeProviderHealthVersionReconciliation&&!originalAfas890Reconciliation\)/);
+ assert.match(guard,/if\(!nativeProviderHealthVersionReconciliation\)/);
+ assert.match(guard,/if\(!originalAfas890Reconciliation\)/);
  assert.match(guard,/Applied historical migrations must never be modified or deleted in an ordinary PR/);
 });
