@@ -14,13 +14,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs"
+      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs"
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs"
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
     ],
     "provider_readback": "OBSERVED_NAME_VERSION_FROM_ORIGINAL_SUPABASE_LIST_MIGRATIONS",
     "production_test": "PENDING"
@@ -32,7 +33,13 @@
     "source_before": 889,
     "source_after_expected": 890,
     "SQLReapplied": false,
-    "noNewMigrations": true
+    "noNewMigrations": true,
+    "observed_native_statement_count": 1,
+    "observed_native_statement_md5": "c06f2b2d0392a57ca383cf0dddb0eb3c",
+    "original_sql_source_md5": "c06f2b2d0392a57ca383cf0dddb0eb3c",
+    "source_sha256": "f9e47051fe44931a1c48e7f7b271b803fd819a82c023fd1243213fb751fc293d",
+    "source_bytes": 5569,
+    "one_time_pinned_protected_base": "933592191851cbd539b0c336fefb49b5a75106d3"
   },
   "releaseGates": [
     "Required exact-head hygiene/preflight migration tests",
