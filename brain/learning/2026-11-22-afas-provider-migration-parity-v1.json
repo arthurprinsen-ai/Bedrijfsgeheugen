@@ -1,0 +1,50 @@
+{
+  "fingerprint": "supabase|original-afas-source-migration-version-mismatch|20261122-v1",
+  "date": "2026-11-22",
+  "status": "PROVIDER_APPLIED_PARITY_RECONCILIATION_CANDIDATE",
+  "owner": "Original Supabase migration-history lock owner",
+  "root_cause": "On 22 November the original AFAS migration was applied through Supabase with provider-generated version 20261122162147, but protected source filename used 20261122162000 and canonical migration-history.lock.json remained at 889 migrations. This blocked subsequent Required preflight and was not caused by the new universal connector changes.",
+  "prevention_rule": "After every original Supabase apply_migration, independently retrieve the provider migration version/name, and use that precise identity in executable source and provider migration lock BEFORE protected PR. Source lock files must have exact provider identity equality, never fabricate migration IDs, never bypass parity tests.",
+  "compiler": {
+    "failure_class": "SUPABASE_PROVIDER_MIGRATION_VERSION_SOURCE_LOCK_DRIFT",
+    "scope": "ORIGINAL_SUPABASE_PROVIDER_HISTORY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
+    ],
+    "provider_readback": "OBSERVED_NAME_VERSION_FROM_ORIGINAL_SUPABASE_LIST_MIGRATIONS",
+    "production_test": "PENDING"
+  },
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "observed_provider_version": "20261122162147",
+    "provider_name": "portal_connector_real_afas_source_readback_v1",
+    "source_before": 889,
+    "source_after_expected": 890,
+    "SQLReapplied": false,
+    "noNewMigrations": true,
+    "observed_native_statement_count": 1,
+    "observed_native_statement_md5": "c06f2b2d0392a57ca383cf0dddb0eb3c",
+    "original_sql_source_md5": "c06f2b2d0392a57ca383cf0dddb0eb3c",
+    "source_sha256": "f9e47051fe44931a1c48e7f7b271b803fd819a82c023fd1243213fb751fc293d",
+    "source_bytes": 5569,
+    "one_time_pinned_protected_base": "933592191851cbd539b0c336fefb49b5a75106d3"
+  },
+  "releaseGates": [
+    "Required exact-head hygiene/preflight migration tests",
+    "CodeQL success",
+    "protected merge and exact provider SHA consistency",
+    "no unverified tenant connector success"
+  ]
+}

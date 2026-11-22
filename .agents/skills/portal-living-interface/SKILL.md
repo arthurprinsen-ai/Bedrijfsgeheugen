@@ -449,8 +449,7 @@ Een echte providerverbinding is ook toegestaan als **CONNECTION_ONLY**. De klant
 - Echte opgeslagen providerwaarden komen uitsluitend via \`GET /api/connectors/page-records?page=...\` op de bestaande portaalpagina: \`Active\` + juiste consent + exact connector-versie, hash en tenant. Maak geen financieel getal of KPI van ongedefinieerde bronrijen. Verwijder klant-DOM na identity boundary.
 - **Overige templates** (Exact Online, Outlook, SharePoint, Shopify, Salesforce, SQL, enz.) blijven voorbereid maar niet als live geclaimd zolang hun eigen OAuth/provider-adapter en onafhankelijke bronreadback ontbreken. De AFAS-verbinding rechtvaardigt geen groenstatus voor andere leveranciers.
 - De connector kan handmatig worden vernieuwd; een refreshbeleid in de configuratie is **geen bewijs van autonome periodieke synchronisatie**. Voortzetting moet via de bestaande ONE BRAIN/Powerhouse/Heartbeat lineage en concrete consumer-ACK, nooit via een nieuwe parallelle cron of executor.
-- Security/functional test: \`tests/brain-portal-connector-real-afas-v1.test.mjs\`; Supabase migratie \`20261122162000_portal_connector_real_afas_source_readback_v1.sql\`; exacte head Required+CodeQL, DB RLS, protected merge, Netlify ready SHA, browser/UI en echte providerreadback zijn aparte gates.
-
+- Security/functional test: \`tests/brain-portal-connector-real-afas-v1.test.mjs\`; Supabase migratie \`20261122162147_portal_connector_real_afas_source_readback_v1.sql\`; exacte head Required+CodeQL, DB RLS, protected merge, Netlify ready SHA, browser/UI en echte providerreadback zijn aparte gates.
 
 ## 2026-11-22 — vertraagde spraak-/assistentantwoorden na identity boundary
 
