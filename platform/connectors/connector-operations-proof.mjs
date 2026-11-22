@@ -40,7 +40,9 @@ export function connectorHealthReport({connector,tenantId,executions=[],snapshot
    Array.isArray(connector.routing?.selectedFields)&&
    JSON.stringify(snapshot.kolommen)===JSON.stringify(connector.routing.selectedFields)&&
    provenance?.evidence?.sourceHash===snapshot.bron_hash&&
-   UTC_DATE(snapshot.ingelezen_op)?snapshot:null;
+   UTC_DATE(snapshot.ingelezen_op)&&UTC_DATE(provenance?.afgerond_op??provenance?.completedAt)&&
+   Date.parse(provenance.afgerond_op??provenance.completedAt)>=Date.parse(snapshot.ingelezen_op)-10_000
+   ?snapshot:null;
  const capturedAt=source?UTC_DATE(source.ingelezen_op):null;
  const ageMinutes=capturedAt?Math.max(0,Math.floor((now.getTime()-Date.parse(capturedAt))/60000)):null;
  // There is no canonical scheduled execution receipt for these new policies.
