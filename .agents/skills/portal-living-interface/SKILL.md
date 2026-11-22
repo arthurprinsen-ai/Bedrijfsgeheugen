@@ -438,6 +438,9 @@ De originele test `tests/brain-portal-safe-browser-module-vendor-20261121.test.m
 - Test: `tests/brain-portal-original-connector-kpi-bridge-v1.test.mjs`, bestaande Portal V2-test. Historisch/shadow/canary en protected release verplicht.
 
 
+### Opt-in portaalgebruik bij echte AFAS-verbindingen
+Een echte providerverbinding is ook toegestaan als **CONNECTION_ONLY**. De klant moet expliciet aanvinken of bedrijfsgegevens daarnaast op de gekozen portaalpagina worden gebruikt. Connection-only mag providerverificatie en eigen Vault-geheim hebben maar **geen bronrecords synchroniseren of op een pagina exposen**; de gebruiker kan dit later via een nieuwe geautoriseerde en geverifieerde configuratie veranderen. Test `tests/brain-portal-connector-real-afas-v1.test.mjs` bevat de negatieve sync- en routeproeven.
+
 ## 22 november 2026 — van koppelingconfiguratie naar echte bronrecords
 
 - De oorspronkelijke Koppeling Studio is pas werkelijk **verbonden** na externe provider-authenticatie en controleerbare bronlezing met geselecteerde velden, provider receipt, tenantgebonden **serveropslag + exacte readback**. Een configuratie, voorbeeldtest, \`Active\`-status of een scheduler is nooit bewijs van echte klantgegevens.
