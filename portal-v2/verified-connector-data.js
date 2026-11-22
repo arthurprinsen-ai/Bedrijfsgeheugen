@@ -62,7 +62,7 @@ export async function mountVerifiedConnectorData(container,{pageId,fetchFn=globa
   if(!response?.ok||!container.isConnected)return null;
   payload=await response.json();
  }catch{return null;}
- if(!container.isConnected||payload?.truth!=='ACTUAL_TENANT_SOURCE_RECORDS'||payload?.pageId!==pageId
+ if(!container.isConnected||getIdentity()!==identity||payload?.truth!=='ACTUAL_TENANT_SOURCE_RECORDS'||payload?.pageId!==pageId
   ||!Array.isArray(payload.items))return null;
  const records=payload.items.map(verifiedConnectorRecord).filter(Boolean).slice(0,25);
  if(!records.length)return null;
