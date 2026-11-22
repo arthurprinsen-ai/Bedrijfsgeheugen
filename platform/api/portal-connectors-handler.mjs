@@ -149,6 +149,8 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='PUT'&&id&&action==='draft'){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
     let body=clean(await requestBody(request,normalized));
+    if(String(body?.templateId||'').startsWith('custom-')&&body.transferPolicy===undefined)
+      return json({error:'TRANSFER_POLICY_CANNOT_BE_DROPPED'},422);
     const intent=validateTransferIntent(body);
     if(intent.error)return json({error:intent.error},422);
     if(intent.transferPolicy)body={...body,transferPolicy:intent.transferPolicy};
