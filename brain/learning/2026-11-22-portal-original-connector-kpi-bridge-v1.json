@@ -25,7 +25,7 @@
   },
   "evidence": {
     "source": "Production original connector_definitions, connector_executions and powerhouse_source_observation_v1 had 0 rows; actual vendor provider ingestion was not independently proven",
-    "candidate_pr": "PENDING",
+    "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6109",
     "parent_issues": [
       "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
       "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547"
