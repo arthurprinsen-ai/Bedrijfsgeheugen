@@ -102,9 +102,12 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
         item.textContent=event.kind==='scan'
           ?'✓ Technische controle '+displayTime(event.observedAt)+' · '
             +String(event.enabledRuleCount??'?')+' regel(s) gecontroleerd · '
-            +String(event.thresholdTriggersObserved??'?')+' grensoverschrijding(en) · bronversheid niet bewezen'
+            +String(event.thresholdTriggersObserved??'?')+' grensoverschrijding(en) · '
+            +(Number(event.connectorRuleCount||0)>0?String(event.connectorMeasurementsMatched??0)+' van '+event.connectorRuleCount+' gekoppelde KPI-bronnen met bewaard bronbewijs · ':'')
+            +'bronversheid niet onafhankelijk bewezen'
           :'⚑ Geregistreerde drempelafwijking '+displayTime(event.observedAt)
             +' · KPI: '+String(event.metricId||'onbekend')
+            +' · bron: '+(event.sourceKind==='connector'?'gekoppelde bron':'portaal')
             +' · geen verzend- of uitvoeringsbewijs';
         proofList.append(item);
       }
