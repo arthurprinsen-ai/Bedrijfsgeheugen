@@ -47,7 +47,7 @@ export function connectorHealthReport({connector,tenantId,executions=[],snapshot
  // Never compute "next run" or "on schedule" from an interval setting.
  const cadence=summary?.cadence||'Onbekend';
  const verified=Boolean(source&&connector.state==='Active');
- const connectionVerified=Boolean(providerProbe&&connector.state==='Active');
+ const connectionVerified=Boolean((providerProbe||verified)&&connector.state==='Active');
  const latest=matching[0]||null; // original query is ordered newest-first.
  return Object.freeze({
    contract:'CONNECTOR_PROOF_HEALTH_V1',connectorId:connector.id,connectorVersion:version,
