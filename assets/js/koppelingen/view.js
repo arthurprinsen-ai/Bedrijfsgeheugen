@@ -224,7 +224,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     fieldLabels[1].hidden=p.mode!=='INCREMENTAL_UPSERT';
     const runtime=box.querySelector('[data-bg-policy-availability]');
     try{
-      const pattern=transferSummary(p);
+      const pattern=transferSummary(p,{fields:state.template.fields||[]});
       runtime.textContent=pattern.direction+' · '+pattern.cadence+
         ' · dit is een ontwerp. Een interval, webhook of tweerichtingskeuze start niet zelf een synchronisatie.';
     }catch(error){runtime.textContent='Onvolledig: kies een unieke sleutel en een wijzigingsveld voordat je kunt opslaan. '+String(error?.code||'');}
