@@ -3,6 +3,7 @@ import {connectorConfigurationForImpact,isConnectorConfigurationChanged,pendingC
 import {enforceConnectorRefreshPolicy} from '../saas/entitlement-policy.mjs';
 import {normalizeConnectorDataUse,connectorDataUseActivationGuard} from '../connectors/connector-data-use-policy.mjs';
 import {buildConnectorTrustReport} from '../connectors/connector-trust-report.mjs';
+import {readAfasGetConnector,afasSafeProbe,validateAfasSource} from '../connectors/afas-live-source.mjs';
 import {normalizeConnectorRouting,connectorPortalSources,CONNECTOR_PORTAL_PAGES} from '../../assets/js/koppelingen/portal-routing.js';
 const SECRET_KEY=/password|secret|token|authorization|api[-_]?key|client[-_]?secret/i;
 const SAFE_PROVIDER_ERROR_CODES=new Set(['ETIMEDOUT','ECONNRESET','EAI_AGAIN','408','429','502','503','504','UNAUTHORIZED','FORBIDDEN','ADAPTER_NOT_CONFIGURED','DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED','DOCUMENT_EXTRACTION_SAFE_TEST_FAILED','DOCUMENT_EXTRACTION_INVALID_RESPONSE','SAFE_TEST_SAMPLE_REQUIRED','UNSUPPORTED_TRANSFORMATION','LOOKUP_NOT_FOUND','LOOKUP_AMBIGUOUS']);
@@ -21,6 +22,7 @@ const TRUSTED_RUNTIME_KEYS=new Set(['changeImpact','crossDomainApproval','activa
 const untrustedRuntime=runtime=>Object.fromEntries(Object.entries(runtime&&typeof runtime==='object'&&!Array.isArray(runtime)?runtime:{}).filter(([key])=>!TRUSTED_RUNTIME_KEYS.has(key)));
 const fingerprintPart=value=>String(value||'unknown').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'unknown';
 function recoveryFingerprint(connectorId,failedStage,errorClass){return `connector-${fingerprintPart(connectorId)}-${fingerprintPart(failedStage)}-${fingerprintPart(errorClass)}`;}
+const modeLabel=mode=>mode==='PORTAL_AI'?'PORTAL_AI':'PORTAL_INSIGHTS';
 
 export async function handlePortalConnectorsRequest({request,user,store,engine,sovereignty}={}){
   if(!user?.id)return json({error:'UNAUTHORIZED'},401);
@@ -31,6 +33,38 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   const segments=suffix.replace(/^\//,'').split('/').filter(Boolean),id=segments[0]||null,action=segments[1]||null,subaction=segments[2]||null;
 
   if(normalized.method==='GET'&&id==='readiness'&&!action){if(!engine?.readiness)return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);return json(clean(engine.readiness));}
+  if(normalized.method==='GET'&&id==='page-records'&&!action){
+    const pageId=new URL(request?.url||request?.path||'https://portal.local/api/connectors/page-records','https://portal.local').searchParams.get('page')||'';
+    if(!CONNECTOR_PORTAL_PAGES.some(page=>page.id===pageId))return json({error:'INVALID_PORTAL_PAGE'},422);
+    if(typeof store?.listSourceSnapshots!=='function')return json({error:'CONNECTOR_SOURCE_STORE_NOT_CONFIGURED'},503);
+    const [connectors,snapshots]=await Promise.all([store.list(tenantId),store.listSourceSnapshots(tenantId)]);
+    const matching=(connectors||[]).filter(connector=>{
+      const mode=connector?.dataUse?.mode;
+      return connector?.state==='Active'&&connector?.source?.type==='afas'
+        &&(mode==='PORTAL_INSIGHTS'||mode==='PORTAL_AI')
+        &&connector?.routing?.portalPages?.includes(pageId)
+        &&Array.isArray(connector?.routing?.selectedFields)&&connector.routing.selectedFields.length>0;
+    });
+    const items=[];
+    for(const connector of matching.slice(0,25)){
+      const source=snapshots.find(s=>s.connector_id===connector.id&&s.organisatie_id===tenantId);
+      if(!source||source.bron_gecontroleerd!==true||source.provider!=='afas'
+        ||Number(source.connector_versie)!==Number(connector.version)
+        ||source.get_connector!==connector?.source?.getConnector
+        ||!Array.isArray(source.kolommen)||!Array.isArray(source.rijen)
+        ||JSON.stringify(source.kolommen)!==JSON.stringify(connector.routing.selectedFields)
+        ||source.rijen.length!==source.aantal||source.rijen.length>100)continue;
+      items.push({
+        id:connector.id,name:String(connector.name||'AFAS-bron').slice(0,100),
+        provider:'afas',dataUse:modeLabel(connector.dataUse.mode),
+        columns:source.kolommen,rows:source.rijen,recordCount:source.aantal,
+        capturedAt:source.ingelezen_op,sourceHash:source.bron_hash,
+        sourceName:String(source.get_connector||'').slice(0,80),
+        proofLevel:'PROVIDER_VERIFIED',truth:'ACTUAL_TENANT_SOURCE_RECORDS'
+      });
+    }
+    return json({pageId,truth:'ACTUAL_TENANT_SOURCE_RECORDS',items});
+  }
   if(normalized.method==='GET'&&id==='page-sources'&&!action){
     if(typeof store?.list!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
     const pageId=new URL(request?.url||request?.path||'https://portal.local/api/connectors/page-sources','https://portal.local').searchParams.get('page')||'';
@@ -88,6 +122,120 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
       ...body,id,state:'Draft',version:(Number(before.version)||1)+(changed?1:0),
       runtime:{...untrustedRuntime(body.runtime),...(changed?{}:{crossDomainApproval:before?.runtime?.crossDomainApproval}),changeImpact:impact}
     })));
+  }
+  if(normalized.method==='POST'&&id&&action==='probe'){
+    const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
+    if(connector?.source?.type!=='afas')return json({error:'AFAS_ONLY_LIVE_ADAPTER'},422);
+    try{validateAfasSource(connector.source);}catch(error){return json({error:error.code||'INVALID_AFAS_SOURCE'},422);}
+    if(typeof sovereignty?.assertConnectorAllowed==='function'){
+      try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch{return json({error:'DATA_SOVEREIGNTY_CONNECTOR_BLOCKED'},409);}
+    }
+    const raw=await requestBody(request,normalized);
+    const credential=typeof raw?.credential==='string'&&raw.credential.trim()
+      ?raw.credential.trim():await store.readAfasCredential(tenantId,id);
+    if(!credential)return json({error:'AFAS_AUTHORIZATION_REQUIRED'},409);
+    try{
+      const selected=connector.routing?.selectedFields||[];
+      const hasSelected=Array.isArray(selected)&&selected.length>0;
+      const result=await readAfasGetConnector({
+        source:connector.source,credential,selectedFields:hasSelected?selected:null,
+        personalAuthorized:connector.source?.personalDataAuthorized===true,probeOnly:!hasSelected
+      });
+      // Credential is stored in per-tenant encrypted Vault ONLY after a real
+      // provider response. Never in connector draft, execution, or browser state.
+      if(typeof raw?.credential==='string'&&raw.credential.trim()){
+        if(!await store.setAfasCredential(tenantId,id,credential))return json({error:'AFAS_VAULT_WRITE_UNCONFIRMED'},503);
+      }
+      const probe=afasSafeProbe(result,{selectedFields:hasSelected?selected:[]});
+      if(!hasSelected)return json({status:'FIELD_SELECTION_REQUIRED',...probe,
+        message:'AFAS werkt. Kies de benodigde velden en bevestig de portaalbestemming voordat je activeert.'});
+      if(!await store.checkSourceStorage(tenantId))return json({error:'CONNECTOR_SOURCE_STORE_NOT_CONFIGURED'},503);
+      const evidence={
+        configVersion:connector.version,testExecutionId:'afas-probe-'+Date.now(),
+        sourceReadSuccess:true,proofLevel:'PROVIDER_VERIFIED',
+        extractionResult:{ok:true,mode:'real-provider-read',documentType:'record'},
+        validationResult:{ok:true,selectedColumns:selected.length},
+        targetSafeTestResult:{ok:true,reference:'connector-source-storage-availability-verified'},
+        sourceHash:result.sourceHash,recordCount:result.recordCount,
+        rowValuesStored:false
+      };
+      const saved=await store.saveExecution(tenantId,{
+        connectorId:id,connectorVersion:connector.version,status:'TEST_PASSED',
+        dedupeKey:null,evidence,completedAt:new Date().toISOString()
+      });
+      if(!saved?.id)return json({error:'PROVIDER_EVIDENCE_WRITE_NOT_CONFIRMED'},503);
+      return json({status:'TEST_PASSED',...probe,executionId:saved.id,evidence:{
+        proofLevel:'PROVIDER_VERIFIED',testExecutionId:saved.id,
+        configVersion:connector.version,sourceReadSuccess:true
+      }});
+    }catch(error){
+      const code=String(error?.code||'AFAS_PROVIDER_UNAVAILABLE');
+      const allowed=new Set(['INVALID_AFAS_CREDENTIAL','AFAS_TOKEN_XML_REQUIRED','AFAS_PROVIDER_AUTH_REQUIRED',
+        'AFAS_RATE_LIMITED','AFAS_TIMEOUT','AFAS_RESPONSE_TOO_LARGE','AFAS_PROVIDER_REQUEST_FAILED',
+        'AFAS_INVALID_JSON','AFAS_ROWS_NOT_RETURNED','AFAS_NO_ROWS_TO_VERIFY',
+        'AFAS_NO_SUPPORTED_COLUMNS','AFAS_NO_ALLOWED_COLUMNS','AFAS_FIELD_SELECTION_INVALID',
+        'AFAS_RESTRICTED_FIELDS_BLOCKED','AFAS_PERSONAL_FIELDS_NEED_CONSENT','AFAS_PROVIDER_UNAVAILABLE']);
+      return json({error:allowed.has(code)?code:'AFAS_PROVIDER_UNAVAILABLE',
+        message:'Geen bevestigde AFAS-verbinding; controleer bron, toestemming en geselecteerde velden.'},[401,403,409,413,429].includes(error?.status)?error.status:422);
+    }
+  }
+  if(normalized.method==='POST'&&id&&action==='sync'){
+    const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
+    if(connector.state!=='Active'||connector?.source?.type!=='afas')
+      return json({error:'ACTIVE_AFAS_CONNECTOR_REQUIRED'},409);
+    const guard=connectorDataUseActivationGuard(connector);
+    if(!guard.allowed)return json({error:guard.reason},409);
+    if(typeof sovereignty?.assertConnectorAllowed==='function'){
+      try{await sovereignty.assertConnectorAllowed(tenantId,id);}catch{return json({error:'DATA_SOVEREIGNTY_CONNECTOR_BLOCKED'},409);}
+    }
+    const credential=await store.readAfasCredential(tenantId,id);
+    if(!credential)return json({error:'AFAS_AUTHORIZATION_REQUIRED'},409);
+    try{
+      const source=await readAfasGetConnector({
+        source:connector.source,credential,selectedFields:connector.routing.selectedFields,
+        personalAuthorized:connector.source?.personalDataAuthorized===true
+      });
+      const saved=await store.saveSourceSnapshot(tenantId,{
+        connectorId:id,version:connector.version,provider:'afas',
+        getConnector:source.getConnector,fields:source.fields,rows:source.rows,hash:source.sourceHash
+      });
+      const readback=await store.getSourceSnapshot(tenantId,id);
+      if(!saved||!readback||readback.organisatie_id!==tenantId
+        ||readback.connector_id!==id||readback.bron_hash!==source.sourceHash
+        ||Number(readback.connector_versie)!==Number(connector.version)
+        ||JSON.stringify(readback.kolommen)!==JSON.stringify(source.fields)
+        ||JSON.stringify(readback.rijen)!==JSON.stringify(source.rows))
+        return json({error:'SOURCE_RECORD_READBACK_UNCONFIRMED'},503);
+      const execution=await store.saveExecution(tenantId,{
+        connectorId:id,connectorVersion:connector.version,status:'SOURCE_SYNCED',
+        dedupeKey:source.sourceHash,
+        evidence:{proofLevel:'PROVIDER_VERIFIED',sourceReadSuccess:true,sourceHash:source.sourceHash,
+          recordCount:source.recordCount,tenantRecordReadback:true,provider:'afas',
+          version:connector.version,portalPages:connector.routing.portalPages},
+        completedAt:new Date().toISOString()
+      });
+      if(!execution?.id)return json({error:'SOURCE_RECEIPT_NOT_CONFIRMED'},503);
+      return json({status:'SOURCE_SYNCED',provider:'afas',recordCount:source.recordCount,
+        capturedAt:readback.ingelezen_op,connectorVersion:connector.version,
+        portalPages:connector.routing.portalPages,sourceHash:source.sourceHash,
+        evidenceId:execution.id,truth:'ACTUAL_TENANT_SOURCE_RECORDS'});
+    }catch(error){
+      const code=String(error?.code||'AFAS_SOURCE_SYNC_FAILED');
+      return json({error:/^AFAS_[A-Z_]+$/.test(code)?code:'AFAS_SOURCE_SYNC_FAILED',
+        message:'Geen bewezen nieuwe brongegevens opgeslagen; bestaande informatie blijft ongewijzigd.'},[401,403,409,413,429].includes(error?.status)?error.status:422);
+    }
+  }
+  if(normalized.method==='POST'&&id&&action==='revoke'){
+    const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);
+    if(connector?.source?.type!=='afas')return json({error:'AFAS_ONLY_LIVE_ADAPTER'},422);
+    const revoked=await store.revokeAfasCredential(tenantId,id);
+    const paused=await store.saveDraft(tenantId,{...connector,id,state:'Paused',
+      runtime:{...(connector.runtime||{}),afasProviderAuthorization:'REVOKED_LOCALLY',
+        revocation:{localCredentialsRemoved:Boolean(revoked),sourceRowsRemoved:true,
+          providerTokenRevokeRequired:true,revokedAt:new Date().toISOString()}}});
+    return json({status:'REVOKED_LOCALLY',connectorId:id,
+      providerTokenRevokeRequired:true,localCredentialsRemoved:Boolean(revoked),
+      connectorState:paused?.state||'Paused'});
   }
   if(normalized.method==='POST'&&id&&action==='test'){
     if(typeof engine?.runTest!=='function')return json({error:'CONNECTOR_RUNTIME_NOT_CONFIGURED'},503);
