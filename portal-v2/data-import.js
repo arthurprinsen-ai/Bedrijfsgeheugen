@@ -261,8 +261,10 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
       report(record.rowCount+" rijen inclusief doel, betekenis en bestemming zijn opgeslagen en teruggelezen. Geen KPI’s gewijzigd.","success");
     }catch(error){
       report("Nog niet als voltooid bevestigd: "+String(error.message||error)+". Probeer opnieuw na controle van je verbinding.","error");
-      confirm.disabled=false;
-    }finally{busy=false;}
+    }finally{
+      busy=false;
+      updateSaveButton();
+    }
   }
   launch.addEventListener("click",()=>{if(!dialog.open){reset();renderSaved();dialog.showModal();}});
   dialog.querySelector("[data-close]").addEventListener("click",()=>dialog.close());
