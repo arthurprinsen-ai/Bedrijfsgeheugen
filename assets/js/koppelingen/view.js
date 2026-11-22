@@ -317,7 +317,18 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
         const name=document.createElement('strong');
         name.textContent=String(item.name||item.templateId||'Koppeling').slice(0,80);
         const description=document.createElement('p');
-        description.textContent=item.state==='Active'?'Configuratie actief. Echte brondata niet bewezen.':item.state==='Paused'?'Gepauzeerd':'Concept';
+        description.textContent=item.state==='Active'
+          ?'Configuratie actief. Bekijk de onafhankelijke status om echte bronverwerking te bevestigen.'
+          :item.state==='Paused'?'Gepauzeerd':'Concept';
+        if(item.transferPolicy){
+          try{
+            const summary=transferSummary(item.transferPolicy);
+            const detail=document.createElement('p');detail.className='bg-kw__draft-edit-note';
+            detail.textContent='Gewenste datastroom: '+summary.direction+' · '+summary.cadence+' · '+summary.mode+
+              '. Een ingestelde frequentie is geen bewijs van automatische synchronisatie.';
+            li.append(detail);
+          }catch{/* An invalid stored policy must not claim a valid cadence. */}
+        }
         li.append(name,description);
         if(typeof item.id==='string'&&item.id){
           const buttons=document.createElement('div');buttons.className='bg-kw__saved-actions';
