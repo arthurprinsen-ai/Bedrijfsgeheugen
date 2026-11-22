@@ -1,3 +1,4 @@
+import {normalizeConnectorRuleSource,measurementForConnectorRule} from './connector-kpi-source.mjs';
 /**
  * Original five-minute Powerhouse/Heartbeat runner's bounded, read-only portal
  * signal evaluation. This is not a second scheduler, customer-state writer,
@@ -14,7 +15,8 @@ const finite=value=>value!==null&&value!==undefined&&value!==''&&typeof value!==
 const readPath=(state,path)=>path.split('.').reduce((item,key)=>item&&typeof item==='object'?item[key]:undefined,state);
 function normalizeServerRule(raw){
   const sourcePath=metric(raw?.metricId),operator=String(raw?.operator||'');
-  if(!sourcePath||!['above','below','missing'].includes(operator))return null;
+  const source=normalizeConnectorRuleSource(raw?.source,raw?.metricId);
+  if(!sourcePath||!source||!['above','below','missing'].includes(operator))return null;
   const threshold=operator==='missing'?null:finite(raw.threshold);
   if(operator!=='missing'&&threshold===null)return null;
   const id=String(raw.id||'').slice(0,96);
@@ -22,11 +24,15 @@ function normalizeServerRule(raw){
   return {id,metricId:raw.metricId,operator,threshold,enabled:true,monitoring:true,
     severity:['hoog','midden','laag'].includes(raw.severity)?raw.severity:'midden',
     channels:{email:raw.channels?.email===true,push:raw.channels?.push===true},
-    sourcePath};
+    source,sourcePath:source.type==='connector'?'connector:'+source.connectorId+':'+source.field:sourcePath};
 }
-function evaluatePersistedRule(rule,state){
-  const value=finite(readPath(state,rule.sourcePath)),missing=value===null;
-  return {value,triggered:rule.operator==='missing'?missing:!missing&&
+function evaluatePersistedRule(rule,state,tenant,connectorMeasurements){
+  const linked=rule.source?.type==='connector'
+    ?measurementForConnectorRule(connectorMeasurements,tenant,rule):null;
+  const value=rule.source?.type==='connector'
+    ?finite(linked?.value):finite(readPath(state,rule.sourcePath));
+  const missing=value===null;
+  return {value,missing,linked,triggered:rule.operator==='missing'?missing:!missing&&
     (rule.operator==='above'?value>rule.threshold:value<rule.threshold)};
 }
 
@@ -61,18 +67,18 @@ export function monitoringRuleCandidates(rows){
   }
   return [...grouped.values()].filter(source=>source.rules.some(rule=>rule?.monitoring===true&&rule?.enabled!==false)).slice(0,100);
 }
-export async function planOriginalHeartbeatObservations(rows,{now=new Date().toISOString()}={}){
+export async function planOriginalHeartbeatObservations(rows,{now=new Date().toISOString(),connectorMeasurements=new Map()}={}){
   if(!safeIso(now))throw new Error('PORTAL_SIGNAL_CLOCK_INVALID');
   const results=[];
   for(const source of monitoringRuleCandidates(rows)){
     const eligible=source.rules.slice(0,50).map(normalizeServerRule).filter(Boolean);
     for(const event of eligible){
-      const calculated=evaluatePersistedRule(event,source.data);
+      const calculated=evaluatePersistedRule(event,source.data,source.tenant,connectorMeasurements);
       if(!calculated.triggered)continue;
       // No database-adjacent external notification until the source's actual
       // measurement freshness, per-recipient channel consent/suppression,
       // original sender and independent provider readback are demonstrated.
-      const sourceRevision=source.sourceUpdatedAt;
+      const sourceRevision=calculated.linked?.sourceRevision||source.sourceUpdatedAt;
       const identity=await digest([source.tenant,event.id,event.metricId,event.operator,event.threshold,
         sourceRevision,event.status].join('\u001f'));
       results.push(Object.freeze({
@@ -87,6 +93,8 @@ export async function planOriginalHeartbeatObservations(rows,{now=new Date().toI
           metricId:event.metricId,operator:event.operator,severity:event.severity,
           sourcePath:event.sourcePath,
           sourceRevision,signalDetected:true,
+          sourceKind:event.source.type,connectorMeasurementRecorded:calculated.linked!==null,
+          connectorReceiptMatched:calculated.linked?.evidenceState||null,
           userRequestedMonitoring:true,
           requestedChannels:Object.freeze({email:event.channels.email,push:event.channels.push}),
           sourceMeasurementFreshness:'UNKNOWN',
@@ -118,7 +126,7 @@ export function planNotificationSafety(observation,{providerVerified=false,recip
  * One receipt per tenant / UTC hour / exact source revision, with no values or
  * plaintext tenant IDs; a scan never implies source freshness or a delivery.
  */
-export async function planOriginalHeartbeatScans(rows,{now=new Date().toISOString()}={}){
+export async function planOriginalHeartbeatScans(rows,{now=new Date().toISOString(),connectorMeasurements=new Map()}={}){
   const current=safeIso(now);
   if(!current)throw new Error('PORTAL_SIGNAL_CLOCK_INVALID');
   const hour=current.slice(0,13);
@@ -126,10 +134,19 @@ export async function planOriginalHeartbeatScans(rows,{now=new Date().toISOStrin
   for(const source of monitoringRuleCandidates(rows)){
     const rules=source.rules.slice(0,50).map(normalizeServerRule).filter(Boolean);
     if(!rules.length)continue;
-    const triggeredCount=rules.reduce((n,rule)=>n+(evaluatePersistedRule(rule,source.data).triggered?1:0),0);
-    const absentCount=rules.reduce((n,rule)=>n+(evaluatePersistedRule(rule,source.data).value===null?1:0),0);
+    const checked=rules.map(rule=>evaluatePersistedRule(rule,source.data,source.tenant,connectorMeasurements));
+    const triggeredCount=checked.filter(value=>value.triggered).length;
+    const absentCount=checked.filter(value=>value.missing).length;
+    const connectorRuleCount=rules.filter(rule=>rule.source.type==='connector').length;
+    const connectorMeasurementsMatched=checked.filter(value=>value.linked!==null).length;
     const fingerprint=(await digest(source.tenant)).slice(0,24);
-    const key=(await digest([source.tenant,source.sourceUpdatedAt,hour].join('\\u001f'))).slice(0,48);
+    // Recheck in the same UTC hour when the actual connector source revision
+    // changes; otherwise the old scan dedupe could hide a newly ingested value.
+    const connectorRevisions=rules.filter(rule=>rule.source.type==='connector').map(rule=>{
+      const linked=measurementForConnectorRule(connectorMeasurements,source.tenant,rule);
+      return [rule.id,linked?.sourceRevision||'SOURCE_NOT_VERIFIED'].join(':');
+    }).sort();
+    const key=(await digest([source.tenant,source.sourceUpdatedAt,hour,...connectorRevisions].join('\\u001f'))).slice(0,48);
     result.push(Object.freeze({
       dedupeKey:'portal-signal-scan:'+key,
       eventType:'portal_user_signal_scan',
@@ -138,6 +155,7 @@ export async function planOriginalHeartbeatScans(rows,{now=new Date().toISOStrin
       evidence:Object.freeze({
         contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,checkedAt:current,sourceRevision:source.sourceUpdatedAt,
         enabledRuleCount:rules.length,thresholdTriggersObserved:triggeredCount,missingSourceValues:absentCount,
+        connectorRuleCount,connectorMeasurementsMatched,
         sourceMeasurementFreshness:'UNKNOWN',channelDeliveryVerified:false,
         executedActionsVerified:false,tenantReadbackRequired:true
       })

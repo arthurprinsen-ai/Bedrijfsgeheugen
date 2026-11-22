@@ -1,5 +1,6 @@
 import postgres from "npm:postgres@3.4.7";
 import {planOriginalHeartbeatObservations,planOriginalHeartbeatScans,planNotificationSafety,PORTAL_SIGNAL_HEARTBEAT_CONTRACT} from "./portal-signal-heartbeat.mjs";
+import {buildConnectorKpiIndex} from "./connector-kpi-source.mjs";
 
 const DB_REF="adhjwmvyoixzjtmiroln";
 const DB_POOLER_HOST="aws-0-eu-central-1.pooler.supabase.com";
@@ -378,8 +379,44 @@ async function observePortalSignals(){
         // excluding them would resurrect consent from older tenant layers.
         "order by updated_at desc limit 201"
       );
-      const observations=await planOriginalHeartbeatObservations(rows.slice(0,200));
-      const scans=await planOriginalHeartbeatScans(rows.slice(0,200));
+      // This is a gated bridge, not a new reader of third-party APIs.
+      // Configured/test-only connector definitions MUST NOT become KPI values.
+      // Resolve only newest opted-in tenant layers: an older consent can
+      // never resurrect connector reads after the user revoked monitoring.
+      const candidates=monitoringRuleCandidates(rows.slice(0,200))
+        .filter(source=>source.rules.some(rule=>rule?.monitoring===true&&rule?.enabled!==false&&rule?.source?.type==='connector'));
+      const scopeUuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const allTenants=[...new Set(candidates.map(source=>String(source.tenant)).filter(tenant=>scopeUuid.test(tenant)))];
+      const allConnectors=[...new Set(candidates.flatMap(source=>source.rules
+        .filter(rule=>rule?.monitoring===true&&rule?.enabled!==false&&rule?.source?.type==='connector')
+        .map(rule=>String(rule.source.connectorId||'').toLowerCase())).filter(id=>scopeUuid.test(id)))];
+      const connectorRuleCoverageTruncated=allTenants.length>100||allConnectors.length>100;
+      const requiredTenants=allTenants.slice(0,100),neededConnectors=allConnectors.slice(0,100);
+      let connectorMeasurements=new Map(),connectorReadTruncated=false;
+      if(requiredTenants.length&&neededConnectors.length){
+        const defs=await tx.unsafe(
+          "select organisatie_id,id,versie,status,configuratie from public.connector_definitions "+
+          "where organisatie_id=any($1::uuid[]) and id=any($2::uuid[]) and status='Active' "+
+          "order by bijgewerkt_op desc limit 251",[requiredTenants,neededConnectors]);
+        const execs=await tx.unsafe(
+          "select e.id,e.organisatie_id,e.connector_id,e.connector_versie,e.status,e.evidence "+
+          "from public.connector_executions e "+
+          "where e.organisatie_id=any($1::uuid[]) and e.connector_id=any($2::uuid[]) "+
+          "and e.status='LIVE_INGEST_VERIFIED' order by e.afgerond_op desc limit 401",
+          [requiredTenants,neededConnectors]);
+        const sourceRows=await tx.unsafe(
+          "select tenant_id,observation_id,source_type,normalized_source_revision,raw_payload,observed_at "+
+          "from public.powerhouse_source_observation_v1 "+
+          "where tenant_id=any($1::text[]) and source_type='connector-kpi' "+
+          "order by observed_at desc limit 501",[requiredTenants]);
+        connectorReadTruncated=defs.length>250||execs.length>400||sourceRows.length>500;
+        connectorMeasurements=buildConnectorKpiIndex({
+          definitions:defs.slice(0,250),executions:execs.slice(0,400),
+          observations:sourceRows.slice(0,500)
+        });
+      }
+      const observations=await planOriginalHeartbeatObservations(rows.slice(0,200),{connectorMeasurements});
+      const scans=await planOriginalHeartbeatScans(rows.slice(0,200),{connectorMeasurements});
       const keys=[];
       let inserted=0,scansInserted=0;
       for(const observation of observations.slice(0,15)){
@@ -415,7 +452,7 @@ async function observePortalSignals(){
       }
       return {state:scans.length?"SCANS_AND_TRIGGERS_OBSERVED":"NO_CONFIGURED_MONITORING",
         planned:observations.length,scanned:scans.length,inserted,scansInserted,keys,
-        coverageTruncated:rows.length>200||observations.length>15||scans.length>20};
+        coverageTruncated:rows.length>200||observations.length>15||scans.length>20||connectorReadTruncated||connectorRuleCoverageTruncated};
     });
     if(!outcome.keys?.length)return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
       state:outcome.state,observedSignalCount:outcome.planned||0,scannedTenantCount:outcome.scanned||0,
