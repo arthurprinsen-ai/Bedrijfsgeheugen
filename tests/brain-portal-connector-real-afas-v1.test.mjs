@@ -178,7 +178,7 @@ test('UI and database enforce source proof, no public RLS access, no browser tok
  const [ui,portal,sql,store,api,handlerCode]=await Promise.all([
   readFile(new URL('../assets/js/koppelingen/afas-live-ui.js',import.meta.url),'utf8'),
   readFile(new URL('../portal-v2/verified-connector-data.js',import.meta.url),'utf8'),
-  readFile(new URL('../supabase/migrations/20261122162000_portal_connector_real_afas_source_readback_v1.sql',import.meta.url),'utf8'),
+  readFile(new URL('../supabase/migrations/20261122162147_portal_connector_real_afas_source_readback_v1.sql',import.meta.url),'utf8'),
   readFile(new URL('../netlify/functions/_portal-connectors-store.mjs',import.meta.url),'utf8'),
   readFile(new URL('../assets/js/koppelingen/api.js',import.meta.url),'utf8'),
   readFile(new URL('../platform/api/portal-connectors-handler.mjs',import.meta.url),'utf8')
