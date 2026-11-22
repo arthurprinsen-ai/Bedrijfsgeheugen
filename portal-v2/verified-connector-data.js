@@ -73,6 +73,8 @@ export async function mountVerifiedConnectorData(container,{pageId,fetchFn=globa
   create('p','Deze rijen komen uit geautoriseerde leveranciersbronnen en zijn teruggelezen uit de organisatiegebonden opslag. Zonder een KPI-definitie worden ze niet als omzet, marge of gerealiseerd effect geteld.'));
  for(const record of records)root.append(sourceTable(record));
  container.prepend(root);
+ // The verified source table replaces configuration-only cards on this page.
+ container.querySelector('.bg-sourcejourney')?.remove();
  const boundary=()=>{root.remove();document.removeEventListener('bg:portal-identity-boundary',boundary);};
  document.addEventListener('bg:portal-identity-boundary',boundary,{once:true});
  return root;
