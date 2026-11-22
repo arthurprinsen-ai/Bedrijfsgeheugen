@@ -18,6 +18,7 @@ import { mountWinstnavigator } from './winstnavigator.js';
 import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountControlPlaneCockpit } from './control-plane-cockpit.js';
 import { mountVoiceSignalCenter } from './voice-signals.js';
+import { mountDataImport } from './data-import.js';
 import { attachExistingControlPlaneCockpit } from './control-plane-boot.js';
 
 const SOURCES=[
@@ -485,7 +486,7 @@ portalStateClient.subscribe(snap=>{
  }
 });
 portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});mountVoiceSignalCenter({stateClient:portalStateClient,domainState:portalDomainState});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});mountVoiceSignalCenter({stateClient:portalStateClient,domainState:portalDomainState});mountDataImport({stateClient:portalStateClient,domainState:portalDomainState});
 bindPortalNavigation({
  openPage:gatedOpenPage,
  openHub,
