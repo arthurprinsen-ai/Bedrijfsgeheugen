@@ -24,6 +24,14 @@ Make the existing entrepreneur portal compelling, legible and effortless. Priori
 - Before award-readiness: test complete 320/375/390/430/768/1024/1440 flows and 200% zoom, focus order, sticky dock non-obscuring, iOS VoiceOver and Android TalkBack, keyboard, reduced motion and WCAG 2.2 AA; then run at least five uncoached entrepreneur tasks with measured completion, errors and clarity. **Source tests and provider browser PASS do not substitute for those human checks.**
 - Require a named owner and actual provider readback on the **current Netlify SHA**; never call the Red Dot standard met or award-ready solely because a visual or code patch shipped.
 
+## 22 november 2026 — data import moet inhoudelijk landen op de juiste pagina
+
+- Zodra de oorspronkelijke klantgebonden CSV/XLSX-import is bevestigd, moet de **inhoud** (rijen, originele kolommen en celwaarden) leesbaar en doorzoekbaar zijn op de volgens het door de klant beoordeelde `semantic.area` toegewezen **bestaande** portaalpagina, niet alleen in het uploadvenster. Alle bestanden zijn terug te vinden bij Data & AI, Datahubstatus en Wat je hebt ingevuld; oudere ongeclassificeerde bestanden uitsluitend in die centrale overzichten.
+- Presenteer een begrijpelijk bronlabel, herkomstsysteem, doel, gegevensperiode, datum en duidelijke waarschuwing dat een bronbestand nog niet automatisch is gekoppeld aan een KPI of gerealiseerd financieel effect. Bestaande KPI’s mogen nooit stiekem worden overschreven. Gebruik de bestaande pagina- en navigatieautoriteit, geen tweede menu of nieuwe portaalapp.
+- Toon uitsluitend de opgeslagen rijen van de originele `stateClient.getSnapshot().state.portal.dataImports`, met exacte gebruiker/tenant-match en geen demodata. Bij logout, sessiewissel of ongeldige readback direct gevoelige DOM-projecties verwijderen. Bewijs dit met positieve route-/rijtests, negatieve cross-tenant-tests, en de echte productie-UI.
+- De importbevestiging opent de betreffende pagina via de oorspronkelijke router met een volledige doel-URL; een opslagsucces bewijst geen KPI-propagatie of ONE BRAIN consumer-ACK. Houd de release EVIDENCE_DUE totdat echte ingelogde import en onafhankelijke readback zijn bewezen.
+- Regressie: `tests/brain-portal-imported-data-destination-v1.test.mjs`. Geen eigen scheduler, datastore, autonome KPI-berekening of test-bypass.
+
 ## Engineering rules
 - Build atop `portal-v2/` and its original InsightLens and route registry. Progressive disclosure for complex details; graphs have precise source-derived tabular alternatives and mouse/touch/keyboard parity.
 - Real user inputs must use native labels, required state, constraints, readable validation and explicit server confirmation; **never** show saved/success from merely typing.

@@ -1,0 +1,35 @@
+/* Portal V2 read-only CSV/XLSX data on the existing semantic destination pages. */
+.bg-imported-page-data{margin:0 0 24px;padding:18px;max-width:100%;border:1px solid #c9dde1;border-radius:16px;background:#f8fbfa;box-shadow:0 8px 24px rgba(14,55,65,.06)}
+.bg-source-section-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:0 0 13px}
+.bg-source-section-head h3{font-size:clamp(1.08rem,2vw,1.42rem);color:#123f41;margin:4px 0 6px}
+.bg-source-section-head p{font-size:.88rem;line-height:1.55;color:#5a7078;margin:0;max-width:720px}
+.bg-source-kicker{font-size:.67rem;color:#13715b;letter-spacing:.09em;font-weight:850}
+.bg-source-total{font-size:.8rem;font-weight:750;color:#21534b;background:#e1f2ed;border-radius:18px;padding:8px 10px}
+.bg-source-record{border:1px solid #d4e4e8;border-radius:12px;background:#fff;margin:10px 0;overflow:hidden}
+.bg-source-record-summary{display:flex;align-items:center;padding:14px 16px;cursor:pointer;min-height:46px;color:#1b4049}
+.bg-source-record-summary>span{display:flex;flex-direction:column;gap:4px;min-width:0}
+.bg-source-record-summary strong{font-size:.94rem;overflow-wrap:anywhere}
+.bg-source-record-summary small{font-size:.77rem;color:#63757d}
+.bg-source-record-body{border-top:1px solid #e5edef;padding:15px}
+.bg-source-trust{display:inline-block;margin:0 0 12px!important;font-size:.79rem!important;background:#eff5ff;color:#285084;padding:7px 10px;border-radius:8px;font-weight:700}
+.bg-source-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:15px}
+.bg-source-fact{min-width:0;display:flex;flex-direction:column;gap:4px}
+.bg-source-fact small{font-size:.7rem;color:#687d85}
+.bg-source-fact strong{font-size:.87rem;color:#214850;overflow-wrap:anywhere;font-weight:650}
+.bg-source-record-body h4{font-size:.92rem;color:#17434b;margin:16px 0 9px}
+.bg-source-table-wrap{max-height:390px;max-width:100%;overflow:auto;border:1px solid #dce8ea;border-radius:9px;overscroll-behavior:contain}
+.bg-source-table-wrap table{border-collapse:collapse;width:100%;white-space:nowrap;font-size:.81rem}
+.bg-source-table-wrap th,.bg-source-table-wrap td{padding:10px 12px;border-bottom:1px solid #e3eaed;text-align:left;max-width:290px;text-overflow:ellipsis;overflow:hidden}
+.bg-source-table-wrap th{background:#e9f5f1;color:#1c4c48;font-weight:750;position:sticky;top:0;z-index:1}
+.bg-source-role{display:block;color:#5b7975;font-size:.67rem;font-weight:500;margin-top:3px}
+.bg-source-table-controls{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:10px}
+.bg-source-table-controls input{background:#fff;border:1px solid #b5cbd1;border-radius:9px;min-height:42px;padding:8px 11px;max-width:100%;flex:1 1 220px;font-size:.86rem}
+.bg-source-pagination{display:flex;align-items:center;gap:9px}
+.bg-source-pagination button{background:#fff;border:1px solid #b2cbd0;border-radius:9px;padding:8px 12px;min-height:42px;color:#194c4d;font-weight:750;cursor:pointer}
+.bg-source-pagination button:disabled{opacity:.4;cursor:not-allowed}
+.bg-source-count{font-size:.76rem;white-space:nowrap;color:#4f6970;font-variant-numeric:tabular-nums}
+.bg-source-destination-link,.bg-import-open-destination{color:#096b5b!important;font-weight:750;font-size:.85rem;text-decoration:underline;text-underline-offset:3px}
+.bg-source-destination-link{display:inline-block;margin-top:4px}
+.bg-source-unreviewed{color:#925614!important;background:#fff6df;padding:10px 12px;border-radius:9px;font-size:.81rem!important}
+.bg-import-history-item .bg-import-open-destination{flex-basis:100%;display:inline-block}
+@media(max-width:700px){.bg-imported-page-data{padding:12px}.bg-source-record-body{padding:12px}.bg-source-facts{grid-template-columns:1fr}.bg-source-section-head{gap:8px}.bg-source-record-summary{padding:12px}.bg-source-table-controls{align-items:stretch}.bg-source-pagination{justify-content:space-between;width:100%}.bg-source-table-wrap{max-height:320px}}

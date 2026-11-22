@@ -19,6 +19,7 @@ import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_
 import { mountControlPlaneCockpit } from './control-plane-cockpit.js';
 import { mountVoiceSignalCenter } from './voice-signals.js';
 import { mountDataImport } from './data-import.js';
+import { renderImportedDataOnPage } from './imported-data-pages.js';
 import { attachExistingControlPlaneCockpit } from './control-plane-boot.js';
 
 const SOURCES=[
@@ -456,7 +457,15 @@ mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient
 // Close tenant-bound visual detail whenever the authenticated subject changes.
 // Do not expose user identifiers through the DOM event payload.
 let portalVisualAuthSubject='';
+function refreshConfirmedImportedPage(){
+ const root=document.getElementById('portalView');
+ if(!root?.classList.contains('open'))return;
+ const native=root.querySelector('#pvNative');
+ if(!native)return;
+ renderImportedDataOnPage(native,{pageId:root.dataset.pageId,stateClient:portalStateClient,openPage:gatedOpenPage});
+}
 portalStateClient.subscribe(snap=>{
+ refreshConfirmedImportedPage();
  const nextVisualSubject=(snap.mode==='authenticated'||snap.mode==='empty')&&snap.user&&!portalStateClient.isDemo()
    ? String(snap.user.id||'') : '';
  if(nextVisualSubject!==portalVisualAuthSubject){
@@ -485,7 +494,7 @@ portalStateClient.subscribe(snap=>{
    navigatePortal('overzicht',{replace:true});
  }
 });
-portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
+portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});refreshConfirmedImportedPage();if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
 mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});mountVoiceSignalCenter({stateClient:portalStateClient,domainState:portalDomainState});mountDataImport({stateClient:portalStateClient,domainState:portalDomainState});
 bindPortalNavigation({
  openPage:gatedOpenPage,

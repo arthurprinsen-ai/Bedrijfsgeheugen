@@ -1,5 +1,8 @@
 import {readImportFile,IMPORT_LIMITS} from './data-import-parser.js';
 import {analyzeImportTable,confirmImportContext,IMPORT_DATA_KINDS,IMPORT_AREAS,IMPORT_GRAINS,IMPORT_ROLES} from './data-import-semantics.js';
+import {importDestinationPage,importPageUrl} from './imported-data-pages.js';
+import {navigatePortal} from './router.js';
+import {findPage} from './page-registry.js';
 
 const MAX_DATASETS=20;
 const MAX_TOTAL_BYTES=450*1024;
@@ -186,6 +189,15 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
       row.append(textNode("strong",(item.fileName||"Import")+" · "+name),
         textNode("span",String(item.rowCount??0)+" rijen · "+destination+" · "+String(item.importedAt||"").slice(0,10)),
         textNode("small",item.semantic?.purpose||"Doel nog niet geregistreerd"));
+      const page=importDestinationPage(item.semantic?.area);
+      const destinationLink=root.createElement("a");
+      destinationLink.href=importPageUrl(page);
+      destinationLink.textContent="Bekijk gegevens op "+(findPage(page)?.label||"Data en AI");
+      destinationLink.className="bg-import-open-destination";
+      destinationLink.addEventListener("click",event=>{
+        event.preventDefault();dialog.close();navigatePortal(page);
+      });
+      row.append(destinationLink);
       history.append(row);
     }
   }
@@ -259,6 +271,15 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
         throw new Error("Server-readback van bestand én zakelijke betekenis ontbreekt.");
       reset();renderSaved();
       report(record.rowCount+" rijen inclusief doel, betekenis en bestemming zijn opgeslagen en teruggelezen. Geen KPI’s gewijzigd.","success");
+      const page=importDestinationPage(record.semantic?.area);
+      const link=root.createElement("a");
+      link.href=importPageUrl(page);
+      link.textContent="Bekijk "+record.rowCount+" rijen op "+(findPage(page)?.label||"Data en AI")+" ›";
+      link.className="bg-import-open-destination";
+      link.addEventListener("click",event=>{
+        event.preventDefault();dialog.close();navigatePortal(page);
+      });
+      status.append(root.createTextNode(" "),link);
     }catch(error){
       report("Nog niet als voltooid bevestigd: "+String(error.message||error)+". Probeer opnieuw na controle van je verbinding.","error");
     }finally{
