@@ -8,4 +8,4 @@ Datum: 2026-11-22. Owner: bestaande Koppeling Studio (portal-v2), single tenant 
 - Bestaande AFAS read-only GET blijft operationeel als opt-in handmatige route, tot echte klantproviderautorisatie en doel-readback. Overige providers alleen ontwerp.
 - Beveiliging: tenant, least privilege, selected pages, no secrets in draft, provider allowlist, plan limit, SQL schema versie; oude provider-test moet ongeldig worden bij scopewijzigingen.
 - Tests: `tests/brain-connector-studio-universal-transfer-v1.test.mjs`, `tests/connector-koppelingen-wizard.test.mjs`, `tests/brain-portal-connector-real-afas-v1.test.mjs`. Status candidate pending exact-head CI + production browser.
-- Requirements: `docs/product/connector-studio-requirements-20261122-v2.md`.
+- Requirements: `docs/changes/2026-11-22-connector-studio-universal-requirements-v2.md`.
