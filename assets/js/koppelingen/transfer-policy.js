@@ -79,8 +79,8 @@ export function connectorTransferSyncGuard(connector){
   return Object.freeze({allowed:false,reason:'DELTA_OR_APPEND_ADAPTER_NOT_VERIFIED'});
  return result;
 }
-export function transferSummary(value){
- const p=normalizeTransferPolicy(value);
+export function transferSummary(value,documentSchema){
+ const p=normalizeTransferPolicy(value,documentSchema);
  const labels={SOURCE_TO_TARGET:'Bron → doel',TARGET_TO_SOURCE:'Doel → bron',BIDIRECTIONAL:'Twee richtingen',
   MANUAL:'Handmatig',INTERVAL:'Iedere '+p.intervalMinutes+' minuten',WEBHOOK:'Bij gebeurtenis',CDC:'Bij bronwijziging'};
  const cadence=p.trigger==='INTERVAL'&&p.intervalMinutes===1440?'Dagelijks'
