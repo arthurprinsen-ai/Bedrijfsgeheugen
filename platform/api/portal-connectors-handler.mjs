@@ -3,6 +3,7 @@ import {connectorConfigurationForImpact,isConnectorConfigurationChanged,pendingC
 import {enforceConnectorRefreshPolicy} from '../saas/entitlement-policy.mjs';
 import {normalizeConnectorDataUse,connectorDataUseActivationGuard} from '../connectors/connector-data-use-policy.mjs';
 import {buildConnectorTrustReport} from '../connectors/connector-trust-report.mjs';
+import {connectorHealthReport} from '../connectors/connector-operations-proof.mjs';
 import {readAfasGetConnector,afasSafeProbe,validateAfasSource} from '../connectors/afas-live-source.mjs';
 import {normalizeTransferPolicy,connectorTransferActivationGuard,connectorTransferSyncGuard} from '../../assets/js/koppelingen/transfer-policy.js';
 import {findConnectorProvider} from '../../assets/js/koppelingen/provider-catalog.js';
@@ -117,6 +118,20 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     return json(buildConnectorTrustReport(connector,{executions:await store.listExecutions(tenantId,id)}));
   }
   if(normalized.method==='GET'&&id&&action==='executions'){if(typeof store?.listExecutions!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);return json(clean(await store.listExecutions(tenantId,id)));}
+
+  if(normalized.method==='GET'&&id&&action==='health'){
+    if(typeof store?.get!=='function'||typeof store?.listExecutions!=='function')
+      return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
+    const connector=await store.get(tenantId,id);
+    if(!connector)return json({error:'NOT_FOUND'},404);
+    const [executions,snapshot]=await Promise.all([
+      store.listExecutions(tenantId,id),
+      connector.source?.type==='afas'&&typeof store?.getSourceSnapshot==='function'
+        ?store.getSourceSnapshot(tenantId,id):Promise.resolve(null)
+    ]);
+    return json(connectorHealthReport({connector,tenantId,executions,snapshot}));
+  }
+
   if(normalized.method==='GET'&&id&&!action){if(typeof store?.get!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);const record=await store.get(tenantId,id);return record?json(clean(record)):json({error:'NOT_FOUND'},404);}
   if(normalized.method==='POST'&&!id){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
@@ -134,12 +149,22 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='PUT'&&id&&action==='draft'){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
     let body=clean(await requestBody(request,normalized));
+    const intent=validateTransferIntent(body);
+    if(intent.error)return json({error:intent.error},422);
+    if(intent.transferPolicy)body={...body,transferPolicy:intent.transferPolicy};
     try{body={...body,dataUse:normalizeConnectorDataUse(body.dataUse)};}
     catch{return json({error:'INVALID_CONNECTOR_DATA_USE'},422);}
     try{body={...body,routing:normalizeConnectorRouting(body.routing,body.documentSchema,body.dataUse)};}
     catch{return json({error:'INVALID_CONNECTOR_ROUTING'},422);}
     const before=await store.get(tenantId,id);if(!before)return json({error:'NOT_FOUND'},404);
     if(before.transferPolicy&&!body.transferPolicy)return json({error:'TRANSFER_POLICY_CANNOT_BE_DROPPED'},422);
+    // Compare against the original persisted source/target purpose. Provider
+    // changes also invalidate old auth evidence; no silent provider swaps.
+    if(before.templateId!==body.templateId)return json({error:'CONNECTOR_TEMPLATE_CHANGE_REQUIRES_NEW_DRAFT'},409);
+    if(before.source?.providerId&&before.source.providerId!==body.source?.providerId)
+      return json({error:'CONNECTOR_SOURCE_CHANGE_REQUIRES_NEW_DRAFT'},409);
+    if(before.target?.providerId&&before.target.providerId!==body.target?.providerId)
+      return json({error:'CONNECTOR_TARGET_CHANGE_REQUIRES_NEW_DRAFT'},409);
     const changed=isConnectorConfigurationChanged(before,body);
     const impact=changed?planCrossDomainChange({
       tenantId,changeId:`connector-update:${id}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,
