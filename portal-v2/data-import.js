@@ -140,7 +140,10 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
     updateSaveButton();
   }
   contextPanel.addEventListener("input",event=>{
-    if(event.target!==reviewed&&event.target!==privacyConfirmed)reviewed.checked=false;
+    if(event.target!==reviewed&&event.target!==privacyConfirmed){
+      reviewed.checked=false;
+      if(staged)staged.confirmedSemantic=null;
+    }
     updateSaveButton();
   });
   contextPanel.addEventListener("change",event=>{
@@ -148,7 +151,10 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
       const target=IMPORT_DATA_KINDS.find(item=>item.id===kind.value);
       if(target){area.value=target.area;grain.value=target.grain;purpose.value=target.purpose;}
     }
-    if(event.target!==reviewed&&event.target!==privacyConfirmed)reviewed.checked=false;
+    if(event.target!==reviewed&&event.target!==privacyConfirmed){
+      reviewed.checked=false;
+      if(staged)staged.confirmedSemantic=null;
+    }
     updateSaveButton();
   });
   function confirmedSemantic(){
@@ -224,7 +230,10 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
     }
     busy=true;confirm.disabled=true;report("Gegevens en zakelijke betekenis gecontroleerd opslaan…");
     try{
-      const semantic=confirmedSemantic();
+      // Retain exactly the same reviewed revision across a failed Brain handoff.
+      // A retry may only replay identical source/purpose/role evidence, never mutate it.
+      const semantic=staged.confirmedSemantic||confirmedSemantic();
+      staged.confirmedSemantic=semantic;
       const record=buildImportRecord(staged.fileObject,staged.table,staged.fingerprint,semantic);
       const current=domainState.get("portal.dataImports")||{};
       const datasets=Array.isArray(current.datasets)?current.datasets:[];
