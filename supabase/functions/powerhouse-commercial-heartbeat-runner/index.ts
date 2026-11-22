@@ -381,18 +381,17 @@ async function observePortalSignals(){
       );
       // This is a gated bridge, not a new reader of third-party APIs.
       // Configured/test-only connector definitions MUST NOT become KPI values.
-      const candidates=rows.slice(0,200).filter(row=>{
-        const p=row?.payload?.data||row?.payload||{};
-        return Array.isArray(p?.portal?.signalering?.rules)
-          &&p.portal.signalering.rules.some(rule=>rule?.monitoring===true&&rule?.enabled!==false&&rule?.source?.type==='connector');
-      });
-      const requiredTenants=[...new Set(candidates.map(row=>String(row.tenant_id||''))
-        .filter(tenant=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tenant)))].slice(0,100);
-      const neededConnectors=[...new Set(candidates.flatMap(row=>{
-        const p=row?.payload?.data||row?.payload||{};
-        return p?.portal?.signalering?.rules?.filter(rule=>rule?.source?.type==='connector')
-          .map(rule=>String(rule.source.connectorId||'').toLowerCase())||[];
-      }).filter(id=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(id)))].slice(0,100);
+      // Resolve only newest opted-in tenant layers: an older consent can
+      // never resurrect connector reads after the user revoked monitoring.
+      const candidates=monitoringRuleCandidates(rows.slice(0,200))
+        .filter(source=>source.rules.some(rule=>rule?.monitoring===true&&rule?.enabled!==false&&rule?.source?.type==='connector'));
+      const scopeUuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const allTenants=[...new Set(candidates.map(source=>String(source.tenant)).filter(tenant=>scopeUuid.test(tenant)))];
+      const allConnectors=[...new Set(candidates.flatMap(source=>source.rules
+        .filter(rule=>rule?.monitoring===true&&rule?.enabled!==false&&rule?.source?.type==='connector')
+        .map(rule=>String(rule.source.connectorId||'').toLowerCase())).filter(id=>scopeUuid.test(id)))];
+      const connectorRuleCoverageTruncated=allTenants.length>100||allConnectors.length>100;
+      const requiredTenants=allTenants.slice(0,100),neededConnectors=allConnectors.slice(0,100);
       let connectorMeasurements=new Map(),connectorReadTruncated=false;
       if(requiredTenants.length&&neededConnectors.length){
         const defs=await tx.unsafe(
@@ -453,7 +452,7 @@ async function observePortalSignals(){
       }
       return {state:scans.length?"SCANS_AND_TRIGGERS_OBSERVED":"NO_CONFIGURED_MONITORING",
         planned:observations.length,scanned:scans.length,inserted,scansInserted,keys,
-        coverageTruncated:rows.length>200||observations.length>15||scans.length>20||connectorReadTruncated};
+        coverageTruncated:rows.length>200||observations.length>15||scans.length>20||connectorReadTruncated||connectorRuleCoverageTruncated};
     });
     if(!outcome.keys?.length)return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
       state:outcome.state,observedSignalCount:outcome.planned||0,scannedTenantCount:outcome.scanned||0,
