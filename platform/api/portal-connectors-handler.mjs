@@ -208,7 +208,10 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
         return json({error:'SOURCE_RECORD_READBACK_UNCONFIRMED'},503);
       const execution=await store.saveExecution(tenantId,{
         connectorId:id,connectorVersion:connector.version,status:'SOURCE_SYNCED',
-        dedupeKey:source.sourceHash,
+        // A manual refresh is a new observed execution even when values have
+        // not changed. The tenant source table is upserted by connector ID;
+        // do not collide with the existing unique execution dedupe index.
+        dedupeKey:null,
         evidence:{proofLevel:'PROVIDER_VERIFIED',sourceReadSuccess:true,sourceHash:source.sourceHash,
           recordCount:source.recordCount,tenantRecordReadback:true,provider:'afas',
           version:connector.version,portalPages:connector.routing.portalPages},
