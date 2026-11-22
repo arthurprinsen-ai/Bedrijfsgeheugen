@@ -5,6 +5,7 @@ import {createConnectorApi} from './api.js';
 import {toHumanStatus,activationEvidenceId} from './status.js';
 import {CONNECTOR_PORTAL_PAGES} from './portal-routing.js';
 import {connectorRecoveryAdvice} from './recovery.js';
+import {mountAfasLiveConnection} from './afas-live-ui.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const STEP_LABELS={source:'Bron',selection:'Selectie',information:'Informatie',target:'Doel',schedule:'Planning',test:'Test'};
@@ -123,6 +124,9 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   if(!container)return null;
   ensureStyles();
   container.insertAdjacentHTML('beforeend',renderWizardShell());
+  // Real provider ingestion has its own explicit auth/field-consent step.
+  // Keep the original sample-only wizard for other templates.
+  mountAfasLiveConnection(container,{api});
   const root=container.querySelector('[data-bg-wizard]');
   const message=root.querySelector('[data-bg-message]');
   const definitionOut=root.querySelector('[data-bg-definition]');
