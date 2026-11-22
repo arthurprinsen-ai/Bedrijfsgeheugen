@@ -32,6 +32,7 @@ import { mountNeedDiscovery } from './modules/need-discovery.js';
 import { mountSecurityTrustWorkspace, disposeSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
 import { mountAiModelChoice } from './modules/ai-model-choice.js';
 import { mountKwartaalrapporten } from './modules/kwartaalrapporten.js';
+import {mountVerifiedConnectorData} from './verified-connector-data.js';
 import { renderImportedDataOnPage } from './imported-data-pages.js';
 
 const COPY = {
@@ -420,6 +421,11 @@ export function openPortalPage(pageId){
   // the original ingestion store independently proves actual business records.
   if(pageId!=='koppelingen'&&portalContext.stateClient?.currentUser?.()&&native?.append){
     void mountConnectedDataSources(native,{pageId});
+    // True source records come from authenticated connector source snapshots, never configuration metadata.
+    void mountVerifiedConnectorData(native,{pageId,getIdentity:()=>{
+      const c=portalContext.stateClient;
+      return c?.isDemo?.()?null:String(c?.currentUser?.()?.id||'')||null;
+    }});
   }
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
