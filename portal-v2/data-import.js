@@ -133,8 +133,13 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
     try{
       const current=domainState.get("portal.dataImports")||{};
       const datasets=Array.isArray(current.datasets)?current.datasets:[];
-      validateImportCapacity(datasets,record);
-      domainState.patch("portal.dataImports",{datasets:[...datasets,record]});
+      // A previous attempt may have saved the tenant state before a downstream Brain ACK failed.
+      // Retry the original handoff; do not append a second copy or declare success early.
+      const pendingSame=datasets.find(item=>item.fingerprint===record.fingerprint);
+      if(!pendingSame){
+        validateImportCapacity(datasets,record);
+        domainState.patch("portal.dataImports",{datasets:[...datasets,record]});
+      }else if(pendingSame.id!==record.id){throw new Error("Er bestaat een conflicterende importversie.");}
       const ack=await domainState.flush();
       if(!["saved","idle"].includes(ack?.status))throw new Error("De opslag is nog niet bevestigd.");
       if(principal(stateClient)!==owner)throw new Error("De gebruikerssessie is veranderd.");
