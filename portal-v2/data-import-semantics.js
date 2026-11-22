@@ -62,9 +62,9 @@ const categorySignals=Object.freeze({
  projects:/\b(project|projecten|planning|mijlpaal|milestone|resourceplanning|begrotingsuren)\b/i
 });
 const hardRestricted=/(^|[^a-z])(bsn|burgerservicenummer|paspoortnummer|passportnumber|wachtwoord|password|api.?key|secret.?key|access.?token|medische.?diagnose|diagnose|medisch|gezondheid|health.?record)([^a-z]|$)/i;
-const personalPattern=/\b(naam|voornaam|achternaam|name|firstname|lastname|e.?mail|email|telefoon|phone|mobiel|adres|address|postcode|geboortedatum|dateofbirth|iban|bankrekening|salaris|salary|klantnummer|klant id|customerid|customer id|medewerkernummer|medewerker id|employeeid|employee id)\b/i;
-const DATE=/\b(datum|date|tijd|time|created|updated|verval|deadline|maand|month|jaar|year|periode|period)\b/i;
-const IDENTIFIER=/\b(id|nummer|number|nr|code|uuid|reference|referentie|sku|ticketid|caseid)\b/i;
+const personalPattern=/\b(naam|voornaam|achternaam|name|firstname|first name|lastname|last name|klantnaam|customername|contactnaam|e.?mail|email|telefoon|phone|mobiel|adres|address|postcode|geboortedatum|dateofbirth|iban|bankrekening|salaris|salary|klantnummer|klant id|customerid|customer id|medewerkernummer|medewerker id|employeeid|employee id)\b/i;
+const DATE=/\b([a-z]*datum|[a-z]*date|tijd|time|created|updated|verval|deadline|maand|month|jaar|year|periode|period)\b/i;
+const IDENTIFIER=/\b(id|[a-z0-9]+id|nummer|[a-z0-9]+nummer|number|nr|code|uuid|reference|referentie|sku)\b/i;
 const AMOUNT=/\b(bedrag|amount|omzet|revenue|kosten|cost|prijs|price|waarde|value|saldo|balance|budget|eur|euro|usd)\b/i;
 const NUMBER=/\b(aantal|quantity|qty|count|volume|uren|hours|kwh|verbruik)\b/i;
 const PERCENTAGE=/\b(percentage|procent|percent|pct|ratio|rate|conversie)\b/i;
