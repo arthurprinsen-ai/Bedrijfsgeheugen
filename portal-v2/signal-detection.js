@@ -38,7 +38,8 @@ const CONNECTOR_UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3
 const CONNECTOR_FIELD=/^[\p{L}_][\p{L}\p{N}_-]{0,79}$/u;
 export function normalizeSignalSource(value){
   const source=value?.source;
-  if(!source||source.type===undefined||source.type==='portal')return Object.freeze({type:'portal'});
+  if(source==null)return Object.freeze({type:'portal'});
+  if(source.type==='portal'&&Object.keys(source).length===1)return Object.freeze({type:'portal'});
   if(source.type!=='connector'||Object.keys(source).some(k=>!['type','connectorId','field'].includes(k)))return null;
   const id=String(source.connectorId||''),field=String(source.field||'');
   if(!CONNECTOR_UUID.test(id)||!CONNECTOR_FIELD.test(field))return null;
