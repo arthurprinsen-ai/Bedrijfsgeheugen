@@ -20,7 +20,8 @@ const metricPage=Object.freeze({
 });
 const UUID_FIELDS=['connectorId','executionId'];
 export function normalizeConnectorRuleSource(source,metricId){
-  if(!source||source.type===undefined||source.type==='portal')return {type:'portal'};
+  if(source==null)return {type:'portal'};
+  if(source.type==='portal'&&Object.keys(source).length===1)return {type:'portal'};
   if(source.type!=='connector'||!Object.hasOwn(metricPage,String(metricId)))return null;
   const id=String(source.connectorId||''),field=String(source.field||'');
   if(!UUID.test(id)||!FIELD.test(field)||Object.keys(source).some(k=>!['type','connectorId','field'].includes(k)))return null;
