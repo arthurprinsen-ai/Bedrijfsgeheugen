@@ -42,7 +42,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     +'<section class="vs-center"><div class="vs-center-head"><div><h3>Mijn signaleringen</h3><p>De browser toont je eigen regels. De oorspronkelijke Heartbeat controleert ingeschakelde regels; het bewijs staat hieronder. E-mail/push is nog geen afleverbevestiging.</p></div><span data-vs-counter>Geen regels</span></div><div data-vs-list class="vs-list"></div></section>'
     +'<section class="vs-proof" aria-label="Bewijs automatische bewaking"><h3>Wat heeft Heartbeat echt gecontroleerd?</h3><p>Alleen de oorspronkelijke serverbewijzen tellen. Een actieve scheduler is niet hetzelfde als een klantcontrole of verstuurde melding.</p><button type="button" data-vs-proof-refresh>Controleer serverbewijzen</button><output data-vs-server-proof role="status" aria-live="polite">Nog geen controle uitgevoerd.</output><div data-vs-proof-events></div></section>'
     +'<form data-vs-action-form class="vs-form" hidden><h3>Actie aanmaken uit signaal</h3><p data-vs-action-context></p><div class="vs-form-grid"><label>Eigenaar<input name="owner" required maxlength="100" placeholder="Naam verantwoordelijke"></label><label>Deadline<input name="due" required type="date"></label></div><div class="vs-item-actions"><button type="submit" class="vs-save">Taak opslaan met bewijs</button><button type="button" data-vs-action-cancel>Annuleren</button></div></form>'
-    +'<form data-vs-form class="vs-form"><h3>Signalering instellen</h3><div class="vs-form-grid"><label>KPI<select name="metric" required></select></label><label>Als de waarde<select name="operator"><option value="below">Onder de grens komt</option><option value="above">Boven de grens komt</option><option value="missing">Ontbreekt</option></select></label><label>Grenswaarde<input name="threshold" inputmode="decimal" type="number" step="any" placeholder="Bijv. 7" required></label><label>Prioriteit<select name="severity"><option value="midden">Midden</option><option value="hoog">Hoog</option><option value="laag">Laag</option></select></label></div><fieldset class="vs-channel-intent"><legend>Bewaking en meldingen</legend><label><input type="checkbox" name="monitoring"> Vraag doorlopende controle aan via de bestaande Heartbeat</label><label><input type="checkbox" name="email"> Ik wil hiervoor e-mailmeldingen ontvangen (kanaal nog niet als geleverd geverifieerd)</label><label><input type="checkbox" name="push"> Ik wil pushmeldingen ontvangen (kanaal nog niet als geleverd geverifieerd)</label></fieldset><p class="vs-form-hint">Eén grenswaarde is jouw beleidskeuze, geen branchebenchmark. Een aangevraagd kanaal is geen verzendbewijs: alleen de oorspronkelijke provider met toestemming, suppressie en ontvangstcontrole mag verzenden.</p><button class="vs-save" type="submit">Signalering veilig opslaan</button></form>';
+    +'<form data-vs-form class="vs-form"><h3>Signalering instellen</h3><div class="vs-form-grid"><label>KPI<select name="metric" required></select></label><label>Als de waarde<select name="operator"><option value="below">Onder de grens komt</option><option value="above">Boven de grens komt</option><option value="missing">Ontbreekt</option></select></label><label>Grenswaarde<input name="threshold" inputmode="decimal" type="number" step="any" placeholder="Bijv. 7" required></label><label>Prioriteit<select name="severity"><option value="midden">Midden</option><option value="hoog">Hoog</option><option value="laag">Laag</option></select></label></div><div class="vs-form-grid"><label>Bron voor deze KPI<select name="sourceType"><option value="portal">Handmatig ingevoerd portaalveld</option><option value="connector">Gekoppelde bron (geverifieerde meetwaarden)</option></select></label><label data-vs-connector-choice hidden>Koppeling<select name="connectorId"></select></label><label data-vs-field-choice hidden>Bronveld<select name="sourceField"></select></label></div><p data-vs-connector-status class="vs-form-hint">Een gekoppelde bron telt pas als KPI na een echte providerophaling, geautoriseerde verwerking en opslagbewijs.</p><button type="button" data-vs-open-connectors class="vs-save">Koppelingen beheren</button><fieldset class="vs-channel-intent"><legend>Bewaking en meldingen</legend><label><input type="checkbox" name="monitoring"> Vraag doorlopende controle aan via de bestaande Heartbeat</label><label><input type="checkbox" name="email"> Ik wil hiervoor e-mailmeldingen ontvangen (kanaal nog niet als geleverd geverifieerd)</label><label><input type="checkbox" name="push"> Ik wil pushmeldingen ontvangen (kanaal nog niet als geleverd geverifieerd)</label></fieldset><p class="vs-form-hint">Eén grenswaarde is jouw beleidskeuze, geen branchebenchmark. Een aangevraagd kanaal is geen verzendbewijs: alleen de oorspronkelijke provider met toestemming, suppressie en ontvangstcontrole mag verzenden.</p><button class="vs-save" type="submit">Signalering veilig opslaan</button></form>';
   for(const metric of SIGNAL_METRICS){const opt=document.createElement('option');opt.value=metric.id;opt.textContent=metric.label+' ('+metric.unit+')';dialog.querySelector('[name=metric]').append(opt);}
   document.body.append(dialog);
   const output=dialog.querySelector('[data-vs-status]'),input=dialog.querySelector('[data-vs-command]');
@@ -50,7 +50,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   const actionForm=dialog.querySelector('[data-vs-action-form]');let selectedSignalId='';
   const mic=dialog.querySelector('[data-vs-mic]'),counter=dialog.querySelector('[data-vs-counter]');
   const threshold=form.elements.threshold,operator=form.elements.operator;
-  let recognizer=null,busy=false,principal='',lastPortalField=null,proofEpoch=0;
+  let recognizer=null,busy=false,principal='',lastPortalField=null,proofEpoch=0,connectorEpoch=0,connectorChoices=[];
   function stopSpeaking(){try{globalThis.speechSynthesis?.cancel?.();}catch{}}
   function speak(text){
     const t=String(text||'').trim();const Synth=globalThis.SpeechSynthesisUtterance;
@@ -121,11 +121,63 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     if(recognizer){try{recognizer.abort();}catch{}recognizer=null;}
     mic.disabled=false;mic.textContent='🎙 Spreek';
   }
+  const sourceType=form.elements.sourceType,connectorId=form.elements.connectorId;
+  const sourceField=form.elements.sourceField,connectorStatus=dialog.querySelector('[data-vs-connector-status]');
+  function availableConnectors(){
+    const metric=metricById(form.elements.metric.value);
+    return connectorChoices.filter(item=>item&&item.state==='Active'
+      &&['PORTAL_INSIGHTS','PORTAL_AI'].includes(item.dataUse?.mode)
+      &&Array.isArray(item.routing?.portalPages)&&item.routing.portalPages.includes(metric?.page)
+      &&Array.isArray(item.routing?.selectedFields)&&item.routing.selectedFields.length>0);
+  }
+  function refreshConnectorChoices(){
+    const linked=sourceType.value==='connector';
+    dialog.querySelector('[data-vs-connector-choice]').hidden=!linked;
+    dialog.querySelector('[data-vs-field-choice]').hidden=!linked;
+    connectorId.replaceChildren();
+    for(const item of availableConnectors()){
+      const option=document.createElement('option');
+      option.value=String(item.id||'');
+      option.textContent=String(item.name||'Gekoppelde bron').slice(0,100);
+      connectorId.append(option);
+    }
+    const connector=availableConnectors().find(item=>item.id===connectorId.value);
+    sourceField.replaceChildren();
+    for(const field of (connector?.routing?.selectedFields||[])){
+      const option=document.createElement('option');option.value=String(field);option.textContent=String(field);
+      sourceField.append(option);
+    }
+    connectorStatus.textContent=linked
+      ?connector?'Koppeling geselecteerd. Dit is configuratie, geen bewijs van ingelezen providerwaarden. Heartbeat beoordeelt alleen echte geverifieerde bronontvangsten.'
+        :'Voor deze KPI is geen geactiveerde koppeling met het juiste gegevensgebruik en bronvelden beschikbaar. Stel die eerst in via Koppelingen.'
+      :'Deze KPI wordt uitsluitend getoetst op opgeslagen portaalgegevens. Bij portaalinvoer is bronactualiteit niet onafhankelijk aangetoond.';
+  }
+  async function loadConnectorChoices(){
+    const snap=authenticated(),owner=String(snap?.user?.id||''),epoch=++connectorEpoch;
+    connectorChoices=[];
+    refreshConnectorChoices();
+    if(!owner)return;
+    const token=await stateClient.currentUser?.()?.jwt?.();
+    if(!token)return;
+    try{
+      const response=await fetchImpl('/api/connectors',{
+        method:'GET',credentials:'same-origin',headers:{accept:'application/json',authorization:'Bearer '+token}
+      });
+      const data=await response.json().catch(()=>null);
+      if(epoch!==connectorEpoch||String(authenticated()?.user?.id||'')!==owner)return;
+      if(!response.ok||!Array.isArray(data))throw Error('CONNECTOR_METADATA_UNAVAILABLE');
+      connectorChoices=data.slice(0,100).filter(item=>item&&typeof item.id==='string');
+      refreshConnectorChoices();
+    }catch{
+      if(epoch===connectorEpoch&&String(authenticated()?.user?.id||'')===owner)
+        connectorStatus.textContent='De koppelingen zijn niet bereikbaar. Gebruik geen onbevestigde bronwaarden.';
+    }
+  }
   function reveal(){
     const opening=!dialog.open;
     if(opening)dialog.showModal();
     render();
-    if(opening)void loadServerProof();
+    if(opening){void loadServerProof();void loadConnectorChoices();}
   }
   function switchFormThreshold(){
     threshold.disabled=operator.value==='missing';
@@ -162,7 +214,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     head.append(title,tag);card.append(head);
     const why=document.createElement('p');why.textContent=result.explanation;card.append(why);
     const evidence=document.createElement('small');evidence.className='vs-evidence';
-    evidence.textContent='Bron: '+result.evidence.sourcePath+' · Actualiteit van de meting: onbekend · Status berekend uit ingevoerde klantdata';
+    evidence.textContent='Bron: '+result.evidence.sourcePath+' · Actualiteit van de meting: onbekend · '+(result.source.type==='connector'?'Geen browserclaim over live gekoppelde gegevens; controleer serverbewijs.':'Status berekend uit ingevoerde klantdata');
     card.append(evidence);
     if(result.triggered){
       const advice=document.createElement('p');advice.className='vs-advice';advice.textContent='Advies: '+result.advice;card.append(advice);
@@ -281,6 +333,17 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     }
     note(output,'Niet herkende opdracht. Probeer “open [onderdeel]”, “focus op [veld]”, “vul veld [naam] met [waarde]”, een vraag of een KPI-signalering.',true);
   }
+  sourceType.addEventListener('change',refreshConnectorChoices);
+  form.elements.metric.addEventListener('change',refreshConnectorChoices);
+  connectorId.addEventListener('change',()=>{
+    const item=availableConnectors().find(item=>item.id===connectorId.value);
+    sourceField.replaceChildren();
+    for(const field of (item?.routing?.selectedFields||[])){
+      const opt=document.createElement('option');opt.value=String(field);opt.textContent=String(field);
+      sourceField.append(opt);
+    }
+  });
+  dialog.querySelector('[data-vs-open-connectors]').addEventListener('click',()=>{dialog.close();openPage('koppelingen');});
   dialog.querySelector('[data-vs-proof-refresh]').addEventListener('click',()=>{void loadServerProof();});
   voiceButton.addEventListener('click',()=>{reveal();input.focus();});
   alertsButton.addEventListener('click',reveal);
@@ -314,10 +377,16 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
       if(!metric||!['above','below','missing'].includes(op)||op!=='missing'&&(!threshold.value.trim()||!Number.isFinite(amount)))
         throw Error('Kies een geldige KPI, vergelijking en grenswaarde.');
       const existing=stateRules(authenticated()?.state).map(normalizeRule).filter(Boolean);
-      if(existing.some(x=>x.metricId===metric.id&&x.operator===op&&x.threshold===amount&&x.enabled))
-        throw Error('Deze actieve signalering bestaat al.');
+      const selected=sourceType.value==='connector'?availableConnectors().find(item=>item.id===connectorId.value):null;
+      if(sourceType.value==='connector'&&(!selected||!selected.routing.selectedFields.includes(sourceField.value)))
+        throw Error('Selecteer eerst een geactiveerde, voor deze KPI toegestane koppeling en een bronveld.');
+      const source=sourceType.value==='connector'
+        ?{type:'connector',connectorId:selected.id,field:sourceField.value}:{type:'portal'};
+      if(existing.some(x=>x.metricId===metric.id&&x.operator===op&&x.threshold===amount&&x.enabled
+        &&JSON.stringify(x.source)===JSON.stringify(source)))
+        throw Error('Deze actieve signalering voor deze bron bestaat al.');
       const id=globalThis.crypto?.randomUUID?.()||('rule-'+Date.now()+'-'+Math.random().toString(36).slice(2));
-      const rule=normalizeRule({id,metricId:metric.id,operator:op,threshold:amount,enabled:true,severity:form.elements.severity.value,monitoring:form.elements.monitoring.checked,channels:{email:form.elements.email.checked,push:form.elements.push.checked}});
+      const rule=normalizeRule({id,metricId:metric.id,operator:op,threshold:amount,enabled:true,severity:form.elements.severity.value,source,monitoring:form.elements.monitoring.checked,channels:{email:form.elements.email.checked,push:form.elements.push.checked}});
       if(!rule)throw Error('ONGELDIGE_REGEL');
       await commitRules([...existing,rule],id);
     }catch(error){note(output,'Niet bevestigd: '+String(error?.message||error),true);}
@@ -377,10 +446,10 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   });
   const unsubscribe=stateClient.subscribe(snap=>{
     const next=String((['authenticated','empty'].includes(snap.mode)&&!stateClient.isDemo?.()?snap.user?.id:'')||'');
-    if(next!==principal){principal=next;proofEpoch++;lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na aanmelden.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;note(output,'');if(dialog.open)dialog.close();}
+    if(next!==principal){principal=next;proofEpoch++;connectorEpoch++;connectorChoices=[];refreshConnectorChoices();lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na aanmelden.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;note(output,'');if(dialog.open)dialog.close();}
     render();
   });
-  const boundary=()=>{proofEpoch++;lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na accountwissel.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
+  const boundary=()=>{proofEpoch++;connectorEpoch++;connectorChoices=[];refreshConnectorChoices();lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na accountwissel.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
   document.addEventListener('bg:portal-identity-boundary',boundary);
   const refreshed=()=>render();document.addEventListener('bg:portal-server-refreshed',refreshed);
   render();
