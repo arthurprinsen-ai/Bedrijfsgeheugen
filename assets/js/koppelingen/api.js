@@ -28,6 +28,10 @@ export const createConnectorApi=({fetchFn=globalThis.fetch}={})=>Object.freeze({
     return jsonRequest(`/api/connectors/${encodeURIComponent(id)}/activate`,{method:'POST',body:{testExecutionId},fetchFn});
   },
   pause:(id,reason)=>jsonRequest(`/api/connectors/${encodeURIComponent(id)}/pause`,{method:'POST',body:{reason},fetchFn}),
+  probe:(id,credential)=>jsonRequest('/api/connectors/'+encodeURIComponent(id)+'/probe',{method:'POST',body:credential?{credential}:{},fetchFn}),
+  sync:id=>jsonRequest('/api/connectors/'+encodeURIComponent(id)+'/sync',{method:'POST',body:{},fetchFn}),
+  revoke:id=>jsonRequest('/api/connectors/'+encodeURIComponent(id)+'/revoke',{method:'POST',body:{},fetchFn}),
+  pageRecords:page=>jsonRequest('/api/connectors/page-records?page='+encodeURIComponent(page),{fetchFn}),
   trust:id=>jsonRequest(`/api/connectors/${encodeURIComponent(id)}/trust`,{fetchFn}),
   executions:id=>jsonRequest(`/api/connectors/${encodeURIComponent(id)}/executions`,{fetchFn})
 });
