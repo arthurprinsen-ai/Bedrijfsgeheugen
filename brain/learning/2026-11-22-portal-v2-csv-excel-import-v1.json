@@ -1,0 +1,48 @@
+{
+  "fingerprint": "portal-v2|tenant-scoped-csv-xlsx-import|20261122-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "date": "2026-11-22",
+  "owner": "existing Portal V2 BusinessInput → ONE BRAIN → Powerhouse → Heartbeat",
+  "authority": "Existing authenticated Portal Domain State and canonical Brain BusinessInput ACK",
+  "rootCause": "Portal V2 lacked a safe authenticated CSV/XLSX intake, forcing manual field re-entry and preventing imported file provenance from being persisted under existing tenant identity.",
+  "prevention": "Use in-browser local parsing, explicit preview and confirmation, file SHA-256 duplicate gate, size/row/column budgets, no formula execution, no auto KPI mapping, no new store or scheduler. Keep existing domainState.patch/flush, Brain receipt and authenticated server readback; reject demo or identity changes.",
+  "regression": "tests/brain-portal-v2-data-import-v1.test.mjs",
+  "noNewScheduler": true,
+  "noNewWriter": true,
+  "noNewStore": true,
+  "compiler": {
+    "failure_class": "PORTAL_FILE_IMPORT_MISSING",
+    "scope": "SITE_PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED: exact-head Required and CodeQL, protected merge, matching Netlify release, signed-in real tenant CSV/XLSX upload and separate re-open/readback required"
+    ]
+  },
+  "evidence": {
+    "observation": "Existing client writes through portal-v2/domain-state.js -> portal-v2/portal-state.js -> /api/portal-business-input; new upload is staged locally and committed only after explicit user confirmation.",
+    "test_evidence": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "protected_main_proven": false,
+    "authenticated_customer_readback_proven": false,
+    "verified_consumer_outcome_proven": false
+  },
+  "limitations": [
+    "CSV UTF-8 and .xlsx first worksheet; legacy .xls requires conversion.",
+    "Up to 4 MB file, 1000 rows, 40 columns, 220 KB per table, 450 KB combined stored data; larger datasets require original connections.",
+    "Generic dataset becomes a source only; financial KPI or company-metric mapping requires separate reviewed mapping, no automatic mutation."
+  ]
+}
