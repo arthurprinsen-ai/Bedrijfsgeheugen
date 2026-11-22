@@ -4,6 +4,8 @@ import {enforceConnectorRefreshPolicy} from '../saas/entitlement-policy.mjs';
 import {normalizeConnectorDataUse,connectorDataUseActivationGuard} from '../connectors/connector-data-use-policy.mjs';
 import {buildConnectorTrustReport} from '../connectors/connector-trust-report.mjs';
 import {readAfasGetConnector,afasSafeProbe,validateAfasSource} from '../connectors/afas-live-source.mjs';
+import {normalizeTransferPolicy,connectorTransferActivationGuard,connectorTransferSyncGuard} from '../../assets/js/koppelingen/transfer-policy.js';
+import {findConnectorProvider} from '../../assets/js/koppelingen/provider-catalog.js';
 import {normalizeConnectorRouting,connectorPortalSources,CONNECTOR_PORTAL_PAGES} from '../../assets/js/koppelingen/portal-routing.js';
 const SECRET_KEY=/password|secret|token|authorization|api[-_]?key|client[-_]?secret/i;
 const SAFE_PROVIDER_ERROR_CODES=new Set(['ETIMEDOUT','ECONNRESET','EAI_AGAIN','408','429','502','503','504','UNAUTHORIZED','FORBIDDEN','ADAPTER_NOT_CONFIGURED','DOCUMENT_EXTRACTION_PROVIDER_NOT_CONFIGURED','DOCUMENT_EXTRACTION_SAFE_TEST_FAILED','DOCUMENT_EXTRACTION_INVALID_RESPONSE','SAFE_TEST_SAMPLE_REQUIRED','UNSUPPORTED_TRANSFORMATION','LOOKUP_NOT_FOUND','LOOKUP_AMBIGUOUS']);
@@ -23,6 +25,27 @@ const untrustedRuntime=runtime=>Object.fromEntries(Object.entries(runtime&&typeo
 const fingerprintPart=value=>String(value||'unknown').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'unknown';
 function recoveryFingerprint(connectorId,failedStage,errorClass){return `connector-${fingerprintPart(connectorId)}-${fingerprintPart(failedStage)}-${fingerprintPart(errorClass)}`;}
 const modeLabel=mode=>mode==='PORTAL_AI'?'PORTAL_AI':'PORTAL_INSIGHTS';
+
+function validateCustomProviderDraft(body){
+ if(!String(body?.templateId||'').startsWith('custom-'))return null;
+ const src=findConnectorProvider(body?.source?.providerId);
+ const dst=findConnectorProvider(body?.target?.providerId);
+ if(!src||!dst||src.id===dst.id||body.source?.type!==src.transport
+    ||body.target?.type!==dst.transport
+    ||body.templateId!=='custom-'+src.id+'-to-'+dst.id
+    ||!Array.isArray(body.documentSchema?.fields)||body.documentSchema.fields.length>40
+    ||!body.transferPolicy)return 'CUSTOM_PROVIDER_CONTRACT_INVALID';
+ return null;
+}
+function validateTransferIntent(body){
+ const providerError=validateCustomProviderDraft(body);
+ if(providerError)return {error:providerError};
+ try{
+  if(body.transferPolicy!==undefined)return {transferPolicy:normalizeTransferPolicy(body.transferPolicy,body.documentSchema)};
+  return {};
+ }catch(error){return {error:error?.code||'TRANSFER_POLICY_INVALID'};}
+}
+
 
 export async function handlePortalConnectorsRequest({request,user,store,engine,sovereignty,afasReader=readAfasGetConnector}={}){
   if(!user?.id)return json({error:'UNAUTHORIZED'},401);
@@ -98,6 +121,9 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
   if(normalized.method==='POST'&&!id){
     if(typeof store?.saveDraft!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
     let body=clean(await requestBody(request,normalized));
+    const intent=validateTransferIntent(body);
+    if(intent.error)return json({error:intent.error},422);
+    if(intent.transferPolicy)body={...body,transferPolicy:intent.transferPolicy};
     try{body={...body,dataUse:normalizeConnectorDataUse(body.dataUse)};}
     catch{return json({error:'INVALID_CONNECTOR_DATA_USE'},422);}
     try{body={...body,routing:normalizeConnectorRouting(body.routing,body.documentSchema,body.dataUse)};}
@@ -113,6 +139,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     try{body={...body,routing:normalizeConnectorRouting(body.routing,body.documentSchema,body.dataUse)};}
     catch{return json({error:'INVALID_CONNECTOR_ROUTING'},422);}
     const before=await store.get(tenantId,id);if(!before)return json({error:'NOT_FOUND'},404);
+    if(before.transferPolicy&&!body.transferPolicy)return json({error:'TRANSFER_POLICY_CANNOT_BE_DROPPED'},422);
     const changed=isConnectorConfigurationChanged(before,body);
     const impact=changed?planCrossDomainChange({
       tenantId,changeId:`connector-update:${id}:${Date.now()}`,kind:'CONNECTOR',actor:user.id,
@@ -185,6 +212,8 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     if(connector.state!=='Active'||connector?.source?.type!=='afas')
       return json({error:'ACTIVE_AFAS_CONNECTOR_REQUIRED'},409);
     if(connector.dataUse?.mode==='CONNECTION_ONLY')return json({error:'PORTAL_DATA_USE_NOT_AUTHORIZED'},409);
+    const topology=connectorTransferSyncGuard(connector);
+    if(!topology.allowed)return json({error:topology.reason},409);
     const guard=connectorDataUseActivationGuard(connector);
     if(!guard.allowed)return json({error:guard.reason},409);
     if(typeof sovereignty?.assertConnectorAllowed==='function'){
@@ -299,6 +328,8 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     const execution=await store.getExecution(tenantId,id,testExecutionId);if(!execution)return json({error:'TEST_EVIDENCE_NOT_FOUND'},409);
     if(execution.status!=='TEST_PASSED')return json({error:'TEST_EVIDENCE_NOT_PASSED'},409);
     if(executionVersion(execution)!==Number(connector.version))return json({error:'TEST_EVIDENCE_VERSION_MISMATCH'},409);
+    const transfer=connectorTransferActivationGuard(connector);
+    if(!transfer.allowed)return json({error:transfer.reason},409);
     const dataUse=connectorDataUseActivationGuard(connector);
     if(!dataUse.allowed)return json({error:dataUse.reason},409);
     const persistedEvidence={...executionEvidence(execution),testExecutionId:execution.id||testExecutionId};
