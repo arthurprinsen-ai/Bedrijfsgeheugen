@@ -34,6 +34,16 @@ export function parseSpokenRule(input){
   if(!metric||threshold===null)return null;
   return {metricId:metric.id,operator:/onder|lager|minder/.test(hit[2])?'below':'above',threshold};
 }
+const CONNECTOR_UUID=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const CONNECTOR_FIELD=/^[\p{L}_][\p{L}\p{N}_-]{0,79}$/u;
+export function normalizeSignalSource(value){
+  const source=value?.source;
+  if(!source||source.type===undefined||source.type==='portal')return Object.freeze({type:'portal'});
+  if(source.type!=='connector'||Object.keys(source).some(k=>!['type','connectorId','field'].includes(k)))return null;
+  const id=String(source.connectorId||''),field=String(source.field||'');
+  if(!CONNECTOR_UUID.test(id)||!CONNECTOR_FIELD.test(field))return null;
+  return Object.freeze({type:'connector',connectorId:id.toLowerCase(),field});
+}
 export function normalizeRule(value){
   if(!value||typeof value!=='object'||!metricById(value.metricId))return null;
   const operator=String(value.operator||'');
@@ -42,31 +52,37 @@ export function normalizeRule(value){
   if(operator!=='missing'&&threshold===null)return null;
   const id=String(value.id||'').slice(0,96);
   if(!id)return null;
+  const source=normalizeSignalSource(value);
+  if(!source)return null;
   const monitoring=value.monitoring===true;
   const channels=value.channels&&typeof value.channels==='object'&&!Array.isArray(value.channels)?value.channels:{};
   // Channel flags describe explicit user intent, not actual provider delivery.
   return Object.freeze({id,metricId:value.metricId,operator,threshold,enabled:value.enabled!==false,
     severity:['hoog','midden','laag'].includes(value.severity)?value.severity:'midden',
-    monitoring,channels:Object.freeze({portal:true,email:monitoring&&channels.email===true,push:monitoring&&channels.push===true})});
+    monitoring,source,channels:Object.freeze({portal:true,email:monitoring&&channels.email===true,push:monitoring&&channels.push===true})});
 }
 export function evaluateSignals(rules,state,{authenticated=false,demo=false}={}){
   if(!authenticated||demo)return Object.freeze([]);
   return Object.freeze((Array.isArray(rules)?rules:[]).slice(0,100).map(normalizeRule).filter(Boolean).map(rule=>{
     const metric=metricById(rule.metricId);
-    const value=finite(byPath(state,metric.path));
+    // Connector measurements are never taken from editable portal KPI fields.
+    // Only the original server Heartbeat can verify a provider ingestion receipt.
+    const connected=rule.source.type==='connector';
+    const value=connected?null:finite(byPath(state,metric.path));
     const missing=value===null;
-    const triggered=rule.enabled && (rule.operator==='missing'?missing:!missing && (rule.operator==='above'?value>rule.threshold:value<rule.threshold));
-    const status=!rule.enabled?'uitgeschakeld':missing&&rule.operator!=='missing'?'geen-data':triggered?'afwijking':'binnen-grens';
-    const explanation=missing
+    const triggered=!connected&&rule.enabled && (rule.operator==='missing'?missing:!missing && (rule.operator==='above'?value>rule.threshold:value<rule.threshold));
+    const status=!rule.enabled?'uitgeschakeld':connected?'bronbewijs-open':missing&&rule.operator!=='missing'?'geen-data':triggered?'afwijking':'binnen-grens';
+    const explanation=connected?'De koppeling is als bron gekozen. Een echte providerophaling en onafhankelijk teruggelezen KPI ontbreken of zijn alleen op de server te verifiëren.'
+      :missing
       ?rule.operator==='missing'?'Dit bronveld heeft geen ingevoerde meetwaarde. Controleer of de bron gekoppeld en bijgewerkt is.':'Geen ingevoerde meetwaarde; een grensafwijking kan niet worden vastgesteld.'
       :rule.operator==='missing'?'Er is een ingevoerde meetwaarde; het veld ontbreekt niet.'
       :'Ingevoerde waarde '+value+' '+metric.unit+' versus ingestelde grens '+rule.threshold+' '+metric.unit+' ('+(rule.operator==='above'?'boven':'onder')+').';
     return Object.freeze({
       ...rule,metric,status,triggered,value,explanation,
-      advice:missing?'Controleer de bron en vul een verifieerbare meetwaarde in.':metric.advice,
+      advice:connected?'Controleer de gekoppelde gegevensbron en het serverbewijs.':missing?'Controleer de bron en vul een verifieerbare meetwaarde in.':metric.advice,
       actionLabel:missing?'Bron controleren':'Bekijk analyse en start een passende actie',
       actionPage:metric.page,
-      evidence:Object.freeze({sourcePath:metric.path,sourceType:'ingevoerde portaaldata',measurementUpdatedAt:null,checkedAt:new Date().toISOString(),freshness:'onbekend'})
+      evidence:Object.freeze({sourcePath:connected?'connector:'+rule.source.connectorId+':'+rule.source.field:metric.path,sourceType:connected?'koppeling (serverbewijs vereist)':'ingevoerde portaaldata',measurementUpdatedAt:null,checkedAt:new Date().toISOString(),freshness:'onbekend'})
     });
   }));
 }
