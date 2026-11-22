@@ -52,8 +52,9 @@ function sourceTable(record){
  next.addEventListener('click',()=>{offset+=countPerPage;paint();});
  paint();box.append(body);return box;
 }
-export async function mountVerifiedConnectorData(container,{pageId,fetchFn=globalThis.fetch}={}){
+export async function mountVerifiedConnectorData(container,{pageId,fetchFn=globalThis.fetch,getIdentity=()=>null}={}){
  if(!container||!allowed.has(pageId)||typeof fetchFn!=='function')return null;
+ const identity=getIdentity();if(!identity)return null;
  const url='/api/connectors/page-records?page='+encodeURIComponent(pageId);
  let response,payload;
  try{
