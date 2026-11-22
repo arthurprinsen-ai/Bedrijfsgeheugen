@@ -51,6 +51,8 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   const mic=dialog.querySelector('[data-vs-mic]'),counter=dialog.querySelector('[data-vs-counter]');
   const threshold=form.elements.threshold,operator=form.elements.operator;
   let recognizer=null,busy=false,principal='',lastPortalField=null,proofEpoch=0,connectorEpoch=0,connectorChoices=[];
+  // Cancel late microphone and assistant callbacks on account/dialog changes.
+  let voiceEpoch=0,assistantEpoch=0;
   function stopSpeaking(){try{globalThis.speechSynthesis?.cancel?.();}catch{}}
   function speak(text){
     const t=String(text||'').trim();const Synth=globalThis.SpeechSynthesisUtterance;
@@ -121,6 +123,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     }
   }
   function stopListening(){
+    voiceEpoch++;
     if(recognizer){try{recognizer.abort();}catch{}recognizer=null;}
     mic.disabled=false;mic.textContent='🎙 Spreek';
   }
@@ -250,6 +253,8 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   }
   async function runCommand(raw){
     const text=String(raw||'').trim();if(!text){note(output,'Spreek of typ eerst een opdracht.',true);return;}
+    // A newer command always supersedes outstanding assistant replies.
+    const requestEpoch=++assistantEpoch;
     const n=norm(text);
     const spoken=parseSpokenRule(text);
     if(spoken){
@@ -278,13 +283,18 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     }
     if(n==='stop'||n==='sluiten'){dialog.close();return;}
     if(/^(?:vraag|vertel|wat |hoe |waarom |wanneer |welke |geef advies)/.test(n)){
-      if(!authenticated()){note(output,'Log eerst in om vragen over je bedrijfscontext te stellen.',true);return;}
+      const owner=String(authenticated()?.user?.id||'');
+      if(!owner){note(output,'Log eerst in om vragen over je bedrijfscontext te stellen.',true);return;}
       note(output,'Vraag wordt opgehaald bij de bestaande tenantgebonden portaalassistent…');
       try{
         const question=n.startsWith('vraag ')?text.slice(5):text;
         const answer=await askPortal(question,{fetchImpl});
+        if(requestEpoch!==assistantEpoch||String(authenticated()?.user?.id||'')!==owner||!dialog.open)return;
         note(output,answer?.text||'Geen onderbouwd antwoord beschikbaar.');
-      }catch(error){note(output,'De portaalassistent kon deze vraag niet beantwoorden ('+String(error?.message||error)+').',true);}
+      }catch(error){
+        if(requestEpoch===assistantEpoch&&String(authenticated()?.user?.id||'')===owner&&dialog.open)
+          note(output,'De portaalassistent kon deze vraag niet beantwoorden ('+String(error?.message||error)+').',true);
+      }
       return;
     }
     // Universal, low-risk dictation: edit only the currently focused input.
@@ -351,7 +361,7 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   voiceButton.addEventListener('click',()=>{reveal();input.focus();});
   alertsButton.addEventListener('click',reveal);
   dialog.querySelector('[data-vs-close]').addEventListener('click',()=>dialog.close());
-  dialog.addEventListener('close',()=>{stopListening();stopSpeaking();});
+  dialog.addEventListener('close',()=>{assistantEpoch++;stopListening();stopSpeaking();});
   dialog.querySelector('[data-vs-read]').addEventListener('click',()=>speak(output.textContent));
   dialog.querySelector('[data-vs-stop]').addEventListener('click',stopSpeaking);
   dialog.querySelector('[data-vs-run]').addEventListener('click',()=>{void runCommand(input.value);});
@@ -362,8 +372,17 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
     stopListening();
     try{
       const r=new Speech();recognizer=r;r.lang='nl-NL';r.continuous=false;r.interimResults=false;r.maxAlternatives=1;
-      r.onresult=event=>{const t=String(event.results?.[0]?.[0]?.transcript||'').trim();input.value=t;void runCommand(t);};
-      r.onerror=event=>note(output,'Microfoon niet beschikbaar: '+String(event.error||'onbekend')+'. Probeer typen.',true);
+      const voiceRequestEpoch=voiceEpoch,voiceOwner=String(authenticated()?.user?.id||'');
+      const voiceStillCurrent=()=>recognizer===r&&voiceRequestEpoch===voiceEpoch
+        &&voiceOwner===String(authenticated()?.user?.id||'')&&dialog.open;
+      r.onresult=event=>{
+        if(!voiceStillCurrent())return;
+        const t=String(event.results?.[0]?.[0]?.transcript||'').trim();
+        input.value=t;void runCommand(t);
+      };
+      r.onerror=event=>{
+        if(voiceStillCurrent())note(output,'Microfoon niet beschikbaar: '+String(event.error||'onbekend')+'. Probeer typen.',true);
+      };
       r.onend=()=>{if(recognizer===r){recognizer=null;mic.disabled=false;mic.textContent='🎙 Spreek';}};
       mic.textContent='● Luistert…';r.start();
     }catch(error){stopListening();note(output,'De microfoon kon niet starten. Gebruik het tekstveld.',true);}
@@ -449,12 +468,12 @@ export function mountVoiceSignalCenter({stateClient,domainState,openPage=navigat
   });
   const unsubscribe=stateClient.subscribe(snap=>{
     const next=String((['authenticated','empty'].includes(snap.mode)&&!stateClient.isDemo?.()?snap.user?.id:'')||'');
-    if(next!==principal){principal=next;proofEpoch++;connectorEpoch++;connectorChoices=[];refreshConnectorChoices();lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na aanmelden.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;note(output,'');if(dialog.open)dialog.close();}
+    if(next!==principal){principal=next;proofEpoch++;connectorEpoch++;assistantEpoch++;connectorChoices=[];refreshConnectorChoices();lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na aanmelden.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;note(output,'');if(dialog.open)dialog.close();}
     render();
   });
-  const boundary=()=>{proofEpoch++;connectorEpoch++;connectorChoices=[];refreshConnectorChoices();lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na accountwissel.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
+  const boundary=()=>{proofEpoch++;connectorEpoch++;assistantEpoch++;connectorChoices=[];refreshConnectorChoices();lastPortalField=null;proofList.replaceChildren();note(proofOutput,'Bewijs opnieuw ophalen na accountwissel.');stopListening();stopSpeaking();selectedSignalId='';actionForm.hidden=true;if(dialog.open)dialog.close();list.replaceChildren();note(output,'');render();};
   document.addEventListener('bg:portal-identity-boundary',boundary);
   const refreshed=()=>render();document.addEventListener('bg:portal-server-refreshed',refreshed);
   render();
-  return {render,runCommand,destroy(){unsubscribe?.();stopListening();stopSpeaking();document.removeEventListener('bg:portal-identity-boundary',boundary);document.removeEventListener('bg:portal-server-refreshed',refreshed);document.removeEventListener('focusin',rememberField);holder.remove();dialog.remove();}};
+  return {render,runCommand,destroy(){assistantEpoch++;unsubscribe?.();stopListening();stopSpeaking();document.removeEventListener('bg:portal-identity-boundary',boundary);document.removeEventListener('bg:portal-server-refreshed',refreshed);document.removeEventListener('focusin',rememberField);holder.remove();dialog.remove();}};
 }
