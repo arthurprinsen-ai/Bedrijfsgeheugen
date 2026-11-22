@@ -53,6 +53,6 @@ test('real V2 mount reuses authenticated tenant portal domain and explicit write
   assert.match(ui,/domainState\.patch\("portal\.dataImports"/);
   assert.match(ui,/domainState\.flush\(\)/);
   assert.match(ui,/stateClient\.load\(\)/);
-  assert.match(ui,/stateClient\.isDemo/);
+  assert.match(ui,/client\?\.isDemo/);
   assert.doesNotMatch(ui,/localStorage|sessionStorage|service_role|new Worker/);
 });
