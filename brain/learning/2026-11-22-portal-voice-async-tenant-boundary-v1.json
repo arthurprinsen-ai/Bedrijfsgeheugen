@@ -14,19 +14,19 @@
   "regression_contract": "Historically reproduce in-flight assistant after identity A-to-B, logout, modal close, or superseding question; stale answer/error must be invisible. Late speech onresult/onerror after recognizer abort/dialog close/identity switch must be discarded. Ensure native approvals, safe typed fallback, opt-in and tenant status continue unchanged.",
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/voice-signals.test.mjs"
+      "tests/brain-portal-voice-async-tenant-boundary-20261122.test.mjs"
     ],
     "shadow": [
-      "portal-v2/tests/voice-signals.test.mjs"
+      "tests/brain-portal-voice-async-tenant-boundary-20261122.test.mjs"
     ],
     "canary": [
-      "portal-v2/tests/voice-signals.test.mjs"
+      "tests/brain-portal-voice-async-tenant-boundary-20261122.test.mjs"
     ]
   },
   "evidence": {
     "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6116",
     "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
-    "test": "portal-v2/tests/voice-signals.test.mjs",
+    "test": "tests/brain-portal-voice-async-tenant-boundary-20261122.test.mjs",
     "production_readback": "DUE",
     "independent_browser_two_tenant": "NOT_PROVEN",
     "real_connector_ingest": "NOT_PROVEN",
