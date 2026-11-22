@@ -75,7 +75,8 @@ export function toConnectorDefinition(state){
     mappings,
     reviewPolicy:Object.freeze({requiredBelowConfidence:DEFAULT_CONFIDENCE}),
     target:Object.freeze({type:target,...(template.targetProviderId?{providerId:template.targetProviderId}:{})}),
-    schedule:transferPolicy.trigger==='INTERVAL'?Object.freeze({refreshMinutes:transferPolicy.intervalMinutes}):'handmatig',
+    schedule:transferPolicy.trigger==='INTERVAL'?Object.freeze({refreshMinutes:transferPolicy.intervalMinutes}):
+      template.adapterCapability==='DESIGN_ONLY'?'handmatig':answers.schedule||template.defaultSchedule||'handmatig',
     transferPolicy,
     dataUse:Object.freeze({mode:['CONNECTION_ONLY','PORTAL_INSIGHTS','PORTAL_AI'].includes(answers.dataUseMode)?answers.dataUseMode:'CONNECTION_ONLY',modelRoute:'TENANT_POLICY',trainingUse:'PROHIBITED'}),
     routing:Object.freeze({
