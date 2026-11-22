@@ -24,7 +24,7 @@ const fingerprintPart=value=>String(value||'unknown').toLowerCase().replace(/[^a
 function recoveryFingerprint(connectorId,failedStage,errorClass){return `connector-${fingerprintPart(connectorId)}-${fingerprintPart(failedStage)}-${fingerprintPart(errorClass)}`;}
 const modeLabel=mode=>mode==='PORTAL_AI'?'PORTAL_AI':'PORTAL_INSIGHTS';
 
-export async function handlePortalConnectorsRequest({request,user,store,engine,sovereignty}={}){
+export async function handlePortalConnectorsRequest({request,user,store,engine,sovereignty,afasReader=readAfasGetConnector}={}){
   if(!user?.id)return json({error:'UNAUTHORIZED'},401);
   if(!store?.configured&&store?.configured!==undefined)return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
   let tenantId=tenantFromUser(user);if(!tenantId&&typeof store?.resolveTenant==='function')tenantId=await store.resolveTenant(user);if(!tenantId)return json({error:'TENANT_NOT_CONFIGURED'},403);
@@ -137,7 +137,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     try{
       const selected=connector.routing?.selectedFields||[];
       const hasSelected=Array.isArray(selected)&&selected.length>0;
-      const result=await readAfasGetConnector({
+      const result=await afasReader({
         source:connector.source,credential,selectedFields:hasSelected?selected:null,
         personalAuthorized:connector.source?.personalDataAuthorized===true,probeOnly:!hasSelected
       });
@@ -191,7 +191,7 @@ export async function handlePortalConnectorsRequest({request,user,store,engine,s
     const credential=await store.readAfasCredential(tenantId,id);
     if(!credential)return json({error:'AFAS_AUTHORIZATION_REQUIRED'},409);
     try{
-      const source=await readAfasGetConnector({
+      const source=await afasReader({
         source:connector.source,credential,selectedFields:connector.routing.selectedFields,
         personalAuthorized:connector.source?.personalDataAuthorized===true
       });
