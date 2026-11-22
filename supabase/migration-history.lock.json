@@ -3556,8 +3556,12 @@
     {
       "version": "20261121090000",
       "name": "reconnect_original_email_reply_in_commercial_stage14"
+    },
+    {
+      "version": "20261122162147",
+      "name": "portal_connector_real_afas_source_readback_v1"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-21T12:50:55.253Z"
+  "captured_at": "2026-11-22T20:22:00.443Z"
 }
