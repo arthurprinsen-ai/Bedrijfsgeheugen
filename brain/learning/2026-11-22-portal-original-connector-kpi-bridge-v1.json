@@ -1,0 +1,48 @@
+{
+  "fingerprint": "portal-original-connector-kpi-bridge-v1",
+  "obligation_id": "portal-original-connector-kpi-bridge-20261122",
+  "date": "2026-11-22",
+  "compiler": {
+    "failure_class": "PORTAL_CONNECTOR_CONFIG_NOT_VERIFIED_KPI_DATA",
+    "scope": "PORTAL_CONNECTORS_ORIGINAL_HEARTBEAT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Portal connector definitions and sample TEST_PASSED records were metadata-only; original Portal V2 Heartbeat evaluated just eight fixed user-editable portal paths. A selected connector field was never evaluated from an actual provider readback.",
+  "prevention_rule": "Never treat a configured, activated, safe-tested, paused, revoked, stale, future or different-tenant connector as actual KPI evidence. A connector policy must preserve source={type:connector,connectorId,field}; original runner checks active provider consent, exact definition version/field/page, LIVE_INGEST_VERIFIED execution with external provider-readback ID and an independently stored connector-kpi source observation with matching source revision, tenant, metric mapping and valid numeric/measured timestamp. Browser may not use portal KPI field fallback for connector rules. Original tenant receipt review shows proven source count but not falsely-promoted provider certification, email delivery or external action.",
+  "regression_contract": "Historical shadow canary fixture: valid connector ingestion triggers original Heartbeat for only its tenant and selected field; duplicate revision yields stable idempotency; same-hour new revision renews scan; denied when no source, sample TEST_PASSED, invalid schema, stale, wrong tenant, revoked opt-in, Active state missing, wrong version, false/NaN value; authenticated UI never cross-contaminates tenant state.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-original-connector-kpi-bridge-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-original-connector-kpi-bridge-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-original-connector-kpi-bridge-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Production original connector_definitions, connector_executions and powerhouse_source_observation_v1 had 0 rows; actual vendor provider ingestion was not independently proven",
+    "candidate_pr": "PENDING",
+    "parent_issues": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547"
+    ],
+    "tests": [
+      "tests/brain-portal-original-connector-kpi-bridge-v1.test.mjs"
+    ],
+    "original_heartbeat": "powerhouse-commercial-heartbeat-runner",
+    "live_provider_ingest": "NOT_PROVEN",
+    "customer_optin_count": 0,
+    "production_readback": "DUE",
+    "provider_notification_delivery": "NOT_PROVEN"
+  },
+  "outcome": {
+    "implementation": "SOURCE_CANDIDATE",
+    "release": "NOT_YET_PROVEN",
+    "provider_ingest": "EXTERNAL_AUTH_AND_REAL_RECEIPT_REQUIRED",
+    "financial_value": "UNMEASURED"
+  }
+}
