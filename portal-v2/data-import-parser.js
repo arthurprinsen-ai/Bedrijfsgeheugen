@@ -19,7 +19,7 @@ export function tableFromRecords(records,{sheet="CSV"}={}){
   const rows=meaningful.slice(1).map((raw,index)=>{
     if(raw.length>IMPORT_LIMITS.columns || raw.slice(columns.length).some(v=>String(v??"").trim()))
       throw new Error("Rij "+(index+2)+" bevat meer kolommen dan de kopregel.");
-    return columns.map((_,i)=>String(raw[i]??"").trim().slice(0,2000));
+    return columns.map((_,i)=>{const cell=String(raw[i]??"").trim();if(cell.length>2000)throw new Error("Rij "+(index+2)+" bevat een te lange celwaarde.");return cell;});
   });
   if(rows.length>IMPORT_LIMITS.rows)throw new Error("Meer dan 1.000 rijen. Gebruik een kleiner bestand of een bestaande gegevenskoppeling.");
   const table={sheet,columns,rows,rowCount:rows.length};
