@@ -137,6 +137,23 @@ test('selected real provider proof gives version-bound activation receipt; no sa
  assert.ok(store.events.includes('execution:TEST_PASSED'));
  assert.equal(payload.recordValuesPersisted,false);
 });
+test('connection-only provider authorization never silently authorizes portal records',async()=>{
+ const c={...connector([]),target:{type:'source-only'},
+   dataUse:{mode:'CONNECTION_ONLY',modelRoute:'TENANT_POLICY',trainingUse:'PROHIBITED'},
+   routing:{portalPages:[],selectedFields:[]}};
+ const store=fakeStore(c);
+ const proof=await (await handler(req('POST','/api/connectors/'+cid+'/probe',{}),{
+   store,afasReader:async()=>sourceResult()
+ })).json();
+ assert.equal(proof.status,'TEST_PASSED');
+ assert.equal(proof.evidence.proofLevel,'PROVIDER_VERIFIED');
+ const rejected=await handler(req('POST','/api/connectors/'+cid+'/sync',{}),{store,
+   afasReader:async()=>sourceResult()});
+ assert.equal(rejected.status,409);
+ assert.equal((await rejected.json()).error,'PORTAL_DATA_USE_NOT_AUTHORIZED');
+ const list=await (await handler(req('GET','/api/connectors/page-records?page=cijfers-maatstaven'),{store})).json();
+ assert.deepEqual(list.items,[]);
+});
 test('active sync must independently read back exact tenant row data and record receipt',async()=>{
  const store=fakeStore();
  const response=await handler(req('POST','/api/connectors/'+cid+'/sync',{}),{
