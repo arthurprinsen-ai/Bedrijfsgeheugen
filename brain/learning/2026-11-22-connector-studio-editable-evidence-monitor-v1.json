@@ -35,5 +35,21 @@
     "newDatabaseTables": false,
     "newWriter": false,
     "newScheduler": false
+  },
+  "evidence": {
+    "regressionTests": [
+      "tests/brain-connector-studio-proof-monitor-v1.test.mjs"
+    ],
+    "sourceTruth": "Execution+snapshot provider proof exact version, tenant, source schema, SHA and near-time receipt",
+    "codePaths": [
+      "platform/connectors/connector-operations-proof.mjs",
+      "platform/api/portal-connectors-handler.mjs",
+      "assets/js/koppelingen/view.js"
+    ],
+    "ciRequired": "PENDING_PROTECTED_HEAD",
+    "browserReadback": "PENDING_PRODUCTION",
+    "realCustomerProviderSync": "NOT_VERIFIED",
+    "automaticScheduledRun": "NOT_VERIFIED",
+    "newExternalWrite": false
   }
 }
