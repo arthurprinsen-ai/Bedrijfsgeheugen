@@ -9,6 +9,8 @@ Datum: 22 november 2026. Oorspronkelijke keten: Portal V2 â†’ Koppeling Studio â
 - De originele server gaf configuratiemetadata aan portaalpagina's, maar geen rijen uit een werkelijke leverancier.
 - Een breed voorbeeldaanbod (AFAS, Exact, Outlook, SharePoint, Shopify, Salesforce, enz.) is **niet** hetzelfde als werkende providerconnectoren.
 
+De gebruiker kan **alleen verbinden** kiezen (echte AFAS-verbinding activeren zonder brongegevens te synchroniseren of op portaalpagina's te tonen), of expliciet **ook gebruiken in het portaal**. Bij verbinding-only worden nul providerrecords opgeslagen; een wijziging van deze toestemming vereist een nieuwe actuele providerproef.
+
 ## Eerste werkende native read-only providerroute: AFAS
 
 1. Klant kiest in de bestaande Koppeling Studio **AFAS echt verbinden**, en voert omgevingnummer, GetConnector-ID en een in AFAS Profit geautoriseerde XML-token in.
