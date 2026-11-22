@@ -92,3 +92,18 @@ test('original Heartbeat proof is visible only after authenticated on-demand ten
   assert.doesNotMatch(ui,/new Worker|setInterval|Notification\.requestPermission/);
   assert.doesNotMatch(ui,/GMAIL_SEND_EMAIL|service_role/);
 });
+
+
+test('late speech/assistant callbacks are invalidated on identity or dialog boundary',async()=>{
+  const ui=await readFile(new URL('../voice-signals.js',import.meta.url),'utf8');
+  for(const invariant of [
+    'const requestEpoch=++assistantEpoch',
+    "requestEpoch!==assistantEpoch||String(authenticated()?.user?.id||'')!==owner||!dialog.open",
+    'recognizer===r&&voiceRequestEpoch===voiceEpoch',
+    "voiceOwner===String(authenticated()?.user?.id||'')&&dialog.open",
+    'if(!voiceStillCurrent())return',
+    "dialog.addEventListener('close',()=>{assistantEpoch++;",
+    'proofEpoch++;connectorEpoch++;assistantEpoch++;',
+    'destroy(){assistantEpoch++;'
+  ])assert.ok(ui.includes(invariant),invariant);
+});
