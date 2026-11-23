@@ -1,0 +1,10 @@
+# BG169-protected GitHub release: transport aanpassen aan repositorybeleid
+23 november 2026 — incident [#4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198)
+
+## Exacte waarneming
+De oorspronkelijke BRAIN-delivery/BG169-run [45144449592](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45144449592) passeerde identity, Required/CodeQL, main protection en de terminal-guard van PR [#6120](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6120), maar GitHub weigerde daarna een **merge commit** met `HTTP 405: Merge commits are not allowed on this repository`. De actuele repository-instellingen zijn onafhankelijk gelezen: `allow_merge_commit=false`, `allow_squash_merge=true`, `allow_rebase_merge=false`, beschermd `main` met drie verplichte checks.
+
+## Broncorrectie binnen dezelfde productieautoriteit
+De bestaande `.github/workflows/unified-brain-delivery.yml` gebruikt voortaan expliciet GitHubs toegestane `squash`-merge. Dat omzeilt geen check: vóór GitHub worden exacte PR/head/base, verplichte checks, hoofdbranch-epoch, andere kandidaat-eigenaars en bestaande BG169 terminal-guard nog steeds afgedwongen. Na de squash controleren we de daadwerkelijke door GitHub geretourneerde merge-SHA, exact dezelfde source tree als de volledig geteste head, eerste parent exact gelijk aan de geverifieerde oude main, main-ancestry van de mergecommit en een onafhankelijke PR GET die merged=true plus dezelfde merge-SHA moet bevestigen. Geen Make/Buffer, geen nieuwe scheduler en geen gewijzigde repositorybeveiliging.
+
+Twee bestaande tests controleren de nieuwe bewijsrelatie; een nieuwe, expliciete positieve/negatieve regressie `tests/brain-bg169-protected-squash-transport-20261123.test.mjs` controleert de volgorde en de fail-closed grenzen. Dit is **broncode in een beveiligde PR, niet live verklaard**. Na exact-head CI, beschermde merge en bestaande release moet een echte volgende BG169-run succesvol een ongewijzigde kandidaat afleveren en zelfstandig een onafhankelijke Netlify en ONE BRAIN/Heartbeat readback hebben. Succes van de PR zelf is geen bewijs dat elk social kanaal publiceert.
