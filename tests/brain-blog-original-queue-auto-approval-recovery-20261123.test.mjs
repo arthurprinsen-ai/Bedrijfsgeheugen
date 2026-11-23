@@ -29,11 +29,17 @@ test('historical 23-Nov missed daily approval is genuinely eligible in original 
 test('the existing authentic queue reuses the original shared policy and canonical state RPC',()=>{
   assert.match(queue,/from '\.\.\/\_shared\/blog-auto-approval\.mjs'/);
   const admission=queue.indexOf('assessBlogQueueAdmission({');
+  const regression=queue.indexOf('BLOG_APPROVAL_STATE_REGRESSION');
+  const factual=queue.indexOf('assessOfficialBlogDateTruth({title:a.title');
+  const rebind=queue.indexOf('o.slug=rebound.slug;o.content_id=rebound.content_id');
   const assessment=queue.indexOf('decideBlogAutoApproval({');
   const approval=queue.indexOf("db.rpc('record_content_publication_state',payload)");
   const sourceProof=queue.indexOf('BLOG_ORIGINAL_AUTO_APPROVAL_READBACK_MISSING');
   const originalQueueWrite=queue.indexOf("const queueStatus=clean(o?.status)==='APPROVED'?'APPROVED':'GENERATED'");
-  assert.ok(admission>=0&&assessment>admission&&approval>assessment&&sourceProof>approval&&originalQueueWrite>sourceProof);
+  assert.ok(admission>=0&&regression>admission&&factual>regression&&
+    rebind>factual&&assessment>rebind&&approval>assessment&&
+    sourceProof>approval&&originalQueueWrite>sourceProof,
+    'veto, regenerated-state regression, official fact, original slug-CAS, approval and independent readback must remain ordered');
   assert.ok(queue.includes("p_status:'APPROVED'"));
   assert.ok(queue.includes('BLOG_VETO_WINDOW_HOURS'));
   assert.ok(queue.includes('BLOG_ORIGINAL_AUTO_APPROVAL_RPC_FAILED'));
