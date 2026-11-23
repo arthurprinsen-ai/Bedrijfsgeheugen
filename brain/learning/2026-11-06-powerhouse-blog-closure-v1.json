@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|content|blog-candidate-pr-actions-permission|20261106-v1",
+  "failure_class": "SILENT_FAILURE",
+  "scope": "RUNTIME",
+  "owner": "original powerhouse-daily-blog workflow; original ONE BRAIN + Heartbeat",
+  "root_cause": "De dagelijkse blogworkflow kon geen kandidaat-PR openen (GitHub Actions mag geen pull requests aanmaken) en meldde toch geen fout; het blog van 6 nov bleef daardoor onzichtbaar achter.",
+  "evidence": {
+    "at_utc": "2026-11-06T10:05:00Z",
+    "source": "gh pr create faalde in powerhouse-daily-blog.yml; kandidaat-PR 5481 handmatig geopend met dezelfde bytes"
+  },
+  "fix": "Kandidaat voor 2026-11-06 via de beschermde route gepubliceerd. Structurele reparatie van de PR-aanmaakrechten volgt apart.",
+  "prevention_rule": "Een workflow die geen kandidaat-PR kan openen moet hard falen, niet als succes eindigen. Groen vereist een publieke leesbare pagina.",
+  "regression_contract": "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"],
+    "canary": ["tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"]
+  },
+  "tests": ["tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "Netlify deploy",
+    "publieke readback van het artikel"
+  ]
+}

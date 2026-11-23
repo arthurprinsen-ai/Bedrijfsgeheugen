@@ -3,6 +3,9 @@ import {navigatePortal,currentPortalRoute,subscribePortalRoute} from './router.j
 import {findPage} from './page-registry.js';
 import {buildEntrepreneurJourneyModel,journeyGuidance,isBrainAckForImpact} from './entrepreneur-journey-model.js';
 import {renderEntrepreneurJourney} from './entrepreneur-journey-view.js';
+import {renderDecisionWorld} from './decision-world.js';
+import {renderOneRoofWorkspace} from './business-os-home.js';
+import {renderDailyControls} from './daily-controls.js';
 
 const add=(parent,tag,className,text)=>{
   const node=parent.ownerDocument.createElement(tag);
@@ -22,7 +25,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   host.setAttribute('aria-label','Jouw ondernemersroute');
   const anchor=main.querySelector('.daily-steering')||main.querySelector('.dashboard');
   main.insertBefore(host,anchor||null);
-  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null,impact=null,brainReceipt=null;
+  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null,impact=null,brainReceipt=null,expanded=false,worldStage='decision';
   const updatePageGuide=()=>{
     const root=documentRef.getElementById('portalView');
     if(!root)return;
@@ -46,6 +49,13 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     add(guide,'p','',guidance.why);
     add(guide,'p','',guidance.check);
     add(guide,'p','',guidance.next);
+    const handoff=domainState.pendingHandoffs?.();
+    if(handoff?.pending){
+      const pendingNote=add(guide,'p','eh-truth',handoff.retryable
+        ?'De laatste wijziging wacht nog op bevestiging van het Bedrijfsbrein. De bestaande portaalcontrole probeert opnieuw; het gevolgadvies is nog niet bewezen.'
+        :'Een eerdere wijziging is nog niet volledig bevestigd. Controleer de opgeslagen bedrijfsgegevens in de juiste sessie; het gevolgadvies is nog niet bewezen.');
+      pendingNote.setAttribute('role','status');
+    }
     const back=add(guide,'button','eh-text-action',model.selectedGoal?'Terug naar mijn route →':'Kies mijn ondernemersdoel →');
     back.type='button';back.addEventListener('click',()=>navigate('overzicht'));
     if(!previous){
@@ -73,11 +83,11 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     host.replaceChildren();
     const lead=add(host,'div','eh-lead');
     const copy=add(lead,'div','eh-lead-copy');
-    add(copy,'span','eh-eyebrow','JOUW BEDRIJF · JOUW VOLGENDE STAP');
+    add(copy,'span','eh-eyebrow','VANDAAG · JOUW BEDRIJF');
     add(copy,'h2','eh-title',loggedIn?model.headline:'Welkom bij jouw bedrijfsroute');
     add(copy,'p','eh-intro',loggedIn
-      ?'Vertel wat je wilt bereiken. Bedrijfsgeheugen helpt je stap voor stap, met jouw eigen gegevens en onderbouwde aanbevelingen.'
-      :'Log in om jouw Frisse Blik en bedrijfsdoelen veilig te bekijken. Voorbeeldgegevens worden hier niet als jouw bedrijf getoond.');
+      ?'Eén overzicht, één volgende stap. Achter elke aanbeveling vind je de onderbouwing.'
+      :'Log in om je eigen bedrijfsinzichten te bekijken. We tonen geen voorbeeldcijfers als jouw resultaat.');
     const status=add(lead,'span','eh-status',loggedIn?(saving?'Opslaan…':snapshot?.status==='error'?'Opslaan niet bevestigd':model.selectedGoal?'Jouw doel centraal':'Begin met jouw ambitie'):'Inloggen nodig');
     status.setAttribute('role','status');
 
@@ -87,7 +97,94 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       add(host,'p','eh-truth','Een scanresultaat, cijfer of aanbeveling verschijnt uitsluitend voor de eigen ingelogde organisatie.');
       return;
     }
-    const chooser=add(host,'div','eh-goals');
+    // One read-only projection of the existing authenticated server snapshot.
+    // Missing evidence stays missing; sample KPIs and estimated euro benefits never appear here.
+    const journey=buildEntrepreneurJourneyModel(customerState||{},{
+      authenticated:loggedIn&&Boolean(customerState),home:model,impact,brainReceipt,
+      tenantRuntime:loggedIn&&customerState?getTenantRuntime():null
+    });
+    const next=add(host,'article','eh-next eh-focus');
+    const eyebrow=add(next,'span','eh-next-label',model.next.kind==='verified-proposal'?'ONDERBOUWD VOORSTEL':'JOUW BESTE VOLGENDE STAP');
+    add(next,'h3','',model.next.title);
+    add(next,'p','',model.next.explanation);
+    if(model.next.kind==='verified-proposal'){
+      add(next,'small','eh-truth',model.next.evidenceCount+' bronverwijzing(en). '+(model.next.requiresApproval?'Voor uitvoering kan goedkeuring nodig zijn.':'Een voorstel is nog geen uitgevoerde handeling.'));
+    }else add(next,'small','eh-truth','Deze stap is begeleiding op basis van je gekozen doel, geen bewezen financieel rendement.');
+    if(model.next.page){
+      const action=add(next,'button','eh-main-action',model.next.kind==='verified-proposal'?'Bekijk voorstel en onderbouwing →':'Ga verder met deze stap →');
+      action.type='button';action.dataset.entrepreneurPage=model.next.page;
+    }else {
+      const choose=add(next,'button','eh-main-action','Kies mijn doel →');
+      choose.type='button';choose.dataset.entrepreneurReveal='true';
+    }
+    const proof=add(next,'p','eh-focus-footnote',Number.isInteger(journey.autopilot?.outcomes)&&journey.autopilot.outcomes>0
+      ?journey.autopilot.outcomes+' onafhankelijk geverifieerde resultaten beschikbaar · zie onderbouwing'
+      :'Nog geen onafhankelijk bewezen financieel resultaat.');
+    proof.setAttribute('role','status');
+    // A concise personal control surface, using ONLY the current authenticated
+    // source, existing Brain receipts and exact customer evidence. No fake KPIs.
+    renderDailyControls(host,{authenticated:loggedIn&&Boolean(customerState),home:model,journey,pendingHandoff:domainState.pendingHandoffs?.()});
+    const advanced=add(host,'details','eh-advanced');
+    advanced.dataset.entrepreneurDetails='true';
+    advanced.open=expanded;
+    const summary=add(advanced,'summary','eh-advanced-summary');
+    add(summary,'span','','Meer inzicht en instellingen');
+    add(summary,'small','','Doelen, brongegevens, metingen en achtergrond');
+    advanced.addEventListener('toggle',()=>{expanded=advanced.open;});
+    // Keep the five-step interactive decision map, but reveal it only on demand.
+    // One visible primary action beats an always-expanded second dashboard.
+    const deeperWorld=add(advanced,'div','eh-deep-world');
+    renderDecisionWorld(deeperWorld,{home:model,journey,selectedStage:worldStage,onSelect:id=>{worldStage=id;}});
+    // One view of this principal's source state; reuses the original route and
+    // handoff owner, never creates a parallel business database or executor.
+    renderOneRoofWorkspace(advanced,{
+      authenticated:loggedIn&&Boolean(customerState),state:customerState,
+      journey,pendingHandoff:domainState.pendingHandoffs?.()
+    });
+    const attention=add(advanced,'section','eh-attention');
+    attention.dataset.entrepreneurAttention='v1';
+    attention.setAttribute('aria-label','Drie zaken die voor jouw bedrijf tellen');
+    add(attention,'h3','','Waar geef je nu aandacht aan?');
+    add(attention,'p','eh-muted','Jouw volgende keuze, de kwaliteit van je gegevens en wat al onafhankelijk onderbouwd is.');
+    const attentionGrid=add(attention,'div','eh-attention-grid');
+    const nextCard=add(attentionGrid,'article','eh-attention-card');
+    add(nextCard,'span','eh-attention-kicker','1 · Jouw volgende stap');
+    add(nextCard,'strong','',model.next.title);
+    add(nextCard,'p','',model.next.explanation);
+    add(nextCard,'small','eh-attention-evidence',model.next.kind==='verified-proposal'
+      ?'Onderbouwd voorstel · '+model.next.evidenceCount+' bronverwijzingen · nog niet uitgevoerd'
+      :'Begeleidingsstap · nog geen bewezen rendement');
+    if(model.next.page){
+      const action=add(nextCard,'button','eh-text-action','Bekijk je vervolgstap →');
+      action.type='button';action.dataset.entrepreneurPage=model.next.page;
+    }
+    const sourceCard=add(attentionGrid,'article','eh-attention-card');
+    add(sourceCard,'span','eh-attention-kicker','2 · Bronkwaliteit');
+    add(sourceCard,'strong','',model.scan.verified
+      ?(model.scan.score===null?'Geverifieerde nulmeting gekoppeld':'Nulmeting '+model.scan.score+'/100')
+      :'Nog geen bevestigde nulmeting');
+    add(sourceCard,'p','',model.scan.verified
+      ?'Deze scan is gebaseerd op eigen antwoorden; dit is geen geauditeerde financiële prestatie.'
+      :'Koppel je scan en bedrijfsgegevens om aanbevelingen op je eigen situatie te baseren.');
+    add(sourceCard,'small','eh-attention-evidence',model.intelligence.ready
+      ?model.intelligence.verifiedSignals+' brononderbouwde onderdelen beschikbaar'
+      :'Geen actuele, klantgebonden Powerhouse-projectie bewezen');
+    const scanAction=add(sourceCard,'button','eh-text-action','Bekijk jouw nulmetingen →');
+    scanAction.type='button';scanAction.dataset.entrepreneurScan='true';
+    const proofCard=add(attentionGrid,'article','eh-attention-card');
+    add(proofCard,'span','eh-attention-kicker','3 · Gemeten resultaat');
+    const outcomes=journey.autopilot?.outcomes;
+    add(proofCard,'strong','',Number.isInteger(outcomes)&&outcomes>0
+      ?outcomes+' brongeverifieerde uitkomst(en)'
+      :'Nog geen bewezen resultaat');
+    add(proofCard,'p','',Number.isInteger(outcomes)&&outcomes>0
+      ?'Bekijk de bron en het meetmoment per uitkomst. Dit aantal zegt nog niets over het netto financiële effect.'
+      :'Een voorgestelde of uitgevoerde actie telt niet als resultaat zonder onafhankelijk controleerbaar bewijs.');
+    add(proofCard,'small','eh-attention-evidence','Voorbeeldcijfers en voorspellingen tellen nooit mee');
+    const evidenceAction=add(proofCard,'button','eh-text-action','Controleer uitkomsten en bewijs →');
+    evidenceAction.type='button';evidenceAction.dataset.entrepreneurPage='outcomes-evidence';
+
+    const chooser=add(advanced,'div','eh-goals');
     add(chooser,'h3','','Wat wil jij met je bedrijf bereiken?');
     add(chooser,'p','eh-muted','Kies jouw belangrijkste doel. Je kunt later veranderen; andere vastgelegde doelen blijven bewaard.');
     const choices=add(chooser,'div','eh-goal-grid');
@@ -98,7 +195,8 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       button.disabled=saving;
     }
 
-    const columns=add(host,'div','eh-cards');
+    if(!model.selectedGoal)host.insertBefore(chooser,advanced);
+    const columns=add(advanced,'div','eh-cards');
     const scan=add(columns,'article','eh-info-card');
     add(scan,'span','eh-card-label','Wat weten we uit jouw scan?');
     add(scan,'h3','',model.scan.verified?(model.scan.score===null?(model.scan.count?'Nulmetingen gekoppeld: '+model.scan.count:'Nulmeting gekoppeld'):'Nulmeting '+model.scan.score+'/100'):'Scanstatus nog niet bevestigd');
@@ -114,29 +212,22 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     const measure=add(ambition,'button','eh-text-action','Doel en bedrijfsgegevens bekijken →');
     measure.type='button';measure.dataset.entrepreneurPage='bedrijfssituatie';
 
-    const next=add(host,'article','eh-next');
-    const eyebrow=add(next,'span','eh-next-label',model.next.kind==='verified-proposal'?'ONDERBOUWD VOORSTEL':'JOUW BESTE VOLGENDE STAP');
-    add(next,'h3','',model.next.title);
-    add(next,'p','',model.next.explanation);
-    if(model.next.kind==='verified-proposal'){
-      add(next,'small','eh-truth',model.next.evidenceCount+' bronverwijzing(en). '+(model.next.requiresApproval?'Voor uitvoering kan goedkeuring nodig zijn.':'Een voorstel is nog geen uitgevoerde handeling.'));
-    }else add(next,'small','eh-truth','Deze stap is begeleiding op basis van je gekozen doel, geen bewezen financieel rendement.');
-    if(model.next.page){
-      const action=add(next,'button','eh-main-action',model.next.kind==='verified-proposal'?'Bekijk voorstel en onderbouwing →':'Ga verder met deze stap →');
-      action.type='button';action.dataset.entrepreneurPage=model.next.page;
-    }else add(next,'p','eh-small','Begin door hierboven een doel te kiezen.');
     // Existing Brain/Powerhouse cockpit and scenario navigator are projections of
     // this same authenticated snapshot, not separate onboarding databases.
-    const journey=buildEntrepreneurJourneyModel(customerState||{},{
-      authenticated:loggedIn&&Boolean(customerState),home:model,impact,brainReceipt,
-      tenantRuntime:loggedIn&&customerState?getTenantRuntime():null
-    });
-    renderEntrepreneurJourney(host,journey);
-    const footer=add(host,'div','eh-foot');
+    const journeySection=renderEntrepreneurJourney(host,journey);
+    if(journeySection)advanced.appendChild(journeySection);
+    const footer=add(advanced,'div','eh-foot');
     add(footer,'span','','1 · Kies je doel');
     add(footer,'span','','2 · Maak het meetbaar');
     add(footer,'span','','3 · Onderzoek en besluit');
     add(footer,'span','','4 · Meet wat echt werkt');
+    const pendingHandoff=domainState.pendingHandoffs?.();
+    if(pendingHandoff?.pending){
+      const pendingMessage=add(host,'p','eh-feedback eh-truth',pendingHandoff.retryable
+        ?'Verwerking onderweg: je gegevens zijn nog niet volledig bevestigd in het Bedrijfsbrein. De bestaande controles proberen opnieuw.'
+        :'Niet alle verwerking is bevestigd. Controleer de aangemelde bedrijfsomgeving en de opgeslagen gegevens.');
+      pendingMessage.setAttribute('role','status');
+    }
     const feedback=add(host,'p','eh-feedback',notice||(
       snapshot?.status==='error'?'Gegevens zijn niet bevestigd als opgeslagen. Je wijzigingen blijven herstelbaar.':
       model.intelligence.ready?model.intelligence.verifiedSignals+' brononderbouwde onderdelen beschikbaar in de bestaande ondernemerscockpit.':
@@ -149,6 +240,13 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     if(!button||!host.contains(button))return;
     if(button.dataset.entrepreneurLogin==='true'){globalThis.netlifyIdentity?.open?.('login');return;}
     if(!auth())return;
+    if(button.dataset.entrepreneurReveal==='true'){
+      const details=host.querySelector('[data-entrepreneur-details]');
+      const goals=host.querySelector('.eh-goals');
+      if(goals?.parentElement===host){goals.scrollIntoView?.({block:'center'});goals.querySelector('button')?.focus?.();}
+      else if(details){details.open=true;goals?.scrollIntoView?.({block:'center'});}
+      return;
+    }
     if(button.dataset.entrepreneurScan==='true'){
       const scans=documentRef.getElementById('portalCanonicalScans');
       if(scans&&!scans.hidden){scans.scrollIntoView?.({behavior:'smooth',block:'center'});return;}
@@ -183,7 +281,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       if(request===generation&&owner===principal()){saving=false;draw();}
     }
   });
-  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;impact=null;brainReceipt=null;}draw();};
+  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;impact=null;brainReceipt=null;expanded=false;worldStage='decision';}draw();};
   const onVerifiedScans=event=>{if(!auth())return;const count=event?.detail?.count;verifiedScanCount=Number.isInteger(count)&&count>=0?count:null;draw();};
   const onImpact=event=>{
     if(!auth()||!principal()||principal()!==subject)return;

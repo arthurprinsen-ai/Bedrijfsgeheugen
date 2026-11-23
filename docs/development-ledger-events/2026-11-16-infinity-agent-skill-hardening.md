@@ -1,0 +1,10 @@
+# 2026-11-16 — P0 #4198: originele agents/skills accepteren geen false-green uit #171
+
+- **Bronincident:** `supabase:adhjwmvyoixzjtmiroln:cron:job171:run:169000`, `POWERHOUSE_INFINITY_CURRENT_SIGNAL_REQUIRED`, 2026-11-16 06:41 UTC.
+- **Productiepatch buiten dit werk:** beveiligde [PR #5919](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5919); main SHA `03a317c10f4d66eae9fc143a3f7b0f13f06389c8`; native applied migration `20261116105000`; normale daaropvolgende job #171 `169268` succeeded om 09:59 UTC. Alleen die technische reparatie is onafhankelijk bewezen.
+- **Bronstatus op controlemoment:** 258 signalen en 0 in zeven dagen geschikt, 72 ruwe recente fetches / 0 toegestane, externe `bg_gezondheid` kan proces-versheid `ok` melden. Registreer en behandel `powerhouse|source-universe|zero-current-eligible-signal|20261116-v1` apart via oorspronkelijk eigenaarspad.
+- **Te herstellen herhaalpatroon:** agentstatus `run succeeded`, `job healthy` of `code merged` wordt voor daadwerkelijke provider/consumerresultaten aangezien. Afhandeling pas bij exact onafhankelijk bron→eigenaar→uitvoering→effect→leren, zonder synthese of extra writer.
+- **Nieuwe regel:** bestaande Engineering, Reliability, Data Quality, Growth-agent en twee oorspronkelijke skills plus AGENTS.md bevatten dezelfde data- en herstelwaarheid. Validatie `tests/brain-infinity-original-171-agent-skill-contract-20261116.test.mjs`.
+- **Bestaande owner en beveiliging:** oorspronkelijke Supabase #171, service_role-only functie, geen tweede cron/agent/sender/queue, geen valse signalen, geen nieuwe provideractie, geen bulkclose.
+- **Resultaat op bron-commit:** `CANDIDATE_NOT_LIVE`; exact Required/BRAIN/CodeQL, originele preview, protected merge en onafhankelijke GitHub main-byte readback zijn verplicht voordat die skill-/agentupdates als live worden aangemerkt. Volledige E2E-businesslus blijft onvolledig tot aparte natuurlijke 07:41- en consument-/providerbewijzen.
+- **P0:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.

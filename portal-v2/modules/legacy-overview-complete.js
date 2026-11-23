@@ -230,7 +230,7 @@ function latestImpactMarkup(){
 
 export function renderLegacyOverviewComplete(root,state={},openPage=()=>{},domainState=null){
  const main=root?.querySelector?.('.main');if(!main)return false;ensureStyle(root.ownerDocument||document);
- let section=main.querySelector('[data-legacy-complete]');if(!section){section=(root.ownerDocument||document).createElement('section');section.className='legacy-complete';section.dataset.legacyComplete='true';const anchor=main.querySelector('.dashboard')||main.querySelector('.lower');main.insertBefore(section,anchor||null)}
+ let section=main.querySelector('[data-legacy-complete]');if(!section){section=(root.ownerDocument||document).createElement('section');section.className='legacy-complete';section.dataset.legacyComplete='true';const anchor=main.querySelector('.dashboard')||main.querySelector('.lower');(anchor?.parentElement||main).insertBefore(section,anchor||null)}
  const m=legacyOverviewCompleteModel(state);
  const first=m.top[0];
  section.innerHTML=`

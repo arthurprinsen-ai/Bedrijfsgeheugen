@@ -9,7 +9,9 @@ export function connectorReadinessFromEnv(getEnv=()=>undefined){
   return {
     sources:{
       upload:{configured:true,state:'native-safe-test'},
-      email:{configured:true,state:'native-safe-test'}
+      email:{configured:true,state:'native-safe-test'},
+      // Real native AFAS support requires separate per-tenant token + provider proof.
+      afas:{configured:false,state:'tenant-authorization-required',nativeReadOnlyAvailable:true}
     },
     extractor:documentExtractorUrl&&connectorSafeTestToken
       ?{configured:true,state:'server-safe-test'}

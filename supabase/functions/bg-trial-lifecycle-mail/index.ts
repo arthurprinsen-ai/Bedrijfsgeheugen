@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
     const rows = (due || []).slice(0, MAX_PER_RUN);
 
     if (mode === 'preview') {
-      return J({ ok: true, contract: C, mode, due: rows.length, mails: rows.map((r: any) => ({ to: r.email, mail_key: r.mail_key, ...composeTrialMail(r.mail_key, pickVariant(r.subscription_id), r) })) });
+      return J({ ok: true, contract: C, mode, due: rows.length, mails: rows.map((r: any) => ({ to: r.email, mail_key: r.mail_key, ...(composeTrialMail(r.mail_key, pickVariant(r.subscription_id), r) as any) })) });
     }
     if (mode !== 'live') return J({ ok: false, error: 'UNKNOWN_MODE' }, 400);
 

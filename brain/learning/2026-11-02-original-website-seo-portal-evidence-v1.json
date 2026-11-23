@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|portal|site-seo-incident-proof-must-separate-live-source-from-autonomous-handoff|20261102-v1",
+  "obligation_id": "original-website-seo-incident-portal-readback-20261102-v1",
+  "parent_issue": 4439,
+  "compiler": {
+    "failure_class": "PORTAL_OPEN_AUTOMATION_MISTAKEN_FOR_ALL_GREEN",
+    "scope": "authenticated-admin-only",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "owner": "Original ONE BRAIN failure coverage and Powerhouse observability owners",
+  "root_cause": "Original admin portal showed only aggregate error counts and predictive recovery. The exact original technical checkout and SEO source fixes were independently live, but the separate native GitHub Actions PR-create authorization remained open. Aggregating into a single green website status would overstate actual autonomous handoff and financial outcomes.",
+  "prevention_rule": "Preserve separate exact-fingerprint readbacks of original checkout, SEO date-only source fix and native PR-create authorization. Treat technical source recovery, future natural execution and permissions as distinct states; never infer a paid order, successful native PR creation or complete incident closure. Require exact allowlisted Supabase provider rows, fail-closed data/status on unavailable or partial readback. Admin-only server summary, no raw evidence in UI, no duplicate agents or cron.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "release_pr": 5294,
+    "release_commit": "6ef57999b31daa6f910645ea134afb3c797f98dc",
+    "netlify_deploy": "6ae886b4d1931496bc831806",
+    "readback_run": 41447750589,
+    "source_registry": "public.brain_failure_registry",
+    "native_gh_actions_permission": "UNPROVEN",
+    "portal_candidate_only": true,
+    "tests": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ],
+    "paid_orders_proven": false
+  }
+}

@@ -91,3 +91,5 @@ export function runGrowthDecisionCycle(signals,{now=Date.now(),limit=10}={}) {
     summary:{observed:signals.length,accepted:proposals.length,rejected:rejected.length},
     note:"Advisory only: existing Heartbeat executes gated actions and independent readback."};
 }
+
+export {CRO_EXPERIMENT_CONTRACT,CRO_SURFACES,designCroExperiment,evaluateCroExperiment,projectCroLearning,diagnoseCroMeasurementGap} from './cro-experiment-cycle.mjs';

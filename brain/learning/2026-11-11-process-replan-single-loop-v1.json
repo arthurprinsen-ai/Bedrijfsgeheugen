@@ -1,0 +1,56 @@
+{
+  "version": 1,
+  "fingerprint": "portal|process|owner-deadline-cannot-replan-without-dropping-lineage|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_PROCESS_REPLAN_RECOVERY",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Portal V2 deliveryPlan / canonical customer-input Brain lineage",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "gap": "Original workflow templates create owner, milestones and deadlines but provide no edit/replan action; real role or schedule changes cannot be corrected in the UI",
+    "false_green_prohibited": true
+  },
+  "root_cause": {
+    "observed": "The original process portfolio view exposes create and submit only, not a safe replan mutation",
+    "unknowns": [
+      "independent authorized approval provider",
+      "backend consumer stages",
+      "real customer outcomes"
+    ]
+  },
+  "fix": {
+    "scope": "Only original portal.deliveryPlan: immutable update of process owner, per-stage ownership and backwards dates, preserve intent IDs/status/approval states",
+    "truth_boundary": "customer replan creates a new Brain handoff; never implies provider execution or outcome"
+  },
+  "compiler": {
+    "failure_class": "PROCESS_OWNER_DEADLINE_REPLAN_MISSING",
+    "scope": "PORTAL_V2",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-process-replan-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-process-replan-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-process-replan-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "NO_SECOND_PROCESS_WRITER",
+    "PRESERVE_APPROVAL_GATE",
+    "NO_FORGED_RESULT",
+    "ESCAPE_CUSTOMER_TEXT"
+  ],
+  "evidence": {
+    "required": "protected tests CodeQL, protected merge, exact Netlify ready and independent browser readback",
+    "limitation": "Authoritative external approvals, execution, Heartbeat and learning still unverified"
+  }
+}

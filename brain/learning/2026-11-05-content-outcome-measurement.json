@@ -1,0 +1,42 @@
+{
+  "type": "CONTENT_MEASUREMENT_STAGE",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "content|publication-chain|measurement-stage|20261105-v1",
+  "owner": "existing powerhouse_content_closed_loop_tick_v1 hourly cron and record_content_publication_state",
+  "compiler": {
+    "failure_class": "CONTENT_CHAIN_MEASUREMENT_STAGE_NEVER_EXECUTED",
+    "scope": "CONTENT_PUBLICATION_OBLIGATIONS_MEASURED",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "record_content_publication_state supports MEASURED but nothing called it with real numbers. All 18 live-proven blogs and 29 live-proven LinkedIn company posts had empty measured_at and metrics, while five rows carried learned_at without any measurement. The GA4 collector attributes campaigns to social_posts only and writes no page-level result for blogs.",
+  "prevention_rule": "Measurement is part of the existing content tick: live-proven blogs are measured from bg_ga4_csv_batches after a seven-day window, with explicit INSUFFICIENT_DATA or INCOMPLETE_COVERAGE quality labels. The measurement stage never sets LEARNED, so thin data cannot become a learning.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-outcome-measurement-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Provider read 2026-11-05: content_publication_obligations measured_at empty on all rows; bg_ga4_sync metingen_ingevuld = 0 over 631 runs"
+    ],
+    "current": [
+      "Provider run of powerhouse_measure_content_outcomes_v1 at 2026-11-05T12:54Z: 18 blogs measured, 0 sufficient for learning (0 sessions in each first 7 days)",
+      "Parsing checked against bg_ga4_csv_batches: site total about 150 sessions over 53 days, blog traffic concentrated on one non-daily blog"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_BRAIN_AND_TERMINAL",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

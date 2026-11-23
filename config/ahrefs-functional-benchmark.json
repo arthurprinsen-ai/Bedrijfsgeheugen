@@ -1,0 +1,135 @@
+{
+  "version": "ahrefs-functional-benchmark-20261112",
+  "domain": "www.bedrijfsgeheugen.nl",
+  "benchmark_sources": [
+    "https://ahrefs.com/all",
+    "https://ahrefs.com/site-audit",
+    "https://ahrefs.com/rank-tracker",
+    "https://ahrefs.com/brand-radar"
+  ],
+  "not_a_claim_of_ahrefs_parity": true,
+  "original_executor": "Powerhouse SEO Order Engine / BG169",
+  "daily_cadence": "single existing daily SEO scheduler; technical crawl all public NL/EN sitemap URLs; rank and backlink provider windows subject to source lag and cost",
+  "objective": "verified qualified Google organic and ChatGPT/Claude referrals -> scans, leads, provider-confirmed orders -> learning",
+  "modules": [
+    {
+      "name": "Site Audit",
+      "status": "PARTIAL_IMPLEMENTED",
+      "source": "Full sitemap/3 viewport browser with href/CLS plus 17-rule health artifact",
+      "unverified": "170+ Ahrefs issue checks, exhaustive external HTTP link and server-log crawling"
+    },
+    {
+      "name": "Always-on Audit",
+      "status": "DAILY_NOT_CONTINUOUS",
+      "source": "Original SEO Order Engine and original protected release browser",
+      "unverified": "Continuous 24/7 discovery and alert SLA"
+    },
+    {
+      "name": "Site Explorer",
+      "status": "PROVIDER_AVAILABLE_NOT_AUTOMATED",
+      "source": "DataForSEO Labs domain overview, relevant pages, competitors",
+      "unverified": "Fresh independent external observation and Ahrefs crawl-index parity"
+    },
+    {
+      "name": "Keywords Explorer",
+      "status": "PARTIAL_SOURCE_STALE",
+      "source": "Search Console GSC and DataForSEO keyword suggestions, volumes, difficulty",
+      "unverified": "Search Console timeliness, complete query-to-revenue mapping, ranked coverage"
+    },
+    {
+      "name": "Rank Tracker",
+      "status": "PARTIAL_SOURCE_STALE",
+      "source": "GSC query/page performance; DataForSEO SERP history capability",
+      "unverified": "Daily independent competitor/mobile/desktop ranking panel"
+    },
+    {
+      "name": "Content Explorer",
+      "status": "PROVIDER_AVAILABLE_NOT_AUTOMATED",
+      "source": "DataForSEO SERP and content discovery combined with original editor",
+      "unverified": "Large historical high-performing content index"
+    },
+    {
+      "name": "Brand Radar AI Visibility",
+      "status": "NOT_MEASURED",
+      "source": "Existing versioned ChatGPT/Claude prompt spec and DataForSEO AI mentions capabilities",
+      "unverified": "Actual provider-returned answers/citations and sample benchmark with real models"
+    },
+    {
+      "name": "Backlinks Explorer",
+      "status": "PROVIDER_AVAILABLE_NOT_AUTOMATED",
+      "source": "DataForSEO backlinks/referring domains/new-lost/anchors API",
+      "unverified": "Provider retrieval and Ahrefs proprietary backlink graph parity"
+    },
+    {
+      "name": "Link Intersect",
+      "status": "PROVIDER_AVAILABLE_NOT_AUTOMATED",
+      "source": "DataForSEO backlinks domain_intersection API",
+      "unverified": "Verified competitor link gap and authority/relevance"
+    },
+    {
+      "name": "Content Gap",
+      "status": "PROVIDER_AVAILABLE_NOT_AUTOMATED",
+      "source": "DataForSEO Labs domain_intersection and SERP competitors API",
+      "unverified": "Actual demand-based competitor gap rankings"
+    },
+    {
+      "name": "Traffic Analytics",
+      "status": "DEGRADED",
+      "source": "GA4, GSC, consent-respecting first-party growth_events",
+      "unverified": "Reliable human Google/ChatGPT/Claude source attribution and non-zero GA4 source writes"
+    },
+    {
+      "name": "AI Content Helper",
+      "status": "PARTIAL_IMPLEMENTED",
+      "source": "Original research/editorial content-to-publication workflow",
+      "unverified": "Actual answer citation improvement and causal next-publication learning"
+    },
+    {
+      "name": "GSC Insights",
+      "status": "PARTIAL_SOURCE_STALE",
+      "source": "Original Google Search Console integration",
+      "unverified": "Complete fresh origin source and independent 28 complete-day comparison"
+    },
+    {
+      "name": "Batch Analysis",
+      "status": "PROVIDER_AVAILABLE_NOT_AUTOMATED",
+      "source": "DataForSEO bulk domain/page metric endpoints",
+      "unverified": "Original owner bounded provider request + readback + next action"
+    },
+    {
+      "name": "Reporting & Alerts",
+      "status": "PARTIAL_IMPLEMENTED",
+      "source": "Original browser artifact, ONE BRAIN, Heartbeat and Portal handoff contract",
+      "unverified": "Confirmed downstream processed ACK of current new artifact and actual meaningful alerts"
+    },
+    {
+      "name": "Paid Competitor Intelligence",
+      "status": "NOT_MEASURED",
+      "source": "External SERP paid results possible, not verified for current niche",
+      "unverified": "Approved provider retrieval, commercial intent and privacy guard"
+    },
+    {
+      "name": "Local/GBP",
+      "status": "NOT_MEASURED",
+      "source": "No established eligible Google Business Profile verification",
+      "unverified": "Account authorization and reliable location-based relevance"
+    }
+  ],
+  "metrics_required": [
+    "sitemap_coverage_pct",
+    "site_health_score_error_free_percent",
+    "actual_gsc_organic_clicks",
+    "verified_human_google_referrals",
+    "verified_chatgpt_human_referrals",
+    "verified_claude_human_referrals",
+    "actual_ai_citation_share",
+    "qualified_leads",
+    "provider_confirmed_order_receipts",
+    "new_links_and_lost_links",
+    "revenue_by_original_source"
+  ],
+  "source_guard": "UNKNOWN_NOT_ZERO",
+  "budget_guard": "bounded paid DataForSEO canary, no bulk purchases without source/ROI evidence",
+  "owner_handoff": "Original tenant/source revision/owner/idempotency/provider identity → ONE BRAIN ack+consumer processed receipt → Powerhouse → Heartbeat → Portal → approved safe CRO/SEO action → measured real effect → verified next run",
+  "completion_guard": "A capability is not implemented or live merely because the provider tool exists; independent real source retrieval, tested ingestion, artifact, production proof and consumer processed ACK required"
+}

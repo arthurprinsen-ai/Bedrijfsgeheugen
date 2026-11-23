@@ -1,0 +1,40 @@
+{
+  "id": "security-trust-expiring-evidence-render-v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "fingerprint": "powerhouse|security|expired-management-proof-client-can-green|20261102-v1",
+  "compiler": {
+    "failure_class": "FALSE_GREEN_SECURITY_EVIDENCE_EXPIRY",
+    "scope": "SECURITY_TRUST",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "The first evidence-first portal platform summary relied on status and evidence_available from the last generated database snapshot. A cached PASS could remain visually green after expires_at even when the snapshot had not refreshed.",
+  "prevention": {
+    "rule": "Green requires observed_at <= now < expires_at for every required provider observation AND an independently fresh (<24h) snapshot generatedAt. Invalid, missing, future or expired values are EVIDENCE_PARTIAL; explicit failures remain ACTION_REQUIRED.",
+    "boundary": "Rendering safeguard only; do not change backend authorization, service tokens, raw private evidence or release writer.",
+    "regression": "tests/portal-private-trust-surfaces-v1.test.mjs; tests/brain-security-trust-center-v1.test.mjs",
+    "closure": "After protected merge verify exact Netlify production SHA, authenticated tenant-scoped Portal and an old snapshot rendering non-green. No production/no-recurrence claims without independent readback."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "production_readback": "NOT_PROVEN"
+  },
+  "evidence": {
+    "tests": [
+      "tests/portal-private-trust-surfaces-v1.test.mjs",
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "source": "original security-trust-workspace.js platform summary code review, original Brain failure register",
+    "outcome": "UNDEPLOYED_CANDIDATE",
+    "portal": "https://www.bedrijfsgeheugen.nl/portaal?page=trust-center"
+  }
+}

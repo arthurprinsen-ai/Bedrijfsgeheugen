@@ -261,6 +261,37 @@ def lees_paginas():
     return paginas
 
 
+
+def schrijf_seo_status_als_gewijzigd(status, pad='seo-status.json'):
+    """Write only a meaningful SEO ownership change, not a clock-only candidate.
+
+    The 'bijgewerkt' date reflects the last content change. An unchanged
+    source must not open a pointless PR (especially when Actions has no
+    native createPullRequest permission). Never hide a genuine SEO delta.
+    """
+    vorig = None
+    try:
+        with io.open(pad, 'r', encoding='utf-8') as bron:
+            vorig = json.load(bron)
+    except (OSError, ValueError, TypeError):
+        pass
+    if isinstance(vorig, dict) and isinstance(vorig.get('bijgewerkt'), str):
+        vorig_inhoud = {k: v for k, v in vorig.items() if k != 'bijgewerkt'}
+        nieuw_inhoud = {k: v for k, v in status.items() if k != 'bijgewerkt'}
+        if vorig_inhoud == nieuw_inhoud and re.fullmatch(r'\d{4}-\d{2}-\d{2}', vorig['bijgewerkt']):
+            status['bijgewerkt'] = vorig['bijgewerkt']
+    nieuw = json.dumps(status, ensure_ascii=False, indent=1) + '\n'
+    try:
+        with io.open(pad, 'r', encoding='utf-8') as bron:
+            if bron.read() == nieuw:
+                return False
+    except OSError:
+        pass
+    with io.open(pad, 'w', encoding='utf-8') as doel:
+        doel.write(nieuw)
+    return True
+
+
 def main():
     P = lees_paginas()
     bevindingen = []
@@ -490,8 +521,7 @@ def main():
             'type': 'pijler' if eigenaar in CLUSTERS else 'cluster',
         })
     status['pijlers'] = sorted(CLUSTERS.keys())
-    io.open('seo-status.json', 'w', encoding='utf-8').write(
-        json.dumps(status, ensure_ascii=False, indent=1) + '\n')
+    schrijf_seo_status_als_gewijzigd(status)
     print('\n'.join(regels))
     # alleen hoge bevindingen laten falen; midden en laag zijn een melding
     gate_hoog = sum(1 for b in gate_bevindingen if b[0] == 'hoog')

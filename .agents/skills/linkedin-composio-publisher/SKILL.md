@@ -5,6 +5,17 @@ description: Enforce Composio as the canonical LinkedIn publication transport an
 
 # LinkedIn — Composio publication authority
 
+## P0 personal identity last-metre rule — 2026-11-15 (#5913)
+
+**This rule supersedes any older observational or generic-news personal fallback instructions in this skill.** Personal LinkedIn is an independently source-verified **Arthur-authored first-person personal story**, not news narration, company marketing, internal metrics or an AI-generated impersonation. The source must be an approved user-origin personal fact, not a reclassified third-party article or an external problem radar result. Preserve provenance, consent/privacy, authenticity, uniqueness and original daily claim. If no trustworthy own story is available, record the same obligation with its owner/next action and do not invent an experience or manufacture a replacement publication. Keep the one canonical executor running; no extra writer or scheduler.
+
+Immediately before **each** personal LinkedIn `LINKEDIN_CREATE_LINKED_IN_POST`, the original `powerhouse-social-publisher` must re-hash the actual final commentary and require all of: current-date permitted schedule, verified immutable user-origin source/revision, source-based personal-first-person checks, independent `bg-pre-publish-review` HTTP 200 + `can_publish=true` + `identity_gate_decision=PASS` on that **identical SHA-256**, and exact equality between actual SHA-256, previous reviewed SHA-256 and source evidence final hash. A missing, stale, 422, contradictory or hash-mismatched review is an unconditional **pre-provider veto**. `final_copy_approved`, a prior `pre_publish_gate=passed`, a 200 from a write API, views, or after-the-fact readback are not replacements for editorial clearance.
+
+Incident evidence: 2026-11-15 news about tasered package courier was registered as personal and `LIVE_PROVEN` despite conflicting reviewer 422, discordant hashes and permission-limited provider readback. Preserve chronological evidence and distinguish provider-created from content-approved, independently verified and measured; **never mark an editorially failed personal post as editorial PASS or regenerate a second provider post**. Reconcile any earlier violation with the original exact URN and source lineage, without deleting existing public content automatically. Company channel remains independent.
+
+Regression: `tests/brain-personal-first-person-voice-and-source-20261115.test.mjs`; source `supabase/functions/_shared/personal-first-person-story-gate.mjs`, last-metre transport `supabase/functions/powerhouse-social-publisher/index.ts`. Protected CI, exact-main source parity, native Edge deployment, negative production review, natural next eligible personal attempt, exact provider URN, ONE BRAIN incident/learning readback are required for terminal closure. Never claim permanent error-proof operation or FULL_GREEN from code alone.
+
+
 Fingerprint: `linkedin-composio-chain-provider-isolation-v1`.
 
 ## Hard transport rule
@@ -440,3 +451,93 @@ Revoke by exact lease CAS then resume the ORIGINAL content_ready record by
 exact updated_at CAS. Repeat source, editorial, identity, OAuth, semantic
 uniqueness and external provider receipt gates; never manufacture a post.
 Never add second sender, job, or OAuth fallback.
+
+## 15 November 2026 — personal observation editorial parity
+
+Fingerprint: `powerhouse|linkedin|observation-builder-review-mismatch|20261115-v1`. The original pre-publish LinkedIn personal decision may be `observational_personal_theme_verified=true` with `ai_native_builder_story_verified=false`. Do **not** reuse the builder/founder correction prompt for this source: it instructs business claims and creates an avoidable final `FINAL_TEXT_BUSINESS_SIGNAL_BLOCK` (HTTP 422). The original editor and original `bg-pre-publish-review` now share `personalNonBuilderBusinessSignal`; the editor attempts only one source-grounded, non-business observational rewrite before final approval. Never alter the original source type, invent personal experiences, lower the final identity/uniqueness gate, or post after a 422. If evidence is insufficient, keep the same date/channel ONE BRAIN obligation OPEN, record its original owner, rejection code, source revision, next safe genuinely different source action, and do not silently skip or re-send. Verify via original protected Required + CodeQL, Netlify/Supabase source parity, the next natural daily executor, LinkedIn provider ID and independent readback, ONE BRAIN named `PROCESSED` consumer and Heartbeat evidence. A passing source test or merge is not evidence of a published post. No second executor or schedule.
+
+## 15 November 2026 — persoonlijke eindtekst controle: één gedeeld taalcontract
+
+Fingerprint `powerhouse|linkedin|legacy-substring-personal-final-truth-veto|20261115-v1` (P0 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198). De originele `powerhouse-content-orchestrator` gaf in de natuurlijke run na de content-loop release `PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED` bij een geverifieerde observerende dagelijkse bron over onlinebestelling en klantenservice. De historische `personalFinalCopyValid` gebruikte een onbegrensde `/klant/`-substring die `klantenservice` als reclame behandelde, in strijd met het onafhankelijke `bg-pre-publish-review` en het gedeelde `personalNonBuilderBusinessSignal`-beleid (standalone-woordgrenzen). **Geen beleidsverlaging:** de oude eindcontrole gebruikt voortaan de bestaande gedeelde classifier; zelfstandige zakelijke woorden, verzonnen eerste-persoonsclaims, ongeverifieerde feiten, slechte bron en ongeldige final-hash blijven verboden. `onlinebestelling` en `klantenservice` zijn alleen geloofwaardige dagelijkse scènes wanneer de geverifieerde bron ze werkelijk bevat. De originele generatie-agent probeert maximaal één source-locked redactieherziening ook bij uitsluitend een final-truth-veto, niet alleen bij een eerste editorial 422, en toetst daarna ALLE oorspronkelijke gates opnieuw. Geen parallelle agent, scheduler, LinkedIn-send of OAuth-omzeiling. Controleer Required+CodeQL, native source SHA, daarna natuurlijke run; claim pas live bij provider-ID/GET, ONE BRAIN `PROCESSED`, Heartbeat-meetbewijs.
+
+
+## 15 November 2026 — exact daily-life observation gate shared with prepublish
+Fingerprint `powerhouse|linkedin|personal-observational-context-lexical-drift|20261115-v1`, parent P0 #4198.
+Production original personal 2026-11-15 BLOCKED: independent final review returned
+`OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED` even though the original personal
+generator accepted the verified online order / customer-service daily-life terms.
+Use the one shared `personalObservationalLifeContextSignal` in BOTH original
+generator and original final reviewer, preserving the existing source-backed
+observation vocabulary including `onlinebestelling`, `klantenservice`, and
+`webwinkel`. The lexical predicate is NOT a provider permit: keep
+`public_theme_source_verified`, source lineage and age, personal topic,
+no false first-person claims, commercial veto, exact final hash, story-family
+uniqueness, capability and OAuth provider gates, and real LinkedIn ID/readback.
+Do not publish the rejected artifact directly; re-enter the EXISTING one daily
+lane only once it has an exact eligible source and valid editorial artifact.
+The original publisher/agent remains the owner, not a second scheduler or sender.
+Do not claim repair complete before protected CI, production edge source parity,
+natural provider publication, ONE BRAIN consumer PROCESSED, and Heartbeat learning.
+
+
+## 15 November 2026 — guarded rebootstrap of ORIGINAL personal 422
+Fingerprint `powerhouse|linkedin|personal-observation-review-no-rebootstrap|20261115-v1`.
+The original hourly `powerhouse_content_closed_loop_tick_v1` calls
+`powerhouse-content-loop`, not the editor directly. After the successful
+shared observer lexicon release, the original personal source claim remained
+BLOCKED (two prior recovery attempts), but the loop did not recognize
+`OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED` as a rebootstrap reason.
+The existing content-loop now owns a bounded, **pre-provider-only** check:
+both original daily records must have the exact same source ID, reviewed
+SHA256, matching 422 failure and status; no original provider ID, live URL,
+publication timestamp, consumed authority, possible provider side effect,
+or republish prohibition. At most one additional attempt when the recorded
+original recovery count is 2 (limit 3), with the full unchanged source/identity/
+editorial/uniqueness/OAuth/provider review in the original orchestrator.
+If anything fails or the source becomes ineligible, keep OPEN with the original
+owner and explicit typed reason, never fake a result and never create a second
+sender/scheduler. Production green requires provider URN and independent
+GET, named ONE BRAIN PROCESSED plus Heartbeat measurement and learning.
+
+
+## 15 November 2026 — observational source completeness before generation
+Fingerprint `powerhouse|linkedin|personal-observation-truncated-source-spinning|20261115-v1` (P0 #4198). Independent original evidence: 15 November source recommendation `6418326b-bded-487d-b1dd-1ec22ea0af66` was marked verified but `source_text` contained only 143 characters ending in `...`, while its original personal generator accumulated six failures `PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED` after source-locked correction. This is insufficient evidence for a 130–200 word source-grounded post and must not be treated as publishable simply because the source URL was verified.
+The ORIGINAL `validPersonalSource` now requires an observational source of at least 240 characters, not ending in truncation ellipsis, with a direct HTTPS source URL and parseable source published/observed timestamps, in addition to all prior identity/source gates. The original source collector must enrich or replace the fragment and provide a genuinely different source if needed. If no complete verified source exists, keep SAME date/channel obligation OPEN, with owner, reason and source reference, no forced publisher call, no fabricated personal experience, no blind resends, and no new scheduler. The original agent learns from the rejection and continues subsequent days, without disabling the executor. Regression tests in existing source-aware blocked-lane fairness suite. Green only after provider ID and independent GET, named ONE BRAIN PROCESSED, Heartbeat effect.
+
+
+## 15 November 2026 — original source-conflict no-resurrection
+
+Fingerprint `powerhouse|linkedin|observational-source-conflict-resurrection|20261115-v1`, parent P0 #4198. After a seven-attempt editorial rejection, the original v2 personal source rotator used ON CONFLICT DO UPDATE to turn a quarantined `skipped` recommendation back into `suggested`, replacing corrected source information with a 143-char ellipsized excerpt and claiming success. The original protected v2 SQL function must use DO NOTHING on conflicts, return a row-count based truthful result, never select a signal with `metadata.original_source_quarantine`, require >=240 complete source characters and preserve immutable original signal/dedupe key despite URL alias changes. Same service role and original publisher. No fake personal experience, no second scheduler/provider sender, no direct publish. Keep original obligation OPEN and hand the typed SOURCE_SUPPLY_REQUIRED to original radar until valid new source, independent LinkedIn provider ID/GET, ONE BRAIN PROCESSED and Heartbeat result.
+
+## 15 November 2026 — original personal search/source contract parity
+Fingerprint `powerhouse|linkedin|original-radar-accepts-truncated-source|20261115-v1`, parent https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+The existing personal source collector mistakenly accepted a 143-character ellipsized excerpt because its original SQL rotation required only 60 characters, while the original writer requires >=240 nontruncated characters. The original source collector now uses the SAME two personal searches within the EXISTING eight-call radar with Tavily advanced, three chunks per result (no new provider, call, queue or scheduler); business six queries remain unchanged. Both radar and existing service-role-only `powerhouse_ensure_personal_source_rotation_v2(date)` enforce source >=240, no trailing ellipsis, source publication/observation date, direct HTTPS and unused source URL, including its `already_has_eligible` branch. Incomplete original source never gets false ready. One original source deficit is recorded as an idempotent failure in ONE BRAIN with original owner and content lineage; no guessed personal anecdotes, no blind provider create, no new executor. Keep the original Daily Publisher active, other lanes progressing, and consumer status open until exact authorized provider URN+GET, named ONE BRAIN processing and Heartbeat outcome. Protected migration and Edge deployed readbacks are prerequisites, not publication proof.
+
+## Source completeness and personal editorial-safety gate — 15 Nov 2026
+
+Fingerprint: `powerhouse|linkedin|dual-provider-source-context-and-editorial-risk|20261115-v1`.
+
+- The original daily personal-news supplier may return advanced Tavily context without a published date, while the original DataForSEO News fallback may provide a dated 140-character snippet. The same original radar may combine them ONLY after an exact canonical HTTPS article identity match; no cross-article enrichment, no invented date, no additional search/scheduler/transport.
+- An article about police force, tasering, serious injury, abuse or similar traumatic incident does not become an appropriate casual personal-life story because a topic keyword matched. Quarantine and reject at the original source intake, record a typed reason in ONE BRAIN, and source another safe genuinely dated original event. Do not invent the author's personal experience or rely on a content length gate alone.
+- Source freshness, length and editorial suitability are independent quality contracts; every downstream author, publisher and independent reviewer must fail closed on any missing contract. Preserve original daily-claim idempotency and provider URN/readback safeguards.
+- A GitHub merge or Edge source parity is not a LinkedIn post. Only exact provider publication ID, independent readback, consumer receipt, measurement and subsequent learning prove the terminal chain. Keep the existing executor active when a candidate is unsuitable.
+
+## 15 november 2026 — persoonlijke stem en bronstatus, bindende laatste-meter-check
+
+Fingerprint: `powerhouse|personal-linkedin|true-user-story-vs-company|20261115-v1`.
+- Vóór een nieuwe provider-side-effect: controleer exact persoonlijke `personal_truth_verified` + `first_person_claims_verified` + `arthur_anchor_verified`, expliciet user-fact-bronherkomst, geen journalistieke observatie/AI-builder marketing, een menselijk ik-verhaal en maandag–zaterdag.
+- Lees de originele `powerhouse_content_recommendations` opnieuw op de immutable `recommendation_id`: alleen juiste datum + kanaal, status `suggested/accepted`, hetzelfde `content_id` én exacte `source_text` als de bevroren publieksclaim. Verschil, skipped of quarantined betekent veilig afwijzen; behoud de originele oorzaak/overdracht.
+- Doe de controle opnieuw onmiddellijk vóór `LINKEDIN_CREATE_LINKED_IN_POST`, vóór het consumeren van de autorisatie. Nooit een nieuwe provider-call na bestaande `provider_post_id`, ongeacht readback-403 of redactionele fout achteraf.
+- De bedrijfspagina is exclusief voor brongebonden MKB-problemen, oplossingen en eigen waarde: nooit deze identiteitsbarrière omzeilen. Alle bestaande canonieke Composio-, audit- en dedupe-gates blijven verplicht.
+
+## 18 november 2026 — persoonlijke bron is EVIDENCE_DUE, niet gezonde PLANNED-status
+
+Originele channel_decisions: linkedin_personal is blocked/hold, PERSONAL_TRUTH_SOURCE_UNVERIFIED. De obligation staat nog PLANNED en provider-ID is NULL. De originele powerhouse_ensure_personal_source_rotation_v2 gaf voor 18-Nov SOURCE_SUPPLY_REQUIRED; er waren nul bruikbare nieuwe persoonlijke aanbevelingen. De oorspronkelijke newsradar had 384 bronnen/124 globaal eligible, maar voor de persoonlijke publicatie geen nieuwe ongebruikte volledige (minstens 240 tekens), recente en geldige persoonlijke bron. Nieuwscontext is geen bewijs dat een specifieke eerste-persoonsgebeurtenis werkelijk door de gebruiker is meegemaakt.
+
+Houd de originele persoonlijke-bronproducent aan het werk; verbeter uitsluitend daar bronintake/dedupe/kwaliteit, en vraag bij werkelijk ontbrekende persoonlijke waarheid één expliciet goedgekeurd, niet-hergebruikt concreet eigen moment zonder privégegevens van minderjarigen. Bewaar goedgekeurde bronrevisie en unieke verhaalidentiteit. Daarna oorspronkelijke persoonlijke redactie, duplicate gate, Composio-publicatie, provider ID en onafhankelijk GET/readback en Heartbeat. Bij onvoldoende bron blijft EVIDENCE_DUE met precies owner/reason/next_action in oorspronkelijke brain_failure_registry en bg_gezondheid. Nooit een algemeen Bedrijfsgeheugen-bericht, nieuwsfeit of verzonnen ik-ervaring als fallback sturen. Andere contentexecutors gaan gewoon door.
+
+## 18 november 2026 — reviewer HTTP200 PASS moet huidig SHA en 200 vastleggen
+De originele persoonlijke post van 18 november kreeg na geborgde originele editor-rebootstrap een unieke URN en LIVE_PROVEN, maar het oude `review_status=422` en `reviewed_text_hash` van de eerste afgekeurde versie stonden naast `pre_publish_gate=passed` en een NIEUWE teksthash. Dit is een onjuiste bewijsweergave, niet een reden voor herpublicatie. Exact tekst-GET bij LinkedIn was Forbidden, dus volledige onafhankelijke tekstreadback blijft onverifieerbaar.
+
+In de **bestaande** `powerhouse-social-publisher` mag alleen een echte onafhankelijke `gate.http===200`, `can_publish===true`, `identity_gate_decision===PASS`, `gate.final_text_hash===textHash` de CURRENT velden `review_status=200`, `reviewed_text_hash=textHash`, `violations=[]` en een exacte review-tijd op PASS zetten. Behoud hoogstens een begrensde historische `prior_rejected_review` voor eerdere 422s, niet als actuele beslissing. Geen wijzigingen aan bron, auteur, provider/create/no-resend, oorspronkelijke consumed capability, negatieve auth- of reviewcodes, quality gate, RLS en doelgroep. Regressie `tests/brain-original-social-review-200-evidence-20261118.test.mjs`; BRAIN `brain/learning/2026-11-18-original-social-review-200-evidence-v1.json`; incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+

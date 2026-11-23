@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "fingerprint": "supabase|main|original-provider-migration-lock-stale-791-vs-800|20261104-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_owner": "original Supabase Git main migration-history authority / ONE BRAIN delivery",
+  "status": "SOURCE_CANDIDATE_NOT_PRODUCTION_TERMINAL",
+  "root_cause": "Production and Git native provider 800 exact matching versions, but historical lock still 791 captured 2026-11-02, causing full BRAIN backend 2026-11-04 post-merge lane failure and terminal close-obligation gate failure. Preserve all 800 independent native identities.",
+  "source_readback": {
+    "prod_project": "adhjwmvyoixzjtmiroln",
+    "prod_provider_migrations": 800,
+    "git_executable_migrations": 800,
+    "provider_git_mismatch_count": 0,
+    "previous_lock": 791,
+    "additional_provider_confirmed_records": 9,
+    "provider_observed_at": "2026-11-04T07:43:05.326605Z",
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5389",
+    "original_failed_close_obligation_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41792476549/job/126448816641"
+  },
+  "fix": "Update ONLY previously stale provider-backed migration-history.lock.json from independent original production list_migrations, exactly nine additions, no SQL replay, no invented applied version; add source regression and original learning.",
+  "prevention": "After every protected Supabase migration, original exclusive migration-history owner performs read-only provider+Git identity parity readback and guarded lock update with monotonic provider timestamp, required historical/shadow/canary tests, then terminal BRAIN; preserve original 791 baseline and never infer provider success from code merge.",
+  "measurement": {
+    "baseline_lock_count": 791,
+    "source_count": 800,
+    "target_lock_count": 800,
+    "critical_gate_broad_suite_result": "STILL_UNVERIFIED; other unrelated BRAIN test failures may remain"
+  },
+  "security": "No new paid preview, cron, SQL execution or secret, original writer-lease and protected Required/CodeQL/BRAIN, fail closed if source drift.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ]
+  },
+  "failure_class": "SUPABASE_PROVIDER_MIGRATION_HISTORY_LOCK_STALE",
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "SUPABASE_PROVIDER_MIGRATION_HISTORY_LOCK_STALE",
+    "machine_enforceable": true,
+    "repeat_count": 9,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "prod_project": "adhjwmvyoixzjtmiroln",
+    "prod_provider_migrations": 800,
+    "git_executable_migrations": 800,
+    "provider_git_mismatch_count": 0,
+    "previous_lock": 791,
+    "additional_provider_confirmed_records": 9,
+    "provider_observed_at": "2026-11-04T07:43:05.326605Z",
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5389",
+    "original_failed_close_obligation_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41792476549/job/126448816641",
+    "original_protected_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5389",
+    "original_failed_full_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41792546872",
+    "native_source_only": true
+  }
+}

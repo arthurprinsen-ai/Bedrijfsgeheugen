@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "PROVIDER_APPLIED_LOCK_SOURCE_CANDIDATE",
+  "obligation_id": "website|seo-growth|forecast-expiry|20261105-v1",
+  "fingerprint": "content|stale-forecast-drives-expired-blog|20261105-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "STALE_FORECAST_NEVER_EXPIRED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 8,
+    "security_sensitive": false
+  },
+  "root_cause": "powerhouse_forecasts rows stay active after their own expected_by/horizon_end because only forecasts with a calibration obligation are ever expired. The recommendation generator filters on status active or claimed only, so the CPNL forecast (opens 6 Oct 2026) kept producing daily blogs; 8 of the last 10 daily blogs were about it and the reader-ready gate had to block them.",
+  "observed_evidence": {
+    "source": "powerhouse_forecasts (11,626 active, 3,826 past horizon on 2026-11-05), content_publication_obligations, GitHub run 42082695079 (EXPIRED_FUTURE_EVENT_CLAIM)",
+    "stale_active_forecasts": 3826,
+    "daily_blogs_on_expired_topic": 8,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "Migration 20261105190000 adds powerhouse_expire_stale_forecasts_v1 (one update: active/claimed with horizon before the Amsterdam date become expired) and one hourly pg_cron job. No change to the generator, the publisher or any gate.",
+  "prevention_rule": "Before any material PR check the exact live supabase_migrations.schema_migrations version/name sequence against executable supabase/migrations SQL and canonical migration-history.lock.json, and block on mismatch. Never invent or apply an already-applied version twice, never delete SQL, do not bypass the original protected migration preflight.",
+  "tests": [
+    "tests/brain-forecast-expiry-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-forecast-expiry-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-forecast-expiry-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-forecast-expiry-20261105.test.mjs"
+    ],
+    "invariants": [
+      "only active or claimed rows change",
+      "only status and updated_at change",
+      "no deletes",
+      "no second publisher"
+    ]
+  },
+  "open_obligation": "SQL provider migration already applied and independently listed as #810; source-lock parity is repaired on protected candidate and remains EVIDENCE_DUE until Required/CodeQL and protected merge. Original scheduled expiry job results and next natural blog freshness require their own provider/consumer readback; no assertion of visitor or revenue uplift.",
+  "reuse_guidance": "Change the expiry rule only in the migration function and its test.",
+  "provider_migration_readback": {
+    "verified_at": "2026-11-06T07:57:00Z",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 810,
+    "latest_version": "20261105190000",
+    "latest_name": "powerhouse_expire_stale_forecasts_v1",
+    "sql_source_path": "supabase/migrations/20261105190000_powerhouse_expire_stale_forecasts_v1.sql",
+    "source_lock_path": "supabase/migration-history.lock.json",
+    "source_lock_before": 809,
+    "source_lock_after": 810,
+    "provider_migration_applied": true,
+    "new_sql_execution_required": false,
+    "live_forecast_expiry_job_proven": false,
+    "next_natural_blog_safe_proven": false,
+    "customer_revenue_proven": false
+  }
+}

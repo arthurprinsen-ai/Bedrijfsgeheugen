@@ -15,7 +15,7 @@ test('configured without evidence is only ready to test',()=>{
 });
 
 test('activation requires successful safe-test evidence with an id',()=>{
-  const s=toHumanStatus({state:'ready',lastSafeTest:{ok:true,executionId:'ex-1'}});
+  const s=toHumanStatus({state:'ready',lastSafeTest:{ok:true,executionId:'ex-1',proofLevel:'PROVIDER_VERIFIED'}});
   assert.equal(s.label,'Test geslaagd');
   assert.equal(s.canActivate,true);
   const missingId=toHumanStatus({state:'ready',lastSafeTest:{ok:true}});
@@ -23,7 +23,7 @@ test('activation requires successful safe-test evidence with an id',()=>{
 });
 
 test('healthy requires real execution evidence',()=>{
-  const healthy=toHumanStatus({state:'healthy',lastExecution:{ok:true,executionId:'live-1'}});
+  const healthy=toHumanStatus({state:'healthy',lastExecution:{ok:true,executionId:'live-1',proofLevel:'PROVIDER_VERIFIED'}});
   assert.equal(healthy.label,'Actief en gezond');
   const unproven=toHumanStatus({state:'healthy'});
   assert.notEqual(unproven.label,'Actief en gezond');
@@ -35,4 +35,12 @@ test('degraded and error states always require action',()=>{
     assert.equal(s.label,'Actie nodig');
     assert.equal(s.canActivate,false);
   }
+});
+
+test('sample-only evidence is neither activatable nor live healthy',()=>{
+  const safe=toHumanStatus({state:'ready',lastSafeTest:{ok:true,executionId:'sample-1',proofLevel:'SAMPLE_ONLY'}});
+  assert.equal(safe.label,'Voorbeeldtest geslaagd');
+  assert.equal(safe.canActivate,false);
+  const notHealthy=toHumanStatus({state:'healthy',lastExecution:{ok:true,executionId:'demo-1',proofLevel:'SAMPLE_ONLY'}});
+  assert.notEqual(notHealthy.label,'Actief en gezond');
 });

@@ -1,0 +1,57 @@
+{
+  "fingerprint": "powerhouse|brain|backend-history-source-contract-drift-email-cro-editorial|20261102-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "parent_issue": 4439,
+  "related_issue": 4198,
+  "source_pr": 5252,
+  "compiler": {
+    "failure_class": "HISTORICAL_STATIC_ASSERTION_NO_LONGER_MATCHES_ORIGINAL_REFACTORED_PRODUCER",
+    "scope": "BRAIN_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original full BRAIN backend suite on 2026-11-02 PR #5252 head 8725eca24a73a3099b96b6fedf0b6f3033341040 failed 32/5358. Four failures pinned obsolete inline source tokens while the original runtime had evolved without losing protective behavior: `let editorialSystem` instead of `const`, Gmail zero-send gap delegated to original shared module, and CRO canonical proof delegated to diagnostics-aware original readback. The other 28 failures have not been reclassified or closed.",
+  "evidence": {
+    "brain_run": 41409975773,
+    "brain_total": 5358,
+    "brain_pass": 5324,
+    "brain_fail": 32,
+    "brain_skipped": 2,
+    "matched_source_proofs": [
+      "supabase/functions/powerhouse-content-orchestrator/index.ts verifies brand guide before editable editorialSystem and buyer-first guard",
+      "supabase/functions/powerhouse-autonomous-outreach/index.ts calls original outboundDeliveryGap; zero sent => health warning, external_outreach_executed=false",
+      "supabase/functions/_shared/outreach-composer-hold.mjs classifies NO_ELIGIBLE_PREPARED_EMAIL / NO_PROVIDER_CONFIRMED_EMAIL / PROVIDER_READBACK_UNVERIFIED",
+      "netlify/functions/powerhouse-cro-other-data.mjs consumes original admin-only loadOneLoopAssuranceWithDiagnostics"
+    ],
+    "production_migrations_applied": false,
+    "paid_order_proven": false,
+    "full_brain_green": false
+  },
+  "prevention": [
+    "Prefer behavior tests over obsolete inline regex when original code delegates to an audited shared helper, without removing any security/control assertion.",
+    "Explicitly assert privacy, recipient authority, provider readback, no-send warnings, original 15-loop authority and editorial source ordering after source refactors.",
+    "A focused test green is only a source-contract verification; full original BRAIN is RED until all other failing tests pass on exact protected head.",
+    "Never update historical migration locks to pretend production deployment; original provider history and trigger ACL must independently prove actual production release."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brand-learning-editorial-tdz-v1.test.mjs",
+      "tests/brain-commercial-independent-readback-p0-v1.test.mjs",
+      "tests/brain-commercial-pressure-rank-and-outbound-proof-v1.test.mjs",
+      "tests/brain-cro-one-loop-portal-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-brand-learning-editorial-tdz-v1.test.mjs",
+    "tests/brain-commercial-independent-readback-p0-v1.test.mjs",
+    "tests/brain-commercial-pressure-rank-and-outbound-proof-v1.test.mjs",
+    "tests/brain-cro-one-loop-portal-20261030.test.mjs"
+  ],
+  "owner": "Existing BRAIN backend regression authority / existing Powerhouse delivery SkillOps",
+  "release": {
+    "protected_merge": false,
+    "full_brain_pass": false,
+    "production_verified": false
+  }
+}

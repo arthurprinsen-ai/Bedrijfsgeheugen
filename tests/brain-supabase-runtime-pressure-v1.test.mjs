@@ -54,7 +54,15 @@ test('interaction telemetry cannot amplify a PostgREST outage', () => {
   assert.match(telemetry, /TELEMETRY_BREAKER_MS = 30_000/);
   assert.match(telemetry, /DATA_API_CIRCUIT_OPEN/);
   assert.match(telemetry, /DATA_API_UNAVAILABLE/);
-  assert.match(telemetry, /status: 202/);
+  // Unstored events must remain observable as an HTTP failure, never a
+  // misleading 202 acceptance with a synthetic successful write receipt.
+  assert.match(telemetry, /function degradedResponse\(origin: string, reason: string\)/);
+  assert.match(telemetry, /status: 503/);
+  assert.match(telemetry, /ok: false, opgeslagen: 0, bevestigd: 0, degraded: true, reason/);
+  assert.match(telemetry, /'x-bg-telemetry-degraded': '1'/);
+  assert.match(telemetry, /return degradedResponse\(origin, 'DATA_API_CIRCUIT_OPEN'\)/);
+  assert.match(telemetry, /return degradedResponse\(origin, 'DATA_API_UNAVAILABLE'\)/);
+  assert.doesNotMatch(telemetry, /status: 202/);
   assert.match(telemetry, /AbortSignal\.timeout\(TELEMETRY_DB_TIMEOUT_MS\)/);
   assert.doesNotMatch(telemetry, /status:\s*500/);
 });

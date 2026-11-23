@@ -2,7 +2,7 @@ import { deriveFlowState, statusLabel } from './flow-state.js?bg_explain=80ad881
 import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell, isProtectedTrustPage, hasProtectedTrustAccess } from './page-shell.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountLegacyParity } from './legacy-parity.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { DESKTOP_NAV_GROUPS } from './navigation-model.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
-import { bindPortalNavigation, navigatePortal } from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { bindPortalNavigation, navigatePortal, subscribePortalRoute } from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { groupedHubPages, hubDefinition } from './hubs.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { createScanClaimBridge } from './scan-claim-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
@@ -13,8 +13,14 @@ import { applyOverviewDashboard } from './modules/overview.js?bg_explain=80ad881
 import { renderProjectOverview } from './project-overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage, trialBannerText } from './plan-access.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountEntrepreneurHome } from './entrepreneur-home.js';
+import { mountPortalQuickSwitcher } from './quick-switcher.js';
 import { mountWinstnavigator } from './winstnavigator.js';
 import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountControlPlaneCockpit } from './control-plane-cockpit.js';
+import { mountVoiceSignalCenter } from './voice-signals.js';
+import { mountDataImport } from './data-import.js';
+import { renderImportedDataOnPage } from './imported-data-pages.js';
+import { attachExistingControlPlaneCockpit } from './control-plane-boot.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -174,21 +180,131 @@ function renderHubGroups(hubId='portal'){
 function mountCanonicalDesktopNavigation(){
  const nav=document.querySelector('.sidebar .nav');if(!nav)return;
  nav.innerHTML='';nav.classList.add('portal-single-navigation');nav.setAttribute('aria-label','Portaalnavigatie');
+ const current=new URLSearchParams(location.search).get('page')||'overzicht';
  for(const group of DESKTOP_NAV_GROUPS){
-   const section=document.createElement('section');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
-   const heading=document.createElement('h2');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
+   const section=document.createElement('details');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
+   section.open=group.pages.some(page=>page.target===current);
+   const heading=document.createElement('summary');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
    for(const page of group.pages){
      if(isProtectedTrustPage(page.target)&&!hasProtectedTrustAccess())continue;
      const button=document.createElement('button');button.type='button';
      button.dataset.navTarget=page.target;button.dataset.navGroup=group.id;button.dataset.navPage=page.id;
+     if(page.target===current){button.classList.add('active');button.setAttribute('aria-current','page');}
      button.innerHTML=`<span class="ico">${group.icon}</span><span>${page.label}</span>`;
      section.appendChild(button);
    }
    nav.appendChild(section);
  }
 }
+/* Four task-oriented shortcuts into the existing authorized V2 router. */
+function mountMobilePrimaryNavigation(){
+ if(document.querySelector('[data-portal-mobile-primary]'))return;
+ const nav=document.createElement('nav');
+ nav.className='portal-mobile-primary';
+ nav.dataset.portalMobilePrimary='v1';
+ nav.setAttribute('aria-label','Snelle mobiele navigatie');
+ for(const [target,icon,label] of [
+  ['overzicht','⌂','Vandaag'],
+  ['actieve-acties','✓','Acties'],
+  ['outcomes-evidence','◈','Resultaat'],
+  ['hub:portal','☰','Meer']
+ ]){
+  const button=document.createElement('button');
+  button.type='button';button.dataset.mobilePrimaryTarget=target;
+  if(target==='hub:portal'){
+   button.setAttribute('aria-haspopup','dialog');
+   button.setAttribute('aria-controls','allPages');
+   button.setAttribute('aria-expanded','false');
+  }
+  const symbol=document.createElement('span');
+  symbol.className='portal-mobile-primary-icon';symbol.setAttribute('aria-hidden','true');symbol.textContent=icon;
+  const caption=document.createElement('span');caption.textContent=label;
+  button.append(symbol,caption);
+  button.addEventListener('click',()=>navigatePortal(target));
+  nav.appendChild(button);
+ }
+ document.body.appendChild(nav);
+ const sync=({target})=>{
+  nav.querySelectorAll('button').forEach(button=>{
+   const selected=button.dataset.mobilePrimaryTarget===target
+    ||(button.dataset.mobilePrimaryTarget==='hub:portal'&&!['overzicht','actieve-acties','outcomes-evidence'].includes(target));
+   button.classList.toggle('is-current',selected);
+   if(selected)button.setAttribute('aria-current','page');
+   else button.removeAttribute('aria-current');
+  });
+ };
+ subscribePortalRoute(sync);
+ const params=new URLSearchParams(location.search);
+ sync({target:params.get('hub')?'hub:portal':params.get('page')||'overzicht'});
+}
+/* Preserve the entire existing overview but make the real entrepreneur action
+   primary. Move, don't clone, old content; routing, data and controls remain original. */
+function mountOverviewDepthDisclosure(){
+ const main=document.querySelector('main.main');
+ if(!main||main.querySelector('[data-portal-overview-depth]'))return;
+ // Original render subscription can execute before this disclosure mounts.
+ // Include already-rendered canonical model/management panels, in their true
+ // document order, otherwise they remain invisible outside the disclosed body.
+ // Do NOT move the single entrepreneur-facing next action or identity shell.
+ const sections=['.daily-steering','.kpis','.dashboard','.lower','.activities',
+  '[data-legacy-overview-insights]','.legacy-complete','[data-bedrijfslek-intelligence]',
+  '[data-business-journey-overview]','.dv-houder',
+  '.v2overviewcustomizer','.v2overviewcanvas',
+  // Late-mounted analytics are for optional evidence, not a second hero.
+  '[data-management-accounting-intelligence]','[data-foresight-context]',
+  '[data-pfs-host]','[data-contextual-impact-cards]'];
+ const existing=[...main.children].filter(node=>sections.some(selector=>node.matches(selector)));
+ if(!existing.length)return;
+ const details=document.createElement('details');
+ details.className='portal-overview-depth';
+ details.dataset.portalOverviewDepth='v1';
+ const summary=document.createElement('summary');
+ summary.className='portal-overview-depth-trigger';
+ const label=document.createElement('span');
+ label.textContent='Meer over mijn bedrijf';
+ const hint=document.createElement('small');
+ hint.textContent='Analyses, gegevens en hoe het werkt';
+ summary.append(label,hint);
+ const body=document.createElement('div');
+ body.className='portal-overview-depth-content';
+ details.append(summary,body);
+ existing[0].before(details);
+ for(const section of existing)body.appendChild(section);
+ details.addEventListener('toggle',()=>{
+  if(details.open)requestAnimationFrame(render);
+ });
+ const sync=({target})=>{
+  details.hidden=target!=='overzicht';
+  if(target!=='overzicht')details.open=false;
+ };
+ subscribePortalRoute(sync);
+ const params=new URLSearchParams(location.search);
+ sync({target:params.get('hub')?'hub:'+params.get('hub'):params.get('page')||'overzicht'});
+}
+// One route authority: dismissing the complete menu must never discard the
+// entrepreneur's current page. Keep only an in-memory focus/return pointer.
+let hubReturnTarget='overzicht';
+let hubOpener=null;
+let backgroundWasInert=false;
+subscribePortalRoute(({target})=>{
+ if(target&&!target.startsWith('hub:'))hubReturnTarget=target;
+});
+function syncHubTriggerState(open){
+ document.querySelectorAll('[data-mobile-primary-target="hub:portal"],#portalFullMenuToggle,#showPages').forEach(button=>
+  button.setAttribute('aria-expanded',String(open))
+ );
+}
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
+ // The specialist page lives outside .app and can remain a separate overlay.
+ // One modal at a time: dismiss its view without losing the canonical route.
+ closePortalPage();
+ if(!sheet.classList.contains('open')){
+  hubOpener=document.activeElement instanceof HTMLElement&&!sheet.contains(document.activeElement)?document.activeElement:null;
+  const background=document.querySelector('.app');
+  backgroundWasInert=Boolean(background?.inert);
+  if(background)background.inert=true;
+ }
  const definition=hubDefinition(hubId) || hubDefinition('portal');
  renderHubGroups(hubId);
  const heading=sheet.querySelector('.sheethead h3');if(heading)heading.textContent=definition.label;
@@ -196,12 +312,30 @@ function openHub(hubId){
  sheet.dataset.hub=hubId;
  sheet.classList.add('open');
  sheet.setAttribute('aria-hidden','false');
+ syncHubTriggerState(true);
+ el('closePages')?.focus({preventScroll:true});
 }
 function closeHub(){
  const sheet=el('allPages');if(!sheet)return;
+ const wasOpen=sheet.classList.contains('open');
  sheet.classList.remove('open');
  sheet.removeAttribute('data-hub');
  sheet.setAttribute('aria-hidden','true');
+ syncHubTriggerState(false);
+ if(wasOpen){
+  const background=document.querySelector('.app');
+  if(background&&!backgroundWasInert)background.inert=false;
+ }
+ hubOpener=null;
+}
+function dismissHub(){
+ const opener=hubOpener;
+ const returnTarget=hubReturnTarget;
+ closeHub();
+ navigatePortal(returnTarget,{replace:true});
+ const fallback=document.querySelector('[data-mobile-primary-target="hub:portal"]');
+ const target=opener?.isConnected&&opener.getClientRects().length?opener:fallback;
+ if(target?.getClientRects().length)target.focus({preventScroll:true});
 }
 function ensureNavigationStyles(){
  if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')==='./navigation.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a'))return;
@@ -301,6 +435,18 @@ const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({
  }
 });
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
+/*
+ * Original owner-only Control Plane must be mounted by the real app, not merely
+ * exported by a module. Same Netlify Identity/JWT and admin-API as before.
+ * The subscription clears private DOM and aborts stale reads on logout/change.
+ */
+const existingControlPlaneBoot=attachExistingControlPlaneCockpit({
+ stateClient:portalStateClient,
+ root:document,
+ fetchImpl:(...args)=>globalThis.fetch(...args),
+ mountImpl:mountControlPlaneCockpit
+});
+
 configurePortalShell({domainState:portalDomainState});
 configurePortalShell({stateClient:portalStateClient});
 // One guided entry over the existing authenticated tenant state and Brain authority.
@@ -310,8 +456,16 @@ mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClie
 mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient});
 // Close tenant-bound visual detail whenever the authenticated subject changes.
 // Do not expose user identifiers through the DOM event payload.
-let portalVisualAuthSubject=null;
+let portalVisualAuthSubject='';
+function refreshConfirmedImportedPage(){
+ const root=document.getElementById('portalView');
+ if(!root?.classList.contains('open'))return;
+ const native=root.querySelector('#pvNative');
+ if(!native)return;
+ renderImportedDataOnPage(native,{pageId:root.dataset.pageId,stateClient:portalStateClient,openPage:gatedOpenPage});
+}
 portalStateClient.subscribe(snap=>{
+ refreshConfirmedImportedPage();
  const nextVisualSubject=(snap.mode==='authenticated'||snap.mode==='empty')&&snap.user&&!portalStateClient.isDemo()
    ? String(snap.user.id||'') : '';
  if(nextVisualSubject!==portalVisualAuthSubject){
@@ -340,14 +494,17 @@ portalStateClient.subscribe(snap=>{
    navigatePortal('overzicht',{replace:true});
  }
 });
-portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
+portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});refreshConfirmedImportedPage();if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});mountVoiceSignalCenter({stateClient:portalStateClient,domainState:portalDomainState});mountDataImport({stateClient:portalStateClient,domainState:portalDomainState});
 bindPortalNavigation({
  openPage:gatedOpenPage,
  openHub,
  closeHub,
  showOverview:()=>{closePortalPage();closeHub()}
 });
+mountMobilePrimaryNavigation();
+mountPortalQuickSwitcher({stateClient:portalStateClient});
+mountOverviewDepthDisclosure();
 document.querySelectorAll('[data-open-page]').forEach(control=>{
  control.addEventListener('click',event=>{
   if(control.tagName==='A') event.preventDefault();
@@ -357,18 +514,47 @@ document.querySelectorAll('[data-open-page]').forEach(control=>{
 document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
 el('portalFullMenuToggle')?.addEventListener('click',()=>navigatePortal('hub:portal'));
 el('showPages')?.addEventListener('click',()=>navigatePortal('hub:portal'));
-el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overzicht',{replace:true})});
-el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){closeHub();navigatePortal('overzicht',{replace:true})}});
-addEventListener('keydown',e=>{if(e.key==='Escape'&&el('allPages')?.classList.contains('open')){closeHub();navigatePortal('overzicht',{replace:true})}});
+el('closePages')?.addEventListener('click',dismissHub);
+el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages'))dismissHub()});
+addEventListener('keydown',e=>{
+ const sheet=el('allPages');
+ if(!sheet?.classList.contains('open'))return;
+ if(e.key==='Escape'){e.preventDefault();dismissHub();return;}
+ if(e.key!=='Tab')return;
+ const focusable=[...sheet.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+  .filter(node=>node.getClientRects().length>0&&!node.closest('[hidden]'));
+ if(!focusable.length){e.preventDefault();el('closePages')?.focus();return;}
+ const first=focusable[0],last=focusable[focusable.length-1],active=document.activeElement;
+ if(e.shiftKey&&(active===first||!sheet.contains(active))){e.preventDefault();last.focus();}
+ else if(!e.shiftKey&&(active===last||!sheet.contains(active))){e.preventDefault();first.focus();}
+});
 addEventListener('resize',render);render();
+// One original mounted-shell signal for the parser-time boot watchdog.
+// This is shell readiness only, never an authenticated tenant/Brain receipt.
+document.documentElement.dataset.bgPortalAppBoot='ready';
+globalThis.__bgMarkPortalBootReady?.();
 // Revalidate when the user returns and every 15 minutes while the portal is
 // visible. Domain refresh rejects dirty state and never overwrites a pending ACK.
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void revalidateVisibleCustomer();});
 globalThis.addEventListener('focus',()=>void revalidateVisibleCustomer());
 globalThis.setInterval(()=>void revalidateVisibleCustomer(),PORTAL_REVALIDATION_INTERVAL_MS);
 ensureIdentityWidget().then(identity=>{
- const refreshDomainState=()=>portalDomainState.init().catch(()=>null);
+ const refreshDomainState=async()=>{
+  const before=String(portalStateClient.currentUser?.()?.id||'');
+  try{
+   await portalDomainState.init();
+   // A delayed identity hydration must not leave a valid deep-linked page
+   // hidden after the old tenant's private DOM has been revoked.
+   // Re-open through the original entitlement/security gate, and only for
+   // the same principal that just hydrated successfully.
+   const after=String(portalStateClient.currentUser?.()?.id||'');
+   if(before!==after)return;
+   const requested=new URL(location.href).searchParams.get('page');
+   const view=document.getElementById('portalView');
+   if(requested&&view?.getAttribute('aria-hidden')==='true')gatedOpenPage(requested);
+  }catch{return null;}
+ };
  identity?.on?.('login',refreshDomainState);
  identity?.on?.('logout',refreshDomainState);
- refreshDomainState();
+ void refreshDomainState();
 });

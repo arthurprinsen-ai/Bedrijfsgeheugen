@@ -9,6 +9,10 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'tools/growth-intelligence/cro-experiment-cycle.mjs': 'automation',
+  'tools/growth-intelligence/cro-experiment-cycle.test.mjs': 'automation',
+  // Exactly this security-critical root dotfile is reviewed in the protected backend lane.
+  '.gitignore': 'backend',
   'scripts/ai-model-freshness-watch.mjs': 'automation',
   'scripts/ai-model-source-probe.mjs': 'automation',
   'tests/brain-model-evidence-delivery-admission.test.mjs': 'automation',
@@ -36,6 +40,10 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tools/brain/agent-skill-execution-evidence.mjs': 'automation',
   'tests/agent-skill-execution-evidence.test.mjs': 'automation',
   'tests/brain-agent-skill-execution-evidence.test.mjs': 'automation',
+  'tools/brain/attested-agent-run-payload.mjs': 'automation',
+  'tests/brain-attested-agent-run-payload.test.mjs': 'automation',
+  'tools/brain/trusted-skill-loader.mjs': 'automation',
+  'tests/brain-trusted-skill-loader.test.mjs': 'automation',
   'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
   'tools/delivery/predictive-controller.mjs': 'automation',
   'tools/ci/netlify-ignore-build.mjs': 'backend',

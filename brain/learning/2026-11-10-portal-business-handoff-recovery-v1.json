@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-4215-server-restart-handoff-journal-20261110-v1",
+  "fingerprint": "portal|domain-state|brain-pending-memory-lost-on-restart|20261110-v1",
+  "compiler": {
+    "failure_class": "PORTAL_BRAIN_SERVER_ACK_GAP_AFTER_RESTART",
+    "scope": "PORTAL_V2_AUTHENTICATED_CUSTOMER_STATE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "createPortalDomainState tracked pending BusinessInput bindings and causal impacts only in transient Map/Array memory. The canonical customer state had been saved but after a browser reload no semantic Brain handoff generation or 50+ impacts could be recovered; the next login could show source truth without downstream acknowledgement. The original authenticated portal-state handler also trusted the browser readback sourceMeta.updatedAt for a new POST; existing Postgres timestamp gating can reject it as stale.",
+  "fix": "Persist only pending semantic binding, the immutable section answer snapshot, and all causal-impact lineage under portal.__brainHandoffJournalV1 using the original authenticated Portal State writer before downstream section calls; on authenticated init hydrate the exact user+server-tenant principal's obligations, validate binding and impacted source paths, and reuse original flush. Persist partial-ACK removal in same server state, never auto-save newer unsaved typing, preserve other principals, and exclude outbox metadata from AI-eligible PortalDomainStateSnapshot.",
+  "tests": [
+    "portal-v2/tests/portal-server-handoff-restart.test.mjs",
+    "tests/brain-portal-server-durable-replay-20261110.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-server-durable-replay-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-server-durable-replay-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-server-durable-replay-20261110.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Before the first section-level Brain handoff, persist the exact pending binding manifest and all causal impact generations to the existing tenant-guarded Portal server state.",
+    "After original Brain ACK remove only the acknowledged binding generations; persist the remaining manifest, including on partial failure.",
+    "Restore and validate only the exact authenticated principal and app_metadata tenant; never relay an older user or tenant source under current credentials.",
+    "Never treat pending server-state journal, a derived readback or source test as executed action, verified outcome, measured impact or learned decision."
+  ],
+  "owner": "Original Portal V2 runtime / ONE BRAIN issue #4215",
+  "proof_state": "SOURCE_CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "observed_evidence": {
+    "original_source": "portal-v2/domain-state.js",
+    "original_authority": "/api/portal-state and /api/portal-business-input and /api/brain-operating-loop",
+    "client_restart_replay_tests_added": true,
+    "real_authenticated_tenant_ab_proven": false,
+    "provider_delivery_end_to_end_proven": false,
+    "heartbeat_value_learning_proven": false
+  },
+  "limitations": "Cannot preserve unsaved data never accepted by the server; cross-device concurrent writes and full server-side autonomic processing when no authenticated browser session remain EVIDENCE_DUE."
+}

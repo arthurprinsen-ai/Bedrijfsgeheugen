@@ -1,0 +1,165 @@
+import {normalizeConnectorRuleSource,measurementForConnectorRule} from './connector-kpi-source.mjs';
+/**
+ * Original five-minute Powerhouse/Heartbeat runner's bounded, read-only portal
+ * signal evaluation. This is not a second scheduler, customer-state writer,
+ * provider sender, autonomous executor or proof of fresh measured KPI data.
+ */
+const METRIC_PATHS=Object.freeze({
+  revenue:'portal.metrics.revenue',ebitda:'portal.metrics.ebitda',
+  grossMargin:'portal.metrics.grossMargin',dso:'portal.metrics.dso',
+  cash:'portal.valueFinance.cash',absence:'portal.people.absence',
+  turnover:'portal.people.turnover',leadTime:'portal.metrics.performance.leadTime'
+});
+const metric=key=>Object.hasOwn(METRIC_PATHS,String(key||''))?METRIC_PATHS[key]:null;
+const finite=value=>value!==null&&value!==undefined&&value!==''&&typeof value!=='boolean'&&Number.isFinite(Number(value))?Number(value):null;
+const readPath=(state,path)=>path.split('.').reduce((item,key)=>item&&typeof item==='object'?item[key]:undefined,state);
+function normalizeServerRule(raw){
+  const sourcePath=metric(raw?.metricId),operator=String(raw?.operator||'');
+  const source=normalizeConnectorRuleSource(raw?.source,raw?.metricId);
+  if(!sourcePath||!source||!['above','below','missing'].includes(operator))return null;
+  const threshold=operator==='missing'?null:finite(raw.threshold);
+  if(operator!=='missing'&&threshold===null)return null;
+  const id=String(raw.id||'').slice(0,96);
+  if(!id||raw.enabled===false||raw.monitoring!==true)return null;
+  return {id,metricId:raw.metricId,operator,threshold,enabled:true,monitoring:true,
+    severity:['hoog','midden','laag'].includes(raw.severity)?raw.severity:'midden',
+    channels:{email:raw.channels?.email===true,push:raw.channels?.push===true},
+    source,sourcePath:source.type==='connector'?'connector:'+source.connectorId+':'+source.field:sourcePath};
+}
+function evaluatePersistedRule(rule,state,tenant,connectorMeasurements){
+  const linked=rule.source?.type==='connector'
+    ?measurementForConnectorRule(connectorMeasurements,tenant,rule):null;
+  const value=rule.source?.type==='connector'
+    ?finite(linked?.value):finite(readPath(state,rule.sourcePath));
+  const missing=value===null;
+  return {value,missing,linked,triggered:rule.operator==='missing'?missing:!missing&&
+    (rule.operator==='above'?value>rule.threshold:value<rule.threshold)};
+}
+
+
+export const PORTAL_SIGNAL_HEARTBEAT_CONTRACT='portal-voice-alert-heartbeat-v1';
+const obj=v=>v&&typeof v==='object'&&!Array.isArray(v)?v:{};
+const layerData=row=>{const p=obj(row?.payload);return Object.keys(obj(p.data)).length?obj(p.data):p;};
+const stamp=row=>String(row?.source_updated_at||row?.updated_at||'').trim();
+const safeIso=value=>{const t=Date.parse(value||'');return Number.isFinite(t)?new Date(t).toISOString():null;};
+const lower=v=>String(v||'').toLowerCase();
+async function digest(value){
+  const bytes=new TextEncoder().encode(value);
+  const hash=await globalThis.crypto.subtle.digest('SHA-256',bytes);
+  return [...new Uint8Array(hash)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+export function monitoringRuleCandidates(rows){
+  const grouped=new Map();
+  for(const row of Array.isArray(rows)?rows.slice(0,200):[]){
+    const tenant=String(row?.tenant_id||'').trim();
+    if(!tenant||tenant.length>180||!['canonical-brain','legacy-migration'].includes(row?.layer))continue;
+    const data=layerData(row);
+    const rawRules=data?.portal?.signalering?.rules;
+    const rules=Array.isArray(rawRules)?rawRules:[];
+    // Keep the newest tenant layer even when monitoring was revoked. Otherwise
+    // older stored consent could be resurrected by a stale canonical row.
+    const updated=safeIso(stamp(row));
+    if(!updated)continue;
+    const prev=grouped.get(tenant);
+    const score=Date.parse(updated);
+    if(!prev||score>prev.score||(score===prev.score&&row.layer==='canonical-brain'))
+      grouped.set(tenant,{tenant,data,rules,sourceUpdatedAt:updated,score});
+  }
+  return [...grouped.values()].filter(source=>source.rules.some(rule=>rule?.monitoring===true&&rule?.enabled!==false)).slice(0,100);
+}
+export async function planOriginalHeartbeatObservations(rows,{now=new Date().toISOString(),connectorMeasurements=new Map()}={}){
+  if(!safeIso(now))throw new Error('PORTAL_SIGNAL_CLOCK_INVALID');
+  const results=[];
+  for(const source of monitoringRuleCandidates(rows)){
+    const eligible=source.rules.slice(0,50).map(normalizeServerRule).filter(Boolean);
+    for(const event of eligible){
+      const calculated=evaluatePersistedRule(event,source.data,source.tenant,connectorMeasurements);
+      if(!calculated.triggered)continue;
+      // No database-adjacent external notification until the source's actual
+      // measurement freshness, per-recipient channel consent/suppression,
+      // original sender and independent provider readback are demonstrated.
+      const sourceRevision=calculated.linked?.sourceRevision||source.sourceUpdatedAt;
+      const identity=await digest([source.tenant,event.id,event.metricId,event.operator,event.threshold,
+        sourceRevision,event.status].join('\u001f'));
+      results.push(Object.freeze({
+        dedupeKey:'portal-signal-observation:'+identity.slice(0,48),
+        eventType:'portal_user_signal_observed',
+        tenantFingerprint:(await digest(source.tenant)).slice(0,24),
+        ruleFingerprint:(await digest(source.tenant+'|'+event.id)).slice(0,24),
+        metricId:event.metricId,
+        sourceRevision,
+        evidence:Object.freeze({
+          contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
+          metricId:event.metricId,operator:event.operator,severity:event.severity,
+          sourcePath:event.sourcePath,
+          sourceRevision,signalDetected:true,
+          sourceKind:event.source.type,connectorMeasurementRecorded:calculated.linked!==null,
+          connectorReceiptMatched:calculated.linked?.evidenceState||null,
+          userRequestedMonitoring:true,
+          requestedChannels:Object.freeze({email:event.channels.email,push:event.channels.push}),
+          sourceMeasurementFreshness:'UNKNOWN',
+          notificationDeliveryVerified:false,
+          providerMessageId:null,
+          independentOutcomeVerified:false,
+          autonomousActionExecuted:false
+        })
+      }));
+    }
+  }
+  return Object.freeze(results.slice(0,100));
+}
+export function planNotificationSafety(observation,{providerVerified=false,recipientConsent=false,
+  recipientAllowed=false,sourceFreshnessVerified=false,providerId=null}={}){
+  if(!observation?.evidence?.signalDetected)return Object.freeze({state:'NO_SIGNAL',maySend:false});
+  if(!observation.evidence.requestedChannels.email&&!observation.evidence.requestedChannels.push)
+    return Object.freeze({state:'NO_CHANNEL_OPT_IN',maySend:false});
+  if(!sourceFreshnessVerified)return Object.freeze({state:'MEASUREMENT_FRESHNESS_NOT_VERIFIED',maySend:false});
+  if(!recipientConsent||!recipientAllowed)return Object.freeze({state:'RECIPIENT_CONSENT_OR_SUPPRESSION_DUE',maySend:false});
+  if(!providerVerified||!providerId)return Object.freeze({state:'ORIGINAL_PROVIDER_READBACK_DUE',maySend:false});
+  // Eligibility is not delivery. The original authorized sender and provider
+  // still own the write, exact message ID, consumer ACK and Heartbeat outcome.
+  return Object.freeze({state:'ORIGINAL_PROVIDER_DISPATCH_APPROVAL_DUE',maySend:false});
+}
+
+
+/** Auditable tenant scans: a trigger-free scan still needs independent proof.
+ * One receipt per tenant / UTC hour / exact source revision, with no values or
+ * plaintext tenant IDs; a scan never implies source freshness or a delivery.
+ */
+export async function planOriginalHeartbeatScans(rows,{now=new Date().toISOString(),connectorMeasurements=new Map()}={}){
+  const current=safeIso(now);
+  if(!current)throw new Error('PORTAL_SIGNAL_CLOCK_INVALID');
+  const hour=current.slice(0,13);
+  const result=[];
+  for(const source of monitoringRuleCandidates(rows)){
+    const rules=source.rules.slice(0,50).map(normalizeServerRule).filter(Boolean);
+    if(!rules.length)continue;
+    const checked=rules.map(rule=>evaluatePersistedRule(rule,source.data,source.tenant,connectorMeasurements));
+    const triggeredCount=checked.filter(value=>value.triggered).length;
+    const absentCount=checked.filter(value=>value.missing).length;
+    const connectorRuleCount=rules.filter(rule=>rule.source.type==='connector').length;
+    const connectorMeasurementsMatched=checked.filter(value=>value.linked!==null).length;
+    const fingerprint=(await digest(source.tenant)).slice(0,24);
+    // Recheck in the same UTC hour when the actual connector source revision
+    // changes; otherwise the old scan dedupe could hide a newly ingested value.
+    const connectorRevisions=rules.filter(rule=>rule.source.type==='connector').map(rule=>{
+      const linked=measurementForConnectorRule(connectorMeasurements,source.tenant,rule);
+      return [rule.id,linked?.sourceRevision||'SOURCE_NOT_VERIFIED'].join(':');
+    }).sort();
+    const key=(await digest([source.tenant,source.sourceUpdatedAt,hour,...connectorRevisions].join('\\u001f'))).slice(0,48);
+    result.push(Object.freeze({
+      dedupeKey:'portal-signal-scan:'+key,
+      eventType:'portal_user_signal_scan',
+      tenantFingerprint:fingerprint,
+      sourceRevision:source.sourceUpdatedAt,
+      evidence:Object.freeze({
+        contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,checkedAt:current,sourceRevision:source.sourceUpdatedAt,
+        enabledRuleCount:rules.length,thresholdTriggersObserved:triggeredCount,missingSourceValues:absentCount,
+        connectorRuleCount,connectorMeasurementsMatched,
+        sourceMeasurementFreshness:'UNKNOWN',channelDeliveryVerified:false,
+        executedActionsVerified:false,tenantReadbackRequired:true
+      })
+    }));
+  }
+  return Object.freeze(result.slice(0,35));
+}

@@ -1,5 +1,7 @@
-import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations} from '../_shared/company-linkedin-editorial-contract.mjs';
+import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal,personalObservationalLifeContextSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {personalFirstPersonCopyViolations,isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact} from '../_shared/personal-first-person-story-gate.mjs';
+import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
+const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const PARENT_CONTRACT = 'channel-identity-hard-gate-v3';
@@ -28,14 +30,11 @@ const aliases: Record<string, string> = {
   instagram_company: 'instagram_company', instagram: 'instagram_company', [INSTAGRAM_CHANNEL]: 'instagram_company', 'bedrijfsgeheugen.nl': 'instagram_company',
 };
 
-function businessSignal(text: string) {
-  return /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|AI|data|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text);
-}
 function firstPersonSignal(text: string) {
   return /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
 }
 function personalLifeContextSignal(text: string) {
-  return /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|pakket|bezorging|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport|winkel|app|afhaalpunt|scherm|schermtijd|offline|smartphone)\b/i.test(text);
+  return /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|pakket|bezorging|printer|telefoon|laptop|robotstofzuiger|dweilrobot|dweilrobots|dweilen|waterleiding|afvoer|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport|winkel|app|afhaalpunt|scherm|schermtijd|offline|smartphone)\b/i.test(text);
 }
 function concretePersonalLifeSignal(text: string) {
   const firstPerson = firstPersonSignal(text);
@@ -61,6 +60,16 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(body.identity_contract === PERSONAL_CONTRACT, 'IDENTITY_CONTRACT_MISMATCH', 'Persoonlijk identity-contract ontbreekt.');
   require(body.identity_gate_version === PARENT_CONTRACT, 'IDENTITY_GATE_VERSION_MISMATCH', 'Parent identity-gate ontbreekt.');
   require(Array.isArray(body.source_lineage) ? body.source_lineage.length > 0 : !!body.source_lineage, 'SOURCE_LINEAGE_REQUIRED', 'Bron/evidence-lineage ontbreekt.');
+  // Unconditional post-content review. Neither an accepted article excerpt nor a
+  // founder-business claim may impersonate Arthur's own lived experience.
+  // Exact approved magazine gift must have the one direct cover-page link;
+  // keep the normal personal no-URL rule for every other source and copy.
+  if(isVerifiedPersonalMagazineGift(body))
+    require(magazineGiftLinkIsExact(text,body),'PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED','Deze exact geautoriseerde gratis magazinepost moet één correcte landingspaginalink bevatten.');
+  for(const code of personalFirstPersonCopyViolations(text,body,body.calendar_date)){
+    require(false,code,'Alleen een eigen, geverifieerd ik-verhaal uit een door Arthur aangeleverde bron mag op zijn persoonlijke profiel.');
+  }
+
 
   const builderMode = body.ai_native_builder_story_verified === true;
   const observationalMode = !builderMode && body.observational_personal_theme_verified === true;
@@ -82,7 +91,7 @@ function personalViolations(text: string, body: any, finalHash: string) {
     require(body.public_theme_source_verified === true, 'PUBLIC_THEME_SOURCE_UNVERIFIED', 'De publieke bron voor de dagelijkse observatie is niet geverifieerd.');
     require(body.first_person_claims_present === false, 'OBSERVATIONAL_MODE_FIRST_PERSON_FORBIDDEN', 'Observerende fallback mag geen eerste-persoonsclaims bevatten.');
     require(!firstPersonSignal(text), 'OBSERVATIONAL_MODE_FINAL_TEXT_FIRST_PERSON_FORBIDDEN', 'Observerende fallback bevat toch eerste-persoonstaal.');
-    require(personalLifeContextSignal(text), 'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED', 'Observerende fallback moet concreet over dagelijks leven gaan.');
+    require(personalObservationalLifeContextSignal(text), 'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED', 'Observerende fallback moet concreet over dagelijks leven gaan.');
     require(body.personal_life_topic === true, 'PERSONAL_LIFE_TOPIC_REQUIRED', 'Persoonlijk onderwerp is niet bewezen.');
     require(body.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY, 'PERSONAL_LIFE_ONLY_POLICY_REQUIRED', 'Personal-life-only policy ontbreekt of is verouderd.');
     require(body.personal_life_only_verified === true, 'PERSONAL_LIFE_ONLY_UNVERIFIED', 'Tekst is niet als uitsluitend persoonlijk leven geverifieerd.');
@@ -113,9 +122,7 @@ function personalViolations(text: string, body: any, finalHash: string) {
     out.push({ code: 'SENSITIVE_PRIVATE_DETAIL_BLOCK', message: 'Privé/sensitief detail vereist exacte goedkeuring.' });
   }
   if (!builderMode) {
-    const businessBlocked = observationalMode
-      ? /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text)
-      : businessSignal(text);
+    const businessBlocked = personalNonBuilderBusinessSignal(text,{observational:observationalMode});
     if (businessBlocked) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
     if (consultantVoiceSignal(text)) out.push({ code: 'FINAL_TEXT_CONSULTANT_VOICE_BLOCK', message: 'Uiteindelijke tekst klinkt als consultant/thought-leadership of forceert een zakelijke moraal.' });
   }
@@ -218,7 +225,37 @@ Deno.serve(async (req) => {
   const finalHash = await digest(text);
   if (!text) return json({ ok: true, can_generate: true, can_publish: false, identity_gate_decision: 'BLOCKED_IDENTITY_GATE', channel, final_text_hash: finalHash }, 200);
 
-  const identityBlockers = channel === 'linkedin_personal' ? personalViolations(text, body, finalHash) : otherIdentityViolations(channel, text, body);
+  // Independent prior-publication readback: source-proven history, not model
+  // guesses or caller-supplied pattern labels. Existing original reviewer only.
+  let personalHistory: string[] = [];
+  if(channel==='linkedin_personal'){
+    const [{data:previous,error:historyError},{data:publishedDecisions,error:decisionError}]=await Promise.all([
+      db.from('powerhouse_content_artifacts')
+        .select('run_date,body,status').eq('channel','linkedin_personal')
+        .in('status',['published','content_ready'])
+        .order('run_date',{ascending:false}).limit(30),
+      db.from('powerhouse_channel_decisions')
+        .select('run_date,state,delivery_ref').eq('channel','linkedin_personal')
+        .eq('state','published').order('run_date',{ascending:false}).limit(30)
+    ]);
+    if(historyError||decisionError)return json({ok:false,can_generate:false,can_publish:false,error:'PERSONAL_EDITORIAL_HISTORY_UNAVAILABLE',channel},503);
+    // The original artifact can remain content_ready after a provider-backed
+    // published decision. A real URN then proves eligibility as NEGATIVE style
+    // context; an unpublished draft never becomes published by inference.
+    const actualPublishedDates=new Set((publishedDecisions||[])
+      .filter((d:any)=>/^urn:li:(?:share|ugcPost):[0-9]+$/i.test(clean(d.delivery_ref)))
+      .map((d:any)=>clean(d.run_date)));
+    const currentDate=Date.parse(clean(body.calendar_date)+'T00:00:00Z');
+    personalHistory=(previous||[]).filter((p:any)=>{
+      const posted=Date.parse(clean(p.run_date)+'T00:00:00Z');
+      const age=(currentDate-posted)/86400000;
+      return Number.isFinite(age)&&age>=0&&age<=45
+        &&(p.status==='published'||actualPublishedDates.has(clean(p.run_date)));
+    }).map((p:any)=>clean(p.body)).filter(Boolean);
+  }
+  const identityBlockers = channel === 'linkedin_personal'
+    ? personalViolations(text, {...body,recentPersonalPosts:personalHistory}, finalHash)
+    : otherIdentityViolations(channel, text, body);
   let genericBlockers: any[] = [];
   if (channel === 'linkedin_company') {
     const { data: violations, error: ruleError } = await db.rpc('bg_brein_regels_check', {
@@ -266,6 +303,6 @@ Deno.serve(async (req) => {
     build_event_verified: channel === 'linkedin_personal' ? body.build_event_verified === true : null,
     personal_life_only_policy: channel === 'linkedin_personal' && body.ai_native_builder_story_verified !== true ? PERSONAL_LIFE_ONLY_POLICY : null,
     personal_life_only_verified: channel === 'linkedin_personal' ? body.personal_life_only_verified === true : null,
-    rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel === 'linkedin_company' },
+    rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel === 'linkedin_company', personal_recent_published_compared: channel === 'linkedin_personal' ? personalHistory.length : null },
   }, pass ? 200 : 422);
 });

@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|terminal|unbounded-brain-flight-history-http504|20261112-v1",
+  "obligation_id": "brain-original-flight-provider-read-504-20261112",
+  "title": "Bound original exact-head BRAIN provider flight search to the immutable PR creation date, preserving full relevant history",
+  "owner": "original ONE BRAIN / obligation-terminal-closure workflow, under #4198",
+  "root_cause": "Post-merge original terminal closure for PR #5673 failed at GitHub Actions provider flight history read: gh api --paginate --slurp fetched all historical workflow_dispatch runs from main and GitHub returned HTTP 504 at 2026-11-12T17:15:20Z. The original workflow correctly failed closed and did not dispatch or claim terminal ACK.",
+  "evidence": [
+    "Original GitHub Actions run 43267333230 job 131354324587 error BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED, HTTP 504",
+    "Original workflow .github/workflows/obligation-terminal-closure.yml full-history provider search and exact candidate title",
+    "GitHub REST documentation https://docs.github.com/en/rest/actions/workflow-runs confirms created date-time filter, pagination and maximum 1000 results for filtered searches",
+    "Original PR #5673 actual created_at 2026-11-12T17:07:05Z; a valid PR-number-specific original BRAIN verification cannot predate it",
+    "Original BRAIN flight index already checks total_count, all pages and duplicate IDs; new guard adds UTC since and search cap"
+  ],
+  "impact": "A GitHub provider read timeout stops the terminal handoff verifier even though protected code may be merged; prevents independent completion evidence, never a safe reason to mark an obligation green.",
+  "fix": "Scope the existing original GH workflow-run source read to created >= provider PR-created-at minus 10 minutes, still paginate and total-check ALL matching runs twice and reject any 1000 cap, missing pages, duplicate run identity, out-of-period source, invalid PR date or HTTP failures. Use no other executor.",
+  "prevention_rule": "Every original terminal-flight lookup is bound to independently obtained immutable PR creation time but MUST prove full pagination within that bounded provider scope before claiming absence; exact PR/head title and protected-main identity remain mandatory; provider 5xx remains red.",
+  "regression_contract": "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs",
+  "compiler": {
+    "failure_class": "GITHUB_PROVIDER_504",
+    "scope": "ONE_BRAIN_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ]
+  },
+  "outcome": "Protected source correction candidate only; no provider closure result, social measurement, client effect or revenue verified.",
+  "no_second_scheduler": true,
+  "no_unauthorized_dispatch": true
+}

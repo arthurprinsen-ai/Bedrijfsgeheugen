@@ -1,0 +1,60 @@
+{
+  "fingerprint": "powerhouse|brain|blog-export-jwt-test-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Historical combined edge-registration test asserted verify_jwt=false for every daily blog function, contradicting both protected repository config and independently read current provider metadata for service-only powerhouse-blog-export. The original exporter is protected by provider JWT, explicit service-role bearer and editorial approved_at.",
+  "prevention_rule": "Original provider and repo auth controls outrank old text fixtures. Strictly assert each function's provider-compatible JWT mode: blog-export true, blog-queue false. Preserve original internal bearer/scheduler and editorial approval checks. Never weaken exporter JWT to satisfy a stale test; run original exact-head targeted test and full original BRAIN backend after protected merge before claiming green.",
+  "owner": "Original ONE BRAIN backend regression owner + original service-only blog export security owner",
+  "evidence": {
+    "original_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41409216287",
+    "original_backend_job_id": 125158396237,
+    "total_tests": 5352,
+    "passed": 5318,
+    "failed": 32,
+    "affected_test": "tests/brain-daily-blog-edge-config-registration-v1.test.mjs",
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_readback_date": "2026-11-02",
+    "provider_versions": {
+      "powerhouse-blog-export": {
+        "version": 297,
+        "status": "ACTIVE",
+        "verify_jwt": true
+      },
+      "powerhouse-blog-queue": {
+        "version": 301,
+        "status": "ACTIVE",
+        "verify_jwt": false
+      }
+    },
+    "source_security_contract": "supabase/config.toml; supabase/functions/powerhouse-blog-export/index.ts; tests/brain-powerhouse-blog-export-security-contract.test.mjs",
+    "external_publication_effect": "NOT_CLAIMED",
+    "other_backend_failures": "OPEN",
+    "admission_failure_reproduced": {
+      "run_id": 41411528313,
+      "reason": "LEARNING_EVALUATION_TESTS_REQUIRED:shadow",
+      "correction": "add explicit shadow and canary tests for security-sensitive learning; retain original historical replay and source safeguards"
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-edge-config-registration-v1.test.mjs",
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-edge-config-registration-v1.test.mjs",
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-blog-edge-config-registration-v1.test.mjs",
+      "tests/brain-powerhouse-blog-export-security-contract.test.mjs"
+    ]
+  },
+  "fix": "Correct stale test's per-function expected verify_jwt mode and add explicit regression enforcing both provider JWT and service-only export approval guards; update original incident skill, AGENTS and human docs. No runtime, SQL, provider, publisher or scheduler changes.",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}

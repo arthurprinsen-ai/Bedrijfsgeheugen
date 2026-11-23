@@ -1,0 +1,41 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|migration-lock|data-spine-decision-receipt|20261105-v1",
+  "owner": "existing required-test migration lock gate",
+  "compiler": {
+    "failure_class": "MIGRATION_APPLIED_BUT_NOT_IN_LOCK",
+    "scope": "SUPABASE_MIGRATION_LOCK",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "PR #5450 merged migration 20261105134200 and it was applied to the provider, but the lock stayed at 807 entries while the provider had 808. preflight failed on every open PR (#5457, #5458, #5461).",
+  "prevention_rule": "Provider count equals lock count; a migration applied to the provider is added to the lock in the same change. The existing PR gate enforces this.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Provider schema_migrations count 808; lock applied list 807 on main 7feda38"
+    ],
+    "current": [
+      "Six lock tests pass with 808 entries"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_DEPLOYED",
+  "fingerprint": "powerhouse|bg-experimentcyclus|anthropic-to-openai-owner-migration|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "failure_class": "ORIGINAL_AI_PROVIDER_MIGRATION_DEBT",
+  "owner": "original-bg-experimentcyclus-cro-agent",
+  "evidence": {
+    "original_source": "Supabase original Edge bg-experimentcyclus v8",
+    "runtime_sha256": "950b7ce0ce75b127ca89d01df959ad4347b418b7168e99d553212dfd5c0faa20",
+    "original_use_case": "supabase-bg-experimentcyclus-v1",
+    "original_provider": "Anthropic",
+    "owner_authorization": "OWNER_DIRECTIVE_20261103_ALL_AI_INFERENCE_VIA_OPENAI"
+  },
+  "root_cause": "Original experiment-CRO AI provider still uses Anthropic and is not aligned to the explicit OpenAI-only owner directive.",
+  "fix": "Use original Edge code from deployed source, preserve pg experiment scoring and human approval, switch model to governance-approved OpenAI only, force named voorstel function schema and validate actual measured page and minimum sample.",
+  "prevention_rule": "Agent must verify original approved ACTIVE use case provider on every model call and reject cross-provider fallback or invented experiment outcomes; exact provider source and natural input must prove real results before green.",
+  "tests": [
+    "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ],
+    "invariants": [
+      "one source owner and one scheduler",
+      "no provider bypass",
+      "minimum viable sample",
+      "source-only measured pages",
+      "protected exact full BRAIN/CodeQL",
+      "independent original provider readback"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "ORIGINAL_AI_PROVIDER_MIGRATION_DEBT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected merge, specific AI use-case handover, original Supabase exact deploy and source-effect readback; do not call a no-candidate cycle an AI model success."
+}

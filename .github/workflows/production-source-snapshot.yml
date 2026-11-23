@@ -277,7 +277,7 @@ jobs:
             oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
             test -n "$oidc_token"
             bridge_body="$(mktemp)"
-            bridge_http="$(curl -sS --max-time 20 -o "$bridge_body" -w '%{http_code}' -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge" || true)"
+            bridge_http="$(curl -sS --max-time 60 -o "$bridge_body" -w '%{http_code}' -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge" || true)"
             bridge_json="$(cat "$bridge_body")"
             if [ "$bridge_http" != "200" ]; then
               bridge_error="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.error||"bridge_unavailable"))}catch{process.stdout.write("bridge_unavailable")}' "$bridge_json")"

@@ -1,0 +1,70 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|janitor-archive-sweep|tag403-circuit-reset-on-existing-tag-readback|20261103-v1",
+  "obligation_id": "github|janitor-archive-sweep|tag403-circuit-reset-on-existing-tag-readback|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333",
+  "parent_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "status": "PROTECTED_CANDIDATE_AWAITING_NATIVE_READBACK",
+  "owner": "existing-powerhouse-github-delivery-janitor",
+  "severity": "P1_OPERATIONAL_INTEGRITY",
+  "root_cause": "The old breaker counted consecutive archive failures and reset after any verified existing archive tag. In the original postmerge native run, that allowed six distinct new-tag HTTP403 permission errors even though a three-strike provider guard was expected.",
+  "native_evidence": {
+    "run_id": 41599769122,
+    "job_id": 125797041084,
+    "main_sha": "c58a4d5290938b0ea7b911aa5ff5aaf6e32e6f6c",
+    "observed_tag_create_403_count": 6,
+    "branch_inventory_total": 747,
+    "probe_window_size": 60,
+    "processed_branch_count": 15,
+    "source_job_status": "FAILURE_TRUTHFUL",
+    "incident_issue_comment": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333#issuecomment-6598485601",
+    "brain_occurrence_id": "github-actions:janitor-archive:run:41599769122:attempt:1:signal:archive_provider_failure",
+    "brain_independent_readback": true,
+    "source_tag_permission_verified": false
+  },
+  "fix": "Maintain a monotonic per-run budget of native CREATE_ARCHIVE_TAG HTTP403 permission denials independent of intervening successful exact-SHA tag readbacks; terminate all further provider API calls at three; record total and circuit-open flag in existing native source artifact.",
+  "tests": [
+    "tests/brain-branch-archive-sweep.test.mjs",
+    "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-archive-sweep.test.mjs",
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-branch-archive-sweep.test.mjs",
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-branch-archive-sweep.test.mjs",
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "protected_head_required": true,
+    "codeql_required": true,
+    "original_postmerge_run_required": true,
+    "brain_provider_dual_readback_required": true,
+    "portal_browser_readback_required_for_portal_green": true
+  },
+  "skills": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "unresolved": [
+    "Actual GitHub POST git/refs 403 integration auth in #5333",
+    "Native GitHub ghost queued 0-job records in #4655",
+    "Distinct drift sampling in #4914",
+    "Authorized incident rendering in portal #4547"
+  ],
+  "global_green_allowed": false,
+  "failure_class": "ARCHIVE_TAG_CREATE_403_CIRCUIT_RESET_AFTER_EXISTING_TAG_READBACK",
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "ARCHIVE_TAG_CREATE_403_CIRCUIT_RESET_AFTER_EXISTING_TAG_READBACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NO_TAG_CREATE_403_CIRCUIT_RESET_WITHIN_RUN_NO_FOURTH_DENIED_POST. Keep the original archive job red on denied writes, keep exact unique branches untouched until a provider-authorized matching tag exists, and retain original GitHub incident + ONE BRAIN dual reporting/readback without duplication."
+}

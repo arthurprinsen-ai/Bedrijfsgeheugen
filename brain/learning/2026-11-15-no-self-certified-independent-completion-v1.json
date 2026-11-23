@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|self-certified-independent-obligations-complete|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "SELF_CERTIFIED_INDEPENDENT_OBLIGATIONS_COMPLETE_PROOF",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The outcome runtime automatically minted accepted=true,independent=true,exactProduction=true OBLIGATIONS_COMPLETE whenever evaluateCompletion reported only that missing evidence, using caller-supplied materialObligations (including []). This treated the claimant's own assertion as independent closure evidence and could promote supervisor LIVE_VERIFIED without distinct material source readback.",
+  "evidence": {
+    "observed_at_utc": "2026-11-15T11:14:50Z",
+    "native_provider_project": "adhjwmvyoixzjtmiroln",
+    "source_table": "public.brain_outcome_obligation_evidence",
+    "matched_historical_rows": 328,
+    "source_min_utc": "2026-09-16T17:37:35Z",
+    "source_max_utc": "2026-09-25T10:52:36Z",
+    "source_predicate": "evidence_type=OBLIGATIONS_COMPLETE AND metadata.producer=OUTCOME_OBLIGATION_RUNTIME AND independent=true AND accepted=true AND exact_production=true",
+    "original_file": "tools/outcome-obligation-runtime.mjs",
+    "original_function": "createOutcomeObligationRuntime.evaluateOne",
+    "independent_production_side_effect_proven_for_all_328": false,
+    "proof_of_all_historical_fraud": false,
+    "historical_records_mutated": false,
+    "regression": "tests/brain-outcome-obligation-runtime.test.mjs"
+  },
+  "prevention": {
+    "original_executor_only": true,
+    "self_attestation_removed": true,
+    "supervisor_decision_remains_nonindependent": true,
+    "do_not_infer_source_evidence_from_empty_array": true,
+    "caller_supplied_VERIFIED_does_not_mean_independent": true,
+    "original_composite_identity_required": true,
+    "no_bulk_history_rewrite": true,
+    "no_new_scheduler": true,
+    "no_database_migration": true
+  },
+  "semantic_learning": {
+    "failure": "RUNTIME_MINTED_ITS_OWN_INDEPENDENT_COMPLETION_PROOF",
+    "cause": "Self-attested accepted exact-production OB_COMPLETE from caller-supplied material status",
+    "prevention_rule": "Runtime never inserts independent OB_COMPLETE; keep supervisor required_evidence and wait for original independent material producer readback with source-bound candidate and production identities.",
+    "regression_guard": "tests/brain-outcome-obligation-runtime.test.mjs",
+    "next_owner": "Existing agent-reliability and independent agent-data-quality / original ONE BRAIN #171",
+    "effect_proof": "PENDING_PROTECTED_RELEASE_AND_INDEPENDENT_CONSUMER_RECHECK"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outcome-obligation-runtime.test.mjs",
+      "tests/brain-completion-supervisor.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-outcome-obligation-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outcome-obligation-runtime.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}

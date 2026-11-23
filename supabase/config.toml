@@ -2,9 +2,9 @@ project_id = "bedrijfsgeheugen"
 
 [functions.powerhouse-blog-export]
 enabled = true
-verify_jwt = false
+verify_jwt = true
 entrypoint = "./functions/powerhouse-blog-export/index.ts"
-# Approved read-only source; no provider write.
+# Confidential blog export: service JWT plus explicit publication approval required.
 
 [functions.powerhouse-blog-queue]
 enabled = true
@@ -53,6 +53,14 @@ entrypoint = "./functions/powerhouse-social-publisher/index.ts"
 enabled = true
 verify_jwt = true
 entrypoint = "./functions/social-recovery-runner/index.ts"
+
+[functions.powerhouse-relationship-public-research]
+# Original #116 source-only relationship research, never an email sender.
+# Protected-main Supabase GitHub Integration is the only production Edge writer.
+# Public JWT bypass remains guarded by original x-powerhouse-token service auth.
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-relationship-public-research/index.ts"
 
 [functions.powerhouse-mira-problem-radar]
 enabled = true
@@ -201,3 +209,55 @@ entrypoint = "./functions/bg-trial-lifecycle-mail/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-benchmark-intake/index.ts"
+
+[functions.bg-bedrijfsprofiel]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/bg-bedrijfsprofiel/index.ts"
+
+# Existing scheduler-token-protected external intelligence producer; register the
+# function for protected-main Git deployment and provider source parity.
+# The entrypoint validates x-powerhouse-token before performing any work;
+# preserve the currently deployed verify_jwt=false (no browser auth bypass).
+[functions.bg-externe-signalen]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-externe-signalen/index.ts"
+
+# Existing canonical browser-side, privacy-minimal CRO telemetry receiver.
+# This function already runs publicly with provider verify_jwt=false: browser
+# requests do not carry Supabase JWTs. Preserve its exact existing auth mode.
+# Edge code enforces allowed origins, consent for detailed events, strict data
+# shape/limits, idempotent database UID writes and 503 on database failure.
+# This declaration is required by protected Supabase Edge Production Authority.
+[functions.bg-interactie]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-interactie/index.ts"
+
+# Existing daily Kansenradar: release-manifest parity with deployed v12.
+# Provider verify_jwt=false is preserved; the original cron now sends a
+# scheduler token that the Edge source verifies BEFORE service-role operations.
+# No public invocation, second scheduler, new provider or OAuth bypass.
+[functions.bg-kansenradar]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-kansenradar/index.ts"
+ 
+# Original DataForSEO producer: protected-main release parity for the EXISTING
+# scheduler-token-protected Edge function, no new cron, sender or service.
+# Preserve native deployed verify_jwt=false; entrypoint validates the original
+# x-powerhouse-token before service-role provider/cache work.
+[functions.powerhouse-dataforseo-intelligence]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-dataforseo-intelligence/index.ts"
+
+# Original GA4/Data Spine collection via existing pg_cron #42 and bg_roep_functie.
+# Preserve verified production verify_jwt=false: original private
+# x-powerhouse-token (Vault) is checked in Edge BEFORE provider work.
+# This declaration enables protected-main production deployment/parity.
+[functions.bg-analytics-sync-composio]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-analytics-sync-composio/index.ts"

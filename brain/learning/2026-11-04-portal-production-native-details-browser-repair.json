@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CODE_CANDIDATE_NOT_LIVE",
+  "fingerprint": "portal|ux|production-dom-progressive-disclosure-parity|20261104-v1",
+  "owner": "original Portal V2 UX/QA and protected release",
+  "compiler": {
+    "failure_class": "PORTAL_DOM_READBACK",
+    "scope": "PRODUCTION_BROWSER",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The original overview and company/adoption renderer used main.insertBefore with a dashboard anchor that had become a nested direct child of native details; 3 original renderers violated direct-child DOM precondition. Two old browser tests also clicked closed canonical nav groups, one expected a redundant old mobile hamburger.",
+  "prevention_rule": "DOM insertion must target actual anchor.parentElement after progressive disclosure; never claim portal green on Netlify READY without real source-matched Playwright production results. Browser tests must open canonical desktop details/mobile More and verify real model content, touch and routes.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-production-progressive-dom-readback-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-production-progressive-dom-readback-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-production-progressive-dom-readback-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41804876350",
+      "11 passed, 4 failed, 1 skipped on published Portal SHA 481fbf260896cdb961b45204013214bf363fb044"
+    ],
+    "current": [
+      "Native source insert-before parent uses anchor.parentElement||main; original browser spec actually interacts with collapsed desktop/mobile and validates company/adoption details",
+      "CODE_CANDIDATE; original production browser acceptance pending exact deployed readback"
+    ]
+  },
+  "actions": [
+    "Fix original overview.js two DOM insertions",
+    "Fix original legacy-overview-complete.js one DOM insertion",
+    "Update four original Playwright integration specs for native disclosures without removing capability assertions",
+    "Add source and browser regression for the real original failures",
+    "Update original Portal UX skill and human ledger"
+  ],
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_MERGE_AND_ORIGINAL_BROWSER"
+}

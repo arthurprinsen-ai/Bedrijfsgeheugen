@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE",
+  "obligation_id": "bg-bedrijfsnieuws-tavily-fout-20261029",
+  "fingerprint": "powerhouse|external-enrichment-silent-failure|bg-bedrijfsnieuws-tavily-432-zero-hits-20261029-v1",
+  "compiler": {
+    "failure_class": "EXTERNAL_ENRICHMENT_SILENT_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Tavily HTTP 432 (plan limiet) werd door bg-bedrijfsnieuws als leeg resultaat gelezen; geen treffers en groen bewijs.",
+  "prevention": "Elke externe HTTP-aanroep controleert r.ok en gooit TAVILY_<status> bij een fout; de run stopt met REMOTE.",
+  "evidence": {
+    "tests": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "Fix in code; niet gedeployed; geen run tijdens Tavily-limiet."
+  },
+  "limitations": [
+    "Geen deploy in deze PR",
+    "Geen run tijdens de Tavily-limiet"
+  ]
+}

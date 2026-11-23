@@ -7,6 +7,9 @@ on:
     - cron: '45 5 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   visual-density:
     runs-on: ubuntu-24.04 # Pin for Playwright 1.55 OS support

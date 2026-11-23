@@ -1,0 +1,7 @@
+# Development ledger: 2026-11-01 original Mira source recall, P0 #5232
+
+- Original canonical callback pg_net request 18176 delivered HTTP 200, but original JSON reported `ok=false SOURCE_RECOVERY_DUE`, `NO_FRESH_PUBLIC_PROBLEM_SIGNAL`; 5 sources stored, 4 eligible, all 5 **personal**, 0 new valid Mira source. Five empty DataForSEO news search tasks. Provider raw tavily 52, 7 news results, source contract collision 1, errors none.
+- Source table had 323 signals, 89 eligible, 12 dated eligible, exactly 2 PH-P-scene contract eligible, both historical/reused, zero 1 Nov original daily winners.
+- The existing six Mira business queries for 1 Nov are being shortened **without adding any new provider search slot**: knowledge transfer, spreadsheets, duplicate entry, project overwork, margin and staffing. The original personal queries, story truth, provider news source publication timestamps and PH-P approved scenes stay unchanged.
+- Current status CODE CANDIDATE; not provider delivery. Regression test added to original Mira suite; machine Brain learning remains candidateOnly; human runbook at `docs/changes/2026-11-01-p0-mira-source-news-recall-repair.md`; original source ownership `powerhouse-mira-problem-radar-v1` with active cron #120.
+- Required, BRAIN, CodeQL, protected merge, production Edge runtime parity, original on-demand source outcome and external Instagram provider proof remain independent acceptance gates. Never report an empty source radar as a green daily publication.

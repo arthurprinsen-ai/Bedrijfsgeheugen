@@ -1,0 +1,104 @@
+{
+  "contract": "original-social-first-time-right-prepublish-v1",
+  "version": 1,
+  "owner": "original-powerhouse-content-loop",
+  "publisher": "original-powerhouse-social-publisher",
+  "scheduler": 140,
+  "preparation_mode": "prepare_only",
+  "final_mode": "publish_only",
+  "required_order": [
+    "verified_source",
+    "original_content",
+    "original_media",
+    "independent_early_review",
+    "original_provider_authorization",
+    "ready_for_final_recheck",
+    "independent_final_review",
+    "original_uniqueness_and_capability",
+    "single_provider_create",
+    "provider_readback",
+    "measure",
+    "learn"
+  ],
+  "requirements": {
+    "linkedin_personal": [
+      "original founder/observational source",
+      "independent editorial PASS",
+      "nonduplicate",
+      "valid exact provider authorization",
+      "3000 character limit"
+    ],
+    "linkedin_company": [
+      "verified dated business source",
+      "editorial PASS",
+      "unique business story",
+      "authorized organization",
+      "measured link"
+    ],
+    "instagram": [
+      "frozen single daily source",
+      "producer claim",
+      "1080x1920 native video",
+      "start,middle,end identity >=0.940",
+      "exact SHA media",
+      "caption/scene source agreement",
+      "original provider rights"
+    ],
+    "blog": [
+      "verified source dates",
+      "real editorial release",
+      "protected Required/BRAIN/CodeQL merge",
+      "exact Netlify live URL readback"
+    ]
+  },
+  "safety": [
+    "preparation never issues or consumes publication capability",
+    "preparation never calls provider create",
+    "nonready social channel skips provider send, other channels and source recovery continue",
+    "final mode revalidates all independent gates",
+    "ACK never causes resend",
+    "no bypass of consent, identity, uniqueness or protected branch",
+    "no new writer, cron or duplicate system"
+  ],
+  "status_contract": {
+    "prepared": "ready_for_final_recheck is not a provider post or a publication guarantee",
+    "blocked": "same original source owner repairs next hourly run",
+    "live": "independent exact provider ID readback only"
+  },
+  "target": "For every scheduled business day all four channels must obtain independent provider/public live proof. Goal, not a promise; every missing proof is a durable, same-owner recovery obligation.",
+  "channel_closure": {
+    "linkedin_company": {
+      "ready": "unique source, original reviewer PASS, company OAuth, measured CTA",
+      "result": "immutable share URN plus independently verified provider content",
+      "when_not_ready": "original company editorial/source owner repairs next regular run without duplicate"
+    },
+    "linkedin_personal": {
+      "ready": "authentic personal source and existing owner authorization, exact SHA and duplicate gates",
+      "result": "immutable original person share URN plus independently authorized GET exact id, author and copy",
+      "when_ack_without_get": "never re-send, original provider reconciling owner checks original account and scope; record restricted provider boundary and demand real authorization if needed"
+    },
+    "instagram": {
+      "ready": "frozen day winner plus source-led Mira producer claim, original cost/asset/media checks, exact 1080x1920 SHA, Mira face >=0.940 at start/middle/end",
+      "result": "original Meta/Composio media ID and permalink independently exact-readback",
+      "when_waiting_asset": "original Mira producer claims existing job, creates/validates genuinely suitable media with already-approved capacity and no repeated rejected source or weakened gate"
+    },
+    "blog": {
+      "ready": "fresh primary-date source, reader-ready copy, genuinely authorized editorial release",
+      "result": "protected GitHub build, merge, Netlify public article URL and exact public content readback",
+      "when_no_approval": "original editorial approver checks content and uses approved release channel, never writes synthetic approved_at"
+    }
+  },
+  "life_cycle": {
+    "before_generation": "source novelty/facts/permissions/previous incident fingerprint",
+    "before_deadline": "original owner prepares content/review/media and repairs bounded failures",
+    "before_send": "exact hash, actual provider permissions, idempotency and final independent review",
+    "after_send": "independent exact provider ID/URL readback; if ACK-only reconcile never resend",
+    "after_proof": "measure reach/leads/orders only from verified sources; learn and apply prevention on next content"
+  },
+  "alert_and_prevention": {
+    "on_missing": "write actual source observation to original ONE BRAIN and Heartbeat; assign existing channel owner; rerun bounded corrective path on next original scheduler #140; do not disable scheduler or alternate publisher",
+    "on_technical_failure": "source-level prevention, regression and protected release with independent runtime readback",
+    "human_boundary": "request real consent/editorial authorization without inventing it",
+    "green_assertion": "all expected channels independently LIVE_PROVEN, exact timestamp/id/URL/author/content and measured proof; false-green prohibited"
+  }
+}

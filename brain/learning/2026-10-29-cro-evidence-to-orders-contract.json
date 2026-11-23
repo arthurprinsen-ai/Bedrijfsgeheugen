@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE",
+  "fingerprint": "cro|evidence-to-orders|telemetry-reconciliation|20261029-v1",
+  "obligation_id": "cro-evidence-to-orders-policy-20261029",
+  "failure_class": "CRO_TELEMETRY_EVENT_RECEIPT_DISPARITY",
+  "root_cause": "Observed production age/skew differs between page_view and page_exit after live website instrumentation; the exact upstream failure cause is not yet proven. Do not infer no real conversions from missing telemetry.",
+  "observed_evidence": {
+    "source": "private ONE BRAIN existing incident powerhouse|growth-drain|historical-queued-not-attempted|v1 version 2",
+    "public_technical_reference": "GitHub issues #4446 and #4900 and merged PR #5096",
+    "raw_customer_data_in_repository": false,
+    "production_receipts_not_yet_verified": true
+  },
+  "fix": "Formalize source-to-durable-event receipts, cohort quality, optional consent-safe CRO forms/popups/WhatsApp and existing one-writer protected release plus experiment readback.",
+  "prevention_rule": "Never promote CRO success or calculate 0% conversion from missing/stale client events; qualify bot/cohort/source, require persistent write ACK, bounded experiments and independent paid outcome evidence.",
+  "production_proven": false,
+  "privacy_sensitive": false,
+  "compiler": {
+    "failure_class": "CRO_TELEMETRY_EVENT_RECEIPT_DISPARITY",
+    "scope": "CRO_ANALYTICS_QUALITY",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-seo-conversion-orders-v1.test.mjs"
+  ],
+  "terminal_rule": "This change is a policy+skill+regression candidate only; true live requires protected exact-main release and an observed production/browser plus durable event/order readback."
+}

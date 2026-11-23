@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|cro|heartbeat-readonly-adapter-not-wired-to-runtime-and-portal|20261030-v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "owner": "existing powerhouse-commercial-heartbeat-runner, ONE BRAIN and Portal V2 Andere data",
+  "parent_pr": 5177,
+  "root_cause": "PR #5177 introduced seven deterministic evidence gates only in the unused Node adapter. The original Supabase Heartbeat runner did not feed or write a live CRO readback, and the existing owner-only Andere data API did not query the canonical Brain record.",
+  "observed_evidence": {
+    "production": "Supabase 2026-10-30 08:05 UTC commercial cron #116 succeeded, original runtime multiplex #171 succeeded, but no evidence of seven-gate application.",
+    "observed_cta_events_7d": 0,
+    "linked_qualified_lead_records_30d": 0,
+    "recorded_provider_order_references_30d": 0,
+    "cohort": {
+      "matured_treatment": 1,
+      "matured_holdout": 0,
+      "minimum_per_arm": 20
+    },
+    "last_main_proof": "PR #5177 merged; legacy BG211 delivery-disabled not reenabled"
+  },
+  "fix": "After original authorized Edge Heartbeat completes, select the original CRO service-only evidence views; idempotently upsert OBSERVED verification with all seven gates into existing canonical brain_records; independently read the durable record. Existing admin-only Andere data fetches same tenant-scoped Brain record and shows seven gates with truth-preserving commercial status.",
+  "prevention_rule": "Source-only adapter/PR is not live use. Every CRO-commercial patch requires original natural Heartbeat invocation, exact durable Brain readback, authenticated portal projection, tenant isolation, and independent customer/order/payment proof; no fake green, new scheduler, BG211 bulk replay or inferred revenue.",
+  "regression_contract": "Run replay and canary tests against actual owner Edge code, canonical Brain source, and admin-only Andere data. Missing/stale/malformed evidence and positive aggregate counts must not promote business outcomes.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-commercial-runtime-portal-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-commercial-runtime-portal-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-commercial-runtime-portal-20261030.test.mjs",
+    "tests/portal-cro-other-data.test.mjs"
+  ],
+  "production_proven": false,
+  "next_proof": [
+    "Exact-head protected Required + BRAIN + CodeQL",
+    "protected GitHub main merge",
+    "original Supabase Edge production version matches exact merged source",
+    "natural original heartbeat publishes canonical Brain record",
+    "readback same record after commit",
+    "admin portal two-tenant authentication and source status",
+    "independent real treatment/holdout, lead/order and applied learning before business GREEN"
+  ]
+}

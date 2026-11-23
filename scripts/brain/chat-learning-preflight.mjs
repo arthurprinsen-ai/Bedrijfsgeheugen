@@ -3,6 +3,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildExecutionPacketV2, classifyTask } from './powerhouse-fast-execution.mjs';
+import { reconcileIncidentObligations } from '../../brain/observability/incident-obligation-assurance.mjs';
+import { auditFailureBacklog } from '../../brain/observability/failure-backlog-assurance-v1.mjs';
 import { buildSkillProjectionIndex, verifySkillProjectionIndex, selectSkillProjection, buildSkillSourceManifest, selectSkillSourceManifest } from './powerhouse-skill-projection.mjs';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
@@ -12,6 +14,7 @@ const FAST_DEVELOPMENT_V2_ENTRYPOINT = 'scripts/brain/powerhouse-fast-execution.
 const UNIVERSAL_COMPLETION_POLICY_SOURCE = 'config/powerhouse-universal-completion-v1.json';
 const UNIVERSAL_INGRESS_POLICY_SOURCE = 'config/powerhouse-universal-ingress-v1.json';
 const SKILL_PROJECTION_INDEX_SOURCE = 'brain/skills/powerhouse-learning-skill-index-v1.json';
+const INCIDENT_SELF_FIX_POLICY_SOURCE = 'brain/policies/powerhouse-incident-register-and-self-fix-v1.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'config/branch-delivery-ownership-guard.json',
   'config/powerhouse-engineering-os.json',
@@ -25,6 +28,7 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/policies/live-completion-learning-contract-v1.json',
   'brain/policies/powerhouse-agent-continuity-v1.json',
   'brain/policies/powerhouse-universal-agent-learning-writeback-v1.json',
+  INCIDENT_SELF_FIX_POLICY_SOURCE,
   'brain/contracts/resource-intelligence-v1.json',
   'docs/brain/learning-plane-authority-contract-v1.md',
   'brain/policies/chat-to-brain-completeness-v1.json',
@@ -137,6 +141,115 @@ function validateUniversalIngressPolicy(policy) {
   });
 }
 
+export function evaluateIncidentSelfFix({ rootDir, policy }) {
+  if (!policy || policy.type !== 'POWERHOUSE_INCIDENT_REGISTER_SELF_FIX_POLICY') throw new Error('incident self-fix policy missing or wrong type');
+  if (policy.version !== 'POWERHOUSE-INCIDENT-REGISTER-SELF-FIX-v1') throw new Error(`unsupported incident self-fix policy version: ${policy.version ?? 'missing'}`);
+  if (policy.fingerprint !== 'agents-skills-register-and-self-fix-v1') throw new Error('incident self-fix fingerprint drift');
+  if (policy.status !== 'ACTIVE' || policy.default_enabled !== true || policy.fail_closed !== true) throw new Error('incident self-fix policy must be ACTIVE, default enabled and fail-closed');
+  if (typeof policy.scope !== 'string' || !/agents/i.test(policy.scope) || !/skills/i.test(policy.scope)) throw new Error('incident self-fix scope does not cover agents and skills');
+  const protocol = policy.skill_protocol ?? {};
+  if (typeof protocol.marker !== 'string' || !protocol.marker) throw new Error('incident self-fix skill marker is missing');
+  if (protocol.new_skills_must_carry_marker !== true) throw new Error('incident self-fix must require the marker on new skills');
+  if (!Array.isArray(policy.reserved_for_owner) || policy.reserved_for_owner.length === 0) throw new Error('incident self-fix reserved owner decisions are missing');
+  if (!Array.isArray(policy.loop_debt_baseline)) throw new Error('incident self-fix loop debt baseline is missing');
+  const backlog = policy.failure_backlog_assurance_v1;
+  if (backlog?.status !== 'ACTIVE_READ_ONLY_CONTRACT'
+    || backlog?.entrypoint !== 'brain/observability/failure-backlog-assurance-v1.mjs'
+    || backlog?.authority !== 'public.brain_failure_registry'
+    || backlog?.if_missing_data !== 'SOURCE_COVERAGE_UNVERIFIED_NOT_GREEN'
+    || !Array.isArray(backlog.required_closure) || backlog.required_closure.length < 7
+    || !Array.isArray(backlog.forbidden) || backlog.forbidden.length < 6)
+    throw new Error('INCIDENT_BACKLOG_ASSURANCE_POLICY_DRIFT');
+  const audit = policy.incident_reporting_audit;
+  if (audit?.required !== true || audit?.version !== 'ONE_BRAIN_INCIDENT_REPORTING_ASSURANCE-v1'
+    || audit?.entrypoint !== 'brain/observability/incident-obligation-assurance.mjs'
+    || audit?.source_coverage_without_provided_evidence !== 'NOT_ATTESTED_NOT_GREEN'
+    || !Array.isArray(audit.rules)
+    || !['NO_SILENT_FAILURE:PROVIDER_EVENT_MUST_HAVE_CANONICAL_RECEIPT','UNREPORTED_PROVIDER_FAILURE_IS_AN_INCIDENT','NO_FIXED_WITHOUT_REGRESSION_AND_INDEPENDENT_PROVIDER_READBACK','NO_PARALLEL_SCHEDULER_OR_REGISTRY'].every(value => audit.rules.includes(value)))
+    throw new Error('INCIDENT_REPORTING_ASSURANCE_POLICY_DRIFT');
+  const runtimePath = normalizeSourcePath(rootDir, audit.entrypoint);
+  if (!fs.existsSync(runtimePath.absolute)) throw new Error('INCIDENT_REPORTING_AUDITOR_MISSING');
+
+  const lean = policy.continuous_lean_loop;
+  const expectedStages = ['MEASURE','ANALYZE','HYPOTHESIZE','PRIORITIZE','IMPLEMENT','VERIFY','LEARN','REMEASURE'];
+  if (!lean || lean.required !== true) throw new Error('LEAN_LOOP_POLICY_MISSING');
+  if (JSON.stringify(lean.stages) !== JSON.stringify(expectedStages)) throw new Error('LEAN_LOOP_STAGE_DRIFT');
+  if (lean.one_authority_only !== true || lean.one_existing_heartbeat_cadence_only !== true || lean.exclusive_writer_per_obligation !== true) throw new Error('LEAN_LOOP_PARALLEL_AUTHORITY_FORBIDDEN');
+  for (const key of ['cycle','event','memory','incident','improvement_candidate','data_source_registry','source_observations','site_measurements','commercial_outcomes']) {
+    if (typeof lean.canonical_tables?.[key] !== 'string' || !lean.canonical_tables[key].startsWith('public.')) throw new Error('LEAN_LOOP_CANONICAL_AUTHORITY_MISSING:' + key);
+  }
+  if (!Array.isArray(lean.required_material_action_evidence) || lean.required_material_action_evidence.length < 12) throw new Error('LEAN_LOOP_EVIDENCE_INCOMPLETE');
+  if (!Array.isArray(lean.daily_questions) || lean.daily_questions.length !== 4) throw new Error('LEAN_LOOP_QUESTIONS_INCOMPLETE');
+  if (!Array.isArray(lean.hard_gates) || !lean.hard_gates.includes('NO_SUCCESS_WITHOUT_INDEPENDENT_OUTCOME_EVIDENCE')) throw new Error('LEAN_LOOP_PROOF_GATE_MISSING');
+  if (typeof lean.data_gap_rule !== 'string' || !lean.data_gap_rule.includes('UNKNOWN is not ZERO')) throw new Error('LEAN_LOOP_MISSING_DATA_GUARD');
+  const runtime = lean.runtime_evidence_contract_v1;
+  if (!runtime || runtime.required !== true || runtime.authority !== 'EXISTING_ONE_BRAIN_POWERHOUSE_HEARTBEAT_EXCLUSIVE_WRITER')
+    throw new Error('AGENT_RUNTIME_EVIDENCE_AUTHORITY_MISSING');
+  const requiredSets = {
+    actor_kinds: ['sql_process','agent','human','external_provider'],
+    agent_provenance_required: ['agent_id','skill_version','obligation_or_correlation_id','tenant_scope','source_and_freshness','event_time','evidence_ref'],
+    data_quality_states: ['FRESH_VERIFIED','STALE','MISSING','INVALID','CONFLICT','UNVERIFIED'],
+    invariant_guards: ['NEVER_CONFLATE_SQL_EVENTS_WITH_AGENT_ACTIONS','UNKNOWN_IS_NOT_ZERO','NO_RETROACTIVE_FABRICATED_ATTRIBUTION','NO_PARALLEL_SCHEDULER_OR_LEARNING_STORE','NO_DUPLICATE_EXTERNAL_EFFECT','NO_UNAUTHORIZED_EXTERNAL_EGRESS','NO_UNVERIFIED_GREEN']
+  };
+  for (const [key, expected] of Object.entries(requiredSets)) {
+    if (!Array.isArray(runtime[key]) || expected.some(item => !runtime[key].includes(item)))
+      throw new Error('AGENT_RUNTIME_EVIDENCE_CONTRACT_DRIFT:' + key);
+  }
+  for (const key of ['scope','stage_evidence_required','data_gap_recovery','always_record','human_documentation_and_portal','improvement_priorities','experiment_guardrails']) {
+    if (!Array.isArray(runtime[key]) || runtime[key].length < 5)
+      throw new Error('AGENT_RUNTIME_EVIDENCE_CONTRACT_INCOMPLETE:' + key);
+  }
+  if (!runtime.deployment_gate?.includes('independent production readback'))
+    throw new Error('AGENT_RUNTIME_EVIDENCE_FALSE_GREEN_FORBIDDEN');
+
+  const skillsRoot = normalizeSourcePath(rootDir, '.agents/skills');
+  const names = fs.existsSync(skillsRoot.absolute)
+    ? fs.readdirSync(skillsRoot.absolute).filter(name => fs.existsSync(path.join(skillsRoot.absolute, name, 'SKILL.md'))).sort()
+    : [];
+  const baseline = new Set(policy.loop_debt_baseline);
+  const withProtocol = [];
+  const loopDebt = [];
+  const violations = [];
+  for (const name of names) {
+    const raw = fs.readFileSync(path.join(skillsRoot.absolute, name, 'SKILL.md'), 'utf8');
+    if (raw.includes(protocol.marker)) { withProtocol.push(name); continue; }
+    if (baseline.has(name)) loopDebt.push(name); else violations.push(name);
+  }
+  if (violations.length) throw new Error(`INCIDENT_PROTOCOL_MISSING_ON_NEW_SKILL:${violations.join(',')}`);
+  const edgeProtocol = policy.edge_function_protocol;
+  if (!edgeProtocol || edgeProtocol.marker !== protocol.marker || edgeProtocol.new_functions_must_carry_marker !== true || !Array.isArray(edgeProtocol.loop_debt_baseline)) throw new Error('INCIDENT_EDGE_PROTOCOL_POLICY_INVALID');
+  const functionsRoot = normalizeSourcePath(rootDir, 'supabase/functions');
+  const functionNames = fs.existsSync(functionsRoot.absolute)
+    ? fs.readdirSync(functionsRoot.absolute).filter(name => name !== '_shared' && fs.existsSync(path.join(functionsRoot.absolute, name, 'index.ts'))).sort()
+    : [];
+  const edgeBaseline = new Set(edgeProtocol.loop_debt_baseline);
+  const edgeWithProtocol = [];
+  const edgeDebt = [];
+  const edgeViolations = [];
+  for (const name of functionNames) {
+    const raw = fs.readFileSync(path.join(functionsRoot.absolute, name, 'index.ts'), 'utf8');
+    if (raw.includes(edgeProtocol.marker)) { edgeWithProtocol.push(name); continue; }
+    if (edgeBaseline.has(name)) edgeDebt.push(name); else edgeViolations.push(name);
+  }
+  if (edgeViolations.length) throw new Error(`INCIDENT_PROTOCOL_MISSING_ON_NEW_EDGE_FUNCTION:${edgeViolations.join(',')}`);
+  return Object.freeze({
+    fingerprint: policy.fingerprint,
+    version: policy.version,
+    status: policy.status,
+    failClosed: true,
+    policySource: INCIDENT_SELF_FIX_POLICY_SOURCE,
+    marker: protocol.marker,
+    incident_reporting_audit: Object.freeze({ required: true, entrypoint: audit.entrypoint, proof_required: [...audit.required_closure], source_coverage_without_provided_evidence: audit.source_coverage_without_provided_evidence }),
+    lean_loop: Object.freeze({ required: true, stages: [...lean.stages], evidence_fields: [...lean.required_material_action_evidence], data_gap_rule: lean.data_gap_rule, runtime_evidence: Object.freeze({ fingerprint: runtime.fingerprint, authority: runtime.authority, provenance_fields: [...runtime.agent_provenance_required], data_quality_states: [...runtime.data_quality_states], production_enforcement: 'UNVERIFIED_UNTIL_RUNTIME_PROVIDER_READBACK' }), limits: lean.enforcement_limit }),
+    reservedForOwner: [...policy.reserved_for_owner],
+    skills_total: names.length,
+    skills_with_protocol: withProtocol.length,
+    loop_debt: Object.freeze({ count: loopDebt.length, skills: loopDebt }),
+    edge_functions: Object.freeze({ total: functionNames.length, with_protocol: edgeWithProtocol.length, loop_debt: Object.freeze({ count: edgeDebt.length, functions: edgeDebt }), limit: edgeProtocol.limit }),
+    not_covered_yet: policy.enforcement?.not_covered_yet ?? null
+  });
+}
+
 export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = null, maxBytes = null, executionContext = {} } = {}) {
   const preflightStarted = nowMs();
   const contractLocation = normalizeSourcePath(rootDir, contractPath);
@@ -159,6 +272,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   let fastDevelopmentV2Policy = null;
   let universalCompletionPolicy = null;
   let universalIngressPolicy = null;
+  let incidentSelfFixPolicy = null;
   let sourceBytes = Buffer.byteLength(contractRaw, 'utf8');
   while (queue.length) {
     const requested = queue.shift();
@@ -176,6 +290,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
       if (normalized === FAST_DEVELOPMENT_V2_SOURCE) fastDevelopmentV2Policy = parsed;
       if (normalized === UNIVERSAL_COMPLETION_POLICY_SOURCE) universalCompletionPolicy = parsed;
       if (normalized === UNIVERSAL_INGRESS_POLICY_SOURCE) universalIngressPolicy = parsed;
+      if (normalized === INCIDENT_SELF_FIX_POLICY_SOURCE) incidentSelfFixPolicy = parsed;
       collectSignals(parsed, signals);
       if (Array.isArray(parsed.linked_learning_sources)) for (const linked of parsed.linked_learning_sources) {
         if (typeof linked !== 'string' || !linked.trim()) throw new Error(`invalid linked_learning_sources entry in ${normalized}`);
@@ -200,6 +315,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   if (!fs.existsSync(ingressEntrypoint.absolute)) throw new Error(`missing universal-ingress entrypoint: ${universalIngress.runtimeEntrypoint}`);
   const ingressCompletionEntrypoint = normalizeSourcePath(rootDir, universalIngress.completionEntrypoint);
   if (!fs.existsSync(ingressCompletionEntrypoint.absolute)) throw new Error(`missing universal-ingress completion entrypoint: ${universalIngress.completionEntrypoint}`);
+  const incidentSelfFix = evaluateIncidentSelfFix({ rootDir, policy: incidentSelfFixPolicy });
   const skillIndexLocation = normalizeSourcePath(rootDir, SKILL_PROJECTION_INDEX_SOURCE);
   if (!fs.existsSync(skillIndexLocation.absolute)) throw new Error(`missing skill projection index: ${SKILL_PROJECTION_INDEX_SOURCE}`);
   const skillIndexManifest = JSON.parse(fs.readFileSync(skillIndexLocation.absolute, 'utf8'));
@@ -279,6 +395,15 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     telemetry,
     universalCompletion,
     universalIngress,
+    incident_self_fix: {
+      ...incidentSelfFix,
+      reporting_audit: reconcileIncidentObligations(executionContext.incidentEvidence || {}),
+      failure_backlog_audit: (() => {
+        const {obligations, ...summary} = auditFailureBacklog(executionContext.failureRegistryEvidence || {});
+        // Internal raw fingerprints never leave the preflight report.
+        return {...summary, actionable_count: Array.isArray(obligations) ? obligations.length : 0};
+      })()
+    },
     skill_projection: {
       status: 'READY',
       fingerprint: skillProjectionIndex.fingerprint,

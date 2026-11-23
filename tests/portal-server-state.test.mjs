@@ -54,3 +54,22 @@ test('stored projection rehydrates only current verified user identity',()=>{
  const s=portalProjectionToState(p,{id:'u2',email:'b@x.nl',name:'B',roles:['viewer']});
  assert.equal(s.user.email,'b@x.nl');assert.equal(s.company.name,'A');assert.equal(s.sourceMeta.kind,PORTAL_LAYERS.LEGACY);
 });
+
+test('authenticated writes refresh source clock on server, never trusting stale or future caller metadata',async()=>{
+ let saved=null;
+ const store={get:async()=>null,put:async(_tenant,projection)=>{saved=projection;return {stored:true,record:projection}}};
+ const h=createPortalStateHandler({
+  getUser:async()=>({id:'u1',app_metadata:{tenantId:'tenant-a'}}),
+  store,now:()=> '2026-11-10T13:00:00.000Z'
+ });
+ for(const claimed of ['2026-01-01T00:00:00.000Z','2099-01-01T00:00:00.000Z']){
+  const r=await h(new Request('https://example.test/api/portal-state',{method:'POST',
+   headers:{'content-type':'application/json'},
+   body:JSON.stringify({sourceMeta:{updatedAt:claimed},portal:{__brainHandoffJournalV1:{version:1,byPrincipal:{}}}})}));
+  assert.equal(r.status,200);
+  assert.equal(saved.tenantId,'tenant-a');
+  assert.equal(saved.sourceUpdatedAt,'2026-11-10T13:00:00.000Z');
+  assert.equal(saved.data.sourceMeta.updatedAt,'2026-11-10T13:00:00.000Z');
+  assert.equal(saved.data.portal.__brainHandoffJournalV1.version,1);
+ }
+});

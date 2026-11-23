@@ -1,0 +1,11 @@
+# Development Ledger — Signed tenant proof incident correction, 2026-10-29
+
+- **Obligation:** `portal|production-authenticated-tenant-claim-persistence|20261029-v1`
+- **Owner:** canonical repo owner `arthurprinsen-ai` / existing Portal-authenticated production proof.
+- **Incident:** [#5118](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5118); baseline protected main `eead20219269341e1933bd33d3a10c7bf2ad43e9`, Netlify provider deploy `6ae370a59cc60cf4ee32e9d1` READY; actual production readback #40909428921 failure `IDENTITY_TENANT_CLAIM_MISMATCH` 30 times.
+- **Cause not yet verified:** temporary Netlify Identity app_metadata not represented on signed JWT. No evidence of cross-customer data leakage; test aborted before querying tenant payloads.
+- **Safe corrective hypothesis:** use official `admin.getUser` after create; for only this newly created synthetic user, `admin.updateUser` if admin-owned tenant claim missing; verify from provider again before password grant. Then require strict provider-issued JWT subject and signed tenant claim plus two separate authenticated tenant requests and cleanup. No insecure fallback.
+- **Source:** `platform/api/portal-authenticated-production-proof-core.mjs`; regression tests `tests/portal-authenticated-production-proof.test.mjs` and canonical 3-mode security evaluation `tests/brain-portal-identity-tenant-claim-canonical-20261029.test.mjs`.
+- **Learning:** `brain/learning/2026-10-29-portal-identity-tenant-claim-recovery-v1.json`; exact incident fingerprint `portal|production-auth|jwt-tenant-claim-mismatch|20261029`.
+- **Release rule:** use existing PR #5139 through native Required, BRAIN learning evaluation, CodeQL, protected main and exact GitHub→Netlify production commit/provider proof. Only mark production tenant proof `PROVEN` after two authenticated isolated tenants pass on exact deploy; before then keep claim open and no fake green.
+- **Regression/lifecycle:** repeat-safe unique PR and original writer lease, bounded recovery budget, negative cases preserve 401/403/wrong-tenant fail closed, cleanup always checked. If this repair does not solve actual provider claims, report real typed blocker and pursue a new evidence-based fix, never waive controls.

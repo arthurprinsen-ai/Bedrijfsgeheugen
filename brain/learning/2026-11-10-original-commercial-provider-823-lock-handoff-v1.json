@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "fingerprint": "commercial|provider-history|source-wait-original-trigger-provider-823-lock-handoff|20261110-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_COMMERCIAL_PROVIDER_APPLIED_SOURCE_WAIT_LOCK_DRIFT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "Original protected commercial PR #5583 merged real 20261110134500 SQL and Supabase applied the exact function migration, while original repo immutable migration history lock still recorded 822 instead of 823. This left another source-only mismatch blocking strict protected Portal PR #5581 after main advanced.",
+  "fix": "Compare all existing 822 source lock pairs with all 823 actual independently returned production migrations and supabase_migrations.schema_migrations exact last name, amend only original applied lock to include the exact registered 20261110134500_original_source_wait_is_not_send_v1, and strengthen original historical parity regression to cover both original commercial migrations. Preserve exact provider ACL, no new DDL or send/retry worker.",
+  "prevention": [
+    "Original commercial provider migration deployment must include independent post-apply exact version+name readback and a protected same-source lock reconciliation handoff before unrelated PRs need their migration history tests.",
+    "Never claim a merged candidate source SQL applied; only provider migrations and live function evidence authorize immutable history append.",
+    "On a new main merge, compare all changed source paths and provider version/lock parity; do not overwrite other executors or weaken protected gates.",
+    "Future original source-WAIT changes may not invent sent provider IDs, skip without independent source or send without explicit consent."
+  ],
+  "tests": [
+    "tests/brain-commercial-applied-provider-lock-20261110.test.mjs",
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-applied-provider-lock-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-applied-provider-lock-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-applied-provider-lock-20261110.test.mjs"
+    ]
+  },
+  "owner": "Original Growth & Revenue OS / ONE BRAIN #4198",
+  "observed_evidence": {
+    "observed_at": "2026-11-10T13:17:39.187581Z",
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 823,
+    "previous_lock_count": 822,
+    "only_new_version": "20261110134500",
+    "only_new_name": "original_source_wait_is_not_send_v1",
+    "old_count_verified": 822,
+    "original_source_sql": "supabase/migrations/20261110134500_original_source_wait_is_not_send_v1.sql",
+    "provider_applied_verified": true,
+    "source_only_pr_not_production_verified": true
+  }
+}

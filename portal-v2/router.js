@@ -20,7 +20,11 @@ function updateActiveState(target){
   document.querySelectorAll('[data-nav-target]').forEach(button=>{
     const active=button.dataset.navTarget===target;
     button.classList.toggle('active',active);
-    if(active) button.setAttribute('aria-current','page'); else button.removeAttribute('aria-current');
+    if(active){
+      button.setAttribute('aria-current','page');
+      const group=button.closest('details.portal-single-nav-group');
+      if(group)group.open=true;
+    }else button.removeAttribute('aria-current');
   });
 }
 

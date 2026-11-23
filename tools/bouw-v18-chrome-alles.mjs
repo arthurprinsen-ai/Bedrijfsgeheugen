@@ -64,7 +64,11 @@ function padVan(bestand) {
 
 // het kruimelpad van de pagina zelf overnemen; anders er een afleiden
 function kruimelsVan(html, bestand) {
-  const blok = html.match(/<nav class="bgkruim"[^>]*>([\s\S]*?)<\/nav>/);
+  // Commercial integration pages historically carried a stale AI breadcrumb before
+  // their canonical Koppelingen breadcrumb. Prefer the final page-owned trail.
+  const trails = [...html.matchAll(/<nav class="bgkruim"[^>]*>([\s\S]*?)<\/nav>/g)];
+  const integrationOwner = new Set(['exact-online-koppeling.html', 'twinfield-koppeling.html', 'api-koppeling-laten-maken.html']).has(bestand);
+  const blok = integrationOwner ? trails.at(-1) : trails[0];
   if (blok) {
     const schakels = [...blok[1].matchAll(/<a href="([^"]+)"[^>]*>([\s\S]*?)<\/a>|<span aria-current="page">([\s\S]*?)<\/span>/g)]
       .map(m => m[3] !== undefined
@@ -156,7 +160,8 @@ for (const p of v18Paginas) {
   if (!home.includes('v18-speels')) {
     home = home.replace('</head>', SPEELS_CSS + '\n</head>');
     home = home.replace('</main>', VERTREK + '</main>');
-    home = home.replace('</body>', LEK + '\n' + EXTRA_HTML + '\n' + SPEELS_JS + '\n' + INTERACTIE_JS + '\n</body>');
+    // rust (besluit 17 nov): de gele LEK-teller staat alleen op /frisse-blik en /prijzen, niet op de homepage
+    home = home.replace('</body>', EXTRA_HTML + '\n' + SPEELS_JS + '\n' + INTERACTIE_JS + '\n</body>');
   }
   if (!home.includes('"@type":"Organization"')) {
     home = home.replace('</body>', ORGANISATIE_SCHEMA + '\n</body>');
@@ -182,7 +187,33 @@ for (const p of v18Paginas) {
   background:radial-gradient(120% 90% at 12% 0%,rgba(80,120,255,.34),transparent 60%),
              linear-gradient(180deg,rgba(7,26,60,.66),rgba(7,26,60,.92))!important}
 </style>`;
-    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n' + BEWEGING_CSS + '\n' + blauw + '\n</head>');
+    // Rituals-richting stap 2 (besluit Arthur 17 nov 2026): de hero ademt rust en
+    // exclusieve begeerte. Alleen ritme, ruimte en hiërarchie: geen nieuwe kleur,
+    // geen inhouds- of routewijziging. De gele woordmarkering stond alleen in de
+    // mobiele media-query; op desktop werd .mark als logo-blokje getekend.
+    const rituals = `<style id="v18-home-rituals">
+section.hero-video.hero-inspiration .hero-video-content{padding:clamp(64px,10vh,112px) 0 clamp(48px,8vh,88px)!important}
+section.hero-video.hero-inspiration .hero-copy{max-width:40rem}
+section.hero-video.hero-inspiration h1{font-size:clamp(2.2rem,4vw,3.5rem)!important;line-height:1.12!important;letter-spacing:-.03em!important;font-weight:600!important;max-width:15em!important;text-wrap:balance}
+section.hero-video.hero-inspiration h1 .mark{display:inline!important;width:auto!important;height:auto!important;min-width:0!important;background:none!important;background-image:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important;margin:0!important;color:#FFE86B!important;transform:none!important;position:static!important}
+section.hero-video.hero-inspiration h1 .mark::before,section.hero-video.hero-inspiration h1 .mark::after{content:none!important;display:none!important}
+section.hero-video.hero-inspiration .hero-kicker{background:none!important;border-color:rgba(255,255,255,.22)!important;margin-bottom:1.6rem!important}
+section.hero-video.hero-inspiration .handline{font-family:inherit!important;font-size:.82rem!important;font-weight:600!important;letter-spacing:.14em!important;text-transform:uppercase;opacity:.78;margin:1.2rem 0 1.4rem!important}
+section.hero-video.hero-inspiration .handline::after{display:none!important}
+section.hero-video.hero-inspiration .hero-sub{max-width:34rem!important;font-size:1.04rem!important;line-height:1.7!important;color:rgba(255,255,255,.84)!important}
+section.hero-video.hero-inspiration .hero-sub strong{font-weight:600!important;color:inherit!important}
+section.hero-video.hero-inspiration .hero-video-actions{gap:1.4rem 1.6rem!important;align-items:center!important}
+section.hero-video.hero-inspiration .hero-secondary{background:none!important;border:0!important;box-shadow:none!important;padding:.4rem 0!important;min-height:0!important;color:rgba(255,255,255,.88)!important;text-decoration:underline;text-underline-offset:.3em;text-decoration-thickness:1px}
+section.hero-video.hero-inspiration .hero-video-actions>p{flex:0 0 100%;max-width:34rem;margin:.4rem 0 0!important;font-size:.86rem!important;line-height:1.6!important;color:rgba(255,255,255,.7)!important}
+section.hero-video.hero-inspiration .hero-video-actions>p strong{font-weight:600!important}
+section.hero-video.hero-inspiration .hero-note,section.hero-video.hero-inspiration .hero-example-switch{opacity:.7}
+section.hero-video.hero-inspiration .hero-scroll-cue{opacity:.6}
+section.hero-video.hero-inspiration .hero-economics .hero-metric{background:none!important;border:0!important;border-left:1px solid rgba(255,255,255,.16)!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important}
+section.hero-video.hero-inspiration .hero-economics .hero-metric strong{font-weight:600!important}
+section.hero-video.hero-inspiration .magnetic{transition:transform .6s cubic-bezier(.2,.6,.2,1),background-color .45s,color .45s,opacity .45s!important}
+@media(prefers-reduced-motion:reduce){section.hero-video.hero-inspiration .magnetic{transition:none!important;transform:none!important}}
+</style>`;
+    home = home.replace('</head>', INHOUD_CSS + '\n' + VRAAG_CSS + '\n' + CONTEXT_CSS + '\n' + BEWEGING_CSS + '\n' + blauw + '\n' + rituals + '\n</head>');
     home = home.replace('</body>', RING + '\n' + VRAAG_JS + '\n' + CONTEXT_JS + '\n' + BEWEGING_JS + '\n</body>');
     home = maakBeweeglijk(home);
   }
@@ -208,6 +239,67 @@ if (fouten.length) {
   const voet = voorbeeld.match(/<footer[\s\S]*?<\/footer>/);
   if (kop) await writeFile('.github/canoniek/kop.html', kop[0], 'utf8');
   if (voet) await writeFile('.github/canoniek/voet.html', voet[0], 'utf8');
+}
+
+// Rituals-richting stap 6 (besluit Arthur 17 nov 2026: rust en exclusieve begeerte
+// voor site en portaal; energie en humor blijven voor social). Eén stille laag
+// over alle binnenpagina's: lichtere kop, kleine hoofdletter-labels, haarlijnen
+// in plaats van schaduwen, trage overgangen. Alleen vorm, ritme en toon; geen
+// tekst, route of gedrag verandert. Pagina's zonder .inhoud-kop blijven ongemoeid.
+{
+  const ritualsBinnen = `<style id="v18-binnen-rituals">
+.inhoud-kop{padding:clamp(104px,12vw,132px) 0 clamp(48px,6vw,68px)!important}
+.inhoud-kop::after{background:linear-gradient(180deg,rgba(7,26,60,.5),rgba(7,26,60,.86))!important}
+.inhoud-kop h1{font-size:clamp(2rem,4.2vw,3.1rem)!important;font-weight:600!important;line-height:1.12!important;letter-spacing:-.02em!important;max-width:24ch!important;margin:12px 0 16px!important}
+.inhoud-kop .intro{font-size:clamp(1rem,1.5vw,1.1rem)!important;line-height:1.7!important;color:rgba(255,255,255,.74)!important;max-width:58ch!important}
+.inhoud-kop .hero-kicker{font-size:11px!important;font-weight:500!important;letter-spacing:.22em!important;text-transform:uppercase;color:rgba(255,255,255,.7)!important}
+.inhoud-kop .hero-kicker span{box-shadow:none!important;opacity:.7}
+.inhoud-kop video{filter:brightness(.5) saturate(.8)!important}
+.inhoud-kruim{border-bottom:1px solid rgba(15,23,42,.08)!important}
+.inhoud-kruim nav{font-size:12.5px;letter-spacing:.02em}
+.inhoud-body .bgx-vraagbalk,.inhoud-body .bgx-bereik,.inhoud-body .kaart,.inhoud-body .tegel{box-shadow:none!important;border:1px solid rgba(15,23,42,.1)!important;transition:border-color .5s ease,background-color .5s ease!important}
+.inhoud-body .kaart:hover,.inhoud-body .tegel:hover{border-color:rgba(15,23,42,.28)!important;transform:none!important}
+.inhoud-body .bgx-kop{font-weight:500!important;letter-spacing:.2em!important}
+.inhoud-body h2{font-weight:600!important;letter-spacing:-.015em!important}
+.inhoud-body .knop,.inhoud-body .btn{transition:background-color .5s ease,border-color .5s ease,color .5s ease!important;box-shadow:none!important}
+@media(max-width:700px){.inhoud-kop h1{font-size:clamp(1.75rem,8vw,2.1rem)!important}}
+@media(prefers-reduced-motion:reduce){.inhoud-body *{transition:none!important}}
+</style>`;
+  for (const pad of await allePaginas()) {
+    let h = await readFile(pad, 'utf8');
+    if (!h.includes('inhoud-kop') || h.includes('v18-binnen-rituals')) continue;
+    h = h.replace('</head>', ritualsBinnen + '\n</head>');
+    await writeFile(pad, h, 'utf8');
+  }
+}
+
+// Rituals-belevenis (besluit Arthur 17 nov 2026): één gelinkt stylesheet met
+// zelf gehoste Fraunces + Instrument Sans, papieren kop, boogvormig videoraam,
+// stille cookiekaart. Alleen vorm; tekst, routes en gedrag blijven gelijk.
+{
+  // Megamenu-contract (V18): menulinks blijven zwart en vet. Inline, omdat
+  // het gelinkte stylesheet in de browsercheck van productie komt en dus nog niet de
+  // nieuwste versie heeft; zo klopt het contract op dezelfde build.
+  const megamenuContract = '<style data-rb-megamenu>html body header.v17-header a[data-bg-megamenu-link][href],html body header.v17-header a[data-bg-megamenu-link][href] *{color:#000!important;font-weight:700!important}html body header.v17-header :is(.mega,.bgkop-paneel) h3:not([data-bg-megamenu-heading]){color:#fff!important;font-weight:700!important}</style>';
+  const link = '<link rel="stylesheet" href="/assets/rituals-belevenis.css?v=20261118q">' + megamenuContract;
+  for (const pad of await allePaginas()) {
+    let h = await readFile(pad, 'utf8');
+    if (!h.includes('</head>') || h.includes('rituals-belevenis.css')) continue;
+    h = h.replace('</head>', link + '\n</head>');
+    await writeFile(pad, h, 'utf8');
+  }
+}
+
+// Rituals-beleving: interactielaag (onthulling bij scrollen, ademmoment, zachte
+// overgangen). Alleen presentatie; zonder JS blijft alles gewoon zichtbaar.
+{
+  const script = '<script src="/assets/rituals-beleving.js?v=20261118o" defer></script>';
+  for (const pad of await allePaginas()) {
+    let h = await readFile(pad, 'utf8');
+    if (!h.includes('</body>') || h.includes('rituals-beleving.js')) continue;
+    h = h.replace('</body>', script + '\n</body>');
+    await writeFile(pad, h, 'utf8');
+  }
 }
 
 // De losse bouwstenen onder components/ zijn fragmenten, geen pagina's. Ze

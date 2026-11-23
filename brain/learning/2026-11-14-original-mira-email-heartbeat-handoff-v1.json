@@ -1,0 +1,104 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|original|instagram-email-heartbeat-source-consumer-delivery-proof-gap|20261114",
+  "failure_class": "PROVIDER_OUTPUT_GAP_NOT_ROUTED_AS_SINGLE_ORIGINAL_HEARTBEAT_OWNER_RECEIPT",
+  "root_cause": "The single original daily content handoff (#171) knows Instagram 2026-11-14 is PLANNED/OVERDUE_PUBLICATION and the original Gmail composer (#116) knows its prepared original action awaits a real source, but the existing original Heartbeat #140 lacks one explicit same-day, two-channel exact-source-and-provider delivery receipt. Instagram had no current same-day Mira source lineage or media job, 12/13 November ended FAILED without provider ID, and the connected OpenArt workspace had zero available generation credits. The original Gmail source retry is safely recorded, but no new authorized provider-verified email was sent today. Cron succeeded and provider preflight OK do not prove a publish or sent message.",
+  "evidence": {
+    "observed_on": "2026-11-14",
+    "timezone": "Europe/Amsterdam",
+    "original_cron_116_active": true,
+    "original_cron_140_active": true,
+    "original_brain_171_active": true,
+    "instagram_20261114": {
+      "status": "PLANNED",
+      "external_id": null,
+      "media_jobs": 0,
+      "source_lineage_rows": 0,
+      "brain_state": "OPEN",
+      "brain_stage": "OVERDUE_PUBLICATION"
+    },
+    "instagram_20261113": {
+      "status": "FAILED",
+      "last_error": "SILENT_PUBLICATION_FAILURE",
+      "external_id": null
+    },
+    "instagram_20261112": {
+      "status": "FAILED",
+      "last_error": "SILENT_PUBLICATION_FAILURE",
+      "external_id": null
+    },
+    "openart": {
+      "workspace_plan": "Plus",
+      "available_credits": 0,
+      "project_canGenerate_flag": "true means only project capability, not funded production"
+    },
+    "gmail_20261114": {
+      "new_verified_sends": 0,
+      "original_action_state": "waiting",
+      "source_feedback": "NO_VERIFIED_SOURCE_RETRY",
+      "original_consumer_receipt": true
+    },
+    "provider_preflight": "OK is not Gmail recipient/content readback",
+    "linkedin_20261114": {
+      "personal": "LIVE_PROVEN",
+      "company": "LIVE_PROVEN"
+    },
+    "native_migration_before": 856,
+    "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "mira_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232"
+  },
+  "repair": "Add a bounded source-only health and receiver handoff to the EXISTING public.powerhouse_commercial_intelligence_heartbeat_v1(date) executed hourly by original cron #140. Source fidelity: exact tenant/date Instagram obligation, original #171 BRAIN consumer ACK source revision, media job and Mira source lineage counts, explicit provider_ID/canonical_url/live/proof gate. Gmail: exact original prepared/waiting count, ID/recipient-authorized provider verified sends by original executed day, exact DataForSEO NO_SOURCE original owner ACK and next due. Store one structured original_daily_mira_email_handoff in the existing immutable daily commercial heartbeat event and its return payload. The side-effect code and original writers remain unchanged, no new scheduler, sender, table, media asset or provider API call.",
+  "prevention": [
+    "Never mark media posted from PLANNED/cron-success; require canonical source, media asset, independent Instagram provider ID/readback and current original BRAIN ACK.",
+    "Never mark email sent from SMTP/Composio preflight, composer draft, DataForSEO source candidate, or consumer NO_SOURCE ACK; require lawful original recipient, provider ack and independent Gmail readback.",
+    "Use one bounded original Heartbeat recipient receipt, exact day/revision/provider and explicit next owner; do not spawn a second scheduler to remedy missing output.",
+    "Distinguish missing original Mira source lineage and media job from verified OpenArt capacity shortage. Confirm connected billing-scope credits before generation; zero-credit account must never trigger unfunded paid retries or unauthorized substitutions.",
+    "Keep original publisher executor active, existing face match 0.940, topic quality, source freshness and media proof; do not republish on uncertain provider side effect.",
+    "Keep original #116 research due_at unchanged. Retry only when due, no same action double send and no fake daily-mail quota.",
+    "After protected merge and provider-native migration readback, require the next natural #140 event showing both lanes with their own states; only provider-verified sends and posts count as LIVE."
+  ],
+  "owner": "Original Powerhouse #140 Heartbeat observer, #171 content publisher and BRAIN original ACK, #116 sole Gmail composer and sender, existing original Mira media router",
+  "status": "PR_CANDIDATE_NOT_LIVE_YET",
+  "compiler": {
+    "failure_class": "PROVIDER_OUTPUT_GAP_NOT_ROUTED_AS_SINGLE_ORIGINAL_HEARTBEAT_OWNER_RECEIPT",
+    "scope": "COMMERCIAL_CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-mira-email-heartbeat-handoff-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-mira-email-heartbeat-handoff-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-mira-email-heartbeat-handoff-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-mira-email-heartbeat-handoff-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migrations/20261114161000_original_daily_mira_email_heartbeat_handoff_v1.sql",
+    "tests/brain-original-mira-email-heartbeat-handoff-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-mira-email-heartbeat-handoff-v1.json",
+    "docs/changes/2026-11-14-original-mira-email-heartbeat-handoff-v1.md",
+    "docs/development-ledger-events/2026-11-14-original-mira-email-heartbeat-handoff-v1.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",
+    "AGENTS.md"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required+BRAIN+CodeQL+hosted Supabase preview exact-HEAD followed by protected merge.",
+    "Native Supabase migration version/name, original #140 function ACL and pg_get_functiondef exact delivery receipt, source-lock append-only AFTER independent provider application.",
+    "Next natural original #140 run must return/write original_daily_mira_email_handoff matching original #171 Instagram source_revision and #116 original Gmail research receiver ACK; no new send or post.",
+    "Actual Instagram post requires original media/source prerequisites and provider readback; funded OpenArt capacity and protected Edge source parity separately required.",
+    "Actual daily Gmail requires original approved recipient, verified current company-specific source, composer quality and independently verified provider message ID/recipient/contents."
+  ],
+  "no_duplicate_sends": true,
+  "no_false_green": true,
+  "no_unapproved_spend": true
+}

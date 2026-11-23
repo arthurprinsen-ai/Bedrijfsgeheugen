@@ -10,7 +10,7 @@ test('CI acceleration keeps one Required single-flight and removes duplicate gen
   assert.match(required, /cancel-in-progress:\s*true/);
   assert.doesNotMatch(required, /Prove Supabase security gate blocks known unsafe patterns/);
   assert.doesNotMatch(required, /Verify Portal V2 suite/);
-  assert.match(required, /npm install --prefer-offline/);
+  assert.match(required, /npm install (--ignore-scripts )?--prefer-offline/);
   assert.match(required, /hashFiles\('package\.json'\)/);
 });
 
@@ -67,7 +67,8 @@ test('backend release lane cannot hang indefinitely during dependency installati
   assert.match(backend, /Install runtime dependencies for backend contracts\n        timeout-minutes: 8/);
   assert.match(backend, /npm_config_fetch_retries: '2'/);
   assert.match(backend, /npm_config_fetch_retry_maxtimeout: '20000'/);
-  assert.match(backend, /npm install --prefer-offline --no-audit --no-fund/);
+  assert.match(backend, /npm install --ignore-scripts --prefer-offline --no-audit --no-fund/);
+  assert.doesNotMatch(backend, /run: npm install --prefer-offline --no-audit --no-fund/);
   assert.doesNotMatch(backend, /npm install .*--silent/);
 });
 

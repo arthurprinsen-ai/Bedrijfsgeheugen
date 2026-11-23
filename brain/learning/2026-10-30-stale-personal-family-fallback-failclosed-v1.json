@@ -1,0 +1,44 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "linkedin|personal|stale-event-family-fallback-reselected|20261030-v1",
+  "compiler": {
+    "failure_class": "PERSONAL_SOURCE_STALE_FAMILY_RESELECTED",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "The canonical original content orchestrator applied a recent-source family filter but its '|| eligiblePersonal[0]' fallback still selected a stale historical family when the bounded fresh supply was exhausted. Original October 30 publication obligations refused two personal candidates against October 27/29 story-family reservations; original publisher correctly generated no external side effect.",
+  "prevention": "Fail closed at the existing original source selection. Only choose valid and not-yet-rejected source with an event family not used in recent personal original publications. If none exists keep the original single claim blocked; allow other channels, original source radar and scheduled run to continue; do not reword an old story or lower quality/dedupe/auth gates. The original Social SkillOps and admin Portal V2 explain source replenishment. Actual Edge deployment and next natural run must be independently verified.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs",
+      "tests/brain-social-publication-portal-diagnostics-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-preprovider-duplicate-recovery-p0-4198.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "canonical Supabase content_publication_obligations 2026-10-30",
+    "status": "BLOCKED",
+    "prior_story_dates": [
+      "2026-10-27",
+      "2026-10-29"
+    ],
+    "already_rejected_candidates": 2,
+    "provider_side_effect_recorded": false,
+    "original_crons_active": [
+      116,
+      130,
+      171
+    ],
+    "new_scheduler": false,
+    "production_source_deployed": false,
+    "next_natural_agent_run_application_verified": false,
+    "linkedIn_personal_provider_readback_verified": false
+  }
+}

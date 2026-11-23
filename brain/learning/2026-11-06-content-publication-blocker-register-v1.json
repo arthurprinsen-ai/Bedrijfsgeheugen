@@ -1,0 +1,20 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "REPO_REGISTER_ADDED",
+  "fingerprint": "powerhouse|content|blocker-register-not-consulted|20261106-v1",
+  "failure_class": "REPEATED_FAILURE",
+  "scope": "PROCESS",
+  "owner": "original powerhouse content agents; original ONE BRAIN",
+  "root_cause": "Blokkades voor blogs en posts stonden verspreid over honderden leerbestanden en foutcodes; agents lazen ze niet voor ze bouwden, dus dezelfde blokkade kwam terug.",
+  "evidence": {"at_utc": "2026-11-06T12:30:00Z", "source": "316 leerbestanden en 16 foutcodes uit content_publication_obligations samengebracht"},
+  "fix": "brain/content-publication-blocker-register.json met oorzaak en preventie per blokkade; AGENTS.md verplicht lezen voor blog/post/nieuwsbrief-werk; test bewaakt volledigheid van de belangrijkste codes.",
+  "prevention_rule": "Lees het blokkaderegister voor je een blog, post of nieuwsbrief maakt of herstelt. Nieuwe blokkade = nieuwe regel in het register in dezelfde wijziging.",
+  "regression_contract": "tests/brain-content-publication-blocker-register-20261106.test.mjs",
+  "compiler": {"failure_class": "REPEATED_FAILURE", "scope": "PROCESS", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {"historical_replay": ["tests/brain-content-publication-blocker-register-20261106.test.mjs"], "canary": ["tests/brain-content-publication-blocker-register-20261106.test.mjs"]},
+  "tests": ["tests/brain-content-publication-blocker-register-20261106.test.mjs"],
+  "production_proven": false,
+  "required_proof": ["Protected exact-head checks"]
+}

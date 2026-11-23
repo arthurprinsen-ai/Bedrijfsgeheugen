@@ -1,0 +1,46 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-07",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "i18n|cache|blog-2026-11-07-segment-keys|20261107-v1",
+  "owner": "existing static i18n cache patch directory and brain-static-i18n cache tests",
+  "compiler": {
+    "failure_class": "I18N_PATCH_KEYS_DIFFER_FROM_BUILD_SEGMENTS",
+    "scope": "STATIC_I18N_CACHE_COMPLETENESS",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The BRAIN backend lane failed again with STATIC_I18N_CACHE_INCOMPLETE: 2 missing translation(s) after the daily blog of 2026-11-07 merged. The pipeline patch powerhouse-blog-2026-11-07.json keys the article as text fragments that follow the production transform chain (a paragraph split at an inline element, an excerpt split by sentence), while the BRAIN cache tests look up the final committed blocks (the whole paragraph and the intro excerpt with its heading), so those two exact keys never matched. This is the same class as 2026-11-06 and repeats because the patch generator is unchanged.",
+  "prevention_rule": "The two exact build keys are added to a second patch using the existing provider translations of the same fragments, and the existing rule REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE stays the control. The generator is not fixed here, so the class can recur on the next daily blog.",
+  "prevention_rules": [
+    "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "BRAIN delivery run 42379680897 on main: STATIC_I18N_CACHE_MISSING with two keys (paragraph of 455 characters and 'Intro' plus excerpt of 219 characters), failing tests brain-static-i18n-production-cache-completeness-v1, brain-static-i18n-versioned-cache-v1 and the incremental patch merge test",
+      "config/bg-static-i18n-en.d/powerhouse-blog-2026-11-07.json holds fragment-level keys produced by the daily workflow",
+      "same failure class on 2026-11-06 (#5494)"
+    ],
+    "current": [
+      "Both keys copied verbatim from STATIC_I18N_CACHE_MISSING; translations are the joined existing provider translations of the same fragments, not new wording; the i18n tests were not run locally (corpus and build are not in the sandbox), so proof comes from the PR checks and the original BRAIN run on main"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

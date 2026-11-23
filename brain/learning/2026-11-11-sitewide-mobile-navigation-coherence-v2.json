@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "fingerprint": "website|mobile|navigation-coherence-geometry|20261111-v2",
+  "date": "2026-11-11",
+  "type": "WEBSITE_MOBILE_NAVIGATION_GEOMETRY_RECOVERY",
+  "status": "PROTECTED_CANDIDATE_CI_EVIDENCE_DUE",
+  "original_owner": "original canonical public website/Netlify delivery",
+  "parent_issues": [
+    4198,
+    4215
+  ],
+  "root_cause": {
+    "observed": "User iPhone screenshots show partial-width menu, visible background strip, offset header, duplicate close button, floating WhatsApp overlap and overflowing top announcement. Product hero also rendered two unstyled post-build CTA links.",
+    "cause": "Old gate checked aria menu state but not viewport geometry. V18 and legacy menu overlays can inherit fixed containing blocks from header and extra close layer conflicted. The old V18 entrance transform continued interpolating after fixed geometry; post-build money-page CTA lacked scoped mobile button styling."
+  },
+  "fix": {
+    "scope": "Preserve existing menu engines, move overlay into document.body, align to fixed header, one Menu/Sluit toggle and no floating WhatsApp collision. Add real browser geometry tests. Cancel old drawer transition and style generated platform money CTA touch targets.",
+    "non_goals": [
+      "no parallel executor",
+      "no portal/auth state changes",
+      "no premature production success claim"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_MOBILE_NAVIGATION_GEOMETRY_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Assert actual drawer left/right/top and header adjacency on 320/390px iPhones",
+    "Require one close toggle and keyboard Escape",
+    "Hide floating WhatsApp while drawer open",
+    "One canonical site builder and proof of exact Netlify READY SHA",
+    "Check both mobile product hero conversion links as actual 44px+ styled buttons with computed 4.5:1 primary contrast"
+  ],
+  "evidence": {
+    "source": "User screenshots and GitHub source",
+    "tests": [
+      "tests/brain-sitewide-mobile-ui-20261111.test.mjs",
+      "tools/site-shell/sitewide-mobile-interaction-browser-check.mjs"
+    ],
+    "production_readback": "NOT_YET_VERIFIED",
+    "browser_gate": {
+      "routes": [
+        "/",
+        "/product",
+        "/kennis/",
+        "/prijzen",
+        "/contact"
+      ],
+      "mobile_widths": [
+        320,
+        390
+      ]
+    },
+    "limitation": "Source candidate is not live proof."
+  },
+  "next_action": "Protected original CI, browser, CodeQL, merge, Netlify READY and production readback.",
+  "agent_skill_handoff": {
+    "original_agent": "platform/agents/agent-team.mjs#agent-website-ux",
+    "original_skill": "skills/website-portal-coherence.md",
+    "same_owner": true,
+    "machine_guard": "tests/brain-sitewide-mobile-ui-20261111.test.mjs",
+    "source_state": "SOURCE_CANDIDATE_CI_PENDING",
+    "next_natural_agent_application": "EVIDENCE_DUE",
+    "independent_production_browser_readback": "EVIDENCE_DUE"
+  },
+  "browser_prerequisite_handoff": {
+    "original_ci_owner": ".github/workflows/lane-website.yml#browser",
+    "already_proven_pattern": ".github/workflows/website-cross-browser-screenshot-assurance.yml",
+    "image": "mcr.microsoft.com/playwright:v1.61.0-noble",
+    "js_client": "playwright@1.61.0",
+    "npm_script_policy": "ignore-scripts",
+    "fresh_apt_os_dependency_install": false,
+    "real_browser_smoke": "REQUIRED_NOT_YET_VERIFIED",
+    "regression_tests": [
+      "tests/brain-website-lane-ubuntu26-playwright-v1.test.mjs",
+      "tests/delivery-website-browser-runtime-single-install.test.mjs"
+    ],
+    "previous_historical_incident": "ci|cross-browser|playwright-181-os-packages-install-30m-timeout|20261105-v1",
+    "outcome": "SOURCE_CANDIDATE_CI_AND_PRODUCTION_READBACK_DUE"
+  }
+}

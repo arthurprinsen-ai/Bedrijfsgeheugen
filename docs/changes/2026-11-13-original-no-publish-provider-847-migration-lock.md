@@ -1,0 +1,9 @@
+# 13 november 2026 — Supabase provider-migratie 847 exact in origineel source-lock
+
+PR #5742 is beschermd gemerged `b729e84c0d3548708c5d5f6178482eb37a247c52`. Productie Supabase `adhjwmvyoixzjtmiroln` heeft daarna daadwerkelijk migratie **847** toegepast: exacte `version=20261113153000`, `name=original_no_publish_legacy_source_action_reconcile_v1`; onafhankelijke providerobservatie `2026-11-13T15:38:43.911949Z`. De originele GitHub source lock had 846, en de gehele bestaande 846-regelige versie+naam prefix is exact één-op-één vergeleken met de originele productiehistorie: **0 verschillen**.
+
+Eerst na dit providerbewijs exact de 847e record toevoegen aan `supabase/migration-history.lock.json`, inclusief provider-observatietijd, en historische test 846 forward-compatible maken: `length>=846`, index 845 met de onveranderlijke provider-846-identiteit, index 844 voorganger, unieke strikt oplopende versies, en niet-teruglopende capturetijd. De *actuele* productie-vs-Git bronlock-verifier blijft strikt gelijk op alle versies/namen. Nieuwe test 847 borgt de bounded original source-action-only DML (max 64, no-send) en originele terminal guard. **Geen** nieuwe SQL of productie-update, provider-send, tweede scheduler/consumer, OAuth/ACL-wijziging of verzonnen besluitbewijs.
+
+Productie-readback na #5742: exact 20 oude blog- en 1 LinkedIn-bedrijfsbesluit met eerlijke `NO_PUBLISH_SOURCE_DECISION_PROOF_INCOMPLETE`/NO_RESEND-bronactie; alle 21 blijven terecht bij originele ONE BRAIN-owner OPEN. Bronactieherstel is geen bewijs dat daadwerkelijke besluitcodes zijn aangeleverd of de complete leer-/CRO-/omzetketen sluit.
+
+Borg via huidige protected Required/BRAIN/CodeQL, merge, onafhankelijke **actuele** Supabase history/source lock vergelijking en oorspronkelijke Obligation Terminal Closure. Issue: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.

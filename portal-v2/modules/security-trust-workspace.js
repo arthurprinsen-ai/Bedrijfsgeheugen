@@ -1,12 +1,28 @@
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const arr=v=>Array.isArray(v)?v:[];
-const tone=v=>{const s=String(v||'').toUpperCase();return /VERIFIED|PASS|CURRENT|HEALTHY|SATISFIED/.test(s)?'ok':/FAIL|CRITICAL|ACTION_REQUIRED|BLOCK/.test(s)?'bad':'warn'};
+// Fail closed: a negated status such as NOT_VERIFIED must never render green.
+export const securityTone=v=>{
+ const s=String(v??'').trim().toUpperCase();
+ if(/^(?:FAIL(?:ED)?|CRITICAL|HIGH|ERROR|ACTION_REQUIRED|BLOCK(?:ED)?|COMPROMISED|VULNERABLE|UNSAFE|REVOKED)(?:_|$)/.test(s))return 'bad';
+ if(/^(?:NOT[_ -]?VERIFIED|UNVERIFIED|UNKNOWN|STALE|EXPIRED|EVIDENCE_PARTIAL|PARTIAL|PENDING|WARN(?:ING)?|MEDIUM|LOW|UNPROVEN)(?:_|$)/.test(s))return 'warn';
+ if(/^(?:VERIFIED|PASS(?:ED)?|CURRENT|HEALTHY|SATISFIED|SECURE)(?:_|$)/.test(s))return 'ok';
+ return 'warn';
+};
+const tone=securityTone;
 const roleList=user=>arr(user?.roles||user?.appMetadata?.roles||user?.app_metadata?.roles).map(v=>String(v).toLowerCase());
 const isInternal=user=>roleList(user).some(r=>['admin','owner','powerhouse-admin','powerhouse_admin'].includes(r));
 async function readJson(response){const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body?.error||('HTTP_'+response.status));return body;}
 function providerName(p){return p?.name||p?.displayName||p?.providerKey||'Provider';}
 function status(v){return '<span class="trust-status '+tone(v)+'">'+esc(v||'UNKNOWN')+'</span>';}
-function evidenceLinks(urls=[]){return arr(urls).map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Officiële bron ↗</a>').join('');}
+// Evidence URLs are provider data, not executable HTML. Only absolute HTTPS links are allowed.
+export function safeSecurityEvidenceUrl(value){
+ try{
+  const url=new URL(String(value??''));
+  if(url.protocol!=='https:'||!url.hostname||url.username||url.password)return null;
+  return url.href;
+ }catch{return null;}
+}
+function evidenceLinks(urls=[]){return arr(urls).map(safeSecurityEvidenceUrl).filter(Boolean).map(u=>'<a href="'+esc(u)+'" target="_blank" rel="noopener noreferrer">Officiële bron ↗</a>').join('');}
 
 function renderModelContext(data,state,saveStatus,activation){
  const prefs=state?.portal?.aiModelPreferences||{},runtime=state?.portal?.runtime||{};
@@ -59,18 +75,130 @@ function renderSovereignty(root,data,security,scope,state={},saveStatus='idle',a
  };
  root.querySelectorAll('[data-answer]').forEach(b=>b.addEventListener('click',()=>{answer.textContent=answers[b.dataset.answer]||'';answer.classList.add('open')}));
 }
-function renderSecurity(root,security,sovereignty,scope){
- const summary=security?.summary||{},findings=arr(security?.findings),frameworks=arr(security?.frameworks),assurance=arr(security?.providerAssurance),observations=arr(security?.managementObservations),db=security?.database||{};
+
+const PLATFORM_SECURITY_REQUIREMENTS=[
+ {provider:'GITHUB',label:'GitHub',checks:['CODEQL','BRANCH_PROTECTION','SECRET_SCANNING']},
+ {provider:'SUPABASE',label:'Supabase',checks:['DATABASE_ADVISOR','RLS','PRIVILEGED_FUNCTIONS']},
+ {provider:'NETLIFY',label:'Netlify',checks:['PREVIEW_ACCESS','ARCHIVE_PREVIEW_ACCESS','SECRET_SCAN','DEPLOY_PROVENANCE']},
+ {provider:'WEBSITE',label:'Website & portaal',checks:['HTTPS_HEADERS','AUTHORIZATION','DEPENDENCY_AUDIT']}
+];
+const upper=v=>String(v??'').trim().toUpperCase();
+// A cached PASS/VERIFIED is not security evidence after its original expiry.
+// Evaluate time at rendering as well as at database snapshot generation.
+export function isCurrentSecurityObservation(observation,nowMs=Date.now()){
+ if(!observation||!Number.isFinite(nowMs))return false;
+ const observed=Date.parse(String(observation.observed_at??observation.observedAt??''));
+ const expiry=Date.parse(String(observation.expires_at??observation.expiresAt??''));
+ return Number.isFinite(observed)&&Number.isFinite(expiry)&&observed<=nowMs&&expiry>nowMs&&expiry>observed;
+}
+export function isFreshSecuritySnapshot(generatedAt,nowMs=Date.now()){
+ const generated=Date.parse(String(generatedAt??''));
+ return Number.isFinite(generated)&&Number.isFinite(nowMs)&&generated<=nowMs
+  && nowMs-generated<=24*60*60*1000;
+}
+export function summarizeSecurityPlatforms(observations=[],nowMs=Date.now()){
+ return PLATFORM_SECURITY_REQUIREMENTS.map(platform=>{
+  const controls=arr(observations).filter(o=>upper(o.provider_key||o.providerKey)===platform.provider);
+  const rows=platform.checks.map(key=>controls.find(o=>upper(o.control_key||o.controlKey)===key));
+  const complete=rows.every(Boolean);
+  const current=rows.filter(o=>o&&isCurrentSecurityObservation(o,nowMs));
+  const allGood=complete&&rows.every(o=>securityTone(o.status)==='ok'
+   &&Boolean(o.evidence_available??o.evidenceAvailable)&&isCurrentSecurityObservation(o,nowMs));
+  const risk=rows.some(o=>o&&securityTone(o.status)==='bad');
+  return { ...platform, total:platform.checks.length, observed:current.length,
+   status:risk?'ACTION_REQUIRED':allGood?'VERIFIED':'EVIDENCE_PARTIAL',
+   latest:rows.filter(Boolean).map(o=>o.observed_at||o.observedAt).filter(Boolean).sort().at(-1)||null};
+ });
+}
+export function securityOverallPosture(summary,observations,generatedAt,nowMs=Date.now()){
+ const source=String(summary?.postureStatus||'EVIDENCE_PARTIAL').toUpperCase();
+ const platform=summarizeSecurityPlatforms(observations,nowMs);
+ if(source==='ACTION_REQUIRED'||platform.some(item=>item.status==='ACTION_REQUIRED'))return 'ACTION_REQUIRED';
+ if(!isFreshSecuritySnapshot(generatedAt,nowMs))return 'EVIDENCE_PARTIAL';
+ if(source==='VERIFIED_NO_OPEN_FINDINGS'&&platform.every(item=>item.status==='VERIFIED'))return 'VERIFIED_NO_OPEN_FINDINGS';
+ return 'EVIDENCE_PARTIAL';
+}
+
+const SAFETY_AREAS=Object.freeze([
+ {id:'toegang',title:'Toegang & identiteit',meaning:'Wie kan de omgeving en jouw gegevens benaderen?',checks:[['NETLIFY','PREVIEW_ACCESS'],['NETLIFY','TEAM_MFA'],['WEBSITE','AUTHORIZATION']]},
+ {id:'gegevens',title:'Gegevens & privacy',meaning:'Wordt toegang tot opgeslagen gegevens beperkt?',checks:[['SUPABASE','RLS'],['SUPABASE','PRIVILEGED_FUNCTIONS']]},
+ {id:'code',title:'Code & updates',meaning:'Worden wijzigingen en kwetsbaarheden gecontroleerd?',checks:[['GITHUB','CODEQL'],['GITHUB','BRANCH_PROTECTION'],['GITHUB','SECRET_SCANNING'],['WEBSITE','DEPENDENCY_AUDIT']]},
+ {id:'website',title:'Website & verbinding',meaning:'Worden verkeer en productiereleases beveiligd?',checks:[['WEBSITE','HTTPS_HEADERS'],['NETLIFY','DEPLOY_PROVENANCE']]},
+ {id:'leveranciers',title:'Leveranciers & omgevingen',meaning:'Worden databronnen en tijdelijke omgevingen gecontroleerd?',checks:[['SUPABASE','DATABASE_ADVISOR'],['NETLIFY','SECRET_SCAN'],['NETLIFY','ARCHIVE_PREVIEW_ACCESS']]}
+]);
+// This is an explanation of the independently observed controls, never a safety score.
+export function buildSafetyCompass(summary={},observations=[],generatedAt=null,findings=[],nowMs=Date.now()){
+ const rows=arr(observations),fresh=isFreshSecuritySnapshot(generatedAt,nowMs);
+ const overall=securityOverallPosture(summary,rows,generatedAt,nowMs);
+ const areas=SAFETY_AREAS.map(area=>{
+  const related=area.checks.map(([provider,key])=>rows.find(o=>upper(o.provider_key||o.providerKey)===provider&&upper(o.control_key||o.controlKey)===key));
+  const open=related.some(o=>o&&securityTone(o.status)==='bad');
+  const checked=related.filter(o=>o&&isCurrentSecurityObservation(o,nowMs)&&Boolean(o.evidence_available??o.evidenceAvailable));
+  const safe=fresh&&checked.length===related.length&&related.every(o=>securityTone(o.status)==='ok');
+  return {...area,status:open?'ACTION_REQUIRED':safe?'VERIFIED':'EVIDENCE_PARTIAL',checked:checked.length,total:related.length};
+ });
+ const verifiedSources=rows.filter(o=>isCurrentSecurityObservation(o,nowMs)&&Boolean(o.evidence_available??o.evidenceAvailable)).length;
+ const attention=overall==='ACTION_REQUIRED';
+ const allVerified=overall==='VERIFIED_NO_OPEN_FINDINGS';
+ const title=attention?'Er zijn beveiligingspunten die aandacht vragen':allVerified?'De vereiste controles zijn actueel bevestigd':'Nog niet alle beveiligingscontroles zijn bewezen';
+ const explanation=attention?'We laten openstaande risico’s zien en verbergen geen ongunstige bevindingen. Een aandachtspunt is niet automatisch een datalek.':allVerified?'De vereiste controles hebben actueel bronbewijs. Ook dan blijft digitale veiligheid een doorlopend proces.':'De beschikbare controles geven inzicht, maar ontbrekend of verlopen bewijs tellen we niet als veilig. We onderzoeken de open punten.';
+ const findingCount=arr(findings).length;
+ const coverage=Number(summary?.evidenceCoverage);
+ return {overall,title,explanation,areas,findingCount,verifiedSources,snapshotFresh:fresh,
+  coverage:Number.isFinite(coverage)&&coverage>=0&&coverage<=100?coverage:null,
+  observedAt:fresh?generatedAt:null};
+}
+const safetyLabel=value=>value==='ACTION_REQUIRED'?'Aandacht nodig':(value==='VERIFIED'||value==='VERIFIED_NO_OPEN_FINDINGS')?'Actueel bevestigd':'Nog niet volledig bewezen';
+const safeDate=value=>{
+ const d=new Date(String(value??''));return Number.isFinite(d.getTime())
+  ?new Intl.DateTimeFormat('nl-NL',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Amsterdam'}).format(d)+' (NL)'
+  :'Nog niet vastgesteld';
+};
+function renderSafetyCompass(summary,observations,generatedAt,findings){
+ const state=buildSafetyCompass(summary,observations,generatedAt,findings);
+ const areas=state.areas.map(a=>'<article class="safety-area safety-area--'+tone(a.status)+'" data-safety-area="'+esc(a.id)+'"><div class="safety-area-heading"><h4>'+esc(a.title)+'</h4>'+status(a.status)+'</div><p>'+esc(a.meaning)+'</p><small>'+a.checked+' van '+a.total+' controles met actueel bewijs · '+esc(safetyLabel(a.status))+'</small></article>').join('');
+ return '<section class="safety-compass" aria-labelledby="safety-compass-title" data-safety-compass><div class="safety-compass-lead">'+
+  '<div><span class="trust-kicker">Jouw Veiligheidskompas · transparant & onafhankelijk controleerbaar</span>'+
+  '<h3 id="safety-compass-title">'+esc(state.title)+'</h3><p>'+esc(state.explanation)+'</p>'+
+  '<p class="safety-source-time">Laatst beoordeeld: <time>'+safeDate(state.observedAt)+'</time> · '+state.verifiedSources+' actuele bronwaarnemingen</p></div>'+
+  '<div class="safety-signal safety-signal--'+tone(state.overall)+'"><span>Bewijsstatus</span><strong>'+esc(safetyLabel(state.overall))+'</strong><small>Geen garantie of veiligheidscijfer</small></div></div>'+
+  '<div class="safety-metrics"><div><strong>'+esc(state.coverage===null?'Onbekend':state.coverage+'%')+'</strong><span>Beschikbaar bronbewijs, niet “zo veilig”</span></div>'+
+  '<div><strong>'+state.findingCount+'</strong><span>Open punten in de actuele registratie</span></div>'+
+  '<div><strong>'+esc(state.snapshotFresh?'Actueel':'Opnieuw controleren')+'</strong><span>Recente beoordeling, maximaal 24 uur geldig</span></div></div>'+
+  '<h4 class="safety-area-title">Vijf onderdelen van jouw digitale veiligheid</h4><div class="safety-areas">'+areas+'</div>'+
+  '<div class="safety-next"><div><h4>Wat wij doen</h4><p>We controleren bronnen, leggen afwijkingen vast en volgen herstel tot onafhankelijk bewijs beschikbaar is. Een fout wordt pas afgemeld na controle; ontbrekend bewijs blijft zichtbaar.</p></div>'+
+  '<div><h4>Wat jij kunt doen</h4><p>Controleer wie toegang heeft tot je organisatie en bekijk het datapaspoort voor de afspraken rond AI en gegevensverwerking.</p>'+
+  '<a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=gebruikers" data-safety-users>Toegang beheren →</a>'+
+  '<a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=data-ai-passport" data-safety-passport>Mijn datapaspoort →</a></div></div>'+
+  '<details class="safety-explain"><summary>Hoe bepalen jullie deze status?</summary><p>Alleen rechtstreeks geregistreerde controles met een geldige observatiedatum, vervaldatum en beschikbaar bronbewijs kunnen groen worden. Ontbrekende, onduidelijke of verlopen resultaten blijven onzeker. Een expliciet onveilig resultaat krijgt aandacht. De getoonde bewijsdekking is geen kans op een datalek, beveiligingsscore, SLA of certificering.</p></details>'+
+  '</section>';
+}
+
+function renderSecurityPlatforms(observations){
+ const platforms=summarizeSecurityPlatforms(observations);
+ return '<section class="trust-section" data-security-platforms><header><h3>Beveiliging van de infrastructuur</h3><p>GitHub, Supabase, Netlify, website en portaal. Status groen uitsluitend wanneer álle verplichte controles actueel en onafhankelijk onderbouwd zijn. Ontbrekend bewijs is nooit groen.</p></header><div class="trust-grid">'+
+ platforms.map(p=>'<article data-security-platform="'+esc(p.provider)+'"><small>'+esc(p.label)+'</small><strong>'+esc(p.status==='VERIFIED'?'Geverifieerd':p.status==='ACTION_REQUIRED'?'Actie nodig':'Niet volledig bewezen')+'</strong>'+status(p.status)+'<span>'+p.observed+' van '+p.total+' actuele controles met bronbewijs · laatste bronmoment: '+esc(p.latest||'onbekend')+'</span></article>').join('')+
+ '</div></section>';
+}
+
+function renderSecurityAdminMetrics(summary,findings,db,overallPosture){
+ return '<div class="trust-grid" data-safety-technical-summary>'+
+  '<article><small>Security posture</small><strong>'+esc(overallPosture)+'</strong>'+status(overallPosture)+'</article>'+
+  '<article><small>Open findings</small><strong>'+findings.length+'</strong><span>High risk: '+esc(summary.highRiskFindingCount??0)+'</span></article>'+
+  '<article><small>Evidence-dekking</small><strong>'+esc(summary.evidenceCoverage??0)+'%</strong><span>Bewijsdekking is geen veiligheidspercentage</span></article>'+
+  '<article><small>Database</small><strong>'+esc(db.highRiskCount??0)+' high-risk</strong><span>'+esc(db.rlsNoPolicy??0)+' RLS zonder policy-classificatie</span></article>'+
+  '</div>';
+}
+
+function renderSecurity(root,security,sovereignty,scope,adminView=false){
+ const summary=security?.summary||{},findings=arr(security?.findings),frameworks=arr(security?.frameworks),assurance=arr(security?.providerAssurance),observations=arr(security?.managementObservations),db=security?.database||{},overallPosture=securityOverallPosture(summary,observations,security?.generatedAt);
  root.innerHTML=`<section class="trust-workspace">
-  <div class="trust-hero"><div><span class="trust-kicker">Alleen ingelogde klantomgeving</span><h2>Security Trust Center</h2><p>Hoe veilig is je data, wie kan erbij, welke controls zijn aantoonbaar en welke punten staan nog open?</p></div><div class="trust-scope"><small>Weergave</small><strong>${scope}</strong><span>Ruwe security-evidence blijft server-only</span></div></div>
-  <div class="trust-grid">
-   <article><small>Security posture</small><strong>${esc(summary.postureStatus||'EVIDENCE_PARTIAL')}</strong>${status(summary.postureStatus)}</article>
-   <article><small>Open findings</small><strong>${findings.length}</strong><span>High risk: ${esc(summary.highRiskFindingCount??0)}</span></article>
-   <article><small>Evidence-dekking</small><strong>${esc(summary.evidenceCoverage??0)}%</strong><span>Geen false-green bij stale/unknown</span></article>
-   <article><small>Database</small><strong>${esc(db.highRiskCount??0)} high-risk</strong><span>${esc(db.rlsNoPolicy??0)} RLS zonder policy-classificatie</span></article>
-  </div>
-  <section class="trust-section"><header><h3>Open security findings</h3><p>Automatisch afgeleid uit runtime-, database- en managementplane-evidence.</p></header>
-   <div class="trust-findings">${findings.map(f=>`<article><div>${status(f.severity)}</div><div><b>${esc(f.title||f.key)}</b><p>${esc(f.detail||f.reason||'Geen detail')}</p></div></article>`).join('')||'<p>Geen open findings in deze snapshot.</p>'}</div>
+  <div class="trust-hero"><div><span class="trust-kicker">Veiligheid · vertrouwd en verifieerbaar</span><h2>Security Trust Center</h2><p>Een helder overzicht van de veiligheid van jouw bedrijfsgegevens, met bewijs, open punten en wat we eraan doen.</p></div><div class="trust-scope"><small>Weergave</small><strong>${scope}</strong><span>Ruwe security-evidence blijft server-only</span></div></div>
+  ${renderSafetyCompass(summary,observations,security?.generatedAt,findings)}
+  ${adminView?renderSecurityAdminMetrics(summary,findings,db,overallPosture):''}
+  ${renderSecurityPlatforms(observations)}
+  ${adminView?'<section class="trust-section" data-safety-admin-findings><header><h3>Beheer: volledige risicoregistratie</h3>':'<section class="trust-section" data-safety-customer-findings><header><h3>Open punten en opvolging</h3>'}<p>Automatisch afgeleid uit runtime-, database- en managementplane-evidence.</p></header>
+   <div class="trust-findings">${adminView?(findings.map(f=>`<article><div>${status(f.severity)}</div><div><b>${esc(f.title||f.key)}</b><p>${esc(f.detail||f.reason||'Geen detail')}</p></div></article>`).join('')||'<p>Geen open punten in deze snapshot; dit is geen garantie.</p>'):(findings.length?'<p>Er staan '+findings.length+' aandachtspunten open. Om misbruik te voorkomen tonen we hier geen technische kwetsbaarheidsdetails. De opvolging blijft zichtbaar in de bewijsstatus.</p>':'<p>In deze snapshot zijn geen open punten geregistreerd. Dat sluit onbekende risico’s niet uit.</p>')}</div>
   </section>
   <section class="trust-section"><header><h3>Provider assurance</h3><p>Provider-certificeringen en verklaringen zijn expliciet géén Bedrijfsgeheugen-certificering.</p></header>
    <div class="trust-list">${assurance.map(a=>`<details><summary><span><b>${esc(a.providerKey)}</b><small>${esc(a.assuranceScope||'')}</small></span>${status(a.evidenceStatus)}</summary><div class="trust-detail"><p>${esc(a.notes||'')}</p>${evidenceLinks(a.evidenceUrls)}</div></details>`).join('')||'<p>Geen provider-assurance beschikbaar.</p>'}</div>
@@ -78,8 +206,8 @@ function renderSecurity(root,security,sovereignty,scope){
   <section class="trust-section"><header><h3>Normen en kaders</h3><p>Applicability en technische evidence blijven gescheiden van formele certificering.</p></header>
    <div class="trust-frameworks">${frameworks.map(f=>`<article><b>${esc(f.label||f.frameworkKey)}</b>${status(f.applicability)}<p>${esc(f.notes||'')}</p>${evidenceLinks(f.evidenceUrls)}</article>`).join('')}</div>
   </section>
-  <section class="trust-section"><header><h3>Actuele access- en managementevidence</h3><p>Alleen metadata en freshness; ruwe management-evidence wordt nooit naar de browser geprojecteerd.</p></header>
-   <div class="trust-list">${observations.map(o=>`<div class="trust-observation"><b>${esc(o.provider_key||o.providerKey)} · ${esc(o.control_key||o.controlKey)}</b>${status(o.status)}<small>Bron: ${esc(o.source||'runtime')} · evidence aanwezig: ${esc(o.evidence_available??o.evidenceAvailable??false)}</small></div>`).join('')||'<p>Geen actuele management-observaties beschikbaar.</p>'}</div>
+  ${adminView?'<section class="trust-section" data-safety-admin-evidence><header><h3>Actuele access- en managementevidence</h3>':'<section class="trust-section" data-safety-customer-evidence><header><h3>Bronnen en verificatie</h3>'}<p>Alleen metadata en freshness; ruwe management-evidence wordt nooit naar de browser geprojecteerd.</p></header>
+   <div class="trust-list">${adminView?(observations.map(o=>`<div class="trust-observation"><b>${esc(o.provider_key||o.providerKey)} · ${esc(o.control_key||o.controlKey)}</b>${status(o.status)}<small>Bron: ${esc(o.source||'runtime')} · evidence aanwezig: ${esc(o.evidence_available??o.evidenceAvailable??false)}</small></div>`).join('')||'<p>Geen actuele management-observaties beschikbaar.</p>'):'<p>De ondernemer ziet uitsluitend de begrijpelijke controlegroepen en de geldigheid van bewijs. Technische bron-ID’s, routes, interne instellingen en incidentdetails blijven beperkt tot bevoegd beheer.</p>'}</div>
   </section>
  </section>`;
 }
@@ -111,7 +239,7 @@ export async function mountSecurityTrustWorkspace(root,{pageId='trust-center',st
   if(pageId==='data-ai-passport'){
    renderSovereignty(root,sovereignty,security,scope,domainState?.get?.()||{},domainState?.status?.()||'idle',activation);
    root.querySelector('[data-passport-model-choice]')?.addEventListener('click',event=>{if(openPage){event.preventDefault();openPage('ai-modelkeuze');}});
-  }else renderSecurity(root,security,sovereignty,scope);
+  }else renderSecurity(root,security,sovereignty,scope,internal);
  };
  const refresh=({force=false}={})=>{
   if(!authorized()){if(alive)deny();return Promise.resolve();}

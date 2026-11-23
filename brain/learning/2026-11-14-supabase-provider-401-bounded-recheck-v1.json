@@ -1,0 +1,53 @@
+{
+  "version": "original-supabase-attestation-bounded-401-recheck-v1",
+  "fingerprint": "powerhouse|delivery|original-readonly-provider-parity-transient-401|20261114-v1",
+  "compiler": {
+    "failure_class": "PROVIDER_TRANSIENT_AUTH_RESPONSE",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-supabase-provider-401-recheck-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-supabase-provider-401-recheck-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-supabase-provider-401-recheck-20261114.test.mjs"
+    ]
+  },
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "owner": "existing Supabase Edge Production Authority workflow and original Security/release agent; no new publisher",
+  "root_cause": "The original read-only attestation classified a single 401 from an individual Supabase function download as a permanently invalid token and immediately stopped, although three earlier downloads on the same run had succeeded. The same protected workflow rerun later succeeded with unchanged credentials; a transient error is a valid explanation, but permanent invalidity must still fail closed.",
+  "production_readback": {
+    "date": "2026-11-14",
+    "protected_merge_commit": "898a89d61317b18e61491b8f3c83119a28e81b8d",
+    "workflow_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43607583476",
+    "original_failure": "SUPABASE_ACCESS_TOKEN_INVALID_REAUTH_REQUIRED",
+    "rerun_success": true,
+    "original_function": "powerhouse-content-loop",
+    "edge_version": 874,
+    "provider_files_exact_match": "9/9",
+    "instagram_sent_today_proven": false,
+    "email_sent_today_proven": false
+  },
+  "prevention": "At most three read-only attempts for the same function on exact 401/Invalid access token before treating the credential as persistently invalid; keep existing bounded non-auth provider convergence. Never bypass GitHub protections, publish to external platforms, deploy from attest-only workflow or claim green from a source-only check.",
+  "evidence": {
+    "source_path": ".github/workflows/supabase-edge-production-authority.yml",
+    "regression": "tests/brain-original-supabase-provider-401-recheck-20261114.test.mjs",
+    "agent_registry": "platform/agents/agent-team.mjs",
+    "skill": ".agents/skills/powerhouse-social-recovery-cooperation/SKILL.md"
+  },
+  "regression": "tests/brain-original-supabase-provider-401-recheck-20261114.test.mjs",
+  "status": "PROTECTED_RELEASE_CANDIDATE",
+  "not_proven": [
+    "this new prevention PR merged",
+    "future 401 classified correctly in production",
+    "daily Instagram Meta provider post",
+    "new Gmail send today",
+    "full Brain/Heartbeat owner-to-consumer loop green"
+  ]
+}

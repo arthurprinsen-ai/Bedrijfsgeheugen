@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|site-openai-qa|gpt5-mini-empty-response-insufficient-budget|20261103-v1",
+  "status": "PRODUCTION_FAILURE_PROVEN_PROTECTED_FIX_CANDIDATE",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-website-brain-provider-agent",
+  "failure_class": "OPENAI_EMPTY_RESPONSE",
+  "evidence": {
+    "original_netlify_release": "6ae9ec88ee11dd91bea4c979",
+    "live_website_path": "https://www.bedrijfsgeheugen.nl/api/vraag",
+    "original_pgnet_public_canary_request_id": 19999,
+    "original_canary_http": 502,
+    "original_canary_header": "OPENAI_EMPTY_RESPONSE",
+    "earlier_runtime_http_502_class": "OPENAI_PROVIDER_ERROR_400",
+    "old_website_completion_budget": 600,
+    "original_model": "gpt-5-mini",
+    "original_openai_key": "PRESENT_NOT_EXPOSED"
+  },
+  "root_cause": "Verified final error class is empty OpenAI visible output on a bounded 600 completion-token original website call; reasoning-token exhaustion is a testable probable mechanism, not yet proven as exact per-request finish_reason until postdeployment readback.",
+  "fix": "Use low reasoning and 2200 completion-token budget on original governed website/portal model requests; classify no-text finish_reason=length as budget exhaustion, retain fail-closed generic visitor HTTP502 and original tenant/source governance.",
+  "prevention_rule": "Never use tiny max_completion_tokens limits for reasoning models on original website or portal; discriminate exhausted token budget from generic empty response without exposing payloads; use public safe canary HTTP200 and Netlify exact deploy SHA before claiming production success.",
+  "tests": [
+    "tests/brain-netlify-openai-website-output-budget-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-openai-website-output-budget-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-openai-website-output-budget-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-openai-website-output-budget-20261103.test.mjs"
+    ],
+    "invariants": [
+      "no leaked prompts or secrets",
+      "OpenAI only",
+      "original source gate",
+      "bounded low reasoning",
+      "no duplicated endpoint or scheduler",
+      "exact protected Netlify deploy and live readback"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "OPENAI_EMPTY_RESPONSE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected Required/CodeQL/BRAIN plus original Netlify deploy exact commit and genuine public question HTTP200; only then mark website Q&A delivery green. If still empty, inspect safe finish reason and reason about model budget, do not fabricate."
+}

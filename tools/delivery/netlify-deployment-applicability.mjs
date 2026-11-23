@@ -12,6 +12,15 @@ export const NETLIFY_GOVERNANCE_PREFIXES = Object.freeze([
   'tools/ci/',
 ]);
 
+// Build command changes are executable Netlify production code, NOT governance.
+// They must execute full production-parity CI even when under tools/ci/.
+export const NETLIFY_BUILD_RUNTIME_EXACT = Object.freeze(new Set([
+  'tools/ci/netlify-build-entry.mjs',
+  // Modifies shipped Portal V2 browser assets during the same original Netlify build.
+  // Governance-only classification here would skip the real security-scoped fix.
+  'tools/ci/build-portal-public-runtime.mjs',
+]));
+
 export const NETLIFY_GOVERNANCE_EXACT = Object.freeze(new Set([
   'AGENTS.md',
   'config/delivery-prevention-rules.json',
@@ -49,6 +58,22 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
   'platform/brain/verified-ai-runtime.mjs',
   'platform/brain/production-ai.mjs',
   'platform/policy/customer-ai-deployment.mjs',
+  // Imported by Netlify _cost-projection-store and _powerhouse-compound-improvement-proof.
+  // A change to the canonical agent roster affects live server code, not only governance.
+  'platform/agents/agent-team.mjs',
+  // Imported by the authenticated /api/powerhouse-control-plane Netlify function.
+  // The admin source-read model is live bundled server code, not governance-only.
+  'platform/portal/powerhouse-existing-integration-read-model.mjs',
+  // Server-bundled by netlify/functions/powerhouse-observability.mjs.
+  // It changes the authenticated portal API even though it lives under brain/.
+  'brain/observability/publication-evidence-readback.mjs',
+  // Imported into Netlify's authenticated /api/powerhouse-one-loop-assurance.
+  // Without this exact dependency, a protected main merge can leave the live
+  // portal displaying stale cause/action codes even while Supabase is current.
+  'brain/observability/one-loop-guard-diagnostics.mjs',
+  'brain/observability/one-loop-assurance-readback.mjs',
+  'brain/observability/failure-coverage-projection.mjs',
+  'brain/observability/cycle-evidence-coverage.mjs',
 ]));
 
 const unique = values => [...new Set((values || []).map(value => String(value).trim()).filter(Boolean))];
@@ -59,7 +84,17 @@ export function requiresBrainRuntimeAuthenticatedProof(changedPaths = []) {
   return unique(changedPaths).some(path =>
     path.startsWith('brain/operating-loop/') ||
     path === 'netlify/functions/brain-operating-loop.mjs' ||
-    path === 'platform/api/brain-operating-loop-handler.mjs'
+    path === 'platform/api/brain-operating-loop-handler.mjs' ||
+    path === 'platform/api/portal-authenticated-production-proof-core.mjs' ||
+    path === 'netlify/functions/portal-authenticated-production-proof.mjs' ||
+    path === 'netlify/functions/portal-ondernemersdata.mjs' ||
+    path === 'netlify/functions/_portal-supabase-store.mjs' ||
+    path === 'platform/agents/agent-team.mjs' ||
+    path === 'brain/observability/publication-evidence-readback.mjs' ||
+    path === 'brain/observability/one-loop-guard-diagnostics.mjs' ||
+    path === 'brain/observability/one-loop-assurance-readback.mjs' ||
+    path === 'netlify/functions/powerhouse-one-loop-assurance.mjs' ||
+    path === 'netlify/functions/powerhouse-observability.mjs'
   );
 }
 
@@ -73,8 +108,10 @@ export function deriveNetlifyDeploymentApplicability({
 }={}) {
   const changed=unique(changedPaths);
   const runtimeChangedPaths=changed.filter(path =>
-    !NETLIFY_GOVERNANCE_EXACT.has(path) &&
-    !NETLIFY_GOVERNANCE_PREFIXES.some(prefix => path.startsWith(prefix))
+    NETLIFY_BUILD_RUNTIME_EXACT.has(path) || (
+      !NETLIFY_GOVERNANCE_EXACT.has(path) &&
+      !NETLIFY_GOVERNANCE_PREFIXES.some(prefix => path.startsWith(prefix))
+    )
   );
 
   if(skipDeployment){
@@ -101,6 +138,7 @@ export function deriveNetlifyDeploymentApplicability({
   const portalRequired=requiredSuites.portal === true;
   const browserRequired=forceBrowser || websiteRequired || portalRequired;
   const netlifyRuntimeRequired=runtimeChangedPaths.some(path =>
+    NETLIFY_BUILD_RUNTIME_EXACT.has(path) ||
     NETLIFY_RUNTIME_EXACT.has(path) || NETLIFY_RUNTIME_PREFIXES.some(prefix => path.startsWith(prefix))
   );
   const deploymentRequired=forceDeployment || websiteRequired || portalRequired || netlifyRuntimeRequired;

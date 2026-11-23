@@ -1,0 +1,9 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {normalizeRecommendationEvidence} from '../supabase/functions/_shared/recommendation-evidence-normalization.mjs';
+const verified={source_lineage:['real-event'],content_id:'unique-event',identity_contract:'arthur-personal-linkedin-identity-v4',identity_gate_version:'channel-identity-hard-gate-v3',ai_native_builder_story_verified:true,ai_native_builder_policy:'personal-linkedin-ai-native-builder-v1',build_event_verified:true,arthur_anchor_verified:true,source_backed:true,business_topic:true,corporate_voice:false,company_page_interchangeable:false,forced_business_moral:false};
+test('existing evidence object unchanged',()=>{const row={evidence:verified};assert.equal(normalizeRecommendationEvidence(row),row)});
+test('string-wrapped JSON object is parsed without mutating original source identity',()=>{const raw={recommendation_id:'r1',evidence:JSON.stringify(verified)};const fixed=normalizeRecommendationEvidence(raw);assert.deepEqual(fixed.evidence,verified);assert.equal(fixed.recommendation_id,'r1');assert.equal(typeof raw.evidence,'string')});
+test('invalid evidence strings remain invalid and fail closed',()=>{for(const evidence of ['not-json','null','true','42','[]','"twice"'])assert.deepEqual(normalizeRecommendationEvidence({evidence}).evidence,{})});
+test('no new truth, claim clearance or provider write by normalizer',()=>{const bad=normalizeRecommendationEvidence({evidence:'{"ai_native_builder_story_verified":false}'});assert.equal(bad.evidence.ai_native_builder_story_verified,false);const src=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');assert.match(src,/\.map\(normalizeRecommendationEvidence\)/);assert.match(src,/personalRejectedSourceIds\.includes\(clean\(source\.recommendation_id\)\)/);assert.match(src,/recoverableObligationUniquenessDenial/)});

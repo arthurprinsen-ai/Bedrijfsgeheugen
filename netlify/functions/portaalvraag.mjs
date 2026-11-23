@@ -22,7 +22,7 @@ const handler=createPortalQuestionHandler({
   store:createPortalProjectionStore(),
   runAnswer:runPortalAnswer,
   runSelectedAnswer:runSelectedPortalAnswer,
-  apiKey:process.env.ANTHROPIC_API_KEY,
+  apiKey:process.env.OPENAI_API_KEY,
   system:SYSTEEM,
 });
 

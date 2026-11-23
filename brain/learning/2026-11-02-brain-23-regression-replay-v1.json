@@ -1,0 +1,88 @@
+{
+  "contract": "one-brain-incident-learning-v1",
+  "obligation_id": "brain-original-backend-23-regression-replay-20261102-v1",
+  "parent_issue": 4439,
+  "source_run_id": 41421421023,
+  "source_head_sha": "6c636e4fcef4b148d955b3eaa985001a3b496920",
+  "source_total_tests": 5377,
+  "source_failed": 23,
+  "source_failed_indexes": [
+    434,
+    475,
+    1098,
+    1101,
+    1103,
+    1184,
+    1185,
+    1186,
+    1202,
+    2126,
+    2220,
+    2486,
+    2793,
+    2917,
+    3161,
+    3272,
+    3276,
+    3342,
+    3680,
+    4011,
+    4499,
+    4534,
+    5095
+  ],
+  "scope": "regression-contract-alignment-and-two-source-corrections",
+  "candidate_addressed_indexes": [
+    1098,
+    1184,
+    1185,
+    1186,
+    1202,
+    2126,
+    2917,
+    3161,
+    3342,
+    4011,
+    4499,
+    475
+  ],
+  "maturity": "CANDIDATE",
+  "root_causes": [
+    "Protected main evolved while historical static tests still assert retired GitHub proof-writer steps, mutable dependency tags and unrotated Mira query strings",
+    "The portal entrypoint app.js query hash diverged from the canonical generated System Map",
+    "A verified-outcome fixture omitted necessary measured metric, baseline, period and source action"
+  ],
+  "prevention": [
+    "Tests must assert current single-writer invariants, not revive retired publisher",
+    "Canonical portal entrypoint must carry exact generated explanationInventory hash",
+    "Historical simulation fixtures must satisfy full measured business-outcome evidence gate",
+    "Never treat a PR or passing subset as 0/23 or production-live"
+  ],
+  "evidence": {
+    "source": "github-actions:41421421023",
+    "verified_zero_failures": false,
+    "source_writes_provider_proven": false,
+    "release_proven": false
+  },
+  "owner": "original ONE BRAIN backend lane",
+  "next_action": "Exact-head Required and full original Unified BRAIN, independent prod evidence; remaining failures stay open",
+  "fingerprint": "powerhouse|brain|postmerge-backend-suite-23-regressions|20261102-v1",
+  "compiler": {
+    "failure_class": "CONTRACT_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs",
+      "tests/brain-cro-other-data.test.mjs",
+      "tests/brain-mira-dataforseo-no-results-20261029.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-daily-blog-watchdog-proof-closure-v1.test.mjs",
+      "tests/brain-daily-entrepreneur-steering-v1.test.mjs",
+      "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs"
+    ]
+  }
+}

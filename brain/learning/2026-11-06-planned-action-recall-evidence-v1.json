@@ -1,0 +1,61 @@
+{
+  "version": "PLANNED_ACTION_RECALL_EVIDENCE_V1",
+  "date": "2026-11-06",
+  "parentIssue": 5510,
+  "obligationId": "delivery|preflight|planned-action-recall-evidence|20261106-v1",
+  "fingerprint": "delivery|preflight|planned-action-review-corpus-missing|20261106-v1",
+  "owner": "canonical planned-action guard and original ONE BRAIN record adapter",
+  "priorEvidence": {
+    "pr5506": "0c96676315ad46b79ae58b38c6b8285a72ce600c",
+    "pr5511": "66bcb7525b48379e2dd733abf5e8359d9731f2be"
+  },
+  "problem": "No real recorded agent action with independently confirmed expected rules linked to original guard decision and outcome; historical PR-title probes are proxies only.",
+  "rootCause": "Original matching and action preflight had deterministic fixtures but no validated independent operational recall corpus.",
+  "change": "Add a pure, non-public canonical BRAIN observation/review evaluation model. Decisions are HMAC-protected, without free-text or tokens; independently reviewed, tenant-matched records on the original BRAIN adapter are mandatory to compute real percentages. No new table, queue, schedule, guard, or provider.",
+  "sourceFiles": [
+    "brain/observability/planned-action-recall.mjs",
+    "tests/brain-planned-action-recall-evidence-20261106.test.mjs"
+  ],
+  "truth": {
+    "corpus": "NOT_MEASURED",
+    "recall": null,
+    "precision": null,
+    "falseBlockRate": null,
+    "causalPrevention": "NOT_PROVEN"
+  },
+  "cannotCloseUntil": [
+    "Capture genuine original agent preflight decision events through canonical authenticated writer",
+    "Collect independently verified reviews across at least 2 agents, 10 positive, 10 negative, 30 reviewed",
+    "Verify outcomes and monitor drift before claiming preventive effectiveness"
+  ],
+  "proof": "PENDING_PROTECTED_CI_ORIGINAL_BRAIN_AND_MAIN_READBACK",
+  "safety": "HMAC key never persisted. source reference cannot itself establish independent review or causal prevention. No second executor or artificial observations.",
+  "compiler": {
+    "failure_class": "UNMEASURED_AGENT_ACTION_RECALL",
+    "scope": "BRAIN_EVIDENCE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-recall-evidence-20261106.test.mjs"
+    ]
+  },
+  "root_cause": "Original planned-action guard/preflight has no independently labelled real-agent decision/outcome corpus. Existing tests use authored plans and historical PR-title proxies rather than exact agent --action inputs.",
+  "prevention_rule": "Allow operational percentages only from validated original BRAIN decision records with externally attested independent labels and adequate sample support; retain null for unknowns.",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "evidence": {
+    "tests": [
+      "tests/brain-planned-action-recall-evidence-20261106.test.mjs"
+    ],
+    "baseline": [
+      "Original BRAIN record planned-action-recall:issue5510:20261106:baseline-v1 confirmed NOT_MEASURED via connected Supabase readback",
+      "PR #5511 original BRAIN terminal and production readback succeeded; no operational recall corpus collected"
+    ],
+    "limitations": [
+      "No real agent decision-source and external reviewer identity attestation joined yet",
+      "Source code candidate unverified until protected merge and terminal readback"
+    ]
+  }
+}

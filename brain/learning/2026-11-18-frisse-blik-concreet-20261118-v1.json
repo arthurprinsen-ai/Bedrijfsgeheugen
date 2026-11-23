@@ -1,0 +1,39 @@
+{
+  "fingerprint": "site|copy|frisse-blik-concreet|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|copy|frisse-blik-concreet|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "PUBLIC_OFFER_PAGE_WITHOUT_PRICE_STEPS_AND_NEXT_STEP",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "De live Frisse blik is de V18-prototypeweergave (twaalf schuifjes) zonder prijs, duur, stappen of vervolg; de handgemaakte bron wordt door de generator overschreven, dus de uitleg bereikte de bezoeker niet.",
+  "correction": "Nieuwe idempotente buildstap na lokalisatie en commercial-pricing vult het lege body-blok van de Frisse blik met: gratis zelfscan, Bedrijfsgeheugen Scan (€ 2.950 excl. btw, vaste prijs vooraf, bestaand besloten bedrag in de config), wat je krijgt en dat de scan bij bouwen wordt verrekend. NL en EN. Geen offers in structured data, geen garanties.",
+  "prevention": [
+    "Wijzig de V18-view niet met de hand; vul via een generatorstap die na lokalisatie draait.",
+    "Prijs in zichtbare tekst volgt de bestaande prijsconfig en de prijs-waarheidstest."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-site-shell-frisse-blik-concreet-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-site-shell-frisse-blik-concreet-20261118.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-site-shell-frisse-blik-concreet-20261118.test.mjs"
+    ],
+    "source": [
+      "tools/site-shell/apply-frisse-blik-concreet.mjs",
+      "tools/ci/netlify-build-entry.mjs"
+    ],
+    "outcome": "Lokaal: 5 van 5 tests groen. Live-readback na merge en klikmeting zelfscan volgen."
+  }
+}

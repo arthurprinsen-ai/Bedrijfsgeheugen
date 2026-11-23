@@ -1,0 +1,81 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|company-intelligence|original-daily-source-observer-no-second-send|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "ORIGINAL_COMPANY_OS_UNWIRED_SOURCE_OBSERVER_RISK_OF_DUPLICATE_PROVIDER_OUTREACH",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The sole existing daily self-improvement job #107 had stopped invoking the original Company Intelligence OS and only read its derived company views; production had zero company_intelligence_os_cycle events. The original OS function still directly invokes the multi-stage commercial acquisition pipeline including outbound dispatch, so blindly reconnecting it would create a second provider send path.",
+  "change": {
+    "source": "supabase/migrations/20261115235900_company_intelligence_existing_daily_source_receipt_v1.sql",
+    "original_owner": "powerhouse_run_self_improvement_layer_v1(date) / original daily cron 107",
+    "original_os": "powerhouse_run_company_intelligence_os_v1(date)",
+    "original_commercial_source": "powerhouse_runtime_events.trigger_based_mkb_acquisition_cycle",
+    "new_scheduler": false,
+    "new_table": false,
+    "new_agent": false,
+    "new_public_provider_send": false,
+    "no_new_crm": true,
+    "idempotent_one_daily_event": true,
+    "financial_value_generated": false
+  },
+  "prevention": {
+    "read_existing_verified_same_day_commercial_source_event": true,
+    "do_not_rerun_commercial_dispatch": true,
+    "no_unverified_provider_send_claim": true,
+    "company_snapshot_source_receipt_is_not_financial_outcome": true,
+    "typed_original_error_status": true,
+    "existing_original_daily_writer_only": true,
+    "financial_source_missing_is_not_zero_roi": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-intelligence-daily-source-receipt-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-intelligence-daily-source-receipt-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-intelligence-daily-source-receipt-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_previous_company_os_cycle_count": 0,
+    "original_verified_commercial_source_events_last_48h": 48,
+    "original_self_improvement_jobid": 107,
+    "original_resource_optimizer_jobid": 59,
+    "original_financial_forecasts": 0,
+    "original_realized_values": 0,
+    "original_optimization_candidates": 14,
+    "old_outcome_verified_source_events": 14,
+    "candidate_only": true,
+    "predeploy_canary_not_run": false,
+    "protected_merge_not_yet_proven": true,
+    "provider_outreach_duplicate_not_triggered_by_new_source": true,
+    "customer_realized_value_not_proven": true,
+    "native_preview_project": "xcxklrnijjjoalgcmtwu",
+    "native_preview_migration_version": "20261115235900",
+    "native_preview_migration_applied": true,
+    "native_preview_observer_source_status": "ORIGINAL_COMMERCIAL_SOURCE_EVENT_DUE",
+    "native_preview_single_original_company_event": true,
+    "native_preview_single_self_improvement_ack": true,
+    "native_preview_self_quality": "COMPANY_OS_SOURCE_RECEIPT_DUE",
+    "native_preview_public_execute_denied": true,
+    "native_preview_service_only": true,
+    "production_customer_result_verified": false
+  },
+  "semantic_learning": {
+    "cause": "An authority name in a JSON snapshot is not an actual invocation. Calling the original OS indiscriminately would rerun a commercial writer and cause unsafe duplicate side effects.",
+    "prevention_rule": "Existing daily self-improvement must invoke the original Company Intelligence observer once using the existing dedupe key and exact prior commercial runtime event, with separate `SOURCE_RECEIPT_ONLY` and `EVIDENCE_DUE` financial truth. No external provider call in the observer.",
+    "regression_guard": "tests/brain-company-intelligence-daily-source-receipt-20261115.test.mjs",
+    "next_owner": "Original Company Intelligence OS/Powerhouse self-improvement #107/Heartbeat/ONE BRAIN",
+    "effect_proof": "PROTECTED_NATIVE_PREVIEW_SQL_AND_IDEMPOTENT_COMPANY_SELF_CYCLE_PASSED_PRODUCTION_RELEASE_DUE"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|daily-blog|seo-action-verb-generic-title|20261118-v1",
+  "date": "2026-11-18",
+  "tenant": "canonical",
+  "channel": "blog",
+  "owner": "original powerhouse-daily-blog.yml / tools/site-shell/publish_powerhouse_blog_artifact.py",
+  "source_obligation": "content-publication:2026-11-18:blog",
+  "original_failed_article_ci": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44300357585",
+  "original_content_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6028",
+  "root_cause": "The canonical publisher chose first action verb 'bereid' from the approved 'Hoe bereid je je MKB-boekhouding ...' title as its focus keyword, then fallback seo_title omitted the actual subject and wrote lowercase, generic 'bereid: wat verandert er voor jou?' into the exact article, blog index and RSS. Protected SEO preflight caught it.",
+  "prevention": "Use source-backed subject extraction that excludes generic opening verbs and preserves hyphenated noun phrases. Generate a concise content-specific headline only from approved subject/target; keep existing legacy title policy unchanged. Run source exact regression before protected blog PR / NL+EN publishing. Preserve original writer and single same-date obligation; keep all i18n, security, protected CI, Netlify and independent production receipt gates.",
+  "evidence": {
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6028",
+    "failing_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44300357585",
+    "expected_focus": "MKB-boekhouding",
+    "expected_title": "MKB-boekhouding koppelen aan mobiele betaalapps",
+    "regression": "tests/brain-blog-action-verb-topic-title-20261118.test.mjs",
+    "protected_merge": false,
+    "actual_article_live_proven": false,
+    "email_sent_proven": false,
+    "linkedin_personal_post_proven": false
+  },
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-action-verb-topic-title-20261118.test.mjs",
+      "tests/brain-blog-seo-focus-pronoun-20261108.test.mjs"
+    ],
+    "shadow": [],
+    "canary": []
+  },
+  "restrictions": [
+    "No parallel publisher",
+    "No altered original business date/content_id",
+    "No invented claims",
+    "No relaxed SEO/i18n gate",
+    "No false provider/outcome success"
+  ],
+  "status": "SOURCE_FIX_CANDIDATE",
+  "live_proven": false
+}

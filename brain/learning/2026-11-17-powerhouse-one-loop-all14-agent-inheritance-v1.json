@@ -1,0 +1,58 @@
+{
+  "fingerprint": "powerhouse|all14-agent-fabric|missing-universal-source-consumer-outcome-inherited-runtime-task|20261117-v1",
+  "obligation_id": "P0_ORIGINAL_ONE_LOOP_ALL14_AGENTS_20261117",
+  "owner": "existing original 14-agent powerhouse Agent Fabric; ONE BRAIN native obligation, #171 existing runtime mux",
+  "compiler": {
+    "failure_class": "UNIVERSAL_AGENT_ONE_LOOP_CONSUMER_OUTCOME_INHERITANCE_MISSING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-universal-agent-original-owner-closed-loop-20261117.test.mjs",
+      "tests/brain-one-loop-agent-skill-binding-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-universal-agent-original-owner-closed-loop-20261117.test.mjs",
+      "tests/brain-original-daily-source-brain-heartbeat-one-loop-20261112.test.mjs"
+    ]
+  },
+  "root_cause": "The protected Nov17 Instagram provider-measurement fix and source-radar recovery were shipped to live Supabase Edge and locally documented in publisher skill and learning, but shared all-specialist inherited runtime tasks and global AGENTS/continuity/green assurance/engineering/growth skills did not yet bind those exact stages in one testable universal original ONE BRAIN→Heartbeat contract. A green cron and a successful original deployment are not proof of a source winner, a Meta post, a named processed consumer or improved commercial outcome.",
+  "source_evidence": {
+    "original_supabase_project": "adhjwmvyoixzjtmiroln",
+    "original_agent_team_count": 14,
+    "original_brain_source_of_truth": "brain_obligations, brain_failure_occurrences",
+    "original_radar": "powerhouse-mira-problem-radar-v1 #120 ACTIVE Edge v1104",
+    "original_orchestrator": "powerhouse-content-orchestrator-daily-v1 #140 ACTIVE",
+    "original_mux": "powerhouse-runtime-scheduler-mux-v1 #171 ACTIVE",
+    "original_meta_measurement": "bg-social-metrics-source-6h-v1 #177 ACTIVE",
+    "direct_instagram_observation_20261117": {
+      "publication_status": "PLANNED",
+      "external_meta_id": null,
+      "live_proven_at": null,
+      "measured_at": null,
+      "learned_at": null,
+      "brain_state": "OPEN",
+      "brain_stage": "OVERDUE_PUBLICATION"
+    },
+    "daily_winner_20261118": null,
+    "media_job_20261118": null,
+    "last_independently_observed_meta_post": "https://www.instagram.com/reel/DeBeb6oAMY8/",
+    "prior_protected_source_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5952",
+    "prior_protected_provider_metrics_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5950"
+  },
+  "correction": "Add four immutable inherited original owner, named Brain consumer, independent Heartbeat outcome and repeat-prevention tasks to each of the 14 existing default specialist agents; place binding global AGENTS policy at file top and update 7 relevant existing specialist skills. No second agent/cron/writer/queue/Meta post; unchanged owner authority, deadlines, provider/date gates and protected workflow.",
+  "prevention": "A new original 14-specialist inherited task regression fails if any existing specialist lacks the four tasks, or any relevant specialist skill/AGENTS stops honoring the same original scope. Existing CI admission must pass exact protected head before provider verification. Correctly classify source, provider, consumer, outcome and applied learning as separate proofs; do not close a parent obligation from a partial successful child.",
+  "tests": [
+    "tests/brain-instagram-universal-agent-original-owner-closed-loop-20261117.test.mjs",
+    "tests/brain-one-loop-agent-skill-binding-20261105.test.mjs"
+  ],
+  "status": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_NATIVE_AGENT_FABRIC_READBACK",
+  "next_action": "Verify exact Required+CodeQL, protected merge and original production agent-team revision; at next natural original source #120 verify genuine source/day winner + media CAS, Meta-ID GET and named original Brain consumer/Heartbeat next natural measurements; propagate only independently observed deltas; leave original #5232 / #4198 open until provider delivery and impact proven.",
+  "independent_publication_proven": false,
+  "independent_named_consumer_processed_proven": false,
+  "independent_heartbeat_impact_proven": false,
+  "external_paid_orders_proven": false
+}

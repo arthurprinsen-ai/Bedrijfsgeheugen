@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|terminal|exact-head-unified-brain-run-missing|20261029-v1",
+  "compiler": {
+    "failure_class": "MISSING_EXACT_HEAD_BRAIN_DISPATCH",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ]
+  },
+  "root_cause": "On protected merge the original Obligation Terminal Closure requires exact-head Unified Brain Delivery workflow_dispatch from trusted main, but nothing guarantees that a workflow_dispatch exists for the merged PR. #5246 Required and CodeQL succeeded but terminal #41350194932 waited and failed with TERMINAL_CRITICAL_GATE_NOT_TERMINAL:BRAIN; this same fingerprint previously occurred on 29 Oct.",
+  "prevention_rule": "Within the already canonical protected original terminal workflow, verify merged same-repository main PR, exact immutable head/merge SHA and merge ancestry before dispatching the already existing Unified Brain Delivery verification_only=true workflow on main, at most once for original PR+head. Do not add scheduler, writer, publisher, alternative workflow, automatic retries of failing BRAIN, or skip terminal required checks. No provider/merchant success claims without independent proof.",
+  "owner": "original GitHub obligation-terminal-closure and unified-brain-delivery owners",
+  "evidence": {
+    "incident_trigger": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41350194932",
+    "previous_occurrences": 2,
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5246",
+    "head_sha": "293bc635e5521472c56974dc74910bffe25c4f60",
+    "merge_sha": "5b1fc01c8d577c73b62aea2f70030e3a5d7cb838",
+    "original_required": "SUCCESS",
+    "original_codeql": "SUCCESS",
+    "terminal": "FAILED_MISSING_BRAIN_DISPATCH",
+    "recovery_code": ".github/workflows/obligation-terminal-closure.yml",
+    "regression": "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs",
+    "new_pr": "PENDING",
+    "read_only_recovery": "verification_only=true",
+    "production_or_provider_result": "UNKNOWN",
+    "status": "SOURCE_CHANGE_PENDING_PROTECTED_CI"
+  }
+}

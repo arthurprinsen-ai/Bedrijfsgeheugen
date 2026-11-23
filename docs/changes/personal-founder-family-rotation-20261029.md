@@ -1,0 +1,3 @@
+# Preserve personal story-family uniqueness while allowing genuinely new events
+
+The original builder reserve reused one same-date recommendation per broad event kind. A rejected recommendation could not rotate to a truly different verified event family. The bounded repair uses a source-family reservation key: the real recorded event type for internal progress/friction, or exact externally verified source reference. New event IDs in the same type never create a fresh family; new source types may, but still face recent-family, content, security, provider identity and duplicate checks. This modification alone is not proof of publication.

@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|commercial-cycle|negative-terminal-stuck-after-legacy-execution|20261029-v1",
+  "status": "SOURCE_CANDIDATE_UNVERIFIED",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sales-cycle-negative-terminal-reconcile-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Legacy SQL advanced a negative outcome to execution, resulting in outcome_pending cycles even though the true sales action was expired or skipped; subsequent corrected logic omitted skipped from blocked branch.",
+  "evidence": {
+    "query": "Canonical join decision cycles, sales actions, sales outcomes; status in open/outcome_pending; executed_at NULL, outcome not_executed, revenue=0 and same action_id",
+    "affected_cycles": 5190,
+    "expired": 4879,
+    "skipped": 311,
+    "observed_on": "2026-10-29",
+    "historical_event_log": "IMMUTABLE"
+  },
+  "prevention_rule": "Negative terminal sales action statuses expired and skipped must be blocked, never promoted to execution/outcome_pending. Historical projection correction requires actual source action & outcome pairing and zero paid revenue.",
+  "fix": "Replace existing SQL function to include skipped in blocked; one bounded guarded status-only reconciliation against existing cycles. No new writer/cron and no event reclassification.",
+  "tests": [
+    "tests/brain-sales-cycle-negative-terminal-reconcile-20261029.test.mjs"
+  ],
+  "open_gaps": [
+    "FUTURE_NEGATIVE_CANARY",
+    "LEGACY_EVENT_READ_MODEL_VERIFICATION",
+    "RUNTIME_AGENT_METADATA",
+    "REAL_PAID_REVENUE"
+  ]
+}

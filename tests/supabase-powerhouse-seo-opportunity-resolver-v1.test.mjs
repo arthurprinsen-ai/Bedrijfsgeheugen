@@ -21,8 +21,9 @@ test('resolver consumes GSC, cached DataForSEO and external market forecasts bef
   assert.match(fn,/bg_zoekwoordkansen/);
   assert.match(fn,/powerhouse_forecasts/);
   assert.match(fn,/opgehaald_op.*72\*3600000/s);
-  assert.match(fn,/opgehaald_op.*14\*86400000/s);
+  assert.match(fn,/opgehaald_op.*7\*86400000/s);
   assert.match(sourceConfig.resolver?.read_order?.join('>')||'',/google-search-console>dataforseo-cache>powerhouse-market-forecasts/);
+  assert.equal(sourceConfig.resolver.freshness_hours['dataforseo-cache'],168);
 });
 
 test('resolver improves an existing owner first and only creates content for a distinct high-value gap',()=>{
@@ -53,4 +54,24 @@ test('daily schedule executes after GSC and before the canonical morning publish
   assert.match(schedule,/25 5 \* \* \*/);
   assert.match(schedule,/powerhouse_daily_scheduler_token/);
   assert.match(schedule,/net\.http_post/);
+});
+
+test('source-backed UPDATE_MONEY_PAGE is handed off to existing website owner, never silently forecast-only',()=>{
+  assert.match(fn,/selectOriginalSeoMoneyHandoffs\(top,\{runDate,observedAt,max:3\}\)/);
+  assert.match(fn,/target_channel:'blog'/);
+  assert.match(fn,/SEO_ORIGINAL_OWNER_HANDOFF_WRITE/);
+  assert.match(fn,/onConflict:'dedupe_key',ignoreDuplicates:true/);
+  assert.match(fn,/owner_handoffs_written:ownerHandoffsWritten/);
+  assert.match(fn,/execution_readback:'EVIDENCE_DUE'/);
+});
+test('Twinfield API short query has one canonical intent owner in original registry and locale map',()=>{
+  const route='https://www.bedrijfsgeheugen.nl/twinfield-koppeling';
+  assert.equal(base.pages.filter(p=>p.secondary_keywords?.includes('twinfield api')).length,1);
+  const owner=owners.pages.find(p=>p.route===route);
+  assert.ok(owner?.secondary_keywords?.includes('twinfield api'));
+  const locale=JSON.parse(fs.readFileSync('site/seo-locale-revenue-map.json','utf8'));
+  assert.ok(locale.pages.find(p=>p.source_route===route)?.nl?.secondary_keywords?.includes('twinfield api'));
+  const html=fs.readFileSync('twinfield-koppeling.html','utf8');
+  assert.match(html,/<title>Twinfield API-koppeling laten maken \| Bedrijfsgeheugen<\/title>/);
+  assert.match(html,/rel="canonical" href="https:\/\/www\.bedrijfsgeheugen\.nl\/twinfield-koppeling"/);
 });

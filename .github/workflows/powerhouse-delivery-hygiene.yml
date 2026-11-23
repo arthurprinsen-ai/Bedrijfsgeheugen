@@ -105,7 +105,7 @@ jobs:
           # END TRUSTED_ADMISSION_POLICY_SOURCE
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
-          import { readFile, writeFile, appendFile } from 'node:fs/promises';
+          import { readFile, writeFile, appendFile, lstat } from 'node:fs/promises';
           import { setTimeout as sleep } from 'node:timers/promises';
           import { parseDeliveryMetadata, parseWriterLease, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
           import { validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage } from './tools/delivery/github-delivery-state-machine.mjs';
@@ -154,6 +154,7 @@ jobs:
           let immutableBaseSha = '';
           let changedPaths = [];
           let currentContracts = [];
+          let firstTimeRightFailure = null;
 
           const writeFailureEvidence = async (state, error) => {
             const evidence = {
@@ -166,10 +167,11 @@ jobs:
               candidate_head_sha: headSha,
               changed_paths: changedPaths,
               conflict_contracts: currentContracts,
+              first_time_right: firstTimeRightFailure,
               state,
               ok: false,
               admitted: false,
-              failure_fingerprint: classifyGitHubAdmissionReadError(error).fingerprint,
+              failure_fingerprint: firstTimeRightFailure?.fingerprint || classifyGitHubAdmissionReadError(error).fingerprint,
               provider_recovery: classifyGitHubAdmissionReadError(error).next_action,
               error: errorSummary(error),
             };
@@ -280,6 +282,33 @@ jobs:
             const securityGate = scanStaticSecurity(patch);
             if (!securityGate.ok) throw new Error(`SECURITY_STATIC_FAILED:${securityGate.findings.join(',')}`);
 
+            // First Time Right: load a protected trusted-main policy, NOT candidate code.
+            // The exact SHA comes from the independently queried GitHub original main ref.
+            const trustedFtrSha = currentMainSha;
+            const trustedFtrName = 'tools/delivery/first-time-right-prebuild-gate.mjs';
+            sh('git','fetch','--no-tags','--depth=1','origin',trustedFtrSha);
+            const trustedFtrCode = sh('git','show',`${trustedFtrSha}:${trustedFtrName}`);
+            if (!trustedFtrCode.trim()) throw new Error('TRUSTED_FTR_POLICY_UNAVAILABLE');
+            const trustedFtrPath = `${process.env.RUNNER_TEMP}/trusted-first-time-right-${trustedFtrSha}.mjs`;
+            await writeFile(trustedFtrPath,trustedFtrCode);
+            const {evaluateFirstTimeRightPrebuild} = await import(pathToFileURL(trustedFtrPath).href);
+            const firstTimeRight = await evaluateFirstTimeRightPrebuild({
+              changedPaths,obligationId:candidateMetadata.obligationId,
+              readSource:async candidatePath => {
+                const stat = await lstat(candidatePath);
+                if(!stat.isFile()||stat.isSymbolicLink()) throw new Error('FTR_SOURCE_NOT_REGULAR_FILE');
+                return readFile(candidatePath,'utf8');
+              }
+            });
+            if(!firstTimeRight.ok){
+              firstTimeRightFailure=firstTimeRight.failure_evidence;
+              await writeFile('.artifacts/powerhouse-prebuild-evidence.json',JSON.stringify({
+                ...firstTimeRight,head_sha:headSha,pr_number:prNumber,observed_at:new Date().toISOString()
+              },null,2)+'\n');
+              throw new Error('FIRST_TIME_RIGHT_PREBUILD_BLOCKED:'+firstTimeRight.reasons.map(v=>v.code+':'+v.path).join(','));
+            }
+            console.log(JSON.stringify({status:'FIRST_TIME_RIGHT_PREBUILD_READY',checks:firstTimeRight.checked,head_sha:headSha}));
+
             const lease = evaluateWriterLease({
               body: pr.body || '',
               candidateHeadSha: headSha,
@@ -361,6 +390,7 @@ jobs:
                 classifier_completeness: true,
                 test_workflow_coverage: coverageGate.ok,
                 security_static: securityGate.ok,
+                first_time_right_prebuild: firstTimeRight.ok,
                 writer_lease: lease.ok,
               },
               classified_lanes: classifiedLanes,
@@ -372,7 +402,7 @@ jobs:
             console.log(JSON.stringify(evidence,null,2));
             if (!result.ok) process.exitCode = 78;
           } catch (error) {
-            const state = classifyGitHubAdmissionReadError(error).state;
+            const state = String(error?.message || '').startsWith('FIRST_TIME_RIGHT_PREBUILD_BLOCKED:') ? 'FIRST_TIME_RIGHT_PREBUILD_BLOCKED' : classifyGitHubAdmissionReadError(error).state;
             await writeFailureEvidence(state, error);
             process.exitCode = 1;
           }
@@ -436,5 +466,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: powerhouse-delivery-hygiene-${{ github.run_id }}
-          path: .artifacts/powerhouse-delivery-hygiene.json
+          path: |
+            .artifacts/powerhouse-delivery-hygiene.json
+            .artifacts/powerhouse-prebuild-evidence.json
           if-no-files-found: error

@@ -1,0 +1,63 @@
+{
+  "contract": "ORIGINAL_INNOVATION_METRIC_SOURCE_TRUTH_V1",
+  "observed_on": "2026-11-15",
+  "original_candidate_id": "2c1ecc77-58aa-4f25-ae68-e2337853fdc7",
+  "original_owner": "agent:agent-integration-engineer",
+  "source_key": "quality-learning-v1:powerhouse-agent-runtime-lean-observability-coverage-20261029",
+  "source_revision": "2026-10-29T13:19:24.643686+00:00",
+  "source_sha256": "f99e9bd94b52b57e6f1af0b0caa0effeef2d0f7510a6b1e914fb21002b57edad",
+  "operation_id": "56e16919-6275-4c2e-9208-6ac0c8a29a29",
+  "operation_version": 5,
+  "correlation_id": "innovation-delivery:2c1ecc77-58aa-4f25-ae68-e2337853fdc7",
+  "idempotency_key": "innovation-delivery:2c1ecc77-58aa-4f25-ae68-e2337853fdc7:f99e9bd94b52b57e",
+  "decision_fingerprint": "513903cf1a78fb1aded64107d2485aba4540342f92c7b9cc7657765e75c6ed9b",
+  "fingerprint": "powerhouse|innovation|metric-coercion-false-zero|20261115-v1",
+  "root_cause": "Number coercion treated whitespace, booleans and arrays as measurements, including zero; malformed red-loop counts could suppress LOOP_ASSURANCE_NOT_GREEN.",
+  "correction": "Accept only finite number scalars or nonblank numeric strings; all other metric values remain null. Preserve real zero and signed amounts.",
+  "prevention_rule": "Unknown source values must remain unknown before aggregation or numeric evidence comparisons. Replay malformed scalars and containers alongside genuine numeric zero.",
+  "scope": "RUNTIME",
+  "failure_class": "FALSE_GREEN",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-metric-source-truth-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-metric-source-truth-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "before": "New historical replay failed with actual 0 versus expected null on original source; numeric control passed.",
+    "after": "New regression and four existing affected test files passed in one node --test invocation (5 files, 0 failures).",
+    "existing_guards": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
+      "tests/brain-powerhouse-preview-evidence-cockpit-20261029.test.mjs",
+      "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs",
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+    ],
+    "preflight": "shared --action passed; planned-action matches empty; operational recall NOT_MEASURED",
+    "limits": "Local synthetic regression evidence only. No provider or production readback, measured business improvement or consumer ACK.",
+    "canary": "Run the same source-truth acceptance regression in POWERHOUSE_LEARNING_EVAL_MODE=CANARY; passing is test evidence only, not independent production/financial effect."
+  },
+  "review_required": true,
+  "protected_review_required": true,
+  "automatic_production_mutation": false,
+  "candidate_pr_only": true,
+  "rollback": "{\"guard\":\"fail closed for missing actor truth; no secret or PII logs\",\"rollback\":\"revert source-authored schema/writer changes through protected single-writer release, preserve immutable events and original evidence\"}",
+  "local_rollback": "Revert the metric helper source hunk through the original protected writer; immutable events remain untouched.",
+  "release_state": "WORKSPACE_CANDIDATE_REVIEW_DUE",
+  "obligation_state": "OPEN",
+  "consumer_ack_verified": false,
+  "measured_improvement_verified": false,
+  "terminal_success": false,
+  "next_safe_action": "Required protected CI must run historical replay plus canary evaluation; after merge verify exact deployed SHA and independently measure runtime truth before treating original innovation as delivered."
+}

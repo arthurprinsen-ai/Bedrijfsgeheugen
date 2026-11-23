@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|cro|new-site-social-email-diagnostics-not-consumed-by-original-agent|20261117-v1",
+  "obligation_id": "CRO_ORIGINAL_CONSUMER_READBACK_20261117",
+  "owner": "original powerhouse-content-orchestrator-140 / ONE BRAIN / Heartbeat",
+  "compiler": {
+    "failure_class": "CRO_DIAGNOSTIC_PRODUCER_TO_CONSUMER_GAP",
+    "scope": "HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Three real service-only site, post and email diagnostic projections were in production, but existing GROWTH_SOURCE_DAILY_HANDOFF consumer only read legacy source classes and did not independently read the three diagnostics.",
+  "source_evidence": {
+    "consumer_function": "public.powerhouse_daily_source_consume_v1(date)",
+    "original_function_md5": "0f08b2e3dc972498a5298e10e3e7e71c",
+    "live_views": [
+      "powerhouse_cro_site_signal_v1",
+      "powerhouse_cro_post_signal_v1",
+      "powerhouse_cro_email_signal_v1"
+    ],
+    "email_recent_verified_send_readbacks": 0,
+    "innovation_open": 14
+  },
+  "correction": "Extend the existing natural original #140 consumer to read and record privacy-minimal diagnostics into original Brain obligation and original runtime event, distinct from producer ACK, execution, causal lift and revenue; fail-closed on unavailable view, no new scheduler or sender.",
+  "prevention": "Require original consumer diagnostics readback with tenant/source revision and hourly distinct source proof before treating CRO data handoff as healthy; keep incomplete sources and non-verified outcomes OPEN.",
+  "status": "CANDIDATE_UNTIL_PROTECTED_MERGE_MIGRATION_AND_NATURAL_RUN_READBACK",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-cro-consumer-readback-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-cro-consumer-readback-20261117.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-cro-consumer-readback-20261117.test.mjs"
+  ]
+}

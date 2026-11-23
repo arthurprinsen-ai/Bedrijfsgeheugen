@@ -1,0 +1,65 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROVIDER_APPLIED_821_LOCK_ONLY_PROTECTED_CANDIDATE",
+  "fingerprint": "powerhouse|supabase|native821-original-historical-closure-lock-after-gitops|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original GitHub Required + Supabase GitOps migration source/lock owner",
+  "root_cause": "Protected PR #5556 merged at 147a8769208006091ed94cedc6e7b1803148ee37. Native Supabase integration independently applied exactly one migration 20261110123000_original_content_handoff_no_aging_gap_v2, advancing production provider schema_migrations to 821. Git main has original 821 SQL sources but canonical migration-history.lock.json still lists 820 identities. Future new migration PRs then fail exact original admission. This is a source lock handoff after automatic provider migration, not a reason to run SQL again.",
+  "production_evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "checked_at_utc": "2026-11-10T09:28:59.623170Z",
+    "provider_count": 821,
+    "prior_lock_count": 820,
+    "first_820_provider_source_lock_identities_verified_equal": true,
+    "new_version": "20261110123000",
+    "new_name": "original_content_handoff_no_aging_gap_v2",
+    "provider_sql_source_blob": "75e0b095eae1528474bc1e03fd0dc90182d240e7",
+    "original_native_release_pr": 5556,
+    "original_merge_sha": "147a8769208006091ed94cedc6e7b1803148ee37",
+    "business_run": "original minute 171 and provider metrics 177 remain active",
+    "first_production_audit": {
+      "tracked": 84,
+      "open": 84,
+      "overdue": 69,
+      "individual_learning_reinspected": 48,
+      "unregistered_historic": 0
+    },
+    "repeat_idempotence": "three consecutive native production checks with no additional source handoff record mutations after initial rotation",
+    "has_causal_revenue_lift": false
+  },
+  "fix": "One original protected lock-only source change: append exact already-applied 821st provider version/name to existing source lock, unchanged previous 820 IDs and existing SQL files. No new migration file or executor, no DDL, no provider token, no send, no approval bypass. Required+CodeQL+Supabase Hosted Preview must verify exact source/lock/provider parity before protected merge.",
+  "prevention": "After protected GitOps merge, independently read original Supabase provider-applied migration IDs and reconcile source lock as a separately protected lock-only action before new SQL migration admission. Never infer provider DDL success from a GitHub merge alone; original provider exact version+name is the authority. Recheck source lock version on every original migration candidate and never weaken existing static admission.",
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "invariants": [
+      "original first 820 provider identities immutable",
+      "821 unique source/lock/provider version-name records",
+      "no new SQL source in lock-only PR",
+      "no new scheduler, email send or social post",
+      "original protected Required, CodeQL and hosted Supabase Preview",
+      "review original owner handoff and keep unverified work OPEN"
+    ]
+  },
+  "compiler": {
+    "scope": "DATABASE_MIGRATIONS",
+    "failure_class": "POST_GITOPS_NATIVE_PROVIDER_821_SOURCE_LOCK_HANDOFF_LAG",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Original Required, CodeQL, native hosted Supabase preview SUCCESS on exact head; protected merge, independent all 821 provider/source lock entries same in main, original #171/#140/#177 remain active, no provider DDL in lock PR. Original 436 open handoffs and 189 overdue learning obligations are real, not falsely closed."
+}

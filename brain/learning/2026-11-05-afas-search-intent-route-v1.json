@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "fingerprint": "seo|afas|commercial-query-displays-pricing-intent-route|20261105-v1",
+  "owner": "original website SEO owner / Powerhouse SEO Order Engine",
+  "state": "SOURCE_CANDIDATE_NOT_LIVE",
+  "source": "Google Search Console domain sc-domain:bedrijfsgeheugen.nl; DataForSEO NL; GitHub original source",
+  "observation": {
+    "period": "2026-10-01/2026-11-02",
+    "gsc_impressions": 260,
+    "gsc_clicks": 2,
+    "prior_period": "2026-09-01/2026-09-30",
+    "prior_impressions": 429,
+    "prior_clicks": 11,
+    "afas_webshop_query_impressions": 39,
+    "afas_webshop_query_clicks": 0,
+    "afas_webshop_query_position": 95.4615,
+    "shown_page": "/blog/wat-kost-een-afas-koppeling/",
+    "sitemap_submitted_urls": 271,
+    "sitemap_reported_errors": 0,
+    "independently_confirmed_indexed_count": null
+  },
+  "root_cause": "AFAS service custom focus keyword pointed to informational pricing instead of its baseline-assigned service intent; pricing article lacked explicit webshop service handoff; poor rankings remain a separate authority and content problem, not proven solved by link correction.",
+  "intervention": "Unique keyword ownership + qualified AFAS webshop explanatory block + canonical editorial deep link, existing pages only.",
+  "prevented_failure": "No duplicate money page or fake ranking improvement; require PR machine metadata and three evidence bundle families before gate.",
+  "release": {
+    "pr": 5447,
+    "base_sha": "1fec0b4d6ece32000a199d3bd1bb317f51a62a6a",
+    "required_check": "PENDING_OR_FAILED",
+    "production_readback": "EVIDENCE_DUE",
+    "test": "tests/brain-seo-afas-search-intent-route-20261105.test.mjs"
+  },
+  "experiment": {
+    "baseline_period": "2026-10-01/2026-11-02",
+    "measurement_windows_days": [
+      28,
+      56
+    ],
+    "metrics": [
+      "afas_webshop_query_impressions",
+      "query_to_canonical_page",
+      "nonbranded_organic_clicks",
+      "avg_position_with_impressions",
+      "consented_cta_clicks",
+      "qualified_leads"
+    ],
+    "guardrails": [
+      "no keyword cannibalization",
+      "no unsupported provider capability claims",
+      "no indexing or revenue fabrication",
+      "retain existing writer and publisher"
+    ],
+    "decision": "EVIDENCE_DUE"
+  },
+  "failure_class": "SEARCH_INTENT_MISMATCH",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-afas-search-intent-route-20261105.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SEARCH_INTENT_MISMATCH",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention": "Before protected SEO PR: preserve one canonical keyword owner per search intent and a relevant context link; submit valid machine metadata, executable Brain replay, activity ledger and human documentation. Follow real GSC query-page readback, do not invent ranking lifts.",
+  "evidence": {
+    "gsc_provider": "sc-domain:bedrijfsgeheugen.nl",
+    "baseline_impressions": 260,
+    "baseline_clicks": 2,
+    "afas_query_impressions": 39,
+    "afas_query_avg_position": 95.4615,
+    "root_page": "/blog/wat-kost-een-afas-koppeling/",
+    "test": "tests/brain-seo-afas-search-intent-route-20261105.test.mjs",
+    "production_status": "NOT_LIVE_PENDING_REQUIRED_AND_NETLIFY_READBACK"
+  }
+}

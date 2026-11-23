@@ -1,0 +1,77 @@
+{
+  "fingerprint": "powerhouse|innovation|historical-execution-current-action-state-false-gap|20261115-v1",
+  "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+  "original_owner": "agent:agent-integration-engineer",
+  "original_operation": "edebcb32-335b-49f0-b527-eb4289f95c5c",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "FALSE_NEGATIVE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original bounded read model checked present-day mutable action.status=done to judge an immutable historical execution event. A safe later internal research_enrichment requeue to waiting after an earlier execution makes a historically source-backed event incorrectly unsupported.",
+  "independent_historical_baseline": {
+    "lookback": "7d",
+    "observed_at": "2026-11-15T14:20:58Z",
+    "original_execution_events": 164,
+    "unique_event_ids": 164,
+    "immutable_writer_done_with_event_source_evidence": 164,
+    "current_done": 163,
+    "current_waiting": 1,
+    "external_provider_dispatch_proof": false,
+    "original_consumer_ack_proof": false,
+    "revenue_effect_proof": false,
+    "original_brain_receipt_version": 7
+  },
+  "prevention_rule": "Historical execution requires exact original immutable event payload done/observed_action_state/SQL writer v1 and original evidence_ref, consistent event-timed executed_at and identical linked action executed_at. Current mutable status is a separate count. Never let later waiting invalidate past valid event, or let event-only self-claims pass without original action join. Preserve original Netlify runtime deploy classification, fail-closed exact paginated 7d census and auth.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+    ],
+    "negative_tests": [
+      "forged_event_payload",
+      "wrong_writer",
+      "wrong_truth_class",
+      "wrong_source_ref",
+      "wrong_timestamp",
+      "missing_action",
+      "post_event_mutation",
+      "provider_count_drift",
+      "duplicate_event_uuid",
+      "over_500_cap"
+    ],
+    "canary": [
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+    ]
+  },
+  "change_scope": [
+    "platform/portal/powerhouse-existing-integration-read-model.mjs",
+    "portal-v2/control-plane-cockpit.js",
+    "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    "brain/learning/2026-11-15-immutable-execution-requeue-v1.json",
+    "docs/changes/2026-11-15-immutable-execution-requeue.md",
+    "docs/development-ledger-events/2026-11-15-immutable-execution-requeue.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "portal-v2/index.html"
+  ],
+  "implementation_state": "PROTECTED_PR_PENDING_PRODUCTION",
+  "no_new_scheduler": true,
+  "no_parallel_executor": true,
+  "no_additional_source": true,
+  "original_14_operations_remaining_open": true,
+  "original_consumer_ack": false,
+  "rollback": "Protected source-only revert, no immutable event or action data rewrite",
+  "production_verification": "Required/CodeQL; protected main SHA; independent Netlify exact SHA READY; authenticated admin source run; original ONE BRAIN evidence readback; measured outcome NOT PROVEN",
+  "evidence": {
+    "original_production_baseline": "2026-11-15 14:20 UTC: canonical immutable sales_action execution events 164/164 writer/status/time/reference backed; 163 current done and one current waiting.",
+    "original_brain_readback": "public.brain_operations edebcb32-335b-49f0-b527-eb4289f95c5c version 7 source-bound, status PLANNED with immutable historical audit; no owner ACK",
+    "provider_delivery_verified": false,
+    "realized_revenue_verified": false,
+    "regression": "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+    "release_proof": "PENDING_PROTECTED_PR_REQUIRED_CODEQL_NETLIFY_EXACT_SHA_AND_ADMIN_READBACK",
+    "generated_portal_explanation_hash": "835c79a0968795dc8f31cc2d6c5ab239cd5bcf757bd6e8bb9d60df0a0419cf6d"
+  }
+}

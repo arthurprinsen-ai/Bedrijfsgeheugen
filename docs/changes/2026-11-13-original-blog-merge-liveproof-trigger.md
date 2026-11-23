@@ -1,0 +1,11 @@
+# P0 #4198 — originele blogrelease naar livebewijs direct bij beschermde main-merge
+
+2026-11-13; fingerprint `content|2026-11-13|blog|original-merge-to-http-liveproof-trigger-gap`.
+
+Original protected PR [#5718](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5718) merged `de138afbd5caa5738b1d4b881e18bdc29ed2bdc7` and Netlify production deploy [6af6c751e4198b40cb648397](https://app.netlify.com/projects/bedrijfsgeheugen/deploys/6af6c751e4198b40cb648397) is READY on **exact** `de138afbd5caa5738b1d4b881e18bdc29ed2bdc7` (published 08:18:01.816 UTC). Original canonical blog obligation was still `APPROVED` at first provider readback, `live_proven_at` and `evidence.public_http_status` absent. Public HTTPS HTML readback had not been proven; no false live claim.
+
+**Root cause:** the already-existing single Powerhouse daily blog workflow uses an hourly `11 * * * *` retry and main push trigger only for its YAML or Supabase blog queue/export source. A successful protected `blog/**` merge therefore does not itself wake the original same-owner postmerge proof before the next scheduled run. This is transfer latency, not a reason to add a scheduler or re-author a blog.
+
+**One-owner bounded fix:** add `blog/**` to `on.push.paths` of **the same original workflow**. Keep the same hourly cron, concurrency `powerhouse-daily-blog`, unique same-date writer, original source/approval/veto, GitHub protected CI, Netlify build and exact content. Its pre-existing `Reconcile merged daily blog only after production HTTP and immutable release proof` step remains `always()` and calls the same `reconcile-merged-blog-live.mjs` once per original run. Update the existing social-delivery recovery agent and social CRO skill, one machine lesson and human ledger.
+
+**Acceptance:** protected Required/CodeQL merge → actual original workflow push activation → independent public `/release.json` exact production SHA, rendered HTTPS article HTML 200 and matching canonical/content-id → service-authorized original `record_content_publication_state` and terminal reconciler → independently read original Supabase `LIVE_PROVEN` and ONE BRAIN sourceRevision/tenant ACK. No real visitor/lead/order/causal learning claim until provider metrics arrive. P0 #4198 stays open for all unproven channels. Guard: `tests/brain-blog-merge-immediate-original-handoff-20261113.test.mjs`.

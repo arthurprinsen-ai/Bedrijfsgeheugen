@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "fingerprint": "github|janitor-agent|github-run-id-over-billion-rejected-by-pr-validator|20261102-v1",
+  "obligation_id": "github|janitor-agent|github-run-id-over-billion-rejected-by-pr-validator|20261102-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "status": "CANDIDATE_NOT_DEPLOYED",
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "GITHUB_ACTIONS_RUN_ID_AND_PR_NUMBER_TYPE_CONFUSION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The GitHub Janitor incident observer used numberOk(), a GitHub PR number validator with < 1,000,000,000 bound, on GITHUB_RUN_ID. Actual post-release run ID 41508842023 fails this bound. The original cleanup step and readback succeeded; the observer failed at RUN_IDENTITY_INVALID before persisting the incident artifact.",
+  "prevention_rule": "Never reuse validators across GitHub PR, workflow run, job, artifact and commit identity types; fixture must use a real 11-digit Actions run ID and assert PR bounds remain strict. No production green without same-run native observer and artifact readback.",
+  "evidence": {
+    "run_id": 41508842023,
+    "job_id": 125495224104,
+    "main_sha": "896b4fc4db428c3aeaf13e6f9f02e083eefbee16",
+    "failed_step": "Agent observation and incident writeback on the same original Janitor",
+    "error": "JANITOR_AGENT_WRITEBACK_OR_SOURCE_FAILED:RUN_IDENTITY_INVALID",
+    "cleanup": "success",
+    "cleanup_readback": "success",
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41508842023",
+    "historical_parent_run": 41342975119,
+    "incident_number": 5320
+  },
+  "fix": "Separate runIdOk from bounded PR numberOk; use validated native run ID consistently in observe() and classifyCurrentJanitor(); preserve all branch, incident, Required and CodeQL gates.",
+  "owner": "existing-powerhouse-github-delivery-janitor",
+  "tests": [
+    "tests/brain-janitor-agent-self-recovery-20261102.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-agent-self-recovery-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-agent-self-recovery-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-agent-self-recovery-20261102.test.mjs"
+    ]
+  },
+  "portal_projection": {
+    "original_cleanup": "SUCCESS_VERIFIED",
+    "agent_incident_writeback": "FAILED_RUNTIME_IDENTITY_VALIDATION",
+    "global_green": false
+  },
+  "terminal_rule": "Exact HEAD Required/CodeQL, protected main merge, next existing Janitor native run including agent step and evidence artifact readback, occurrence registry proof only for actual failures, no second scheduler."
+}

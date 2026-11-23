@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|instagram-mira|unclaimed-media-history-rejection-persistence-gap|20261103-v1",
+  "status": "ORIGINAL_PRODUCTION_RECOVERY_PROVEN_GITOPS_PENDING",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-powerhouse-instagram-media-router",
+  "failure_class": "UNCLAIMED_MEDIA_PROOF_HANDOFF",
+  "evidence": {
+    "original_router_rejection_http": 422,
+    "original_rejected_face_confidence": 0.9,
+    "required_face_confidence": 0.94,
+    "original_canonical_preflight_http": 200,
+    "original_preflight_request_id": 20034,
+    "original_job_after": "WAITING_PROOF",
+    "published": false,
+    "no_provider_id": true
+  },
+  "root_cause": "A provider generation was created while the original media job lacked a producer claim and exact pinned history; the original protected rejection writer therefore correctly did not mutate an unclaimed WAITING_ASSET job.",
+  "fix": "Retain the exact rejected history and measured face proof in the existing ONE BRAIN occurrence; CAS-link that rejection to the original job and invoke its existing authenticated media-router preflight. Real provider HTTP200 and WAITING_PROOF readback verified.",
+  "prevention_rule": "Original Mira producer must claim the unique existing job before spending media credits; always record normalized original provider history and exact independent face score; never retry rejected history, create a second publisher, lower 0.940, or claim LIVE_PROVEN without Meta receipt/readback.",
+  "tests": [
+    "tests/brain-mira-unclaimed-rejection-proof-20261103.test.mjs",
+    "tests/brain-mira-rejected-proof-preflight-regression-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-unclaimed-rejection-proof-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-unclaimed-rejection-proof-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-unclaimed-rejection-proof-20261103.test.mjs"
+    ],
+    "invariants": [
+      "same original owner",
+      "same daily job",
+      "no posted provider id",
+      "face>=0.940 for media PASS",
+      "immutable rejected history"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "UNCLAIMED_MEDIA_PROOF_HANDOFF",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-social-recovery-cooperation"
+  ],
+  "terminal_rule": "Only original media router HTTP200 and original WAITING_PROOF state close rejection-persistence issue; Instagram remains BLOCKED until real verified media and Meta independent provider readback."
+}

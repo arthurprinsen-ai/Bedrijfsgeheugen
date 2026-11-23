@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|janitor|silent-debt-observer-missing-report|20261103-v1",
+  "obligation_id": "github|janitor|silent-debt-observer-missing-report|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "related_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333",
+  "status": "CANDIDATE_UNTIL_EXACT_HEAD_BRAIN_AND_NATIVE_PRODUCTION_READBACK",
+  "failure_class": "SILENT_INCIDENT_OR_MISSING_EVIDENCE_OBSERVER",
+  "owner": "existing-powerhouse-github-delivery-janitor",
+  "root_cause": "The original observer only flagged native cleanup/readback step failures. Cleanup could succeed while history deferrals (19 in native run 41546047078) or an absent/malformed runtime action artifact were not emitted to canonical Brain as registered incidents; status appeared JANITOR_STEPS_VERIFIED_SAME_RUN without actionable reporting.",
+  "evidence": {
+    "source_run": 41546047078,
+    "previous_unreported_history_deferrals": 19,
+    "native_protected_lineage_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5335",
+    "archive_false_green_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333"
+  },
+  "repair": "Classify history deferrals and absent/malformed action artifacts as report-required independently of step success. The existing original Janitor observer writes exactly one run-attempt idempotent incident comment and existing brain_observe_failure occurrence; source issue and Brain occurrence readbacks must both be proven. Missing authority or failed readback fails the original job, not cosmetic green. No parallel event store, workflow or scheduler.",
+  "prevention_rule": "No GREEN or PROVEN from step result alone; every instrumented operational signal or missing signal must be detected and have durable issue+Brain readback, owned repair, regression, next natural-run check and recurrence tracking. Reporter failure is itself a failing operation.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-no-silent-incident-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-no-silent-incident-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-no-silent-incident-20261103.test.mjs"
+    ],
+    "invariants": [
+      "19 historical history-deferrals cannot remain silently classified as clean native success",
+      "missing action artifact is never empty array success",
+      "same-run cleanup success does not imply global green",
+      "failed observer Brain RPC fails original job",
+      "semantic incident fingerprint and run-attempt idempotency",
+      "no second scheduler or weakened security gates"
+    ]
+  },
+  "tests": [
+    "tests/brain-janitor-no-silent-incident-20261103.test.mjs",
+    "tests/brain-janitor-agent-self-recovery-20261102.test.mjs"
+  ],
+  "skill_targets": [
+    "continuity"
+  ],
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "SILENT_INCIDENT_OR_MISSING_EVIDENCE_OBSERVER",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "portal_projection": {
+    "before": "INCOMPLETE_NATIVE_REPORT_COVERAGE",
+    "candidate": "NOT_LIVE_UNTIL_PROTECTED_MERGE_AND_NATIVE_READBACK",
+    "after": "OPEN_DEBT_OR_UNKNOWN_NOT_GREEN_UNTIL_PROVEN",
+    "all_agents_covered": false,
+    "global_green_allowed": false
+  },
+  "terminal_rule": "Protected exact-head Required + CodeQL + full BRAIN, then original Janitor natural production readback and exact Brain/issue/portal proof. Uninstrumented agents remain COVERAGE_UNKNOWN. Archive HTTP403/provider drift handled separately."
+}

@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|mira|dataforseo-google-goto-urls-all-18-rejected|20261114-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-goto-provider-resolution-20261114.test.mjs"
+    ]
+  },
+  "status": "CODE_CANDIDATE",
+  "parent_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "original_owner": "powerhouse-mira-problem-radar-v1 / cron #120 and original Mira publisher",
+  "root_cause": "Original Google News Live Advanced calls used provider default resolve_goto_urls:false, returning 18/18 Google goto intermediary URLs rejected by correct source-quality gate. No verified publisher article URL reached original source materializer.",
+  "prevention": "Enable provider-native resolve_goto_urls:true on the original same eight tasks, concurrent lookup to preserve 120s execution budget and deterministic original consumer processing; keep all real publication-date, source-quality, 90d URL/3d topic uniqueness, score, media and Meta provider gates unchanged.",
+  "regression": "tests/brain-mira-goto-provider-resolution-20261114.test.mjs",
+  "evidence": {
+    "original_pg_net_request_id": 31065,
+    "http_status": 503,
+    "source_intake": {
+      "providerCandidates": 18,
+      "rejections": {
+        "REJECTED_SOURCE_URL_QUALITY": 18
+      }
+    },
+    "created_extra_provider_task": false,
+    "source_url_quality_guard_preserved": true,
+    "official_provider_documentation": "https://docs.dataforseo.com/v3/serp/google/news/live/advanced/",
+    "new_instagram_media_proven": false
+  },
+  "next_readback": [
+    "protected exact-head Required/CodeQL",
+    "independent Supabase Edge source option",
+    "original sourceIntake response and dated eligible publisher URL",
+    "unique canonical Mira winner",
+    "original OpenArt media job and exact native proof",
+    "official Meta ID permalink and independent GET",
+    "original ONE BRAIN consumer PROCESSED ACK"
+  ]
+}

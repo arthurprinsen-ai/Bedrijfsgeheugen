@@ -1,0 +1,10 @@
+# 10 november 2026 — sociaal meetbewijs ook door één oorspronkelijk BRAIN bevestigd
+Canoniek incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+**Bron:** 12 onafhankelijke historische 24/48/72-uursmetingen waren in originele `social_learning_obligations` als `MEASUREMENT_VERIFIED` bevestigd (vorige PR #5573). Dat is meetbewijs, geen causaal experiment. De afzonderlijke 12 `brain_obligations`-kinderrecorden waren nog OPEN: de oorspronkelijke `powerhouse_content_handoff_receipts_v1` scant alleen OPEN bronverplichtingen en verwerkt niet de positieve terugontvangst. Dit is exact een niet-afgesloten overdrachts-ACK, geen nieuw publicatieprobleem.
+
+**Direct herstel uitgevoerd:** SQL herverifieerde oorspronkelijke post, providerbron, exact `source_event_id`, originele deterministische `evaluation:<post>:<window>`, periode en `payload.resolution`; vervolgens CAS van de bijbehorende 12 oorspronkelijke BRAIN-rijen naar `FULFILLED` met `stage=MEASUREMENT_WINDOW_ACK_VERIFIED`, `measurement_only=true`, `causal_lift_proven=false`, zonder een nieuw workerproces. Productie leverde 12 exacte BRAIN-ID's in UPDATE RETURNING.
+
+**Blijvende preventie:** dezelfde reeds bestaande geauthenticeerde Supabase `social-learning-store`-actie `reconcile_verified_obligations`, uitgevoerd door exact dezelfde bestaande hourly Netlify-agent, inspecteert nu óók al bevestigde bronverplichtingen. Voor ieder geval onafhankelijke controle van huidige originele posten, snapshot en evaluatie, immutable ID's plus bewaakt één BRAIN-owner/versie en `state=OPEN`; alleen dan idempotent BRAIN-CAS naar `FULFILLED`. Geen parallelle planner, social publisher of e-mailconnector. Niet-aantoonbare historische vensters blijven onopgelost en leerresultaten uit een later experiment vereisen apart bewijs.
+
+**Acceptatie:** `tests/brain-social-original-brain-mirror-ack-20261110.test.mjs` + bestaande guard; beschermde Required en CodeQL; originele Supabase Edge in productie met exact gemergede source; echte volgende oorspronkelijke hourly-ontvangst en providerbewijs afzonderlijk gecontroleerd. Een technisch HTTP-succes is niet voldoende voor causaliteitsclaim.

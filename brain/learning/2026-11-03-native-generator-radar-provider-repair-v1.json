@@ -1,0 +1,78 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|native-generator-radar|provider-governance-drift-and-credit-denial|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "SOURCE_CANDIDATE_PENDING_PROTECTED_RELEASE",
+  "failure_class": "EDGE_FUNCTION_PROVIDER_GOVERNANCE_CONTRACT_DRIFT_PLUS_BILLING_CAPACITY",
+  "ownership": {
+    "agent": "original native-content-generate and kansenradar owner with ONE BRAIN exclusive writer",
+    "exclusive_writer_required": true
+  },
+  "evidence": {
+    "native_content": {
+      "source": "Supabase production Edge bg-native-content-generate v17 + public.brain_ai_governance_registry + public.brain_delivery_evidence",
+      "cause": "deployed v17 required approved Anthropic; canonical already-approved use-case supabase-bg-native-content-generate-v4 requires OpenAI gpt-5-mini; source returns 403 AI_USE_CASE_NOT_APPROVED",
+      "original_deployed_sha256": "a19e8204a91556e520e99b02e56d614e10426d2a05d5ef42158fcc69ea094be4",
+      "fix": "source mirror of original Edge function with explicitly approved provider OpenAI and strict structured output, unchanged editorial truth/Notion concept gates"
+    },
+    "radar": {
+      "source": "Supabase production Edge bg-kansenradar v11 + brain delivery evidence",
+      "cause": "real external Anthropic HTTP 400 low credit balance, provider governance is still Anthropic and approved; historical cron transport success does not prove successful AI scoring or commercial output",
+      "original_deployed_sha256": "1969d74681bed4facc81d76579d9e51e5e70a19a0278be51619cdb3f0af38948",
+      "safe_mitigation": "read original RED source proof, avoid repeat paid API calls for 20h while leaving original daily cron active, fail closed with explicit billing debt and next original retry; no approval bypass or synthetic signal ranking"
+    }
+  },
+  "prevention_rule": "At original Edge deployment verify exact provider+model in canonical AI governance before API call; no source that contradicts approved use case may be considered ready. At provider billing denial, no automatic spend or unapproved cross-provider fallback; preserve source event and source-owned recovery, avoid repeated charge attempts, resume on natural original cadence when account restored.",
+  "tests": [
+    "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "scope": "SUPABASE_EDGE",
+    "failure_class": "AI_GOVERNANCE_PROVIDER_DRIFT_OR_CREDIT_EXHAUSTED",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 4
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "invariants": [
+      "approved-use-case-only",
+      "no AI key leakage",
+      "strict schema and original story truth checks",
+      "no external publication",
+      "no unauthorized model switching",
+      "real credit denial cannot become green",
+      "original cron stays enabled"
+    ],
+    "shadow": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-generator-radar-provider-20261103.test.mjs"
+    ],
+    "replay_proof_gate": "NODE_TEST_EXACT_HEAD_CI_REQUIRED_NO_FAKE_GREEN"
+  },
+  "release_requirements": [
+    "protected Required/BRAIN/CodeQL on exact SHA",
+    "native source/skill System Map parity",
+    "merged protected main",
+    "deploy each original Supabase Edge function from exact source if authorized",
+    "provider get_edge_function exact source readback",
+    "next natural cron plus actual provider result readback",
+    "record RCA, real executed regression, recurrence outcome in original registry"
+  ],
+  "live_truth": {
+    "github_patch_live": false,
+    "edge_code_deployed": false,
+    "native_content_provider_output_proven": false,
+    "radar_provider_recovered": false,
+    "all_observed_failures_closed": false
+  }
+}

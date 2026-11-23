@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "fingerprint": "growth|linkedin-underperformance-no-closed-loop|20261028-v1",
+  "obligation_id": "growth:linkedin-underperformance-closed-loop:20261028-v1",
+  "failure_class": "GROWTH_LINKEDIN_UNDERPERFORMANCE_NOT_FED_BACK",
+  "root_cause": "Supabase readback 2026-10-28: social_learning_applications and social_learning_decisions had 0 rows; LinkedIn company posts had 1-19 impressions and 0 likes/comments; all company posts shared one CTA (diagnostic_offer) and all personal posts one format, so nothing was learnable. measured-next-post-challenger only covered company/instagram, needed >=2 posts with exposure >=50, and fell back to a date-modulo rotation; no experiment was registered or evaluated and the Notion speelboek was static.",
+  "observed_evidence": {
+    "supabase": "social_posts channel_kind=linkedin_company 37 rows, 8 with snapshots; latest company snapshots impressions 1,3,3,5,6,13; social_learning_applications=0; social_learning_decisions=0",
+    "runtime_readback": "PENDING"
+  },
+  "fix": "New DB functions bg_social_lus_cyclus/beoordelen/meting (service_role only) called from the existing powerhouse-content-orchestrator for linkedin_company and linkedin_personal. Each run: evaluate due experiments (before/after against own 28-day baseline, min 2 measured posts, one extension), write revenue_learnings + social_learning_decisions + social_learning_applications, then choose ONE variable from the channel's least-varied dimension (own history from bg_post_kenmerken), skipping values with a recent REJECTED learning and preferring PROMOTED/evidence-backed values; register it in social_experiments (soort=linkedin_lus) and pass a one-variable instruction to the generator. bg_linkedin_bewijs holds external/internal evidence rows that require source URL and date.",
+  "prevention_rule": "Underperformance must always produce a registered, evaluated, single-variable experiment whose result is written back; never claim causal proof from a before/after comparison without a control group; never loosen personal identity/editorial gates (ik-vorm, no sales CTA, no link, no emoji, open question) or company gates (no external link, no engagement bait, no invented figures); no second scheduler or agent register; rejected variants are not repeated within 90 days.",
+  "tests": [
+    "tests/brain-linkedin-underperformance-loop-20261028.test.mjs",
+    "tests/brain-measured-provider-db-source-allowlist-v1.test.mjs",
+    "tests/brain-measured-next-post-challenger-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "GROWTH_LINKEDIN_UNDERPERFORMANCE_NOT_FED_BACK",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-linkedin-underperformance-loop-20261028.test.mjs"],
+    "shadow": ["tests/brain-linkedin-underperformance-loop-20261028.test.mjs"],
+    "canary": ["tests/brain-linkedin-underperformance-loop-20261028.test.mjs"]
+  },
+  "terminal_rule": "Exact HEAD Required+CodeQL, protected merge, migration applied through the protected path, Supabase edge deploy parity, then a genuine orchestrator run must show linkedin_loop in generation_evidence and a social_experiments row li-lus-*; closure of the loop requires a later evaluation row in revenue_learnings/social_learning_decisions. Actual reach/likes/comments improvement remains unproven.",
+  "known_gaps": [
+    "Company page analytics source (Windsor) was 24 days stale; personal LinkedIn has no views source, only reactions.",
+    "External evidence refresh (weekly Tavily with source URL and date) is not automated yet; bg_linkedin_bewijs is seeded from the Notion speelboek of 2026-07-22 and can be extended through bg_linkedin_bewijs_vastleggen.",
+    "Evaluation is before/after without control group and small sample: results are exploratory."
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|innovation|admin-imported-readmodel-netlify-selective-skip|20261115-v1",
+  "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+  "original_owner": "agent:agent-integration-engineer",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Netlify selective-ignore classified imported platform/portal/powerhouse-existing-integration-read-model.mjs as generic backend, not hosted runtime. The protected full-week audit PR #5857 was merged but production deployment was cancelled as no content change, leaving old production SHA live.",
+  "prevention_rule": "Every module imported into a live Netlify function must be in canonical NETLIFY_RUNTIME_EXACT or PREFIXES. The shared ignore, CI, production readiness and runtime applicability must all require deployment for a changed imported source. Do not treat merged code or a skipped provider build as live.",
+  "evidence": {
+    "failed_netlify_deploy": "6af9bc3634ea5ebd680aecf4",
+    "failed_deploy_sha": "875244148e910e43928a11221f6e75496f491ebb",
+    "failed_state": "error",
+    "failed_provider_reason": "Canceled build due to no content change",
+    "observed_prior_production_sha": "00c99582067fc38dd1dfc2ab8a97c87f89c20c5d",
+    "protected_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857",
+    "regression_tests": "tests/brain-netlify-imported-innovation-runtime-v1.test.mjs",
+    "real_production_recovery": "PENDING_EXACT_HEAD_REQUIRED_CODEQL_AND_NETLIFY_READBACK",
+    "independent_customer_effect": "NOT_PROVEN",
+    "original_consumer_ack": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-imported-innovation-runtime-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-imported-innovation-runtime-v1.test.mjs"
+    ]
+  },
+  "change_scope": [
+    "tools/delivery/netlify-deployment-applicability.mjs",
+    "netlify/functions/powerhouse-control-plane.mjs",
+    "tests/brain-netlify-imported-innovation-runtime-v1.test.mjs",
+    "brain/learning/2026-11-15-original-admin-import-netlify-skip-v1.json",
+    "docs/changes/2026-11-15-original-admin-import-netlify-skip.md",
+    "docs/development-ledger-events/2026-11-15-original-admin-import-netlify-skip.md"
+  ],
+  "original_operation_status": "PLANNED",
+  "consumer_ack_verified": false,
+  "genuine_production_readback_verified": false,
+  "no_new_scheduler": true,
+  "no_parallel_executor": true,
+  "rollback": "Revert only through original protected GitHub main/Netlify delivery; retain all original Brain and source records."
+}

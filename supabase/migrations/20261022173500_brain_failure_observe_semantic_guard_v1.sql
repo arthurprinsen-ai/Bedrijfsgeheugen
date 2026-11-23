@@ -6,12 +6,34 @@ BEGIN;
 SET LOCAL lock_timeout = '2s';
 SET LOCAL statement_timeout = '30s';
 
+-- Replay-safe guard: on fresh baselines we expect the legacy function, but
+-- a reseeded branch may already contain this *same* promoted-evidence-safe
+-- postcondition. Never reject the stronger verified end state as source drift.
+-- This alters only a replay precondition; the migration's DDL/function body,
+-- existing migration identity and production provider history stay untouched.
 DO $guard$
+DECLARE
+  v_observe regprocedure := to_regprocedure('public.brain_observe_failure(text,text,text,jsonb)');
+  v_definition text;
+  v_legacy boolean;
+  v_safe_postcondition boolean;
 BEGIN
-  IF to_regprocedure('public.brain_observe_failure(text,text,text,jsonb)') IS NULL
-     OR position('evidence=coalesce(p_evidence,evidence)' IN
-       pg_get_functiondef('public.brain_observe_failure(text,text,text,jsonb)'::regprocedure)) = 0
-  THEN RAISE EXCEPTION 'BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT';
+  IF v_observe IS NULL THEN
+    RAISE EXCEPTION 'BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT';
+  END IF;
+  v_definition := pg_get_functiondef(v_observe);
+  v_legacy := position('evidence=coalesce(p_evidence,evidence)' IN v_definition) > 0;
+  v_safe_postcondition :=
+    position('evidence=coalesce(evidence,p_evidence)' IN v_definition) > 0
+    AND position('FAILURE_SEMANTIC_EVENT_CONFLICT' IN v_definition) > 0
+    AND position('FAILURE_SEMANTIC_EVENT_LEGACY_CONFLICT' IN v_definition) > 0
+    AND position('pg_advisory_xact_lock' IN v_definition) > 0
+    AND position('brain_failure_semantic_event_key' IN v_definition) > 0
+    AND NOT coalesce(has_function_privilege('anon',v_observe,'EXECUTE'),true)
+    AND NOT coalesce(has_function_privilege('authenticated',v_observe,'EXECUTE'),true)
+    AND coalesce(has_function_privilege('service_role',v_observe,'EXECUTE'),false);
+  IF NOT (v_legacy OR v_safe_postcondition) THEN
+    RAISE EXCEPTION 'BRAIN_FAILURE_OBSERVE_SOURCE_DRIFT';
   END IF;
   IF to_regclass('public.brain_failure_occurrences') IS NULL
      OR to_regclass('public.brain_failure_registry') IS NULL

@@ -5,6 +5,12 @@ description: Use for branch drift, SYSTEM_MAP_WRITEBACK_INCOMPLETE, stale PR rec
 
 # Current Main Reconstruction — agent contract
 
+## 4 November 2026 — original provider migration lock after protected release
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1. A successful protected GitHub merge or successful isolated preview is **not** a current source-backed provider-migration inventory. The original Supabase migration-history authority MUST independently fetch original production `Supabase.list_migrations`, the exact current-main executable SQL migration identities, and `supabase/migration-history.lock.json`. Every version and name must match, including the previously attested historical baseline; do not trim, rename, fabricate or replay provider-applied migrations. If the lock is stale, the same original exclusive migration-history owner issues a source-only PR updating the provider-observed lock and timestamp, regression and original Brain learning, then requires BRAIN/Required/CodeQL and native readback, preserving all unrelated terminal findings.
+
+Incident: original 4 November provider and Git count **800** both exact with **zero discrepancies**, lock was **791**, so nine genuinely applied migrations were absent from the lock and the original PR #5389 post-merge BRAIN `close-obligation` gate remained failed. Provider proof timestamp `2026-11-04T07:43:05.326605Z`. Original regression `tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs`; learning `brain/learning/2026-11-04-original-supabase-800-provider-lock-parity-v1.json`; explanation `docs/changes/2026-11-04-original-provider-migration-lock-800.md`. This repair alone never implies overall BRAIN or all provider outcomes are green.
+
 Fingerprint: `delivery|current-main-reconstruction|single-writer-fail-closed|20261025-v1`.
 
 ## Mandatory procedure

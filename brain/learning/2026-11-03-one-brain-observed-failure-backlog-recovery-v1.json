@@ -1,0 +1,76 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|one-brain|observed-failure-missing-rca-prevention-regression-backlog|20261103-v1",
+  "obligation_id": "powerhouse|one-brain|observed-failure-missing-rca-prevention-regression-backlog|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PATCH_CANDIDATE_NOT_LIVE_VERIFIED",
+  "failure_class": "OBSERVED_FAILURE_BACKLOG_NOT_OWNER_TRIAGED",
+  "ownership": {
+    "agent": "original-one-brain-incident-recovery-owner",
+    "exclusive_writer_required": true
+  },
+  "evidence": {
+    "source": "Supabase public.brain_failure_registry direct production SQL readback",
+    "initial_observed": 230,
+    "initial_missing_causes": 80,
+    "initial_missing_preventions": 86,
+    "initial_missing_regressions": 125,
+    "documentary_recovery": "9 original incident patterns: 7 proven source explanations, 3 existing prevention text, 3 source-backed test references copied by existing brain_promote_failure CAS; no maturity changes",
+    "readback_observed": 230,
+    "readback_missing_causes": 73,
+    "readback_missing_preventions": 83,
+    "readback_missing_regressions": 122,
+    "observed_at": "2026-11-03",
+    "status_class": "DOCUMENTATION_BACKFILL_ONLY",
+    "high_recurrence_examples": [
+      "brein-status|pg_cron|FOUT",
+      "brein-status|bg-experimentcyclus|NOOIT_BEWEZEN",
+      "brein-status|bg-native-content-generate|NOOIT_BEWEZEN"
+    ]
+  },
+  "root_cause": "Existing hourly self-watch writes OBSERVED occurrence fingerprints from intern.bg_brein_status_oordeel without requiring original owner root-cause, prevention, or test proof; the view can contain aggregate job symptoms and missing GREEN delivery receipts even when cron transport succeeded. Source proof and original owner follow-through remain separate, and old patterns accumulate.",
+  "fix": "Add fail-closed source-counted triage projection integrated into existing original agent preflight. Prioritize recent repeats, treat placeholders as missing, report only scalar aggregate without exposing fingerprints, preserve original owner and registry. The pure helper is read-only and cannot repair original runtime/provider failures by itself.",
+  "prevention_rule": "Every existing agent must provide an exact complete production registry readback to the existing preflight when claiming backlog coverage; incomplete source returns SOURCE_COVERAGE_UNVERIFIED. Process original fingerprint source evidence, root cause, safe repair and independent regression/provider readback through original writer/owner; no direct maturity promotion for aesthetic green.",
+  "tests": [
+    "tests/brain-failure-backlog-assurance-20261103.test.mjs",
+    "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-incident-register-and-self-fix-policy"
+  ],
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "OBSERVED_FAILURE_BACKLOG_NOT_OWNER_TRIAGED",
+    "machine_enforceable": true,
+    "repeat_count": 230,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-failure-backlog-assurance-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-failure-backlog-assurance-20261103.test.mjs"
+    ],
+    "invariants": [
+      "exact complete provider readback",
+      "placeholder means missing",
+      "never fabricate causes/tests",
+      "no raw private fingerprint in preflight",
+      "no new writer or scheduler",
+      "no green or live without independent production proof"
+    ]
+  },
+  "portal_projection": {
+    "status": "OBSERVED_RECOVERY_TRIAGE_DUE",
+    "full_green_allowed": false,
+    "required": "actual original owner readback from production source followed by provider proof and natural recurrence checks"
+  },
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL and System Map, protected merge, authoritative main+provider and original agent preflight source readback. No claim all 230 failure patterns resolved."
+}

@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|supabase|original-ga4-applied-provider-844-lock-drift|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_GA4_PROVIDER_844_APPLIED_MIGRATION_LOCK_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Protected GA4 consumer migration 20261113121500 was successfully merged, automatically applied to actual production as 844th canonical Supabase migration, and independently verified to be installed with exact version/name and correct single SQL expression and unchanged owner privileges. Existing original source lock still held only 843 provider-applied entries because a migration must not be recorded as applied before real provider readback. Original postmerge BRAIN backend lane run 43425411400 failed 17 source/lock parity tests due to this missing independent 844th provider identity. This was correct fail-closed enforcement, not permission to fake terminal success.",
+  "prevention_rule": "After original protected migration has been independently proven applied, append only the exact matching provider version/name to the SAME original immutable supabase/migration-history.lock.json. Do not invent pending migrations or rewrite historical 843 prefix. Retain original source identity and provider observation timestamp. Use protected Required/BRAIN/CodeQL, independent exact provider version+name/definition/terminal guard readback and original terminal closure rerun. A green production SQL fix is distinct from green historical source lock and from consumer measurement/learning outcomes.",
+  "evidence": [
+    "Original Supabase project adhjwmvyoixzjtmiroln query observed 844 actual applied migration entries, max version 20261113121500, name original_ga4_handoff_json_operator_precedence_v1, at observed_at 2026-11-13T12:33:20.358846+00.",
+    "Production PG provider function has fixed GA4 accessor parentheses, broken expression absent, anon/authenticated EXECUTE denied, service_role granted; original brain_content_handoff_terminal_proof_guard_v1 enabled.",
+    "Original natural #171 assurance at 2026-11-13T12:29:00.051503+00 reported content-closed-loop RED due to unresolved guard but NULL content_handoff_failure_sqlstate and tracked=84. The previous 22P02 is gone. Red status must not be reinterpreted as GREEN.",
+    "Original postmerge Obligation Terminal Closure run 43425369317 failed at critical BRAIN run 43425411400, backend lane reported 17 failed source-lock parity tests. Previously original Git file had 843 entries ending 20261113083000. This change records the exact 844th provider-observed migration, no new SQL file."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-ga4-provider-844-migration-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-ga4-provider-844-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-ga4-provider-844-migration-lock-20261113.test.mjs"
+    ]
+  },
+  "original_owner": "existing protected Supabase migration history source-lock / ONE BRAIN release terminalizer",
+  "status": "CANDIDATE_PENDING_PROTECTED_REQUIRED_CODEQL_AND_TERMINAL_PROOF",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_migration": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5733",
+  "no_new_scheduler": true,
+  "no_synthetic_provider_source": true,
+  "no_extra_migration": true,
+  "downstream_content_handoffs_still_open": true
+}

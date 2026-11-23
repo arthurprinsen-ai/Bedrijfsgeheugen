@@ -1,7 +1,7 @@
 // Canonical prepublication editor for the Bedrijfsgeheugen LinkedIn company page.
 // A provider acknowledgement does not imply editorial fitness.
 // Kept dependency-free so both orchestration and independent review can apply it.
-export const COMPANY_EDITORIAL_POLICY = 'linkedin-company-entrepreneur-value-v1';
+export const COMPANY_EDITORIAL_POLICY = 'linkedin-company-entrepreneur-value-v2';
 
 const clean = (value) => String(value ?? '').trim();
 const normalized = (value) => clean(value).toLowerCase().normalize('NFKD')
@@ -20,6 +20,17 @@ export function companyStoryFamily(text) {
   if (/\bbank lending survey\b/.test(t)) return 'ecb-bank-lending-survey';
   return null;
 }
+// Safeguard against repeating one *concrete operational problem* under a different
+// headline. This is deliberately narrow: broad industry topics (AI, MKB, CRM)
+// never constitute a story family on their own.
+export function companyRecurringFrictionFamily(text) {
+  const t=normalized(text);
+  if (/\boffert(?:e|es)\b/.test(t) &&
+      /\b(?:verloren|verdwenen|verdwijnt|kwijt|zoekgeraakt|opvolging|opvolgen|onopgevolgd|blijft liggen)\b/.test(t)) {
+    return 'missing-or-unfollowed-offer';
+  }
+  return null;
+}
 function nearDuplicate(a,b) {
   const tokens=(s)=>new Set(normalized(s).slice(0,650).split(/[^a-z0-9]+/)
     .filter(w=>w.length>=5&&!/^(bedrijf|bedrijven|ondernem|ondernemers|signaal|context|gevolg|directie|risico|resultaat|strategie|bedrijfsgeheugen|powerhouse|website|kunnen|worden|wordt)$/.test(w)));
@@ -36,6 +47,13 @@ export function companyEditorialViolations(text, {recentPosts=[]}={}) {
   if(/^\s*(?:signaal\s*:|context\s*:|concrete probleem voor|probleem\s*\(zakelijk\)|aantoonbare externe signalen|beslissing\s*\(|waargenomen gevolg)/i.test(t))fail('COMPANY_REPORT_OPENING_FORBIDDEN');
   const reportHeadings=(t.match(/^\s*(?:signaal|context|gevolg|beslissing|actie|resultaat|leren|eigenaarschap|meetpunt|controleerbare uitkomst|concrete bestuurlijke beslissing|wat verandert er|risico)\s*(?::|\()/gim)||[]).length;
   if(reportHeadings>=2)fail('COMPANY_INTERNAL_MEMO_STRUCTURE');
+  // The company page must not broadcast internal execution counters as
+  // a public customer story (independent of the historical duplicate gate).
+  if(/^\s*(?:ik wil dat ai niet alleen|wij willen dat ai niet alleen|ons systeem heeft vandaag)/iu.test(t))
+    fail('COMPANY_GENERIC_AI_HOOK');
+  if(/\b(?:assurance[- ]controle|amber (?:signalen|loops)|actieve loops|gemeten pagina.s|bron[- ]verversing|acties klaargezet)\b/iu.test(t)||
+      (t.match(/\b\d+(?:[.,]\d+)?\s+(?:bronnen|pagina.s|modellen|acties|signalen|loops)\b/giu)||[]).length>=2)
+    fail('COMPANY_INTERNAL_METRICS_REPORT');
   if(/\b(?:compliance.exposure|bi.refresh(?:es)?|lineage|readback|runtime|pipeline|deliverable|stakeholder.matrix|vendor.lock.in|cloud.agents|gekalibreerde prioriteitenlijst|pilot.dossier)\b/i.test(t))fail('COMPANY_TECHNICAL_JARGON');
   if(/\b(?:signaal\s*[→>-]\s*context|context\s*[→>-]\s*gevolg|resultaat\s*[→>-]\s*leren)\b/i.test(t))fail('COMPANY_INTERNAL_PROCESS_FORMULA');
   if(!/\b(?:klant(?:en)?|offert(?:e|es)|order(?:s)?|omzet|marge|kosten|tijd|uren|planning|factur(?:en|atie)|voorraad|kennis|overdracht|medewerker(?:s)?|levering|ondernemer(?:s)?|cashflow|risico(?:s)?|fout(?:en)?|betalingen|proces(?:sen)?|werkdruk)\b/i.test(t))
@@ -44,8 +62,11 @@ export function companyEditorialViolations(text, {recentPosts=[]}={}) {
     fail('COMPANY_BUSINESS_CONSEQUENCE_REQUIRED');
   const previous=Array.isArray(recentPosts)?recentPosts:[];
   const family=companyStoryFamily(t);
+  const operationalFamily=companyRecurringFrictionFamily(t);
   if(previous.some(p=>family&&companyStoryFamily(typeof p==='string'?p:p?.body)===family))
     fail('COMPANY_RECENT_STORY_FAMILY_REPEAT');
+  else if(previous.some(p=>operationalFamily&&companyRecurringFrictionFamily(typeof p==='string'?p:p?.body)===operationalFamily))
+    fail('COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT');
   else if(previous.some(p=>nearDuplicate(t,typeof p==='string'?p:p?.body)))
     fail('COMPANY_RECENT_STORY_NEAR_DUPLICATE');
   // A source-backed niche example is allowed only if novel; a company page

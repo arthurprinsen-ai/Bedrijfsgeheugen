@@ -1,0 +1,72 @@
+{
+  "contract": "POWERHOUSE_INNOVATION_SALES_EXECUTION_SOURCE_AUDIT_V1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+  "original_owner": "agent:agent-integration-engineer",
+  "failure_fingerprint": "powerhouse|innovation|sales-cycle-execution-stage-not-source-joined-in-admin|20261115-v1",
+  "root_cause": "Admin did not independently source-join cycle execution events to original sales action status and executed_at; historical event counts can imply execution falsely.",
+  "correction": "Read-only original admin API samples 100 latest execution events in 7d with exact count and joins corresponding action UUIDs, reporting supported, unsupported and missing; never claims external provider execution.",
+  "prevention_rule": "Every execution-stage claim needs current original action status done plus executed_at; unknown, missing exact count, truncated sample, provider receipt absent remain explicitly unverified.",
+  "change_scope": [
+    "platform/portal/powerhouse-existing-integration-read-model.mjs",
+    "netlify/functions/powerhouse-control-plane.mjs",
+    "portal-v2/control-plane-cockpit.js",
+    "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    "brain/learning/2026-11-15-innovation-sales-execution-source-audit-v1.json",
+    "docs/changes/2026-11-15-innovation-sales-execution-source-audit.md",
+    "docs/development-ledger-events/2026-11-15-innovation-sales-execution-source-audit.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "portal-v2/index.html"
+  ],
+  "controls": [
+    "admin-jwt-before-service-read",
+    "bounded_last_100",
+    "exact_source_content_range",
+    "uuid_source_join",
+    "no_provider_execution_claim",
+    "no_new_scheduler",
+    "protected_Required_CodeQL_merge_and_readback",
+    "next_natural_outcome_verification"
+  ],
+  "release_state": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "material_change": true,
+  "measured_improvement_verified": false,
+  "consumer_ack_verified": false,
+  "customer_value_verified": false,
+  "rollback": "revert via existing protected GitHub delivery; source rows remain unchanged",
+  "fingerprint": "powerhouse|innovation|sales-cycle-execution-stage-not-source-joined-in-admin|20261115-v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "verified_original_production_source": "public.powerhouse_cycle_events joined to public.powerhouse_sales_actions",
+    "candidate": "55bb0754-355b-4940-aaea-aed7123e7e57",
+    "source_audit": "LAST_100_EVENTS_ONLY_UNTIL_PRODUCTION_READBACK",
+    "test_evidence": "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+    "release_evidence": "PROTECTED_REQUIRED_CODEQL_AND_MAIN_MERGE_DUE",
+    "independent_effect": "NOT_PROVEN",
+    "ack": "NOT_PROVEN",
+    "system_map_sha_from_original_required_generator": "dc19a4084ff42cae46ed459d3e30e9ac32f9f1dff59a60b5ba836f64f88da7fd",
+    "system_map_regression": "Original Required run 43706130090 preflight rejected stale generated inventory; exact generator-produced hash synced, no guard bypass",
+    "system_map_generated_hash_after_main_sync": "0f0073eb1d5a1271c5978f318fb071c87c88aec3c4cdc9d671364bdd0f7124ab",
+    "source_replay_note": "New dedicated regression; no attempt to bypass blocked import of original large test source."
+  }
+}

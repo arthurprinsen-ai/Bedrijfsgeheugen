@@ -1,0 +1,38 @@
+{
+  "id": "portal-mobile-production-acceptance-20261104-v1",
+  "owner": "original-portal-v2",
+  "status": "TECHNICAL_PRODUCTION_VERIFIED_HUMAN_USABILITY_OPEN",
+  "fingerprint": "portal|mobile-ux|dialog-loses-route-and-focus|20261104-v1",
+  "root_cause": "Unpinned ES module browser import created duplicate router; specialist overlay remained behind full menu.",
+  "remediation": "Canonical bound DOM navigation; close original specialist overlay before menu; verify focus trap and return route at 390px.",
+  "evidence": {
+    "netlify_deploy": "6aeb82327b0f598f2a87721a",
+    "production_sha": "4d5823446c3b830e9b33b0314893cdd56dc5b5ee",
+    "github_run": 41895447111,
+    "github_job": 126804497371,
+    "production_tests_passed": 15,
+    "mobile_shell_tests_passed": 1,
+    "visual_regression_tests_passed": 1
+  },
+  "prevention": "Require original owner, protected merge, exact published SHA and original Chromium readback. No parallel executor.",
+  "open_obligations": [
+    "unassisted first-time entrepreneur task testing",
+    "physical VoiceOver/TalkBack",
+    "WCAG 2.2 AA independent audit"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-mobile-production-acceptance-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-mobile-production-acceptance-v1.test.mjs"
+    ]
+  }
+}

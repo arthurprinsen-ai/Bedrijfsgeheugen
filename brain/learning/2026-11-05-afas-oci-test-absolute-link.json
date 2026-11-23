@@ -1,0 +1,41 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "seo|afas-oci|internal-link-origin-agnostic-test|20261105-v1",
+  "owner": "existing SEO AFAS intent owner and original BRAIN backend lane",
+  "compiler": {
+    "failure_class": "TEST_COUPLED_TO_LINK_ORIGIN_FORM",
+    "scope": "SEO_AFAS_OCI_INTENT_ANSWER",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "PR #5447 rendered the internal AFAS-koppelingspagina link as an absolute canonical URL. The older test asserted only the relative form, so the original BRAIN backend lane failed on main (ec2f235) although the link target is unchanged. The required PR check does not run this test, so the mismatch was found only after merge.",
+  "prevention_rule": "Internal-link assertions accept the site origin or a relative path to the same target. The link target, anchor text and canonical remain asserted.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-afas-oci-intent-answer-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-outcome-measurement-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original BRAIN run 42039250029, backend lane: 1 failing test, existing price explainer supports AFAS money owner without duplicate landing page"
+    ],
+    "current": [
+      "Page links to https://www.bedrijfsgeheugen.nl/afas-koppeling with the same anchor; AFAS tests 6 of 6 pass locally"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_BRAIN_AND_TERMINAL",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

@@ -1,11 +1,18 @@
 // Only independently recorded provenance already selected by BRAIN is eligible.
 const c=x=>String(x??'').trim();
-// Event types already used for a personal story in the recent window describe the same
-// story family (same system, same figures) even when the event id differs.
+const evidenceObject=value=>{
+ if(value&&typeof value==='object'&&!Array.isArray(value))return value;
+ if(typeof value==='string'){try{const decoded=JSON.parse(value);if(decoded&&typeof decoded==='object'&&!Array.isArray(decoded))return decoded;}catch{}}
+ return {};
+};
+// Original published obligations store editor-validated source events under
+// evidence.identity_gate_evidence, not just evidence.*. A top-level-only reader
+// accidentally misses their global story family and repeatedly drafts duplicates.
 export function personalSourceEventTypes(row){
- const e=row?.evidence||{};
- return [e.result_event,e.friction_event,e.source_focus_context]
-  .map(v=>c(v?.event_type)).filter(Boolean);
+ const outer=evidenceObject(row?.evidence);
+ const nested=evidenceObject(outer.identity_gate_evidence);
+ return [...new Set([outer,nested].flatMap(e=>[e.result_event,e.friction_event,e.source_focus_context])
+  .map(v=>c(v?.event_type)).filter(Boolean))];
 }
 export function isStalePersonalSource(row,recentTypes){
  const r=recentTypes instanceof Set?recentTypes:new Set(recentTypes||[]);
@@ -41,9 +48,12 @@ export function buildVerifiedFounderReserve(source,date,recentTypes=[]){
  const seen=new Set();
  return s.filter(x=>{if(seen.has(x.ref))return false;seen.add(x.ref);return true;})
   .slice(0,3).map((x,i)=>({
-   dedupe_key:'founder-proof-reserve:'+date+':'+x.kind,
+   // A rejected same-day family cannot be reactivated by changing only an event UUID.
+   // A genuinely different verified event TYPE or external SOURCE can rotate to its own
+   // immutable canonical source-family recommendation while semantic dedupe remains enforced.
+   dedupe_key:'founder-proof-reserve:'+date+':'+x.kind+':'+(x.source_context.event_type? 'event-type:'+x.source_context.event_type : 'source-ref:'+x.ref),
    run_date:date,topic_key:'founder-distinct:'+x.kind,
-   content_key:'linkedin-personal-distinct:'+date+':'+x.kind,
+   content_key:'linkedin-personal-distinct:'+date+':'+x.kind+':'+(x.source_context.event_type? 'event-type:'+x.source_context.event_type : 'source-ref:'+x.ref),
    target_channel:'linkedin_personal',recommendation_type:'verified_ai_native_builder_story',
    priority:99-i,status:'suggested',
    reason:'Maak een inhoudelijk nieuw, controleerbaar ondernemershoofdstuk over '+x.focus+

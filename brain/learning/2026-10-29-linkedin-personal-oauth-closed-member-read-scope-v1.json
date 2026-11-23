@@ -1,0 +1,46 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "linkedin|personal|canonical-oauth-requests-closed-r-member-social|20261029-v1",
+  "compiler": {
+    "failure_class": "PROVIDER_UNAUTHORIZED_SCOPE_ERROR",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Canonical owner-bound LinkedIn personal OAuth setup requested r_member_social alongside openid, profile, email and w_member_social. LinkedIn documents r_member_social as closed. User's screenshot of canonical Composio redirect displayed unauthorized_scope_error, consistent with a missing/unsupported scope. Individual rejected scope not disclosed in screenshot, so new auth still needs provider readback.",
+  "prevention": "Use only exact least-privilege approved member OAuth scopes openid/profile/email/w_member_social for the same canonical publisher and owner; never reuse historical Composio auth configs containing extra r_member_social or organization scopes; verify actual provider grant. Preserve real provider-ID+independent readback and no-repost claims without copying tokens or creating alternate publisher. Do not mark channel LIVE without provider side effect and independent verification.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-org-scope-workspace-isolation-v1.test.mjs",
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-org-scope-workspace-isolation-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "2026-10-29 user screenshot of canonical Composio/LinkedIn OAuth callback plus production setup source",
+    "original_setup_edge_version": 478,
+    "last_link_request": 16058,
+    "linkedin_error": "unauthorized_scope_error",
+    "requested_closed_scope": "r_member_social",
+    "desired_write_scope": "w_member_social",
+    "other_scopes": [
+      "openid",
+      "profile",
+      "email"
+    ],
+    "confirmed_individual_rejected_scope": false,
+    "user_auth_completed": false,
+    "publisher_provider_id_present": false,
+    "publication_proven": false,
+    "new_scheduler": false,
+    "publisher_authority_unchanged": true,
+    "requires_protected_merge": true,
+    "contains_private_link": false
+  }
+}

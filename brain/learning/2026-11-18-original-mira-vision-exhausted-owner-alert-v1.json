@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|mira|exhausted-3of3-unverified-provider-not-routed-to-original-owner-guardian|20261118-v1",
+  "obligation_id": "powerhouse|mira|exhausted-3of3-unverified-provider-not-routed-to-original-owner-guardian|20261118-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing original ONE BRAIN #171 result guardian and original Mira verifier #140 / #116 source",
+  "root_cause": "Original Mira completed one OpenArt video with immutable history ID, but the independent frame-vision verifier returned provider unavailable and exhausted the 3-of-3 approved bounded retry ledger. Original Instagram obligation became FAILED with zero Meta ID and empty proof_manifest. Original #171 owner_action_due continued listing only Tavily after personal OpenAI recovered; critical Mira owner review obligation was not surfaced through the same canonical owner-message pathway.",
+  "evidence": {
+    "date": "2026-11-18",
+    "media_job_id": "4a68dc41-6e60-4b64-ba7b-400086cb7296",
+    "original_history": "r6sZX8kdGyvpD6zEbWg7",
+    "provider": "openart",
+    "generation_status": "COMPLETED",
+    "asset_materialized": true,
+    "frame_identity_proven": false,
+    "vision_retry_count": 3,
+    "approved_max": 3,
+    "media_job_status": "WAITING_PROOF",
+    "obligation_status": "FAILED",
+    "last_error": "MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE",
+    "meta_external_id": null,
+    "current_owner_notification_sent": false
+  },
+  "prevention_rule": "The original #171 heartbeat/guardian must detect an exact same-day, same-owner Mira verifier exhausted 3/3 record with no Meta side effect, emit one deduplicated durable owner action and clearly say owner notification is pending until actual task delivery. Never reset retry ledger, do fourth verification, regenerate paid OpenArt, invent frame 0.940 scores, downgrade safety or mark Instagram green.",
+  "compiler": {
+    "failure_class": "UNDELIVERED_OWNER_ESCALATION",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-mira-vision-exhausted-owner-alert-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-mira-vision-exhausted-owner-alert-20261118.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-mira-vision-exhausted-owner-alert-20261118.test.mjs"
+  ],
+  "status": "CANDIDATE_UNTIL_PROTECTED_RELEASE_NATIVE_WATCHDOG_NEXT_RUN_AND_REAL_TASK_DELIVERY"
+}

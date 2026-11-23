@@ -1,3 +1,4 @@
+import {buildChannelTrends,socialChannel} from './social-funnel-trend.mjs';
 const nonneg=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0?v:(typeof v==='string'&&/^\d+(\.\d+)?$/.test(v)?Number(v):null);
 const metric=(m,key)=>m&&Object.hasOwn(m,key)?nonneg(m[key]):null;
 const ms=v=>{const n=Date.parse(v||'');return Number.isFinite(n)?n:null;};
@@ -27,9 +28,11 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
  const seen=new Set();
  for(const item of (Array.isArray(evidence.social)?evidence.social:[]).slice(0,300)){
    const id=String(item?.post_id||'');
+   const tenantId=String(item?.tenant_id||'bedrijfsgeheugen');
    const platform=String(item?.platform||'');
-   if(!id||seen.has(id)||!['instagram','linkedin'].includes(platform))continue;
-   seen.add(id);
+   const identity=tenantId+':'+id;
+   if(!id||seen.has(identity)||!['instagram','linkedin'].includes(platform))continue;
+   seen.add(identity);
    const age=ms(item.published_at),observed=ms(item.observed_at);
    const mature=age!==null&&at.getTime()-age>=86400000;
    const fresh=recentReceipt(item.observed_at,at.getTime())&&observed>=age;
@@ -50,7 +53,11 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
    if(observedSource&&exposure!==null&&exposure>=50&&engagement===0)signals.push('OBSERVED_ZERO_ENGAGEMENT');
    const suggestion=signals.includes('OBSERVED_ZERO_ENGAGEMENT')?'TEST_SITUATION_CONSEQUENCE_CLEAR_POINTE':
      signals.includes('OBSERVED_ZERO_COMMENTS')?'TEST_RELEVANT_NON_MANIPULATIVE_QUESTION':'COLLECT_COMPARABLE_PROVIDER_EVIDENCE';
-   social.push({post_id:id,platform,format:item.format||null,hook_type:item.hook_type||null,cta_type:item.cta_type||null,
+   const channel=socialChannel({...item,tenant_id:tenantId});
+   const localTime=age===null?null:new Intl.DateTimeFormat('nl-NL',{timeZone:'Europe/Amsterdam',weekday:'long',hour:'2-digit',hourCycle:'h23'}).format(new Date(age));
+   social.push({tenant_id:tenantId,post_id:id,platform,channel,published_at:item.published_at||null,published_day_hour_nl:localTime,
+     topic:item.topic||null,content_pillar:item.content_pillar||null,narrative_type:item.narrative_type||null,
+     format:item.format||null,hook_type:item.hook_type||null,cta_type:item.cta_type||null,
      views,reach,likes,comments,reactions,saved,shares,engagement_rate:rate,provider_quality:status,
      observed_at:item.observed_at||null,signals,suggestion,
      not_a_causal_explanation:true,conversion_outcome:'UNKNOWN_UNLESS_ATTRIBUTED'});
@@ -77,7 +84,8 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
  }
  return {
    contract:'POWERHOUSE-DAILY-POST-BLOG-CONVERSION-DIAGNOSTICS-v1',generated_at:at.toISOString(),
-   source_state,source_quality:sourceMap,source_gaps:gaps,social_posts:social,website_pages:pages,
+   source_state,source_quality:sourceMap,source_gaps:gaps,social_posts:social,
+   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),website_pages:pages,
    next_day_hypotheses:actions.slice(0,6),
    action_gate:'REVIEW_IN_EXISTING_EXPERIMENT_AND_PROTECTED_PUBLICATION_LANE',
    instructions:'No inference of low views without comparable cohort; missing metrics are unknown not zero. No cause claim without experiment, and no revenue without paid order readback.',

@@ -1,0 +1,8 @@
+# 2026-11-15 | Consumer rejects historic independent-looking claimant material proof
+
+- Root P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+- Independent native Supabase source `public.brain_outcome_obligation_evidence`: 328 immutable `OBLIGATIONS_COMPLETE` rows with producer `OUTCOME_OBLIGATION_RUNTIME`, accepted/independent/exact-production true, taskIdentity `material-change-live-verification`. Historical production evidence, not proven external completion.
+- Previous protected PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5851 stopped the self-certifying **writer**. Existing read-side producer allowlist in `platform/agents/completion-supervisor.mjs` still trusted it. This is the source/consumer handoff trust leak.
+- Same original consumer now denies claimant producer in historical **and** future replay. Only original independent `PRODUCTION_READBACK` with exact production identity, source receipt reference and source revision can count as `OBLIGATIONS_COMPLETE`.
+- Existing original Reliability/Data Quality tasks, original recovery skill, source-positive and negative legacy replay tests, machine learning `brain/learning/2026-11-15-legacy-material-completion-consumer-trust-v1.json`, and human change `docs/changes/2026-11-15-legacy-material-completion-consumer-trust.md` are in this one protected delivery candidate.
+- Security sensitive: historical replay + shadow + canary test suites required; native exact-head protected Required/CodeQL, merge, Netlify production READY+commit and independent consumer outcomes remain proof gates. No history rewrite, migration, external sends, parallel scheduler, second BRAIN, or false green.

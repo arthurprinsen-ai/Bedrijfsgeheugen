@@ -39,7 +39,9 @@ concurrency:
 
 jobs:
   bijwerken:
-    runs-on: ubuntu-latest
+    # Codex drop-sudo on ubuntu-26.04 rejects root-owned D-Bus socket ACL (original Weekblog 41451022810).
+    # Keep privilege revocation and permission-profile intact: pin the supported 24.04 runner.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
         with:
@@ -192,7 +194,7 @@ jobs:
 
       - name: Artikel bijwerken
         if: steps.kalender.outputs.gevonden == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
-        uses: openai/codex-action@v1
+        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1 (v1.13)
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ":workspace"

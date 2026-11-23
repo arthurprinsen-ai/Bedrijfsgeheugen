@@ -1,3 +1,5 @@
+import {DEFAULT_TRANSFER_POLICY,normalizeTransferPolicy} from './transfer-policy.js';
+
 const PHASES=Object.freeze(['source','selection','information','target','schedule','test']);
 
 const cloneAnswers=answers=>({...answers});
@@ -20,7 +22,11 @@ export function createWizardState(template=null){
     phase:'source',
     answers:Object.freeze({
       target:template.targets?.length===1?template.targets[0]:null,
-      schedule:template.defaultSchedule||null
+      dataUseMode:'CONNECTION_ONLY',
+      portalPages:[],
+      selectedFields:(template.fields||[]).map(field=>typeof field==='string'?field:field.key),
+      schedule:template.defaultSchedule||null,
+      transferPolicy:{...DEFAULT_TRANSFER_POLICY}
     })
   });
 }
@@ -53,19 +59,30 @@ export function toConnectorDefinition(state){
   const {template,answers}=state;
   const target=answers.target||(template.targets?.length===1?template.targets[0]:null);
   const fields=Object.freeze((template.fields||[]).map(toFieldSpec));
-  const mappings=Object.freeze(fields.map(field=>Object.freeze({
+  const selected=Array.isArray(answers.selectedFields)?new Set(answers.selectedFields):new Set(fields.map(field=>field.key));
+  const transferPolicy=normalizeTransferPolicy(answers.transferPolicy,{fields});
+  const mappings=Object.freeze(fields.filter(field=>selected.has(field.key)).map(field=>Object.freeze({
     sourceField:field.key,
     targetField:field.key,
     transformation:Object.freeze({type:'none'})
   })));
   return Object.freeze({
     templateId:template.id,
-    source:Object.freeze({type:template.source.type,connectionId:answers.connection||null,filters:template.filters||{}}),
+    name:template.title,
+    source:Object.freeze({type:template.source.type,connectionId:answers.connection||null,
+      ...(template.source.providerId?{providerId:template.source.providerId}:{}),filters:template.filters||{}}),
     documentSchema:Object.freeze({type:template.documentType||'custom',fields}),
     mappings,
     reviewPolicy:Object.freeze({requiredBelowConfidence:DEFAULT_CONFIDENCE}),
-    target:Object.freeze({type:target}),
-    schedule:answers.schedule||template.defaultSchedule||'handmatig',
+    target:Object.freeze({type:target,...(template.targetProviderId?{providerId:template.targetProviderId}:{})}),
+    schedule:transferPolicy.trigger==='INTERVAL'?Object.freeze({refreshMinutes:transferPolicy.intervalMinutes}):
+      template.adapterCapability==='DESIGN_ONLY'?'handmatig':answers.schedule||template.defaultSchedule||'handmatig',
+    transferPolicy,
+    dataUse:Object.freeze({mode:['CONNECTION_ONLY','PORTAL_INSIGHTS','PORTAL_AI'].includes(answers.dataUseMode)?answers.dataUseMode:'CONNECTION_ONLY',modelRoute:'TENANT_POLICY',trainingUse:'PROHIBITED'}),
+    routing:Object.freeze({
+      selectedFields:Object.freeze([...selected].filter(key=>fields.some(field=>field.key===key))),
+      portalPages:Object.freeze(answers.dataUseMode==='CONNECTION_ONLY'?[]:[...new Set(Array.isArray(answers.portalPages)?answers.portalPages:[])].filter(page=>page!=='brain-verwerking'||answers.dataUseMode==='PORTAL_AI'))
+    }),
     fallback:template.fallback||'review',
     activation:'test-required'
   });

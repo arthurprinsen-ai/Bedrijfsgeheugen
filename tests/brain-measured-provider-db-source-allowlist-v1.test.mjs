@@ -23,15 +23,18 @@ async function personalHistoryQuery(runDate,kind){
   return captures[0];
 }
 
-for(const kind of ['selection','reserve'])for(const [runDate,expected] of [
- ['2026-10-28',['2026-10-21','2026-10-22','2026-10-23','2026-10-24','2026-10-25','2026-10-26','2026-10-27']],
- ['2026-01-03',['2025-12-27','2025-12-28','2025-12-29','2025-12-30','2025-12-31','2026-01-01','2026-01-02']],
- ['2024-03-02',['2024-02-24','2024-02-25','2024-02-26','2024-02-27','2024-02-28','2024-02-29','2024-03-01']],
-])test(kind+' personal story history executes with exact seven previous dates: '+runDate,async()=>{
+// Keep the expanded 30-day story-family exclusion intact; the original seven-day
+// fixture accidentally rejected this stricter, already-deployed deduplication policy.
+// Executing both producer queries verifies 30 individually bound dates, including leap day.
+for(const kind of ['selection','reserve'])for(const runDate of ['2026-10-28','2026-01-03','2024-03-02'])
+test(kind+' personal story history executes with exact thirty previous dates: '+runDate,async()=>{
+ const expected=Array.from({length:30},(_,i)=>
+   new Date(Date.parse(runDate+'T12:00:00Z')-(i+1)*86400000).toISOString().slice(0,10)).sort();
  const {sql,values}=await personalHistoryQuery(runDate,kind);
  assert.match(sql,/from public\."content_publication_obligations"/);
  assert.match(sql,/"tenant_id" = \$1 and "channel" = \$2/);
  assert.deepEqual(values.slice(0,2),['canonical','linkedin_personal']);
+ assert.equal(expected.length,30);
  assert.deepEqual(values.filter(v=>/^\d{4}-\d{2}-\d{2}$/.test(v)).sort(),expected);
  assert.deepEqual(values.slice(-2),['PUBLISHED','LIVE_PROVEN']);
  assert.ok(!sql.includes(runDate),'date values stay bound, never SQL interpolated');

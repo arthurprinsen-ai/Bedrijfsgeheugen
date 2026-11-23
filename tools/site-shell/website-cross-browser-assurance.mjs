@@ -2,6 +2,7 @@ import { chromium, firefox, webkit } from 'playwright';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { planMobileClsReplay, summarizeMobileClsReplay } from './mobile-cls-repeatability.mjs';
+import { filterSettledCoreFailures } from './core-request-recovery.mjs';
 
 const contractPath=process.env.WEBSITE_ASSURANCE_CONTRACT||'config/powerhouse-website-cross-browser-assurance-v1.json';
 const contract=JSON.parse(await fs.readFile(contractPath,'utf8'));
@@ -126,20 +127,6 @@ async function inspectStable(page){
   throw last;
 }
 
-function filterSettledCoreFailures(failedCore,{status,finalUrl}={}){
-  if(!(status>=200&&status<400)||!finalUrl)return [...failedCore];
-  let finalPath=null;
-  try{finalPath=new URL(finalUrl).pathname||'/';}catch{}
-  if(!finalPath)return [...failedCore];
-  const transientDocumentFailure=/^(?:net::ERR_CONNECTION_RESET|net::ERR_ABORTED|NS_ERROR_ABORT|Load request cancelled)$/i;
-  return failedCore.filter(value=>{
-    const match=String(value).match(/^document:([^:]*):(.*)$/);
-    if(!match)return true;
-    const [,pathname,errorText]=match;
-    return !(pathname===finalPath&&transientDocumentFailure.test(errorText));
-  });
-}
-
 function basicViolations(state,status,pageErrors,failedCore){
   const out=[];
   if(!status||status>=400)out.push(`HTTP ${status??'none'}`);
@@ -208,6 +195,36 @@ async function runInteraction(browserName,browser,interaction,route){
     const fallback=found==='#bgkopKnop'?'#bgkopMob':'#v18MobileDrawer';
     const panel=controls&&await page.locator('#'+controls).count()?page.locator('#'+controls).first():page.locator(fallback).first();
     if(!(await panel.isVisible().catch(()=>false)))violations.push(`mobile panel not visible: ${controls||fallback}`);
+    // Closing must work by touch/click, not only by toggling aria attributes.
+    const close=panel.locator('[data-bg-sitewide-close]').first();
+    if(await close.count()===0)violations.push('mobile menu has no independent close control');
+    else{
+      await close.click().catch(error=>violations.push(`close click failed: ${error.message}`));
+      await sleep(120);
+      if(await trigger.getAttribute('aria-expanded')!=='false')violations.push('mobile menu remained expanded after close');
+      if(await panel.getAttribute('aria-hidden')!=='true')violations.push('mobile menu remained visible after close');
+    }
+    // Header must stay at viewport top while scrolling every public page.
+    const sticky=await page.evaluate(()=>{
+      const header=document.querySelector('header.v17-header,nav.bgkop');
+      if(!header || document.documentElement.scrollHeight<innerHeight+250)return null;
+      scrollTo(0,Math.min(900,document.documentElement.scrollHeight-innerHeight));
+      return {top:header.getBoundingClientRect().top,position:getComputedStyle(header).position};
+    });
+    if(sticky && (Math.abs(sticky.top)>4 || sticky.position!=='sticky'))violations.push(`mobile header not sticky: ${JSON.stringify(sticky)}`);
+  } else if(interaction.assert==='knowledge_slider_native'){
+    const range=page.locator(found).first();
+    const inFrame=await range.evaluate(el=>el.parentElement?.id==='compareFrame');
+    if(!inFrame)violations.push('knowledge range does not cover comparison frame');
+    await range.focus().catch(error=>violations.push(`slider focus failed: ${error.message}`));
+    await range.press('End').catch(error=>violations.push(`slider End failed: ${error.message}`));
+    const high=await range.inputValue().catch(()=>null);
+    const after=await page.locator('#compareFrame').getAttribute('data-bg-knowledge-side').catch(()=>null);
+    if(Number(high)<95||after!=='after')violations.push(`knowledge slider end did not update: ${high}/${after}`);
+    await range.press('Home').catch(error=>violations.push(`slider Home failed: ${error.message}`));
+    const low=await range.inputValue().catch(()=>null);
+    const before=await page.locator('#compareFrame').getAttribute('data-bg-knowledge-side').catch(()=>null);
+    if(Number(low)>5||before!=='before')violations.push(`knowledge slider start did not update: ${low}/${before}`);
   } else if(interaction.assert==='desktop_mega_visible'){
     const trigger=page.locator(found).first();
     await trigger.hover().catch(()=>{});

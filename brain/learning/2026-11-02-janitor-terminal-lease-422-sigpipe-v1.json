@@ -1,0 +1,97 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "fingerprint": "github|janitor-terminal-lease|bounded-successor-history|http422-sigpipe|20261101-v1",
+  "obligation_id": "github|janitor-terminal-lease|bounded-successor-history|http422-sigpipe|20261101-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "status": "CANDIDATE_NOT_DEPLOYED",
+  "failure_class": "GITHUB_JANITOR_HTTP422_UPSTREAM_SIGPIPE_AND_BOUNDED_LINEAGE_FALSE_NEGATIVE",
+  "ownership": {
+    "agent": "existing-powerhouse-github-delivery-janitor",
+    "accountable": "arthurprinsen-ai",
+    "exclusive_writer_required": true
+  },
+  "direct_cause": {
+    "hypothesis": "gh api PATCH state=open for an unmerged closed terminal lease whose historical merged successor was outside the last 100 closed PRs",
+    "confidence": "HIGH_BUT_UNCONFIRMED_ENDPOINT",
+    "observed": [
+      "gh: Validation Failed (HTTP 422)",
+      "jq: error: writing output failed: Broken pipe"
+    ],
+    "alternative": "branch deletion inside later streamed loop",
+    "primary_endpoint_proven": false
+  },
+  "design_cause": "A 100-entry closed PR window was used to infer missing successor and authorize mutation; jq/gh producers piped into fallible while under pipefail mask provider errors as SIGPIPE.",
+  "evidence": {
+    "run_id": 41342975119,
+    "job_id": 124956777904,
+    "artifact_id": 13098203266,
+    "artifact_sha256": "a6541f75a0666c31837f4626f4a1912f035ff6873a8d6bd3c805954fe1d07d32",
+    "head_sha": "eedc3f8b380cd1e0c986cc0d0ea98854a48813e8",
+    "failed_step": "Reconcile stale Actions and merged branch debris",
+    "bounded_cursor": {
+      "actions_page": 5,
+      "branches_page": 19,
+      "run_number": 229
+    },
+    "closed_predecessor_pr": 2225,
+    "merged_successor_pr": 2353,
+    "other_jobs": [
+      "branch_reconciler:success",
+      "branch_archive_sweep:success"
+    ],
+    "post_failure": "telemetry success and 5-file artifact upload success",
+    "supervisor_repeated_drift_observations": 133
+  },
+  "fix": "Materialize JSON producers before fallible loops, make absence from recent 100 closed PRs explicitly unknown and defer blind reopen to existing delivery owner, annotate branch API rejection with operation/ref.",
+  "prevention_rule": "Never use a bounded or index-lagged list to prove absence of a delivery successor or authorize reopening; require explicit full-lineage and current provider head evidence. Do not mask provider failure with pipe SIGPIPE.",
+  "tests": [
+    "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization"
+  ],
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "GITHUB_JANITOR_HTTP422_UPSTREAM_SIGPIPE_AND_BOUNDED_LINEAGE_FALSE_NEGATIVE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "portal_projection": {
+    "now": {
+      "status": "PARTIAL_FAILURE",
+      "confidence": "PROVIDER_VERIFIED_RUN",
+      "run_id": 41342975119,
+      "succeeded_jobs": 2,
+      "failed_jobs": 1,
+      "janitor_cleanup_readback": "SKIPPED",
+      "artifact_present": true,
+      "supervisor_drift": "133_OBSERVATIONS_NOT_PROVEN_RESOLVED"
+    },
+    "on_candidate_merge": "AWAIT_FRESH_JANITOR_RUN",
+    "on_proven_readback": "THIS_FIX_VERIFIED_ONLY",
+    "global_green_allowed": false
+  },
+  "terminal_rule": "Required+CodeQL+applicable gates exact-head green; protected merge; new canonical Janitor execution + independent readback; existing drift tracked separately.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-terminal-lease-422-20261101.test.mjs"
+    ],
+    "invariants": [
+      "bounded closed-pr sample cannot prove missing merged successor",
+      "HTTP 422 must preserve primary operation/ref evidence, not only jq SIGPIPE",
+      "no blind reopen of PR #2225",
+      "existing required security/protected checks remain unchanged",
+      "repair live only after native janitor readback"
+    ]
+  },
+  "root_cause": "Design defect confirmed: the Janitor treats absence of a merged successor in a bounded 100-record closed-PR sample as global absence, even though #2353 was a merged exact-obligation successor of #2225 outside that window. The historical HTTP 422 endpoint is not logged; rejected PATCH reopening is the leading hypothesis, and the jq broken pipe is secondary to consumer termination under pipefail."
+}

@@ -23,7 +23,7 @@ test('provider generation requires valid strict schema and retains independent a
   const source=readFileSync(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
   assert.match(source,/if\(!validArtifactObject\(result\)\)throw new Error\('AI_ARTIFACT_SCHEMA_INVALID:/);
   assert.match(source,/if\(!\(firstError instanceof AIProviderIncompleteOutputError\)\)throw firstError/);
-  assert.match(source,/artifact=await callAI\(apiKey,gov\.model_id,editorialSystem,artifactInput,artifactTool,retryBudget\)/);
+  assert.match(source,/artifact=await callAI\(apiKey,gov\.model_id,editorialSystem,artifactInput,artifactTool,retryBudget,pending\.channel==='linkedin_personal'\?'low':undefined\)/);
   assert.match(source,/if\(editorialViolations\.length\) throw new Error\('PERSONAL_EDITORIAL_CONTRACT_FAILED:/);
   assert.match(source,/if\(!personalFinalCopyValid\(bodyText,personalSource\?\.evidence\|\|\{\}\)\) throw new Error\('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED'\)/);
   assert.match(source,/if\s*\(!companyTrackingUrl \|\| !bodyText\.includes\(companyTrackingUrl\)\)/);

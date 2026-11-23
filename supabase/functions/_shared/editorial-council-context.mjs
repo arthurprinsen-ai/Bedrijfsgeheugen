@@ -1,0 +1,98 @@
+// Advisory roles within the ORIGINAL Powerhouse content orchestrator; never a second writer.
+// Editorial research = creative hypothesis; real provider/customer outcomes alone can prove lift.
+export const EDITORIAL_COUNCIL_POLICY='one-brain-commercial-editorial-council-v1';
+export const EDITORIAL_RESEARCH_REVIEWED_AT='2026-11-02';
+const SOURCE_NOTES=Object.freeze({
+  linkedin:'https://news.linkedin.com/2026/ImprovingTheFeed',
+  linkedin_authenticity:'https://news.linkedin.com/2026/how-linkedin-is-tackling-ai-slop',
+  instagram_best_practices:'https://about.fb.com/news/2024/10/best-practices-education-hub-creators-instagram/',
+  instagram_originality:'https://about.fb.com/news/2026/01/2026-ai-drives-performance/',
+  google_people_first:'https://developers.google.com/search/docs/fundamentals/creating-helpful-content',
+  google_search_essentials:'https://developers.google.com/search/docs/essentials',
+  email_testing:'https://mailchimp.com/help/about-ab-tests/',
+  email_permission:'https://mailchimp.com/help/about-compliance-for-email-marketing/'
+});
+const CHANNELS=Object.freeze({
+  linkedin_personal:Object.freeze({
+    audience:'ondernemers en beslissers die de echte afwegingen van een oprichter willen begrijpen',
+    reader_job:'één geverifieerde eigen ervaring of bouwepisode die een herkenbaar ondernemersdilemma oplost',
+    editorial:'Begin bij een menselijk probleem; beschrijf situatie, oorzaak, echt gevolg en eigen les. Geen AI-status, sales-CTA, nep-ervaring, engagementbait of generieke LinkedIn-formules. Houd originele persoonlijke v4-regels.',
+    experiment:'Test hoogstens één openingsinvalshoek op nieuwe, verschillende brongebonden verhalen.',
+    success:['provider_verified_reach_if_available','substantive_comments','qualified_inbound_conversations','consented_qualified_leads','independently_paid_orders']
+  }),
+  linkedin_company:Object.freeze({
+    audience:'directeur, ondernemer, commercieel manager of operations-leider',
+    reader_job:'één concreet probleem dat verlies, risico, werkdruk of gemiste omzet veroorzaakt',
+    editorial:'Maak de eerste regels concreet; breng zakelijke oorzaak/gevolg, een bruikbare les en één relevante meetbare vervolgstap. Geen interne dashboards, kopie van personal of fictieve klantcase. Tracking alleen langs bestaande gecontroleerde route. SOURCE NOVELTY BEFORE GENERATION: het herhaalde familieverhaal verloren of niet-opgevolgde offertes is afgekeurd met COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT. Selecteer eerst een aantoonbaar ANDER ondernemersprobleem uit een eigen nieuwe gedateerde, controleerbare bron; zonder nieuw feitelijk bronanker: HOLD en brononderzoek, geen parafrase van offertes en geen verzonnen klantcasus. De bestaande companyEditorialViolations plus globale deduplicatie blijven beslissend.',
+    experiment:'Test één opening, format of CTA per keer; carrousel/video alleen met werkelijk goedgekeurd asset.',
+    success:['provider_verified_impressions_if_available','substantive_comments','reposts','attributed_cta','consented_qualified_leads','independently_paid_orders']
+  }),
+  instagram_company:Object.freeze({
+    audience:'ondernemer die in seconden een herkenbare zakelijke situatie moet begrijpen',
+    reader_job:'een alledaags probleem zichtbaar maken met één concrete scène, oorzaak en gevolg',
+    editorial:'Mira-caption en video blijven exact gekoppeld aan de goedgekeurde bron en identiteit; geen losse tekstkaart, AI-hype, onwaar bewijs of fictieve testimonial. Bewaar de bestaande exacte media/face gates.',
+    experiment:'Test alleen een andere bewezen beschikbare opening of videovorm met zelfstandig goedgekeurde media.',
+    success:['provider_verified_views_if_available','watch_time_if_available','saves','shares','profile_or_site_visits_if_available','consented_qualified_leads','independently_paid_orders']
+  }),
+  blog:Object.freeze({
+    audience:'Nederlandstalige ondernemer die actief een probleem probeert op te lossen',
+    reader_job:'een concrete vraag volledig beantwoorden, passend bij feitelijke zoekintentie',
+    editorial:'Mensen-eerst artikel: origineel deskundig antwoord, actuele primaire bron, voorbeeld zonder verzonnen klant, heldere titel, logische H2s, concrete stappen en één passende CTA. SEO ondersteunt de lezer, nooit content op schaal om ranking te manipuleren. Huidige CMS- en kwaliteitsgate blijft beslissend.',
+    experiment:'Test na GSC/GA4-bronreadback één zoekintentiecluster, titel of CTA; geen cannibalisatie van bestaande canonical pagina.',
+    success:['gsc_nonbrand_impressions','gsc_clicks','qualified_search_sessions','verified_cta','consented_qualified_leads','independently_paid_orders']
+  }),
+  email_outreach:Object.freeze({
+    audience:'individuele zakelijke contactpersoon met aantoonbare concrete, relevante en rechtmatig gebruikte context',
+    reader_job:'in een paar zinnen één echte, passende observatie en een waardevolle kleine vervolgstap begrijpen',
+    editorial:'Schrijf een persoonlijke, relevante zakelijke e-mail met specifiek bronanker, helder onderwerp, menselijke context en maximaal één natuurlijke vraag. Respecteer bestaande rechtmatigheid, toestemming waar vereist, afmelden waar van toepassing, suppressions en broncontrole. Geen ongefundeerde aannames over het bedrijf, nep-urgentie, bulktoon of generieke opdringerige follow-up. Deze redactie verleent GEEN verzendautorisatie.',
+    experiment:'Varieer één onderdeel (feitelijke opening, onderwerp of micro-CTA) alleen binnen de bestaande gecontroleerde outreach-owner.',
+    success:['provider_verified_sent','positive_replies','verified_meetings','qualified_leads','independently_paid_orders','negative_replies_or_unsubscribes']
+  }),
+  email_newsletter:Object.freeze({
+    audience:'bestaande contacten met aantoonbare geldige toestemming en toepasselijk doel',
+    reader_job:'één relevante en tijdige aanleiding, nuttig inzicht en eenvoudige vervolgstap',
+    editorial:'Onderwerp en preheader concreet, segment passend, korte body, één CTA. Geen misleidende urgentie of onbewezen personalisatie; afmelden en toestemming blijven verplicht. Geen verzending door deze generator: canonical nieuwsbrief-executor is NIET geautoriseerd.',
+    experiment:'Alleen via bestaande bevoegde verzender en opt-in: één variabele per A/B-test, zoals onderwerp of CTA.',
+    success:['provider_verified_delivered','verified_clicks','positive_replies','meetings','consented_qualified_leads','independently_paid_orders','unsubscribes']
+  })
+});
+// Explicit generation-side contract. Read by ORIGINAL powerhouse-content-orchestrator
+// in its existing editorialSystem prompt BEFORE any content/model generation.
+export const FIRST_TIME_RIGHT_PRE_GENERATION='original-social-first-time-right-prepublish-v1';
+const GENERATION_GATE=Object.freeze({
+  linkedin_personal:'VÓÓR GENERATIE: kies één werkelijk geverifieerde persoonlijke bouw-/observatiebron met unieke verhaalfamilie. Geen verzonnen ervaring, hergebruikte mislukte tekst, onbewezen cijferclaim of bedrijfsverkoppraat. Lever exacte brongeschiedenis, identiteit en controleerbare redactionele juistheid. Houd huidige persoonlijke v4-contract, maximale LinkedIn-lengte 3000 tekens en leg geen providerresultaat vast.',
+  linkedin_company:'VÓÓR GENERATIE: selecteer een nieuw, gedateerd en onafhankelijk toetsbaar ondernemersprobleem, niet slechts herformulering van een afkeurde familie. Maak concreet oorzaak, gevolg, toepassing en één meetbare CTA. Geen nepklant, lege benchmark of onbewezen omzetclaim. Lever echt bronanker en nieuwe bronfamilie voor de oorspronkelijke reviewer en globale duplicate-gate.',
+  instagram_company:'VÓÓR GENERATIE: laat de oorspronkelijke Mira-bronagent eerst exact één gedateerde, unieke dagwinnaar en brongebonden concrete scène vastleggen. De oorspronkelijke producer moet de mediajob werkelijk claimen vóór betaalde OpenArt-generatie. Geen generiek beeld of tekstkaart: native 1080x1920 Reel met Mira-identiteit minimaal 0,940 op begin/midden/eind en temporele consistentie, exact media-SHA en bron-/caption-scène-overeenstemming. Geen providerpublicatie tot alle echte media- en kanaalbewijzen geslaagd zijn.',
+  blog:'VÓÓR GENERATIE: controleer de primaire bron, echte datum, zoekintentie, huidige canonical, doelgroepvraag, bruikbare inhoud en CTA. Bouw een origineel leesbaar NL/EN SEO-artikel zonder fictieve resultaten of toekomstige claims. De beschermde blogowner moet eerst echt redactioneel goedkeuren en daarna GitHub Required/BRAIN/CodeQL, Netlify en publieke URL bewijzen; een concept of gegenereerde URL is nooit live.',
+});
+const EMAIL_OUTREACH_POLICY="TRUSTED ADVISOR: de e-mailredactie is adviserend, zonder eigen publicatierechten of tweede planner; alleen de oorspronkelijke verzender heeft na toestemming, kwaliteitscontrole en Gmail-readback uitvoeringsbevoegdheid. COMMERCIELE E-MAIL SPECIFIEK: bepaal eerst de contactintentie uit bewezen feiten en interacties: eerste contact, bestaande relatie, vervolg met nieuw feit, reactie op een antwoord, interesse of bezwaar. Niet gokken op koopintentie of interne problemen. De ontvanger moet in een paar seconden begrijpen waarom juist nu contact wordt gezocht en wat er concreet aan is. Bij het interne TRUSTED ADVISOR-advies is ook niets doen een legitieme afweging wanneer relevantie of bewijs ontbreekt; die afweging is geen tekstsjabloon voor de ontvanger. Onderzoek 2026 (Hunter, Gong): kleine relevante segmenten, feitelijke personalisatie en een ontspannen interessevraag; de bevindingen zijn hypothesen, nooit gegarandeerde conversie. Voor oprichters-e-mail: één echt relevant feit, kort waarom Arthur Bedrijfsgeheugen is begonnen, één inhoudelijke gedachte en hoogstens één niet-opdringerige vraag. Doelgroepsegment uit rol is uitsluitend een redactionele hypothese en mag niet als feitelijk probleem van de ontvanger gepresenteerd worden. Meet positieve menselijke reacties, gesprekken, opt-outs en aantoonbare omzet apart; openings- of clickscores gelden niet als klantresultaat. Schrijf als een menselijke ondernemer in vlot Nederlands; één verifieerbaar inhoudelijk haakje dat meer is dan een functietitel, één korte relevante gedachte en hoogstens één natuurlijke vraag. Bij onvoldoende specifieke context: STOP copy, vraag brononderzoek via de originele keten. Nooit problem-cause-lesson/limitation/alternative schrijfmal voor mails. De interne velden probleem, oorzaak, praktische les, beperking, hypothese, alternatief en kwaliteitsnotities horen nooit in de klanttekst, ook niet tussen haakjes. Geen hypothetische bedrijfsdiagnose, ongefundeerde claims, nep-bekendheid, herhaald verzoek om twee observaties, standaard onderwerp Korte observatie of robot-ondertekening. Bij een reply eerst de echte vraag beantwoorden; bij geen reactie alleen opvolgen met een nieuw relevant bewezen feit; bij afwijzing of afmelding niet opnieuw benaderen. Deze instructie verleent GEEN toestemming tot verzending: behoud de bestaande rechtmatigheids-, afmeld-, bron-, ontvanger-, duplicate- en provider-readbackgates.";
+const ROLES=Object.freeze(['hoofdredacteur','doelgroeponderzoeker','kanaalspecialist','SEO-redacteur','e-mail/lifecycle-specialist','factchecker','CRO-experimentanalist','omzetanalist','trusted-advisor-specialist']);
+export function buildEditorialCouncilBrief({channel,commercialFeedback={},verifiedBrandLearnings=[],measuredNextPostTest={},creativeExploration={}}={}){
+  if(!Object.prototype.hasOwnProperty.call(CHANNELS,channel))throw new Error('EDITORIAL_COUNCIL_UNSUPPORTED_CHANNEL');
+  const play=CHANNELS[channel];
+  // Upstream canonical selection verifies tenant, evidence refs, freshness, sample and confidence.
+  // These identifiers are candidate guidance, NOT proof the next artifact applied a lesson.
+  const verifiedIds=(Array.isArray(verifiedBrandLearnings)?verifiedBrandLearnings:[])
+    .filter(row=>row?.status==='VERIFIED_TENANT_SCOPED_PATTERN_NOT_A_GUARANTEE')
+    .map(row=>String(row.learning_id||'')).filter(Boolean).slice(0,3);
+  const feedbackIds=commercialFeedback?.state==='EVIDENCE_AVAILABLE' && Array.isArray(commercialFeedback.learning_ids)
+    ?commercialFeedback.learning_ids.filter(id=>typeof id==='string'&&id.length>0).slice(0,3):[];
+  const proposed=measuredNextPostTest?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'
+    ?'PROVIDER_BOUNDED_HYPOTHESIS'
+    :creativeExploration?.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS'?'EXPLORATORY_HYPOTHESIS':'NO_MEASURED_CREATIVE_WINNER';
+  return {
+    contract:EDITORIAL_COUNCIL_POLICY,channel,roles:ROLES,
+    trust_policy:'one-brain-trusted-advisor-external-quality-v1',
+    audience:play.audience,reader_job:play.reader_job,editorial:play.editorial,
+    single_variable_experiment:play.experiment,metrics_priority:play.success,
+    evidence_state:proposed,
+    candidate_learning_ids:[...new Set([...verifiedIds,...feedbackIds])],
+    next_application_status:'NOT_YET_APPLIED_OR_VERIFIED',
+    research_reviewed_at:EDITORIAL_RESEARCH_REVIEWED_AT,
+    research_sources:SOURCE_NOTES,
+    truth_boundary:'External guidance suggests hypotheses, not channel-specific causal lift. No fake provider metrics, no claims of revenue without linked independent payment, no second scheduler/writer, no bypass of identity, media, OAuth, CMS, consent or publication dedupe.',
+    pre_generation_contract:FIRST_TIME_RIGHT_PRE_GENERATION,
+    pre_generation_specification:GENERATION_GATE[channel]||'Behoud bestaande toestemming, bronechtheid, identiteit en betaalde quota; geen provideractie zonder originele gate.',
+    instruction:(GENERATION_GATE[channel]||'Bestaande bronkwaliteit en toestemming blijven verplicht.')+' '+(channel==='email_outreach'?EMAIL_OUTREACH_POLICY:'TRUSTED ADVISOR: externe teksten mogen geen interne CI/PR/release-status, redactienotities, fictieve cases, loze superlatieven of niet-onderbouwde resultaten bevatten. Benoem één echt ondernemersprobleem, oorzaak, praktische les, beperking van het bewijs, een eerlijk alternatief (ook niets doen) en passende volgende stap. De trusted-advisor-specialist geeft advies binnen deze bestaande redactie, zonder eigen publicatierechten of tweede planner. Een bronlink is niet automatisch een onafhankelijke uitkomst; nooit klantvertrouwen of omzet als bewezen labelen zonder eigen meting. REDACTIERAAD: werk als één team van doelgroepexpert, hoofdredacteur, specialist, factchecker en CRO-analist binnen deze originele generator. Maak een origineel, bronwaar, leesbaar stuk dat de genoemde reader_job oplost. Kies maar één relevante bewezen leerregel OF één verkennende hypothese, nooit tegelijk meerdere wijzigingen. Teken geen experiment of winnaar af op basis van extern advies, gemiddelde benchmarks, ontbrekende metingen of één post. Behoud alle bestaande kanaalgates.'),
+  };
+}

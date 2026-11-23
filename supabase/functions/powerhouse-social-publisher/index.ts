@@ -1,4 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
+import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations,personalLastMilePublicationViolations,personalFounderDecisionSourceScopeViolations,isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact} from '../_shared/personal-first-person-story-gate.mjs';
 import {canRecoverExpiredCompanyClaim,canRecoverExpiredPersonalClaim} from '../_shared/social-publish-claim-recovery.mjs';
 import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
@@ -6,6 +7,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem} from '../_shared/mira-entrepreneur-caption.mjs';
 import {validateResolvedMiraCaptionForDelivery} from '../_shared/mira-frozen-winner-contract.mjs';
+import {ORIGINAL_HISTORICAL_READBACK_BATCH,originalHistoricalProviderReference,originalProviderReadbackResult,originalProviderReadbackErrorCode} from '../_shared/original-skipped-provider-readback-selection.mjs';
 
 // Protected-main promotion bootstrap: social provider-truth contract v1.
 
@@ -21,6 +23,27 @@ const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedi
 const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
 
 const clean = (value: unknown) => String(value ?? '').trim();
+async function verifyCurrentPersonalStorySource(db:any,row:any,art:any,runDate:string){
+  const original=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{};
+  const id=clean(row.delivery_evidence?.personal_source_recommendation_id
+    ||art.generation_evidence?.personal_source_recommendation_id
+    ||art.generation_evidence?.recommendation_id);
+  if(!/^[a-f0-9-]{36}$/i.test(id))return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_ID_MISSING'};
+  const {data,error}=await db.from('powerhouse_content_recommendations')
+    .select('recommendation_id,target_channel,run_date,status,evidence')
+    .eq('recommendation_id',id).maybeSingle();
+  if(error||!data)return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_READ_FAILED'};
+  if(data.target_channel!=='linkedin_personal'||data.run_date!==runDate
+    ||!['suggested','accepted'].includes(clean(data.status)))
+    return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_REJECTED_OR_STALE'};
+  const sourceCodes=personalFirstPersonSourceViolations(data.evidence||{},runDate);
+  if(sourceCodes.length)return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_TRUTH_FAILED',violations:sourceCodes};
+  if(clean(data.evidence?.content_id)!==clean(original.content_id)
+    ||clean(data.evidence?.source_text)!==clean(original.source_text))
+    return {ok:false,code:'PERSONAL_ORIGINAL_SOURCE_REVISION_DRIFT'};
+  return {ok:true,source_recommendation_id:id};
+}
+
 function jsonObject(value:any){
   if(value===null||value===undefined)return {};
   if(typeof value==='string'){
@@ -456,11 +479,28 @@ async function preflightLinkedInViaComposio(db:any){
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   return {apiKey,accountId,userId,personId};
 }
-async function publishLinkedInPersonalViaComposio(db:any,art:any){
+async function publishLinkedInPersonalViaComposio(db:any,art:any,approval:any){
+  // Last-metre transport veto: re-hash the actual bytes about to be sent.
+  // This cannot be bypassed by a stale PASS, prior capability or accepted news.
+  const commentary=clean(art.body);
+  const exactFinalHash=await digest(commentary);
+  // Ensure THIS original publisher deployment carries the latest source-bound founder
+  // guard. The older production bundle preceded the protected reviewer update.
+  // A successful reviewer or consumed capability never permits unsupported
+  // first-person customer/team claims; veto before any provider POST.
+  const unverifiedFounderClaims=personalFounderDecisionSourceScopeViolations(commentary,approval?.evidence||{});
+  if(unverifiedFounderClaims.length)
+    throw new Error('PERSONAL_FOUNDER_SOURCE_SCOPE_LAST_MILE_VETO:'+unverifiedFounderClaims.join(','));
+  const lastMileViolations=personalLastMilePublicationViolations({
+    text:commentary,evidence:approval?.evidence,runDate:approval?.runDate,
+    review:approval?.review,expectedTextHash:approval?.expectedTextHash,
+    actualTextHash:exactFinalHash,sourceVerified:approval?.sourceVerified
+  });
+  if(lastMileViolations.length)
+    throw new Error('PERSONAL_LAST_MILE_PUBLICATION_VETO:'+lastMileViolations.join(','));
   const {apiKey,accountId,userId,personId}=await composioLinkedInContext(db);
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   const author=`urn:li:person:${personId}`;
-  const commentary=clean(art.body);
   const created=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary,visibility:'PUBLIC',lifecycleState:'PUBLISHED'});
   const createdData=created?.data||created;
   const postUrn=clean(createdData?.x_restli_id)||deepPickLinkedInPostUrn(createdData);
@@ -607,7 +647,7 @@ async function linkedinCompanyAuthorUrn(db:any):Promise<string>{
     : [];
   if(urns.length===0)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTHOR_UNVERIFIED');
   if(urns.length!==1)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTHOR_AMBIGUOUS');
-  return urns[0];
+  return urns[0] as string;
 }
 function assertLinkedInCompanyContentPolicy(commentary:string){
   const normalized=clean(commentary).toLowerCase();
@@ -927,6 +967,66 @@ function instagramIdentityProven(evidence: any) {
     &&clean(proof?.mira_gate_result)==='PASS'&&visible&&dims&&providerOk;
 }
 
+// Bounded independent PUBLIC LinkedIn readback owned by the ORIGINAL publisher.
+// Never creates a post, never treats a 403 as proof, never trusts caller-provided copy.
+// Live backend Composio read-only response #22797 verified on 2026-11-06.
+async function originalLinkedInPersonalPublicReadback(db,ref,runDate,canonicalUrl){
+ const fail=reason=>({ok:false,reason});
+ const urn=clean(ref),url='https://www.linkedin.com/feed/update/'+urn+'/';
+ if(!/^urn:li:(?:share|ugcPost):[0-9]+$/.test(urn)||clean(canonicalUrl)!==url
+   ||!/^20\d{2}-\d{2}-\d{2}$/.test(clean(runDate)))
+   return fail('PUBLIC_LINKEDIN_EXACT_URN_URL_OR_DATE_REQUIRED');
+ const [{data:artifact,error:artifactError},{data:setup,error:setupError}]=await Promise.all([
+  db.from('powerhouse_content_artifacts').select('body').eq('run_date',runDate).eq('channel','linkedin_personal').maybeSingle(),
+  db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle()
+ ]);
+ if(artifactError||setupError)return fail('PUBLIC_LINKEDIN_SOURCE_READ_UNAVAILABLE');
+ const expectedCopy=clean(artifact?.body),entityId=clean(jsonObject(setup?.result)?.user_id);
+ if(!expectedCopy||expectedCopy.length<150||!entityId)return fail('PUBLIC_LINKEDIN_CANONICAL_SOURCE_OR_ENTITY_MISSING');
+ const apiKey=await secret(db,'COMPOSIO_API_KEY');
+ if(!apiKey)return fail('PUBLIC_LINKEDIN_COMPOSIO_KEY_UNAVAILABLE');
+ const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),14000);
+ try{
+  const response=await fetch(COMPOSIO_BASE+'/tools/execute/SCRAPECREATORS_GET_LINKEDIN_POST',{
+   method:'POST',headers:{'content-type':'application/json','x-api-key':apiKey},
+   body:JSON.stringify({entity_id:entityId,user_id:entityId,arguments:{url}}),
+   signal:controller.signal
+  });
+  const result=await response.json().catch(()=>({}));
+  const publicPost=result?.data||{},author=publicPost?.author||{};
+  if(!response.ok||result?.successful!==true||publicPost?.success!==true)
+    return fail('PUBLIC_LINKEDIN_PROVIDER_READBACK_UNAVAILABLE');
+  const normalize=value=>String(value??'').replace(/\s+/g,' ').trim();
+  const expected=normalize(expectedCopy),actual=normalize(publicPost?.description);
+  const match=expected.length>=150&&expected===actual;
+  const first=expected.slice(0,85)===actual.slice(0,85);
+  const last=expected.slice(-90)===actual.slice(-90);
+  const authorMatched=/^Arthur Prinsen\b/i.test(clean(author?.name))
+    &&/^https:\/\/(?:[a-z]{2}\.)?linkedin\.com\/in\/arthurprinsen(?:\/|$)/i.test(clean(author?.url));
+  const actualPermalink=clean(publicPost?.url);
+  const postMatched=/^https:\/\/(?:[a-z]{2}\.)?linkedin\.com\/posts\/arthurprinsen_[^\s?#]+-activity-[0-9]+-[A-Za-z0-9_-]+(?:[/?#]|$)/i.test(actualPermalink);
+  const published=new Date(clean(publicPost?.date_published));
+  const validDate=Number.isFinite(published.getTime())
+    &&new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(published)===runDate;
+  if(!match||!first||!last||!authorMatched||!postMatched||!validDate)
+    return fail('PUBLIC_LINKEDIN_AUTHOR_COPY_DATE_OR_PERMALINK_MISMATCH');
+  return {ok:true,evidence:{
+   independent_public_readback_verified:true,
+   readback_exact_first_85_characters_matched:true,
+   readback_exact_last_90_characters_matched:true,
+   independent_public_full_copy_matched:true,
+   public_provider_readback_contract:'linkedin-original-public-page-readback-v1',
+   independent_public_source:'SCRAPECREATORS_GET_LINKEDIN_POST',
+   independent_public_post_url:actualPermalink,
+   independent_public_author_url:clean(author.url),
+   independent_public_published_at:published.toISOString(),
+   independent_public_readback_checked_at:new Date().toISOString(),
+   public_linkedin_urn:urn
+  }};
+ }catch(_error){return fail('PUBLIC_LINKEDIN_PROVIDER_READBACK_UNAVAILABLE')}
+ finally{clearTimeout(timer)}
+}
+
 async function reconcileExistingProviderTruth(db: any, token: string | null, runDate: string) {
   const [{ data: rows, error }, { data: obligations, error: obligationError }] = await Promise.all([
     db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence').eq('run_date', runDate).in('channel', ['linkedin_personal','linkedin_company','instagram_company']),
@@ -981,8 +1081,10 @@ async function reconcileExistingProviderTruth(db: any, token: string | null, run
           && publicProof.readback_exact_first_85_characters_matched===true
           && publicProof.readback_exact_last_90_characters_matched===true
           && clean(obligation?.canonical_url).includes(ref);
-        if(providerCreateProven && independentPublicProof){
-          const evidence={...previous,provider:'composio',provider_post_id:ref,
+        const verifiedPublicPage=providerCreateProven && permissionLimited && !independentPublicProof
+          ?await originalLinkedInPersonalPublicReadback(db,ref,runDate,clean(obligation?.canonical_url)):null;
+        if(providerCreateProven && (independentPublicProof || verifiedPublicPage?.ok===true)){
+          const evidence={...previous,...(verifiedPublicPage?.ok===true?verifiedPublicPage.evidence:{}),provider:'composio',provider_post_id:ref,
             provider_create_success:true,provider_publication_ack_verified:true,
             provider_truth_verified:true,provider_truth_source:'independent_public_linkedin_page',
             provider_truth_checked_at:new Date().toISOString(),
@@ -1202,6 +1304,85 @@ async function recoverExpiredLinkedInPublicationAuthority(db:any,runDate:string,
     channels:results};
 }
 
+
+// The original social publisher owns historical provider readback as part of
+// its EXISTING authenticated run/audit. At most 3 idempotent GETs per tick.
+// A failed provider read is neither deletion nor permission to post again.
+async function reconcileHistoricalSkippedProviderReferences(db:any){
+ const {data:rows,error}=await db.from('content_publication_obligations')
+  .select('tenant_id,channel,publication_date,status,external_id,evidence,updated_at')
+  .eq('tenant_id','canonical').eq('status','SKIPPED')
+  .not('external_id','is',null).order('publication_date',{ascending:true}).limit(80);
+ if(error)throw new Error('ORIGINAL_HISTORICAL_PROVIDER_READ_SOURCE_UNAVAILABLE:'+error.message);
+ const report:any[]=[];
+ for(const row of rows||[]){
+  if(report.length>=ORIGINAL_HISTORICAL_READBACK_BATCH)break;
+  const target=originalHistoricalProviderReference(row);
+  if(target.eligible!==true)continue;
+  const checkedAt=new Date().toISOString();
+  const claimEvidence={...(row.evidence||{}),
+   republish_forbidden:true,reconciliation_required:true,
+   reconciliation_provider_probe:{status:'CLAIMED_READ_ONLY',checked_at:checkedAt,kind:target.kind}};
+  // Source-row CAS makes two concurrent publisher audits one attempted read.
+  const {data:claimed,error:claimError}=await db.from('content_publication_obligations')
+   .update({evidence:claimEvidence,updated_at:checkedAt})
+   .eq('tenant_id','canonical').eq('channel',row.channel)
+   .eq('publication_date',row.publication_date).eq('status','SKIPPED')
+   .eq('external_id',target.ref).eq('updated_at',row.updated_at)
+   .select('channel,publication_date').maybeSingle();
+  if(claimError)throw new Error('ORIGINAL_PROVIDER_READ_CAS_CLAIM_FAILED:'+claimError.message);
+  if(!claimed)continue;
+  let result:any={verified:false,reason:'PROVIDER_READBACK_UNVERIFIED'};
+  try{
+   if(target.kind==='internal_reference'){
+    result={verified:false,reason:'INTERNAL_SOURCE_ID_REQUIRES_ORIGINAL_PROVIDER_LINKAGE'};
+   }else if(target.kind==='instagram'){
+    const ctx=await canonicalInstagramComposioContext(db);
+    const response=await composioExecuteArgsNoUser(ctx.apiKey,ctx.accountId,
+     'INSTAGRAM_GET_IG_MEDIA',{ig_media_id:target.ref,
+      fields:'id,username,permalink,timestamp,media_type,media_product_type'});
+    result=originalProviderReadbackResult(row,response?.data||response,
+      {expectedUsername:INSTAGRAM_CANONICAL_USERNAME});
+   }else{
+    const ctx=target.kind==='linkedin_personal'
+      ?await composioLinkedInContext(db)
+      :await composioLinkedInCompanyContext(db);
+    const response=await composioExecuteArgs(ctx.apiKey,ctx.accountId,ctx.userId,
+      'LINKEDIN_GET_POST_CONTENT',{post_id:target.ref});
+    const expectedAuthor=target.kind==='linkedin_personal'
+      ?'urn:li:person:'+ctx.personId:ctx.targetOrg;
+    result=originalProviderReadbackResult(row,response?.data||response,{expectedAuthor});
+   }
+  }catch(error){
+   result={verified:false,reason:originalProviderReadbackErrorCode(error)};
+  }
+  const finalEvidence={...claimEvidence,
+   reconciliation_provider_probe:{
+    status:result.verified===true?'EXACT_READBACK_PROVEN':'READBACK_UNVERIFIED',
+    checked_at:checkedAt,kind:target.kind,reason:result.reason,
+    exact_source_reference:target.ref,
+    provider_published_at:result.verified===true?result.provider_published_at:null,
+    exact_provider_readback_verified:result.verified===true,
+    source_state_updated:false,
+    original_consumer_fulfilled:false,
+    republish_forbidden:true}};
+  const completedAt=new Date().toISOString();
+  const {data:saved,error:saveError}=await db.from('content_publication_obligations')
+   .update({evidence:finalEvidence,updated_at:completedAt})
+   .eq('tenant_id','canonical').eq('channel',row.channel)
+   .eq('publication_date',row.publication_date).eq('status','SKIPPED')
+   .eq('external_id',target.ref).eq('updated_at',checkedAt)
+   .select('channel,publication_date').maybeSingle();
+  if(saveError)throw new Error('ORIGINAL_PROVIDER_READ_CAS_RESULT_FAILED:'+saveError.message);
+  report.push({channel:row.channel,publication_date:row.publication_date,
+    kind:target.kind,verification:result.reason,stored:!!saved,
+    provider_readback_verified:result.verified===true&&!!saved,
+    publication_created:false,source_status_changed:false});
+ }
+ return {contract:'original-historical-provider-readback-within-one-publisher-v1',
+  selected:report.length,results:report,no_new_scheduler:true,no_provider_create:true};
+}
+
 Deno.serve(async (req) => {
   try {
   if (req.method !== 'POST') return json({ ok: false, error: 'POST_ONLY' }, 405);
@@ -1216,18 +1397,21 @@ Deno.serve(async (req) => {
   const runDate = clean(body.runDate) || today();
   const mode = clean(body.mode) || 'run';
   if (mode === 'cockpit_autopilot') return json({ ok: true, runDate, cockpit_autopilot: await runLinkedInCockpitAutopilot(db) });
-  const publishOnly = mode === 'publish_only';
+  // FIRST-TIME-RIGHT: same original publisher, pre-review only (no provider create).
+  const prepareOnly = mode === 'prepare_only';
+  const publishOnly = mode === 'publish_only' || prepareOnly;
   const allChannels = ['linkedin_personal','linkedin_company','instagram_company'];
   const requestedChannels = Array.isArray(body.channels)
     ? [...new Set(body.channels.map((value:any)=>clean(value)).filter((value:string)=>allChannels.includes(value)))]
     : [];
-  const channels = requestedChannels.length ? requestedChannels : allChannels;
+  const channels: string[] = requestedChannels.length ? requestedChannels as string[] : allChannels;
   const { data: integration } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').maybeSingle();
   const bufferToken = clean(integration?.token) || null;
 
   let bufferCircuit = await readBufferCircuit(db);
   let containment_sweep:any = publishOnly ? { skipped:true, reason:'PUBLISH_ONLY' } : { skipped:false };
   let provider_reconciliation:any[] = [];
+  let historical_provider_readback:any={selected:0,reason:'PUBLISH_ONLY_NO_HISTORICAL_PROVIDER_READ'};
 
   if (!publishOnly) {
     // LinkedIn/Composio reconciliation is independent from Buffer health.
@@ -1237,6 +1421,7 @@ Deno.serve(async (req) => {
       !bufferCircuit.active && bufferToken ? bufferToken : null,
       runDate
     );
+    historical_provider_readback = await reconcileHistoricalSkippedProviderReferences(db);
 
     if (!bufferCircuit.active && bufferToken) {
       try {
@@ -1251,9 +1436,12 @@ Deno.serve(async (req) => {
       containment_sweep = { skipped:true, reason:bufferToken?'BUFFER_RATE_LIMIT_CIRCUIT_OPEN':'BUFFER_TOKEN_UNAVAILABLE_NON_BLOCKING', retry_at:bufferCircuit.retry_at };
     }
   }
-  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
+  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, historical_provider_readback, buffer_circuit:bufferCircuit });
 
-  const authority_recovery=await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels);
+  // A preventive preview can never revoke/issue/consume a publication capability.
+  const authority_recovery=prepareOnly
+    ? {skipped:true,reason:'PREPARE_ONLY_NO_AUTHORITY_MUTATION'}
+    : await recoverExpiredLinkedInPublicationAuthority(db,runDate,channels);
   const cockpit_autopilot: any[] = []; // explicit cockpit_autopilot mode owns this work; publication never does
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
@@ -1281,12 +1469,34 @@ Deno.serve(async (req) => {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
       continue;
     }
+    if(!prepareOnly){
+      // All original caller paths obey the same prebuild contract. An early
+      // preflight is NOT final approval, but it must exist for THIS exact copy.
+      const evidence=row.delivery_evidence?.first_time_right_preflight||{};
+      const originalHash=await digest(clean(art.body));
+      const ageMs=Date.now()-Date.parse(clean(evidence.observed_at));
+      if(evidence.contract!=='original-social-first-time-right-prepare-v1'
+        ||evidence.status!=='READY_FOR_FINAL_RECHECK'
+        ||clean(evidence.text_sha256)!==originalHash
+        ||!Number.isFinite(ageMs)||ageMs<0||ageMs>12*60*60*1000){
+        results.push({channel:row.channel,status:'deferred_to_original_preparation',
+          reason:'EXACT_SOURCE_FIRST_PREFLIGHT_REQUIRED',
+          provider_create:false});
+        continue;
+      }
+    }
     const dispatchReady=linkedinDispatchReadiness(row.channel,row.scheduled_for);
-    if(dispatchReady.status==='not_due'){
-      // Do not start review, claim an authority or call an external provider before due.
-      // The existing canonical hourly loop will retry this same content_ready decision.
+    if(dispatchReady.status==='not_due'&&!prepareOnly){
+      // Real side effects remain impossible before the scheduled time.
       results.push({channel:row.channel,status:'deferred_until_due',due_at:dispatchReady.due_at});
       continue;
+    }
+    if(prepareOnly&&dispatchReady.status==='not_due'){
+      const dueTime=Date.parse(clean(dispatchReady.due_at));
+      if(!Number.isFinite(dueTime)||dueTime-Date.now()>12*60*60*1000){
+        results.push({channel:row.channel,status:'deferred_preflight_window',due_at:dispatchReady.due_at});
+        continue;
+      }
     }
     if(dispatchReady.status==='invalid_schedule'){
       const evidence={...row.delivery_evidence,error:'LINKEDIN_SCHEDULE_INVALID',provider_create_success:false,possible_provider_side_effect:false,republish_forbidden:false};
@@ -1317,6 +1527,14 @@ Deno.serve(async (req) => {
     if(row.channel==='linkedin_personal') {
       const editorialEvidence=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{};
       const violations=personalEditorialViolations(art.body,editorialEvidence);
+      // Redeploy original sender with the exact user-approved giveaway gate;
+      // missing, wrong or additional link is rejected before provider create.
+      if(isVerifiedPersonalMagazineGift(editorialEvidence)&&!magazineGiftLinkIsExact(art.body,editorialEvidence))
+        violations.push({code:'PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED',message:'Exacte gratis magazine-URL ontbreekt of wijkt af.'});
+      const ownStoryViolations=personalFirstPersonCopyViolations(art.body,editorialEvidence,runDate);
+      const currentPersonalSource=await verifyCurrentPersonalStorySource(db,row,art,runDate);
+      if(!currentPersonalSource.ok)ownStoryViolations.push(currentPersonalSource.code,...(currentPersonalSource.violations||[]));
+      for(const code of ownStoryViolations)violations.push({code,message:'Original first-person experience / source status cannot authorize publication.'});
       if(art.generation_evidence?.final_copy_approved!==true ||
          art.generation_evidence?.editorial_policy_version!==PERSONAL_EDITORIAL_POLICY ||
          violations.length>0) {
@@ -1328,7 +1546,7 @@ Deno.serve(async (req) => {
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()})
           .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
         await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,
-          'Repair personal founder editorial contract and re-review in the same canonical lineage. No provider action taken.','PERSONAL_EDITORIAL_CONTRACT_FAILED');
+          'Recover the original, still-approved user-authored personal story with explicit first-person truth; never turn public news into Arthur experience. No provider action taken.','PERSONAL_EDITORIAL_CONTRACT_FAILED');
         results.push({channel:row.channel,status:'blocked_editorial',violations:codes});continue;
       }
     }
@@ -1363,7 +1581,7 @@ Deno.serve(async (req) => {
       if (!personalTruthMode && !observationalMode && !builderMode) {
         const blocked = { ...(row.delivery_evidence || {}), error: 'PERSONAL_SOURCE_UNVERIFIED', provider_truth_verified: false, personal_truth_verified: false, observational_personal_theme_verified: false };
         await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_evidence: blocked, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
-        await recordObligation(db, runDate, row.channel, 'BLOCKED', null, blocked, 'Provide a verified personal truth source or a verified non-first-person daily-life observation source.', 'PERSONAL_SOURCE_UNVERIFIED');
+        await recordObligation(db, runDate, row.channel, 'BLOCKED', null, blocked, 'Recover a verified user-authored first-person personal story. Public news or observational fallback is forbidden.', 'PERSONAL_SOURCE_UNVERIFIED');
         results.push({ channel: row.channel, status: 'blocked', reason: 'PERSONAL_SOURCE_UNVERIFIED' }); continue;
       }
       reviewPayload = { ...evidence, personal_truth_verified: personalTruthMode, observational_personal_theme_verified: observationalMode, ai_native_builder_story_verified: builderMode, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash), final_copy_approved:art.generation_evidence?.final_copy_approved===true,editorial_policy_version:clean(art.generation_evidence?.editorial_policy_version) };
@@ -1410,7 +1628,7 @@ Deno.serve(async (req) => {
            &&clean(proof.mira_entrepreneur_scene)===clean(selected?.scene)
            &&!dailyWinner);
       if(!verdict.ok||!mediaMatches||!masterFaceOk||!sourceConsistent){
-        const error=!verdict.ok?verdict.reason:!sourceConsistent?'MIRA_FROZEN_SOURCE_PUBLISHER_REJECTED':!masterFaceOk?'MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED':'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
+        const error=!verdict.ok?(verdict as any).reason:!sourceConsistent?'MIRA_FROZEN_SOURCE_PUBLISHER_REJECTED':!masterFaceOk?'MIRA_CANONICAL_MASTER_FACE_NOT_VERIFIED':'MIRA_MEDIA_CAPTION_SCENE_MISMATCH';
         const ev={...(row.delivery_evidence||{}),mira_entrepreneur_caption_contract:clean(captionEvidence.caption_contract),canonical_problem_id:selected?.id||null,provider_truth_verified:false,error,republish_forbidden:false};
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:ev,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'BLOCKED',null,ev,'Repair source-bound caption and matching exact-final Mira media before any provider call.',error);
@@ -1454,7 +1672,71 @@ Deno.serve(async (req) => {
       await recordObligation(db, runDate, row.channel, 'BLOCKED', null, evidence, 'Repair canonical gate evidence before any dispatch.', 'PRE_PUBLISH_GATE_BLOCKED');
       results.push({ channel: row.channel, status: 'blocked', violations: gate.violations || [] }); continue;
     }
-    const gatePassedEvidence={...(row.delivery_evidence||{}),pre_publish_gate:'passed',identity_gate_version:GATE,final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY};
+    // The same original independent final review returned exact PASS/HTTP 200
+    // and confirmed the current SHA256 above. Old 422 evidence from a prior
+    // rejected draft is historical, never the CURRENT approval status.
+    // Preserve one bounded diagnostic without treating it as a live veto.
+    const earlierReview=row.delivery_evidence||{};
+    const priorRejectedReview=Number(earlierReview.review_status)===422
+      &&Array.isArray(earlierReview.violations)&&earlierReview.violations.length>0
+      ? {state:'SUPERSEDED_BY_EXACT_INDEPENDENT_REVIEW',review_status:422,
+          reviewed_text_hash:clean(earlierReview.reviewed_text_hash)||null,
+          violations:earlierReview.violations.slice(0,8),
+          current_approved_text_hash:textHash}
+      : null;
+    const gatePassedEvidence={
+      ...earlierReview,pre_publish_gate:'passed',identity_gate_version:GATE,
+      final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY,
+      review_status:gate.http,reviewed_text_hash:textHash,violations:[],
+      review_transport_error:null,independent_final_review_verified:true,
+      independent_final_review_verified_at:new Date().toISOString(),
+      ...(priorRejectedReview?{prior_rejected_review:priorRejectedReview}:{})
+    };
+    if(prepareOnly){
+      // An early independent review is PREPARATION, not an irrevocable approval.
+      // Validate original LinkedIn auth without creating a post or claiming a lease.
+      let authorization:'VERIFIED'|'RECHECK_AT_DUE'='RECHECK_AT_DUE';
+      try{
+        if(row.channel==='linkedin_personal') await preflightLinkedInComposio(db);
+        if(row.channel==='linkedin_company'){
+          const company=await preflightLinkedInCompanyComposio(db);
+          if(company.organization_capability_verified!==true
+            ||company.organization_write_scope_authorized!==true
+            ||company.linkedin_company_admin_oauth_proven!==true)
+            throw new Error('ORIGINAL_COMPANY_OAUTH_PREPARATION_UNVERIFIED');
+        }
+        if(row.channel==='linkedin_personal'||row.channel==='linkedin_company') authorization='VERIFIED';
+      }catch(error){
+        const why=clean((error as Error)?.message||error).slice(0,120);
+        const risk={...gatePassedEvidence,first_time_right_preflight:{
+          contract:'original-social-first-time-right-prepare-v1',status:'REPAIR_BEFORE_DUE',
+          reason:'ORIGINAL_PROVIDER_AUTH_PREFLIGHT_FAILED',observed_at:new Date().toISOString(),
+          text_sha256:textHash,provider_error_class:why
+        }};
+        const {error:writeError}=await db.from('powerhouse_channel_decisions')
+          .update({delivery_evidence:risk,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+        if(writeError)throw new Error('PREPARE_AUTH_RISK_WRITE_FAILED');
+        results.push({channel:row.channel,status:'repair_before_due',
+          reason:'ORIGINAL_PROVIDER_AUTH_PREFLIGHT_FAILED'});
+        continue;
+      }
+      const prepared={...gatePassedEvidence,first_time_right_preflight:{
+        contract:'original-social-first-time-right-prepare-v1',status:'READY_FOR_FINAL_RECHECK',
+        text_sha256:textHash,observed_at:new Date().toISOString(),authorization,
+        independent_editorial_review:true,provider_create:false,
+        final_review_at_due_required:true
+      }};
+      const {error:prepareError}=await db.from('powerhouse_channel_decisions')
+        .update({delivery_evidence:prepared,updated_at:new Date().toISOString()})
+        .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+      if(prepareError)throw new Error('PREPARE_REVIEW_WRITE_FAILED');
+      results.push({channel:row.channel,status:'ready_for_final_recheck',
+        contract:'original-social-first-time-right-prepare-v1',
+        final_review_at_due_required:true,provider_create:false,
+        text_sha256:textHash});
+      continue;
+    }
     await db.from('powerhouse_channel_decisions').update({delivery_evidence:gatePassedEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
 
     let instagramMetaConfig:MetaInstagramConfig|null=null;
@@ -1571,8 +1853,29 @@ Deno.serve(async (req) => {
 
     if (row.channel === 'linkedin_personal') {
       try {
+        // Independent last-metre freshness check: a source skipped or quarantined
+        // between generation and dispatch must never acquire a provider side effect.
+        const lastPersonalSource=await verifyCurrentPersonalStorySource(db,row,art,runDate);
+        if(!lastPersonalSource.ok) {
+          const blocked={...gatePassedEvidence,error:lastPersonalSource.code,
+            violations:lastPersonalSource.violations||[],provider_create_success:false,
+            possible_provider_side_effect:false,republish_forbidden:false,
+            publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
+          await db.from('powerhouse_channel_decisions')
+            .update({state:'blocked',delivery_evidence:blocked,updated_at:new Date().toISOString()})
+            .eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+          await recordObligation(db,runDate,row.channel,'BLOCKED',null,blocked,
+            'Original user-authored personal source was rejected or changed before provider dispatch. Recover with a different genuinely verified source; no provider post created.',
+            lastPersonalSource.code);
+          results.push({channel:row.channel,status:'blocked_source_revision',reason:lastPersonalSource.code});
+          continue;
+        }
         await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
-        const direct=await publishLinkedInPersonalViaComposio(db,art);
+        const direct=await publishLinkedInPersonalViaComposio(db,art,{
+          runDate,
+          evidence:row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{},
+          review:gate,expectedTextHash:textHash,sourceVerified:lastPersonalSource.ok===true
+        });
         const exactReadbackVerified=direct.provider_truth_verified===true;
         const providerCreateProven=direct.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(clean(direct.provider_post_id));
         if(!providerCreateProven)throw new Error('LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN');
@@ -1696,7 +1999,10 @@ Deno.serve(async (req) => {
     await recordObligation(db, runDate, row.channel, providerStatus === 'sent' ? 'PUBLISHED' : 'DISPATCHED', readback.id, evidence, providerStatus === 'sent' ? 'Verify public/outcome proof, then measure and learn.' : 'Await provider send, then reconcile.', null);
     results.push({ channel: row.channel, status: providerStatus, post_id: readback.id, provider_truth_verified: true });
   }
-  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, cockpit_autopilot, authority_recovery, results, buffer_circuit:bufferCircuit, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
+  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, historical_provider_readback, cockpit_autopilot, authority_recovery, results, buffer_circuit:bufferCircuit,
+    // Preparation is not an external side effect and never constitutes provider proof.
+    preparation_only:prepareOnly, provider_create:prepareOnly?false:null,
+    provider_truth_verified:prepareOnly?false:true, publication_authority: PUBLICATION_AUTHORITY });
   } catch (error) {
     if (error instanceof BufferHttpError && error.status === 429) {
       return json({ ok: false, error: 'BUFFER_RATE_LIMITED', retryable: true, retry_after: error.retryAfter }, 429);

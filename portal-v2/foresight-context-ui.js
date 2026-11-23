@@ -131,7 +131,7 @@ function contextualActionMarkup(pageId,state){
   const cardsHtml=cards.slice(0,12).map(card=>{
     const pages=card.pages.filter(id=>id!==pageId).slice(0,card.regulatoryImpact?card.pages.length:8);
     return '<article class="fsv-card" data-context-card="'+esc(card.id)+'"><header><div><span class="fsv-kicker">'+esc(card.priority)+' · '+esc(card.sourcePath)+'</span><h4>'+esc(card.title)+'</h4></div><b class="fsv-pill warn">'+esc(CARD_TITLES[card.priority]||'Beoordelen')+'</b></header>'+
-      '<p>'+esc(card.description)+'</p><p><strong>Volgende actie:</strong> '+esc(card.action)+'</p>'+
+      '<p>'+esc(card.description)+'</p>'+(card.externalBasis?'<p><strong>Waarom hier:</strong> '+esc(card.externalBasis.reden)+'</p><p><small>Bron: '+esc(card.externalBasis.bron)+' · peildatum '+esc(card.externalBasis.peildatum)+' · herzien uiterlijk '+esc(card.externalBasis.herzienUiterlijk)+(card.externalBasis.verouderd?' · <b>bron is over zijn herzieningsdatum: aandacht één niveau lager gezet</b>':'')+'</small></p>':'')+'<p><strong>Volgende actie:</strong> '+esc(card.action)+'</p>'+
       (card.regulatoryImpact?
         '<p><strong>Wettelijk onderwerp:</strong> '+esc(card.regulatoryImpact.framework)+
         ' · <strong>Ingangsdatum:</strong> '+esc(card.regulatoryImpact.effectiveDate||'nog te verifiëren')+
@@ -198,17 +198,20 @@ export async function mountContextualForesight(host,{pageId,state={},openPage,fe
 export async function mountOverviewForesight(root,{state={},openPage,fetchImpl=globalThis.fetch}={}){
   const main=root?.querySelector?.('.main');if(!main)return null;
   ensureStyles(root.ownerDocument||document);
+  // Keep late-mounted strategic context accessible without a second visible
+  // overview dashboard. Original routing, tenant model and save handlers remain.
+  const overviewDepth=main.querySelector('[data-portal-overview-depth] .portal-overview-depth-content')||main;
   main.querySelector?.('[data-foresight-context]')?.remove();
   main.__contextualActionAbort?.abort();
   const controller=new AbortController();
   main.__contextualActionAbort=controller;
-  mountContextualActionCandidates(main,'overzicht',openPage);
-  globalThis.addEventListener?.('bg:portal-impact',()=>mountContextualActionCandidates(main,'overzicht',openPage),{signal:controller.signal});
+  mountContextualActionCandidates(overviewDepth,'overzicht',openPage);
+  globalThis.addEventListener?.('bg:portal-impact',()=>mountContextualActionCandidates(overviewDepth,'overzicht',openPage),{signal:controller.signal});
   const quality=await loadPredictionQuality(fetchImpl);
   const holder=(root.ownerDocument||document).createElement('div');holder.innerHTML=sectionMarkup({pageId:'overzicht',state,quality,overview:true});
   const section=holder.firstElementChild;if(!section)return null;
-  const anchor=main.querySelector('[data-business-journey-overview]')||main.querySelector('#companyDecisionCockpit')||main.querySelector('.dashboard');
-  if(anchor?.parentNode===main)anchor.after(section);else main.appendChild(section);
-  bind(section,openPage);mountForesightScenarioStudio(main,{state,pageId:'overzicht',openPage});return section;
+  const anchor=overviewDepth.querySelector('[data-business-journey-overview]')||overviewDepth.querySelector('#companyDecisionCockpit')||overviewDepth.querySelector('.dashboard');
+  if(anchor?.parentNode===overviewDepth)anchor.after(section);else overviewDepth.appendChild(section);
+  bind(section,openPage);mountForesightScenarioStudio(overviewDepth,{state,pageId:'overzicht',openPage});return section;
 }
 export const FORESIGHT_CONTEXT_PAGES=Object.freeze([...CONTEXT_PAGES]);

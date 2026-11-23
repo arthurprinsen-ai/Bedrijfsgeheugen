@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|delivery|prod-applied-20261031135451-migration-absent-source|20261102-v1",
+  "parent_issue": 4198,
+  "obligation_id": "original-supabase-applied-publication-source-mirror-20261102",
+  "compiler": {
+    "failure_class": "PRODUCTION_MIGRATION_LEDGER_SOURCE_ABSENT",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original protected PR #5252 merged as 3621657751881f50240f9dd4a787a76530c7d369; Supabase production GitHub check rejected 'Remote migration versions not found in local migrations directory'. Independent comparison of all 788 official applied production versions and 789 tracked source migrations found one missing source: 20261031135451_publication_sync_preserve_recovery_handoff_v1. The provider's stored complete SQL (statements[1], 2875 bytes) was byte-identical to existing tracked version 20261031133000 of the same original function, but the second legitimate applied ledger identity had no source file. The expected new PR #5252 migrations had not been applied, so customer-intake and quote-revenue fixes were source-merged but NOT production live.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "merged_source_sha": "3621657751881f50240f9dd4a787a76530c7d369",
+    "github_main_supabase_check_id": 125161001325,
+    "production_applied_migration_count": 788,
+    "source_executable_migration_count": 789,
+    "missing_provider_version": "20261031135451",
+    "missing_provider_name": "publication_sync_preserve_recovery_handoff_v1",
+    "original_provider_sql_bytes": 2875,
+    "existing_matching_source": "supabase/migrations/20261031133000_publication_sync_preserve_recovery_handoff_v1.sql",
+    "production_migration_20261102074013_applied": false,
+    "production_migration_20261102075243_applied": false,
+    "provider_history_edited": false,
+    "production_paid_eur": 0,
+    "original_pr_first_admission_failed": "LEARNING_EVALUATION_TESTS_REQUIRED:shadow",
+    "original_required_run": 41410913989
+  },
+  "correction": "Restore the exact already-applied 20261031135451 migration SQL body as its own historical source file under the canonical supabase/migrations directory, preserving every byte of the original provider ledger; no new SQL semantics. Retain protected main / official Supabase deployment integration, preview migration replay, tenant safety checks and original publisher owner, no force recreation or manual migration-history insert/delete.",
+  "prevention": [
+    "Before each source candidate merge/production deployment, compare full production supabase_migrations.schema_migrations version+name to current executable Git source filenames, not only an old lock snapshot.",
+    "A legitimately already applied production migration missing from Git must be restored byte-for-byte from the provider ledger, never fabricated or skipped, and must keep its original migration version.",
+    "Do not delete or change production migration history or bypass Supabase Preview as a workaround.",
+    "Any source merge is NOT a Supabase production deployment until both new migration identities and actual trigger/function ACLs are independently read back from production.",
+    "Do not alter the original publisher next_action ownership, status, consent, recipients, provider receipt or dedupe in this restoration.",
+    "For security-sensitive schema/migration incidents, machine learning must specify historical_replay, shadow, and canary regression paths; never relabel security_sensitive=false to obtain admission. Passing static canary fixture does not prove live provider deployment."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-publication-sync-migration-mirror-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-publication-sync-migration-mirror-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-publication-sync-migration-mirror-20261102.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-production-publication-sync-migration-mirror-20261102.test.mjs"
+  ],
+  "owner": "original Powerhouse Supabase production migration source/ONE BRAIN/Heartbeat",
+  "release": {
+    "protected_pr_passed": false,
+    "protected_merge": false,
+    "provider_deployment_verified": false,
+    "original_intake_triggers_verified": false
+  }
+}

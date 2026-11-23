@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|quarterly-report-not-in-portal|20261106-v1",
+  "failure_class": "DELIVERY_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Het kwartaalrapport De AI-kloof in het mkb was alleen als losse PDF te verspreiden; klanten konden het niet in het portaal terugvinden en een nieuwe editie had geen vaste route.",
+  "evidence": {
+    "at_utc": "2026-11-06T11:00:00Z",
+    "source": "portal-v2/page-registry.js bevatte vóór deze wijziging geen pagina voor kwartaalrapporten"
+  },
+  "fix": "Pagina kwartaalrapporten leest portal-v2/reports/manifest.json en toont per editie PDF en databestand. Een nieuwe editie is een nieuw bestand plus een manifestregel; geen schemawijziging, geen scheduler.",
+  "prevention_rule": "Elk periodiek rapport krijgt een manifestregel in het portaal, zodat klanten het daar vinden en een volgende editie geen code kost.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "DELIVERY_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-portal-kwartaalrapporten-20261106.test.mjs"],
+    "canary": ["tests/brain-portal-kwartaalrapporten-20261106.test.mjs"]
+  },
+  "tests": ["tests/brain-portal-kwartaalrapporten-20261106.test.mjs"],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge door Arthur",
+    "pagina Kwartaalrapporten zichtbaar in portaal met download van de PDF"
+  ]
+}

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { createPreflightDecision } from './delivery-learning.mjs';
+import { matchPlannedAction } from '../scripts/brain/planned-action-guard.mjs';
 import { buildGuardRegressionInventory } from './delivery-guard-regression-inventory.mjs';
 import { evaluateCompletionReadiness } from '../brain/policy/completion-readiness.mjs';
 
@@ -28,6 +29,7 @@ export async function loadDeliveryPreflight({
   remediationOwnershipPath = new URL('../brain/learning/remediation-ownership-2026-08-30.json', import.meta.url),
   ciEfficiencyPath = new URL('../brain/learning/ci-efficiency-lessons-2026-08-30.json', import.meta.url),
   rulesPath = new URL('../config/delivery-prevention-rules.json', import.meta.url),
+  plannedActionTriggersPath = new URL('../config/planned-action-triggers.json', import.meta.url),
   completenessGuardPath = new URL('../config/chat-learning-completeness-guard.json', import.meta.url),
   browserGuardPath = new URL('../config/browser-evidence-guard-contract.json', import.meta.url),
   ownershipGuardPath = new URL('../config/branch-delivery-ownership-guard.json', import.meta.url),
@@ -35,8 +37,11 @@ export async function loadDeliveryPreflight({
   guardRegistrySchemaPath = new URL('../config/guard-registry-schema-guard.json', import.meta.url),
   component = 'shared',
   stages = ['COMMIT', 'PR', 'MERGE', 'PIPELINE'],
+  plannedAction = '',
+  acknowledgedPreventionRules = [],
+  recordPlannedAction = null,
 } = {}) {
-  const [lessonsDoc, chatLessonsDoc, continuityDoc, executionLessonsDoc, completenessAddendum, remediationOwnership, ciEfficiency, rulesDoc, completenessGuard, browserGuard, ownershipGuard, guardDiscovery, guardRegistrySchema] = await Promise.all([
+  const [lessonsDoc, chatLessonsDoc, continuityDoc, executionLessonsDoc, completenessAddendum, remediationOwnership, ciEfficiency, rulesDoc, plannedActionTriggersDoc, completenessGuard, browserGuard, ownershipGuard, guardDiscovery, guardRegistrySchema] = await Promise.all([
     readFile(lessonsPath, 'utf8').then(JSON.parse),
     readFile(chatLessonsPath, 'utf8').then(JSON.parse),
     readFile(continuityPath, 'utf8').then(JSON.parse),
@@ -45,6 +50,7 @@ export async function loadDeliveryPreflight({
     readFile(remediationOwnershipPath, 'utf8').then(JSON.parse),
     readFile(ciEfficiencyPath, 'utf8').then(JSON.parse),
     readFile(rulesPath, 'utf8').then(JSON.parse),
+    readFile(plannedActionTriggersPath, 'utf8').then(JSON.parse),
     readFile(completenessGuardPath, 'utf8').then(JSON.parse),
     readFile(browserGuardPath, 'utf8').then(JSON.parse),
     readFile(ownershipGuardPath, 'utf8').then(JSON.parse),
@@ -89,6 +95,27 @@ export async function loadDeliveryPreflight({
 
   const guardInventory = await buildGuardRegressionInventory();
   const baseDecision = createPreflightDecision({ component, stages, knownLessons: provenLessons, appliedPreventionRules: activeRules });
+  // Reuse the existing action guard inside the canonical preflight; no second control plane.
+  // An acknowledgement is never independent execution or provider-outcome evidence.
+  const plannedActionGuard = String(plannedAction).trim()
+    ? matchPlannedAction({
+        action: plannedAction,
+        // Delivery lessons first, then the chat lessons the preflight already treats as PROVEN.
+        lessons: [...historicalLessons, ...chatLessons.filter(lesson => lesson.preventionRule && lesson.fix && lesson.rootCause)],
+        rules: rulesDoc.rules || [],
+        triggers: plannedActionTriggersDoc.rules || [],
+        acknowledged: acknowledgedPreventionRules,
+      })
+    : null;
+  // Record genuine matched and blocked actions before the original safety decision.
+  if (plannedActionGuard && recordPlannedAction) {
+    if (typeof recordPlannedAction !== 'function') throw new TypeError('recordPlannedAction callback required');
+    await recordPlannedAction({ action: plannedAction, result: plannedActionGuard });
+  }
+  if (plannedActionGuard && !plannedActionGuard.ok) {
+    throw new Error('PLANNED_ACTION_PREVENTION_REQUIRED: ' +
+      plannedActionGuard.unacknowledged.map(item => item.ruleId + ': ' + item.fix).join(' | '));
+  }
   const reusedGuards = [
     ...(completenessGuard.knownFailureFingerprints || []).map(item => typeof item === 'string' ? item : item?.fingerprint),
     ...(browserGuard.knownFailureFingerprints || []),
@@ -132,12 +159,26 @@ export async function loadDeliveryPreflight({
     ...baseDecision,
     reusedGuards: Object.freeze(uniqueReusedGuards),
     guardKnowledge: Object.freeze(guardKnowledge),
-    completionPolicy: Object.freeze({ ...completionPolicy })
+    completionPolicy: Object.freeze({ ...completionPolicy }),
+    plannedActionGuard: plannedActionGuard ? Object.freeze(plannedActionGuard) : null
   });
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
-  const component = process.argv[2] || 'shared';
-  const decision = await loadDeliveryPreflight({ component });
+  const args = process.argv.slice(2);
+  const component = args[0]?.startsWith('--') ? 'shared' : (args[0] || 'shared');
+  const flag = key => { const index = args.indexOf(key); return index >= 0 ? args[index + 1] || '' : ''; };
+  const action = flag('--action');
+  const { createCanonicalPlannedActionRecorder } = await import('../brain/observability/planned-action-live-recorder.mjs');
+  const recorder = action.trim() ? createCanonicalPlannedActionRecorder() : null;
+  if (recorder?.status === 'NOT_CONFIGURED') {
+    process.stderr.write('PLANNED_ACTION_CAPTURE_NOT_CONFIGURED: operational recall remains NOT_MEASURED\n');
+  }
+  const decision = await loadDeliveryPreflight({
+    component,
+    plannedAction: action,
+    acknowledgedPreventionRules: flag('--ack').split(',').map(value => value.trim()).filter(Boolean),
+    recordPlannedAction: recorder?.record || null,
+  });
   process.stdout.write(`${JSON.stringify(decision)}\n`);
 }

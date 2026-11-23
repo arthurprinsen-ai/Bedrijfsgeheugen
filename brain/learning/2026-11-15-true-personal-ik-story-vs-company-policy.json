@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|personal-linkedin|true-user-story-vs-company|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "SOURCE_CANDIDATE",
+  "owner": "original powerhouse-content-orchestrator; independent bg-pre-publish-review; original powerhouse-social-publisher",
+  "failure_class": "POLICY_DRIFT",
+  "scope": "CONTENT",
+  "root_cause": "Personal source selector accepted observational third-party public news and business founder-builder modes. 2026-11-15 personal post came from previously quarantined NOS taser-news recommendation and personal_truth_verified=false. Original publisher did not freshly verify recommendation status and source revision immediately before external side effect.",
+  "prevention_rule": "Require direct user-authored genuine personal source and verified first-person claim; ban news-observation and builder-business personal modes; enforce same source truth in generator, independent reviewer and publisher, with last-mile recommendation current status/text recheck; no Sunday personal post; company evidence-backed B2B separately; never duplicate already-created LinkedIn URN.",
+  "compiler": {
+    "failure_class": "POLICY_DRIFT",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs",
+      "tests/brain-personal-source-provider-editorial-safety-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "personal_post_urn": "urn:li:share:7527762350779662336",
+    "original_source_signal_id": "d542a27e-1d60-4e98-ac66-d4d7dd7bd8c5",
+    "original_source_recommendation_id": "578a438c-7658-44f2-8e89-d4181da70c2f",
+    "original_source_quarantined": true,
+    "original_recommendation_skipped": true,
+    "personal_truth_verified": false,
+    "provider_create_success": true,
+    "republish_forbidden": true,
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5886"
+  },
+  "acceptance": [
+    "Protected Required CodeQL Supabase Preview",
+    "main merge and Edge exact-source parity",
+    "genuine new user-authored story + independent LinkedIn ID/GET",
+    "named ONE BRAIN processed receipt + Heartbeat learning"
+  ],
+  "false_green_forbidden": true,
+  "new_scheduler": false,
+  "new_publisher": false
+}

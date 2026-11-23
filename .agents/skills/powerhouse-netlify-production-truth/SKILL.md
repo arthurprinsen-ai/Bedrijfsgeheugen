@@ -5,6 +5,10 @@ description: Use for every Bedrijfsgeheugen/Powerhouse Netlify production delive
 
 # Powerhouse Netlify Production Truth
 
+## P0 2026-11-02 — atomic System Map and immutable Portal app entry
+
+Original incident #4439 / BRAIN #41428302145: a generated `platform/system-map/canonical-system-map.mjs` digest and the immutable `portal-v2/index.html` `./app.js?bg_explain=` cache key diverged and caused backend tests #2917/#3162 to fail repeatedly. Every authorized source/inventory/Portal change MUST run the existing `node scripts/brain/portal-explanation-inventory.mjs --write` in the same protected source candidate. Its one canonical digest must update **both** tracked Map and Portal app entry deterministically; do not hand-write old hashes or emit a second cache-busting authority. The original `tools/delivery/assert-system-map-integrity.mjs` MUST compare both tracked paths after twice regenerating and fail closed on drift; verify current protected main, Required/BRAIN/CodeQL, exact Netlify deployed SHA and a real browser readback before setting live/green. Regression: `tests/brain-portal-entry-system-map-atomic-stamp-20261102.test.mjs` checks unchanged repeat, changed-source restamp and no-write fail-closed. Never bypass login/tenant boundaries, no fake sales/customer outcome, no additional release agent/scheduler, no assertion removal.
+
 Fingerprint: `netlify-auth-recovery-exact-sha-provider-proof-20260925-v1`.
 
 ## Mandatory production truth model
@@ -248,3 +252,82 @@ Verplichte diagnose voordat CSS of content wordt veranderd: bewaar de echte layo
 De diagnose is uitsluitend meetinstrumentatie. `CLS > 0.100` blijft **release-blocking**; niet boven de limiet gaan zitten, geen uitzondering voor de AFAS-route en geen extra scheduler, providerpublishing of parallel foutregister. Alleen herstel van een bewezen DOM/CSS-oorzaak met herhaalde volledige browserregressie, exact-head Required/CodeQL en Netlify-productiereadback mag het incident `PROVEN` maken.
 
 Regressie: `tests/brain-mobile-cls-attribution-20261022.test.mjs`. Incident authority: `public.brain_failure_registry`, issue #4215 en originele website PR #4606.
+
+
+## 30-10-2026 — 15-loop portal admin production readback in bestaande Identity-deployproef
+
+**Incident:** #4918. De bestaande portal-auth production proof controleerde twee tenants maar niet `/api/powerhouse-one-loop-assurance`. Een geldige commit/deploy en generic `PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1=PROVEN` zijn geen bewijs dat de 15-lussenroute admin-only veilig werkt. Dit is één ontbrekende **verificatiegrens**, geen tweede Powerhouse-executor.
+
+**Verplichte run:** hergebruik dezelfde `deploySucceeded`-hook, officiële Netlify Identity admin API en dezelfde korte twee synthetische tenantaccounts van `platform/api/portal-authenticated-production-proof-core.mjs`. Role-provisioning alleen via door admin beheerde app_metadata. Signed JWT voor tenant-a moet `powerhouse-admin` claimen, tenant-b mag dat niet. Op identiek immutable deploy: admin GET moet `READBACK_COMPLETE` met 15 brongebonden loops, consistente counts en `overallStatus` hebben; tenant-b GET = 403 POWERHOUSE_ADMIN_REQUIRED; unauth GET = 401 UNAUTHENTICATED. Beide synthetische accounts worden in `finally` verwijderd. Een rode bron is een **geldige betrouwbare waarneming**, niet een mislukte API-test.
+
+**Gescheiden uitkomstgates:** `one_loop_assurance_proof=PROVEN` uitsluitend als alle drie onafhankelijke readbacks én cleanup zijn bevestigd; anders `UNVERIFIED`, mét foutcode. De algemene portaalauth en netto-deploy kunnen onafhankelijk PROVEN blijven, maar betekent nooit 15/15 GREEN, LinkedIn/Mira/blog gepost of gerealiseerde orders. BRAIN-incidentfingerprint/herstel/preventie en menselijk ontwikkellog blijven de bestaande exclusieve lineage. Geen nieuwe scheduler, globale adminrol uit user_metadata, tokenlogging, gefingeerde provideruitslagen of versoepelde rollen. Test `tests/portal-authenticated-production-proof.test.mjs`; document `docs/changes/2026-10-30-one-loop-admin-production-proof.md`.
+
+## 2026-10-30 — bewezen terminale 15-loop-productiepoort, businessguard blijft zelfstandig
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+De oorspronkelijke terminale releaseproof is **independently PROVEN**: PR #5184 exact protected main `c986ae2a49c09daf349ae365e95c7fbc31a1f8ba`, Netlify READY deploy `6ae45d9944f9ea2b285e27f3`, originele Production Release Readback run `41030754918` met providerbewijs `one_loop_assurance_proof=PROVEN` en 15 actuele bronlussen (9 GREEN, 1 AMBER, 5 RED) om 2026-10-30 09:06:13Z. De eerdere ontbrekende nested-proof was een werkelijk incident; historische `brain/learning/2026-10-30-one-loop-deploy-proof-release-guard-v1.json` mag zijn oorspronkelijke OBSERVED-bewijs NIET retroactief omzetten in een zogenaamd eerdere success.
+
+Iedere bestaande Netlify-, Powerhouse-, Portal-, CRO- en SkillOps-agent moet exact gescheiden bewijsvelden aanhouden: `MAIN_MERGED`, `NETLIFY_READY_EXACT_SHA`, `GENERIC_PORTAL_AUTH_PROVEN`, `ONE_LOOP_ADMIN_PROOF_PROVEN`, `ORIGINAL_15_LOOP_GUARDS`, `CRO_7_COMMERCIAL_GATES`, `EXTERNAL_PROVIDER_OUTCOMES`, `NATURAL_LEARNING_APPLIED`. Een software-release met 5 rode lussen blijft overkoepelend `RED`. De oorspronkelijke CRO admin-API kan niet als onafhankelijk getest worden beschouwd alleen omdat de andere one-loop-route haar tenantchecks doorstaan heeft. Als bewijs ontbreekt, `UNVERIFIED` en een bestaande owner-obligation, nooit een ander scheduler-/providerpad of verzonnen status.
+
+Borg de natuurlijke productiecheck en volgende regressies via bestaande `brain_failure_registry` / `brain_promote_failure` met CAS, originele GitHub-release, menselijke development ledger en huidige Portal V2. Testcontract `tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs`. Geen tweede writer, OAuth-omzeiling, betalingen, duplicate posts of wijziging van bestaande 15 bronguards.
+
+
+## Canonical build-engine classification and phase proof — P0 #5241 (1 November 2026)
+
+Fingerprint: `netlify|production|build-exit2-parity-misclassification|20261101-v1`.
+
+- `tools/ci/netlify-build-entry.mjs` is **executable production code** even though other `tools/ci/` scripts are governance. It MUST force the existing Required `netlify_build_parity` build, not a documentation-only acceptance.
+- When the original source-to-Netlify deployment fails after authorized transport, separate genuine build failure from OAuth/proxy failure. Do not retry an unchanged source merely because the broad provider exit code is 2.
+- Capture the exact first `NETLIFY_BUILD_PHASE_FAILURE` phase and exit code, the protected source SHA, provider build/deploy ID and failed run; no secrets, recipient information, or guessed cause. The same canonical build engine must stay fail-closed and use `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1`.
+- Correct the observed source-phase failure under the original protected PR, rerun real parity plus regression, then only the original Production Source Snapshot may promote main; require independently verified `ready`, deploy ID, `release.json` and browser readback before LIVE. Do not create a parallel publisher or scheduler.
+
+Regression: `tests/brain-netlify-production-phase-proof-20261101.test.mjs`. Learning: `brain/learning/2026-11-01-netlify-build-phase-parity-p0-5241-v1.json`.
+
+## Original incident status stays separate from proven production — P0 #5241 (1 November 2026)
+
+Fingerprint: `powerhouse|portal|netlify-live-versus-unresolved-build-incident|20261101-v1`.
+
+- The existing **admin-authenticated** Powerhouse delivery page must read the original GitHub incident #5241 through the original `/api/powerhouse-observability` service and display its open/closed state separately from the exact-current Netlify release.
+- Even with a matching GitHub main SHA, provider `ready`, full pricing/browser proof and successful prebuilt promotion, the earlier full-build provider `exit 2` remains diagnostic debt until the first failed phase, source repair, historical replay and regression are independently evidenced. An incident cannot disappear because a later release succeeds.
+- When GitHub is unavailable, issue identity/state is unexpected, or release evidence is incomplete: label **unverified**, not resolved. Do not infer third-party sends, lead conversions or orders from release success.
+- Retain one incident ID, one release owner, canonical Brain learning and Heartbeat visibility. No new incident registry, schedule, fail-open provider probe, token or duplicate deployment authority.
+- Regression: `tests/brain-original-netlify-incident-portal-20261101.test.mjs`; learning: `brain/learning/2026-11-01-netlify-release-incident-portal-truth-v1.json`.
+
+INCIDENT_PROTOCOL: agents-skills-register-and-self-fix-v1
+
+## Original Portal System Map cache coherence — 2026-11-02
+
+`portal-v2/index.html` must reference `./app.js?bg_explain=<current original generated explanationInventory.contentHash>`. Otherwise a browser can serve stale JS for the new owner-only ONE BRAIN incident card despite Netlify production READY. Do not hardcode a historic digest or bypass protected System Map generation. Reject incorrect release until `tests/brain-portal-control-plane-bootstrap-20261029.test.mjs` and `tests/brain-postmerge-backend-incident-triage-20261102.test.mjs` pass. Provider deployment identity, authenticated UI readback and original commercial outcomes are separate evidence gates.
+
+## 2026-11-02 tablet consent overlay versus business-first H1 (original Required)
+PR #5248 original browser job `125144564373` reported `Public page visibility failed` for `/` and `/en` at 768×1024: `h1 is visually occluded by button#bgCookieDeny.bgDeny`. Cause: new business-value section before the existing H1 moved the heading's visibility probe into the fixed centered GDPR banner's hit area. Correct original consent **presentation**, not the test oracle: keep the existing deny/accept buttons accessible and readable; at tablet widths present the original cookie dialog as a narrower right-aligned panel so the main heading remains unobscured. Never hide the consent dialog, preselect acceptance, disable the page-visibility gate or weaken independent tablet/mobile/desktop/browser-readback. Contract test: `tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs`; independent proof: original `tools/site-shell/standalone-visibility-check.mjs` in protected Required. Original ONE BRAIN failure fingerprint `website|tablet|cookie-consent-overlays-main-heading|20261102-v1`, initially OBSERVED; promotion to PROVEN requires real protected merge and Netlify public browser readback.
+
+
+## 2026-11-02 — business-value block must not push canonical first-screen hero out of view
+Protected PR #5248 original website/browser job `125148273211` rejected the initial home-page rendering on phone, tablet, small and wide desktop: `UI visual regression failed: / ... initial: visible-ratio` across all viewport profiles. Root cause: an early value-first website patch inserted an extra large panel at the **start** of `<main>` before the existing lead hero, hiding or shifting the original H1 outside the measured initial view. Prevent the recurrence by preserving the original hero and rendering the secondary customer-value explanation **after the entire original first hero section** in the existing final homepage copy pass. Keep actual viewport height, visible-ratio thresholds, cookie consent, source cache and original browser guards unchanged. Test `tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs`, then original protected browser/checkout/visible-route regression in CI. Register the exact occurrence in original ONE BRAIN fingerprint `website|first-fold|value-section-pushes-homepage-hero-offscreen|20261102-v1`; no false green before independently observed Netlify production readback.
+
+
+## Exact V18 hero token and generated-HTML regression, 2026-11-02
+The original final static Netlify build transforms the source homepage into a V18 page shell: `<main><div class="page active"><section class="hero-video hero-inspiration" data-bg-component="hero"><div class="hero-video-shade">...<div class="hero-video-content"><h1>...</h1>`. In original Required run `41408833272`, `main h1` failed **all seven** viewport visible-ratio guards because a naïve `\\bhero\\b` CSS class regex matched the substring of `hero-video-shade`, and the value panel was inserted *inside the video hero before H1*. This is a separate, independently observed root in the existing first-fold incident fingerprint `website|first-fold|value-section-pushes-homepage-hero-offscreen|20261102-v1`.
+**Prevent recurrence:** CSS selectors used for positioning must match **complete space-delimited class tokens**, never a word-boundary prefix of hyphenated classes. Video hero fallback must place any added content **after the entire original `<section data-bg-component="hero">`**. Extend the original `tests/brain-site-shell-homepage-daily-steering-positioning.test.mjs` with exact **built V18-shaped** fixture, not only unbuilt source `index.html`; independently verify unmodified `config/ui-visual-regression.json` (all seven viewports, H1 >= 0.98 visible), no cookie consent bypass, no missing provider proof, and original Netlify deployment SHA. Original ONE BRAIN `brain_observe_failure` occurrence run `41408833272` was inserted and independently read back as OBSERVED; never promote to proven on a green unit test alone.
+
+## 2026-11-05 — releasebewijs en nood-back-updeploy niet verwarren (incident #4447)
+
+**Originele owner:** `.github/workflows/production-source-snapshot.yml`, originele GitHub/Netlify-bron en bestaande OIDC-Supabase `netlify-deploy-bridge`. Behoud de bestaande exclusieve releasewriter en de bestaande cron; start geen tweede executor of geforceerde deployment om een controletabel groen te maken.
+
+**Afzonderlijk bewezen:** beschermd PR #5474 is gemerged op SHA `c6a2718e0de7eea4fdb87fe2a54026db21dfc218` met Required #42079562310 en CodeQL #42079562134 groen; Netlify publiceerde bij die SHA productie-deploy `6aecc573342de9b9ea08a889`. De natuurlijke originele releasejob #42082695121 publiceerde de latere `main`-SHA `93a4a4554961b08d30d3ae4d4d21bd6ca9ddb92e` via de **primaire** Git-route naar READY deploy `6aecc8100190bb7c9e07b6f8`. Het feit dat de workflowstap `Deploy exact source through authorized Netlify transport` SUCCESS is, bewijst **niet** dat de back-up fallback werkelijk werd gebruikt; de log zegt `NETLIFY_NATIVE_GIT_PRIMARY_WAIT` en `No explicit Netlify deploy id: Git-linked production may already be current`.
+
+**Originele bevoegdheidsprobe:** run #42083931842, GitHub main `93a4a455...`, inputs `deploy=false` en `authority_probe=true`, geeft `NETLIFY_BACKUP_AUTHORITY_HEALTH http=200 healthy=true error=none`, `deploymentRequired=false` en nul ongepubliceerde paden. Dit bewijst geautoriseerde OIDC/provider **read**, nooit een provider **write** of een bewezen fallback-writepad.
+
+**Niet afsluiten:** incident https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447 behoudt afzonderlijk `BACKUP_PROVIDER_EFFECT_DEPLOY_EVIDENCE_DUE`. Alleen een écht noodzakelijke, toegestane source-release die na een aangetoonde primaire failure via de bestaande OIDC-back-up schrijft, gevolgd door Netlify provider-deploy-ID, exact commit, published READY en onafhankelijk live `release.json`/browsertestbewijs, kan die status wijzigen. Een health 200, preview READY, geslaagde normale Git-deploy of artifact is onvoldoende. Bij ontbrekende rechten: status OPEN en bestaande eigenaar, nooit SSO/OIDC/CodeQL of writer-lease omzeilen.
+
+Voor alle agents: controleer steeds eerst actuele `main`-SHA, huidige gepubliceerde Netlify-commit én bronapplicabiliteit; geef bewijs een eigen controletijdstip. Ook wanneer de vorige release echt PROVEN was, is iedere latere commit een nieuwe provenance-check. Regressie `tests/brain-netlify-git-deploy-first-v1.test.mjs`; incident #4447 en ONE BRAIN zijn leidend.
+
+## 18 november 2026 — i18n provider-429 retry-explosie en origineel herstel
+
+Fingerprint `netlify|production-i18n-translate|browser-recursive-429-burst|20261118-v1`; bestaande ouder #4215 / #4198, géén nieuwe vertaalagent of provider. Na native productie-deploy `6afd583c726cf176ada08779` registreerde Netlify in de nieuwe release 515 echte `/api/i18n-translate` 502-responses en 412 afgebroken 499-verzoeken in de gecontroleerde periode. Het bestaande veilige classificatieherstel via beschermde #6000 werkte: echte originele logs tonen `UPSTREAM_HTTP_REJECTION`, `upstream_status=429` (geen klantdata/ruwe upstreamtekst). De kernfout zit ook in `assets/js/i18n.js`: bij elk non-200 opnieuw hetzelfde vertaalbatch proberen, daarna recursief in vijf items knippen en daarna élke ontbrekende bron apart opnieuw sturen. De MutationObserver probeerde bovendien reeds statisch vertaalde Engelse publieke pagina's opnieuw bij de provider te vertalen.
+
+**Verplicht:** dezelfde bestaande browser-runtime gebruiken, zonder neven-API/queue/scheduler. Stop bij 429/5xx/netwerkfout onmiddellijk de héle huidige vertaalcyclus; 5 minuten tab-lokale cooldown vóór een nieuwe normale trigger; geen batchsplits of individuele automatische herhalingen bij providerfalen. Behoud exact echte reeds beschikbare of statisch voorvertaalde content, URL-lokalisatie, tenant autorisatie, geen verzonnen EN en geen onzichtbare fallback. Op publieke `/en` met `data-bg-static-translated != false` blijft de statische pagina bron van waarheid; observeer navigatielinks maar stuur nieuwe DOM-mutaties niet alsnog door `/api/i18n-translate`. Het portaal behoudt dynamische verzoeken, maar faalt zichtbaar en begrensd. Clientversie expliciet cache-busten, regressietests incl. echte batch 43 strings met precies één HTTP502-call en daarna nul tijdens cooldown, 200 echte vertalingen, 429/netwerk, statische `/en` mutation skip.
+
+**Vrijgave:** alleen protected exact-head Required+CodeQL, same-owner merge, werkelijk Netlify READY-commit, onafhankelijke nieuwe providerlog-volume/EN-functionaliteit en ONE BRAIN/Heartbeat effect. Statische GitHub blog-EN build heeft aparte originele `OPENAI_I18N_HTTP_429` billing/quota-blokkade: niet via deze front-endpatch groen verklaren, niet omzeilen, geen onbevoegde nieuwe betaalmiddelen. Bestaande blog/Instagram/LinkedIn executors actief houden en alleen eigen provider-proven targets terminal zetten.

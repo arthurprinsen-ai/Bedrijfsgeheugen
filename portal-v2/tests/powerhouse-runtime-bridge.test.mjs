@@ -18,6 +18,29 @@ const projection={
   businessGraph:{nodes:[],edges:[]},executiveCockpit:{recommendedActions:[],openKnowledgeObligations:[],activityTimeline:[],openLoops:[]}
 };
 
+// The real Brain read model independently returns the persisted record, not
+// merely the POST echo. In-memory contract fixture simulates that separate GET
+// and preserves the exact immutable identity of accepted source records.
+function createReadbackTestBridge(options){
+ const accepted=new Map();
+ const original=options.fetchImpl;
+ return createPowerhouseRuntimeBridge({...options,fetchImpl:async (url,opts={})=>{
+  const response=await original(url,opts);
+  if(opts.method==='POST'&&response.ok){
+   const body=await response.json();
+   const record=JSON.parse(opts.body);
+   if(body?.record?.id===record.id&&body?.record?.correlationId===record.correlationId)
+    accepted.set(record.id,{...record,provenance:{source:'portal-v2'}});
+   return {...response,json:async()=>body};
+  }
+  if(opts.method!=='POST'&&response.ok){
+   const body=await response.json();
+   return {...response,json:async()=>({...body,records:[...accepted.values()]})};
+  }
+  return response;
+ }});
+}
+
 test('portal write result keeps the canonical PORTAL_INPUT correlation',()=>{
   assert.equal(portalCorrelationFromStored({sourceRevision:'abc123'}),'PORTAL_INPUT-abc123');
   assert.equal(portalCorrelationFromStored({}),'');
@@ -52,10 +75,13 @@ test('runtime bridge authenticates readback, writes same-lineage evidence and re
   };
   const fetchImpl=async(url,options={})=>{
     requests.push({url,options});
-    if(options.method==='POST')return {ok:true,json:async()=>({duplicate:false})};
+    if(options.method==='POST'){
+      const record=JSON.parse(options.body);
+      return {ok:true,json:async()=>({duplicate:false,record:{id:record.id,correlationId:record.correlationId}})};
+    }
     return {ok:true,json:async()=>projection};
   };
-  const bridge=createPowerhouseRuntimeBridge({stateClient,domainState,fetchImpl,eventTarget:bus,intervalMs:0,onRuntime:()=>{}});
+  const bridge=createReadbackTestBridge({stateClient,domainState,fetchImpl,eventTarget:bus,intervalMs:0,onRuntime:()=>{}});
   await bridge.refresh();
   assert.equal(requests[0].url,'/api/brain-operating-loop');
   assert.equal(requests[0].options.headers.authorization,'Bearer identity-token');
@@ -108,7 +134,7 @@ test('runtime bridge persists action intents and reads the Brain projection back
     }
     return {ok:true,json:async()=>projection};
   };
-  const bridge=createPowerhouseRuntimeBridge({stateClient,domainState,fetchImpl,eventTarget:bus,intervalMs:0});
+  const bridge=createReadbackTestBridge({stateClient,domainState,fetchImpl,eventTarget:bus,intervalMs:0});
   bus.emit('bg:portal-brain-synced',{stored:[{sourceRevision:'rev-action',brainRecordId:'brain-1',currentStateRecordId:'state-1'}]});
   await new Promise(resolve=>setTimeout(resolve,90));
   bus.emit('portal:action-intent',{label:'Marge verbeteren',sourceType:'future_lens',action:'create_action'});
@@ -122,4 +148,279 @@ test('runtime bridge persists action intents and reads the Brain projection back
   assert.equal(action.payload.sourceType,'future_lens');
   assert.equal(requests.at(-1).options.method,undefined,'na Action-write moet canonical Brain readback volgen');
   bridge.destroy();
+});
+
+test('failed POST keeps the immutable record until the original refresh retries and exact ACK arrives',async()=>{
+ const bus=new FakeBus();
+ let attempts=0;const postBodies=[];
+ const stateClient={getSnapshot:()=>({mode:'authenticated',user:{id:'tenant-user-A'}}),
+  authHeaders:async()=>({authorization:'Bearer tenant-A'}),subscribe:()=>()=>{},isDemo:()=>false};
+ const bridge=createReadbackTestBridge({
+  stateClient,domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,options={})=>{
+   if(options.method!=='POST')return {ok:true,json:async()=>projection};
+   attempts++;postBodies.push(options.body);
+   if(attempts===1)return {ok:false,status:503,json:async()=>({error:'TEMPORARY'})};
+   const record=JSON.parse(options.body);
+   return {ok:true,status:200,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
+  }
+ });
+ try{
+  bus.emit('portal:action-intent',{label:'Orderstroom verbeteren',action:'create_action'});
+  await new Promise(resolve=>setTimeout(resolve,70));
+  assert.equal(attempts,1);
+  assert.deepEqual(bridge.pendingHandoffs(),{pending:1,unverified:1},'no ACK means no deletion');
+  await bridge.refresh();
+  await new Promise(resolve=>setTimeout(resolve,25));
+  assert.equal(attempts,2);
+  assert.equal(postBodies[0],postBodies[1],'retry may not generate another ID, timestamp or content');
+  assert.equal(bridge.pendingHandoffs().pending,0);
+  await bridge.refresh();
+  await new Promise(resolve=>setTimeout(resolve,25));
+  assert.equal(attempts,2,'confirmed operation must never be sent twice');
+ }finally{bridge.destroy();}
+});
+
+test('HTTP 200 without exact Brain record ID/correlation is not an acknowledgement',async()=>{
+ const bus=new FakeBus();let attempts=0;const seen=[];
+ const bridge=createReadbackTestBridge({
+  stateClient:{getSnapshot:()=>({mode:'authenticated',user:{id:'tenant-A'}}),
+   authHeaders:async()=>({authorization:'Bearer tenant-A'}),subscribe:()=>()=>{},isDemo:()=>false},
+  domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,options={})=>{
+   if(options.method!=='POST')return {ok:true,json:async()=>projection};
+   attempts++;const record=JSON.parse(options.body);seen.push(record);
+   return {ok:true,json:async()=>attempts===1
+      ?{record:{id:'SOMEONE-ELSES-RECORD',correlationId:record.correlationId}}
+      :{duplicate:true,record:{id:record.id,correlationId:record.correlationId}}};
+  }
+ });
+ try{
+  bus.emit('bg:portal-brain-synced',{stored:[{sourceRevision:'source-abc',brainRecordId:'r1',currentStateRecordId:'r2'}]});
+  await new Promise(resolve=>setTimeout(resolve,100));
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,25));
+  assert.equal(attempts,2);
+  assert.equal(seen[0].id,seen[1].id);
+  assert.equal(bridge.pendingHandoffs().pending,0);
+ }finally{bridge.destroy();}
+});
+
+test('identity switch discards old session queue before any network POST and resets action correlation',async()=>{
+ const bus=new FakeBus();const subscribers=new Set();const posts=[];
+ let user='tenant-A';let token='Bearer A';
+ const stateClient={getSnapshot:()=>({mode:'authenticated',user:{id:user}}),
+  authHeaders:async()=>({authorization:token}),subscribe:fn=>{subscribers.add(fn);return()=>subscribers.delete(fn);},isDemo:()=>false};
+ const bridge=createReadbackTestBridge({
+  stateClient,domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,options={})=>{
+   if(options.method==='POST'){
+    const record=JSON.parse(options.body);posts.push({record,token:options.headers.authorization});
+    return {ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
+   }
+   return {ok:true,json:async()=>projection};
+  }
+ });
+ try{
+  bus.emit('bg:portal-brain-synced',{stored:[{sourceRevision:'from-A',brainRecordId:'B-A',currentStateRecordId:'S-A'}]});
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  user='tenant-B';token='Bearer B';
+  for(const fn of subscribers)fn(stateClient.getSnapshot());
+  assert.equal(bridge.pendingHandoffs().pending,0,'no old pending entry can move to tenant B');
+  await new Promise(resolve=>setTimeout(resolve,95));
+  assert.equal(posts.length,0,'tenant A data must not be posted under B bearer');
+  bus.emit('portal:action-intent',{label:'Nieuwe actie B',action:'create_action'});
+  await new Promise(resolve=>setTimeout(resolve,65));
+  assert.equal(posts.length,1);
+  assert.equal(posts[0].token,'Bearer B');
+  assert.equal(posts[0].record.correlationId.startsWith('PORTAL_UI-'),true,'must not inherit tenant A correlation');
+  assert.equal(bridge.pendingHandoffs().pending,0);
+ }finally{bridge.destroy();}
+});
+
+test('network exception retains pending evidence until a later focus or readback',async()=>{
+ const bus=new FakeBus();let fail=true;let posts=0;
+ const bridge=createReadbackTestBridge({
+  stateClient:{getSnapshot:()=>({mode:'authenticated',user:{id:'tenant-A'}}),
+   authHeaders:async()=>({authorization:'Bearer A'}),subscribe:()=>()=>{},isDemo:()=>false},
+  domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,options={})=>{
+   if(options.method!=='POST')return {ok:true,json:async()=>projection};
+   posts++;
+   if(fail)throw new Error('offline');
+   const record=JSON.parse(options.body);
+   return {ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
+  }
+ });
+ try{
+  bus.emit('portal:semantic-point-select',{metric:'response-time'});
+  await new Promise(resolve=>setTimeout(resolve,300));
+  assert.equal(posts,1);
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  fail=false;
+  await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,30));
+  assert.equal(posts,2);
+  assert.equal(bridge.pendingHandoffs().pending,0);
+ }finally{bridge.destroy();}
+});
+
+test('a second same-kind UI event never replaces a ready but unacknowledged Brain handoff',async()=>{
+ const bus=new FakeBus();let accepts=false;const attempts=[];
+ const stateClient={
+  getSnapshot:()=>({mode:'authenticated',user:{id:'shared-user',app_metadata:{tenantId:'company-A'}}}),
+  authHeaders:async()=>({authorization:'Bearer company-A'}),
+  subscribe:()=>()=>{},isDemo:()=>false
+ };
+ const bridge=createReadbackTestBridge({
+  stateClient,domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,opts={})=>{
+   if(opts.method!=='POST')return {ok:true,json:async()=>projection};
+   const record=JSON.parse(opts.body);attempts.push(record);
+   if(!accepts)return {ok:false,status:503,json:async()=>({error:'RETRY'})};
+   return {ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
+  }
+ });
+ try{
+  bus.emit('portal:semantic-point-select',{metric:'first-metric'});
+  await new Promise(resolve=>setTimeout(resolve,300));
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  bus.emit('portal:semantic-point-select',{metric:'second-metric'});
+  assert.equal(bridge.pendingHandoffs().pending,2,'unacknowledged first event must not disappear');
+  await new Promise(resolve=>setTimeout(resolve,300));
+  assert.equal(bridge.pendingHandoffs().pending,2);
+  assert.ok(attempts.some(record=>record.payload.metric==='first-metric'));
+  assert.ok(attempts.some(record=>record.payload.metric==='second-metric'));
+  accepts=true;
+  await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,60));
+  assert.equal(bridge.pendingHandoffs().pending,0,'both handoffs eventually get their own exact ACK');
+  for(const metric of ['first-metric','second-metric']){
+   const records=attempts.filter(record=>record.payload.metric===metric);
+   assert.ok(records.length>=2,'failed same record must retry: '+metric);
+   assert.equal(new Set(records.map(record=>record.idempotencyKey)).size,1,'original immutable key');
+   assert.equal(new Set(records.map(record=>record.id)).size,1,'original immutable record ID');
+  }
+ }finally{bridge.destroy();}
+});
+
+test('tenant membership switch for the SAME user revokes all previous tenant pending records',async()=>{
+ const bus=new FakeBus(),subscribers=new Set();let tenant='company-A';const sent=[];
+ const client={
+  getSnapshot:()=>({mode:'authenticated',user:{id:'same-user',app_metadata:{tenantId:tenant}}}),
+  authHeaders:async()=>({authorization:'Bearer '+tenant}),
+  subscribe:fn=>{subscribers.add(fn);return()=>subscribers.delete(fn);},
+  isDemo:()=>false
+ };
+ const bridge=createReadbackTestBridge({
+  stateClient:client,domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,opts={})=>{
+   if(opts.method!=='POST')return {ok:true,json:async()=>projection};
+   const record=JSON.parse(opts.body);sent.push({token:opts.headers.authorization,record});
+   return {ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
+  }
+ });
+ try{
+  bus.emit('portal:semantic-point-select',{metric:'tenant-A-private'});
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  tenant='company-B';for(const fn of subscribers)fn(client.getSnapshot());
+  assert.equal(bridge.pendingHandoffs().pending,0);
+  await new Promise(resolve=>setTimeout(resolve,310));
+  assert.equal(sent.length,0,'old private A item must not go out under B authorization');
+  bus.emit('portal:semantic-point-select',{metric:'tenant-B-public'});
+  await new Promise(resolve=>setTimeout(resolve,310));
+  assert.equal(sent.length,1);
+  assert.equal(sent[0].record.payload.metric,'tenant-B-public');
+  assert.equal(sent[0].token,'Bearer company-B');
+ }finally{bridge.destroy();}
+});
+
+test('the same source revision never creates concurrent duplicate runtime Brain evidence',async()=>{
+ const bus=new FakeBus();let successful=false;const sent=[];
+ const bridge=createReadbackTestBridge({
+  stateClient:{getSnapshot:()=>({mode:'authenticated',user:{id:'tenant-A',app_metadata:{tenantId:'a'}}}),
+   authHeaders:async()=>({authorization:'Bearer a'}),subscribe:()=>()=>{},isDemo:()=>false},
+  domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,opts={})=>{
+   if(opts.method!=='POST')return {ok:true,json:async()=>projection};
+   const record=JSON.parse(opts.body);sent.push(record);
+   return successful
+    ?{ok:true,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})}
+    :{ok:false,json:async()=>({error:'retry'})};
+  }
+ });
+ try{
+  const source={stored:[{sourceRevision:'immutable-r1',brainRecordId:'brain-1',currentStateRecordId:'state-1'}]};
+  bus.emit('bg:portal-brain-synced',source);
+  await new Promise(resolve=>setTimeout(resolve,80));
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  bus.emit('bg:portal-brain-synced',source);
+  assert.equal(bridge.pendingHandoffs().pending,1,'same source ACK should not spawn a second handoff');
+  successful=true;
+  await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,25));
+  assert.equal(bridge.pendingHandoffs().pending,0);
+  assert.equal(new Set(sent.map(record=>record.idempotencyKey)).size,1);
+ }finally{bridge.destroy();}
+});
+
+test('producer POST ACK alone does not remove handoff until the same Brain record is independently readable',async()=>{
+ const bus=new FakeBus();
+ let record=null,readVisible=false;
+ const posts=[];
+ const bridge=createPowerhouseRuntimeBridge({
+  stateClient:{getSnapshot:()=>({mode:'authenticated',user:{id:'customer-A',app_metadata:{tenantId:'tenant-A'}}}),
+   authHeaders:async()=>({authorization:'Bearer customer-A'}),subscribe:()=>()=>{},isDemo:()=>false},
+  domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,opts={})=>{
+   if(opts.method==='POST'){
+    record=JSON.parse(opts.body);posts.push(JSON.stringify(record));
+    return {ok:true,status:201,json:async()=>({record:{id:record.id,correlationId:record.correlationId}})};
+   }
+   return {ok:true,status:200,json:async()=>({...projection,records:readVisible&&record
+     ?[{...record,provenance:{source:'portal-v2'}}]:[]})};
+  }
+ });
+ try{
+  bus.emit('portal:action-intent',{label:'Bestaande actie',action:'create_action'});
+  await new Promise(resolve=>setTimeout(resolve,80));
+  assert.equal(posts.length,1);
+  assert.equal(bridge.pendingHandoffs().pending,1,'POST echo is insufficient without independent GET');
+  readVisible=true;
+  await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,30));
+  assert.equal(posts.length,2);
+  assert.equal(posts[0],posts[1],'retry must reuse exact immutable record, not create another action');
+  assert.equal(bridge.pendingHandoffs().pending,0,'same tenant GET now confirms the original');
+ }finally{bridge.destroy();}
+});
+
+test('foreign, mutated or unrelated GET records can never acknowledge the waiting handoff',async()=>{
+ const bus=new FakeBus();let stored=null,mode='wrong-id',tries=0;
+ const bridge=createPowerhouseRuntimeBridge({
+  stateClient:{getSnapshot:()=>({mode:'authenticated',user:{id:'customer-A',app_metadata:{tenantId:'tenant-A'}}}),
+   authHeaders:async()=>({authorization:'Bearer customer-A'}),subscribe:()=>()=>{},isDemo:()=>false},
+  domainState:{get:()=>null,setDerived:()=>{}},eventTarget:bus,intervalMs:0,
+  fetchImpl:async(_url,opts={})=>{
+   if(opts.method==='POST'){
+    tries++;stored=JSON.parse(opts.body);
+    return {ok:true,json:async()=>({record:{id:stored.id,correlationId:stored.correlationId}})};
+   }
+   const candidate=stored&&({...stored,provenance:{source:'portal-v2'}});
+   if(candidate){
+    if(mode==='wrong-id')candidate.id='another-customer-record';
+    else if(mode==='wrong-source')candidate.provenance.source='other-provider';
+    else if(mode==='wrong-revision')candidate.correlationId='PORTAL_INPUT-other';
+   }
+   return {ok:true,json:async()=>({...projection,records:candidate?[candidate]:[]})};
+  }
+ });
+ try{
+  bus.emit('portal:action-intent',{label:'Klantactie',action:'create_action'});
+  await new Promise(resolve=>setTimeout(resolve,85));
+  assert.equal(bridge.pendingHandoffs().pending,1);
+  for(const next of ['wrong-source','wrong-revision']){
+   mode=next;await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,25));
+   assert.equal(bridge.pendingHandoffs().pending,1,next+' cannot falsely ACK');
+  }
+  mode='ok';await bridge.refresh();await new Promise(resolve=>setTimeout(resolve,25));
+  assert.equal(bridge.pendingHandoffs().pending,0);
+  assert.ok(tries>=4);
+ }finally{bridge.destroy();}
 });

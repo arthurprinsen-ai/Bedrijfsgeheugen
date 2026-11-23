@@ -12,6 +12,7 @@ const base=()=>({
 function outcome(overrides={}){
  return {id:'outcome-1',title:'Doorlooptijd aantoonbaar gedaald',status:'VERIFIED',
   evidence_health:{status:'healthy',confidence:0.95},source_refs:['receipt-1'],
+  action_id:'action-1',realized:{amount:3,unit:'HOURS',metric_id:'processing-time',baseline_id:'baseline:oct',period_id:'2026-11'},
   learning_verified:true,learning_evidence_refs:['learning-1'],
   learning_summary:'Andere volgorde voorkomt wachttijd',next_decision_id:'decision-2',...overrides};
 }

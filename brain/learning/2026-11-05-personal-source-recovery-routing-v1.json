@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_PROTECTED_CHECKS_AND_LIVE_READBACK_DUE",
+  "fingerprint": "powerhouse|publication-recovery|linkedin_personal|personal_source_unverified_misrouted_as_provider_proof|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "owner": "original powerhouse-content-loop / original personal source owner",
+  "failure_class": "AUTONOMOUS_RECOVERY_MISCLASSIFICATION",
+  "root_cause": "Original recovery reasonFor fell through to EXACT_PROVIDER_PUBLICATION_PROOF_MISSING when personal LinkedIn obligation was BLOCKED with PERSONAL_SOURCE_UNVERIFIED and no provider side effect. The existing first-time-right incident planner only required new verified source on DISTINCT_VERIFIED_STORY_REQUIRED, so this pre-create source-truth failure did not carry its exact source-repair invariant.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T06:37:31Z",
+    "source": "public.content_publication_obligations",
+    "publication_date": "2026-11-05",
+    "channel": "linkedin_personal",
+    "original_status": "BLOCKED",
+    "original_error": "PERSONAL_SOURCE_UNVERIFIED",
+    "original_next_action_code": "EXACT_PROVIDER_PUBLICATION_PROOF_MISSING",
+    "provider_id_present": false,
+    "independent_proof_present": false
+  },
+  "fix": "In the original shared recovery classifier map actual pre-create personal source failure to PERSONAL_SOURCE_PROOF_REQUIRED / VERIFY_ORIGINAL_FOUNDER_SOURCE_THEN_REGENERATE, and in the existing preventive classifier to SOURCE_EDITORIAL_REVISION_REQUIRED. Require new verified source in the existing incident-learning planner. Preserve PUBLISHED immutable post ID as reconciliation-only, original hourly scheduler and all editorial/OAuth/dedup gates.",
+  "prevention_rule": "Every classifier must distinguish pre-create source truth from post-create provider receipt. Source agent must not invent a personal founder story; genuine verified original source or safe fail-closed. An external provider ACK demands readback-only without any new send. Regression covers both states and semantic BRAIN obligations.",
+  "tests": [
+    "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "invariants": [
+      "existing scheduler #140",
+      "original writer/owner only",
+      "no duplicate provider create",
+      "OAuth/consent never bypassed",
+      "true factual personal source",
+      "missing proof is not LIVE_PROVEN"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "AUTONOMOUS_RECOVERY_MISCLASSIFICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected Required, CodeQL, full BRAIN + protected merge; original authorized Supabase Edge deployment; independent exact-version production readback; same owner natural cron observes correctly routed source recovery; no false personal LinkedIn LIVE_PROVEN."
+}

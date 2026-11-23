@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|original-content-handoff|ga4-json-accessor-precedence-22P02|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_CONTENT_HANDOFF_GA4_JSON_TEXT_PRECEDENCE_22P02",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The original production public.powerhouse_content_handoff_receipts_v1 (owner: original #171) constructed blog GA4 source event with v_event:='ga4:'||r.metrics->>'window_start'||':'||r.metrics->>'window_end';. PostgreSQL evaluates the unparenthesized JSON ->> expression with string concatenation in a way that coerces the literal 'ga4:' into JSON; invalid input syntax for type json, token ga4, SQLSTATE 22P02. A real independently verified blog source with a measured GA4 window reaches this line and aborts the whole original handoff transaction. The existing assurance owner swallowed the original message and exposed only SOURCE_RECHECK_REQUIRED / 22P02, allowing many originally due BRAIN content receipts to remain stale.",
+  "prevention_rule": "In the SAME original protected database function, parenthesize each JSON text extraction before concatenation: v_event:='ga4:'||(r.metrics->>'window_start')||':'||(r.metrics->>'window_end');. Retain exact original 20261113082500 function implementation, permissions, tenant, idempotency, publication, measurement, learning and terminal trigger gates. Fail closed for missing/unverified GA4 window, never infer provider or learning receipt from a generated string. Add a mandatory named regression under tests/brain-* and actual protected migration identity / applied production function definition readback. Original #171 remains the only dispatcher. No direct production SQL patch, no new scheduler or alternate inbox.",
+  "evidence": [
+    "Read-only production powerhouse_loop_assurance_state_v1 at 2026-11-13 11:59 UTC: content-closed-loop RED, evidence.content_handoff.state=SOURCE_RECHECK_REQUIRED, sqlstate=22P02, missing stages from prior run; #171 scheduler active.",
+    "Controlled diagnostic DO/PLpgSQL probe called the original function only in an exception-managed subtransaction, rolled back ALL writes, and raised a deliberate external exception. Original SQLSTATE 22P02, message invalid input syntax for type json, DETAIL Token \"ga4\" is invalid, CONTEXT PL/pgSQL function powerhouse_content_handoff_receipts_v1(timestamp with time zone) line 139 at assignment. No production records changed.",
+    "Current production pg_get_functiondef was compared byte-for-byte with original protected Git migration supabase/migrations/20261113082500_original_cancelled_social_learning_source_ack_v1.sql; full source matched except trailing newline. The GA4 expression appears exactly once and is the only modified executable expression in this candidate.",
+    "The 365 OPEN CONTENT_HANDOFF and 184 OPEN social_learning obligations are not automatically satisfied by fixing an exception; independent owner, provider readback, actual measurement and downstream applied learning proof remain obligatory."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-ga4-content-handoff-json-precedence-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-ga4-content-handoff-json-precedence-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-ga4-content-handoff-json-precedence-20261113.test.mjs"
+    ]
+  },
+  "invariants": {
+    "original_cron_job_id": 171,
+    "original_function": "public.powerhouse_content_handoff_receipts_v1(timestamptz)",
+    "original_terminal_proof_guard": "brain_content_handoff_terminal_proof_guard_v1",
+    "new_scheduler": false,
+    "new_provider_post": false,
+    "new_external_api_call": false,
+    "new_brain_writer": false,
+    "provider_publication_assumed": false,
+    "independent_measurement_assumed": false,
+    "full_green_claimed": false,
+    "migration_requires_protected_CI_and_provider_exact_name": true
+  },
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_PENDING_PROTECTED_CI_AND_PROVIDER_APPLY"
+}

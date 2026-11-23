@@ -34,7 +34,7 @@ test('merge-group run ID is not a PR identity and Required passes event type', (
   assert.equal(context.baseSha, sha('b'));
   const source = readFileSync(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
   assert.match(source, /eventName:\s*process\.env\.EVENT_NAME/);
-  assert.match(source, /context\.prNumber\s*\?/);
+  assert.match(source, /context\.prNumber\s*(?:&&[^?]*)?\?/);
   assert.match(source, /resolveDeliveryMetadataAuthority\(/);
   assert.match(source, /merge_group:/);
 });

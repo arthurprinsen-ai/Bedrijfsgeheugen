@@ -8,8 +8,21 @@
     "supabase/functions/netlify-deploy-bridge/index.ts"
   ],
   "tests": [
-    "tests/brain-netlify-session-tool-exposure-v1.test.mjs"
+    "tests/brain-netlify-session-tool-exposure-v1.test.mjs",
+    "tests/brain-ci-browser-install-and-netlify-preview-auth-20261105.test.mjs"
   ],
   "status": "CANDIDATE_NOT_RELEASED",
-  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4437"
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4437",
+  "ci_failure_classification_20261105": {
+    "owner": "original Portal V2 Live Preview and Website Cross-Browser Screenshot Assurance",
+    "preview_authorization": "HTTP 401/403 from PR alias or immutable Netlify URL => NETLIFY_PREVIEW_AUTH_REQUIRED immediately. Do not loop for nine minutes, infer source SHA defect, bypass SSO, expose response bodies or report a successful browser acceptance.",
+    "browser_dependency": "For screenshot-only workflow install Playwright package with npm --ignore-scripts to avoid unrelated ffmpeg-static postinstall GitHub HTTP 504; explicitly install Chromium, Firefox, WebKit and system dependencies; never skip actual browsers or thresholds.",
+    "incident_receipt": "A failed prerequisite must emit original workflow artifact/step summary and remain FAILED; exact protected Required, CodeQL, original provider ID+SHA, canonical/immutable readback, browser proof before GREEN.",
+    "fingerprints": [
+      "ci|cross-browser|ffmpeg-static-postinstall-http-504|20261105-v1",
+      "ci|netlify-preview|nonproduction-auth-401-retry-misclassified-timeout|20261105-v1"
+    ],
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+    "verification": "SOURCE_CANDIDATE_EVIDENCE_DUE"
+  }
 }

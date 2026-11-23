@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|original-one-loop|accepted-source-event-timestamp-mismatch|20261112-v1",
+  "obligation_id": "original-source-event-time-mismatch-20261112",
+  "parent_issue": 4198,
+  "owner": "original powerhouse-runtime-scheduler-mux-v1 (#171) / ONE BRAIN",
+  "failure_class": "SOURCE_CONSUMER_TEMPORAL_LINEAGE_DRIFT",
+  "root_cause": "The existing original powerhouse_content_handoff_receipts_v1 correctly selected a Windsor provider-linked source_event_id from social_metric_snapshots but always populated measurement_consumer.measured_at from content_publication_obligations.measured_at. A source event from Nov 12 could therefore have a null or stale time even with accepted=true, masking the producer to consumer handshake.",
+  "impact": "Proof mismatch and missing consumption-time evidence in original ONE BRAIN, with potential wrong heartbeat freshness, late learning, double treatment of metrics as unknown and misrouted next_action.",
+  "prevention": "Select source_event_id and observed_at from the exact same independently account/post-linked snapshot row; reset at each post, copy that timestamp only when metric accepted. All other original channels retain their measured_at semantics. The BRAIN next action must be aligned with actual WAIT_ANALYSIS/OVERDUE_ANALYSIS stage while retaining the original source hint for provenance. All missing analysis/experiment outcomes stay OPEN.",
+  "evidence": {
+    "provider_readback": "Windsor linkedin_organic source data_fetched_at 2026-11-12T14:12:23Z, org 18234216, exact post URNs 7525453327631917056,7525815714499170304,7526178124292718592",
+    "original_source_snapshot_written": 3,
+    "exact_original_provider_urn_matched": 3,
+    "production_stage": "WAIT_ANALYSIS",
+    "original_consumer_inconsistency": [
+      "2026-11-10 accepted=true, source_event_id Windsor 2026-11-12T14:12:23Z, measured_at=null",
+      "2026-11-11 accepted=true, source_event_id Windsor 2026-11-12T14:12:23Z, measured_at=null",
+      "2026-11-09 accepted=true, source_event_id Windsor 2026-11-12T14:12:23Z, measured_at from a different Nov10 snapshot"
+    ],
+    "original_canonical_cron_active": 171,
+    "missing_historical_window_proofs_not_inferred": true
+  },
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "ORIGINAL_ONE_BRAIN_HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-metric-event-temporal-handoff-20261112.test.mjs"
+    ]
+  },
+  "regression": "tests/brain-original-metric-event-temporal-handoff-20261112.test.mjs",
+  "rule": "ONE_ACK_SOURCE_EVENT_TIME_IS_ATOMIC",
+  "skill_targets": [
+    "AGENTS.md",
+    "powerhouse-social-cro-funnel"
+  ],
+  "no_secondary_executor": true,
+  "no_fabricated_provider_metrics": true,
+  "causal_result_proven": false
+}

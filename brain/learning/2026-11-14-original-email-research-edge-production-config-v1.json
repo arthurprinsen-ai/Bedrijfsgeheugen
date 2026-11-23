@@ -1,0 +1,71 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|original-relationship-research-edge-not-declared-for-provider-deploy|20261114",
+  "compiler": {
+    "failure_class": "ORIGINAL_RESEARCH_EDGE_GITHUB_INTEGRATION_NOT_DECLARED",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Protected main original relationship-public-research/index.ts already contains the no-source/recovered prepared-or-waiting exact recipient CAS fixes (PR #5768). Native Supabase DB #856/857 and original #116 consumer receipt function are live, but production original Edge relationship-public-research stayed on v13 because the function had no [functions.powerhouse-relationship-public-research] declaration in supabase/config.toml. Official Supabase GitHub Integration only auto-deploys declared functions to production. Source merge and native migrations therefore did NOT update original provider worker, and claimed complete handoff would be false.",
+  "evidence": {
+    "repo": "arthurprinsen-ai/Bedrijfsgeheugen",
+    "project": "adhjwmvyoixzjtmiroln",
+    "production_seen_on": "2026-11-14T14:43:30Z",
+    "original_edge_function": "powerhouse-relationship-public-research",
+    "production_edge_version_before": 13,
+    "production_edge_has_researchNoSourceFeedback": false,
+    "source_protected_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5768",
+    "native_migration_856_applied": true,
+    "native_migration_857_applied": true,
+    "original_116_active": true,
+    "original_140_active": true,
+    "original_171_active": true,
+    "origin_waiting_no_source_consumer_ack": true,
+    "provider_gmail_sent_proven_today": false,
+    "supabase_docs": "https://supabase.com/docs/guides/deployment/branching/github-integration",
+    "config_toml_before_has_slug": false
+  },
+  "repair": "Add exactly the EXISTING original powerhouse-relationship-public-research Edge function to protected supabase/config.toml (enabled=true, entrypoint original index.ts, verify_jwt=false matching current active runtime with its required x-powerhouse-token private service check). Existing original Supabase GitHub Integration is the only permitted production Edge writer after protected main. No new cron/sender, no direct Supabase MCP deploy, no HTTP proxy or background queue. Scope resolver must show only that original Edge function changed, never all functions. Independently verify new provider version and exact deployed source (worker and _shared helper), plus next due original #116 DataForSEO→same email action ACK.",
+  "prevention": [
+    "Every original Edge function that needs automatic protected-main deployment MUST have a matching [functions.<slug>] enabled entry in supabase/config.toml; a source commit or Supabase Preview alone is never production parity.",
+    "Use original Supabase GitHub Integration Deploy to production, not an alternative CI CLI or chat direct deploy; unchanged production v13 after source merge is RUNTIME_AUTHORITY_DRIFT, not success.",
+    "Verify original live verify_jwt setting and private custom x-powerhouse-token before registering existing auth-protected function, never exposing an unauthenticated sender.",
+    "Function-specific config additions must not change other function sections or global config, so original Edge scope resolver selects only that exact slug.",
+    "Original source candidate/NO_SOURCE is not mail permission. Recipient consent, original compositor, no-resend, independent current company evidence, Gmail message ID and exact readback stay unchanged.",
+    "Keep original #116 hourly cron active, one original source worker, no manual provider re-run before 24h due and exact original receiver ACK into Heartbeat/ONE BRAIN."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-email-research-edge-production-config-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-email-research-edge-production-config-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-email-research-edge-production-config-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-email-research-edge-production-config-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/config.toml",
+    "tests/brain-original-email-research-edge-production-config-20261114.test.mjs",
+    "brain/learning/2026-11-14-original-email-research-edge-production-config-v1.json",
+    "docs/changes/2026-11-14-original-email-research-edge-provider-config-v1.md",
+    "docs/development-ledger-events/2026-11-14-original-email-research-edge-provider-config-v1.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",
+    "AGENTS.md"
+  ],
+  "status": "PROTECTED_PR_CANDIDATE_NOT_PROVIDER_LIVE_YET",
+  "production_proof_to_complete": [
+    "Protected Required/BRAIN/CodeQL/hosted Supabase preview pass, protected main merge.",
+    "Supabase GitHub Integration provider production check on exact merged main SHA and independently read provider function version increased from 13, with exact original candidate + NO_SOURCE feedback code and auth settings matching source.",
+    "Original hourly cron 116 remains sole writer/owner; next natural due DataForSEO attempt is not premature; exact same original email action consumer ACK and Heartbeat #140 readback preserved.",
+    "No Gmail sent status without independent exact recipient/message-content provider-ID and Gmail readback, and same approvals/suppression."
+  ]
+}

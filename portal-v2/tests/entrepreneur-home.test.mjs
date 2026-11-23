@@ -130,3 +130,21 @@ test('guided homepage is mounted once in original V2 with auth boundaries and na
  assert.match(ui,/findPage\(target\)/);
  assert.doesNotMatch(ui,/localStorage|sessionStorage|Math\.random|fetch\(/);
 });
+
+
+test('three entrepreneur attention cards remain authenticated and evidence-aware',async()=>{
+ const [ui,css]=await Promise.all([
+   readFile(new URL('../entrepreneur-home.js',import.meta.url),'utf8'),
+   readFile(new URL('../entrepreneur-home.css',import.meta.url),'utf8')
+ ]);
+ assert.match(ui,/if\(!loggedIn\)\{/);
+ assert.ok(ui.indexOf("if(!loggedIn){")<ui.indexOf("attention.dataset.entrepreneurAttention='v1'"));
+ assert.match(ui,/model\.next\.kind==='verified-proposal'/);
+ assert.match(ui,/Number\.isInteger\(outcomes\)&&outcomes>0/);
+ assert.match(ui,/Geen actuele, klantgebonden Powerhouse-projectie bewezen/);
+ assert.match(ui,/Voorbeeldcijfers en voorspellingen tellen nooit mee/);
+ assert.match(ui,/dataset\.entrepreneurPage='outcomes-evidence'/);
+ assert.equal((ui.match(/const journey=buildEntrepreneurJourneyModel\(customerState/g)||[]).length,1);
+ assert.match(css,/\.eh-attention-grid/);
+ assert.match(css,/@media\(max-width:920px\)/);
+});

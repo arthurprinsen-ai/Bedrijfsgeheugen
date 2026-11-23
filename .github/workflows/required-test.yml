@@ -116,7 +116,8 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          fetch-depth: 2
+          # Immutable base-to-candidate migration classification must have history.
+          fetch-depth: 0
           ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
@@ -170,6 +171,44 @@ jobs:
         run: node --test tests/release-artifact-identity.test.mjs
       - name: Verify fail-closed Supabase provider preview classification
         run: node --test tests/brain-supabase-preview-diagnosis-v1.test.mjs
+      - name: Enforce Supabase migration lock parity before merge
+        env:
+          CANDIDATE_BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.merge_group.base_sha || '' }}
+          CANDIDATE_EVENT_NAME: ${{ github.event_name }}
+          CANDIDATE_PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
+        # Provider-applied lock remains immutable; NEW PR SQL is admitted source-only,
+        # with independent hosted Supabase Preview required for replay authority.
+        run: >-
+          node tools/ci/protected-supabase-pr-migration-tests.mjs
+          tests/supabase-migration-history-integrity.test.mjs
+          tests/brain-cro-production-migration-lock-20261029.test.mjs
+          tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs
+          tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs
+          tests/brain-supabase-migration-lock-provider-20261029.test.mjs
+          tests/brain-migration-lock-pr-gate-20261105.test.mjs
+          tests/brain-protected-supabase-pr-migration-tests.test.mjs
+      - name: Verify GitHub error lessons stay in the delivery preflight
+        run: node --test tests/brain-github-error-register-20261106.test.mjs
+      - name: Verify site and CI error lessons stay in the delivery preflight
+        run: node --test tests/brain-site-error-lessons-20261106.test.mjs
+      - name: Verify planned-action triggers fire and stay precise
+        run: node --test tests/brain-planned-action-triggers-wave2-20261106.test.mjs tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs tests/brain-planned-action-recall-evidence-20261106.test.mjs tests/brain-planned-action-live-recorder-20261106.test.mjs tests/brain-planned-action-trusted-main-capture-20261106.test.mjs tests/brain-planned-action-independent-review-queue-20261106.test.mjs
+      - name: Verify the daily blog renderer keeps markdown out of headings and paragraphs
+        run: node --test tests/brain-blog-markdown-render-20261106.test.mjs
+      - name: Verify no published blog article carries markdown or invalid structured data
+        run: node --test tests/brain-blog-articles-clean-20261106.test.mjs
+      - name: Verify every path the daily blog workflow stages is a runtime closure path
+        run: node --test tests/brain-daily-blog-closure-exemption-20261107.test.mjs
+      - name: Verify the daily blog prepares the English cache for the committed tree
+        run: node --test tests/brain-daily-blog-i18n-committed-tree-20261107.test.mjs
+      - name: Verify git file listings used by the build set an explicit buffer
+        run: node --test tests/brain-artifact-id-git-buffer-20261108.test.mjs
+      - name: Verify the required test install survives the ffmpeg download
+        run: node --test tests/brain-required-test-npm-install-20261108.test.mjs
+      - name: Verify the blog SEO focus keyword is never a pronoun and no title is truncated
+        run: node --test tests/brain-blog-seo-focus-pronoun-20261108.test.mjs
+      - name: Enforce system error lessons and the planned-action guard
+        run: node --test tests/brain-system-error-register-20261106.test.mjs tests/brain-planned-action-guard-20261106.test.mjs tests/brain-linkedin-personal-independent-public-proof-20261106.test.mjs tests/brain-mira-original-pristine-claim-20261106.test.mjs tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs
       - name: Enforce ONE BRAIN portal change-impact and canonical writeback contract
         run: |
           node --test portal-v2/tests/one-brain-impact-contract.test.mjs portal-v2/tests/portal-impact-engine.test.mjs portal-v2/tests/portal-causal-propagation.test.mjs portal-v2/tests/domain-state.test.mjs
@@ -238,6 +277,7 @@ jobs:
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           import { deriveNetlifyDeploymentApplicability } from './tools/delivery/netlify-deployment-applicability.mjs';
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
+          import { reconcileLivePrScope } from './tools/delivery/live-pr-scope-reconciliation.mjs';
           import { evaluateBranchHygiene, resolvePRScopeMergeBase } from './tools/delivery-branch-hygiene-guard.mjs';
           import { resolveDeliveryMetadataAuthority } from './tools/delivery/delivery-metadata-authority.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
@@ -258,9 +298,19 @@ jobs:
               } : undefined,
             },
           });
-          const livePrBody = process.env.PR_BODY_INPUT || (context.prNumber
-            ? JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${context.prNumber}`],{encoding:'utf8'})).body || ''
-            : '');
+          const livePr=context.prNumber && ['pull_request','workflow_dispatch'].includes(process.env.EVENT_NAME)
+            ? JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${context.prNumber}`],{encoding:'utf8'}))
+            : null;
+          const livePrScope=livePr ? reconcileLivePrScope({
+            eventName:process.env.EVENT_NAME,
+            prNumber:context.prNumber,
+            eventBaseSha:context.baseSha,
+            eventHeadSha:context.changeHeadSha,
+            livePr,
+          }) : null;
+          const livePrBody = process.env.PR_BODY_INPUT || livePr?.body || '';
+          if(livePrScope?.baseDrift) console.log('REQUIRED_PR_EVENT_BASE_STALE:verified_live_base='+livePrScope.baseSha);
+
           const oneLoopPolicy=JSON.parse(await readFile('config/powerhouse-one-loop-v1.json','utf8'));
           const metadataAuthority=resolveDeliveryMetadataAuthority({
             prBody: livePrBody,
@@ -276,7 +326,7 @@ jobs:
           // For a diverged PR, GitHub's merge base is the scope authority.
           // A two-dot diff from today's main includes unrelated main edits.
           // Non-PR and merge-group delivery retain their event-base scope.
-          const providerBaseSha=context.prNumber && context.baseSha ? context.baseSha : comparisonBaseSha;
+          const providerBaseSha=livePrScope?.baseSha || comparisonBaseSha;
           const prComparison=context.prNumber && ['pull_request','workflow_dispatch'].includes(process.env.EVENT_NAME)
             ? JSON.parse(execFileSync('gh',[
                 'api',
@@ -333,6 +383,11 @@ jobs:
           POWERHOUSE_BASE_SHA: ${{ steps.scope.outputs.base_sha }}
           POWERHOUSE_HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
         run: node scripts/brain/learning-canonicalization-gate.mjs
+      - name: Run tests that read changed files before merge
+        env:
+          BASE_SHA: ${{ steps.scope.outputs.base_sha }}
+          HEAD_SHA: ${{ steps.scope.outputs.change_head_sha }}
+        run: node scripts/ci/select-tests-for-changed-paths.mjs "$BASE_SHA" "$HEAD_SHA"
       - id: integration
         name: Compile one-write integration bundle
         env:
@@ -366,7 +421,9 @@ jobs:
         run: node --test tests/brain-material-writeback-closure-guard.test.mjs
       - name: Install runtime dependencies for the unwired contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
-        run: npm install --prefer-offline --no-audit --no-fund --silent
+        # The unwired contracts never run the root ffmpeg-static binary; its postinstall
+        # download (HTTP 504 from GitHub releases) turned this required check red.
+        run: npm install --ignore-scripts --prefer-offline --no-audit --no-fund --silent
       - name: Validate fail-closed static English cache before merge
         if: steps.integration.outputs.full_shared_suite == 'true'
         env:
@@ -400,6 +457,7 @@ jobs:
           tests/brain-production-promotion-observability.test.mjs
           tests/control-plane-supabase-terminal-readback-v1.test.mjs
           tests/delivery-test-coverage-guard.test.mjs
+          tests/cro-measurement-contract.test.mjs
           tests/compliance-status-page.test.mjs
           tests/control-plane-first-fanout-reduction.test.mjs
           tests/control-plane-fourth-fanout-reduction.test.mjs
@@ -429,6 +487,7 @@ jobs:
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/cms-website-portal-v1.test.mjs
+          tests/cms-studio-20261102.test.mjs
           tests/daily-cost-optimizer.test.mjs
           tests/data-ai-passport.test.mjs
           tests/eu-ai-act-audit-report.test.mjs
@@ -682,7 +741,9 @@ jobs:
           restore-keys: |
             static-i18n-render-v1-${{ runner.os }}-
       - name: Install exact Netlify build dependencies
-        run: npm install --prefer-offline --no-audit --no-fund --silent
+        # The build never runs the root ffmpeg-static binary; its postinstall download of
+        # linux-x64.README returns HTTP 504 from GitHub releases (persistent on 8 Nov).
+        run: npm install --ignore-scripts --prefer-offline --no-audit --no-fund --silent
       - name: Run exact Netlify production build command once
         env:
           COMMIT_REF: ${{ needs.preflight.outputs.change_head_sha }}

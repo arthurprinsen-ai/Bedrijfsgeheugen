@@ -19,7 +19,7 @@ test('existing price explainer supports AFAS money owner without duplicate landi
   const page = await read('../blog/wat-kost-een-afas-koppeling/index.html');
   assert.match(page, /<link rel="canonical" href="https:\/\/www\.bedrijfsgeheugen\.nl\/blog\/wat-kost-een-afas-koppeling\/">/);
   assert.match(page, /AFAS OCI-koppeling/);
-  assert.match(page, /href="\/afas-koppeling">AFAS-koppelingspagina<\/a>/);
+  assert.match(page, /href="(?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/afas-koppeling">AFAS-koppelingspagina<\/a>/);
 });
 
 test('OCI translation cache preserves English answer without provider translation dependency', async () => {

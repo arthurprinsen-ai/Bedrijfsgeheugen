@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse|website|checkout-status-dom-null-after-benefit-fix|20261102-v1",
+  "obligation_id": "original-checkout-status-null-guard-20261102-v1",
+  "parent_issue": 4439,
+  "related_prs": [
+    5283
+  ],
+  "compiler": {
+    "failure_class": "BUILT_DOM_NONFINANCIAL_STATUS_REMOVED",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "owner": "Original Bedrijfsgeheugen website checkout and Page/SEO ONE BRAIN source owner",
+  "root_cause": "On native protected checkout production main 95b098996b724f79ad210c3b733250029dad5b1b the exact original Page/SEO workflow 41436276607 detected one JavaScript TypeError in /afsluiten: setCheckoutReady() dereferenced checkoutStatus.style while the browser DOM status element was null. Tracked original HTML includes div#status. The build transformation removing it is not conclusively attributed. The previously repaired optional plan-benefit list has separate ownership. The original Page/SEO candidate push succeeded but PR creation failed because GitHub Actions token cannot create/approve PRs.",
+  "prevention_rule": "The same original checkout must idempotently restore only the non-payment status display inside existing payment form when absent. If original form/submit/status prerequisites are missing, checkout must be not-ready and disabled. No fake form, payment readiness, provider receipt, order or account activation. Verify full checkout browser DOM on built site after Required/CodeQL, native Netlify exact SHA and a later natural Page/SEO run; do not treat PR creation failure as green or disable pageerror listener. Also enforce the original checkout-build-integrity source contract: recover runtime cosmetic DOM via setAttribute('id','status') rather than an inline el.id='status' assignment, because the current exact static regex scans the entire HTML source and counts the latter as a duplicate static id. Test the current whole checkout HTML with assertCheckoutContract and confirm exactly one source status id; never relax duplicate-id detection to silence failing builds.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-checkout-status-dom-failclosed-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-checkout-status-dom-failclosed-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-checkout-status-dom-failclosed-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_production_main": "95b098996b724f79ad210c3b733250029dad5b1b",
+    "original_page_run": 41436276607,
+    "failed_job_id": 125246782291,
+    "observed_error": "TypeError: Cannot read properties of null (reading 'style') at setCheckoutReady",
+    "original_netlify_deploy": "6ae8725e1432aeae081c49c0",
+    "producer_change_type": "EXISTING_CHECKOUT_NON_PAYMENT_STATUS_ONLY",
+    "original_pr_handoff_error": "GitHub Actions is not permitted to create or approve pull requests",
+    "new_paid_order_verified": false,
+    "source_candidate": true,
+    "protected_release_verified": false,
+    "no_recurrence_verified": false,
+    "preflight_false_duplicate_status": {
+      "run_id": 41437697752,
+      "job_id": 125251780103,
+      "error": "CHECKOUT_TARGET_INVALID:source:status:2",
+      "root_cause": "Raw textual HTML integrity regex matched both the real HTML div id=status and runtime JavaScript el.id='status', an apparent second source ID; no duplicate DOM element established.",
+      "correction": "Use runtime el.setAttribute('id','status'), reflect setAttribute id in VM fixture; guard real static HTML uniqueness in existing regression suite.",
+      "source_branch_commit": "b7d48c927c73221dfec676d95b1448e02d118840",
+      "status": "CANDIDATE_PENDING_NATIVE_CI",
+      "paid_order_proven": false
+    }
+  }
+}

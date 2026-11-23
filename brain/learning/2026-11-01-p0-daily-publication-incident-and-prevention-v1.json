@@ -1,0 +1,53 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "fingerprint": "powerhouse|publication|multi-channel-missed-output-after-preflight|v1",
+  "maturity": "VALIDATED",
+  "candidateOnly": true,
+  "owner": "original Powerhouse daily publisher, powerhouse-content-loop, powerhouse-content-orchestrator, canonical Mira source agent, original authorized email owner",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "root_cause": "Original scheduled Daily Publisher could not read original obligation table (permission denial twice). Existing approved gpt-5-mini generation returned 429 insufficient_quota, governed fallback SUSPENDED. Mira had no independent current unique source winner; newsletter had no authorized canonical executor. Scheduler completion and prior early-classifier fix failed to produce independently proven external effects.",
+  "observed_evidence": {
+    "date": "2026-11-01",
+    "publication_status": "PLANNED",
+    "affected_original_channels": [
+      "linkedin_personal",
+      "linkedin_company",
+      "instagram",
+      "blog",
+      "email_newsletter"
+    ],
+    "provider_publication_proven": false,
+    "provider_email_proven": false,
+    "previous_day_original_publication_status": "FAILED",
+    "original_brain_fingerprint_status": "VALIDATED",
+    "source": "public.content_publication_obligations, powerhouse_channel_decisions, Brain source tables and recorded Publisher run",
+    "incident_id": "INC-2026-11-01-PROVIDER-QUOTA-DAY-PUBLISH"
+  },
+  "prevention_rule": "Preflight publisher's own original Supabase read access, approved generator quota and active fallback governance, unique Mira independent source winner and final identity>=0.940, and original authorized email executor/opt-in before due time. Hard failure immediately RED/RECOVERY_DUE with named owner, occurrence, bounded same-lineage recovery and prevention. Keep existing executor alive and all other channels independently advancing, avoid remote duplicate side effects by provider ID/readback. Never green without external provider receipts and seven-day natural-run regression. No auto-pay, suspended fallback, consent bypass, invented posts or second scheduler/publisher.",
+  "fix_candidate": "Documentation/agent-skill + original ChatGPT daily task guard and canonical Brain CRITICAL incident; DOES NOT restore provider quota, grant consent or publish; original code/authorization owner must make independently proven repairs. Existing #5224 classifier already merged.",
+  "approval_boundaries": "Provider billing, model fallback governance, newsletter authorization/opt-in and provider API rules are hard; user request does not authorize automatic funds or bypass.",
+  "compiler": {
+    "failure_class": "UNVERIFIED_DELIVERY",
+    "scope": "RUNTIME",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Observed on 1 Nov canonical obligations and recorded automation; zero external provider IDs, original reader permission failure; actual provider billing proof from 31 Oct.",
+    "regression": "Production original scheduled reader access, provider quota, Mira source, consent, side effect dedupe, external proof and 7-day natural-run validation; not yet proven.",
+    "pending": "Protected Required+BRAIN+CodeQL, exact main/deploy source parity; source-authorized generator, newsletter and Mira recovery; external publisher readbacks. Candidate is not live publication."
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-11-01-p0-daily-publication-incident-and-prevention.md",
+  "activity_ledger": "docs/development-ledger-events/2026-11-01-p0-daily-publication-incident-and-prevention.md"
+}

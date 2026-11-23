@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CANDIDATE_PENDING_PROTECTED_MERGE_AND_NATIVE_PROVIDER_READBACK",
+  "fingerprint": "supabase|ga4|edge-production-release-config-missing-and-private-token|20261104-v1",
+  "owner": "original Supabase Edge Production Authority and bg-analytics-sync-composio owner",
+  "failure_class": "RUNTIME_INVARIANT",
+  "scope": "EDGE_PRODUCTION",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": true,
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "EDGE_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs"
+    ]
+  },
+  "root_cause": "After protected PR #5419 merged, original GitHub release run 41846442932 failed with SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-analytics-sync-composio. Existing original cron #42 sends private x-powerhouse-token but original GA4 Edge handler did not validate it.",
+  "prevention_rule": "Any changed function must be declared in exact GitHub/Supabase native config with unchanged transport JWT flag, verify original private scheduler secret before provider/database mutation, and pass protected CI plus native source-parity readback.",
+  "evidence": {
+    "provider_workflow_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41846442932",
+    "failed_job_id": 126631078700,
+    "sql_original_cron": "bg-analytics-sync-6h-v1 active 5 */6 * * *",
+    "provider_version_before": 15,
+    "site_public_data": "UNKNOWN_CONSENT_LIMITED"
+  },
+  "regression": "tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs",
+  "acceptance": [
+    "protected Required/BRAIN/CodeQL and security admission",
+    "no new cron or change in verify_jwt=false",
+    "original GitHub Supabase deployment on protected main",
+    "deployed code exact main source",
+    "next original cron #42 successful guarded invocation and independent GA4 data truth"
+  ],
+  "truth_boundary": "Declared and deployed Edge source is not proof of GA4 traffic recovery; consent-limited source remains unknown."
+}

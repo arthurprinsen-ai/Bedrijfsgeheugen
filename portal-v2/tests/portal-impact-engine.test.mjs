@@ -32,3 +32,16 @@ test('compliance mutation changes risk and final synthesis consumers',()=>{
   assert.ok(impact.changes.some(x=>x.id==='compliance-risk'));
   assert.ok(impact.affectedPages.includes('eindconclusie'));
 });
+
+test('clearing a real numeric zero is a causal change to unknown, not a no-op',()=>{
+  const before={portal:{profile:{hourlyCost:0}}};
+  const after={portal:{profile:{hourlyCost:null}}};
+  const impact=impactForMutation({path:'portal.profile.hourlyCost',before,after});
+  assert.equal(impact.changed,true,'zero and missing must not be considered equal');
+  assert.equal(impact.mappingStatus,'MAPPED');
+  assert.ok(impact.affectedPages.includes('businesscase'));
+  assert.ok(impact.affectedPages.includes('advies'));
+  for(const metric of impact.changes){
+    if(metric.to===null)assert.equal(metric.delta,null,`${metric.id} must not invent a numeric delta to unknown`);
+  }
+});

@@ -267,6 +267,18 @@ const navigationStateContract = `<script id="v18-navigation-state-contract">
 html = html.replace('</head>', `${canonicalChromeGeometryContract}\n<script src="https://www.bedrijfsgeheugen.nl/assets/scan-persistence.js?v=20261021" data-bg-scan-persistence></script>\n</head>`);
 html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${productkaartContrast}\n${navigationStateContract}\n</body>`);
 
+// Booking step on the scan result. Non-fatal: if the signup button is not exactly one
+// match (for example in a localized variant), the link is skipped and the build continues.
+const SCAN_BOOK_RE = /<button class="secondary v18-btn-ghost bgx-magneet" data-view="signup">([^<]*)<\/button>/g;
+const scanBookCount = (html.match(SCAN_BOOK_RE) || []).length;
+if (scanBookCount === 1) {
+  html = html.replace(SCAN_BOOK_RE, (match, label) => {
+    const cta = label.trim() === 'Aanmelden' ? 'Plan een adviesgesprek →' : 'Book a consultation →';
+    return match + '<a class="cta v18-btn-primary bgx-magneet" href="https://calendly.com/arthur-prinsen" target="_blank" rel="noopener">' + cta + '</a>';
+  });
+} else {
+  console.warn('scan booking link skipped: signup anchor count ' + scanBookCount);
+}
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
 console.log(`Accepted historical V18 production homepage restored from pinned payload: ${EXPECTED_HTML_SHA256}`);

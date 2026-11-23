@@ -3,6 +3,7 @@
 import datetime as dt
 import html
 import json
+import os
 import pathlib
 import re
 import sys
@@ -22,11 +23,29 @@ def fail(message):
 
 def fetch(date):
     try:
-        with urllib.request.urlopen(f"{EXPORT}?date={date}", timeout=30) as response:
+        token = os.environ.get("SUPABASE_SERVICE_ROLE_KEY", "").strip()
+        if not token:
+            fail("BLOG_EXPORT_SERVICE_AUTH_NOT_CONFIGURED")
+        request = urllib.request.Request(
+            f"{EXPORT}?date={date}",
+            headers={"Authorization": f"Bearer {token}"},
+            method="GET",
+        )
+        with urllib.request.urlopen(request, timeout=30) as response:
             data = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as error:
         if error.code == 404:
             return None
+        if error.code == 403:
+            # The service-only exporter correctly rejects non-approved drafts.
+            # This expected pending editorial approval is NOT a token failure;
+            # never loop a traceback or bypass approval. Other 403 errors fail.
+            try:
+                reason = json.loads(error.read().decode('utf-8')).get('error')
+            except (ValueError, UnicodeDecodeError):
+                reason = None
+            if reason == 'BLOG_PUBLIC_EXPORT_NOT_APPROVED':
+                return None
         raise
     if not data.get("ok"):
         if data.get("error") == "NO_APPROVED_BLOG_ARTIFACT":
@@ -78,21 +97,42 @@ def seo_focus(data):
     # one-word fallback that is merely a question/article/preposition.
     words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", title)
     starters = {"hoe", "wat", "waarom", "wanneer", "welke", "wie",
-                "de", "het", "een", "dit", "die", "als", "voor"}
+                "de", "het", "een", "dit", "die", "als", "voor",
+                # Pronouns are not a search topic either: "je Twinfield" and
+                # "jouw MKB" were published as titles, keywords and headings.
+                "je", "jij", "jouw", "jullie", "u", "uw", "zich", "mijn",
+                "ons", "onze", "we", "wij"}
     leading = 0
     while leading < len(words) and words[leading].casefold() in starters:
         leading += 1
     meaningful = words[leading:]
+    # A pronoun inside the first words is no topic either ("MKB zich").
+    meaningful = [word for word in meaningful if word.casefold() not in {"je", "jij", "jouw", "jullie", "u", "uw", "zich", "mijn", "ons", "onze", "we", "wij"}]
+    # "Hoe bereid je je MKB-boekhouding ..." begins with an action verb,
+    # not the topic. Keep the actual noun phrase and its hyphenation.
+    generic_actions = {"bereid", "bereiden", "voorbereiden", "voorbereid", "maak", "maken", "zorg", "zorgen"}
+    while meaningful and meaningful[0].casefold() in generic_actions:
+        meaningful = meaningful[1:]
     # Editorial verbs + prepositions are not a meaningful search topic.
     if [word.casefold() for word in meaningful[:2]] == ["publiceren", "voor"]:
         meaningful = meaningful[2:]
         while meaningful and meaningful[0].casefold() in {"de", "het", "een"}:
             meaningful = meaningful[1:]
     raw_words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", raw)
-    raw_ok = raw_words and raw_words[0].casefold() not in starters and raw_words[-1].casefold() not in starters
+    raw_ok = (raw_words and raw_words[0].casefold() not in starters
+              and raw_words[-1].casefold() not in starters
+              and raw_words[0].casefold() not in generic_actions)
     candidates = [raw] if raw_ok else []
-    if len(meaningful) >= 2:
-        candidates.append(" ".join(meaningful[:2]))
+    if len(meaningful) >= 2 and meaningful[1].casefold() not in (starters | {"op", "met", "aan", "en", "of"}):
+        # Preserve the exact original hyphenated subject ONLY for an
+        # action-verb question. Do not silently rewrite older Twinfield
+        # and other already certified noun-phrase selection contracts.
+        source_question = bool(re.match(r"(?i)^hoe bereid (?:je|jij|u)\b", title))
+        pair = re.search(
+            r"(?<!\w)" + re.escape(meaningful[0]) + r"[\s-]+" + re.escape(meaningful[1]) + r"(?!\w)",
+            title, flags=re.I
+        )
+        candidates.append(pair.group(0) if source_question and pair else " ".join(meaningful[:2]))
     if meaningful and meaningful[0].casefold() not in starters:
         candidates.append(meaningful[0])
     haystack = (title + " " + body).casefold()
@@ -101,8 +141,20 @@ def seo_focus(data):
             return candidate
     return "Bedrijfsgeheugen"
 
-def seo_title(title, focus):
+def _seo_title_raw(title, focus):
     title = re.sub(r"\s+", " ", title).strip()
+    # Source-bound question-title normalization: do not turn the first verb
+    # ("bereid") into a generic "wat verandert er voor jou" SEO headline.
+    # The pattern only rearranges explicit subject and target from the source.
+    source_title = re.sub(r"\s*\([^)]*\)\s*\??$", "", title).rstrip(" ?")
+    preparation = re.fullmatch(
+        r"hoe bereid (?:je|jij|u) (?:je|jouw|uw) (.+?) voor op (?:integratie|koppeling) met (.+)",
+        source_title, re.I
+    )
+    if preparation:
+        candidate = f"{preparation.group(1).strip()} koppelen aan {preparation.group(2).strip()}"
+        if len(candidate) <= 60 and focus.casefold() in candidate.casefold():
+            return candidate[0].upper() + candidate[1:]
     if focus.casefold() not in title.casefold():
         title = f"{focus}: {title}"
     if len(title) <= 60:
@@ -113,6 +165,12 @@ def seo_title(title, focus):
         if len(candidate) <= 60:
             return candidate
     return focus[:60].rstrip(" :-")
+
+def seo_title(title, focus):
+    # A published title never starts lowercase: the focus keyword is lowercase,
+    # and "focus: suffix" / "focus: title" were published as-is (20261120).
+    value = _seo_title_raw(title, focus)
+    return value[:1].upper() + value[1:] if value else value
 
 def seo_meta(meta, focus):
     value = re.sub(r"\s+", " ", meta).strip()
@@ -165,6 +223,9 @@ def faq_items(data):
                 if nxt != "---":
                     answer = nxt
                     break
+        # List markers in an answer are structure, not text: drop them so the
+        # schema.org answer and the visible FAQ never start with or contain "- ".
+        answer = re.sub(r"(?m)^\s*-\s+", "", answer)
         answer = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"\1", answer)
         answer = re.sub(r"\*\*([^*]+)\*\*", r"\1", answer)
         answer = re.sub(r"\s+", " ", answer).strip()
@@ -225,31 +286,61 @@ def body_html(data):
     focus_plain = seo_focus(data)
     result = [f"<h2>{html.escape(focus_plain)}: de kern</h2>"]
     lead_written = False
-    for block in blocks:
+
+    def emit_block(block):
+        nonlocal lead_written
         if block == "---":
-            continue
+            return
         if block.startswith("# "):
-            continue
-        if block.startswith("## "):
-            result.append(f"<h2>{inline_markdown(block[3:].strip())}</h2>")
-            continue
-        if block.startswith("### "):
-            result.append(f"<h3>{inline_markdown(block[4:].strip())}</h3>")
-            continue
+            return
+        # A heading is only its first line. Source text often continues on the
+        # next line without a blank line (the same shape faq_items accepts), so
+        # the rest of the block is rendered as its own paragraph or list instead
+        # of being swallowed into the heading.
+        for marker, tag in (("## ", "h2"), ("### ", "h3")):
+            if block.startswith(marker):
+                head, _, rest = block.partition("\n")
+                result.append(f"<{tag}>{inline_markdown(head[len(marker):].strip())}</{tag}>")
+                if rest.strip():
+                    emit_block(rest.strip())
+                return
         lines = [line.strip() for line in block.splitlines() if line.strip()]
         if lines and all(line.startswith("- ") for line in lines):
             result.append("<ul>" + "".join(f"<li>{inline_markdown(line[2:].strip())}</li>" for line in lines) + "</ul>")
-            continue
+            return
         if len(lines) > 1 and lines[0].startswith("**") and all(line.startswith("- ") for line in lines[1:]):
             result.append(f"<p>{inline_markdown(lines[0])}</p>")
             result.append("<ul>" + "".join(f"<li>{inline_markdown(line[2:].strip())}</li>" for line in lines[1:]) + "</ul>")
-            continue
+            return
+        if any(line.startswith("- ") for line in lines):
+            # Text and list lines mixed in one block: keep each run in its own
+            # element instead of leaking "- " markdown into a paragraph.
+            run, is_list = [], False
+            def flush():
+                if not run:
+                    return
+                if is_list:
+                    result.append("<ul>" + "".join(f"<li>{inline_markdown(x[2:].strip())}</li>" for x in run) + "</ul>")
+                else:
+                    result.append(f"<p>{inline_markdown(' '.join(run))}</p>")
+            for line in lines:
+                item = line.startswith("- ")
+                if run and item != is_list:
+                    flush()
+                    run = []
+                is_list = item
+                run.append(line)
+            flush()
+            return
         css = ' class="lead"' if not lead_written else ""
         paragraph = block
         if not lead_written and focus_plain.casefold() not in paragraph.casefold():
             paragraph = f"{focus_plain}: {paragraph}"
         result.append(f"<p{css}>{inline_markdown(paragraph)}</p>")
         lead_written = True
+
+    for block in blocks:
+        emit_block(block)
     result.append(functional_figures(focus_plain))
     # Visible, verified source links are required for claims about laws and
     # external events; never synthesize a citation or remove the SEO proof gate.
@@ -271,6 +362,26 @@ def body_html(data):
             + ' <a href="/frisse-blik">Bekijk de Frisse blik &rarr;</a></p>'
         )
     return "\n".join(result)
+
+def card_excerpt(text, limit=220):
+    """Cut a blog card excerpt at a word boundary instead of in the middle of a word."""
+    if len(text) <= limit:
+        return text
+    cut = text[:limit]
+    if not text[limit].isspace() and " " in cut:
+        cut = cut.rsplit(" ", 1)[0]
+    return cut.rstrip(" ,;:-") + "…"
+
+
+def assert_rendered_body_clean(markup):
+    """Fail closed when markdown list syntax or a whole section ends up inside a heading or paragraph."""
+    for tag, text in re.findall(r"<(h[23]|p)(?:\s[^>]*)?>(.*?)</\1>", markup, re.S):
+        plain = re.sub(r"<[^>]+>", "", text)
+        if re.search(r"(?m)^\s*-\s+\S", plain):
+            fail("BLOG_ARTIFACT_NOT_READER_READY:MARKDOWN_LIST_IN_" + tag.upper())
+        if tag != "p" and len(plain) > 160:
+            fail("BLOG_ARTIFACT_NOT_READER_READY:HEADING_TOO_LONG")
+
 
 def assert_reader_ready(data, business_date=None):
     """Fail closed on author/editor instructions accidentally exported as customer copy.
@@ -455,12 +566,14 @@ def main():
         rf'\1{title}\2',
         "breadcrumb",
     )
+    body_markup = body_html(data)
+    assert_rendered_body_clean(body_markup)
     article = (
         f'<article class="artikel" data-content-id="{html.escape(data["content_id"], quote=True)}">'
         f'<div class="artikelkop"><span class="eyebrow">Powerhouse · Dagelijkse learning</span>'
         f'<h1>{title}</h1><div class="artikelmeta"><span>{business_date[8:10]}-{business_date[5:7]}-{business_date[:4]}</span>'
         f' · <span>Arthur Prinsen</span></div></div>'
-        + body_html(data)
+        + body_markup
         + faq_html(data)
         + "</article>"
     )
@@ -471,7 +584,7 @@ def main():
     index_text = BLOG_INDEX.read_text(encoding="utf-8")
     href = f"/blog/{slug}/"
     excerpt_raw = re.sub(r"\s+", " ", data["body"]).strip()
-    excerpt = html.escape(excerpt_raw[:220] + ("…" if len(excerpt_raw) > 220 else ""))
+    excerpt = html.escape(card_excerpt(excerpt_raw))
     card = (
         f'  <a class="kaart" href="{canonical}"><span class="tag">Powerhouse</span><h2>{title}</h2>'
         f'<p>{excerpt}</p><span class="lees">Lees het artikel &rarr;</span>'

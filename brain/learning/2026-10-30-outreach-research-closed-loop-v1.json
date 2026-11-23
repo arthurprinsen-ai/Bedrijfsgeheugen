@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|outreach|source-gap-not-routed-to-original-relationship-research|20261030-v1",
+  "failure_class": "INCOMPLETE_CLOSURE",
+  "scope": "RUNTIME",
+  "owner": "original Powerhouse autonomous outreach and relationship public research, ONE BRAIN and canonical Portal V2",
+  "root_cause": "Original composer correctly refused a human-approved action for missing company-specific source, and sender preserved exact hold, but no task was created under original relationship-research:% internal action ownership. The existing public-research runner processes only those research_enrichment actions, so original blocked email could not become self-repairing. The active 15-loop assurance reported AMBER with missing action/readback.",
+  "observed_evidence": {
+    "date": "2026-10-30",
+    "outreach_prepared": 1,
+    "source_preflight_reason": "SOURCE_SPECIFIC_EVIDENCE_REQUIRED",
+    "public_source_present": false,
+    "quality_proof": false,
+    "real_provider_send": false,
+    "active_original_schedulers": [
+      112,
+      113,
+      114,
+      129
+    ],
+    "original_pending_relationship_research_actions": 0
+  },
+  "repair": "At original composer hold, bounded action-correlated pure helper builds ONE idempotent research_enrichment/internal record with dedupe key relationship-research:outreach-source:<original_action_id>, owner original relationship public research, no external send, no fabricated source, no new scheduler. Existing original daily commercial owner then processes this exact queued research. Original canonical Andere data now shows aggregates of research pending, held source, and original provider-verified sends without exposing personal details.",
+  "prevention_rule": "For source-specific rejected outreach, always route one deduped internal company research to existing owner, and keep original email prepared until original composer succeeds. Never promote sender action/readback without actual Gmail message id, independent SENT/recipient matched readback and same-lineage outcome. Never promote business GREEN from a research receipt.",
+  "compiler": {
+    "failure_class": "INCOMPLETE_CLOSURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outreach-research-to-portal-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outreach-research-to-portal-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-outreach-research-to-portal-20261030.test.mjs",
+    "tests/brain-outreach-composer-source-handoff-20261030.test.mjs"
+  ],
+  "production_proven": false,
+  "release_proof": [
+    "exact protected Required/BRAIN/CodeQL and System Map hash",
+    "main protected merge",
+    "original Edge function ACTIVE exact shared helper",
+    "Netlify READY exact main hash + admin readback",
+    "one original internal research action idempotency readback",
+    "next natural original research cycle executes only genuinely found company evidence",
+    "actual Gmail SENT + recipient proof before AMBER -> GREEN"
+  ]
+}

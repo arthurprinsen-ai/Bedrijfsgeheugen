@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 
 const PII_KEY=/(email|e-mail|phone|telefoon|name|naam|message|bericht|form|address|adres|ip|user_agent|useragent)/i;
-const ALLOWED_BEHAVIOR=new Set(['page_view','organic_landing','money_link_click','primary_cta_click','secondary_cta_click','engaged_view','selfscan_start','frisse_blik_start','scroll_depth','page_exit','lead_outcome','order_outcome']);
+const ALLOWED_BEHAVIOR=new Set(['page_view','organic_landing','money_link_click','primary_cta_click','secondary_cta_click','form_start','form_submit_intent','engaged_view','selfscan_start','frisse_blik_start','scroll_depth','page_exit','lead_outcome','order_outcome']);
 const ALLOWED_CONTENT_TYPES=new Set(['blog','linkedin','social','page','unknown']);
 
 function clean(v){return String(v??'').trim();}

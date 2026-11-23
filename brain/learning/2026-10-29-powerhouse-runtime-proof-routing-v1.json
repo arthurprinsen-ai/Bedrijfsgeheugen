@@ -1,0 +1,48 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-29",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|runtime|cron-success-without-business-proof|20261029-v1",
+  "compiler": {
+    "failure_class": "FALSE_GREEN_RUNTIME_EVIDENCE_GAP",
+    "scope": "POWERHOUSE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Active cron and succesful net.http_post database request were confused with actual provider and Edge application execution. Existing ONE BRAIN and portal wiring can be fully green while revenue/forecast calibration, content and skill handoff proof remain unverified.",
+  "prevention": "Existing agents read canonical runtime, loop and control plane SQL views, provider/Edge readback and per-channel daily obligations. Maintain distinct architectural wiring, execution, independent readback, real outcome, and learning stages. Never replay unknown remote results, fabricate cal outcomes, bypass OAuth/Mira identity or create parallel publishers/schedulers.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-runtime-truth-routing-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-runtime-truth-routing-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_at": "2026-10-29T19:48:12Z",
+    "source": "canonical Supabase runtime health, loop integrity, content obligations and cron.job_run_details; GitHub issue #4918",
+    "wiring": "32/32",
+    "core_jobs": "18/18",
+    "current_runtime_errors": 2,
+    "content_loop": "BLOCKED",
+    "learning_evidence_gaps": 2,
+    "loop_green": 8,
+    "loop_amber": 3,
+    "loop_red": 4,
+    "linkedin_personal": "APPROVED_WITH_REVOKED_PROVIDER_TOKEN",
+    "linkedin_oauth_code": "EDGE_V479_SCOPE_FIX_DEPLOYED; HUMAN_CONSENT_PENDING",
+    "instagram_media": "REJECTED_FACE_0.900_BELOW_0.940",
+    "blog": "GENERATED_NOT_LIVE",
+    "legacy_escalated_result_unknown": 2,
+    "current_commercial_revenue_eur": 0,
+    "runtime_green_proven": false,
+    "new_provider_side_effect": false,
+    "no_new_scheduler": true,
+    "no_second_writer": true,
+    "skill_runtime_consumption_proven": false,
+    "protected_merge_pending": true
+  }
+}

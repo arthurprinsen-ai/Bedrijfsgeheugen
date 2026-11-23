@@ -26,9 +26,30 @@ function identityUser(identity){try{return identity?.currentUser?.()||null}catch
 async function authToken(user){try{return await user?.jwt?.()||''}catch{return''}}
 const clone=value=>value==null?value:structuredClone(value);
 
+
+/** Authoritative same-principal GET must contain every authored portal value.
+ * Additional server-derived fields are allowed; missing/old submitted fields
+ * (including false, 0, null and arrays) are not successful persistence.
+ */
+export function portalAuthoringReadbackMatches(submitted,received){
+ if(submitted===undefined)return true;
+ if(submitted===null||typeof submitted!=='object')return Object.is(submitted,received);
+ if(Array.isArray(submitted))return Array.isArray(received)
+    &&submitted.length===received.length
+    &&submitted.every((value,index)=>portalAuthoringReadbackMatches(value,received[index]));
+ if(!received||typeof received!=='object'||Array.isArray(received))return false;
+ return Object.entries(submitted).every(([key,value])=>
+   value===undefined||portalAuthoringReadbackMatches(value,received[key]));
+}
+
 export function buildPortalBusinessInput(nextState={}){
  const answers=clone(nextState||{})||{};
  for(const key of DERIVED_READ_MODEL_KEYS)delete answers[key];
+ // The durable retry manifest is delivery control data, never a business
+ // fact or AI-eligible source document. Keep it in authenticated server
+ // Portal State, but exclude it from canonical BusinessInput answers.
+ if(answers.portal&&typeof answers.portal==='object'&&!Array.isArray(answers.portal))
+  delete answers.portal.__brainHandoffJournalV1;
  return Object.freeze({
   inputType:'PortalDomainStateSnapshot',
   modelId:'portal-v2-domain-state',
@@ -137,8 +158,21 @@ export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProv
   await savePortalBusinessInput(buildPortalBusinessInput(nextState),{fetchFn:fetchImpl,authorization:headers.authorization});
   const response=await fetchImpl(API_URL,{method:'POST',headers:{...headers,'content-type':'application/json'},credentials:'same-origin',body:JSON.stringify(nextState||{})});
   const body=await response.json().catch(()=>({}));
-  if(!response.ok||body?.stored===false)throw new Error(body?.error||`PORTAL_STATE_WRITE_${response.status}`);
-  return load();
+  if(!response.ok)throw new Error(body?.error||`PORTAL_STATE_WRITE_${response.status}`);
+  // A 2xx response alone, an omitted stored flag, or an explicitly stale
+  // projection is NOT an authenticated persistence/consumer receipt.
+  if(body?.stale===true)throw new Error(body?.error||'PORTAL_STATE_STALE_PROJECTION');
+  if(body?.stored!==true||body?.stale!==false)throw new Error(body?.error||'PORTAL_STATE_ACK_INCOMPLETE');
+  const confirmed=await load();
+  if(confirmed?.mode!=='authenticated')throw new Error('PORTAL_STATE_READBACK_NOT_AUTHENTICATED');
+  // Source and projection ACKs must also match every authored root-level
+  // field, not only portal.*. Derived/read-only models are deliberately
+  // excluded by the original canonical BusinessInput projection. A stale
+  // non-portal authored value must never be reported as saved.
+  const authoredAnswers=buildPortalBusinessInput(nextState).answers;
+  if(!portalAuthoringReadbackMatches(authoredAnswers,confirmed?.state))
+    throw new Error('PORTAL_STATE_VALUE_READBACK_MISMATCH');
+  return confirmed;
  }
 
  return Object.freeze({apiUrl:API_URL,isDemo:()=>demo,isCustomer:()=>customer,getSnapshot:()=>current,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn)},load,write,currentUser:()=>demo?DEMO_USER:identityUser(identityProvider()),authHeaders:async()=>demo?{accept:'application/json'}:headersFor(identityUser(identityProvider()))});

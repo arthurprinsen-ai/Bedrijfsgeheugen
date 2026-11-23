@@ -1,0 +1,46 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|innovation|empty-source-false-green|20261114-v1",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-consumer-intake-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-original-consumer-intake-20261114.test.mjs"
+    ]
+  },
+  "root_cause": "Existing original innovation intake CASE used INDEPENDENTLY_VERIFIED fallback without a zero-candidate guard; source=0 and outcomes=0 were incorrectly treated as verified.",
+  "evidence": {
+    "provider_preview_project": "bszjifiycurnerfmhvth",
+    "provider_migration_applied": "20261114193000",
+    "source_count": 0,
+    "independent_outcomes": 0,
+    "observed_health": "INDEPENDENTLY_VERIFIED",
+    "expected_health": "NO_SOURCE_CANDIDATES",
+    "production_source_count": 14,
+    "production_health": "RECOVERY_DUE",
+    "production_effect_proven": false,
+    "original_registry": "public.brain_failure_registry"
+  },
+  "prevention": {
+    "original_daily_only": true,
+    "no_source_state": "NO_SOURCE_CANDIDATES",
+    "unknown_never_green": true,
+    "no_second_scheduler": true,
+    "no_parallel_queue": true,
+    "no_provider_source_fabrication": true,
+    "test": "tests/brain-innovation-original-consumer-intake-20261114.test.mjs"
+  },
+  "release_state": "PROTECTED_SOURCE_CANDIDATE_PENDING",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}

@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|health-weekly-cron-cadence-aware|20261106-v1",
+  "type": "CANONICAL_REPAIR",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "compiler": {
+    "failure_class": "SCHEDULE_CADENCE_FALSE_POSITIVE",
+    "scope": "ORIGINAL_WEEKLY_CRON_MONITOR",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "owner": "public.bg_gezondheid_meten()",
+  "root_cause": "Original 74-hour non-daily freshness rule flagged successful Monday weekly tasks as stale on Friday; old PR 4639 had no Supabase Preview association and an outdated October base.",
+  "fix": "Guarded in-place canonical function source replacement: successful simple weekly schedules get 7 days plus 2 hours; failed/no-run retain errors and non-weekly limits unchanged. Use the current-main version and new migration ID.",
+  "prevention_rule": "Match monitoring to declared schedule; never conflate cron succeeded with independently proven provider output; gate migration by actual provider-managed preview, CI and role ACL evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "PR #4639 Supabase Preview check PREVIEW_BRANCH_UNASSOCIATED; original weekly successful 2 November 06:00 UTC"
+    ],
+    "current": [
+      "6 November 13:57 UTC source-health marked `bg-zoekwoordkansen-wekelijks` warning despite successful Monday run; production function still uses unconditional 74-hour clause"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_CI_SUPABASE_PREVIEW",
+  "migration": "supabase/migrations/20261106144500_weekly_cron_health_cadence_original_function_v1.sql",
+  "regression": "tests/brain-weekly-cron-health-74h-false-positive-20261022.test.mjs",
+  "no_parallel_scheduler": true,
+  "supersedes_pr": 4639
+}

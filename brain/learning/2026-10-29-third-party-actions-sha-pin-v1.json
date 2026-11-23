@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-supply-chain|third-party-actions-sha-pin|20261029-v1",
+  "fingerprint": "ci|third-party-action-moving-tag|20261029-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "THIRD_PARTY_ACTION_MOVING_TAG",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Four workflow steps ran third-party actions (openai/codex-action, supabase/setup-cli) by moving tag (@v1) with repository secrets in scope. The action owner could change what runs without any change in this repository. 119 workflows use first-party actions by tag, which is accepted.",
+  "observed_evidence": {
+    "source": "audit of 123 workflow files on main 99fd28c on 2026-10-29",
+    "third_party_uses_total": 4,
+    "unpinned_before": 4,
+    "all_workflows_have_explicit_permissions": true,
+    "repo_default_workflow_permissions_set_to": "read",
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "Pin openai/codex-action to bdf19a4a (v1.13) and supabase/setup-cli to 1dedf2c6 (v1.7.3, current head of the v1 branch) with the version in a comment. Existing Dependabot github-actions updates keep the pins current. tests/brain-third-party-actions-sha-pin-v1.test.mjs fails any new third-party action that is not pinned to a 40-character commit.",
+  "prevention_rule": "Third-party actions are pinned to a commit SHA with the version in a comment. First-party actions/* and github/* may use version tags.",
+  "correction_of_earlier_statement": "The change note of 2026-10-28 (blog-reader-brief-guard) says the blog of 2026-10-25 is live with internal wording. A source check on 2026-10-29 shows the live page contains none of the internal terms and has a reader-facing title; only its URL slug is meta. No page was changed.",
+  "tests": [
+    "tests/brain-third-party-actions-sha-pin-v1.test.mjs",
+    "tests/brain-native-openai-blog-provider-20261019.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-third-party-actions-sha-pin-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-third-party-actions-sha-pin-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-third-party-actions-sha-pin-v1.test.mjs"
+    ],
+    "invariants": [
+      "third-party actions are pinned to a 40-character commit",
+      "first-party actions keep version tags",
+      "no workflow behaviour changes: same action code as the moving tags pointed to on 2026-10-29"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

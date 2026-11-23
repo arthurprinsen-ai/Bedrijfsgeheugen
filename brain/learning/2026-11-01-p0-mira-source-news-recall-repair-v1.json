@@ -1,0 +1,46 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "fingerprint": "powerhouse|mira|no-new-unique-source-backed-daily-winner|20261101-v1",
+  "maturity": "VALIDATED",
+  "candidateOnly": true,
+  "owner": "original powerhouse-mira-problem-radar-v1 / powerhouse_select_instagram_daily_winner_v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "root_cause": "Canonical 2026-11-01 Mira source probe 18176 returned HTTP200 but SOURCE_RECOVERY_DUE: five new source records were all personal lane, zero Mira business. Original 6 business topical NEWS searches had insufficient recall, including five DataForSEO NEWS_NO_RESULTS. Source inventory 323, 89 eligible, 12 dated eligible, only two fully PH-P scene mapped sources, both blocked by historical uniqueness.",
+  "observed_evidence": {
+    "original_pg_net_request_id": 18176,
+    "original_response_code": 200,
+    "original_json_ok": false,
+    "original_state": "SOURCE_RECOVERY_DUE",
+    "failure_reason": "NO_FRESH_PUBLIC_PROBLEM_SIGNAL",
+    "stored": 5,
+    "eligible": 4,
+    "personalStored": 5,
+    "personalEligible": 4,
+    "dataforseo_no_results": 5,
+    "original_mira_winner_selected": false
+  },
+  "prevention_rule": "Never count HTTP200 or unrelated personal news as a valid Mira day winner. With same original 6+2/8-source-query budget, use short Dutch entrepreneur topic searches from the original PH-P mapping; keep all provider publication-date verification, 45-day age, 90-day source uniqueness, 3-day topic uniqueness, MIRA scene match, identity>=0.940 and exact official Instagram provider proof. Record red source failure to original Brain/Heartbeat, no new scheduler or fabricated date.",
+  "fix_candidate": "supabase/functions/_shared/mira-source-query-rotation.mjs and original regression test. Must pass protected CI and original source-owner Edge deploy/readback; source proof pending.",
+  "compiler": {
+    "failure_class": "SOURCE_EVIDENCE_INSUFFICIENT",
+    "scope": "RUNTIME",
+    "machine_enforceable": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Original provider response 18176 on 1 November 2026: zero new Mira despite five personal sources and five DataForSEO empty-news tasks.",
+    "regression": "Exact six short business queries and fixed eight-call rotation, original provider-freshness and approved PH-P scene gates.",
+    "pending": "Protected Required, BRAIN and CodeQL, original Edge active exact source readback and original provider 1 Nov business source observation, video/Instagram receipt, seven natural runs."
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-11-01-p0-mira-source-news-recall-repair.md",
+  "activity_ledger": "docs/development-ledger-events/2026-11-01-p0-mira-source-news-recall-repair.md"
+}

@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|seo-growth|blog-reader-brief-guard|20261028-v1",
+  "fingerprint": "content|blog-writes-about-publish-decision|20261028-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "BLOG_BRIEF_LEAKS_INTERNAL_PUBLISHING_ADVICE",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "root_cause": "For opportunity-driven blogs the writer received the internal recommendation as its brief (for example 'publish or activate only if channel gates and expected commercial value remain favorable' or 'SEO first-mover opportunity: score=72.4; CPC=4.33; verify no canonical owner before publication'). The model wrote an article about the publishing decision itself. blogReaderReadyViolations only caught a few exact sentences, so the blogs of 2026-10-25, 26 and 27 passed with internal wording; the 2026-10-28 candidate was only stopped by the P0 quality gate after a PR existed.",
+  "observed_evidence": {
+    "source": "powerhouse_content_artifacts, content_publication_obligations, PR #5042 gate comment, daily assert cron 2026-10-27 and 2026-10-28",
+    "affected_run_dates": ["2026-10-25", "2026-10-26", "2026-10-27"],
+    "run_date_2026_10_25_is_live": true,
+    "daily_publication_invariant_failed_days": 2,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "BLOG_READER_READY_PROMPT states that the recommendation and brief are internal advice for the publisher and not the topic, and forbids channel gates, scores, CPC, forecast, search volume and canonical-owner talk. blogReaderReadyViolations gains INTERNAL_PUBLISHING_LANGUAGE (body) and META_PUBLISHING_TOPIC (title); the existing revise and repair path handles a failed check.",
+  "prevention_rule": "A reader-facing blog is about the entrepreneur's problem or opportunity. It never explains whether, when or how to publish, and never repeats internal selection metrics.",
+  "tests": [
+    "tests/brain-blog-reader-brief-guard-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-reader-brief-guard-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-reader-brief-guard-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-reader-brief-guard-v1.test.mjs"
+    ],
+    "invariants": [
+      "publish-decision titles are rejected",
+      "internal gate and metric wording in the body is rejected",
+      "clean reader-facing blogs still pass",
+      "no new scheduler, publisher or table"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

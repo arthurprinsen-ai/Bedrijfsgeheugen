@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "status": "PROTECTED_SOURCE_CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|personal-linkedin|21-editorial-failures-conflicting-journey-prompts|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original-powerhouse-content-orchestrator-editorial-agent",
+  "failure_class": "PERSONAL_EDITORIAL_CONTRACT_FAILED",
+  "evidence": {
+    "original_content_loop_pgnet": 20014,
+    "source_failure_time": "2026-11-03T15:11:59Z",
+    "reason_codes": [
+      "PERSONAL_EDITORIAL_WORD_COUNT",
+      "PERSONAL_EDITORIAL_BUYER_RELEVANT_OPENING",
+      "PERSONAL_EDITORIAL_AUTHENTIC_VOICE",
+      "PERSONAL_EDITORIAL_ENTREPRENEUR_RELEVANCE"
+    ],
+    "attempts": 21,
+    "original_cooldown_until": "2026-11-03T15:31:59Z",
+    "unsent": true,
+    "old_obligation_status": "BLOCKED",
+    "source_recommendation_id": "c146b144-d986-4263-8487-b5577f25183d",
+    "status_of_provider_side_effect": "NONE_PROVEN"
+  },
+  "root_cause": "The original personal AI-native founder prompt explicitly encouraged internal AI-model/page/source/action status counts while the original strict personal buyer-first validator rejects this as unhelpful corporate status copy. Twenty-one original generation attempts failed four deterministic editorial checks.",
+  "fix": "Original orchestrator removes contradictory public status-count directive and adds final 150–175-word four-paragraph buyer-first personal prompt with first-person authentic and independently proven source moments. Leave validators, duplicate controls, original bounded cooldown and provider gates unchanged.",
+  "prevention_rule": "Every original personal founder generation must avoid internal counters, open on a genuine entrepreneur friction + first-person owned event in first 260 characters, use 150–175 words, no manufactured personal anecdotes and terminate with a real open question. If no distinct real source, stay BLOCKED; no rewrite of rejected story family.",
+  "tests": [
+    "tests/brain-personal-linkedin-buyer-story-retry-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-linkedin-buyer-story-retry-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-linkedin-buyer-story-retry-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-linkedin-buyer-story-retry-20261103.test.mjs"
+    ],
+    "invariants": [
+      "same original content writer",
+      "no duplicate provider create",
+      "not live from source-only",
+      "proof from original next natural original run",
+      "strict personal editorial veto kept",
+      "no fake owner experience"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "PERSONAL_EDITORIAL_CONTRACT_FAILED",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 21
+  },
+  "skill_targets": [
+    "powerhouse-social-cro-funnel"
+  ],
+  "terminal_rule": "Protected exact-head Required/CodeQL, original Edge deployment source parity and one original real, unique validated provider create/readback; only then mark personal publication green."
+}

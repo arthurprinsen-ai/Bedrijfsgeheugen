@@ -2,7 +2,16 @@
   "version": "DELIVERY-PREVENTION-v1",
   "linked_learning_sources": [
     "brain/learning/portal-v2-customer-project-completeness-2026-09-15.json",
-    "brain/learning/netlify-transport-authority-2026-10-19.json"
+    "brain/learning/netlify-transport-authority-2026-10-19.json",
+    "brain/learning/2026-11-06-github-error-register-v1.json",
+    "brain/learning/2026-11-06-i18n-patch-segment-drift.json",
+    "brain/learning/2026-11-06-site-error-lessons-v1.json",
+    "brain/learning/2026-11-06-blog-markdown-render-v1.json",
+    "brain/learning/2026-11-07-daily-blog-closure-exemption.json",
+    "brain/learning/2026-11-07-i18n-blog-segment-keys-repeat.json",
+    "brain/learning/2026-11-07-daily-blog-i18n-committed-tree.json",
+    "brain/learning/2026-11-08-artifact-id-git-buffer.json",
+    "brain/learning/2026-11-08-required-test-npm-install-ffmpeg.json"
   ],
   "rules": [
     {
@@ -405,6 +414,294 @@
       "id": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
       "active": true,
       "enforcedBy": "netlify-authority-incident-classifier-plus-transport-regression",
+      "scope": "shared"
+    },
+    {
+      "id": "GITHUB_WORKFLOW_WRITE_NEEDS_CONTENTS_AND_WORKFLOWS_PERMISSION",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NEVER_PASTE_OR_REPEAT_TOKENS_IN_CHAT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NEVER_SWALLOW_AUTH_ERRORS_AND_ALERT_BEFORE_TOKEN_EXPIRY",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "READ_VIA_RAW_VERIFY_VIA_AUTHENTICATED_CONTENTS_API",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "UPDATE_BRANCH_AND_WAIT_FOR_CHECK_BEFORE_MERGE_RETRY",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "VERIFY_AUTO_MERGE_ENABLED_BEFORE_RELYING_ON_IT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "USE_GIT_DATA_API_OR_MULTI_FILE_COMMIT_ON_CONTENDED_REPO",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "USE_FLAT_BRANCH_NAMES_AFTER_CHECKING_EXISTING_REFS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "QUERY_CHECK_RUNS_BY_FULL_HEAD_SHA",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "RETRIGGER_REQUIRED_CHECK_AFTER_PR_BODY_CHANGE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "REGISTER_NEW_TESTS_AND_PATHS_IN_LANE_CONFIG",
+      "active": true,
+      "enforcedBy": "delivery-test-coverage-guard-plus-delivery-plan-unclassified-path-check",
+      "scope": "shared"
+    },
+    {
+      "id": "USE_EXACT_GIT_BRANCH_NAME_FOR_SUPABASE_PREVIEW",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NO_PR_OR_CHECK_CLAIMS_WITHOUT_AUTHENTICATED_READ",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT",
+      "active": true,
+      "enforcedBy": "tools-ci-install-chromium-script",
+      "scope": "shared"
+    },
+    {
+      "id": "MIGRATION_AND_LOCK_IN_SAME_CHANGE_WITH_PROVIDER_READBACK",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NEVER_SET_APPROVED_AT_DIRECTLY_USE_PUBLICATION_STATE_FUNCTION",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "DURABLE_REJECT_VIA_EVIDENCE_VETO",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "STATUS_LADDER_NEVER_CLAIM_ABOVE_EVIDENCE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "PROPOSE_BEFORE_IRREVERSIBLE_DATA_WRITE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "CHECK_NETLIFY_FUNCTION_ENV_KEYS_BEFORE_ADDING_SECRETS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "DEPLOY_READY_IS_ONE_LINK_NOT_OUTCOME",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "COMPOSIO_ACTIVE_STATUS_NOT_PROOF_READBACK_BEFORE_PUBLISH",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "COMPOSIO_USE_SERVER_PROJECT_CONNECTED_ACCOUNT_ID",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "RECORD_ACCOUNT_ID_AND_USERNAME_WITH_EVERY_MEASUREMENT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "RESPECT_RETRY_AFTER_NO_FALLBACK_PUBLISHING_ROUTE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "OK_WITH_FALLBACK_IS_NOT_A_FRESH_MEASUREMENT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "EMPTY_PROVIDER_REPORT_IS_NOT_SUCCESS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "HEALTH_CHECK_MUST_MATCH_JOB_CADENCE",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "DATAFORSEO_ONLY_40101_40102_ARE_EMPTY",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "EVERY_LOOP_NEEDS_OWNER_AND_STARTER",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "CHECK_EXTERNAL_EFFECT_BEFORE_REPUBLISH",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "KEEP_ENTRY_PAGES_READABLE_AND_CORRECT_OLD_STATUS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
+      "active": true,
+      "enforcedBy": "brain-static-i18n-production-cache-completeness-v1-test-plus-agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "NEW_OR_HANDMADE_PAGES_CHECK_GENERATOR_VIEW_LISTS_AND_SHELL_EXCLUSIONS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "MEASURE_GEOMETRY_BEFORE_ADDING_VISIBILITY_GUARDS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "DO_NOT_COPY_SHELL_JSONLD_TO_PAGES",
+      "active": true,
+      "enforcedBy": "tests-site-shell-schema-integriteit",
+      "scope": "shared"
+    },
+    {
+      "id": "USE_ONLY_DEPENDENCY_FREE_TESTS_IN_LEARNING_EVALUATION",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "TESTS_ASSERT_OUTCOMES_NOT_LITERAL_COPY",
+      "active": true,
+      "enforcedBy": "portal-v2-no-demo-data-test-plus-agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "INCLUDE_DOT_FOLDERS_IN_BULK_FILE_OPERATIONS",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "UPDATE_CANONICAL_KOP_WITH_MENU_CHANGES",
+      "active": true,
+      "enforcedBy": "seo-controle-kop-comparison",
+      "scope": "shared"
+    },
+    {
+      "id": "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
+      "active": true,
+      "enforcedBy": "agent-contract",
+      "scope": "shared"
+    },
+    {
+      "id": "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK",
+      "active": true,
+      "enforcedBy": "publish_powerhouse_blog_artifact-assert_rendered_body_clean-plus-brain-blog-markdown-render-20261106-test",
+      "scope": "shared"
+    },
+    {
+      "id": "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS",
+      "active": true,
+      "enforcedBy": "brain-daily-blog-closure-exemption-20261107-test",
+      "scope": "shared"
+    },
+    {
+      "id": "DAILY_BLOG_I18N_MUST_COVER_COMMITTED_TREE",
+      "active": true,
+      "enforcedBy": "brain-daily-blog-i18n-committed-tree-20261107-test",
+      "scope": "shared"
+    },
+    {
+      "id": "GIT_LS_FILES_MUST_SET_MAXBUFFER",
+      "active": true,
+      "enforcedBy": "brain-artifact-id-git-buffer-20261108-test",
+      "scope": "shared"
+    },
+    {
+      "id": "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD",
+      "active": true,
+      "enforcedBy": "brain-required-test-npm-install-20261108-test",
       "scope": "shared"
     }
   ]

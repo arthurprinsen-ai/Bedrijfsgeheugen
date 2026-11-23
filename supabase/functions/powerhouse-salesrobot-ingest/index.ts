@@ -4,11 +4,11 @@ import { createClient } from "npm:@supabase/supabase-js@2";
 const CAMPAIGN_ID = "ae2812ad-c3eb-4c90-a0d4-6d4e5a94b93e";
 const CAMPAIGN_NAME = "Bedrijfsgeheugen";
 const MAX_BYTES = 65536;
-const json = (body, status = 200) => new Response(JSON.stringify(body), {
+const json = (body: any, status = 200) => new Response(JSON.stringify(body), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" },
 });
-const str = (v) => (typeof v === "string" || typeof v === "number" ? String(v).trim() : "");
-const first = (items, names) => {
+const str = (v: any) => (typeof v === "string" || typeof v === "number" ? String(v).trim() : "");
+const first = (items: any[], names: string[]) => {
   for (const obj of items) {
     if (!obj || typeof obj !== "object" || Array.isArray(obj)) continue;
     for (const name of names) {
@@ -18,7 +18,7 @@ const first = (items, names) => {
   }
   return "";
 };
-const scopes = (body) => {
+const scopes = (body: any) => {
   const found = [body, body?.data, body?.payload, body?.eventData];
   for (const obj of [...found]) {
     if (obj && typeof obj === "object") {
@@ -27,15 +27,15 @@ const scopes = (body) => {
   }
   return found;
 };
-const digest = async (data) => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",
+const digest = async (data: string) => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",
   new TextEncoder().encode(data)))).map(x => x.toString(16).padStart(2, "0")).join("");
-const constantEqual = (a, b) => {
+const constantEqual = (a: string, b: string) => {
   if (a.length !== b.length) return false;
   let diff = 0;
   for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return diff === 0;
 };
-const linkedinProfile = (raw) => {
+const linkedinProfile = (raw: any) => {
   if (!raw) return "";
   try {
     const url = new URL(raw);
@@ -44,7 +44,7 @@ const linkedinProfile = (raw) => {
     return "https://www.linkedin.com" + url.pathname.replace(/\/$/, "");
   } catch { return ""; }
 };
-const safeDate = (value) => {
+const safeDate = (value: any) => {
   if (!value) return new Date().toISOString();
   const ms = /^\d{10,13}$/.test(value) ? Number(value) * (value.length === 10 ? 1000 : 1) : Date.parse(value);
   if (!Number.isFinite(ms) || ms > Date.now() + 86400000 || ms < Date.now() - 365 * 86400000)

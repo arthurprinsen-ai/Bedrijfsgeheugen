@@ -1,0 +1,22 @@
+# P0 — First Time Right for rejected publication candidates (2026-11-02)
+
+Parent incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232
+Architecture: existing ONE BRAIN → `powerhouse-content-loop` (single original lease) → `powerhouse-content-orchestrator` / existing channel producer → original review/publisher → provider readback → Brain learning.
+Scope: exact pre-provider company 422, plus shared incident proof and permanent original agent skill requirements. No new executor, job, authorization or channel.
+
+## Actual independently checked 2026-11-02 source incident
+Original Supabase `content_publication_obligations` linked company: `BLOCKED`, `PRE_PUBLISH_GATE_BLOCKED`, `external_id=NULL`. Original decision: `publish/blocked`, `review_status=422`, violation `COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT`, rejected recommendation `d05ce26c-9982-426a-8101-e2e3cb6cf390`. Prior editorial generated a lost/unfollowed-offer story family again. The hard reviewer was correct; the missing behavior was a safe same-owner source rotation after this deterministic rejection. A previous merged text prompt (PR #5295) cannot by itself reopen an already blocked original decision. No provider side-effect was recorded in checked fields, but no *external publication* has been proven.
+
+## Correction and safety
+The new pure `company-rejected-candidate-regeneration.mjs` allows a bounded candidate rotation **only** when exact decision and obligation match, review is code 422 with the exact company editorial violation, no original published/external ID or provider create/ambiguous side-effect, no consumed publication authority, no capability hard-boundary, and a different source-backed HTTPS recommendation observed within 14 days is already available. Prior recommendation IDs are excluded; at most three distinct candidates. It cannot approve content or publish.
+
+The existing original content-loop evaluates this before its existing bootstrap and only re-invokes its OWN original orchestrator if a truly distinct eligible candidate exists. The original orchestrator re-reads all source, rejected ID and provider-authority state and generates a different candidate under its unchanged quality, dedupe, identity, OAuth, scheduler and release gates. An absent new verified source or ambiguous effect remains BLOCKED with a typed original-owner explanation, never "force green". Separate existing Mira media and blog editorial approval remain their own original repair processes; this PR does not auto-grant permission, auto-buy credits, lower face score 0.940 or self-approve blog.
+
+## Original incident and learning
+Original `daily-publication-recovery.mjs` carries only the SHA-256 of the rejected final text and the exact prior recommendation UUID (when proven), never raw draft text, provider secrets or prospect data. `publication-incident-learning.mjs` now registers different rejected draft hashes as different idempotent original occurrence IDs under the same failure fingerprint and attaches mandatory first-time-right prevention, root-cause, regression, later natural-run and provider-readback closure obligations. Original existing Brain writer stays exclusive. New occurrence must be read back in `brain_failure_registry`, not marked PROVEN until applied learning and recurring-run proof.
+
+## Tests and acceptance
+`tests/brain-first-time-right-company-regeneration-20261102.test.mjs`: exact preprovider 422, alternate real source, no same candidate, historical rejected sources, no new source, stale/source-invalid, hard provider flags, consumed authority, forbidden duplicate. Run native node test plus required full BRAIN, backend, CodeQL, security, System Map on exact head; protected merge only, original Supabase Git integration source/runtime parity, natural original publisher + exact external LinkedIn URN/readback, original portal truthful status, later no-repeat occurrence check. An HTTP 200/CI green only proves code work, not published content. First-time-right measured as first-pass acceptance and repeat fingerprint rate, never guaranteed 100%.
+
+## Owner / follow-up
+Original `powerhouse-content-orchestrator` and `powerhouse-content-loop` own source correction; original social publisher retains external dispatch; ONE BRAIN/Heartbeat retain incident follow-up. Portal PR #5245 is separately OPEN and not a production-facing proof projection. No changes to original personal LinkedIn already-created share or other channels' send route.

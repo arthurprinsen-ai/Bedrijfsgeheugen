@@ -1,0 +1,3 @@
+# 2026-11-03 — Kansenradar OpenAI schema herstel
+
+Original production request 19898 returned HTTP 500 and OPENAI_OUTPUT_CONTRACT_FAILED after the OpenAI migration. The JSON-only prompt asked for a wrapper, while existing Kansenradar tasks require direct arrays oordelen and berichten. The protected fix forces the original named function schema and reads its argument object. Missing or invalid arguments remain a failed execution. Source issue #4198; source PR #5354. This is a new regression; do not label runtime GREEN until a fresh successful independent source receipt, production deployment and natural recurrence check. The original daily cron, no-send safety gates, source checks and ONE BRAIN incident ownership remain unchanged.

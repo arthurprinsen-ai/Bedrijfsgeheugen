@@ -1,0 +1,50 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-31",
+  "fingerprint": "powerhouse|mira|radar-materializer-no-source-false-success|20261031-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original powerhouse-mira-problem-radar-v1 and powerhouse_select_instagram_daily_winner_v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original Mira radar checks only RPC transport error after calling powerhouse_materialize_mira_problem_recommendation_v1, while the original stored materializer correctly returns JSON {ok:false,state:NO_FRESH_PUBLIC_PROBLEM_SIGNAL} or other typed source rejection. The radar then responds ok:true if no transport errors even when its source/next-day winner is absent.",
+  "observed_evidence": {
+    "at_utc": "2026-10-31T09:58:26Z",
+    "production_original_radar_job": 120,
+    "original_radar_active": true,
+    "original_radar_daily_utc": "20:02",
+    "original_mira_signals": 311,
+    "eligible_signals": 85,
+    "dated_recent_signals": 8,
+    "full_contract_unique_winner_count": 0,
+    "original_2026_10_31_winner_count": 0,
+    "original_2026_10_31_content_loop_status": "RED/RECOVERY_DUE",
+    "original_source_first_reason": "MIRA_UNIQUE_SOURCE_WINNER_REQUIRED",
+    "provider_reel_proven": false
+  },
+  "prevention_rule": "Use the existing stored materializer's JSON ok/state as source-stage authority, not HTTP success. Known original source shortages return ok:false, state:SOURCE_RECOVERY_DUE, typed MIRA_UNIQUE_SOURCE_WINNER_REQUIRED, same original radar owner and no extra sending. Append only original ONE BRAIN failure occurrence keyed by day/state, with idempotent SHA256. Unknown states and RPC transport errors fail closed. All 90-day source/3-day topic, date, Mira media >=0.940 and consent/provider gates remain unchanged.",
+  "fix_candidate": "A small pure original shared materializer result classifier consumed by the same original Mira radar. Its existing output reports sourceRecovery without spinning up a new job; original Brain RPC records a source shortage once per day+state.",
+  "approval_boundaries": "No additional search/API credits, scheduler, email sender, social publish, relaxation of uniqueness, substitution of historical media or invented provider readback.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Original index.ts source readback and independently verified 31 Oct production source lineage: materializer's explicit NO_FRESH_PUBLIC_PROBLEM_SIGNAL outcome can be collapsed into radar ok=true because only RPC transport error contributes to original errors array.",
+    "regression": "Original pure classifier accepts only source-proven states, rejects known source shortage and malformed results and asserts one original Brain failure observation; no second scheduler/publisher.",
+    "pending": "Protected exact-head Required/BRAIN/CodeQL; merge and original Supabase Edge exact source deploy; original next native radar on its regular existing schedule; source/no-source response and independent Brain occurrence readback; publication still RED until Meta provider proof."
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-10-31-mira-radar-source-shortage-no-false-green-v1.md",
+  "activity_ledger": "docs/development-ledger-events/2026-10-31-mira-radar-source-shortage-no-false-green-v1.md"
+}

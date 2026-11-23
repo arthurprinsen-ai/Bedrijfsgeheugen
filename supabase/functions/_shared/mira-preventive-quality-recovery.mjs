@@ -10,6 +10,15 @@ export const MIRA_PREVENTIVE_RECOVERY_CONTRACT='mira-original-owner-pre-generati
 export const MIRA_PRODUCER_MOTION_COMPATIBILITY_CONTRACT='mira-recognizable-face-and-genuine-human-motion-v1';
 
 export const MIRA_PROVIDER_OUTPUT_PRESPEND_CONTRACT='mira-native-provider-output-prespend-v1';
+// Measured face-gate outcomes of real, paid, independently verified OpenArt
+// generations. A model whose best measured face score stays below the gate is
+// NOT spendable again until a new candidate is justified by new evidence.
+export const MIRA_FACE_GATE_MIN=0.94;
+export const MIRA_MODEL_FACE_EVIDENCE=Object.freeze([
+  Object.freeze({model:'veo3-1',modes:['image2video','element2video'],best_face_score:0.9,
+    rejected_histories:['6GYKFxqd9aif8WacnMnL','B5uX1JhoC8hl0kiFTrnl'],
+    observed:['2026-11-03','2026-11-07'],source:'brain_failure_occurrences VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'})
+]);
 export const MIRA_WAN27_PROVIDER_OBSERVATION=Object.freeze({
   model:'wan2-7',mode:'image2video',requested_resolution:'1080p',
   actual_width:1292,actual_height:1604,actual_duration:8.08,
@@ -36,16 +45,46 @@ export function assessMiraProviderBeforeSpend({model,mode,params,masterReference
     return {...base,ok:false,code:'MIRA_SOURCE_ANCHORED_GENERATION_REQUIRED'};
   if(String(p.resolution??'').toLowerCase()!=='1080p'||Number(p.duration)!==8||Number(p.videoCount)!==1)
     return {...base,ok:false,code:'MIRA_NATIVE_REEL_SETTINGS_REQUIRED'};
+  const faceRecord=MIRA_MODEL_FACE_EVIDENCE.find(r=>r.model===name&&r.modes.includes(kind));
+  // No caller-supplied bypass: only a reviewed source change to the evidence
+  // list above (new measured score) can re-enable a model.
+  if(faceRecord&&Number(faceRecord.best_face_score)<MIRA_FACE_GATE_MIN)
+    return {...base,ok:false,code:'MIRA_MODEL_FACE_GATE_FAILED_BEFORE',
+      best_recorded_face_score:faceRecord.best_face_score,required_face_score:MIRA_FACE_GATE_MIN,
+      rejected_histories:faceRecord.rejected_histories,
+      reason:'This model/mode produced Mira videos that failed the independent face gate on real paid runs. Spending again would repeat a known failure.',
+      recommended_action:'Choose a different model/route and update MIRA_MODEL_FACE_EVIDENCE only through a reviewed PR with new measured evidence; never resubmit rejected histories.'};
   if(name==='wan2-7'&&kind==='image2video'){
     return {...base,ok:false,code:'MIRA_WAN27_IMAGE_RATIO_NOT_EXACT_REEL',
       observed:MIRA_WAN27_PROVIDER_OBSERVATION,
       reason:'Wan 2.7 I2V resolution is a pixel-count tier. The provider preserves input aspect ratio; OpenArt Wan image2video has no aspect-ratio or mute output control. Actual 1080p result was 1292x1604 with audio.',
       recommended_action:'Use a verified native-9:16, mute-capable provider mode with immutable Mira master, or obtain a separately approved original-master-preserving 9:16 input workflow.'};
   }
+  // OpenArt's current connected, model-specific FORM for Wan 3.0
+  // element2video (read on 2026-11-17) exposes explicit 9:16, 1080p,
+  // duration 8 and audio:false. This allows ONE source-locked, exclusively
+  // claimed QUALITY TEST under an independently verified <=640-credit quote.
+  // It does NOT certify actual video geometry, silence, identity or motion;
+  // the original native-MP4/frame/temporal verifier remains the only approval.
+  // Unlike Wan 2.7 image2video, this is a different model and reference route.
+  // A later observed quality failure must enter immutable MIRA_MODEL_FACE_EVIDENCE
+  // before any retry, and a new exact history must never be silently recycled.
+  if(name==='wan3-0'&&kind==='element2video'&&
+     p.aspectRatio==='9:16'&&p.audio===false&&
+     (!p.mode||p.mode==='standard')){
+    return {...base,ok:true,code:'PROVIDER_MODEL_CONTROLS_PRESENT_TEST_ONLY',
+      evidence:'Connected OpenArt Wan 3.0 element2video model form: resolution 1080p, aspectRatio 9:16, audio false, duration 8, videoCount 1.',
+      model:'wan3-0',generation_mode:'element2video',
+      requires_verified_original_project_and_credit_quote:true,
+      max_quote_credits:640,
+      actual_media_verified:false,approved_for_publish:false,
+      requires_native_mp4_frame_and_temporal_verifier:true,
+      one_exclusive_source_locked_candidate_only:true};
+  }
   // Only the observed Veo3.1 control surface has both explicit 9:16 and mute
   // settings and a historical actual native 1080x1920 result. Its past face
   // failures remain valid; compatibility here does NOT endorse retrying Veo.
-  if(name==='veo3-1'&&kind==='image2video'&&
+  if(name==='veo3-1'&&(kind==='image2video'||kind==='element2video')&&
      p.aspectRatio==='9:16'&&p.generateAudio===false){
     return {...base,ok:true,code:'FORMAT_CONTROLS_PROVEN_ONLY',
       evidence:'Prior original OpenArt Veo3.1 image2video returned native 1080x1920 without audio; facial continuity still failed independent validation.',

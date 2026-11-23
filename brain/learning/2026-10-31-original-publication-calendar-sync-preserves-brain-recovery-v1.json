@@ -1,0 +1,63 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-31",
+  "fingerprint": "powerhouse|publication|calendar-sync-overwrites-original-brain-recovery|20261031-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original PostgreSQL publication calendar sync + existing exclusive Powerhouse content-loop and read-only ONE BRAIN portal",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original public.sync_content_publication_obligations(date,date) ON CONFLICT branch copied excluded generic next_action into all PLANNED rows whenever rank<=10. The original powerhouse_reconcile_content_outcomes_v1 calls that sync on both pre/post reconciliation, resetting the original CANONICAL typed Powerhouse-ONE BRAIN recovery next_action after the original content loop wrote it. Consecutive same-date runs reported handoffWriteback.applied=4 rather than becoming idempotent.",
+  "observed_evidence": {
+    "source": "Existing production pg_get_functiondef(public.sync_content_publication_obligations(date,date))",
+    "date": "2026-10-31",
+    "prior_brain_runs": [
+      {
+        "time_utc": "2026-10-31T13:24:26.511Z",
+        "handoff_planned": 4,
+        "applied": 4,
+        "conflicts": 0,
+        "errors": 0
+      },
+      {
+        "time_utc": "2026-10-31T13:29:28.967Z",
+        "handoff_planned": 4,
+        "applied": 4,
+        "conflicts": 0,
+        "errors": 0
+      }
+    ],
+    "public_channels": [
+      "linkedin_personal",
+      "linkedin_company",
+      "instagram",
+      "blog"
+    ],
+    "actual_provider_publication_proven": false
+  },
+  "prevention_rule": "Calendar bootstrap may INSERT missing PLANNED obligations with default action. ON CONFLICT on existing rows may update only materially changed experiment_id/content_kind; must never overwrite next_action, provider IDs, statuses, approval, proof or error context. Skip UPDATE if both planning fields match; no unnecessary updated_at churn. Exclusive original Powerhouse content-loop retains the typed owner-specific original CAS writeback, protected by provider side-effect reconciliation. Zero updates on unchanged normal runs are an independently measurable technical result, not social publication success.",
+  "fix_candidate": "Protected one-function Supabase migration preserving SECURITY DEFINER/search_path/revoked public EXECUTE rights, existing original content-loop and scheduler unchanged, original read-only ONE BRAIN guard/portal display real sanitized action sync counts.",
+  "approval_boundaries": "No direct provider publish, new scheduler or sender, altered OAuth/credit/identity and opt-in policies, synthetic provider IDs, or revoked AI model fallback. LinkedIn company scope 403; gpt-5-mini 429; Mira original dated unique winner and canonical email authorization remain unresolved external/source tasks.",
+  "compiler": {
+    "failure_class": "REPEATED_REGRESSION",
+    "scope": "DATABASE_FUNCTION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-sync-no-rewrite-churn-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-publication-sync-no-rewrite-churn-20261031.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "One original PostgreSQL function clobbers next_action every sync for PLANNED, and two 31 Oct normal loops performed four identical original handoff updates 5 minutes apart.",
+    "regression": "Protected test ensures existing-row sync omits next_action/status/provider writes and only metadata changes trigger UPDATE; private original Brain guard and portal expose actual writeback counters without green.",
+    "pending": "Protected GitHub required tests/CodeQL/System Map, merge main, apply exact tracked migration via Supabase migrations, verify function definition and original ACL, execute original SQL sync twice with unchanged next_action and updated_at, next natural original heartbeat handoffWriteback.applied=0, native Netlify exact main deploy and public provider IDs remain separate."
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-10-31-original-publication-calendar-sync-preserves-brain-recovery-v1.md",
+  "activity_ledger": "docs/development-ledger-events/2026-10-31-original-publication-calendar-sync-preserves-brain-recovery-v1.md"
+}

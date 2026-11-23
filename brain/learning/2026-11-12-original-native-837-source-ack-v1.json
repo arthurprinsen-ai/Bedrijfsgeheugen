@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|original-native-provider-837-ack|20261112-v1",
+  "obligation_id": "supabase|migration-history|original-native-provider-837-ack|20261112-v1",
+  "title": "Native applied migration #837 omitted from original protected Git source lock",
+  "status": "CANDIDATE",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "root_cause": "Protected #5692 applied SEO daily manifest source migration 20261112214500 in real native Supabase as 837th version, while original main migration source lock still had 836 and its captured_at timestamp predated provider observation.",
+  "impact": "Dependent protected website #5694 and next original SEO/Portal releases can be starved by failed migration parity; no migration or tenant data was lost.",
+  "fix": "Append only real observed native 837 identity and set source lock captured_at to independently read provider timestamp; preserve 836 immutable prefix, original SQL and access controls, no replay.",
+  "prevention_rule": "Native applied version/name and real provider-observed_at must flow to original protected Git lock before downstream admissions; if drift occurs fail closed with owner and regression, no fake green or second writer.",
+  "owner": "Original Supabase migration-history source lock / ONE BRAIN delivery owner",
+  "tests": [
+    "tests/brain-original-native-837-source-ack-20261112.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "regression_contract": "tests/brain-original-native-837-source-ack-20261112.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-837-source-ack-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-837-source-ack-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-837-source-ack-20261112.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 837,
+    "provider_version": "20261112214500",
+    "provider_name": "original_seo_derived_brain_manifest_handoff_v1",
+    "provider_observed_at": "2026-11-12T20:39:22.938468Z",
+    "source_lock_before": 836,
+    "source_lock_after_candidate": 837,
+    "main_before": "8efae5411eb3398fdcea3a9a854864e2566a8b15",
+    "upstream_pr": 5692,
+    "downstream_pr": 5694
+  },
+  "outcome": "Candidate pending exact-head protected Required/CodeQL/native Preview, merge, independent 837/837 source provider parity, downstream original SEO Heartbeat processed ACK.",
+  "compiler": {
+    "failure_class": "NATIVE_MIGRATION_SOURCE_LOCK_DRIFT",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  }
+}

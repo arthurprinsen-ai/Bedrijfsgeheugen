@@ -1,0 +1,67 @@
+{
+  "fingerprint": "powerhouse|bg169|backend-three-source-drift-regressions|20261123-v1",
+  "observed_at": "2026-11-23",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "source": {
+    "original_bg169_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45142550416",
+    "blocked_original_repair": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6119",
+    "source_main_sha": "1be4597a0636f422b60a544a929dd3d08c7a7597"
+  },
+  "root_causes": [
+    "Historical provider-888 test mistakenly assumed immutable 888-history snapshot equals today's growing migration-history.lock.json total; when lock reached at least 890 entries it rejected a valid appended history.",
+    "Canonical brand-shell readback correctly delegates governance/runtime applicability to tools/delivery/netlify-deployment-applicability.mjs, but the older regression required obsolete path literals directly inside the workflow YAML.",
+    "Supabase db-pooler-introspect-v1 unexpectedly reintroduced a type-only jsr: import, contrary to the existing repo bundle-time independence contract."
+  ],
+  "fix": [
+    "Reconstruct immutable 888-version historical head from the first 888 current lock entries; retain strict base 886, provider security MD5, exact tail and all tampering veto tests; reject current duplicate migration-version identifiers.",
+    "Assert the actual shared applicability import and its immutable contract paths, while retaining positive verifier-only and negative runtime-changing supersession assertions.",
+    "Remove only the type-only JSR runtime import from the existing db-pooler Edge function; retain authorization guard, query, behavior and npm postgres pin."
+  ],
+  "prevention": [
+    "Never hard-code a historical cohort's total as the evolving current database-history total.",
+    "Test canonical shared dependency resolution rather than obsolete inlined YAML literals while retaining exact safety behavior.",
+    "No build-time jsr: imports in Supabase Edge function source when avoidable; existing regression enforces.",
+    "Do not bypass or downgrade protected Required, CodeQL, BG169 or Supabase security checks to publish social/blog content."
+  ],
+  "tests": [
+    "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs",
+    "tests/brain-production-runtime-applicability-v1.test.mjs",
+    "tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"
+  ],
+  "evidence": {
+    "observed_failures": [
+      "BG169 backend test #4118: 888 !== 886",
+      "BG169 backend test #5347: obsolete direct contracts.mjs and readback JSON literal in workflow",
+      "BG169 backend test #6480: unexpected jsr import in db-pooler-introspect-v1"
+    ],
+    "provider_live_readback": "NOT_YET_PROVEN",
+    "protected_tests": "PENDING",
+    "production_deployment": "NOT_YET_PROVEN",
+    "protected_admission_retry": "The first Required admission on PR #6120 rejected missing shadow evaluation tests; preserve same 3 deterministic regression paths for historical/shadow/canary. Not yet successfully executed."
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs",
+      "tests/brain-production-runtime-applicability-v1.test.mjs",
+      "tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs",
+      "tests/brain-production-runtime-applicability-v1.test.mjs",
+      "tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs",
+      "tests/brain-production-runtime-applicability-v1.test.mjs",
+      "tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"
+    ]
+  },
+  "current_state": "CODE_CANDIDATE_NOT_LIVE"
+}

@@ -1,0 +1,84 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|original-provider-853-outreach-lock|20261114-v1",
+  "failure_class": "ORIGINAL_NATIVE_SUPABASE_PROVIDER_LOCK_LAG_AFTER_DUAL_DEPLOY",
+  "root_cause": "Protected PR #5759 canonical merge applied production migration 20261114083500. A second direct native apply also registered 20261114080027 for the same idempotent create-or-replace helper, so provider now contains two genuinely applied rows. Immutable source history remained at 851, and next protected PR migration preflight correctly refused an unproven lock update in a migration-bearing PR. No email was sent or additionally authorized by these DDL applications.",
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "verified_at": "2026-11-14 08:09:21.06713+00",
+    "provider_count": 853,
+    "source_original_count": 851,
+    "prefix_version_name_mismatches": 0,
+    "exact_new_actual_provider_migrations": [
+      {
+        "version": "20261114080027",
+        "name": "original_approved_connection_source_priming_v1"
+      },
+      {
+        "version": "20261114083500",
+        "name": "original_approved_connection_source_priming_v1"
+      }
+    ],
+    "protected_main_merge": "7603fc67c85093bcd03328fa1e42f6c128200cbb",
+    "original_stage_readback": true,
+    "anon_execute": false,
+    "authenticated_execute": false,
+    "service_role_execute": true,
+    "native_version_80027_statement_md5": "7f3b733b4f450b931b416bcaf9eac773",
+    "original_protected_83500_source_bytes": 11353,
+    "native_80027_sql_byte_identical_to_83500": true,
+    "portal_ci_fixture_false_block": "Test authenticated client used an Oct 14 verified record, correctly deemed stale under 30-day production freshness as of Nov 14; 701/702 tests passed, one fixed by fresh test data only."
+  },
+  "repair": "In a protected source-lock-only PR, append only the two independently confirmed native (version,name) pairs and exact native captured_at; do not run any migrations here or fabricate further applied states. Preserve first 851 unchanged. Keep unrelated source-only cooldown change in a separate protected PR. To close the original exact executable-source gap, restore 20261114080027 under its original filename using byte-identical already-protected 83500 SQL and add only a pinned one-time CI reconciliation that requires the exact protected base, source and actual native version/name/digest. Keep all other migrations under the existing immutable admission gate.",
+  "prevention": [
+    "Wait for canonical postmerge provider migration readback before considering any direct apply; if provider version exists, do not apply it again.",
+    "Source migration files and immutable applied-provider lock changes are distinct protected phases. Never mark unexecuted SQL in source lock.",
+    "Any duplicate idempotent native provider migration recorded must be transparently retained; do not delete actual audit history.",
+    "Provider stage and Gmail send proof are separate; migration or cron success is not a send.",
+    "Never soften original migration-inventory parity globally. The 853 history recovery is a one-time exception limited to the exact original SHA, two provider versions and native statements MD5, with negative drift tests.",
+    "Time-sensitive test fixtures must declare a controlled clock or use verified ordered timestamps inside the freshness window, never weaken production stale-data rejection for test convenience."
+  ],
+  "owner": "ONE BRAIN native migration-history recorder and protected GitHub/Supabase release; original commercial #116 unchanged",
+  "status": "PENDING_PROTECTED_MERGE_PRODUCTION_SOURCE_READBACK",
+  "compiler": {
+    "failure_class": "ORIGINAL_NATIVE_SUPABASE_PROVIDER_LOCK_LAG_AFTER_DUAL_DEPLOY",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migration-history.lock.json",
+    "brain/learning/2026-11-14-original-provider-853-outreach-migration-lock-v1.json",
+    "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs",
+    "docs/changes/2026-11-14-original-provider-853-outreach-lock.md",
+    "docs/development-ledger-events/2026-11-14-original-provider-853-outreach-lock.md",
+    "supabase/migrations/20261114080027_original_approved_connection_source_priming_v1.sql",
+    "tools/ci/protected-supabase-pr-migration-tests.mjs",
+    "tools/ci/verified-provider-853-original-outreach-source-mirror.mjs",
+    "tests/portal-v2-owner-financial-truth.test.mjs"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required/CodeQL pass, source lock PR merges; verify original provider still 853 before merge, source lock 853 exact.",
+    "No new SQL DDL, cron, sender, contact, subscriber permission or outbound.",
+    "Separate source-cooldown PR may run only after source lock is applied and rebase/concurrency checks."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}

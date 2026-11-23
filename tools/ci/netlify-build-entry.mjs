@@ -2,6 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { restampReleaseIdentity } from '../site-shell/restamp-release-identity.mjs';
+import { resolveFinalReleaseIdentity } from '../site-shell/release-source-identity.mjs';
 
 const PREBUILT_MARKER = '.bg-prebuilt-deploy.json';
 const PREBUILT_MANIFEST = '.bg-prebuilt-manifest.json';
@@ -32,10 +33,17 @@ const phases = Object.freeze([
   ['revenue-links','tools/seo-order-engine/apply-revenue-links.mjs'],
   ['website-coherence','tools/site-shell/finalize-website-coherence-v1.mjs'],
   ['daily-steering-positioning','tools/site-shell/apply-daily-steering-positioning.mjs'],
+  ['frisse-blik-concreet','tools/site-shell/apply-frisse-blik-concreet.mjs'],
+  ['klantcase-placeholders','tools/site-shell/remove-klantcase-placeholders.mjs'],
+  ['oplossingen-wat-je-overhoudt','tools/site-shell/apply-oplossingen-wat-je-overhoudt.mjs'],
+  ['business-os-positioning','tools/site-shell/apply-business-os-positioning.mjs'],
   ['cms-runtime','tools/site-shell/apply-cms-runtime.mjs'],
   ['sitemap','tools/genereer-sitemap.mjs'],
   ['locale-validation','tools/seo-order-engine/validate-locales.mjs'],
   ['checkout-final-contract','tools/site-shell/checkout-build-integrity.mjs','verify'],
+  // Publish only explicit, read-only browser calculations under /portal-v2/;
+  // keep /brain/* and /platform/* blocked for all other source files.
+  ['portal-safe-runtime','tools/ci/build-portal-public-runtime.mjs'],
   ['release-evidence','tools/bouw-release-evidence.mjs'],
 ]);
 
@@ -74,6 +82,32 @@ async function runPrebuiltReuse() {
 async function runFullBuild({cacheOnlyPatch=''}={}) {
   const started=Date.now();
   const timings=[];
+  // Preserve the original provider build failure *phase* even if Netlify only
+  // exposes a generic build exit code in its deploy metadata.
+  async function recordPhaseFailure({name,script,status,error}) {
+    const failure={
+      contract:'NETLIFY_BUILD_PHASE_FAILURE_V1',
+      phase:name,
+      script,
+      exit_code:Number.isInteger(status)?status:null,
+      spawn_error_code:typeof error?.code==='string'?error.code.replace(/[^A-Z0-9_]/gi,'').slice(0,48):null,
+      completed:false,
+      context:String(process.env.CONTEXT||'').slice(0,40),
+      observed_at:new Date().toISOString(),
+      phases:timings,
+    };
+    // Never log environment variables, connector tokens, command output, or PII.
+    console.error('NETLIFY_BUILD_PHASE_FAILURE',JSON.stringify(failure));
+    const profilePath=String(process.env.NETLIFY_BUILD_PROFILE_PATH||'').trim();
+    if(profilePath){
+      try{
+        await mkdir(path.dirname(profilePath),{recursive:true});
+        await writeFile(profilePath,`${JSON.stringify(failure,null,2)}\\n`);
+      }catch(writeError){
+        console.error('NETLIFY_BUILD_FAILURE_PROFILE_WRITE_ERROR',String(writeError?.code||'unknown').slice(0,48));
+      }
+    }
+  }
   for(const [name,script,...args] of phases) {
     const phaseStarted=Date.now();
     const effectiveArgs = cacheOnlyPatch && name==='localized-routes' ? [...args,'--prepare-cache='+cacheOnlyPatch] : args;
@@ -84,8 +118,11 @@ async function runFullBuild({cacheOnlyPatch=''}={}) {
     });
     const elapsed_ms=Date.now()-phaseStarted;
     timings.push({name,script,args,elapsed_ms,status:result.status});
-    if(result.error) throw result.error;
-    if(result.status!==0) throw new Error(`NETLIFY_BUILD_PHASE_FAILED:${name}:${result.status}`);
+    if(result.error || result.status!==0){
+      await recordPhaseFailure({name,script,status:result.status,error:result.error});
+      if(result.error) throw result.error;
+      throw new Error(`NETLIFY_BUILD_PHASE_FAILED:${name}:${result.status}`);
+    }
     if(cacheOnlyPatch && name==='localized-routes'){
       console.log('NETLIFY_I18N_CACHE_PREPARED',JSON.stringify({
         patch:cacheOnlyPatch, phaseCount:timings.length,
@@ -94,13 +131,43 @@ async function runFullBuild({cacheOnlyPatch=''}={}) {
     }
   }
   // Publish independently observable deployment identity on normal builds too.
-  const commitRef=String(process.env.COMMIT_REF||'').trim();
+  const providedCommit=String(process.env.COMMIT_REF||'').trim();
   const context=String(process.env.CONTEXT||'').trim();
   const deployId=String(process.env.DEPLOY_ID||'').trim();
-  if(context==='production'&&HEX40.test(commitRef)&&deployId){
+  // Native Netlify builds can omit COMMIT_REF; use the checked-out Git HEAD,
+  // never a manually configured or stale release SHA. Fail closed otherwise.
+  const gitHeadResult=spawnSync('git',['rev-parse','--verify','HEAD'],{
+    cwd:process.cwd(),encoding:'utf8',timeout:5000,
+  });
+  const gitHead=gitHeadResult.status===0?String(gitHeadResult.stdout||'').trim():'';
+  if(providedCommit && !HEX40.test(providedCommit)) throw new Error('PRODUCTION_RELEASE_COMMIT_REF_INVALID');
+  // GitHub PR parity checks out a synthetic merge commit while COMMIT_REF is
+  // intentionally the candidate PR head. Only native provider builds require
+  // checkout HEAD equality; retain the explicit candidate identity in CI.
+  if(process.env.GITHUB_ACTIONS!=='true'&&HEX40.test(providedCommit)&&HEX40.test(gitHead)&&providedCommit.toLowerCase()!==gitHead.toLowerCase()){
+    throw new Error('PRODUCTION_RELEASE_GIT_HEAD_MISMATCH');
+  }
+  let commitRef=providedCommit||gitHead;
+  if(context==='production'){
+    // The earlier release-evidence phase has already resolved source identity.
+    // Never overwrite that attestation with an unrelated temporary build HEAD.
+    let markerText='';
+    try{markerText=await readFile('.bg-source-commit','utf8');}
+    catch(error){if(error?.code!=='ENOENT')throw error;}
+    const releaseEvidence=JSON.parse(await readFile('release.json','utf8'));
+    const originResult=spawnSync('git',['remote','get-url','origin'],{
+      cwd:process.cwd(),encoding:'utf8',timeout:5000,
+    });
+    const remoteMainResult=spawnSync('git',['rev-parse','--verify','refs/remotes/origin/main'],{
+      cwd:process.cwd(),encoding:'utf8',timeout:5000,
+    });
+    commitRef=resolveFinalReleaseIdentity({
+      env:process.env,markerText,existingRelease:releaseEvidence,gitHead,
+      gitOrigin:originResult.status===0?String(originResult.stdout||'').trim():'',
+      gitRemoteMain:remoteMainResult.status===0?String(remoteMainResult.stdout||'').trim():'',
+    });
+    if(!deployId) throw new Error('PRODUCTION_RELEASE_DEPLOY_ID_MISSING');
     await restampReleaseIdentity({root:process.cwd(),commitRef,context,deployId});
-  }else if(context==='production'){
-    throw new Error('PRODUCTION_RELEASE_IDENTITY_UNAVAILABLE');
   }
   const profile={
     contract:'NETLIFY_BUILD_PROFILE_V1',

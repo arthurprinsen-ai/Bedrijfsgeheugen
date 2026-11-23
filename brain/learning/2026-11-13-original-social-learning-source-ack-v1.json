@@ -1,0 +1,114 @@
+{
+  "fingerprint": "powerhouse|one-chain|social-learning-source-revision-consumer-ack|20261113-v1",
+  "obligation_id": "powerhouse|one-chain|social-learning-source-revision-consumer-ack|20261113-v1",
+  "parent_issue": 5232,
+  "status": "PROVIDER_DEPLOYED_ORIGINAL_SOURCE_TO_BRAIN_185_OF_185_VERIFIED_OUTCOME_OPEN",
+  "owner": "original powerhouse-runtime-scheduler-mux-v1 / #171",
+  "root_cause": "The original #171 social-learning reconciliation wrote OPEN BRAIN obligations with original source identifiers but without cryptographic source_revision, payload digest, stable correlation and same-version consumer ACK. Thus 183 open continuous learning obligations could not demonstrate independent source-to-BRAIN version parity.",
+  "prevention_rule": "For every original OPEN social_learning_obligations source, the SAME original #171 BRAIN consumer records a SHA256 over source identity, status, due_at, updated_at and full payload, exact payload SHA, stable correlation and source-only consumer ACK; replay preserves accepted_at for an unchanged source, revision drift re-ACKs without sending or marking provider/outcome green. No second worker or synthetic proof.",
+  "evidence": {
+    "observed_date": "2026-11-13",
+    "original_source_status_open": 185,
+    "original_brain_learning_open": 183,
+    "source_revision_present_in_prior_brain_learning_open": 0,
+    "auth_boundary": "service_role allowed, anon/authenticated forbidden",
+    "delivery_status": "PR candidate until protected merge, applied SQL readback, and natural original #171 source/consumer parity",
+    "original_brain_learning_source_exact_ack_after_replay": 185,
+    "original_source_open_count_at_proof": 185,
+    "unchanged_original_source_count": 185,
+    "production_status": "PROVIDER_850_APPLIED_AND_SOURCE_TO_BRAIN_ACK_PROVEN",
+    "consumer_evidence_scope": "SOURCE_RECEIVED_ONLY_PROVIDER_METRICS_LEARNING_OPEN",
+    "natural_run_independently_verified_at": "2026-11-13T18:14:01.127033Z",
+    "original_active_executor_id": 171
+  },
+  "remedy": {
+    "migration": "supabase/migrations/20261113174500_original_social_learning_source_ack_v1.sql",
+    "regression": "tests/brain-original-social-learning-source-ack-20261113.test.mjs",
+    "skill": ".agents/skills/powerhouse-social-cro-funnel/SKILL.md",
+    "single_original_executor": true,
+    "no_provider_resend": true
+  },
+  "verification": {
+    "required": "SUCCESS (exact head 4e9f9d4187db778a74370ef2719c101c0adcd992)",
+    "codeql": "SUCCESS (python and javascript-typescript, exact head)",
+    "protected_merge": "SUCCESS: PR #5752 merge 2feb1186bc48e5b9fea0ff4dc076b697f238147e",
+    "provider_migration": "CONFIRMED: 20261113174500/original_social_learning_source_ack_v1, native production 850/850",
+    "independent_original_consumer_readback": "SUCCESS: 185/185 original social-learning source SHA256/payload SHA256/correlation/ACK identity exact; 0 missing/drift; original #171 receipt function sequential 48-row bounded rounds",
+    "public_post_or_revenue_proven": false,
+    "preview_initial_failure": "Supabase Preview MIGRATIONS_FAILED 2026-11-13: generated pg_get_functiondef CREATE FUNCTION statement lacked terminating semicolon before REVOKE; isolated in branch Postgres logs.",
+    "preview_fix": "Reinsert standalone DDL semicolon before REVOKE; requires fresh protected preview check.",
+    "natural_original_scheduler_and_consumer_readback": "SUCCESS native 18:14 UTC original #171 tasks and idempotent 185/185 ACK readback"
+  },
+  "compiler": {
+    "failure_class": "MISSING_CONSUMER_ACK",
+    "scope": "SOURCE_TO_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 183,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-social-learning-source-ack-20261113.test.mjs"
+    ],
+    "invariants": [
+      "same tenant+original obligation+post+window and SHA256 source",
+      "consumer ACK only acknowledges source receipt",
+      "identical source preserves accepted_at",
+      "revision drift creates fresh ACK not duplicate provider publication",
+      "provider readback, metrics and subsequent application remain OPEN until real independent evidence",
+      "pg_get_functiondef copied into a migration must terminate with semicolon before following SQL DDL/DCL"
+    ]
+  },
+  "production_success": false,
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "production_proof": {
+    "original_repository": "arthurprinsen-ai/Bedrijfsgeheugen",
+    "original_merge_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5752",
+    "exact_merge_commit": "2feb1186bc48e5b9fea0ff4dc076b697f238147e",
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_migration_version": "20261113174500",
+    "provider_migration_name": "original_social_learning_source_ack_v1",
+    "provider_applied_migration_count": 850,
+    "provider_readback_at": "2026-11-13T18:05:43.826407Z",
+    "prior_849_provider_identities_exact_source_matches": 849,
+    "prior_849_mismatches": 0,
+    "original_source_records_open": 185,
+    "existing_brain_rows_linked": 185,
+    "source_revision_payload_correlation_and_consumer_ack_exact": 185,
+    "source_revision_missing_or_drift": 0,
+    "unsupported_provider_metric_learning_truth_claims": 0,
+    "provenance": "Independent read-only SQL after original content receipt function on production; initial 0/185, then 48/185 and after four original sequential bounded replay rounds 185/185.",
+    "natural_original_next_tick_readback": "PROVEN: native #171 scheduler 2026-11-13T18:14:00.027554Z succeeded; independent same-slot runtime evidence COMPLETED healthy=true; content-closed-loop ok=true/224ms; loop-assurance ok=true/853ms; original source ACK 185/185 and receipt digest/versions unchanged",
+    "independent_provider_publication_metric_or_revenue": "NOT_PROVEN_AND_STILL_OPEN",
+    "original_scheduler_only": true,
+    "no_second_scheduler_or_provider_sender": true,
+    "natural_original_tick": {
+      "run_slot": "2026-11-13T18:14:00Z",
+      "canonical_scheduler_job_id": 171,
+      "original_scheduler": "powerhouse-runtime-scheduler-mux-v1",
+      "pg_cron_status": "succeeded",
+      "pg_cron_return": "DO",
+      "original_runtime_state": "COMPLETED",
+      "original_runtime_healthy": true,
+      "tasks": [
+        {
+          "name": "content-closed-loop",
+          "ok": true,
+          "elapsed_ms": 224
+        },
+        {
+          "name": "loop-assurance",
+          "ok": true,
+          "elapsed_ms": 853
+        }
+      ],
+      "actual_consumer": "powerhouse_content_handoff_receipts_v1",
+      "source_ack_count_after_natural_tick": 185,
+      "accepted_at_digest_before_and_after": "a65f8d67c6a7f494cbff26d836bc22bc",
+      "original_brain_source_record_versions_before_and_after": "2696",
+      "duplicate_source_revision_acks": 0,
+      "downstream_business_outcomes_proven": false,
+      "original_loop_assurance_status": "RED"
+    }
+  }
+}

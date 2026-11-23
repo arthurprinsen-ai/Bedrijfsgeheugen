@@ -1,0 +1,19 @@
+# Original #116 wrapped SERP source recovery wake and historical evidence correction
+
+Parent P0: [#4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198).
+
+## Live native root cause
+
+Protected earlier [PR #5848](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5848) merged original main `069d76d2566d9d1d5b41ba7251af4b7a3c3fbb5c`, and Edge `powerhouse-relationship-public-research` production version **63 ACTIVE** includes its source-filter and `recoverWrappedOriginalResearchSources` function. But independent native DB after deploy still shows original research source action `1be12b8f-8d43-42e1-b0da-d8ce20291ee4` `done` with `google.com/goto` redirect, original still-held commercial recipient action `e5047182-405c-43f2-8c25-7674f1a2cb70` `prepared/SOURCE_SPECIFIC_EVIDENCE_REQUIRED`, and original runtime evidence event `05618504-b072-4c35-ade3-d365bdfd70fe` still `data_quality=VERIFIED`, which was false because a tracking URL is not an independently read publisher page.
+
+Root cause: `powerhouse_dispatch_relationship_public_research_v1` (original cron #116 stage 3) only calls the already-existing Edge when **pending due**, new first-party research budget, or first-party unreadable-source retry. It has no predicate to wake an existing **done** wrapped source action. At 11:07 UTC, the stage returned `NO_DUE_ORIGINAL_SOURCE_RESEARCH` and no provider request ID. The repair remained unreachable despite valid code and green CI. A passing cron step is not evidence of processing.
+
+## Single existing pipeline correction
+
+Forward-only native migration `20261115121500_original_wrapped_serp_source_dispatch_wakeup_v1.sql` alters **only** the existing original dispatcher, adding `v_due_wrapped_source_review` as an additional permission to wake the **same original Edge**, even with zero other due work. Bounded exact original source research link, seven-day age, exact original held contact action + matching person/company, `SOURCE_SPECIFIC_EVIDENCE_REQUIRED`, and zero ambiguous provider send/readback/republish evidence are all mandatory. Without these, no call. Original cron #116 schedule, idempotency, original research/recipient IDs, provider and token are unchanged; this wake itself does not create DataForSEO work or send a mail.
+
+In the **same existing Edge** `recoverWrappedOriginalResearchSources`, quarantine the original false `VERIFIED` source event **before** safe source action recovery. Update only an exact matching original event ID, original research action ID and original `source_url`; keep old event and original timestamp, append correction evidence and set `data_quality=REJECTED_TRACKING_REDIRECT,state=error`. Use revision CAS. Reuse original research action ID to restore `waiting` with 24-hour due, clear bad tracking URL, and convey an exact no-source `SOURCE_REDIRECT_REJECTED_NOT_VERIFIED` ACK to the still-prepared/waiting original held commercial recipient. The existing #116 consumer reconciler handles contested ACKs; no hidden drop.
+
+## Accept only independent production proofs
+
+Protected Required, backend, native Supabase Preview, CodeQL; protected merge. Then independently read native applied migration/function ACL, exact original Edge version/code and natural or explicit same-original dispatcher decision `due_wrapped_source_review=true`, first-party source record `waiting` with next retry, original historical event `REJECTED_TRACKING_REDIRECT`, original recipient no-send ACK, zero new email/permission, and no duplicate on next original natural run. Technical recovery must not silently close original commercial P0; real sender authority and independently measured replies/meetings/revenue remain separate gates. No second cron, paid lookup, scheduler, recipient, provider, queue, sender or separate agent created.

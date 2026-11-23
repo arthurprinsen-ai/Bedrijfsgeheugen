@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|supabase|source-lock-869-provider-870|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "SOURCE_CANDIDATE",
+  "owner": "original protected Supabase migration-lock provider readback",
+  "root_cause": "Original PR #5878 correctly applied native migration 20261115162500 to the canonical Supabase provider, increasing provider to 870, while Git source migration-history.lock.json still attested 869 and would reject the next independent protected migration.",
+  "prevention_rule": "Original provider migration version/name readback must append to one immutable original migration source lock immediately after GitOps apply, without inventing or predeclaring any unapplied version. Existing protected lock suite compares provider-backed identities and no new migration is proposed.",
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 870,
+    "provider_last_version": "20261115162500",
+    "provider_last_name": "original_personal_source_supplier_completeness_v4",
+    "source_lock_prior_count": 869,
+    "readback_utc": "2026-11-15T15:52:42.26634Z",
+    "merged_parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5878",
+    "provider_runtime_source_verified": true,
+    "no_new_migration": true,
+    "no_parallel_release": true
+  },
+  "acceptance": [
+    "Protected exact-head Required and CodeQL",
+    "Protected main merge",
+    "Exact Git source 870 migration lock readback",
+    "Native provider still independently 870/870",
+    "No missing original LinkedIn provider effect falsely green"
+  ],
+  "false_green_forbidden": true,
+  "failure_class": "METADATA_DRIFT",
+  "scope": "DATABASE"
+}

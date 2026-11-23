@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "forecast-calibration-scope-health-truth-20261029",
+  "fingerprint": "calibration|public-scope-empty|private-due-unreported|20261029",
+  "problem": "Public calibration Edge Function records NO_DUE_CALIBRATIONS when its restricted public-scope queue is empty even if company/person calibration obligations are overdue.",
+  "observations": {
+    "total_due_obligations": 1753,
+    "person_scope_due": 1483,
+    "company_scope_due": 270,
+    "permitted_public_scope_due": 0,
+    "existing_scheduler_runs_last_24h": 24,
+    "existing_cron_job": 30,
+    "source_isolation": "Public market calibration selector intentionally permits market, segment, technology, regulation and behavior, not company or person."
+  },
+  "root_cause": "Whole-system due count is different from the deliberately restricted public LLM selector. The caller reported the narrow zero as a global zero.",
+  "corrective_change": "On zero public-scope candidates, read only a canonical aggregate count of all due obligations. Preserve the original public-only RPC and scheduler auth, log out_of_public_scope_due and NON_PUBLIC_SCOPE_BACKLOG, and never forward company/person payload to an LLM.",
+  "prevention_rule": "No agent may mark a global outcome queue empty based on a scope-limited selection. Unsupported due obligations remain OPEN with truthful owner scope; no invented calibration, closure or customer/revenue result.",
+  "release_requirement": "Exact-head Required, CodeQL and protected merge, provider three-file source parity including shared dependencies, and authenticated real production canary. Until then NOT_LIVE.",
+  "tests": [
+    "tests/brain-calibration-nonpublic-backlog-20261029.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GLOBAL_EMPTY_FROM_SCOPE_LIMITED_SELECTOR",
+    "scope": "FORECAST_CALIBRATION",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-calibration-nonpublic-backlog-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-calibration-nonpublic-backlog-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-calibration-nonpublic-backlog-20261029.test.mjs"
+    ]
+  }
+}

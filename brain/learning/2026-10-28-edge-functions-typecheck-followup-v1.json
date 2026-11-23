@@ -1,0 +1,23 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "fingerprint": "edge|type-only-deno-check-debt|20261028-followup-v1",
+  "obligation_id": "edge-functions-typecheck-20261028",
+  "failure_class": "EDGE_FUNCTION_TYPE_DEBT_BLOCKS_CHECK",
+  "root_cause": "Edge functions accumulated 77 deno check errors (untyped JSON boundaries, union results, and shared helpers with narrow parameter types). None failed the bundler, so the gate stayed green while the type check was red.",
+  "observed_evidence": {
+    "actual_sources": ["deno check per supabase/functions/*/index.ts on origin/main 134f3e7: 77 errors in 17 functions"]
+  },
+  "fix": "Type-only: typed aliases for imported shared helpers (call text unchanged), annotations on locals, and a JSDoc typing for recordMediaProofRejection. No runtime change. deno check passes for every edge function.",
+  "prevention_rule": "Every edge function must pass deno check before merge.",
+  "tests": ["tests/brain-edge-functions-typecheck-20261028.test.mjs"],
+  "compiler": {"failure_class": "EDGE_FUNCTION_TYPE_DEBT_BLOCKS_CHECK", "scope": "SUPABASE_FUNCTIONS_RUNTIME", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-edge-functions-typecheck-20261028.test.mjs"],
+    "shadow": ["tests/brain-edge-functions-typecheck-20261028.test.mjs"],
+    "canary": ["tests/brain-edge-functions-typecheck-20261028.test.mjs"]
+  },
+  "terminal_rule": "Terminal once deno check is green for all edge functions in CI."
+}

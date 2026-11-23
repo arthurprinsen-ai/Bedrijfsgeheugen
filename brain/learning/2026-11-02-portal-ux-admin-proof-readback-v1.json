@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "parent_issue": 4547,
+  "fingerprint": "portal|living-interface|admin-ux-release-observation-visibility-evidence-due|20261102-v1",
+  "failure_class": "PORTAL_ADMIN_UX_PROOF_PROJECTION_ABSENT",
+  "obligation_id": "portal-v2-original-admin-ux-proof-20261102-v1",
+  "root_cause": "The existing original admin System Map projected aggregate incident counts and provider release state, but not the already-written original ONE BRAIN observed-state entry for the V1 UX rollout; owner had no authenticated, proof-aware panel for open UX acceptance gaps.",
+  "fix": "Use an original admin-only, tenant-gated server-side allowlisted Supabase observation read and compact projection on existing System Map. The client independently compares stored production SHA against current provider-published SHA, and distinguishes technical release proof from unverified WCAG, SUS, tenant testing and award evaluation.",
+  "tests": [
+    "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+  ],
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
+    "original_observation": "portal-v2-living-interface-20261102-1400-3556-postmerge-observation",
+    "old_ui": "portal-v2/modules/powerhouse-observability.js",
+    "new_read": "brain/observability/portal-ux-release-proof.mjs",
+    "claim": "CANDIDATE_NOT_LIVE_UNTIL_AUTHENTICATED_ADMIN_BROWSER_READBACK"
+  },
+  "prevention_rules": [
+    "Every original UX release observation has an admin-only allowlisted projection; no new persistence and no raw incident evidence in the client.",
+    "Technical live requires current published Netlify SHA match, not stored status text.",
+    "Expired record, provider error or missing auth gives UNVERIFIED, never 0 or green.",
+    "Independent authenticated admin browser, two-tenant and WCAG tests remain separate acceptance gates."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-ux-admin-proof-readback-20261102.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_ADMIN_UX_PROOF_PROJECTION_ABSENT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "owner": "original Portal V2 admin observability and ONE BRAIN production-state owner",
+  "terminal_rule": "Cannot call verified portal visibility until protected merge, exact Netlify deployment, authorized admin+tenant browser readback and no-leak tests pass."
+}

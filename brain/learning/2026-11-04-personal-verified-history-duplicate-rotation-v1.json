@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CANDIDATE_NEEDS_PROTECTED_RELEASE_AND_REAL_UNIQUE_POST",
+  "fingerprint": "linkedin-personal|7day-source-rotation-misses-old-nested-identity-duplicate|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original powerhouse-content-orchestrator personal founder editorial and source reserve owner",
+  "failure_class": "HISTORICAL_DUPLICATE_SOURCE_EVENT_IGNORED",
+  "root_cause": "Original daily publication 2026-11-04 after actual scheduled 07:00Z source-clean publisher ran but global story reservation rejected the personal founder post as STORY_FAMILY_DUPLICATE matched 2026-10-27. Original pre-generation source reserve and source selection use only 7 prior publication dates, thus ignore the 8-day-old published story; moreover they examine prior obligation evidence.result_event/friction_event/source_focus_context only at top level. Real provider published Oct 27 obligation stores the genuine events under evidence.identity_gate_evidence: result_event.event_type=commercial_heartbeat and friction_event.event_type=source_health_evaluated. Current Nov 4 source has the same exact event types. The original source-rotation recent history therefore remains empty and repeatedly regenerates an already used source family, while correct global duplicate gate blocks provider side effects.",
+  "evidence": {
+    "utc_observed": "2026-11-04T07:01:58Z",
+    "global_gate": "GLOBAL_POST_DUPLICATE_BLOCKED:STORY_FAMILY_DUPLICATE",
+    "matched_reservation_key": "claim:2026-10-27:linkedin_personal",
+    "publication_date": "2026-11-04",
+    "original_source_recommendation": "fdfb9a10-c56e-4fe1-88b3-f8275c2860a8",
+    "prior_event_types": [
+      "commercial_heartbeat",
+      "source_health_evaluated"
+    ],
+    "today_event_types": [
+      "commercial_heartbeat",
+      "source_health_evaluated"
+    ],
+    "last_provider_create_success": false,
+    "independent_personal_post_proven": false
+  },
+  "fix": "Extend existing original source reservation/selection history from 7 to 30 days and read true nested original identity_gate_evidence result/friction/focus event_types from published obligations through a single strict shared helper, retaining legacy top-level and JSONB string support. Rejected old source families cannot be recycled via new UUID or paraphrase. The exact global provider duplicate and owner permission gates remain unchanged.",
+  "prevention_rule": "Before proposing a new founder story, compare immutable verified event family against original recently published evidence (including nested identity context) for a lookback longer than the real duplicate-rejection window observed. Never treat no top-level event keys as absence of real prior source proof; do not relax global uniqueness. Continue independent provider-ID and URL readback for final publish.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-verified-history-duplicate-rotation-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-verified-history-duplicate-rotation-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-verified-history-duplicate-rotation-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "HISTORICAL_DUPLICATE_SOURCE_EVENT_IGNORED",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Exact-head protected Required/BRAIN/CodeQL+native Supabase Preview, protected merge and original 20-file Edge bundle byte-source parity; original source rotation generates a genuinely different verified story, real independent LinkedIn reviewer and global duplicate gate approve, true authorized provider create and readback. Otherwise personal channel remains BLOCKED; no fake green."
+}

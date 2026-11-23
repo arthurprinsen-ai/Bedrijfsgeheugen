@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|supabase|provider-applied-cro-consumer-881-history-lock-drift|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Protected CRO consumer PR #5973 applied real production migration 20261117192500_original_cro_consumer_source_diagnostics_v1, while main's migration-history.lock.json retained only 880 identities versus 881 canonical Supabase provider migrations. The unrelated website design PR #5975 had correctly added the missing identity, but Required scope budget rejected its now-11-file mixed change, and could not release.",
+  "prevention": [
+    "The original migration release owner must compare applied provider version/name identities against the committed lock before returning publication authority; commit exact provider-parity lock in a separate protected release when other lanes are affected.",
+    "Retain original 880 identities; register the 881st independently read back only, with genuine repo SQL source. Never modify provider history to pass CI, weaken the scope budget or bypass branch protections.",
+    "When one migration lock causes another lane's scope failure, isolate by original ownership, use the same verified lock bytes, then rerun protected PR checks, merge only on success and independently verify production.",
+    "Keep ONE BRAIN/Heartbeat outcomes OPEN until actual consumer acknowledgement, provider outcome and applied learning; a successful PR is not a business outcome."
+  ],
+  "evaluation": {
+    "prior_committed_lock_count": 880,
+    "expected_provider_count": 881,
+    "added_exact_identity": {
+      "version": "20261117192500",
+      "name": "original_cro_consumer_source_diagnostics_v1"
+    },
+    "existing_regressions": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+      "tests/supabase-migration-history-integrity.test.mjs"
+    ],
+    "dependent_pr": 5975,
+    "initial_blocked_run": 44156831371,
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5973",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5975",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44156831371",
+    "Canonical Supabase project adhjwmvyoixzjtmiroln: 881 applied rows, latest 20261117192500; independently read back at 2026-11-17T19:22Z"
+  ],
+  "acceptance": "Exact-head Required/CodeQL, protected merge, original website PR #5975 strict 10-file scope retest, exact Netlify production SHA and public proof; keep content and commercial outcome obligations OPEN until downstream measured/learned.",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_MIGRATION_LOCK_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false,
+    "scope_note": "Metadata lock version/name parity only; no SQL migration, no auth changes, no false provider claims."
+  }
+}

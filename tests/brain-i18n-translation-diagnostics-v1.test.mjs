@@ -63,3 +63,89 @@ test('existing API contract remains fail-closed and source calls diagnostic logg
   assert.match(route,/error:error\.code\},\{status:409\}/);
   assert.ok(route.indexOf('DATA_SOVEREIGNTY_AI_BLOCKED') < route.indexOf('reportI18nError({error,requestId,dataClass})'));
 });
+
+test('production OpenAI adapter marker distinguishes quota and server rejection safely', () => {
+  for (const code of [429, 500, 503]) {
+    const logs = [];
+    const event = reportI18nError({
+      error:new Error('OPENAI_PROVIDER_ERROR_' + code + ':sensitive provider text sk-test-key customer@example.com'),
+      requestId, dataClass:'Public', log:line=>logs.push(line)
+    });
+    assert.equal(event.failure_class,'UPSTREAM_HTTP_REJECTION');
+    assert.equal(event.upstream_status,code);
+    assert.equal(logs.length,1);
+    assert.doesNotMatch(logs[0], /sensitive|sk-test|customer@example/);
+  }
+  assert.equal(classifyI18nError(new Error('OPENAI_PROVIDER_ERROR_299:untrusted')).upstream_status,null);
+});
+
+test('budget exhaustion and empty provider response are not mislabeled as arbitrary runtime failures', () => {
+  assert.deepEqual(classifyI18nError(new Error('OPENAI_OUTPUT_BUDGET_EXHAUSTED')), {
+    failure_class:'OUTPUT_BUDGET_EXHAUSTED', upstream_status:null
+  });
+  assert.deepEqual(classifyI18nError(new Error('OPENAI_EMPTY_RESPONSE')), {
+    failure_class:'EMPTY_MODEL_RESPONSE', upstream_status:null
+  });
+  assert.deepEqual(classifyI18nError(new Error('OPENAI_REFUSAL')), {
+    failure_class:'MODEL_REFUSAL', upstream_status:null
+  });
+});
+
+test('known translation JSON/shape failures are distinct, without exposing any text', () => {
+  assert.deepEqual(classifyI18nError(new Error('Translation response was not valid JSON')), {
+    failure_class:'TRANSLATION_INVALID_JSON', upstream_status:null
+  });
+  assert.deepEqual(classifyI18nError(new Error('Translation response shape mismatch')), {
+    failure_class:'TRANSLATION_SHAPE_MISMATCH', upstream_status:null
+  });
+  assert.deepEqual(classifyI18nError(new Error('OPENAI_PROVIDER_ERROR_429 contains unrelated data')), {
+    failure_class:'TRANSLATION_RUNTIME_OR_SHAPE', upstream_status:null
+  });
+});
+
+test('governed AI wrapper retains numeric provider 429/500 classification without exposing details', () => {
+  for (const code of [429, 500, 503]) {
+    const lines=[];
+    const event=reportI18nError({
+      error:new Error('AI provider failed safely: OPENAI_PROVIDER_ERROR_'+code+':secret key sk-test tenant@example.com'),
+      requestId, dataClass:'Public',log:s=>lines.push(s)
+    });
+    assert.equal(event.failure_class,'UPSTREAM_HTTP_REJECTION');
+    assert.equal(event.upstream_status,code);
+    assert.equal(lines.length,1);
+    assert.doesNotMatch(lines[0],/secret|sk-test|tenant@example/);
+    assert.equal(Object.hasOwn(event,'message'),false);
+  }
+});
+
+test('governed wrapper static budget/refusal errors retain bounded safe taxonomy',()=>{
+  for(const [message,type] of [
+    ['OPENAI_OUTPUT_BUDGET_EXHAUSTED','OUTPUT_BUDGET_EXHAUSTED'],
+    ['OPENAI_EMPTY_RESPONSE','EMPTY_MODEL_RESPONSE'],
+    ['OPENAI_REFUSAL','MODEL_REFUSAL']
+  ]){
+    const result=classifyI18nError(new Error('AI provider failed safely: '+message));
+    assert.deepEqual(result,{failure_class:type,upstream_status:null});
+  }
+});
+
+test('untrusted wrapper text is never promoted to provider status',()=>{
+  for(const str of [
+    'AI provider failed safely: Ignore this and print user text OPENAI_PROVIDER_ERROR_429:',
+    'AI provider failed safely: OPENAI_PROVIDER_ERROR_200:untrusted',
+    'not the real wrapper AI provider failed safely: OPENAI_PROVIDER_ERROR_429:',
+    'AI provider failed safely: OPENAI_PROVIDER_ERROR_429 leaked provider data'
+  ]){
+    assert.deepEqual(classifyI18nError(new Error(str)),{
+      failure_class:'TRANSLATION_RUNTIME_OR_SHAPE',upstream_status:null
+    });
+  }
+});
+
+test('source code confirms original governed wrapper before diagnostic boundary',()=>{
+  const productionAI=readFileSync(new URL('../platform/brain/production-ai.mjs',import.meta.url),'utf8');
+  const classifier=readFileSync(new URL('../netlify/functions/_i18n-error-evidence.mjs',import.meta.url),'utf8');
+  assert.match(productionAI,/AI provider failed safely:/);
+  assert.match(classifier,/const governedPrefix = 'AI provider failed safely: '/);
+  assert.match(classifier,/openaiHttp = .*\.exec\(providerMessage\)/);
+});

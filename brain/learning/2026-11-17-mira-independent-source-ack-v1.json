@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|mira|valid-business-source-503-because-personal-fact-unverified|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "root_cause": "Original #120 Mira radar merged primary business supply.ok with independent personalPublishingSourceReady in allSourceReady and used this combined value for HTTP 503/200. At actual 2026-11-17 20:02 UTC native provider response for runDate 2026-11-18 returned HTTP503 SOURCE_RECOVERY_DUE despite business sourceRecovery=null, materialized.ok=true, real source score 0.913; sole unmet personal recovery reason PERSONAL_USER_EXPERIENCE_NOT_VERIFIED. This could cause the original business-source caller to treat a usable Mira source as failed when an unrelated first-person story is unavailable.",
+  "evidence": [
+    "Supabase canonical project adhjwmvyoixzjtmiroln native pg_net response net._http_response.id=34368, 2026-11-17T20:02:00Z, HTTP503 with exact JSON business source ready and personal source incomplete",
+    "Supabase Edge function powerhouse-mira-problem-radar version1126 and original 2026-11-17 20:02:38Z HTTP503",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232#issuecomment-6959388727"
+  ],
+  "prevention": [
+    "Keep source-business and personal first-person user-fact verdicts separate in the existing original Mira producer transport; business source HTTP200 only when source materialization and writeback are real and provider errors empty.",
+    "Preserve personalSourceState=SOURCE_RECOVERY_DUE, sendsAuthorized=false, original BRAIN failure and personal publication hard gates until genuine user-confirmed source.",
+    "Never treat HTTP200 business source ACK as Meta publication, LinkedIn personal post, consumer PROCESSED, Heartbeat metric, financial outcome or applied learning.",
+    "Keep original #120 source producer, #140 content orchestrator, #171 ONE BRAIN, #177 metrics, no extra scheduler/agent/queue/provider write. Maintain exact provider GET, 0.940 Mira face gate, dedupe."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-independent-personal-source-20261117.test.mjs",
+      "tests/brain-original-personal-radar-source-parity-20261115.test.mjs",
+      "tests/brain-mira-radar-http-contract-20261113.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-original-provider-rejections-20261114.test.mjs",
+      "tests/brain-mira-goto-provider-resolution-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-independent-personal-source-20261117.test.mjs"
+    ],
+    "expected_mira_business_ack_on_real_20261118_data": 200,
+    "expected_personal_source_state": "SOURCE_RECOVERY_DUE",
+    "provider_post_proven": false
+  },
+  "compiler": {
+    "failure_class": "CROSS_CHANNEL_SOURCE_ACK_COUPLING",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false,
+    "scope_note": "Pure result separation in existing authenticated Edge response; no credential changes, no new sends, no lowered first-person/asset gates."
+  },
+  "acceptance": "Protected exact-head Required and CodeQL, canonical Supabase Edge deployment and independently read back deployed exact source, next natural #120 HTTP result, original Mira winner/media/publisher proof and personal original source gap must remain separately tracked; entire content and revenue loop not green until named BRAIN consumer and Heartbeat evidence."
+}

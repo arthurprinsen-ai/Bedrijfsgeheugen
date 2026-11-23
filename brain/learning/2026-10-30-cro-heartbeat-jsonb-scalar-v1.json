@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "status": "CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|cro|brain-jsonb-scalar-after-natural-heartbeat|20261030-v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "owner": "original powerhouse-commercial-heartbeat-runner",
+  "root_cause": "First genuine post-merge natural Heartbeat at 2026-10-30 08:22Z successfully created canonical brain_records cro-commercial-evidence:2026-10-30, but postgres.js typed the JSON.stringify(snapshot) parameter as JSONB string scalar ($2::jsonb); payload->>'contract' was NULL and payload->'gates' NULL. The code's post-commit check correctly refused to claim success.",
+  "observed_evidence": {
+    "record_id": "cro-commercial-evidence:2026-10-30",
+    "tenant": "canonical",
+    "post_commit_payload_type": "string",
+    "post_commit_result_type": "object",
+    "readback_verified": false,
+    "source": "Supabase production SQL independent readback, Netlify original natural Heartbeat 2026-10-30 08:22Z"
+  },
+  "fix": "Cast input as TEXT before JSONB parse: ($2::text)::jsonb; require jsonb_typeof(payload)='object' in independent post-commit readback. Re-run original natural Heartbeat, verify object payload and seven gates. Do not fabricate lead or revenue.",
+  "prevention_rule": "Never use a JSON.stringify() string with a $n::jsonb typed parameter in postgres.js without checking actual provider serialization. For every technical write, test jsonb_typeof(payload)='object', exact contract, same record_id, tenant and post-commit readback; do not confuse transport success with stored structured evidence.",
+  "regression_contract": "tests/brain-cro-commercial-runtime-portal-20261030.test.mjs must reject scalar-string payload, enforce explicit text-to-jsonb parse and object-kind readback.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-commercial-runtime-portal-20261030.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-commercial-runtime-portal-20261030.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-commercial-runtime-portal-20261030.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "protected PR merge",
+    "original Supabase Edge exact source version",
+    "next natural Netlify background → Edge call",
+    "canonical ONE BRAIN JSONB object and seven verified boolean flags readback",
+    "existing admin-only portal projection",
+    "independent commercial buyer/payment learning remains separate"
+  ]
+}

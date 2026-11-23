@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { filterSettledCoreFailures } from '../tools/site-shell/core-request-recovery.mjs';
 
 const contract=JSON.parse(fs.readFileSync('config/powerhouse-website-cross-browser-assurance-v1.json','utf8'));
 const workflow=fs.readFileSync('.github/workflows/website-cross-browser-screenshot-assurance.yml','utf8');
@@ -128,11 +129,39 @@ test('canonical V18 navigation exposes machine-readable open state',()=>{
   assert.match(core,/button\.addEventListener\('click'/);
 });
 
-test('successful final document load suppresses only settled transient document retry failures',()=>{
+test('settled document retry guard remains wired into full three-engine and core request gates',()=>{
+  const recovery=fs.readFileSync('tools/site-shell/core-request-recovery.mjs','utf8');
   assert.match(runner,/filterSettledCoreFailures/);
-  assert.match(runner,/ERR_CONNECTION_RESET/);
-  assert.match(runner,/pathname===finalPath/);
-  assert.match(runner,/status>=200&&status<400/);
   assert.match(runner,/failedCore:settledFailedCore/);
   assert.match(runner,/finalUrl=page\.url\(\)/);
+  assert.match(recovery,/ERR_CONNECTION_RESET/);
+  assert.match(recovery,/status<200\|\|status>=300/);
+  assert.match(recovery,/canonicalDocumentPath\(pathname\)===finalPath/);
+});
+
+test('only a fully settled 2xx canonical trailing-slash document reset is ignored',()=>{
+  const reset='document:/blog/wat-is-een-bedrijfsgeheugen:net::ERR_CONNECTION_RESET';
+  const finalUrl='https://www.bedrijfsgeheugen.nl/blog/wat-is-een-bedrijfsgeheugen/';
+  assert.deepEqual(filterSettledCoreFailures([reset],{status:200,finalUrl}),[]);
+  assert.deepEqual(filterSettledCoreFailures(['document:/blog/wat-is-een-bedrijfsgeheugen/:net::ERR_CONNECTION_RESET'],{status:200,finalUrl}),[]);
+  // Both directions: a canonical initial slash can settle on its no-slash alias.
+  assert.deepEqual(filterSettledCoreFailures(['document:/blog/example/:net::ERR_ABORTED'],{status:200,finalUrl:'https://www.bedrijfsgeheugen.nl/blog/example'}),[]);
+});
+
+test('a failed or different document, script, stylesheet or other network error never becomes green',()=>{
+  const reset='document:/blog/wat-is-een-bedrijfsgeheugen:net::ERR_CONNECTION_RESET';
+  const finalUrl='https://www.bedrijfsgeheugen.nl/blog/wat-is-een-bedrijfsgeheugen/';
+  for(const status of [null,0,301,404,500]){
+    assert.deepEqual(filterSettledCoreFailures([reset],{status,finalUrl}),[reset],String(status));
+  }
+  assert.deepEqual(filterSettledCoreFailures([reset],{status:200,finalUrl:'not-a-url'}),[reset]);
+  assert.deepEqual(filterSettledCoreFailures([reset],{status:200,finalUrl:'https://www.bedrijfsgeheugen.nl/andere-pagina/'}),[reset]);
+  for(const failure of [
+    'document:/blog/wat-is-een-bedrijfsgeheugen:net::ERR_CERT_AUTHORITY_INVALID',
+    'document:/blog/wat-is-een-bedrijfsgeheugen:net::ERR_CONNECTION_REFUSED',
+    'script:/js/site.js:net::ERR_CONNECTION_RESET',
+    'stylesheet:/css/main.css:net::ERR_CONNECTION_RESET'
+  ]){
+    assert.deepEqual(filterSettledCoreFailures([failure],{status:200,finalUrl}),[failure],failure);
+  }
 });

@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-09",
+  "fingerprint": "cro|first-party-generic-cta-identity|20261109-v1",
+  "status": "PROTECTED_SOURCE_CANDIDATE_NOT_LIVE",
+  "owner": "original-website-analytics-cro",
+  "root_cause": "Original privacy-safe first-party click code used data-bg-meet, then element id, then tagName. It ignored already authored data-bg-conversion and data-bg-order-cta. As a result canonical click labels can become generic BUTTON/A; experiment generator may mistake these telemetry placeholders for actual website copy.",
+  "observed_evidence": {
+    "aggregation_window_days": 30,
+    "pricing_pageviews": 533,
+    "pricing_clicks": 87,
+    "pricing_generic_button_clicks": 26,
+    "pricing_named_cta_clicks_observed": 0,
+    "interpretable_visitor_conversion_not_proven": true,
+    "source": "Supabase public.bg_interacties aggregate without PII",
+    "separate_sender": "existing tools/seo-order-engine/measurement.mjs exclusive owner of growth-page commercial events"
+  },
+  "fix": "Prioritize author-controlled static conversion descriptors in original assets/meting.js; never inspect customer-visible textContent/innerText/form field values, preserve same event and original ACK queue",
+  "prevention": "No AI copy proposal based on tagName-only click label, missing conversion marker or underpowered/consent-limited sample. Separate event label quality from real CTA click and paid order.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-cta-safe-label-20261109.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-cta-safe-label-20261109.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-cta-safe-label-20261109.test.mjs"
+  ],
+  "test_evidence": {
+    "expected": "safe static action labels before fallback HTML tag; no raw visitor text, no second commercial event producer",
+    "actual_provider_write": "NOT_YET_VERIFIED",
+    "deployment": "protected GitHub -> Netlify production exact commit -> browser and original event/ACK"
+  }
+}

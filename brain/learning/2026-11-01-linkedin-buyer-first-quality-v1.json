@@ -1,0 +1,62 @@
+{
+  "fingerprint": "powerhouse|linkedin|public-internal-status-instead-of-buyer-story|20261101-v1",
+  "observed_on": "2026-11-01",
+  "source_type": "user_supplied_linkedin_screenshot_and_canonical_publication_obligation",
+  "external_post_id": "urn:li:share:7522660274441670656",
+  "screenshot_observation": "Generic AI mission opening; internal 273 pages, 30 sources, 280 queued/22 executed actions and 4 red/3 amber assurance signals; no user-visible views or orders in screenshot",
+  "root_cause": "Personal founder generator feeds internal builder status into public copy; editorial v3 lacks generic hook and internal counters veto; company counterpart lacks same counters check.",
+  "owner": "original Powerhouse content-orchestrator/prepublish reviewer/exclusive social publisher and original social CRO learning",
+  "fix_source": [
+    "supabase/functions/_shared/personal-linkedin-editorial-contract.mjs",
+    "supabase/functions/_shared/company-linkedin-editorial-contract.mjs",
+    "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "portal-v2/modules/andere-data.js",
+    "netlify/functions/powerhouse-cro-other-data.mjs"
+  ],
+  "prevention": "Buyer-first opening, real original problem, situation-cause-consequence-clear takeaway; reject status reports before provider claim; allow one bounded valid source-backed revision; no duplicate repost; original provider and consent protection",
+  "regression": [
+    "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
+    "tests/brain-linkedin-company-editorial-contract-v1.test.mjs",
+    "tests/brain-social-cro-portal-evidence-v1.test.mjs"
+  ],
+  "status": "SOURCE_CHANGE_PROPOSED_NOT_DEPLOYED",
+  "proof_to_obtain": [
+    "protected_required_brain_codeql",
+    "exact_main_merge",
+    "supabase_edge_runtime_parity",
+    "netlify_ready_exact_sha",
+    "new_provider_post_id_and_independent_readback",
+    "48h_engagement_comparable",
+    "7d_consent_attributed_lead_order_evidence",
+    "next_original_learning_application_and_recurrence_check"
+  ],
+  "measured_views": null,
+  "verified_customer_leads": null,
+  "verified_paid_orders": null,
+  "confidence": "impact_unverified",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "legal_safety": "no second scheduler, no bypass of OAuth, identity, CMS, global dedupe or user consent",
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "maturity": "VALIDATED",
+  "candidateOnly": true,
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-editorial-contract-v1.test.mjs",
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
+      "tests/brain-social-cro-portal-evidence-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "1 Nov user screenshot and original Supabase personal PUBLISHED ID; no verified view or lead uplift",
+    "pending": "protected Required/BRAIN/CodeQL, exact runtime production parity, next-original provider post + independent readback, comparable measured commercial effect"
+  },
+  "release_status": "SOURCE_CANDIDATE_NOT_LIVE"
+}

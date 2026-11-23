@@ -112,7 +112,8 @@
       "tools/genereer-sitemap.mjs",
       "afsluiten.html",
       "zelfscan.html",
-      "tools/bouw-v18-production-core.mjs"
+      "tools/bouw-v18-production-core.mjs",
+      "platform/agents/agent-team.mjs"
     ],
     "runtimeApplicabilityAuthority": "brain/contracts/production-readback-v1.json",
     "netlifyApplicabilityAuthority": "tools/delivery/netlify-deployment-applicability.mjs",

@@ -1,0 +1,46 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "supabase|migration-history|provider-805-source-801|20261105-v1",
+  "owner": "existing original Supabase migration source owner and ONE BRAIN protected recovery",
+  "compiler": {
+    "failure_class": "SUPABASE_MIGRATION_HISTORY_SOURCE_DRIFT",
+    "scope": "SUPABASE_PROVIDER_SOURCE_PARITY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Four official Supabase migrations (20261105080000, 20261105093000, 20261105102500, 20261105111500) were applied at the provider and committed as executable SQL, but supabase/migration-history.lock.json stayed at 801 identities. Every original BRAIN backend lane after that merge failed on six migration-lock tests, so the original terminal closure reported TERMINAL_CRITICAL_GATE_FAILED:BRAIN on 26 of 40 runs since 2 November. The 4 November prevention rule existed only as prose in AGENTS.md; nothing enforced the lock append in the same lineage as the migration.",
+  "prevention_rule": "A provider-applied migration is not closed until its exact version and name are appended to the original lock in the same protected lineage. Read all provider version/name pairs, compare them to supabase/migrations/*.sql and the lock, append only missing identities, advance captured_at monotonically, never edit or reorder existing rows and never replay SQL.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42020903893",
+      "Original BRAIN backend lane on 4288508af43763a58855a29f7bb181b002d4dd7d: 6 failing migration-lock tests, 801 !== 805"
+    ],
+    "current": [
+      "2026-11-05T12:11:40.805Z original Supabase schema_migrations has exactly 805 rows, latest 20261105111500",
+      "Comparison of the 801 existing lock rows against the new lock: 0 modified, 0 lost, 4 appended",
+      "Local run of the five failing test files after the append: 22 of 22 pass"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_BRAIN_AND_TERMINAL",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

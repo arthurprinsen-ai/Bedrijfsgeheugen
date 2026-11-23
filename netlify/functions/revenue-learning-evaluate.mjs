@@ -83,7 +83,7 @@ export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date(),
     const actionEvidence=await reconcile;
     const due=await duePromise;
     const bounded=selectDueRevenueBatch(due,{now:now(),limit:maxDueEvidence});
-    let evaluated=0,missingVerifiedSource=0,insufficientCohort=0,noComparableMetric=0;
+    let evaluated=0,settledUnverified=0,missingVerifiedSource=0,insufficientCohort=0,noComparableMetric=0;
     // Bounded concurrency: targets are independent (idempotent keys per evidence row), so a small
     // worker pool replaces strictly serial gateway round-trips that exceeded the hourly time limit.
     const evaluateTarget=async target=>{
@@ -93,6 +93,12 @@ export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date(),
         missingVerifiedSource++;
         await active.recordObligation({id:`source:${target.evidenceId}`,type:'VERIFIED_SOURCE_REQUIRED',
           status:'OPEN',contentId:target.contentId,windowHours:target.windowHours||0});
+        // Whether a row carries a verified source depends on that row alone. Once the typed obligation is
+        // recorded the row is settled until its data really changes (updated_at > evaluated_at), instead of
+        // staying due forever and occupying evaluation slots every hour. Cohort/metric gaps depend on OTHER
+        // rows and are deliberately not settled here.
+        await active.markEvidenceEvaluated(target.evidenceId,now().toISOString());
+        settledUnverified++;
         return;
       }
       const rawCohort=await active.listCohort({target,limit:30});
@@ -129,7 +135,7 @@ export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date(),
     const projection=await refreshProjection(active,now);
     return {contract:'REVENUE_LEARNING_BOUNDED_VERIFIED_MULTI_CHANNEL-v1',
       evaluated,total:due.length,attempted:bounded.length,unprocessedDue:Math.max(0,due.length-bounded.length),
-      missingVerifiedSource,insufficientCohort,noComparableMetric,
+      missingVerifiedSource,settledUnverified,insufficientCohort,noComparableMetric,
       projectionVersion:projection.version,projectedLearnings:projection.learnings.length,actionEvidence};
   };
 }

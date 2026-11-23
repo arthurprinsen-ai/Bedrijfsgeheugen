@@ -40,6 +40,7 @@
   ],
   "runtimeClosurePathPrefixes": [
     "blog/",
-    "sitemap.xml"
+    "sitemap.xml",
+    "config/bg-static-i18n-en.d/powerhouse-blog-"
   ]
 }

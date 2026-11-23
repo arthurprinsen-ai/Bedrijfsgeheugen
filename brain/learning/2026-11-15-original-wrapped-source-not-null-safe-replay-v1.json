@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|relationship-research|same-source-safe-retry-null-url-schema-violation|20261115-v1",
+  "root_cause": "Native production Supabase source_url on powerhouse_sales_actions is NOT NULL DEFAULT ''. Original protected #5852 successfully deployed same-worker source wake and historical false VERIFIED event correction, but the same Edge recovery tried to update the original research source action to waiting with source_url:null and received real Postgres 23502 / HTTP 503. The prior historical event correction succeeded, but source action remained done and original recipient remained safely prepared with source-specific evidence required.",
+  "scope": "ORIGINAL_COMMERCIAL116_RELATIONSHIP_RESEARCH_SCHEMA_SAFE_RETRY",
+  "owner": "existing original #116 relationship public research Edge and original commercial recipient, existing ONE BRAIN reliability/data-quality owner",
+  "prevention_rule": "On rejected tracking URL, canonical source_url text NOT NULL must be set to schema-default empty string '', never SQL null. Preserve original rejected source URL as a quarantined audit-only evidence field; public_research_execution.source_url may be null as internal unverified metadata. Keep original research action IDs and owner CAS/no-send gates, historical event REJECTED quality, 24h bounded retry and independent consumer no-source ACK; prohibit guessed email, consent inference and parallel schedulers.",
+  "regression": [
+    "tests/brain-original-serp-tracked-redirect-safe-retry-20261115.test.mjs",
+    "tests/brain-original-116-wrapped-source-dispatch-wakeup-20261115.test.mjs"
+  ],
+  "evidence": {
+    "observed_at_utc": "2026-11-15T11:38:50.223646Z",
+    "protected_parent_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5852",
+    "original_dispatch_request_id": 31982,
+    "native_http_status_code": 503,
+    "native_error_class": "NOT_NULL_VIOLATION_ON_SOURCE_URL",
+    "native_schema": "public.powerhouse_sales_actions.source_url text NOT NULL DEFAULT ''",
+    "original_research_action_id": "1be12b8f-8d43-42e1-b0da-d8ce20291ee4",
+    "original_research_state_after_503": "done",
+    "historical_original_source_event_id": "05618504-b072-4c35-ade3-d365bdfd70fe",
+    "historical_event_after_503": "state=error,data_quality=REJECTED_TRACKING_REDIRECT",
+    "original_recipient_action_id": "e5047182-405c-43f2-8c25-7674f1a2cb70",
+    "original_recipient_after_503": "prepared,SOURCE_SPECIFIC_EVIDENCE_REQUIRED,provider_send_authorized=false",
+    "external_mail_sent_from_this_candidate": 0,
+    "release_state": "CANDIDATE_UNTIL_PROTECTED_EDGE_RELEASE_AND_REPLAY_READBACK"
+  },
+  "learning_state": "OBSERVED_NOT_CLOSED",
+  "compiler": {
+    "failure_class": "NOT_NULL_SOURCE_URL_DURING_ORIGINAL_SAFE_SOURCE_RETRY",
+    "scope": "BACKEND_EDGE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-serp-tracked-redirect-safe-retry-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-116-wrapped-source-dispatch-wakeup-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-serp-tracked-redirect-safe-retry-20261115.test.mjs",
+      "tests/brain-original-116-wrapped-source-dispatch-wakeup-20261115.test.mjs"
+    ]
+  }
+}

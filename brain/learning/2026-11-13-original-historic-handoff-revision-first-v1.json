@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|original-171-historical-content-handoff-revision-starvation|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_CONTENT_HANDOFF_HISTORIC_SOURCE_REVISION_STARVED_BY_BOUNDED_AGE_SORT",
+    "scope": "ORIGINAL_CHAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Post migration 847 real source has 21 incomplete SKIPPED no-publish rows correctly marked EVIDENCE_DUE. The original BRAIN #171 consumer updated 13 to exact new 2026-11-13T15:37:12.080846Z source_revision but left 8 at earlier source revisions despite multiple successful natural #171 runs. Real production SQL yielded 127 eligible historical content rows sorted only by prior BRAIN.updated_at and limited to 48; the 8 revision-mismatched rows ranked 52..114, entirely outside the next batch. Existing OPEN rows with unchanged prior ACK can occupy all 48 slots. This is a data handoff scheduling defect, not a missing cron or completed no-publish decision.",
+  "prevention_rule": "Within ONLY original public.powerhouse_content_handoff_receipts_v1 original #171 scheduler, sort historical records with missing producer revision or original consumer receipt revision before oldest existing BRAIN.updated_at, still LIMIT 48 and preserving all other original semantics and service_role ACL. Always compare original source updated_at UTC-microsecond revision to BOTH BRAIN evidence.source_revision and evidence.consumer_ack.source_revision. No duplicate writer, no synthetic terminal, no blind provider resend; monitor 21/21 native source-to-BRAIN exact revisions and reopen same fingerprint on regression.",
+  "evidence": [
+    "At 2026-11-13 15:49 UTC original #171 cron successful, no failures in prior hour, but only 13/21 incomplete source obligations had exact latest BRAIN source_revision; all 21 remained OPEN with original no-publish action.",
+    "Read-only SQL replicating LIVE original historic CTE: 127 eligible historic entries, 8 source-revision mismatches, ranks min 52 max 114, all eight rank > 48 while LIMIT=48; seven blog and one linkedin_company.",
+    "Real production function 44,079 chars matches original source migration 20261113132000 byte-for-byte except trailing newline. Only first historical ORDER BY is changed; separate social-learning limited batches are untouched.",
+    "Git source lock/provider applied 847 match after PR #5743; not evidence of full business loop, publication or measurable revenue."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-historic-handoff-revision-first-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-historic-handoff-revision-first-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-historic-handoff-revision-first-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "original_executor_only": true,
+    "original_batch_size": 48,
+    "no_parallel_scheduler": true,
+    "no_new_publisher": true,
+    "original_acl_retained": true,
+    "existing_source_evidence_unchanged": true,
+    "no_synthetic_ack": true,
+    "protected_release_required": true
+  },
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PROTECTED_CANDIDATE_REAL_CONSUMER_READBACK_REQUIRED"
+}

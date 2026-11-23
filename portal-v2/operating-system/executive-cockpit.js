@@ -1,3 +1,6 @@
+import {strategicAdvisorMarkup} from './strategic-advisor.js';
+import {customerValueBriefingMarkup} from './customer-value-briefing.js';
+import {outcomeFeedbackMarkup,verifiedCustomerOutcome} from './outcome-feedback.js';
 import {buildExecutiveProjection} from './executive-projection.js';
 import {mountOperatingSystemPage,OPERATING_SYSTEM_PAGES} from './operating-system-ui.js';
 import {ensureOperatingSystemStyles} from './styles.js';
@@ -8,12 +11,7 @@ const pct=value=>value==null?'—':`${Math.round(value)}%`;
 
 // The final two steps of the existing daily cockpit consume only canonical,
 // tenant-scoped outcome envelopes. A projection is not proof of realization.
-const provenOutcome=item=>{
- const terminal=String(item?.verification_status||item?.status||'').toUpperCase();
- return ['VERIFIED','OUTCOME_VERIFIED','REALIZED_VERIFIED'].includes(terminal)
-  && item?.evidence_health?.status==='healthy'
-  && Array.isArray(item?.source_refs)&&item.source_refs.length>0;
-};
+const provenOutcome=verifiedCustomerOutcome;
 function dailyFeedbackCards(model={}){
  const outcomes=Array.isArray(model.outcomes)?model.outcomes:[];
  const outcome=outcomes.find(provenOutcome);
@@ -66,12 +64,15 @@ export function executiveCockpitMarkup(model){
  if(!model.available)return `<section class="os-executive os-executive-unavailable" data-os-status="unavailable">
   <div class="os-head"><div><small>Bedrijfsgeheugen · ${esc(model.role_label||model.role||'Directie')}</small><h2>Wat moet ik vandaag weten, beslissen en doen?</h2><p class="os-subtitle">De cockpit blijft de startpagina. Cijfers en adviezen verschijnen pas zodra ze tenant-scoped en bewezen zijn.</p></div><span>Data wordt geladen</span></div>
   ${renderCompanyIntelligenceContext(model,'executive-cockpit')}
+  ${customerValueBriefingMarkup(model)}
+  ${strategicAdvisorMarkup(model)}
   <div class="os-mobile-decision-flow" aria-label="Executive dagstart">
     <article><small>1 · Weten</small><strong>Belangrijkste afwijkingen</strong><span>Nog geen bewezen aandachtspunten beschikbaar.</span></article>
     <article><small>2 · Beslissen</small><strong>Besluiten die vandaag nodig zijn</strong><span>Nog geen bewezen besluitvraag beschikbaar.</span></article>
     <article><small>3 · Doen</small><strong>Eerstvolgende actie</strong><span>Nog geen bewezen actie beschikbaar.</span></article>
     ${dailyFeedbackCards(model)}
   </div>
+  ${outcomeFeedbackMarkup(model.outcomes)}
  </section>`;
  const tabs=OPERATING_SYSTEM_PAGES.map(page=>`<button type="button" data-os-page="${page}" aria-pressed="false">${esc(LABELS[page]||page)}</button>`).join('');
  const attention=model.attention||[];
@@ -79,12 +80,15 @@ export function executiveCockpitMarkup(model){
  return `<section class="os-executive" data-os-status="live">
   <div class="os-head"><div><small>Bedrijfsgeheugen · ${esc(model.role_label||model.role)}</small><h2>Waar moet de directie vandaag op sturen?</h2><p class="os-subtitle">Dagelijkse ondernemingssturing: weten → beslissen → doen → meten → leren. Alle inzichten en acties komen uit hetzelfde Bedrijfsgeheugen.</p></div><span>${model.evidence_health.healthy}/${model.evidence_health.total} bronnen gezond</span></div>
   ${renderCompanyIntelligenceContext(model,'executive-cockpit')}
+  ${customerValueBriefingMarkup(model)}
+  ${strategicAdvisorMarkup(model)}
   <div class="os-mobile-decision-flow" aria-label="Executive dagstart">
     <article><small>1 · Weten</small><strong>${attention[0]?.title?esc(attention[0].title):'Geen urgente afwijking'}</strong><span>${attention[0]?esc(attention[0].explanation||attention[0].summary||attention[0].reason||''):'Geen bewezen aandachtspunt dat nu actie vraagt.'}</span></article>
     <article><small>2 · Beslissen</small><strong>${model.decision_queue[0]?.title?esc(model.decision_queue[0].title):'Geen besluit nodig'}</strong><span>${model.decision_queue[0]?esc(model.decision_queue[0].next_action||model.decision_queue[0].explanation||model.decision_queue[0].summary||''):'Geen bewezen besluitvraag voor vandaag.'}</span></article>
     <article><small>3 · Doen</small><strong>${model.next_best_actions[0]?.title?esc(model.next_best_actions[0].title):'Geen actie met bewijs'}</strong><span>${model.next_best_actions[0]?esc(model.next_best_actions[0].next_action||model.next_best_actions[0].explanation||model.next_best_actions[0].summary||''):'Zodra bewijs beschikbaar is verschijnt hier de eerstvolgende actie.'}</span></article>
     ${dailyFeedbackCards(model)}
   </div>
+  ${outcomeFeedbackMarkup(model.outcomes)}
   <section class="os-attention" aria-label="Wat vraagt vandaag aandacht?">
   <div class="os-section-heading"><h3>Wat vraagt vandaag aandacht?</h3><p>Maximaal vijf geprioriteerde problemen uit dezelfde PH-Pxxx waarheid die ook Problem Radar, content en capabilities gebruiken.</p></div>
   ${problems.length?problems.map(problemCard).join(''):(attention.length?attention.map(attentionCard).join(''):'<article class="os-attention-empty"><strong>Geen gevalideerde problemen</strong><span>Externe signalen blijven hypotheses totdat intern bewijs beschikbaar is.</span></article>')}
@@ -92,6 +96,13 @@ export function executiveCockpitMarkup(model){
   <div class="os-metrics"><article><small>Bedrijfsgezondheid</small><b>${pct(model.health_score)}</b></article><article><small>Strategievoortgang</small><b>${pct(model.strategy_progress)}</b></article><article><small>Besluiten nodig</small><b>${model.decision_queue.length}</b></article><article><small>Open toprisico’s</small><b>${model.risks.length}</b></article></div>
   <div class="os-executive-scan"><section><h3>Nu beslissen / uitvoeren</h3>${model.next_best_actions.length?`<ol>${model.next_best_actions.map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.next_action||item.explanation||item.summary||'')}</small></li>`).join('')}</ol>`:'<p class="os-empty">Geen bewezen acties.</p>'}</section><section><h3>Vooruitkijken</h3>${model.forecasts.length?`<ol>${model.forecasts.slice(0,4).map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.explanation||item.summary||'')}</small></li>`).join('')}</ol>`:'<p class="os-empty">Geen bewezen forecasts.</p>'}</section></div>
   <details class="os-detail"><summary>Verdieping: risico’s, kansen, veranderingen en outcomes</summary><div class="os-grid">${list('Toprisico’s',model.risks)}${list('Kansen',model.opportunities)}${list('Wat veranderde?',model.changes)}${list('Gerealiseerde outcomes',model.outcomes)}</div></details>
+  <section class="os-cms-workstream" aria-label="Content en CMS in Powerhouse">
+    <h3>Content & Growth Studio · schrijf → controleer → publiceer → meet → leer</h3>
+    <p>Beheer website- en portaalteksten met begrijpelijke velden, een veilig conceptvoorbeeld en de bestaande serverkwaliteitscontrole. Content blijft concept tot bevoegde goedkeuring en onafhankelijke publieke controle. GA4, CTA, leads, betaalde orders en leereffecten blijven aparte, brongebonden metingen.</p>
+    <a href="https://www.bedrijfsgeheugen.nl/cms.html" rel="noopener">Open visuele CMS Studio en publicatiebeheer →</a>
+    <small>Alleen bevoegde beheerders mogen publiceren. Een CMS-publicatie is geen bewezen conversiestijging.</small>
+    <p><strong>Vertrouwen en kwaliteit:</strong> klantteksten worden gecontroleerd op interne technische informatie, conceptinstructies, overdreven garanties en claims zonder bron. De eindredactie beoordeelt feiten, privacy en relevantie; het effect op klantvertrouwen is niet automatisch bewezen.</p>
+  </section>
   <section class="os-health"><h3>Data & bewijs</h3><p>${model.evidence_health.stale} verouderd · ${model.evidence_health.low_confidence} lage confidence · ${model.evidence_health.unavailable} onvolledig</p></section>
   <nav class="os-module-tabs" aria-label="Powerhouse modules">${tabs}</nav><div class="os-module-detail" aria-live="polite"></div>
  </section>`;
@@ -113,8 +124,16 @@ export function mountExecutiveCockpit(root,state,{tenantId=state?.tenant_id||sta
  let host=main.querySelector('.os-executive-host');
  if(!host){host=doc.createElement('div');host.className='os-executive-host';main.insertBefore(host,main.firstChild);}
  host.innerHTML=executiveCockpitMarkup(model);
- const domainState=globalThis.__BG_PORTAL_DOMAIN_STATE__;
- host.querySelectorAll('[data-os-page]').forEach(btn=>btn.addEventListener('click',()=>openModule(host,btn.dataset.osPage,domainState)));
+ // One delegated listener also handles buttons rendered later by mountOperatingSystemPage().
+ // The same host survives cockpit refreshes; never attach a second listener.
+ if(!host.__bgOsPageNavigationBound){
+  host.__bgOsPageNavigationBound=true;
+  host.addEventListener('click',event=>{
+   const button=event.target?.closest?.('[data-os-page]');
+   if(!button||!host.contains(button))return;
+   openModule(host,button.dataset.osPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
+  });
+ }
  if(!doc.__bgOsRouteBound){
   doc.__bgOsRouteBound=true;
   doc.addEventListener('bg:open-os-page',event=>{

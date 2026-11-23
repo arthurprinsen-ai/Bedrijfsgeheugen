@@ -1,0 +1,104 @@
+{
+  "fingerprint": "powerhouse|email|four-workstream-source-handoff-safe-send-measurement|20261115-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "observed_on": "2026-11-15",
+  "owner": "original-agent:commercial (#116 original research; #138 original identity consumer; existing composer/outreach)",
+  "scope": "ORIGINAL_PUBLIC_WORK_EMAIL_AND_RESEARCH_COMPOSER_RELIABILITY",
+  "failure_class": "INCOMPLETE_PUBLIC_HTML_AND_SOURCE_HELD_HANDOFF_STARVATION",
+  "root_cause": "The original public-company source reader rejected every HTML page whose declared or streamed body exceeded 160kB, preventing bounded evidence extraction. The original held composer always inspected only the first 50 priority waiting actions, allowing eligible source-verified later rows to starve. Neither is proof of a real new address or recipient authority.",
+  "evidence": {
+    "observed_total_connections": 23295,
+    "canonical_email_addresses": 605,
+    "unresolved_original_source_retries": 10,
+    "original_handoff_scorecard_health": "DEGRADED",
+    "broken_or_unproven_handoffs_7d": 4,
+    "broken_by_type": {
+      "BROKEN_RESEARCH_TO_COMPOSER_SLA": 1,
+      "BROKEN_RESEARCH_TO_COMPOSER_EXPIRED": 1,
+      "EXPIRED_WITHOUT_DELIVERY": 2
+    },
+    "verified_new_emails_from_this_change": 0,
+    "external_emails_sent_by_this_change": 0,
+    "provider_or_consumer_ack_not_yet_proven": true,
+    "source_failure_types_observed": [
+      "REDIRECT_UNSAFE_OR_CROSS_HOST",
+      "SOURCE_HTTP_NON_SUCCESS",
+      "SOURCE_HTML_TOO_LARGE"
+    ],
+    "source_systems": [
+      "powerhouse_sales_actions",
+      "powerhouse_commercial_handoff_telemetry_v1",
+      "powerhouse_commercial_handoff_scorecard_v1",
+      "cron.job_run_details"
+    ],
+    "original_sender_gap": "PRE_SEND_INTENT_NOT_DURABLE_BEFORE_SEND_AT_BASE",
+    "provider_new_send_from_this_change": 0,
+    "original_commercial_state_after_technical_release": "OPEN_DEGRADED"
+  },
+  "corrective_action": "Allow first 160kB of a large public HTML page to be inspected within the original worker, preserve SOURCE_HTML_TRUNCATED_UNVERIFIED as retriable if no independently named work-mailto found, and scan four capped stable pages of the original waiting composer view; preserve provider/consent/outcome safeguards. Extend the same original Gmail Edge with pre-send CAS intent, fail-closed pinned provider, 14-day confirmed-outcome and unresolved-send recipient pressure checks, immutable provider outcome first-write and exact readback, and distinct historical readback versus new-send counters.",
+  "prevention_rule": "An oversized or partial website is never COMPLETE without actual identity-bound source proof; a composer may not starve eligible original waiting actions at a fixed top-50 offset; no expired action may be automatically reauthorized, no send/consumer/learning claim without independent proof. No provider send before original action CAS+durable uncertainty evidence; do not silently choose an unpinned Gmail identity; do not rewrite an already verified historical send or count delayed readback as new outreach.",
+  "regression": "tests/brain-original-email-research-handoff-20261115.test.mjs",
+  "human_documentation": "docs/changes/2026-11-15-original-email-source-handoff-reliability.md",
+  "human_ledger": "docs/development-ledger-events/2026-11-15-original-email-source-handoff-reliability.md",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-email-research-handoff-20261115.test.mjs",
+      "tests/brain-original-email-atomic-send-and-outcome-20261115.test.mjs",
+      "tests/brain-original-ambiguous-gmail-no-resend-20261110.test.mjs",
+      "tests/brain-original-email-agent-skill-assurance-20261115.test.mjs"
+    ],
+    "live_result": "PROTECTED_MAIN_MERGED_AND_SUPABASE_EDGE_BYTE_PARITY_VERIFIED; ORIGINAL_COMMERCIAL_EXECUTION_OPEN_DEGRADED",
+    "business_outcome_status": "OPEN_NOT_INDEPENDENTLY_PROVEN",
+    "original_action_debt": {
+      "unresolved_source_retries": 10,
+      "broken_or_unproven_handoffs": 4,
+      "verified_new_public_addresses_from_release": 0,
+      "provider_new_sends_from_release": 0,
+      "provider_linked_replies_7d": 0,
+      "provider_linked_meetings_7d": 0,
+      "provider_linked_realized_revenue_eur_7d": 0
+    },
+    "agent_skill_assurance": {
+      "fingerprint": "powerhouse|email|four-workstream-agent-skill-guard|20261115-v1",
+      "owner": "original-agent:commercial",
+      "agent_registry": "platform/agents/agent-team.mjs",
+      "skill": ".agents/skills/powerhouse-daily-full-connection-enrichment/SKILL.md",
+      "assurance_test": "tests/brain-original-email-agent-skill-assurance-20261115.test.mjs",
+      "agent_ids": [
+        "agent-integration-engineer",
+        "agent-reliability",
+        "agent-data-quality",
+        "agent-integration-composio",
+        "agent-growth-market"
+      ],
+      "effective_after": "protected Required + CodeQL + main merge + agent registry and skill projection readback",
+      "business_closure_rule": "EXACT_SOURCE_RECEIPT_AND_ORIGINAL_138_PROCESSED_AND_ELIGIBLE_PROVIDER_READBACK_AND_ACTUAL_OUTCOME_AND_APPLIED_LEARNING_OR_REMAIN_OPEN"
+    },
+    "technical_release": {
+      "release_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5911",
+      "merged_main_sha": "137b9f5b2d29bad0ffd614d89325348b4d968151",
+      "supabase_parity_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43762075688",
+      "skill_projection_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43762075795",
+      "source_status": "NATIVE_SUPABASE_BYTES_MATCH_MERGED_SHA_FOR_THREE_EXISTING_EDGE_FUNCTIONS",
+      "original_crons": "116/138/171 ACTIVE; 116/171 natural postrelease run succeeded as of evidence capture",
+      "postmerge_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43762106661",
+      "postmerge_brain_status": "FAILURE_TWO_EXISTING_INNOVATION_WORKFLOW_PERMISSION_REGRESSIONS_SEPARATE_FROM_EMAIL_SOURCE_PARITY",
+      "netlify_state": "PREVIOUS_SHA_READBACK; NOT_CLAIMED_NEW_SHA_LIVE"
+    }
+  },
+  "compiler": {
+    "failure_class": "INCOMPLETE_PUBLIC_HTML_AND_SOURCE_HELD_HANDOFF_STARVATION",
+    "scope": "ORIGINAL_PUBLIC_WORK_EMAIL_AND_RESEARCH_COMPOSER_RELIABILITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "release_status": "TECHNICAL_RELEASE_VERIFIED_BUSINESS_EXECUTION_OPEN",
+  "rollback": "Revert only scoped three existing Supabase Edge logic changes and affected existing agent/skill updates through protected original PR, retaining original source/action IDs, pending retries, recipient suppression, provider IDs and ONE BRAIN history. Never direct cron/send mutation.",
+  "additional_failure_classes": [
+    "PROVIDER_SEND_ATTEMPT_WITHOUT_DURABLE_PRE_SEND_CLAIM",
+    "MUTABLE_HISTORICAL_PROVIDER_OUTCOME_ON_REPLAY",
+    "PINNED_GMAIL_ACCOUNT_MISMATCH_FALLBACK",
+    "CONTACT_PRESSURE_14D_NOT_INDEPENDENTLY_RECHECKED"
+  ]
+}

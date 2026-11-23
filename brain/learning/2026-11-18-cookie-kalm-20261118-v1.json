@@ -1,0 +1,40 @@
+{
+  "fingerprint": "site|rituals|cookie-kalm|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|cookie-kalm|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": false,
+    "repeat_count": 6,
+    "security_sensitive": false
+  },
+  "root_cause": "Een overlay die op elke pagina staat (cookiemelding) werd bij de Rituals-restyle alleen opnieuw gekleurd, niet op omvang beoordeeld; op desktop dekte hij de primaire actie af.",
+  "correction": "Compacte variant met de bestaande korte tekst; consent-gedrag ongewijzigd.",
+  "prevention": [
+    "Beoordeel overlays die op elke pagina staan op oppervlak en overlap met de primaire actie, niet alleen op kleur.",
+    "Bump de cacheversie van een asset in dezelfde wijziging."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-belevenis.css",
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Lokaal bekeken en tests groen. Live-readback open."
+  }
+}

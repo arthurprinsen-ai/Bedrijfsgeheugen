@@ -1,0 +1,40 @@
+{
+  "fingerprint": "site|rituals|ring-cases-kalm|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|ring-cases-kalm|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": false,
+    "repeat_count": 7,
+    "security_sensitive": false
+  },
+  "root_cause": "Een eerdere speelse laag voegde een tweede voortgangsmeter toe die naast de Rituals-voortgangslijn bleef bestaan; pagina-specifieke blokken (cases) kregen geen typografisch ritme bij de restyle.",
+  "correction": "Ring verborgen; case-labels en scheiding in Rituals-stijl via de gedeelde CSS-laag.",
+  "prevention": [
+    "Zoek bij een nieuw merkelement naar bestaande elementen met dezelfde functie en laat er één over.",
+    "Loop na een restyle de pagina's met eigen blokken (cases, over-ons) visueel na, niet alleen de gedeelde onderdelen."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-belevenis.css",
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Lokaal bekeken en tests groen. Live-readback open."
+  }
+}

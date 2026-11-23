@@ -1,0 +1,44 @@
+{
+  "fingerprint": "supabase|source-history|original-866-heartbeat-source-receipt-applied-lock-behind|20261115-v1",
+  "root_cause": "Protected PR #5827 merged successfully and the original Supabase production provider applied native migration 20261115094500 original_public_work_email_heartbeat_source_receipt_v1. The immutable protected Git migration-history lock still contained exactly the previous 865 applied versions and names, which can cause next source/provider release gate drift. Independent native provider comparison proved all 865 old pairs exact, with exactly one new native 866th pair.",
+  "scope": "ORIGINAL_GITOPS_PROVIDER_APPLIED_MIGRATION_HISTORY_PARITY",
+  "owner": "original Supabase provider-owned migration/source history GitOps owner, not a new migration executor",
+  "prevention_rule": "Append ONLY real native-applied version/name pairs to original Git source lock with pairwise exact-prefix verification, then protected Required + CodeQL + native provider main/readback. Do not invent or modify native migration SQL or bypass protected release. Track original #116/#138-to-Heartbeat candidate and unresolved lawful commercialization separately.",
+  "regression": "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+  "evidence": {
+    "observed_at_utc": "2026-11-15T09:39:08.405Z",
+    "provider_project_id": "adhjwmvyoixzjtmiroln",
+    "protected_original_heartbeat_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5827",
+    "original_release_main_sha": "16aae1e805e33f0d3494df9f7dc9d42c3d9f350b",
+    "native_migration_count": 866,
+    "protected_source_lock_count_before": 865,
+    "exact_prefix_conflicts": 0,
+    "native_extra": {
+      "version": "20261115094500",
+      "name": "original_public_work_email_heartbeat_source_receipt_v1"
+    },
+    "original_commercial_obligation": "43c90754-3fd0-4c97-bb14-fbf815e12f47",
+    "heartbeat_candidate_source_receipt_state_at_utc": "WAITING_FOR_NEXT_NATURAL_HEARTBEAT",
+    "external_email_send_or_provider_delivery_claimed": false,
+    "source_history_release": "CANDIDATE_UNTIL_PROTECTED_MAIN_AND_NATIVE_READBACK"
+  },
+  "learning_state": "OBSERVED_NOT_CLOSED",
+  "compiler": {
+    "failure_class": "SOURCE_MIGRATION_LOCK_BEHIND_NATIVE_APPLIED_866",
+    "scope": "GITOPS_SOURCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  }
+}

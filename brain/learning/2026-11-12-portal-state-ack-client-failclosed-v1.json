@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "portal|customer-input|http-200-stale-projection-false-ack|20261112-v1",
+  "obligation_id": "portal|customer-input|http-200-stale-projection-false-ack|20261112-v1",
+  "title": "Portal customer state requires explicit stored non-stale ACK and authenticated GET readback",
+  "status": "FIX_CANDIDATE",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "root_cause": "Portal V2 client rejected only stored===false for /api/portal-state POST; HTTP 200 with missing stored or stale:true could proceed to load(), masking an incomplete projection write after canonical BusinessInput source ACK.",
+  "impact": "Customer-facing saved status could be displayed despite an incomplete or obsolete tenant-scoped Portal State projection, so later dashboard and Brain views could disagree. No verified real customer corruption is claimed.",
+  "fix": "For original Portal State client, require stored===true and stale===false plus authenticated GET readback. Fail closed with original domain-state error and existing server handoff journal. No duplicate writer.",
+  "prevention_rule": "Customer input write is complete only after original authoritative BusinessInput+organism source ACK and explicit current Portal State non-stale ACK and tenant-authenticated GET. Missing/stale is never saved, executed or learned.",
+  "owner": "original Portal V2 customer input and ONE BRAIN source authority",
+  "tests": [
+    "tests/brain-portal-state-projection-confirmed-ack-20261112.test.mjs",
+    "portal-v2/tests/portal-business-input-persistence.test.mjs"
+  ],
+  "regression_contract": "tests/brain-portal-state-projection-confirmed-ack-20261112.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-state-projection-confirmed-ack-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-state-projection-confirmed-ack-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-state-projection-confirmed-ack-20261112.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Read original code at protected main e3802eb074c9d6fcd502574ef715f46223930470 with condition `!response.ok||body?.stored===false`",
+    "Original browser client save response otherwise treated 200 as valid and skipped check of stale true or omitted stored",
+    "Fix guards client success; independent live tenant field-to-outcome and external updates require future verification"
+  ],
+  "outcome": "FIX_CANDIDATE — protected PR and production authenticated data update/readback still required. Do not close #4215 or count external CRO outcomes.",
+  "compiler": {
+    "failure_class": "CUSTOMER_PORTAL_READBACK_TRUTH",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

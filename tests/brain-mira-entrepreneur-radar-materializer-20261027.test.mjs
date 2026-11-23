@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import { selectMiraSourceQueries, MIRA_SOURCE_TOPIC_QUERIES, MIRA_SOURCE_ALTERNATE_QUERIES } from '../supabase/functions/_shared/mira-source-query-rotation.mjs';
 import {MIRA_CASES} from '../supabase/functions/_shared/mira-entrepreneur-caption.mjs';
 import {resolveMiraFrozenWinner} from '../supabase/functions/_shared/mira-frozen-winner-contract.mjs';
 import {evaluateMiraPublicationFreshness} from '../supabase/functions/_shared/mira-publication-freshness.mjs';
@@ -17,7 +18,7 @@ test('radar searches fresh news only and keeps the shared freshness gate as auth
  assert.match(radar,/topic:'news',days:MAX_AGE_DAYS/);
  assert.match(radar,/serp\/google\/news\/live\/advanced/);
  assert.match(radar,/evaluateMiraPublicationFreshness\(/);
- assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&Boolean\(portalProblemId\)/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&personalSourceTextComplete&&\(Boolean\(portalProblemId\)\|\|Boolean\(personalTopic\)\)/);
  assert.doesNotMatch(radar,/topic:'general'/);
  assert.match(radar,/mira-entrepreneur-portal-story-v1/);
  assert.match(radar,/providers,max_age_days:MAX_AGE_DAYS/); // run response shows which provider delivered fresh items
@@ -70,6 +71,52 @@ test('radar treats a failed DataForSEO task as an error instead of zero results'
 test('radar uses short news queries, a 45-day window inside the 60-day gate, and counts task 40101 as no results',()=>{
  assert.match(radar,/MAX_AGE_DAYS=45/);
  assert.doesNotMatch(radar,/mkb excel chaos spreadsheets cijfers/);
- assert.match(radar,/taskCode===40101/);
+ assert.match(radar,/isDataForSeoEmptyNewsTask\(/);
  assert.match(radar,/dataforseo_no_results/);
+});
+
+test('radar uses a fixed eight-call budget but rotates multiple approved entrepreneur topics by date',()=>{
+ assert.match(radar,/selectCanonicalRadarSourceQueries\(runDate\)/);
+ assert.equal(MIRA_SOURCE_TOPIC_QUERIES.length,12);
+ assert.equal(new Set(MIRA_SOURCE_TOPIC_QUERIES.map(x=>x.topic)).size,12);
+ assert.ok(MIRA_SOURCE_TOPIC_QUERIES.every(x=>x.query.startsWith('mkb ')));
+ assert.ok(MIRA_SOURCE_TOPIC_QUERIES.some(x=>x.query==='mkb onbetaalde facturen debiteuren'));
+ assert.ok(MIRA_SOURCE_TOPIC_QUERIES.some(x=>x.query==='mkb facturering te laat'));
+ const days=['2026-10-28','2026-10-29','2026-10-30'];
+ const searches=days.map(selectMiraSourceQueries);
+ assert.ok(searches.every(v=>v.length===8&&new Set(v).size===8),'never increase daily provider requests or duplicate queries');
+ assert.notDeepEqual(searches[0],searches[1],'next business date changes topic portfolio');
+ const topics=new Set(searches.flat().map(query=>{
+  const family=MIRA_SOURCE_TOPIC_QUERIES.find(f=>f.query===query||MIRA_SOURCE_ALTERNATE_QUERIES[f.topic]===query);
+  assert.ok(family,'every provider query must belong to a canonical PH-P family');
+  return family.topic;
+ }));
+ assert.equal(topics.size,12,'rotation covers all 12 canonical problem families across both wording variants');
+ assert.throws(()=>selectMiraSourceQueries('2026-02-30'),/MIRA_RUN_DATE_INVALID/);
+ assert.throws(()=>selectMiraSourceQueries(''),/MIRA_RUN_DATE_INVALID/);
+ assert.match(radar,/oninbare vorder/);
+ assert.match(radar,/onbetaalde factur/);
+ assert.match(radar,/betalingsachterstand/);
+ assert.match(radar,/directeur\.\*besluit/);
+ assert.match(radar,/facturering\.\*te laat/);
+ assert.match(radar,/klantafhankelijk/);
+ assert.ok(radar.includes('evaluateMiraPublicationFreshness('));
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+});
+
+test('P0 5232: original six Mira news slots use short high-recall queries while all provenance gates remain intact',()=>{
+ const selected=selectMiraSourceQueries('2026-11-01').slice(0,6);
+ assert.deepEqual(selected,[
+  'mkb kennisoverdracht', 'mkb excel', 'mkb dubbele invoer',
+  'mkb meerwerk','mkb omzet marge','mkb personeelstekort'
+ ]);
+ assert.ok(selected.every(q=>q.split(' ').length<=3));
+ assert.equal(selected.length,6);
+ const tomorrow=selectMiraSourceQueries('2026-11-02');
+ assert.equal(tomorrow.length,8);
+ assert.ok(new Set(tomorrow).size===8);
+ assert.ok(radar.includes('evaluateMiraPublicationFreshness('));
+ assert.match(radar,/source_publication_date_evidence/);
+ assert.ok(radar.includes('const portalProblemId=portalIds[problemTopic]'));
+ assert.match(radar,/source_contract_collision_skipped/);
 });

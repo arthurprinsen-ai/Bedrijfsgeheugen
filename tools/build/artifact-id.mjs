@@ -20,7 +20,7 @@ export function computeRepositoryArtifactId(root=process.cwd()) {
   const contract=JSON.parse(fs.readFileSync(path.join(root,'config','build-contract.json'),'utf8'));
   const lockPath=fs.existsSync(path.join(root,'package-lock.json')) ? 'package-lock.json' : 'package.json';
   const lockfileContents=fs.readFileSync(path.join(root,lockPath),'utf8');
-  const sourceManifest=execFileSync('git',['ls-files','-s'],{cwd:root,encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+  const sourceManifest=execFileSync('git',['ls-files','-s'],{cwd:root,encoding:'utf8',maxBuffer:256*1024*1024}).split(/\r?\n/).filter(Boolean);
   return computeArtifactId({sourceManifest,lockfileContents,toolchainManifest:contract.toolchain,contractVersion:contract.contract_version});
 }
 

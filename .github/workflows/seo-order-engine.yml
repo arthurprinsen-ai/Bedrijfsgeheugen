@@ -31,6 +31,9 @@ concurrency:
   group: seo-order-engine-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   seo-order:
     runs-on: ubuntu-latest

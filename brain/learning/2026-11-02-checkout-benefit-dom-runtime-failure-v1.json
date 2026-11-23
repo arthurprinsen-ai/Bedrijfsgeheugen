@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|website|checkout-benefit-dom-missing|20261102-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Original GitHub Pagina- en SEO-controle run 41430693011, exact production source 79d99ce9d03068dae3c909707d00dde1933f9d78: all 89 public pages checked, one real JS exception at /afsluiten: TypeError Cannot set properties of null (setting textContent), at built checkout runtime line 3332 column 2603. This corresponds to assigning the optional plan-benefit source/freshness/automation text. The exact build transform that omitted the DOM node is not yet independently isolated.",
+  "correction": "Existing checkout runtime now idempotently reconstitutes any missing non-payment plan-benefit LI inside the original plan card and writes safe translated text. It fails closed when the containing plan card is missing or the ID is not one of the three allowlisted benefits. The form, provider readiness gate, trial/paid terms, payment success, original checkout and canonical data flow are unchanged.",
+  "prevention_rule": "Always test built /afsluiten in a real browser with pageerror capture; never report site green from HTML static contract alone. Keep original checkout build integrity + BRAIN source/runtime negative fixtures and existing single CRO producer. Require protected exact-head Required/BRAIN/CodeQL, canonical original Netlify deploy SHA, live browser 0 page errors and follow-up recurrence proof. Missing cosmetic benefits may be repaired, but never invent customer, payment status, subscription, provider ID, order, buyer conversion, or bypass the readiness gate. Record original human docs and upgrade existing SEO/CRO skill; no second scheduler, writer or analytics source.",
+  "owner": "Original canonical checkout frontend, Page/SEO browser CI, ONE BRAIN commercial and website protection owner",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-checkout-benefit-dom-recovery-20261102.test.mjs",
+      "tests/brain-saas-checkout-build-preservation-v1.test.mjs",
+      "tests/brain-afsluiten-english-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-checkout-benefit-dom-recovery-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-checkout-benefit-dom-recovery-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_browser_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41430693011",
+    "observed_page": "/afsluiten",
+    "pages_checked": 89,
+    "blocking_js_errors": 1,
+    "seo_pages_checked": 133,
+    "seo_high": 0,
+    "seo_medium": 90,
+    "seo_low": 18,
+    "prior_production_sha": "79d99ce9d03068dae3c909707d00dde1933f9d78",
+    "fix_status": "CANDIDATE_UNVERIFIED",
+    "buyer_orders_proven": false,
+    "live_browser_0_errors_proven": false,
+    "postdeployment_recurrence_proven": false
+  }
+}

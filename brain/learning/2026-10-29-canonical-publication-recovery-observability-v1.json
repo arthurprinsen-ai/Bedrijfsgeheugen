@@ -1,0 +1,30 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "publication-canonical-recovery-truth-20261029",
+  "fingerprint": "powerhouse|publication|blocked-channels-not-visible-in-portal|20261029",
+  "status": "CANDIDATE_TESTED",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "OBSERVABILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-canonical-publication-recovery-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Daily channel obligations exist in canonical Supabase, but admin Portal V2 System Map did not show source-backed four-channel delivery, provider-ID and blocked recovery identity side by side.",
+  "change": "Expose canonical per-channel publication registry statuses via existing Netlify Identity gated Powerhouse admin API; classify recovery without sending, leaking raw provider IDs/errors, pretending database state is independent external provider readback, or creating a second publisher.",
+  "prevention": "Fail closed for missing/partial/wrong tenant/date/duplicate channel/readback; never resend an existing provider-side effect; keep duplicate and media/identity/approval gates.",
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-canonical-publication-recovery-20261029.test.mjs"
+    ],
+    "live_production_readback": "PENDING_PROTECTED_MERGE_AND_AUTHENTICATED_PORTAL_CHECK",
+    "source_audit": "2026-10-29 four canonical obligations: company LIVE_PROVEN with stored external ID; personal BLOCKED duplicate; Instagram PLANNED without provider ID; blog GENERATED without public readback.",
+    "impact": "Improved operator visibility and safe handoff only; no provider send, sales or closed-loop causal measurement claimed."
+  }
+}

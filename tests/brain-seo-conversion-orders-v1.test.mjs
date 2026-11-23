@@ -127,3 +127,60 @@ test('chat and agent order-first inheritance stays canonical',()=>{
   assert.equal(learning.agent_chat_inheritance?.fingerprint,'commercial-website|orders-first|existing-pages|v1');
   assert.equal(learning.agent_chat_inheritance?.production_proof?.state,'ready');
 });
+
+
+test('CRO evidence-to-orders policy is writeback-complete but cannot fake live outcomes',()=>{
+  const fingerprint='cro|evidence-to-orders|telemetry-reconciliation|20261029-v1';
+  const learning=JSON.parse(readFileSync('brain/learning/2026-10-29-cro-evidence-to-orders-contract.json','utf8'));
+  const changes=readFileSync('docs/changes/2026-10-29-cro-evidence-to-orders-contract.md','utf8');
+  const ledger=readFileSync('docs/development-ledger-events/2026-10-29-cro-evidence-to-orders-contract.md','utf8');
+  const reg=JSON.parse(readFileSync('docs/brain/component-registry.json','utf8'));
+  assert.match(skill,/CRO evidence-to-orders runtime assurance/);
+  for(const evidence of ['growth_events','growth_page_daily','created_at','occurred_at','BG211_DELIVERY_ENABLED=false','INCONCLUSIVE','WhatsApp','Netlify']) assert.ok(skill.includes(evidence),'skill evidence contract missing '+evidence);
+  assert.match(skill,/nooit als nul bezoekers/);
+  assert.match(skill,/maximaal \*\*drie\*\*/i);
+  assert.match(systemMap,/croEvidenceToOrders:Object\.freeze/);
+  assert.match(systemMap,/POLICY_CANDIDATE_PENDING_PROTECTED_MERGE_AND_RUNTIME_PROOF/);
+  const cap=(reg.components||reg.capabilities||[]).find(x=>x.key==='CAPABILITY_SEO_CONVERSION_ORDERS');
+  assert.equal(cap?.cro_evidence_to_orders?.fingerprint,fingerprint);
+  assert.equal(cap?.cro_evidence_to_orders?.max_daily_reversible_changes,3);
+  assert.equal(learning.fingerprint,fingerprint);
+  assert.equal(learning.status,'CANDIDATE');
+  assert.equal(learning.production_proven,false);
+  assert.match(changes,/NOT_LIVE/);
+  assert.match(ledger,/NO_PRODUCTION_CLAIM/);
+});
+
+
+test('daily sitewide SEO, keyword and CRO share one evidence-gated execution and handoff',()=>{
+  const fp='seo|sitewide|daily-audit-to-conversion-learning|20261110-v1';
+  const daily=growth.optimization.sitewide_daily_audit;
+  assert.equal(daily.fingerprint,fp);
+  assert.equal(daily.no_parallel_executor,true);
+  assert.equal(daily.actions_max_per_day,3);
+  assert.equal(daily.single_writer_lease,true);
+  assert.equal(daily.auto_promote_only_after_protected_checks_and_preview,true);
+  assert.match(daily.expected_site_coverage,/every discoverable public indexable production NL\/EN/);
+  assert.ok(daily.discovery_sources.includes('live sitemap.xml'));
+  assert.ok(daily.mandatory_technical_checks.some(s=>s.includes('hreflang')));
+  assert.ok(daily.mandatory_technical_checks.some(s=>s.includes('LCP CLS INP')));
+  assert.ok(daily.mandatory_keyword_checks.some(s=>s.includes('GSC')));
+  assert.ok(daily.mandatory_cro_checks.some(s=>s.includes('server-confirmed')));
+  assert.equal(daily.on_missing_data.startsWith('UNKNOWN'),true);
+  assert.match(daily.on_incomplete_coverage,/COVERAGE_INCOMPLETE/);
+  assert.ok(daily.evidence_readbacks.some(s=>s.includes('Netlify main deploy SHA')));
+  assert.match(systemMap,/sitewideDailyAudit:Object\.freeze/);
+  assert.match(systemMap,/dailyLiveSitewideCoverageProven:false/);
+  assert.match(skill,/Permanente websitebrede dagelijkse SEO- en CRO-lus/);
+  assert.match(skill,/ONE BRAIN owner ACK/);
+  const cap=JSON.parse(registry).components.find(c=>c.key==='CAPABILITY_SEO_CONVERSION_ORDERS');
+  assert.equal(cap.sitewide_daily_audit.fingerprint,fp);
+  assert.equal(cap.sitewide_daily_audit.single_daily_executor,true);
+  const learning=JSON.parse(readFileSync('brain/learning/2026-11-10-sitewide-seo-cro-daily-audit-v1.json','utf8'));
+  assert.equal(learning.fingerprint,fp);
+  assert.equal(learning.production_proven,false);
+  const change=readFileSync('docs/changes/2026-11-10-sitewide-seo-cro-daily-audit-v1.md','utf8');
+  const ledger=readFileSync('docs/development-ledger-events/2026-11-10-sitewide-seo-cro-daily-audit-v1.md','utf8');
+  assert.match(change,/COVERAGE_INCOMPLETE/);
+  assert.match(ledger,/PRODUCTION_NOT_YET_PROVEN/);
+});

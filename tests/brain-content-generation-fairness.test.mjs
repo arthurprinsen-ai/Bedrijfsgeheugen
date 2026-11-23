@@ -20,12 +20,31 @@ test('all pending cooldown gives no candidate but preserves queue',()=>{
   assert.equal(selectNextContentChannel(pending,start),null);
   assert.equal(selectNextContentChannel(pending,start+21*60000)?.channel,'linkedin_personal');
 });
-test('provider billing gets a bounded two-hour retry and increments attempts',()=>{
-  const retry=contentGenerationCooldown('credit balance is too low to access Anthropic API',start,4);
-  assert.equal(retry.classification,'PROVIDER_BILLING');
-  assert.equal(retry.attempts,5);
-  assert.equal(retry.retry_after,'2026-10-11T10:00:00.000Z');
-  assert.equal(retry.provider_side_effect,false);
+test('provider 429 insufficient_quota opens an escalating capped same-lane recovery circuit',()=>{
+  const reason='AI_PROVIDER_REQUEST_FAILED:429:gpt-5-mini:insufficient_quota:You have no credits remaining.';
+  for (const [previousAttempts,hours] of [[0,2],[1,4],[2,8],[3,12],[4,12],[6,12],[10000,12]]) {
+    const recovery=contentGenerationCooldown(reason,start,previousAttempts);
+    const expected=new Date(start+hours*60*60*1000).toISOString();
+    assert.equal(recovery.classification,'PROVIDER_BILLING');
+    assert.equal(recovery.attempts,Math.min(10000,previousAttempts+1));
+    assert.equal(recovery.retry_after,expected);
+    assert.equal(recovery.provider_side_effect,false);
+    assert.equal(recovery.requires_authorization,true);
+    assert.equal(recovery.recovery_action,'RESTORE_APPROVED_PROVIDER_QUOTA_OR_PROVE_ACTIVE_APPROVED_FALLBACK');
+    const queues=[
+      {channel:'linkedin_personal',delivery_evidence:{generation_retry_after:recovery.retry_after}},
+      {channel:'linkedin_company',delivery_evidence:{}},
+    ];
+    assert.equal(selectNextContentChannel(queues,start)?.channel,'linkedin_company');
+    assert.equal(selectNextContentChannel(queues,start+hours*3600000)?.channel,'linkedin_personal');
+  }
+});
+test('editorial failures retain 20-minute fair retry and no billing authorization',()=>{
+  const recovery=contentGenerationCooldown('BLOG_READER_READY_CONTRACT_FAILED:BODY_TOO_SHORT',start,8);
+  assert.equal(recovery.classification,'GENERATION_OR_EDITORIAL_RETRY');
+  assert.equal(recovery.retry_after,'2026-10-11T08:20:00.000Z');
+  assert.equal(recovery.requires_authorization,false);
+  assert.equal(recovery.recovery_action,'RETRY_ORIGINAL_CHANNEL_AFTER_COOLDOWN');
 });
 test('no generation failure may alter previously published rows',()=>{
   const rows=[{channel:'linkedin_company',state:'published',delivery_evidence:{}},

@@ -1,0 +1,68 @@
+{
+  "type": "POWERHOUSE_LEARNING_CANDIDATE",
+  "version": "v1",
+  "observed_at": "2026-11-02",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "fingerprint": "powerhouse|commercial|verified-claim-conversion-gap-signed-quote-not-paid|20261102-v1",
+  "parent_issue": 4198,
+  "obligation_id": "growth:original-tenant-claim-outcomes-payment-truth:20261102-v1",
+  "compiler": {
+    "failure_class": "TENANT_CLAIM_OUTCOME_MISSING_OR_QUOTED_EUR_FALSE_REVENUE",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original production public.scan_inzendingen AFTER INSERT trigger ignored all unverified intake (56 of 58 scans) and did not fire when the original claim route later updated identity to verified; original quotation outcome trigger ran on insert/update getekend only and, if verified, mapped signed quote total into won_order and revenue with no payment provider receipt. All four currently signed quotations are demo, so no production paid revenue was observed.",
+  "evidence": {
+    "source": "2026-11-02 live Supabase trigger definitions and read-only counts",
+    "scans_total": 58,
+    "verified_scans": 0,
+    "unverified_scans": 56,
+    "demo_scans": 2,
+    "proposals_total": 9,
+    "demo_signed_proposals": 4,
+    "demo_signed_nominal_eur": 51200,
+    "verified_proposals": 0,
+    "verified_paid_eur": 0,
+    "growth_outcomes_positive_revenue_rows": 0,
+    "original_trigger_replay": "scan AFTER INSERT only; offer AFTER INSERT OR UPDATE OF getekend only",
+    "production_release_proven": false,
+    "customer_outcome_proven": false,
+    "paid_order_proven": false,
+    "immutable_acl_version": "20261102075243",
+    "preview_first_version_stale_source": true,
+    "preview_old_acl_proacl_null_observed": true,
+    "preview_old_acl_browser_execute_true_observed": true,
+    "provider_acl_finalizer_verified": false
+  },
+  "prevention": [
+    "Only canonical tenant identity verified + non-null organisatie_id may create original lead/proposal outcomes.",
+    "A later tenant claim triggers the same original idempotent bg_uitkomst_eenmalig with the same source key; repeat updates never create extra leads.",
+    "Signed quotes and nominal totals cannot be paid orders or realized revenue without exact independently confirmed payment receipt.",
+    "No historical backfill or demo/unverified promotion by this source change.",
+    "Keep original RLS, security definer search path, private source identity, and no new agent, scheduler, writer or datastore.",
+    "Only mark LIVE after protected tests, original migration application, SQL trigger readback and new natural-run outcome validation; business-value proof remains separate.",
+    "Applied migration versions are immutable; a later source edit requires a new migration version and independent provider ACL readback, not a rewritten version or false-green."
+  ],
+  "correction": "Update original intern.trg_scan_uitkomst and intern.trg_offerte_uitkomst in source migration so verified identity transition is heard; source signatures are treated as proposal status, not revenue. Reuse original bg_uitkomst_eenmalig; never invent provider revenue.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-verified-tenant-intake-quoted-value-payment-truth-20261102.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-verified-tenant-intake-quoted-value-payment-truth-20261102.test.mjs"
+  ],
+  "owner": "original Growth & Revenue OS / source intake authority / ONE BRAIN / Heartbeat",
+  "regression": "When verified source arrives after initial anonymous/demonstration intake, create exactly one original source lead/proposal; no paid provider receipt means zero euros.",
+  "release": {
+    "required_passed": false,
+    "codeql_passed": false,
+    "protected_merge": false,
+    "supabase_migration_applied": false,
+    "trigger_readback_verified": false,
+    "privileged_trigger_acl_verified": false,
+    "acl_finalizer_version": "20261102075243"
+  }
+}

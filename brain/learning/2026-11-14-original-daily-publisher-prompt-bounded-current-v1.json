@@ -1,0 +1,51 @@
+{
+  "version": "original-daily-publisher-prompt-current-only-budget-20261114-v1",
+  "fingerprint": "powerhouse|publisher|overgrown-stale-competing-automation-runbook|20261114-v1",
+  "compiler": {
+    "failure_class": "CONTRACT_DRIFT",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-daily-publisher-prompt-budget-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-daily-publisher-prompt-budget-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-daily-publisher-prompt-budget-20261114.test.mjs"
+    ]
+  },
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "owner": "existing agent-social-delivery-recovery / original Powerhouse Daily Publisher",
+  "root_cause": "Multiple historical operational status notes were appended to the same existing scheduled automation as competing instructions rather than being retained as dated evidence with original incident owners, enlarging the runbook and increasing the likelihood of stale directives overriding current provider truth. This describes an instruction-maintenance risk, not proof of a particular failed provider post.",
+  "production_readback": {
+    "date": "2026-11-14",
+    "same_existing_task": true,
+    "enabled": true,
+    "local_schedule_unchanged": true,
+    "original_prompt_characters": 129285,
+    "consolidated_prompt_characters": 13019,
+    "observed_character_reduction_percent": 90,
+    "original_instagram_post_proven": false
+  },
+  "prevention": "One bounded current canonical original publisher contract (~<=16k chars); read actual original task before and after edit; preserve identity and exact RRULE and enabled state, canonical source/recipient/media/proof/consent/privacy thresholds, original #120/#140/#171 and original authorized email owner. Refer to original dated incident evidence; no stale append-only status paragraphs, no second sender or false GREEN.",
+  "evidence": {
+    "regression": "tests/brain-original-daily-publisher-prompt-budget-20261114.test.mjs",
+    "agent": "platform/agents/agent-team.mjs",
+    "skill": ".agents/skills/powerhouse-social-recovery-cooperation/SKILL.md",
+    "note": "Private task prompt content and authorization material intentionally NOT included in public repository"
+  },
+  "regression": "tests/brain-original-daily-publisher-prompt-budget-20261114.test.mjs",
+  "status": "PROTECTED_CANDIDATE",
+  "not_proven": [
+    "protected PR merge",
+    "actual next natural automated publisher run result",
+    "new verified Instagram Meta media ID",
+    "named BRAIN consumer PROCESSED ACK",
+    "Heartbeat commercial outcome"
+  ]
+}

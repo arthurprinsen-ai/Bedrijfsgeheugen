@@ -1,0 +1,26 @@
+# 2026-11-17 | ONE BRAIN→Heartbeat universal agent binding in original Agent Fabric (P0)
+
+## Direct original observations before the change
+
+Original Supabase project `adhjwmvyoixzjtmiroln` read at ~11:43Z: original crons #120/#140/#171/#177 all active, #140 and #171 natural job runs succeeded; original Instagram content obligations 16-Nov FAILED, 17-Nov PLANNED and 18-Nov PLANNED, all no external Meta provider ID or measurement. Original `brain_obligations` for `content:instagram` 16-Nov OPEN OVERDUE_PUBLICATION and 17-Nov OPEN OVERDUE_PUBLICATION. No original winner or media job 17/18-Nov. This must not be reported as publishing or learning GREEN. Existing protected source radar repaired as v1104 via PR #5952 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5952; existing original 177 provider metrics fix via PR #5950 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5950.
+
+Root-cause of cross-agent guarantee gap: previously the latest Instagram source/Meta rules existed in local skill/docs, while inherited `DEFAULT_AGENT_TEAM` task declarations for all 14 specialists and global AGENTS + continuity, social recovery, CRO, learning, assurance and Engineering skill policies were not uniformly linked to the new exact stage proof. This made documentation coverage and actual ALL-agent compliance easy to overstate.
+
+## Original-owned correction, no parallel runtimes
+
+- `platform/agents/agent-team.mjs` preserves the exact 14 existing ids and original same `createDefaultAgentRegistry`, but every agent inherits four shared exact source/owner/lease, named consumer, independent outcome+learning and register-original-failure tasks.
+- Top of `AGENTS.md` binds **all existing agents and workstreams**; seven existing specialist SKILL.md files (including Instagram) independently agree: no source→Meta→Brain→Heartbeat closure from cron API200, no fabricated revenue, incomplete cases OPEN/DEGRADED, existing executor stays active. No new cron, external social sender, agent, queue or database, and no SQL migration.
+- `brain/learning/2026-11-17-powerhouse-one-loop-all14-agent-inheritance-v1.json` records real source-vs-result and compile time fail class plus historical replay. `tests/brain-instagram-universal-agent-original-owner-closed-loop-20261117.test.mjs` enforces all 14 inheriting exactly one copy of each task, plus global/skill parity and no new writers.
+- Source #120 v1104, content #140, mux #171 and metrics #177 remain the ORIGINAL natural schedulers; verification of real winner/claimed job/Meta readback is pending next natural source run 2026-11-17T20:02Z, then independent Brain consumer and Heartbeat measured outcome.
+
+## Admission / final verification not fabricated
+
+This protected candidate requires exact-head Required tests, CodeQL, original commit merge + native release parity. A PR/merge, code/agent registry update, a successful scheduled run, all 14 declarations or a source to ONE BRAIN event without named ACK must NEVER be called fully autonomous successful. Original ONE BRAIN #5232 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232 and #4198 https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198 stay OPEN until real Meta post and named consumer/measured/outcome proof. Any newly surfaced failure in this protected delivery must be logged under the same original source-fingerprint with root cause and regression before closing.
+
+## Eigen herstelincident bij toelating — meteen opgenomen
+
+Exact PR #5955 eerste Required run `44077940412` faalde bij `hygiene / admission` met `LEARNING_EVALUATION_FAILED:historical_replay:exit_1`, omdat de nieuw toegevoegde regressie ten onrechte de specifieke spelling `Meta-ID` eiste terwijl het eigen dossier expliciet het nauwkeurigere `Meta-media-ID` gebruikte. Alle 14 inherited task tests en de specialist skill-tests waren wél geslaagd. Dit is een test-verwachtingsfout, geen bewijs dat een Meta-publicatie wel of niet lukte. Root-cause: te letterlijke assert op bewijslabelling in documentatie; fix in dezelfde bestaande branch/test: regex accepteert exact `Meta-media-ID` of `Meta-ID`, met onveranderde harde check op het echte provider-ID en externe readback. Vervolg: nieuwe exact-head Required+CodeQL, daarna beschermd mergen en echte provider/ONE BRAIN-consumer-check. Maak geen alternatieve worker of automatische niet-geautoriseerde publicatie.
+
+## Tweede eigen CI-regressie — bestaand groen-draaiboek eerst lezen
+
+Exact run `44078254498` na herstel van eerdere Meta-labelregressie: `hygiene / admission` en `lease-postgres-pr-replay` beide **success**; `preflight` faalde uitsluitend op bestaand `tests/brain-no-premature-closure-contract-20261115.test.mjs`, dat `AGENTS.md` verplichtte binnen de eerste 2.500 tekens naar `docs/brain/groen-draaiboek.md` te verwijzen. Nieuwe universele P0-sectie bovenaan schoof die bestaande link te ver omlaag; het was geen mislukte runtime-overdracht of Meta provider failure. Veilige minimale fix: voeg de verplichte oorspronkelijke draaiboeklink terug meteen na nieuwe P0-kop; behoud alle oude anti-voortijdige-afsluitingsregels en tests. Herbeoordeel exact-head protected Required/CodeQL; registreer eventuele nieuwe falende gate op dezelfde oorspronkelijke fix-PR, nooit omzeilen.

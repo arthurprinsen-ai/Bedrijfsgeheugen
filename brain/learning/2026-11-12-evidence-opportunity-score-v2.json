@@ -1,0 +1,77 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v2",
+  "fingerprint": "seo|google-ai-external-evidence-revenue-priority|20261112-v2",
+  "obligation_id": "seo|google-ai-external-evidence-revenue-priority|20261112-v2",
+  "date": "2026-11-12",
+  "owner": "original Powerhouse SEO Order Engine / BG169",
+  "tenant_id": "canonical",
+  "status": "CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_MEASURED",
+  "root_cause": "Original triage score primarily used estimated monthly volume, user-assigned commercial fit, GSC impressions/zero-click quotient. Missing GSC fields were cast as zero and Google Ads competition/CPC, organic keyword difficulty, real ranking and independent external evidence were not separate scored factors. Broad DataForSEO Keyword Ideas can return unrelated high-volume terms.",
+  "impact": "Risk of incorrect keyword priority and false CTR or lead assumptions, including user questions about DataForSEO and independent external opportunities.",
+  "fix": "Replace existing original triage ranker score with evidence-weighted 100-point pure model; keep original hard provider date/business fit/canonical owner gate, add source coverage, observed vs unobserved GSC, distinct organic difficulty vs paid Ads, measured trend, dated HTTPS independent market evidence, recommended original next action, and transparent confidence.",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-opportunity-evidence-priority-20261112.test.mjs",
+      "tests/brain-sitewide-seo-audit-intelligence-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-opportunity-evidence-priority-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-opportunity-evidence-priority-20261112.test.mjs"
+    ]
+  },
+  "regression": [
+    "tests/brain-seo-opportunity-evidence-priority-20261112.test.mjs",
+    "tests/brain-sitewide-seo-audit-intelligence-20261112.test.mjs"
+  ],
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-evidence-opportunity-score-v2.md",
+    "original_owner": "Powerhouse SEO Order Engine / BG169",
+    "new_parallel_executor": false
+  },
+  "prevention": [
+    "Every source gets timestamp, country, language, provider ID, and one canonical commercial intent owner before action",
+    "Google Ads competition and paid CPC never proxy organic keyword difficulty, ranking, leads or revenue",
+    "GSC query/page absent means NOT_MEASURED, never zero clicks; GSC position >30 means relevance/authority work before CTR",
+    "Fresh independent evidence must be dated HTTPS and distinct domain, community chatter never proves a market event",
+    "Human AI referrals and provider-cited AI answers are separate from AI search-volume estimates",
+    "Any source-to-consumer handoff without processed ACK remains owned/open; no secondary publisher or mass closure"
+  ],
+  "evidence": {
+    "original_repo_path": "tools/site-shell/seo-site-audit-intelligence.mjs",
+    "provider_report": "DataForSEO Google Keyword Overview 11121511-2222-0607-0000-ab86d4f1717d",
+    "market_example": {
+      "afas koppeling": {
+        "search_volume_estimate": 170,
+        "organic_difficulty": 10,
+        "paid_cpc_usd": 4.12,
+        "search_intent": "informational",
+        "updated_at": "2026-10-19"
+      },
+      "bedrijfsprocessen automatiseren": {
+        "search_volume_estimate": 170,
+        "search_intent": "commercial",
+        "updated_at": "2026-10-20"
+      },
+      "ai governance": {
+        "search_volume_estimate": 390,
+        "updated_at": "2026-09-17",
+        "state": "STALE"
+      }
+    },
+    "observed_gsc": "2026-10-12 to 2026-11-09: AFAS Lightspeed existing owner 19 impressions / 0 clicks / 73.4 average position; low ranking is not a CTR optimization proof",
+    "production_head": "NOT_YET_PROVEN",
+    "original_consumer_processed_ack": "NOT_YET_PROVEN"
+  }
+}

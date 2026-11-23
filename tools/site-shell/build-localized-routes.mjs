@@ -302,6 +302,12 @@ function rewriteLinks(doc,sourceFile,locale,aliases) {
         const sameOrigin = resolveSameOriginAbsolute(a.value);
         const resolved = sameOrigin || resolveInternal(a.value,sourceFile);
         if (!resolved) continue;
+        // `/behoeftecheck` is a real NL-only noindex utility, not an indexable EN page.
+        // Preserve its existing canonical HTTPS destination in BOTH locale builds.
+        if (normalizedRoute(resolved.path) === '/behoeftecheck') {
+          a.value = SITE + '/behoeftecheck' + resolved.suffix;
+          continue;
+        }
         const targetFile = aliases.get(resolved.path) || aliases.get(resolved.path + '.html') || aliases.get(resolved.path + '/');
         if (targetFile) {
           const targetRoute = routeFor(targetFile);
@@ -869,6 +875,7 @@ if (PREPARE_CACHE_PATCH_NAME) {
   const before = loadCache();
   const missingBefore = [...allStrings].filter(source => typeof before[source] !== 'string' || !before[source].trim());
   if (missingBefore.length && String(process.env.STATIC_I18N_NETWORK || '').trim() !== '1') {
+    console.error('STATIC_I18N_PREPARE_MISSING', JSON.stringify(missingBefore));
     throw new Error('STATIC_I18N_PREPARE_NETWORK_REQUIRED: ' + missingBefore.length + ' missing translation(s); first=' + String(missingBefore[0] || '').slice(0,160));
   }
   if (missingBefore.length) await translateAll([...allStrings]);

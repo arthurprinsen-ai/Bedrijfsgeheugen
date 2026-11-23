@@ -4,6 +4,7 @@ const PAGE_MIN_PLAN=Object.freeze({
   'profiel':'starter',
   'bedrijfssituatie':'starter',
   'documenten':'starter',
+  'kwartaalrapporten':'starter',
   'advies':'starter',
   'roadmap':'starter',
   'data-ai':'pro',

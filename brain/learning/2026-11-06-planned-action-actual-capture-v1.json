@@ -1,0 +1,46 @@
+{
+  "type": "PLANNED_ACTION_REAL_PREFLIGHT_CAPTURE",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|preflight|real-agent-guard-capture-missing|20261106-v1",
+  "owner": "canonical BRAIN planned-action preflight and original main-only release/ integrity agents",
+  "compiler": {
+    "failure_class": "UNOBSERVED_REAL_AGENT_GUARD_DECISIONS",
+    "scope": "BRAIN_RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The deterministic planned-action guard was executable but its exact decision was not persisted automatically in the original BRAIN record store; thus real-agent operational recall denominators were missing.",
+  "prevention_rule": "The existing original preflight records the actual match result, including a blocked decision, before any fail-closed denial; append idempotently with the existing BRAIN record adapter and read back the exact provider record. Main-only workflows may use protected server-side credentials. PR candidate code never receives service-role keys. Missing provider credentials is NOT_CONFIGURED, not a recorded action or green recall.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-live-recorder-20261106.test.mjs",
+      "tests/brain-planned-action-trusted-main-capture-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-planned-action-recall-evidence-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-planned-action-guard-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-planned-action-live-recorder-20261106.test.mjs",
+      "tests/brain-planned-action-trusted-main-capture-20261106.test.mjs"
+    ],
+    "historical": [
+      "PR #5506 protected LIVE_BEWEZEN; PR #5511 protected LIVE_BEWEZEN; PR #5512 protected LIVE_BEWEZEN",
+      "Canonical Supabase baseline planned-action-recall:issue5510:20261106:baseline-v1 NOT_MEASURED"
+    ],
+    "current": [
+      "candidate only; protected Required/CodeQL/BRAIN/terminal/readback still required",
+      "real source event count and reviewer corpus NOT_MEASURED"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_ORIGINAL_PROTECTED_DELIVERY",
+  "safety": "Main-only credentials via GitHub secrets, never pull request or untrusted ref. No new scheduled job, no alternate authority, no self-validated review, no fake action sample."
+}

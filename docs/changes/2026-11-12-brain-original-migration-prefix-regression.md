@@ -1,0 +1,7 @@
+# 2026-11-12 — Behoud oude migratieprefix, niet het oude totaal
+
+BRAIN delivery voor PR #5672 faalde bij job 131344834664 vier keer omdat historische tests het volledige migratieaantal hard op 826/831/832 zetten. Beide actuele bronnen — originele Supabase `list_migrations` en `supabase/migration-history.lock.json` — bevatten 833 identieke toegepaste migraties; alle oude prefixes (826, 831, 832) zijn inhoudelijk en qua volgorde onveranderd. De 833e migratie is `20261112194500_original_growth_source_revision_identity_fix_v1`. Dit is geen reden om historische migraties te herschrijven of op 833 opnieuw te spelen.
+
+De vier bestaande tests controleren voortaan de oorspronkelijke immutabele prefix (minimale lengte, historische eindankers, versievolgorde) en uniciteit van alle versies in de **volledige** lock. De vroeger toekomstige migratie mag alleen na de historische prefix staan, nooit binnen de originele prefix. Originele provider-versus-Git-lock-source-parity en beschermde CI blijven de actuele eindautoriteit; geen losse `>=`-goedkeuring voor een echte providerafwijking.
+
+De bestaande `powerhouse-continuity` skill, ONE BRAIN leerrecord en ontwikkelledger leggen oorzaak, oplossing, regressies en eigenaarschap vast onder https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198. Release blijft kandidaat tot exact-head tests, beschermd mergen en onafhankelijke BRAIN-werkrun. Geen nieuwe scheduler, migratie, DDL of provider-schrijfrechten.

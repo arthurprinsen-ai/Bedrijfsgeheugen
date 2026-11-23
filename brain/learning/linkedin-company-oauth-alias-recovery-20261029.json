@@ -1,0 +1,36 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "linkedin|company-oauth|canonical-alias-occupied|20261029-v1",
+  "status": "SOURCE_FIX_PENDING_PROTECTED_RELEASE",
+  "root_cause": "The existing OAuth link creation used a fixed account alias, and the provider reserves aliases even while an earlier connection is no longer suitable for publishing.",
+  "prevention_rule": "On the exact alias-occupied response only, retry one user-initiated OAuth link with a uniquely named pending account; never transfer old authorization, consider an alias proof of identity, or publish without verified connected-account ID and company scopes.",
+  "evidence": {
+    "source": "Public linked-account API behavior and source regression only; private connection identifiers and credentials intentionally excluded.",
+    "protected_merge": false,
+    "production_readback": false,
+    "external_publication": false
+  },
+  "tests": [
+    "tests/brain-linkedin-composio-capability-proof.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "COMPANY_OAUTH_ALIAS_COLLISION",
+    "scope": "LINKEDIN_ORG_AUTH",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ]
+  },
+  "resolution": "Not live or proven; protected release and real provider OAuth are mandatory. No public post is implied."
+}

@@ -38,3 +38,17 @@ test('immutable baseline preview URL resolver rejects status URL injection',()=>
   'https://'+id+'--evil-site.netlify.app'
  ])assert.throws(()=>immutableNetlifyPreviewUrl(attacker));
 });
+
+
+test('SSO-blocked preview alias never masks a visual diff and replays exact protected source',()=>{
+  assert.match(workflow,/alias_release="\$\(curl --fail[\s\S]*?\|\| true\)"/);
+  assert.match(workflow,/if \[ -n "\$alias_release" \]; then/);
+  assert.match(workflow,/Unpinned Netlify PR alias does not match the exact protected head/);
+  assert.match(workflow,/preview_url=""/);
+  assert.match(workflow,/if \[ -n "\$preview_url" \]; then/);
+  assert.match(workflow,/Netlify has no immutable exact-head preview/);
+  assert.match(workflow,/if \[ "\$verified_head" != "\$pr_head_sha" \]/);
+  assert.match(workflow,/git worktree add --detach "\$source_dir" "\$pr_head_sha"/);
+  assert.match(workflow,/Visual regression against approved PR baseline/);
+  assert.doesNotMatch(workflow,/continue-on-error:\s*true/);
+});

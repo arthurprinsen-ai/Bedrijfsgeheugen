@@ -1,0 +1,34 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+const sql=fs.readFileSync(new URL('../supabase/migrations/20261112162500_original_metric_source_temporal_handoff_v1.sql',import.meta.url),'utf8');
+test('original #171 takes metric event ID and observation time from the SAME source row',()=>{
+ assert.match(sql,/v_metric_observed_at timestamptz/);
+ assert.match(sql,/v_event:=null; v_eval:=null; v_metric_observed_at:=null;/);
+ assert.match(sql,/SELECT s\.source_event_id,s\.observed_at INTO v_event,v_metric_observed_at\s+FROM public\.social_posts p/);
+ assert.match(sql,/s\.metrics->>'provider_post_urn'=r\.external_id/);
+ assert.match(sql,/s\.metrics->>'provider_organization_urn'='urn:li:organization:18234216'/);
+ assert.match(sql,/s\.metrics->>'independent_proof'='EXACT_CANONICAL_LIVE_PROVEN_AUTHOR_AND_PROVIDER_ACCOUNT'/);
+ assert.match(sql,/s\.observed_at <=?p_now|s\.observed_at<=p_now/);
+ assert.match(sql,/s\.observed_at >= r\.live_proven_at\+interval '24 hours'/);
+ assert.match(sql,/s\.data_quality='PROVIDER_OBSERVED_LINKED'/);
+ assert.match(sql,/AND jsonb_typeof\(s\.metrics->'impressions'\)='number'/);
+ assert.match(sql,/source_time_contract','ORIGINAL_SOURCE_EVENT_AND_OBSERVED_AT_SAME_ROW_V1'/);
+});
+test('a measured consumer never reports a different or empty event timestamp on provider-linked company handoff',()=>{
+ const c=sql.match(/'measurement_consumer',jsonb_build_object\([\s\S]*?\),\s+'analysis_consumer'/);
+ assert.ok(c,'must preserve original measurement consumer');
+ const s=c[0];
+ assert.match(s,/'accepted',v_metric/);
+ assert.match(s,/'source_event_id',CASE WHEN v_metric THEN v_event ELSE null END/);
+ assert.match(s,/'measured_at',CASE WHEN v_metric\s+THEN coalesce\(v_metric_observed_at,r\.measured_at\) ELSE null END/);
+ assert.doesNotMatch(s,/'measured_at',r\.measured_at/);
+ assert.match(sql,/'source_next_action',r\.next_action/);
+ assert.match(sql,/'next_action',CASE\s+WHEN v_stage IN\('WAIT_ANALYSIS','OVERDUE_ANALYSIS'\)/);
+ assert.match(sql,/RUN_ORIGINAL_SOURCE_BOUND_BRAIN_ANALYSIS_ACK:/);
+ assert.match(sql,/'analysis_consumer',jsonb_build_object\('accepted',v_analysis/);
+ assert.match(sql,/'experiment_consumer',jsonb_build_object\('accepted',v_reuse/);
+ assert.match(sql,/REVOKE ALL ON FUNCTION public\.powerhouse_content_handoff_receipts_v1/);
+ assert.match(sql,/TO service_role/);
+ assert.doesNotMatch(sql,/CREATE TABLE|CREATE TRIGGER|cron\.schedule|net\.http_post/i);
+});

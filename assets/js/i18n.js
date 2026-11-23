@@ -12,6 +12,8 @@
   let localeEpoch = 0;
   let cache = loadCache();
   let controlsBound = false;
+  const PROVIDER_RETRY_COOLDOWN_MS = 5 * 60 * 1000;
+  let providerRetryAfter = 0;
 
   const cssEscape = value => String(value).replace(/"/g, '&quot;');
   const normalizeLocale = value => String(value || '').toLowerCase().split('-')[0];
@@ -26,11 +28,24 @@
     const marker = normalizeLocale(document.documentElement.dataset.bgStaticLocale || document.querySelector('meta[name="bg-static-locale"]')?.content);
     return SUPPORTED.has(marker) ? marker : null;
   };
+  // These eight standalone NL-only AI model/comparison canonicals have no /en/
+  // counterpart in the actual production sitemap. English navigation resolves to
+  // the existing English AI model guide, never a fabricated /en/<model> 404.
+  const NL_ONLY_AI_MODEL_ROUTES = new Set([
+    '/openai-ai-modellen','/claude-ai-modellen','/gemini-ai-modellen','/mistral-ai-modellen',
+    '/amazon-ai-modellen','/chatgpt-vs-claude','/chatgpt-vs-gemini','/claude-vs-gemini'
+  ]);
+  // Exact original public utility is intentionally not translated into a missing /en route.
+  const NL_ONLY_UTILITY_ROUTES = new Set(['/behoeftecheck']);
+  const normalizeRouteKey = route => route.replace(/\/+$/,'') || '/';
   const localizedHref = target => {
     const normalized = normalizeLocale(target);
     const stripped = location.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
+    const key = normalizeRouteKey(stripped);
+    if (NL_ONLY_UTILITY_ROUTES.has(key)) return 'https://www.bedrijfsgeheugen.nl/behoeftecheck' + location.search + location.hash;
     const pathname = normalized === 'en'
-      ? '/en' + (stripped === '/' ? '/' : stripped)
+      ? NL_ONLY_AI_MODEL_ROUTES.has(key) ? '/en/ai-modelwijzer'
+        : '/en' + (stripped === '/' ? '/' : stripped)
       : (stripped === '/' ? '/' : stripped);
     return pathname.replace(/\/+/g,'/') + location.search + location.hash;
   };
@@ -49,6 +64,14 @@
     if (NON_PAGE_PREFIXES.some(prefix => lowerPath.startsWith(prefix))) return raw;
     const stripped = url.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
     if (stripped.startsWith('/portal') || stripped.startsWith('/klantportaal')) return raw;
+    // These eight standalone model pages have no EN counterpart; keep their
+    // original Dutch canonical target in internal content links.
+    const strippedKey = normalizeRouteKey(stripped);
+    if (NL_ONLY_UTILITY_ROUTES.has(strippedKey)) return 'https://www.bedrijfsgeheugen.nl/behoeftecheck' + url.search + url.hash;
+    if (normalizeLocale(target) === 'en' && NL_ONLY_AI_MODEL_ROUTES.has(strippedKey)) {
+      url.pathname = strippedKey;
+      return url.pathname + url.search + url.hash;
+    }
     url.pathname = (normalizeLocale(target) === 'en'
       ? '/en' + (stripped === '/' ? '/' : stripped)
       : (stripped === '/' ? '/' : stripped)).replace(/\/+/g,'/');
@@ -72,8 +95,8 @@
     ['Start','Start'],['Gratis zelfscan','Free self-scan'],['Frisse Blik Scan','Fresh Perspective Scan'],
     ['Inloggen','Log in'],['Aanmelden','Sign up'],['Home','Home'],['Taal','Language'],
     ['Nederlands','Dutch'],['English','English'],['Voor het Nederlandse mkb','For Dutch SMEs'],
-    ['Vaste prijs, geen uurtje-factuurtje','Fixed price, no hourly billing'],
-    ['In twee weken draaiend','Up and running in two weeks']
+    ['Duidelijke afspraken vooraf','Clear agreements upfront'],
+    ['Klein beginnen, resultaat toetsen','Start small, validate the results']
   ]);
 
   function localTranslation(target, source) {
@@ -182,6 +205,8 @@
       if (typeof hit === 'string' && hit) out.set(source,hit);
       else missing.push(source);
     }
+    // Keep the original source visible during a provider outage; no hot-loop.
+    if (missing.length && Date.now() < providerRetryAfter) throw new Error('translation_temporarily_unavailable');
     const batches = [];
     let batch = [], chars = 0;
     for (const source of missing) {
@@ -195,24 +220,21 @@
     async function requestPart(part) {
       if (requestEpoch !== localeEpoch) return false;
       let response;
-      for (let attempt=0; attempt<2; attempt++) {
-        try {
-          response = await fetch('/api/i18n-translate', {
-            method:'POST',
-            headers:{'content-type':'application/json'},
-            body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
-          });
-        } catch { response = null; }
-        if (response?.ok) break;
-        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 300));
-      }
+      try {
+        response = await fetch('/api/i18n-translate', {
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
+        });
+      } catch { response = null; }
       if (!response?.ok) {
-        if (part.length > 5) {
-          let any = false;
-          for (let i=0;i<part.length;i+=5) any = (await requestPart(part.slice(i,i+5))) || any;
-          return any;
+        // Never recursively split, retry per item or send a second request
+        // during a real provider 429/5xx/network outage.
+        if (!response || response.status >= 500 || response.status === 429 || response.status === 402) {
+          providerRetryAfter = Date.now() + PROVIDER_RETRY_COOLDOWN_MS;
+          throw new Error('translation_provider_unavailable');
         }
-        return false;
+        throw new Error('translation_request_rejected');
       }
       let payload;
       try { payload = await response.json(); } catch { return false; }
@@ -234,11 +256,8 @@
 
     for (const part of batches) await requestPart(part);
 
-    const unresolved = missing.filter(source => !out.has(source));
-    for (const source of unresolved) {
-      await requestPart([source]);
-    }
-
+    // Incomplete successful translation is a quality failure, not permission
+    // for one-by-one paid retries or unsafe translated-copy substitutions.
     const stillMissing = unique.filter(source => !out.has(source));
     if (stillMissing.length) {
       throw new Error('translation_incomplete:' + stillMissing.length);
@@ -496,6 +515,10 @@
       mountControl();
       roots.forEach(root => syncInternalLinks(root));
       if (locale !== 'en') return;
+      // A statically translated public /en page must not repeatedly invoke
+      // the paid runtime translator on unrelated DOM mutations.
+      if (!isPortal() && pathLocale() === 'en' &&
+          document.documentElement.dataset.bgStaticTranslated !== 'false') return;
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(()=>{
         for (const root of roots) apply(root).catch(()=>{});

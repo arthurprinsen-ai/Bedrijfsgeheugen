@@ -1,0 +1,63 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-11-02",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "github|brain-janitor|source-step-id-breaks-name-only-regression-fixture|20261102-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Five original BRAIN delivery Janitor tests read an empty substring by searching - name while original YAML steps have - id before name. Bounded cleanup and final provider readback are present in canonical workflow and retained unchanged.",
+  "correction": "Update only the two original regression fixtures to locate stable unique step IDs, verify exact following human-readable name and ordered non-empty original sections; retain all existing positive safety assertions.",
+  "prevention": "In workflow tests, parse stable original step id, assert unique presence/name/order and never accept an empty step substring; keep original runtime and security behavior unchanged.",
+  "owner": "existing ONE BRAIN and Powerhouse Janitor delivery self-optimization agent",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs",
+      "tests/brain-janitor-final-readback.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs",
+      "tests/brain-janitor-final-readback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs",
+      "tests/brain-janitor-final-readback.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_run_id": 41518702294,
+    "original_job_id": 125529347516,
+    "original_commit": "eaf74c91a932964792ae84716e2157980b459ab7",
+    "failed_assertions": 5,
+    "test_failure_example": "The input did not match the regular expression /actions_page=.../; Input: ''",
+    "original_step_ids": [
+      "janitor_cleanup_reconcile",
+      "janitor_cleanup_readback"
+    ],
+    "source_workflow": "unchanged",
+    "runtime_proof_after_this_release": "PENDING_NATIVE_NEXT_ORIGINAL_JANITOR",
+    "postmerge_full_brain": "PENDING",
+    "financial_outcomes_proven": false
+  },
+  "sources": [
+    ".github/workflows/powerhouse-repository-janitor.yml",
+    "tests/brain-janitor-bounded-cleanup.test.mjs",
+    "tests/brain-janitor-final-readback.test.mjs",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41518702294"
+  ],
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "regression_ref": "tests/brain-janitor-bounded-cleanup.test.mjs; tests/brain-janitor-final-readback.test.mjs",
+  "test_evidence": {
+    "observed": "Original CI job 125529347516 five exact Janitor-test assertions failed on empty step source; original workflow step ID/name and bounded paging/fresh state/readback are present.",
+    "pending": "Protected exact-head Required + CodeQL, full BRAIN delivery, merge, postmerge runtime and native Janitor independent readback."
+  },
+  "agent_instruction": "AGENTS.md",
+  "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+  "human_doc": "docs/changes/2026-11-02-janitor-step-id-regression.md",
+  "development_ledger": "docs/development-ledger-events/2026-11-02-janitor-step-id-regression.md"
+}

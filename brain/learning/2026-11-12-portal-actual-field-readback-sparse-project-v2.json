@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "portal|tenant-authored-value|ack-without-field-equality-and-sparse-external-reset|20261112-v2",
+  "obligation_id": "portal|tenant-authored-value|ack-without-field-equality-and-sparse-external-reset|20261112-v2",
+  "title": "Exact authenticated customer input field readback and sparse provider non-erasure after original #5671 ACK guard",
+  "status": "FIX_CANDIDATE",
+  "root_cause": "Original #5671 fixed false HTTP 200/stale portal projection ACK, but returned authenticated GET without testing the actual submitted portal field values; original project-state merge still overlays default empty arrays from absent external quote keys and hides user-entered tasks/docs/roadmap.",
+  "impact": "An authenticated save could be declared successful with stale values; a sparse external project response could erase customer answers from the displayed tenant view. No actual human customer exposure proven.",
+  "fix": "Keep canonical #5671 stored===true/stale===false and authenticated GET; require deep equality for authored portal paths. Overlay external project collections only on explicitly supplied provider arrays. Missing and explicit [] and 0 distinct.",
+  "prevention_rule": "All source-driven portal changes require original tenant, sourceRevision, exact value readback, original Brain consumer processing and provider timestamp; a catalogued source or HTTP success never constitutes actual customer field or CRO outcome. No second writer.",
+  "owner": "original Portal V2 field-to-output P0 #4215 and original ONE BRAIN source consumer",
+  "tests": [
+    "tests/brain-portal-field-value-and-sparse-project-20261112.test.mjs",
+    "portal-v2/tests/portal-business-input-persistence.test.mjs",
+    "tests/portal-v2-customer-project-state.test.mjs"
+  ],
+  "regression_contract": "tests/brain-portal-field-value-and-sparse-project-20261112.test.mjs; original signed portal/quote source fixture",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-field-value-and-sparse-project-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-field-value-and-sparse-project-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-field-value-and-sparse-project-20261112.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Main c6c2a6ef3c2910d727a708b61c23670e75b98a45 source readback #5671 checks mode not nested data",
+    "Current main project-state unconditionally overlays empty provider arrays",
+    "Earlier candidate #5670 was closed unmerged to preserve #5671 stronger ACK contract"
+  ],
+  "outcome": "FIX_CANDIDATE; full protected CI, exact production current+authorized browser readback still due; all-fields and external feeds not declared green.",
+  "compiler": {
+    "failure_class": "PORTAL_FIELD_VALUE_ACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

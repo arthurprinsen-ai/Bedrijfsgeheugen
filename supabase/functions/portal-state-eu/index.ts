@@ -3,7 +3,8 @@ import { repairBusinessInputsFromAuthority } from './business-input-read-repair.
 import { readPortalBusinessInputAuthorityPages } from './business-input-authority-pages.js';
 import { eligibleFinancialForecast } from '../_shared/portal-financial-forecast-acceptance.js';
 import { boundedReads } from './bounded-reads.js';
-import { finiteEvidence, sumKnownEvidence, maxKnownEvidence, entrepreneurSnapshotFreshness } from './entrepreneur-snapshot-truth.js';
+import {finiteEvidence,sumKnownEvidence,maxKnownEvidence,entrepreneurSnapshotFreshness as entrepreneurSnapshotFreshness_raw} from './entrepreneur-snapshot-truth.js';
+const entrepreneurSnapshotFreshness:(...args:any[])=>any=entrepreneurSnapshotFreshness_raw;
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 // Accept the approved production Netlify gateway token by hash, never by plaintext.
@@ -150,6 +151,66 @@ Deno.serve(async(req:Request)=>{
   const url=Deno.env.get('SUPABASE_URL'); const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+
+
+  // Read-only, tenant-scoped original Heartbeat proof. Browser supplied
+  // tenant identifiers never reach this gateway: the Netlify endpoint resolves
+  // tenant from a verified Identity principal before signing this service call.
+  if(action==='signal_observations'){
+    const identityHash=(await sha256(tenantId)).slice(0,24);
+    const key='tenant:'+identityHash;
+    const [{data:entries,error:entryError},{data:heartbeats,error:heartbeatError}]=await Promise.all([
+      client.from('powerhouse_runtime_events')
+        .select('dedupe_key,event_type,occurred_at,state,data_quality,source,evidence')
+        .eq('subject_key',key)
+        .eq('source','powerhouse-commercial-heartbeat-runner')
+        .in('event_type',['portal_user_signal_observed','portal_user_signal_scan'])
+        .order('occurred_at',{ascending:false}).limit(51),
+      client.from('powerhouse_runtime_events')
+        .select('occurred_at,state,data_quality')
+        .eq('event_type','commercial_heartbeat')
+        .eq('source','powerhouse-commercial-heartbeat-v1')
+        .order('occurred_at',{ascending:false}).limit(1)
+    ]);
+    if(entryError||heartbeatError)return json({error:'PORTAL_MONITORING_READ_FAILED'},503);
+    const valid=(entries||[]).filter((row:any)=>{
+      const type=String(row.event_type||'');
+      const prefix=type==='portal_user_signal_scan'?'portal-signal-scan:':'portal-signal-observation:';
+      return row.source==='powerhouse-commercial-heartbeat-runner'
+        &&row.state==='observed'&&row.data_quality==='OBSERVED'
+        &&String(row.dedupe_key||'').startsWith(prefix)
+        &&row.evidence?.contract==='portal-voice-alert-heartbeat-v1';
+    });
+    const events=valid.slice(0,50).map((row:any)=>{
+      const e=row.evidence||{};
+      const scan=row.event_type==='portal_user_signal_scan';
+      return {
+        id:String(row.dedupe_key).slice(0,85),
+        kind:scan?'scan':'trigger',
+        observedAt:row.occurred_at,
+        sourceRevision:String(e.sourceRevision||'').slice(0,40),
+        metricId:scan?null:String(e.metricId||'').slice(0,48),
+        sourcePath:scan?null:String(e.sourcePath||'').slice(0,120),
+        sourceKind:scan?null:e.sourceKind==='connector'?'connector':'portal',
+        connectorRuleCount:scan&&Number.isSafeInteger(Number(e.connectorRuleCount))?Math.max(0,Number(e.connectorRuleCount)):null,
+        connectorMeasurementsMatched:scan&&Number.isSafeInteger(Number(e.connectorMeasurementsMatched))?Math.max(0,Number(e.connectorMeasurementsMatched)):null,
+        enabledRuleCount:scan&&Number.isSafeInteger(Number(e.enabledRuleCount))?Math.max(0,Number(e.enabledRuleCount)):null,
+        thresholdTriggersObserved:scan&&Number.isSafeInteger(Number(e.thresholdTriggersObserved))?Math.max(0,Number(e.thresholdTriggersObserved)):null,
+        measurementFreshnessVerified:false,notificationDeliveryVerified:false,actionExecutionVerified:false
+      };
+    });
+    const last=(kind:string)=>events.find((row:any)=>row.kind===kind)?.observedAt||null;
+    return json({
+      tenantId,contract:'portal-signal-tenant-readback-v1',
+      checkedAt:new Date().toISOString(),
+      lastOriginalHeartbeatAt:heartbeats?.[0]?.occurred_at||null,
+      lastTenantScanAt:last('scan'),lastTenantTriggerAt:last('trigger'),
+      events,eventsTruncated:(entries||[]).length>50,
+      alertsDelivered:0,autonomousActionsVerified:0,
+      measurementFreshnessVerified:false,
+      explanation:'Originele Heartbeat-observaties, geen bevestiging van bronversheid, e-mail/push of uitgevoerde acties.'
+    });
+  }
 
   // Private tenant-scoped commercial evidence series; no cross-tenant aggregates.
   if(action==='commercial_feedback'){
@@ -679,7 +740,7 @@ Deno.serve(async(req:Request)=>{
       let authorityRecords;
       try{authorityRecords=await readPortalBusinessInputAuthorityPages(client,tenantId);}
       catch(error){
-        const code=error?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
+        const code=(error as any)?.message==='BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED'
           ?'BUSINESS_INPUT_HISTORY_LIMIT_EXCEEDED':'BUSINESS_INPUT_AUTHORITY_READ_FAILED';
         return json({error:code},503);
       }

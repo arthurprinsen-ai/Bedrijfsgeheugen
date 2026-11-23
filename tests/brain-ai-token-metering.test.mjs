@@ -3,12 +3,11 @@ import assert from 'node:assert/strict';
 import { runWebsiteAnswer } from '../netlify/functions/_brain-ai.mjs';
 
 const providerResponse = () => Response.json({
-  content: [{ type: 'text', text: 'Brongebonden antwoord.' }],
+  choices: [{ message: { content: 'Brongebonden antwoord.' } }],
   usage: {
-    input_tokens: 90,
-    output_tokens: 15,
-    cache_read_input_tokens: 20,
-    cache_creation_input_tokens: 0,
+    prompt_tokens: 90,
+    completion_tokens: 15,
+    cached_tokens: 20,
   },
 });
 

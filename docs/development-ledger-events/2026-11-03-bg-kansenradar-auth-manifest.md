@@ -1,0 +1,8 @@
+# Append-only development ledger 2026-11-03 — original Kansenradar auth and source manifest
+
+- Original workflow: 41628384628 Supabase Edge Production Authority FAILED with `SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-kansenradar`; source main `5e9ef539d6c34f51da4f920d2f98277c23f90d91`.
+- Original read-only production inspection: Edge slug `bg-kansenradar` ACTIVE v12, `verify_jwt=false`; POST handler used a service-role DB client without checking request caller; original daily job #18 active at `0 6 * * *` sent no auth header. This is a security exposure. Never call this GREEN before independently tested.
+- Source changes: protected config declaration of original function, check original scheduler token before all side effects, original cron exact in-place guard without plaintext secret, dedicated Node regression, canonical Brain learning and docs.
+- 2026-11-03 original production cron job #18 updated through its only source runtime using exact old-command preimage, **not** a second cron. Independent readback: `jobid=18`, `active=true`, `schedule='0 6 * * *'`, `token_header_present=true`, `token_runtime_reference_present=true`, `same_original_endpoint=true`, job count 1.
+- Readback boundary: GitHub protected CI/merge, native Supabase Edge deploy/sha and no-auth 401 verification PENDING. Anthropic account credit exhaustion remains a separate external provider problem; no bill/credit falsely marked paid.
+- Prevention: ONE BRAIN incident + exact regression, no silent provider drift, fail-closed if scheduler command mutated by another owner, never regress to anonymous privileged invocation.

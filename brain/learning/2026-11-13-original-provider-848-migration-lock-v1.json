@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|supabase|original-provider-848-source-lock-parity|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_PROVIDER_848_APPLIED_BEFORE_GIT_IMMUTABLE_SOURCE_LOCK",
+    "scope": "PROTECTED_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Protected original #5744 merged and original Supabase provider applied migration 20261113155800 while immutable Git migration-history source lock remained at already verified 847. Original BRAIN backend CI and terminal release require exact source/production version+name parity. Additional original #171 handoff priority defect caused 8/21 historical revisions to starve outside bounded 48-row batch before #5744.",
+  "prevention_rule": "Never infer provider applied identity from source CI. Verify entire provider version/name history read-only, preserve all 847 existing Git lock entries exactly, append 848 only after real observed provider migration version and name. Preserve original ONE BRAIN protected source lock and exact-head delivery, no second executor, no fake data. Historical proof tests use >= N with immutable fixed index and monotone captured_at. Actual original #171 consumer evidence must still independently show 21/21 latest revisions before handoff GREEN.",
+  "evidence": [
+    "2026-11-13 16:05:16.124635 UTC original Supabase production real read-only schema_migrations: 848 applied, latest 20261113155800/original_historic_handoff_source_revision_priority_v1.",
+    "Exact full 847 provider history prefix independently compared to original Git immutable source lock by version/name: 0 mismatches. Provider current original function revision-first ORDER BY, LIMIT 48, original service_role EXECUTE=true anon/authenticated=false.",
+    "Protected PR #5744 main squash merge 1422e08ef48c89f3305e2effc0ba5d8e55ef91fb after CodeQL, Required, native Supabase preview SUCCESS. Original source/Brain proof 13/21 before next postmerge natural #171 readback, 21 OPEN, 7 RED loops; do not claim business green."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-848-migration-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-848-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-848-migration-lock-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "no_new_migration": true,
+    "no_provider_sql_replay": true,
+    "no_new_scheduler": true,
+    "no_publication": true,
+    "unchanged_original_847_prefix": true,
+    "protected_exact_head_required": true
+  },
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PROVIDER_APPLIED_SOURCE_ONLY_PROTECTED_CANDIDATE"
+}

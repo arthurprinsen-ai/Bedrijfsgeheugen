@@ -1,0 +1,51 @@
+{
+  "fingerprint": "seo|original-archive-derived-cardinality-regression|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "original Powerhouse #175 → ONE BRAIN #140 → commercial Heartbeat",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "failure_class": "ORIGINAL_GROWTH_ARCHIVE_CARDINALITY_DRIFT",
+  "root_cause": "Protected migration 20261112214500 added the legitimate ninth original CTE source seo_opportunity_intelligence but left archive function hard-guarded by v_saved<>8. An actual authorized same-original producer invocation on 2026-11-12 failed with SQLSTATE 23514 GROWTH_SOURCE_MANIFEST_INCOMPLETE:9; transaction rolled back, so no revised source manifest or downstream acknowledgment was created.",
+  "evidence": {
+    "original_function": "public.powerhouse_daily_source_archive_v1(date)",
+    "observed_error": "GROWTH_SOURCE_MANIFEST_INCOMPLETE:9",
+    "sqlstate": "23514",
+    "native_migration_count": 837,
+    "derived_observation_id": "e1dd5ffa-8aa7-47cf-a979-64197d3e71d9",
+    "derived_observed_at": "2026-11-12T19:59:35.662Z",
+    "source_revision_ack_status": "NOT_PROVEN",
+    "actual_cro_experiment_executed": false,
+    "traffic_lift_proven": false
+  },
+  "fix": [
+    "Change only the original function source-completeness guard: minimum nine producer rows plus exact seo_opportunity_intelligence row for requested day, preserving cardinality flexibility for future additions.",
+    "Guard original function text and source signature, fail on drift, verify function definition after native Supabase migration.",
+    "Replay exactly original #175 day then existing #140 consumer and commercial Heartbeat; each must independently read the current revision SHA before any delivery claim."
+  ],
+  "prevention_rule": "For every future source Union extension, revalidate source producer cardinality and real SQL invocation before source/consumer terminal claims. Never infer successful manifest delivery from a merged SQL migration or a source observation alone.",
+  "compiler": {
+    "failure_class": "SOURCE_PRODUCER_EXECUTABLE_GUARD_REGRESSION",
+    "scope": "SEO_DATA_SPINE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-daily-archive-cardinality-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-seo-daily-archive-cardinality-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-daily-archive-cardinality-20261112.test.mjs"
+    ],
+    "expected": "Preview applies guarded function, original #175 current-day row and manifest include derived SEO, original #140 and commercial Heartbeat acknowledge matching SHA; CRO outcome separately proven."
+  },
+  "delivery": {
+    "migration": "supabase/migrations/20261112230000_original_seo_daily_archive_cardinality_guard_v1.sql",
+    "status": "CANDIDATE_NOT_LIVE",
+    "consumer_state": "OPEN"
+  }
+}

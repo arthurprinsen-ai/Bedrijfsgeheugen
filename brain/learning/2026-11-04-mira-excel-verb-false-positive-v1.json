@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_LIVE_PROVEN",
+  "fingerprint": "mira-radar|english-verb-excel-at|misclassified-spreadsheet-source|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original powerhouse-mira-problem-radar source classifier / Mira canonical producer",
+  "failure_class": "SEMANTIC_SOURCE_TOPIC_FALSE_POSITIVE",
+  "root_cause": "Original Mira radar uses unbounded regex /excel|spreadsheet|.../ and audience keyword /...|excel|.../ on lowercased public headlines. English 'Artists Excel at VASE Competition' from an American school contest matched Dutch Excel spreadsheet dependency PH-P006 despite no business operations context. The original 2026-11-04 Instagram winner recommendation d7206d60-f667-4859-b01e-4428fe1e831a has topic_key=excel-chaos, source_score=0.737 and school domain coppellisd.com, but its headline describes school art achievement rather than spreadsheet chaos. Original asset job is WAITING_ASSET and has no Meta post. Generating paid video from that misclassified source would amplify a false signal.",
+  "evidence": {
+    "source_url": "https://www.coppellisd.com/o/mkb/article/2886214",
+    "source_title": "Drawing Statewide Recognition: CHS and CHS9 Artists Excel at VASE Competition | MOCKINGBIRD ELEMENTARY",
+    "daily_recommendation_id": "d7206d60-f667-4859-b01e-4428fe1e831a",
+    "topic_key": "excel-chaos",
+    "mapped_problem_id": "PH-P006",
+    "score": 0.737,
+    "original_job_state": "WAITING_ASSET",
+    "original_post_proven": false,
+    "observed_at_utc": "2026-11-04T06:50:00Z"
+  },
+  "fix": "In the SAME original radar Edge function, centralize precise spreadsheet-business-context matching in one shared bounded helper, and reuse for topic and entrepreneur relevance classification. Reject the bare English 'excel at' verb while retaining Dutch/English explicit Excel spreadsheets, .xlsx files and operational prepositions. Do not change score thresholds, freeze rule or provider permission, do not restart or overwrite today's frozen daily winner via code patch.",
+  "prevention_rule": "Source and business-problem classification must disambiguate multilingual homonyms (English verbs vs spreadsheet product names) before selecting frozen Mira winning candidate or spending OpenArt credits. Run deterministic negative and positive source regression and require independently relevant winner before media generation.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-excel-verb-source-quality-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-excel-verb-source-quality-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-excel-verb-source-quality-20261104.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "SEMANTIC_SOURCE_TOPIC_FALSE_POSITIVE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required/BRAIN/CodeQL/native Supabase Preview, merged actual original radar Edge byte-for-byte source deploy, original new source selection test. Today original frozen winner requires distinct legitimate owner/source-led replacement, not arbitrary auto-rewrite. Continue genuine Mira identity >=0.940 and exact provider readback."
+}

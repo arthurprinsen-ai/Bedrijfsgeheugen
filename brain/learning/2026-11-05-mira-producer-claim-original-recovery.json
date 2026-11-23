@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_CHECKS_AND_ORIGINAL_RUNTIME_READBACK_DUE",
+  "fingerprint": "powerhouse|mira|virgin-winner-media-job-not-producer-claimed|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "owner": "original powerhouse-content-loop + original Mira producer/media router",
+  "failure_class": "SOURCE_OWNED_PRODUCER_HANDOFF_MISSING",
+  "root_cause": "Original hourly publication recovery only examined decision.daily_winner_recommendation_id, never the media job already read by the same loop preventive check. On 2026-11-05 true frozen winner 5f95bf92-73f8-419a-bac4-0e388b256b76, original media job WAITING_ASSET attempts=0 without external history, original obligation BLOCKED/MEDIA_ASSET_REQUIRED. Generic MIRA_FINAL_MEDIA_PROOF_REQUIRED hid the actionable exclusive first producer claim.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T07:30:00Z",
+    "publication_date": "2026-11-05",
+    "source": "public.powerhouse_instagram_media_jobs_v1 + public.powerhouse_channel_decisions",
+    "job_state": "WAITING_ASSET",
+    "job_attempts": 0,
+    "source_winner_id": "5f95bf92-73f8-419a-bac4-0e388b256b76",
+    "provider_history_present": false,
+    "meta_provider_id_present": false,
+    "original_next_action": "MIRA_FINAL_MEDIA_PROOF_REQUIRED",
+    "independent_live_proof": false
+  },
+  "fix": "Pass original media job with attempts from existing one-loop read to original recovery pure classifier; produce MIRA_PRODUCER_CLAIM_REQUIRED only for same-day matching immutable winner and pristine unclaimed zero-attempt job; no new executor, scheduler, writer, provider call or paid generation. Existing authorized media producer exclusively claims through its original router before any OpenArt spend.",
+  "prevention_rule": "Use the exact durable source and current media state to separate virgin source-owned producer claim from rejected media replacement and from missing winner. A successful preflight is not a producer claim, a generated asset, or Meta LIVE_PROVEN. Never weaken original face threshold 0.940, provider budget, OAuth, idempotency or duplicate prevention.",
+  "tests": [
+    "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs"
+    ],
+    "invariants": [
+      "original cron #140",
+      "no parallel sender",
+      "same-frozen-winner only",
+      "zero previous OpenArt side effects",
+      "exclusive producer claim required",
+      "no auto Meta post",
+      "three-frame identity >=0.940",
+      "independent exact-provider readback"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "SOURCE_OWNED_PRODUCER_HANDOFF_MISSING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected exact-head Required/CodeQL/BRAIN and merge; existing source-authorized Supabase Edge deploy; exact live source-byte match, original natural run and actual original next_action showing owner claim due. Meta publish remains separately blocked until independently proven."
+}

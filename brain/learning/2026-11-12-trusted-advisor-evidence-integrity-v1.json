@@ -1,0 +1,77 @@
+{
+  "fingerprint": "portal|trusted-advisor-evidence-integrity|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "original Portal V2 Trusted Advisor assurance and existing CMS/editorial owner",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN",
+  "observed_evidence": [
+    {
+      "path": "portal-v2/trusted-advisor-assurance.js",
+      "defect": "Unknown source healthy not false was counted healthy; generic outcome ok was treated as verified",
+      "verified_state": "SOURCE"
+    },
+    {
+      "path": "contact.html",
+      "defect": "Two-minute free scan with automatic email claim conflicted with actual twelve-question approximately three-minute immediate anonymous results",
+      "verified_state": "SOURCE"
+    },
+    {
+      "path": "zelfscan.html",
+      "defect": "Unreached hidden completion markup promised automatic email report",
+      "verified_state": "SOURCE"
+    },
+    {
+      "path": "portal-v2/index.html",
+      "defect": "Public demo-like figures require prominent illustrative label; not proven resolved",
+      "verified_state": "OPEN"
+    }
+  ],
+  "root_cause": "Customer-facing claims and derived assurance status were not consistently bound to independently verifiable evidence and true end-to-end customer journey.",
+  "fix": [
+    "Fail closed for source health omitted in runtime state",
+    "Recognize independently verified outcome only with explicit proof state and receipt reference for all shown outcomes",
+    "Make assurance interface evidence first rather than self-labeling trusted",
+    "Align copy with actual anonymous 12-question on-screen scan journey",
+    "Add original policy and editorial skill learning, no second executor"
+  ],
+  "prevention_rule": "No trust label, green source or verified outcome without evidence and explicit provenance. No customer promise may contradict the original operational flow. Preserve a single original owner, tenant lineage and consumer ACK; PR CI does not prove a live customer result.",
+  "regressions": [
+    "tests/brain-trusted-advisor-assurance-v1.test.mjs",
+    "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs"
+  ],
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-trusted-advisor-evidence-integrity-v1.md",
+    "original_owner": "portal-v2/trusted-advisor-assurance.js + original CMS",
+    "new_parallel_executor": false
+  },
+  "compiler": {
+    "failure_class": "CUSTOMER_TRUST_PROOF_AND_COPY_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-advisor-assurance-v1.test.mjs",
+      "tests/brain-trusted-advisor-customer-journey-20261112.test.mjs"
+    ],
+    "expected": "unknown health => not healthy; generic ok => not verified; 12-question scan results immediately without email gate; no self-declared trust badges"
+  },
+  "evidence_due": [
+    "exact-head Required/BRAIN/CodeQL green",
+    "protected merge",
+    "Netlify deployment exact production SHA",
+    "public and authenticated portal journey readback",
+    "original ONE BRAIN consumer processed ACK",
+    "consent-qualified 7/14/28d actual change in trust/scan/lead outcomes"
+  ],
+  "evidence": {
+    "source_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-evidence-integrity-v1.md",
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5678",
+    "original_owner": "Portal V2 / original CMS",
+    "no_production_claim": true
+  }
+}

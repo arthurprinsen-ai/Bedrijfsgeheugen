@@ -131,7 +131,7 @@ test('Supabase Edge production workflow is current-main-only, single-writer and 
   assert.match(workflow,/actions\/upload-artifact@v4/);
   assert.match(workflow,/SUPABASE_ACCESS_TOKEN/);
   assert.match(workflow,/SUPABASE_ACCESS_TOKEN_REQUIRED_FOR_READ_ONLY_PROVIDER_PARITY/);
-  assert.match(workflow,/supabase\/setup-cli@v1/);
+  assert.match(workflow,/supabase\/setup-cli@1dedf2c611547ede7232d26866dd3c56ab903bbb # v1\.7\.3/);
   assert.match(workflow,/version:\s*2\.119\.0/);
   assert.match(workflow,/supabase functions download/);
   assert.match(workflow,/supabase functions download "\$fn" --project-ref "\$PROJECT_REF" --use-api/);

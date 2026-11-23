@@ -1,5 +1,6 @@
 import { getStore, getDeployStore } from '@netlify/blobs';
 import { timingSafeEqual } from 'node:crypto';
+import { validateDatahubAck } from '../../tools/seo-growth/datahub-ack-contract.mjs';
 import { normalizeGrowthOutcome } from '../../tools/seo-growth/datahub-contract.mjs';
 import { normalizeUniversalEvent } from '../../tools/universal-event-envelope.mjs';
 
@@ -12,7 +13,7 @@ function authorized(request){const supplied=request.headers.get('x-bg-service-to
 function keyFor(outcome){return `outcome/${outcome.outcome_id.replace(/[^a-z0-9_-]/gi,'_')}`;}
 function dataHubUrl(){const base=env('BG_PORTAL_EU_SUPABASE_URL').replace(/\/$/,'');return base?`${base}/functions/v1/growth-datahub-ingest`:'';}
 async function dataHubPost(payload){const url=dataHubUrl();const token=env('BG_PORTAL_EU_SERVICE_TOKEN');if(!url||!token)return {attempted:false,ok:false,reason:'datahub-unconfigured'};try{const response=await fetch(url,{method:'POST',headers:{'content-type':'application/json','x-bg-service-token':token},body:JSON.stringify(payload),signal:AbortSignal.timeout(3500)});const body=await response.json().catch(()=>null);return {attempted:true,ok:response.ok,status:response.status,body,reason:response.ok?'ok':'http-error'};}catch(error){return {attempted:true,ok:false,reason:error?.name==='TimeoutError'?'timeout':'network-error'};}}
-async function attemptDataHub(outcome){const result=await dataHubPost({action:'outcome',outcome});return {attempted:result.attempted,persisted:result.ok,status:result.status,reason:result.ok?'stored':result.reason,readback:result.ok?result.body?.result:null};}
+async function attemptDataHub(outcome){const result=await dataHubPost({action:'outcome',outcome});const verified=result.ok&&validateDatahubAck('outcome',{outcome},result.body);return {attempted:result.attempted,persisted:verified,status:result.status,reason:verified?'stored':result.ok?'invalid-datahub-ack':result.reason,readback:verified?result.body.result:null};}
 async function markBrainQueue(queueId,delivery){if(!queueId)return {attempted:false,ok:false,reason:'queue-id-missing'};const state=delivery.delivered?'DELIVERED':delivery.attempted?'BLOCKED':'QUEUED';return dataHubPost({action:'brain_delivery',queue_id:queueId,state,attempted:delivery.attempted,attempts:delivery.attempted?1:0,last_error:delivery.delivered?'':delivery.reason||''});}
 async function attemptBg211(envelope){const url=env('BG211_WEBHOOK_URL');if(!url||env('BG211_DELIVERY_ENABLED')!=='true')return {attempted:false,delivered:false,reason:'delivery-disabled'};try{const response=await fetch(url,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({event_json:JSON.stringify(envelope)}),signal:AbortSignal.timeout(3500)});return {attempted:true,delivered:response.ok,status:response.status,reason:response.ok?'accepted':'http-error'};}catch(error){return {attempted:true,delivered:false,reason:error?.name==='TimeoutError'?'timeout':'network-error'};}}
 

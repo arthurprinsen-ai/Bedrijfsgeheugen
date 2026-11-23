@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|relationship-research|tracked-google-goto-serp-falsely-done-and-verified|20261115-v1",
+  "root_cause": "Original daily #116 DataForSEO organic result selected a Google tracking redirect (google.com/goto) as relationship research source URL, transitioned a source-specific action to done and a generic snippet runtime event to data_quality=VERIFIED. The original outbound email remained rightly held by SOURCE_SPECIFIC_EVIDENCE_REQUIRED, but source-to-composer telemetry labeled the handoff BROKEN and the original research action did not self-retry because it had become terminal done. Independent public search located a real publisher-owned YER training page describing the company's AI training, not a person-specific buying trigger or an outreach permission.",
+  "scope": "ORIGINAL_DAILY_116_RELATIONSHIP_RESEARCH_SOURCE_PROVENANCE_AND_RETRY",
+  "owner": "existing Powerhouse relationship public research worker; original commercial composer held action consumer; existing Reliability and Data Quality agents",
+  "prevention_rule": "Require direct public HTTPS publisher URL before even staging a SERP research candidate or public mailto ingestion; reject Google redirect wrappers and shorteners. Mark SERP snippet UNVERIFIED_SERP_SNIPPET never VERIFIED. Within SAME existing original Edge producer, safely recover a bounded set of previously done wrapper-backed source actions only if original recipient is still prepared/waiting with source-required hold and has no provider send ambiguity, returning source action to waiting with 24-hour due and exact original recipient no-source ACK; no duplicate action, new scheduler, new provider lookup or mailing.",
+  "regression": "tests/brain-original-serp-tracked-redirect-safe-retry-20261115.test.mjs",
+  "evidence": {
+    "measured_at_utc": "2026-11-15T10:41:56Z",
+    "source_action_status_before": "done",
+    "source_url_type": "google.com/goto tracking redirect not publisher URL",
+    "original_recipient_status_before": "prepared",
+    "original_recipient_execution_gate": "SOURCE_SPECIFIC_EVIDENCE_REQUIRED",
+    "original_research_action_id": "relationship-research:outreach-source:e5047182-405c-43f2-8c25-7674f1a2cb70",
+    "data_quality_before": "VERIFIED (incorrect for SERP snippet)",
+    "independent_official_company_page": "https://www.yer.nl/training/praktisch-werken-met-ai-in-het-sociaal-domein/",
+    "source_person_specific_buying_intent_proven": false,
+    "recipient_send_authorized": false,
+    "original_seven_day_unproven_handoffs": 4,
+    "original_source_retry_backlog": 10,
+    "release_state": "CANDIDATE_NOT_PROVIDER_VERIFIED",
+    "original_parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  },
+  "learning_state": "OBSERVED_PENDING_PROTECTED_RELEASE_AND_NATURAL_READBACK",
+  "compiler": {
+    "failure_class": "SERP_REDIRECT_URL_FALSE_VERIFIED_SOURCE_AND_NO_SAME_ACTION_RETRY",
+    "scope": "SOURCE_RESEARCH_EDGE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-serp-tracked-redirect-safe-retry-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-serp-tracked-redirect-safe-retry-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-serp-tracked-redirect-safe-retry-20261115.test.mjs"
+    ]
+  }
+}

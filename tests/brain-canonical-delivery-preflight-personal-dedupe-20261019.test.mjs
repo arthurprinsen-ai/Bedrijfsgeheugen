@@ -20,7 +20,8 @@ test('personal duplicate recovery excludes the rejected verified source rather t
   assert.match(orchestrator, /personalRejectedSourceIds\.includes\(clean\(source\.recommendation_id\)\)/);
   assert.match(orchestrator, /const eligiblePersonal = recs\.filter\(validPersonalSource\)\.filter/);
   assert.match(orchestrator, /eligiblePersonal\.find\(\(s:any\)=>!isStalePersonalSource\(s,recentPersonalTypes\)\)/);
-  assert.match(orchestrator, /\|\| eligiblePersonal\[0\] \|\| null/);
+  assert.match(orchestrator, /const personalSource = eligiblePersonal\.find\(\(s:any\)=>!isStalePersonalSource\(s,recentPersonalTypes\)\)\s*\|\| null;/);
+  assert.doesNotMatch(orchestrator, /eligiblePersonal\s*\[\s*0\s*\]/, 'rejected or stale story-family must never be a fallback');
   assert.match(orchestrator, /NO_UNIQUE_VERIFIED_PERSONAL_SOURCE/);
   assert.match(orchestrator, /rejected_recommendation_ids:channel==='linkedin_company'\|\|channel==='linkedin_personal'/);
 });

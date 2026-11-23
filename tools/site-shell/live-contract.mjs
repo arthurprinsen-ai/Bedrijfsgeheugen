@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell } from './contracts.mjs';
 import { readReleaseMarker } from './release-marker.mjs';
 
-const TRUST = ['Vaste prijs, geen uurtje-factuurtje', 'In twee weken draaiend', 'Voor het Nederlandse mkb'];
+const TRUST = ['Duidelijke afspraken vooraf', 'Klein beginnen, resultaat toetsen', 'Voor het Nederlandse mkb'];
 const MOBILE = ['Oplossingen', 'Platform', 'Prijzen', 'Kennis', 'Over ons', 'Meer'];
 const CONTACT = ['mailto:arthur@bedrijfsgeheugen.nl', 'tel:+31627483345', 'ma–vr 08:00–18:00'];
 

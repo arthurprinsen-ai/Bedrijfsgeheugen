@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - 'portal-v2/**'
+      - '.agents/skills/portal-living-interface/SKILL.md'
+      - 'tests/integration/portal-v2-production-*.spec.js'
+      - 'tests/integration/portal-v2-mobile-shell.spec.js'
+      - '.github/workflows/portal-v2-production-dom-readback.yml'
   workflow_dispatch:
     inputs:
       approved_pr_number:
@@ -55,6 +59,39 @@ jobs:
             echo "PORTAL_ALIAS_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
             echo "PORTAL_EXPECTED_SHA=${PRODUCTION_SHA_OVERRIDE:-$GITHUB_SHA}" >> "$GITHUB_ENV"
           fi
+      - name: Pin already-published Netlify SHA only for exact evidence-only push
+        if: github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          # A test-only or native-workflow change must be reproved against the
+          # genuinely published runtime, not a made-up unpublished main SHA.
+          # Runtime source changes are not eligible: they MUST wait for exact
+          # GITHUB_SHA deployment via the unmodified immutable release gate.
+          payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "${PORTAL_ALIAS_URL}/release.json" || true)"
+          published_sha="$(node -e 'try {const r=JSON.parse(process.argv[1]);process.stdout.write(String(r.commit_ref||""));}catch{}' "$payload")"
+          if ! [[ "$published_sha" =~ ^[0-9a-f]{40}$ ]] || [ "$published_sha" = "$GITHUB_SHA" ]; then
+            echo "NO_EVIDENCE_ONLY_OVERRIDE:main_exact_or_published_sha_unavailable"
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor "$published_sha" "$GITHUB_SHA"; then
+            echo "PUBLISHED_SHA_NOT_ANCESTOR:wait_for_exact_main:$GITHUB_SHA"
+            exit 0
+          fi
+          changed="$(git diff --name-only "$published_sha" "$GITHUB_SHA")"
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            case "$file" in
+              AGENTS.md|.agents/skills/*|.github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|tools/delivery/github-actions-failure-observer.mjs|supabase/functions/_shared/editorial-council-context.mjs|supabase/functions/powerhouse-content-loop/index.ts|supabase/functions/powerhouse-social-publisher/index.ts|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
+              *)
+                echo "RUNTIME_DRIFT_NOT_ELIGIBLE_FOR_PUBLISHED_SHA:$file"
+                exit 0
+                ;;
+            esac
+          done <<< "$changed"
+          echo "PORTAL_EXPECTED_SHA=$published_sha" >> "$GITHUB_ENV"
+          echo "PORTAL_PUBLISHED_CI_ONLY_VERIFIED=true" >> "$GITHUB_ENV"
+          echo "ORIGINAL_BROWSER_EVIDENCE_ONLY_PINNED:published=$published_sha:main=$GITHUB_SHA"
+
       - name: Verify published SHA override is strictly scoped to CI and evidence
         env:
           EVENT_NAME: ${{ github.event_name }}
@@ -64,8 +101,12 @@ jobs:
             echo "EXACT_MAIN_PRODUCTION_TARGET:$GITHUB_SHA"
             exit 0
           fi
-          if [ "$EVENT_NAME" != "workflow_dispatch" ] || [ "$GITHUB_REF" != "refs/heads/main" ] || ! [[ "$PORTAL_EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
-            echo "::error::Production SHA override requires main workflow_dispatch with valid commit SHA."
+          if { [ "$EVENT_NAME" != "workflow_dispatch" ] && [ "$EVENT_NAME" != "push" ]; } || [ "$GITHUB_REF" != "refs/heads/main" ] || ! [[ "$PORTAL_EXPECTED_SHA" =~ ^[a-f0-9]{40}$ ]]; then
+            echo "::error::Published source SHA pin requires approved main workflow_dispatch or original evidence-only push."
+            exit 1
+          fi
+          if [ "$EVENT_NAME" = "push" ] && [ "${PORTAL_PUBLISHED_CI_ONLY_VERIFIED:-false}" != true ]; then
+            echo "::error::Published source SHA pin on push must be independently scoped against exact runtime history."
             exit 1
           fi
           if ! git merge-base --is-ancestor "$PORTAL_EXPECTED_SHA" "$GITHUB_SHA"; then
@@ -76,7 +117,7 @@ jobs:
           while IFS= read -r file; do
             [ -n "$file" ] || continue
             case "$file" in
-              .github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
+              AGENTS.md|.agents/skills/*|.github/workflows/*|tests/*|docs/*|brain/learning/*|tools/ci/*|tools/delivery/github-actions-failure-observer.mjs|supabase/functions/_shared/editorial-council-context.mjs|supabase/functions/powerhouse-content-loop/index.ts|supabase/functions/powerhouse-social-publisher/index.ts|supabase/migration-history.lock.json|supabase/functions/netlify-deploy-bridge/index.ts|brain/skills/powerhouse-portal-dom-bridge-only-override-v1.json|platform/system-map/canonical-system-map.mjs) ;;
               *)
                 echo "::error::Runtime source changed after selected production SHA: $file"
                 exit 1
@@ -165,13 +206,18 @@ jobs:
         env:
           CACHEBUST: bg_preview_ready
         run: bash tools/ci/wait-for-url.sh "${PORTAL_READBACK_URL}/portal-v2/"
+      - name: Pin canonical production browser host to exact immutable release identity
+        run: |
+          set -euo pipefail
+          node tools/ci/portal-canonical-browser-release-fence.mjs --verify
+          echo "PORTAL_BROWSER_READBACK_URL=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_ENV"
       - name: Read back Portal V2 DOM, standalone routing and CSRD assets
         env:
-          PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
+          PRODUCTION_URL: ${{ env.PORTAL_BROWSER_READBACK_URL }}
         run: npx playwright test tests/integration/portal-v2-production-*.spec.js --workers=1
       - name: Read back hydrated mobile demoAI shell
         env:
-          PREVIEW_URL: ${{ env.PORTAL_READBACK_URL }}
+          PREVIEW_URL: ${{ env.PORTAL_BROWSER_READBACK_URL }}
         run: npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
       - name: Capture exact-head PR visual baseline
         if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
@@ -217,6 +263,18 @@ jobs:
             echo "Waiting for successful exact-head PR readback ${pr_head_sha} (attempt ${attempt}/60)"
             sleep 4
           done
+          # A successful workflow_run can have NO screenshot artifact (for example,
+          # a skipped visual lane). Do not treat run success as screenshot evidence.
+          # Fall through to the EXISTING exact-PR-HEAD screenshot capture if absent.
+          if [ -n "$run_id" ]; then
+            artifact_name="visual-baseline-pr-${pr_number}-${pr_head_sha}"
+            artifacts="$(gh api -H 'Accept: application/vnd.github+json' "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/artifacts?per_page=100")"
+            artifact_id="$(jq -r --arg expected "$artifact_name" '[.artifacts[] | select(.name == $expected and .expired == false)] | first | .id // empty' <<<"$artifacts")"
+            if [ -z "$artifact_id" ]; then
+              echo "::notice::Successful exact-head PR readback ${run_id} has no unexpired ${artifact_name}; requiring verified approved-source browser screenshot instead."
+              run_id=""
+            fi
+          fi
           mkdir -p artifacts/visual-baseline-pr
           if [ -n "$run_id" ]; then
             gh run download "$run_id" -n "visual-baseline-pr-${pr_number}-${pr_head_sha}" -D artifacts/visual-baseline-pr
@@ -238,24 +296,32 @@ jobs:
               # Netlify sometimes returns the exact PR's preview alias rather
               # than a provider deploy dashboard URL. Verify exact SHA there,
               # then pin the returned deploy ID to the immutable host.
-              alias_release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${target}/release.json?head=${pr_head_sha}")" || {
-                echo "::error::Exact numbered Netlify PR alias could not serve release identity."
-                exit 1
-              }
-              alias_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$alias_release")"
-              alias_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$alias_release")"
-              if [ "$alias_sha" != "$pr_head_sha" ] || [[ ! "$alias_id" =~ ^[a-f0-9]{24}$ ]]; then
-                echo "::error::Unpinned Netlify PR alias does not match the exact protected head."
-                exit 1
+              # A non-production SSO policy may intentionally return 401/403.
+              # No authenticated alias evidence means NO preview acceptance:
+              # the exact-source baseline below remains mandatory.
+              alias_release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${target}/release.json?head=${pr_head_sha}" || true)"
+              if [ -n "$alias_release" ]; then
+                alias_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$alias_release")"
+                alias_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$alias_release")"
+                if [ "$alias_sha" != "$pr_head_sha" ] || [[ ! "$alias_id" =~ ^[a-f0-9]{24}$ ]]; then
+                  echo "::error::Unpinned Netlify PR alias does not match the exact protected head."
+                  exit 1
+                fi
+                preview_url="https://${alias_id}--bedrijfsgeheugen.netlify.app"
+              else
+                echo "::notice::Numbered Netlify preview inaccessible; require approved exact-source visual baseline (no waiver)."
+                preview_url=""
               fi
-              preview_url="https://${alias_id}--bedrijfsgeheugen.netlify.app"
             else
               preview_url="$(node tools/ci/netlify-immutable-preview-target.mjs "$target")" || {
                 echo "::error::Netlify preview target is not an allowed immutable deployment."
                 exit 1
               }
             fi
-            release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${preview_url}/release.json?sha=${pr_head_sha}" || true)"
+            release=""
+            if [ -n "$preview_url" ]; then
+              release="$(curl --fail --silent --show-error --max-time 30 -H 'Cache-Control: no-cache' "${preview_url}/release.json?sha=${pr_head_sha}" || true)"
+            fi
             verified_sha="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.commit_ref||"")); } catch {}' "$release")"
             verified_id="$(node -e 'try { const d=JSON.parse(process.argv[1]); process.stdout.write(String(d.deploy_id||"")); } catch {}' "$release")"
             expected_id="$(printf '%s' "$preview_url" | sed -nE 's#^https://([a-f0-9]{24})--bedrijfsgeheugen\.netlify\.app$#\1#p')"
@@ -315,10 +381,13 @@ jobs:
       - name: Visual regression against approved PR baseline
         if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
-          PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
+          PRODUCTION_URL: ${{ env.PORTAL_BROWSER_READBACK_URL }}
           VISUAL_BASELINE: artifacts/visual-baseline-pr/portal-v2-canvassen.png
           VISUAL_ACTUAL_PATH: artifacts/visual-production/portal-v2-canvassen.png
         run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
+      - name: Reverify canonical browser release after browser/visual readbacks
+        if: success()
+        run: node tools/ci/portal-canonical-browser-release-fence.mjs --verify
       - name: Upload browser evidence
         if: always()
         uses: actions/upload-artifact@v4

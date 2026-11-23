@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|brain|software-pass-portal-observation-parity|20261102-v1",
+  "obligation_id": "original-brain-software-zero-failure-admin-observation-20261102-v1",
+  "parent_issue": 4439,
+  "compiler": {
+    "failure_class": "EVIDENCE_PRESENTATION_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "owner": "Existing ONE BRAIN backend verifier and canonical admin-only Portal other-data source owner",
+  "root_cause": "Original BRAIN full backend recovered 5,390 of 5,392 tests with 0 failed and 2 skipped in run 41430758451, after protected source merges. Existing original incident registry already recorded that precise software recovery and independent Netlify exact-SHA READY; however owner-only Portal rendered only prior historical FAILED_BRAIN source and showed 23 failures without distinguishing later successful software verification.",
+  "prevention_rule": "Every new original exact-provider BRAIN observation must preserve historical failure series while separating verified software-test metrics from live terminal, commercial business health, tenant outcome and no-recurrence claims. Only original limited immutable run+job+protected main+Netlify evidence with exact sums is displayable as RECORDED_SOFTWARE_PASS. An unverified, conflicting or absent field remains UNKNOWN. Never claim vendor provider ID from registry alone, make test green by disabling/skipping assertions, introduce a second writer, or claim actual orders. Confirm original GitHub Actions run, Netlify provider READY, original terminal and next natural BRAIN before independent closure.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-zero-software-proof-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_backend_run_id": 41430758451,
+    "original_backend_job_id": 125229059857,
+    "verified_total": 5392,
+    "verified_passed": 5390,
+    "verified_failed": 0,
+    "verified_skipped": 2,
+    "original_run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41430758451",
+    "original_netlify_deploy_id": "6ae8689d8166870bb317e761",
+    "recorded_in_original_brain_failure_registry": true,
+    "portal_production_readback_verified": false,
+    "business_outcome_verified": false,
+    "natural_no_recurrence_proven": false,
+    "status": "CANDIDATE_NOT_MERGED"
+  }
+}
