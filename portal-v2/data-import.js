@@ -51,6 +51,9 @@ export function withoutImportedDataset(datasets,candidate){
   if(!/^[a-f0-9]{64}$/.test(String(candidate?.fingerprint||""))){
     throw new Error("De bronvingerafdruk ontbreekt.");
   }
+  if(candidate.id!=="file-"+candidate.fingerprint.slice(0,32)){
+    throw new Error("De bronidentiteit is ongeldig of gewijzigd.");
+  }
   const matches=datasets.filter(row=>row?.id===candidate.id);
   if(matches.length!==1||matches[0].fingerprint!==candidate.fingerprint){
     throw new Error("De bron is gewijzigd of is niet meer beschikbaar. Vernieuw het portaal.");
