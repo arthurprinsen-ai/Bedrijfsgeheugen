@@ -36,7 +36,8 @@
     ],
     "provider_live_readback": "NOT_YET_PROVEN",
     "protected_tests": "PENDING",
-    "production_deployment": "NOT_YET_PROVEN"
+    "production_deployment": "NOT_YET_PROVEN",
+    "protected_admission_retry": "The first Required admission on PR #6120 rejected missing shadow evaluation tests; preserve same 3 deterministic regression paths for historical/shadow/canary. Not yet successfully executed."
   },
   "compiler": {
     "failure_class": "GITHUB_DELIVERY",
@@ -47,6 +48,16 @@
   },
   "evaluation": {
     "historical_replay": [
+      "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs",
+      "tests/brain-production-runtime-applicability-v1.test.mjs",
+      "tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs",
+      "tests/brain-production-runtime-applicability-v1.test.mjs",
+      "tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"
+    ],
+    "canary": [
       "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs",
       "tests/brain-production-runtime-applicability-v1.test.mjs",
       "tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"
