@@ -12,13 +12,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase/personal-founder-perspective-contract.test.mjs"
+      "tests/brain-quality-personal-founder-perspective-20261123.test.mjs"
     ],
     "shadow": [
-      "tests/supabase/personal-founder-perspective-contract.test.mjs"
+      "tests/brain-quality-personal-founder-perspective-20261123.test.mjs"
     ],
     "canary": [
-      "tests/supabase/personal-founder-perspective-contract.test.mjs"
+      "tests/brain-quality-personal-founder-perspective-20261123.test.mjs"
     ]
   },
   "root_cause": "The user-approved 20-Nov trusted advisor founder outlook was present in the original personal generator, but all non-builder personal source candidates were forced into personal_life_only by the source selector, correction prompt and independent prepublish business-language veto. Legitimate research-synthesis and independently user-authored professional viewpoints could not be published as themselves.",
@@ -37,7 +37,7 @@
       "supabase/functions/powerhouse-content-orchestrator/index.ts"
     ],
     "tests": [
-      "tests/supabase/personal-founder-perspective-contract.test.mjs"
+      "tests/brain-quality-personal-founder-perspective-20261123.test.mjs"
     ],
     "negative_examples": [
       "External public article as first person client experience",
