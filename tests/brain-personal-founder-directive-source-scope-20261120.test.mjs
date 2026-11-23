@@ -60,8 +60,14 @@ test('original writer and independent reviewer share the exact source-scoped pre
 
 
 test('one-time, strict native-provider 888 reconciliation verifies historical prefix and exact SQL attestation',()=>{
- const headLock=JSON.parse(readFileSync('supabase/migration-history.lock.json','utf8'));
+ // Provider-888 is an immutable historical attestation. A current lock may
+ // contain newer, independently applied migrations; do not make the old
+ // proof dependent on the latest total number of versions.
+ const currentLock=JSON.parse(readFileSync('supabase/migration-history.lock.json','utf8'));
+ assert.ok(currentLock.applied.length>=888,'native provider-888 history must remain present');
+ const headLock={...currentLock,applied:currentLock.applied.slice(0,888)};
  const baseLock={...headLock,applied:headLock.applied.slice(0,-2),captured_at:'2026-11-19T09:35:00.000Z'};
+ assert.equal(new Set(currentLock.applied.map(row=>row.version)).size,currentLock.applied.length,'current source lock must not repeat historical provider versions');
  assert.equal(baseLock.applied.length,886);
  assert.equal(headLock.applied.length,888);
  const securitySQL=readFileSync('supabase/migrations/20261120134537_security_pw_mo14_private_player_data_20261120.sql','utf8');
