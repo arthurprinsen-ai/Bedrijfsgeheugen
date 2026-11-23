@@ -46,6 +46,49 @@ Deno.serve(async(req)=>{
     runDate,today:localDate(),obligation:o?{...o,evidence:jsonObject(o.evidence)}:null
   });
   if(!admission.allowed) return json({ok:true,queued:false,reason:admission.code,runDate});
+  // A previously approved but now GENERATED row is a state-regression incident.
+  // Never silently reuse an approval for possibly regenerated content.
+  if(clean(o?.status)==='GENERATED'&&o?.approved_at&&
+     jsonObject(o?.evidence)?.auto_approval?.approved_at){
+    return json({ok:false,queued:false,error:'BLOG_APPROVAL_STATE_REGRESSION',
+      runDate,recovery_required:true,
+      next_owner:'original blog approval and protected publisher'},409);
+  }
+
+  if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
+  const fact=assessOfficialBlogDateTruth({title:a.title,body:a.body,cta:a.cta,runDate});
+  if(!fact.ok)return json({ok:false,queued:false,error:fact.code,runDate,
+    source:fact.source||null,requires_corrected_source:true},422);
+
+  const generationEvidence=jsonObject(a.generation_evidence);
+  const deliveryEvidence=jsonObject(d.delivery_evidence);
+  const slug=clean(generationEvidence.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
+  const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
+
+  // Safe same-date recovery: update only GENERATED/unpublished metadata.
+  // A live, dispatched or ambiguous provider side effect must NEVER be rebound.
+  if(o && clean(o.slug)!==slug){
+    const provenance=jsonObject(o.evidence);
+    if(!canRebindUnsentBlog(o,provenance)){
+      return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_EXTERNAL_STATE',recovery_required:true,runDate},409);
+    }
+    // CAS by the ACTUAL old value. PostgREST equality with '' does not match
+    // SQL NULL; that mismatch stranded the 22 Oct daily blog metadata.
+    // Every external side-effect bound stays in force before this selection.
+    const recoveryQuery=db.from('content_publication_obligations')
+      .update({slug,content_id:'blog:'+slug,canonical_url:canonical,updated_at:new Date().toISOString()})
+      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog')
+      .eq('status','GENERATED')
+      .is('external_id',null).is('published_at',null).is('live_proven_at',null);
+    const {data:rebound,error:reboundError}=await originalBlogSlugGuard(recoveryQuery,o.slug)
+      .select('slug,content_id,canonical_url').maybeSingle();
+    if(reboundError || !rebound || clean(rebound.slug)!==slug){
+      return json({ok:false,error:'BLOG_LINEAGE_REBIND_FAILED',recovery_required:true,runDate},409);
+    }
+    // Preserve the original CAS result for the subsequent existing policy
+    // decision. Approval must always bind the corrected source slug/content ID.
+    o.slug=rebound.slug;o.content_id=rebound.content_id;o.canonical_url=rebound.canonical_url;
+  }
   // Same ORIGINAL, scheduler-token-protected blog queue owns the last-mile
   // 6-hour auto-approval. Its server-scoped Supabase key is already proven by
   // the queue's source read; GitHub's separate stale REST credential must not
@@ -90,46 +133,7 @@ Deno.serve(async(req)=>{
     if(o){o.status='APPROVED';o.approved_at=readback.approved_at;o.evidence=evidence;}
   }
 
-  // A previously approved but now GENERATED row is a state-regression incident.
-  // Never silently reuse an approval for possibly regenerated content.
-  if(clean(o?.status)==='GENERATED'&&o?.approved_at&&
-     jsonObject(o?.evidence)?.auto_approval?.approved_at){
-    return json({ok:false,queued:false,error:'BLOG_APPROVAL_STATE_REGRESSION',
-      runDate,recovery_required:true,
-      next_owner:'original blog approval and protected publisher'},409);
-  }
 
-  if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
-  const fact=assessOfficialBlogDateTruth({title:a.title,body:a.body,cta:a.cta,runDate});
-  if(!fact.ok)return json({ok:false,queued:false,error:fact.code,runDate,
-    source:fact.source||null,requires_corrected_source:true},422);
-
-  const generationEvidence=jsonObject(a.generation_evidence);
-  const deliveryEvidence=jsonObject(d.delivery_evidence);
-  const slug=clean(generationEvidence.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
-  const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
-
-  // Safe same-date recovery: update only GENERATED/unpublished metadata.
-  // A live, dispatched or ambiguous provider side effect must NEVER be rebound.
-  if(o && clean(o.slug)!==slug){
-    const provenance=jsonObject(o.evidence);
-    if(!canRebindUnsentBlog(o,provenance)){
-      return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_EXTERNAL_STATE',recovery_required:true,runDate},409);
-    }
-    // CAS by the ACTUAL old value. PostgREST equality with '' does not match
-    // SQL NULL; that mismatch stranded the 22 Oct daily blog metadata.
-    // Every external side-effect bound stays in force before this selection.
-    const recoveryQuery=db.from('content_publication_obligations')
-      .update({slug,content_id:'blog:'+slug,canonical_url:canonical,updated_at:new Date().toISOString()})
-      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog')
-      .eq('status','GENERATED')
-      .is('external_id',null).is('published_at',null).is('live_proven_at',null);
-    const {data:rebound,error:reboundError}=await originalBlogSlugGuard(recoveryQuery,o.slug)
-      .select('slug,content_id,canonical_url').maybeSingle();
-    if(reboundError || !rebound || clean(rebound.slug)!==slug){
-      return json({ok:false,error:'BLOG_LINEAGE_REBIND_FAILED',recovery_required:true,runDate},409);
-    }
-  }
   const evidence={
     ...deliveryEvidence,
     provider:'github-protected-daily-blog',
