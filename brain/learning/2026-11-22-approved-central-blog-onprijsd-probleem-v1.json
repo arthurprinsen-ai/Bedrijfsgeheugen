@@ -1,0 +1,46 @@
+{
+  "fingerprint": "approved-central-blog|2026-11-22|onprijsd-probleem-bedrijfsvoering|protected-delivery-v1",
+  "observed_at": "2026-11-23",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "obligation_id": "approved-central-blog|powerhouse:2026-09-17:blog:3deda36a-ac8a-81dd-a10f-cb24a260ba7b",
+  "source": {
+    "writer_run_id": "45038416083",
+    "source_content_id": "powerhouse:2026-09-17:blog",
+    "queue_page": "3deda36a-ac8a-81dd-a10f-cb24a260ba7b",
+    "approved_source_hash": "0c16fd9a0366467c74549dba1eac5769d55cd7be2db4aae2856a182acda47d9d",
+    "source_base_sha": "cf5bc622471dee3a85a06e1395606b375c8e335a",
+    "article_slug": "onprijsd-probleem-bedrijfsvoering"
+  },
+  "root_causes": [
+    "Original approved-central-blog writer emitted a PR body without required Obligation-ID, Delivery-Lane, Candidate-Type, Base-SHA, Change-Scope and Scope-Budget, so protected hygiene failed closed.",
+    "After correcting PR machine metadata, protected admission correctly required same-candidate Brain learning, activity ledger and human-facing change documentation."
+  ],
+  "prevention": [
+    "Each source-bound approved-central-blog candidate must carry its immutable queue/source identity and exact source-base SHA and file scope as part of the SAME original candidate metadata; never weaken admission.",
+    "Generate truthful same-PR human documentation, original development ledger and Brain learning before protected Required/CodeQL promotion.",
+    "Never count approved queue, CI, GitHub merge or Netlify scheduling as LIVE_PROVEN without exact public URL, deployed release source and Heartbeat readback.",
+    "The historical 2026-09-17 source is NOT the new 2026-11-23 daily blog obligation; deduplicate against both identities independently."
+  ],
+  "evidence": {
+    "github_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6112",
+    "source_writer_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45038416083",
+    "failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45038446660",
+    "failure_1": "PR_MACHINE_METADATA_INVALID",
+    "failure_2": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning,human_documentation",
+    "protected_tests": "PENDING_REPEAT",
+    "external_provider_proof": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-hygiene-janitor.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}
