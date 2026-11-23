@@ -136,10 +136,13 @@ function personalViolations(text: string, body: any, finalHash: string) {
   if (body.sensitive_private_detail === true && body.sensitive_private_approval !== true) {
     out.push({ code: 'SENSITIVE_PRIVATE_DETAIL_BLOCK', message: 'Privé/sensitief detail vereist exacte goedkeuring.' });
   }
-  if (!builderMode && !founderPerspectiveMode) {
-    const businessBlocked = personalNonBuilderBusinessSignal(text,{observational:observationalMode});
+  if (!builderMode) {
+    // Preserve existing outside-builder checks for legacy personal-life mode.
+    if (!founderPerspectiveMode) {
+      const businessBlocked = personalNonBuilderBusinessSignal(text,{observational:observationalMode});
     if (businessBlocked) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
-    if (consultantVoiceSignal(text)) out.push({ code: 'FINAL_TEXT_CONSULTANT_VOICE_BLOCK', message: 'Uiteindelijke tekst klinkt als consultant/thought-leadership of forceert een zakelijke moraal.' });
+      if (consultantVoiceSignal(text)) out.push({ code: 'FINAL_TEXT_CONSULTANT_VOICE_BLOCK', message: 'Uiteindelijke tekst klinkt als consultant/thought-leadership of forceert een zakelijke moraal.' });
+    }
   }
   return out;
 }
