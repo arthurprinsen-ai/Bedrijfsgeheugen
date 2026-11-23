@@ -127,7 +127,7 @@ test('workflow: original authenticated queue now owns veto-gated approval and Gi
   const approve = text.indexOf('Verify source-owned approval through original private blog exporter');
   const writer = text.indexOf('Reuse the existing writer for this obligation');
   assert.ok(approve > 0 && approve < writer, 'source proof must precede the writer step');
-  assert.doesNotMatch(text, /node tools\\/content-growth\\/blog-auto-approval\\.mjs "\\$DATE"/);
+  assert.ok(!text.includes('node tools/content-growth/blog-auto-approval.mjs "$DATE"'));
   assert.ok(text.includes('BLOG_ORIGINAL_QUEUE_EXPORT_NOT_READY'), 'fail closed after veto rather than green no-action');
   assert.ok(queue.includes('decideBlogAutoApproval('));
   assert.ok(queue.includes("db.rpc('record_content_publication_state',payload)"));
