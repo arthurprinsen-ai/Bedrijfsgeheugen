@@ -1,0 +1,56 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|verified-owner-perspective-20261123-v1",
+  "event_date": "2026-11-23",
+  "owner": "original-powerhouse-editorial-agents",
+  "user_instruction": "Los op ga verder: herstel de al vastgelegde persoonlijke LinkedIn-strategie in de werkende bron-, schrijf- en publicatieketen.",
+  "compiler": {
+    "failure_class": "PERSONAL_EDITORIAL_SOURCE_POLICY_CONFLICT",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase/personal-founder-perspective-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/supabase/personal-founder-perspective-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/supabase/personal-founder-perspective-contract.test.mjs"
+    ]
+  },
+  "root_cause": "The user-approved 20-Nov trusted advisor founder outlook was present in the original personal generator, but all non-builder personal source candidates were forced into personal_life_only by the source selector, correction prompt and independent prepublish business-language veto. Legitimate research-synthesis and independently user-authored professional viewpoints could not be published as themselves.",
+  "correction": "Introduce a separate verified founder perspective source mode with direct user-authored event lineage, exact source text, independent research attestation for externally researched claims, first-person truth, confidentiality and channel separation. Use the same shared predicate in original orchestrator and independent reviewer/editor. Preserve original provider source revision, exact final hash, protection and dedupe. Do not treat prospective work or opinions as completed build or customer results.",
+  "prevention_rule": "Only explicit first-person viewpoints or design preferences documented in actual user-facts may be used. Never turn an article into Arthur's lived experience, or a merged commit into his own completed client outcome. Distinguish opinion, ambition, proven implementation and measured effect. Never recycle an internal engineering incident as consumer-facing personal LinkedIn; rotate among original twelve trusted-advisor themes and real private life.",
+  "evidence": {
+    "original_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+    "original_profile_rules": "https://app.notion.com/p/3b9da36aac8a81779e00ffecaa340fd5",
+    "original_strategy_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6077",
+    "original_production_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "human_feedback_id": "d6a0ecd1-c610-4672-b4ff-2c8efc09ac6c",
+    "changed_code": [
+      "supabase/functions/_shared/personal-first-person-story-gate.mjs",
+      "supabase/functions/_shared/personal-linkedin-editorial-contract.mjs",
+      "supabase/functions/bg-pre-publish-review/index.ts",
+      "supabase/functions/powerhouse-content-orchestrator/index.ts"
+    ],
+    "tests": [
+      "tests/supabase/personal-founder-perspective-contract.test.mjs"
+    ],
+    "negative_examples": [
+      "External public article as first person client experience",
+      "Unsupported team and economic impact assertions",
+      "Internally operational report and duplicated personal post"
+    ]
+  },
+  "boundaries": [
+    "No autonomous second publisher, scheduler, provider dispatch, or duplicate LinkedIn URN",
+    "No silent weakening of source validation or privacy/commercial-gate protections",
+    "No legal or customer-outcome claims without independently sourced facts",
+    "No claim that PR equals deployed production until exact provider source readback",
+    "No reuse or rewrite of already published 23-Nov personal LinkedIn post"
+  ],
+  "implementation_state": "PROTECTED_PR_CI_PENDING"
+}
