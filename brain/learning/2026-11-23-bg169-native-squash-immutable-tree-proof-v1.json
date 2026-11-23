@@ -52,5 +52,19 @@
       "tests/brain-bg169-protected-squash-transport-20261123.test.mjs"
     ]
   },
-  "current_state": "SOURCE_CANDIDATE_NOT_LIVE"
+  "current_state": "SOURCE_CANDIDATE_NOT_LIVE",
+  "evidence": {
+    "original_bg169_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45144449592",
+    "observed_provider_rejection": "HTTP 405 Merge commits are not allowed on this repository",
+    "verified_repo_settings": {
+      "allow_merge_commit": false,
+      "allow_squash_merge": true,
+      "main_protected": true
+    },
+    "original_approved_source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6120",
+    "original_protected_squash_merge": "ea7d679613f25571ca307320d6eb3c151ac660ad",
+    "regression": "tests/brain-bg169-protected-squash-transport-20261123.test.mjs",
+    "future_bg169_recurrence": "NOT_PROVEN",
+    "public_release_proof": "NOT_PROVEN"
+  }
 }
