@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {parseCsv,parseXlsx,tableFromRecords,IMPORT_LIMITS,readImportFile} from '../portal-v2/data-import-parser.js';
-import {buildImportRecord,validateImportCapacity} from '../portal-v2/data-import.js';
+import {buildImportRecord,validateImportCapacity,withoutImportedDataset} from '../portal-v2/data-import.js';
 
 const fakeFile=(name,size=200)=>({name,size});
 
@@ -55,4 +55,28 @@ test('real V2 mount reuses authenticated tenant portal domain and explicit write
   assert.match(ui,/stateClient\.load\(\)/);
   assert.match(ui,/client\?\.isDemo/);
   assert.doesNotMatch(ui,/localStorage|sessionStorage|service_role|new Worker/);
+});
+
+test('source deletion requires exact ID+fingerprint and preserves other imported data',()=>{
+  const table=parseCsv('Datum,Bedrag\\n2026-11-22,0');
+  const first=buildImportRecord(fakeFile('omzet.csv'),table,'a'.repeat(64));
+  const second=buildImportRecord(fakeFile('kosten.csv'),table,'b'.repeat(64));
+  const original=[first,second];
+  assert.deepEqual(withoutImportedDataset(original,first),[second]);
+  assert.deepEqual(original,[first,second],'the original evidence list must remain unchanged');
+  assert.throws(()=>withoutImportedDataset(original,{...first,fingerprint:'c'.repeat(64)}),/gewijzigd/);
+  assert.throws(()=>withoutImportedDataset(original,{...first,id:'file-'+('c'.repeat(32))}),/gewijzigd/);
+  assert.throws(()=>withoutImportedDataset([first,first],first),/gewijzigd/);
+  assert.throws(()=>withoutImportedDataset(original,{...first,id:'other'}),/Ongeldige/);
+});
+test('deleting a stored source needs active tenant, explicit approval, flush and independent server readback',async()=>{
+  const ui=await readFile(new URL('../portal-v2/data-import.js',import.meta.url),'utf8');
+  assert.match(ui,/globalThis\\.confirm\\?\\./);
+  assert.match(ui,/const next=withoutImportedDataset\\(current\\.datasets,item\\)/);
+  assert.match(ui,/domainState\\.patch\\("portal\\.dataImports",\\{datasets:next\\}\\)/);
+  assert.match(ui,/const ack=await domainState\\.flush\\(\\)/);
+  assert.match(ui,/const readback=await stateClient\\.load\\(\\)/);
+  assert.match(ui,/String\\(readback\\?\\.user\\?\\.id\\|\\|""\\)!==owner/);
+  assert.match(ui,/actual\\.length!==next\\.length/);
+  assert.doesNotMatch(ui,/domainState\\.patch\\("portal\\.kpi/);
 });
