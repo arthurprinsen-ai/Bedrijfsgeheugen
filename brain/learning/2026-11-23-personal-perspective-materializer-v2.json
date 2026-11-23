@@ -1,0 +1,35 @@
+{
+  "fingerprint": "personal-linkedin-owner-perspective-v2-source-quarantine-20261123",
+  "detected": "2026-11-23",
+  "owner": "original-powerhouse-content-orchestrator",
+  "root_cause": "Protected original JS reviewed founder-opinion source yet original SQL v2 materializer still skipped every non-builder business candidate.",
+  "prior_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6128",
+  "fix": "strict user-fact-aligned third class in same service-role-only v2 materializer",
+  "test": "tests/brain-personal-founder-perspective-sql-source-20261123.test.mjs",
+  "protected_release_required": true,
+  "production_proof": "PENDING",
+  "provider_publish_proof": "NOT_CLAIMED",
+  "event_date": "2026-11-23",
+  "user_instruction": "Reconcile the previously approved personal LinkedIn trusted-advisor content strategy across the original SQL source-selection lane and its independent editorial truth review.",
+  "compiler": {
+    "failure_class": "PERSONAL_EDITORIAL_SOURCE_POLICY_CONFLICT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-founder-perspective-sql-source-20261123.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-founder-perspective-sql-source-20261123.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-founder-perspective-sql-source-20261123.test.mjs"
+    ]
+  },
+  "correction": "Add a strictly owner-attested founder-opinion source class to the existing security-definer service-role-only v2 materializer while retaining general quarantine, genuine first-person truth and provider proof.",
+  "prevention_rule": "Every protected editorial source class must be independently accepted in upstream materializer, production writer, prepublication review and original provider; no unverified customer or delivery results.",
+  "implementation_state": "PROTECTED_PR_CI_PENDING"
+}
