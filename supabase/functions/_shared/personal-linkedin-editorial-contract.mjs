@@ -1,7 +1,7 @@
 // Canonical Notion: "Skill — Persoonlijk LinkedIn: persoonlijke ondernemersreis & leven"
 // and "Persoonlijk profiel — wat er wel en niet op mag" (read 2026-10-10).
 // This is a deterministic delivery veto, NOT a substitute for source verification.
-import {isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact} from './personal-first-person-story-gate.mjs';
+import {isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact,isVerifiedPersonalFounderPerspective} from './personal-first-person-story-gate.mjs';
 export const PERSONAL_EDITORIAL_POLICY = 'personal-linkedin-founder-editorial-v4';
 
 // Shared source of truth: pre-publication and generator use the same personal
@@ -26,7 +26,7 @@ export function personalEditorialViolations(value, evidence={}) {
   const text=String(value??'').trim();
   const out=[];
   const fail=(code,reason)=>out.push({code,message:reason});
-  const builder=evidence?.ai_native_builder_story_verified===true;
+  const builder=evidence?.ai_native_builder_story_verified===true||isVerifiedPersonalFounderPerspective(evidence);
   const observation=evidence?.observational_personal_theme_verified===true&&!builder;
   if(!builder&&personalNonBuilderBusinessSignal(text,{observational:observation}))
     fail('PERSONAL_EDITORIAL_PREPUBLISH_BUSINESS_SIGNAL','Niet-bouwverhaal bevat zakelijke taal die de definitieve LinkedIn-controle afkeurt.');
