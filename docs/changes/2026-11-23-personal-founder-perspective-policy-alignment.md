@@ -15,7 +15,7 @@ Een persoonlijk bericht kiest precies één concrete invalshoek: menselijk probl
 ## Technische implementatie
 Een nieuwe dedicated personal_founder_perspective_verified klasse is uitsluitend toelaatbaar bij rechtstreeks user-fact-lineage, geverifieerde eigen opvatting, eigen bronafbakening, gecontroleerde researchreferenties en niet-uitwisselbare persoonlijke kanaalstem. Original personal publisher behoudt onafhankelijk finale bronrevisioncontrole, review-HTTP200, exacte copy-hash, provider-goedkeuring en anti-duplicatie.
 
-Regression: tests/supabase/personal-founder-perspective-contract.test.mjs. Protected PR: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6128.
+Regression: tests/brain-quality-personal-founder-perspective-20261123.test.mjs. Protected PR: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6128.
 
 ## Status- en effectgrenzen
 Dit document is een beschermde implementatievoorstelbeschrijving. Het is niet zelf een LinkedIn-publicatie, bevestigde Supabase-release, nieuw commercieel aanbod, geslaagde AI-transformatie of gemeten verbetering. Vereist: Required, CodeQL, beveiligde merge, native originele productie-source-readback en pas daarna nieuw geëvalueerd persoonlijk contentconcept. De 23-nov-post over mislukte social agents was inhoudelijk afgekeurd en mag niet als inhoudelijke winnaar worden hergebruikt.
