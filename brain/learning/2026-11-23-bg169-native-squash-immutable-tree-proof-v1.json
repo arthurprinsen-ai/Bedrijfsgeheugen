@@ -1,0 +1,56 @@
+{
+  "fingerprint": "bg169|protected-production-transport|merge-commit-disabled-but-squash-enabled|20261123-v1",
+  "observed_at": "2026-11-23",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_owner": "Unified Brain Delivery / BG169 GitHub-native production transport",
+  "observed": {
+    "repository": "arthurprinsen-ai/Bedrijfsgeheugen",
+    "repo_settings": {
+      "allow_merge_commit": false,
+      "allow_squash_merge": true,
+      "allow_rebase_merge": false,
+      "main_protected": true
+    },
+    "failed_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45144449592",
+    "failure": "gh: Merge commits are not allowed on this repository. (HTTP 405)",
+    "successful_early_gates": "candidate-identity, admission, plan, backend, pre-handoff admission, terminal-guard",
+    "original_recovery_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6120",
+    "recovered_source_merge_sha": "ea7d679613f25571ca307320d6eb3c151ac660ad",
+    "production_proof": "PENDING"
+  },
+  "root_causes": [
+    "The original BG169 workflow hard-coded merge_method=merge although the actual protected GitHub repository disables merge commits and permits squash only.",
+    "After a squash the original feature head is not an ancestor of main: naive git merge-base --is-ancestor candidate_sha origin/main would mislabel a valid squash as failed.",
+    "BG169 previously could pass every quality gate yet remain permanently unable to promote any future candidate."
+  ],
+  "fix": [
+    "Select the existing GitHub policy-approved squash method and fail closed when allow_squash_merge is false; leave GitHub protection unchanged.",
+    "Preserve immutable sha=$HEAD_SHA compare-and-swap plus zero-behind, main-epoch and terminal duplicate guards.",
+    "After provider accepted squash merge, verify returned merge SHA, source tree equality, first parent exactly equal original rollback/main epoch, resulting merge commit ancestor of current protected main, and GitHub PR merged with exact provider SHA.",
+    "Store canonical BG169 evidence with merge_method, merge_commit_sha and verified_candidate_tree; do not claim Netlify/publication from GitHub transport alone."
+  ],
+  "prevention": [
+    "Never assume a repository allows merge commits; use current repository settings before a native protected release.",
+    "SQUASH lineage must be proven through exact source tree and first parent, not feature-head ancestry.",
+    "Original BRAIN-delivery tests explicitly reject disallowed merge method, missing source-tree verification or any bypass to Make; production provider readback remains independent."
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bg169-protected-squash-transport-20261123.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bg169-protected-squash-transport-20261123.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bg169-protected-squash-transport-20261123.test.mjs"
+    ]
+  },
+  "current_state": "SOURCE_CANDIDATE_NOT_LIVE"
+}
