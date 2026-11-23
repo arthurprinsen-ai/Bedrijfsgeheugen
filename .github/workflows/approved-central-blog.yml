@@ -184,9 +184,9 @@ jobs:
             'current_state': 'CANDIDATE_NOT_LIVE'
           }
           files = {
-            f'brain/learning/{key}.json': json.dumps(lesson, ensure_ascii=False, indent=2) + '\\n',
-            f'docs/changes/{key}.md': f'# Protected central blog kandidaat — {slug}\\n\\nBron: \\u0060{source}\\u0060, Notion pagina \\u0060{page}\\u0060, source hash \\u0060{source_hash}\\u0060. Originele writer-run: {run_id}, source base SHA: {base_sha}.\\n\\nDe HTML, blogindex, RSS en sitemap zijn alleen een kandidaat. Required, CodeQL, BG169, Netlify en onafhankelijke live-URL-readback blijven verplicht. Een groen runresultaat is niet hetzelfde als gepubliceerd.\\n',
-            f'docs/development-ledger-events/{key}.md': f'# Development ledger — protected approved central blog\\n\\n- Original producer: approved-central-blog, run {run_id}\\n- Source page: {page}\\n- Source content: {source}\\n- Approved hash: {source_hash}\\n- Candidate URL (not yet published): {url}\\n- Status: CANDIDATE_NOT_LIVE; existing protected BG169 owner controls merge and public proof\\n- Delivery rule: one source-bound candidate, one writer; no main-push, no duplicate canonical page and no green until Heartbeat/ONE BRAIN readback\\n'
+            f'brain/learning/{key}.json': json.dumps(lesson, ensure_ascii=False, indent=2) + '\n',
+            f'docs/changes/{key}.md': f'# Protected central blog kandidaat — {slug}\n\nBron: \u0060{source}\u0060, Notion pagina \u0060{page}\u0060, source hash \u0060{source_hash}\u0060. Originele writer-run: {run_id}, source base SHA: {base_sha}.\n\nDe HTML, blogindex, RSS en sitemap zijn alleen een kandidaat. Required, CodeQL, BG169, Netlify en onafhankelijke live-URL-readback blijven verplicht. Een groen runresultaat is niet hetzelfde als gepubliceerd.\n',
+            f'docs/development-ledger-events/{key}.md': f'# Development ledger — protected approved central blog\n\n- Original producer: approved-central-blog, run {run_id}\n- Source page: {page}\n- Source content: {source}\n- Approved hash: {source_hash}\n- Candidate URL (not yet published): {url}\n- Status: CANDIDATE_NOT_LIVE; existing protected BG169 owner controls merge and public proof\n- Delivery rule: one source-bound candidate, one writer; no main-push, no duplicate canonical page and no green until Heartbeat/ONE BRAIN readback\n'
           }
           for filename, content in files.items():
               dest = pathlib.Path(filename)
@@ -341,7 +341,7 @@ jobs:
             if ! grep -q '^Obligation-ID:' <<< "$existing_body"; then
               gh pr edit "$number" --body "$PR_BODY"
             else
-              expected_obligation="$(printf '%s\\n' "$PR_BODY" | sed -n 's/^Obligation-ID: //p')"
+              expected_obligation="$(printf '%s\n' "$PR_BODY" | sed -n 's/^Obligation-ID: //p')"
               grep -Fqx "Obligation-ID: $expected_obligation" <<< "$existing_body" || { echo "::error::ORIGINAL_SOURCE_PR_IDENTITY_DRIFT"; exit 1; }
             fi
             echo "Candidate PR bestaat al: #$number"
