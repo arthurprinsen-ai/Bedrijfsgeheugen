@@ -117,7 +117,10 @@ BEGIN
             AND jsonb_array_length(r.evidence->'research_source_evidence') > 0
             AND NOT EXISTS (
               SELECT 1
-              FROM jsonb_array_elements(r.evidence->'research_source_evidence') AS src(item)
+              FROM jsonb_array_elements(
+                CASE WHEN jsonb_typeof(r.evidence->'research_source_evidence') = 'array'
+                THEN r.evidence->'research_source_evidence' ELSE '[]'::jsonb END
+              ) AS src(item)
               WHERE src.item->>'verified' IS DISTINCT FROM 'true'
                  OR coalesce(src.item->>'url','') !~* '^https://[^[:space:]]+'
                  OR coalesce(src.item->>'checked_at','') !~ '^20[0-9]{2}-[01][0-9]-[0-3][0-9]'
