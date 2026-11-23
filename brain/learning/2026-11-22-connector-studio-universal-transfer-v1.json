@@ -1,0 +1,46 @@
+{
+  "fingerprint": "portal-v2|connector-studio-missing-universal-direction-frequency-and-capabilities|20261122-v1",
+  "date": "2026-11-22",
+  "status": "CANDIDATE_EVIDENCE_DUE",
+  "owner": "Existing Portal V2 Koppeling Studio",
+  "root_cause": "The Studio listed many provider templates but could not independently choose arbitrary source/destination, describe direction, cadence, deduplication and conflict semantics; a schedule label could incorrectly imply running automatic ingestion.",
+  "prevention_rule": "All new connector designs require versioned user-reviewed transfer policy, unique source+target registry entry, explicit direction and cadence, schema keys for incremental modes, privacy/use permission, and provider-specific runtime capability evidence. Never activate a reverse, two-way, webhook, CDC, backfill, delete, auto-schedule or unimplemented provider with only a template or sample test. Preserve existing original AFAS manual source reader and single tenant execution chain.",
+  "compiler": {
+    "failure_class": "CONNECTOR_INTENT_CONFUSED_WITH_EXECUTION",
+    "scope": "PORTAL_STUDIO_EXECUTION_POLICY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connector-studio-universal-transfer-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connector-studio-universal-transfer-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-connector-studio-universal-transfer-v1.test.mjs"
+    ],
+    "production_browsing": "PENDING",
+    "provider_execution": "NOT_VERIFIED_FOR_NEW_CATALOGUE_ITEMS"
+  },
+  "evidence": {
+    "proof": "GitHub Required and CodeQL + protected merge + exact Netlify deployment + browser",
+    "real_live_providers": "AFAS READ_ONLY MANUAL only (tenant auth still required)",
+    "automatic_scheduler_added": false,
+    "new_writer_added": false,
+    "versions_bound": true,
+    "source_readback_required": true,
+    "baselineRegressions": [
+      "tests/connector-koppelingen-wizard.test.mjs",
+      "tests/brain-portal-connector-real-afas-v1.test.mjs"
+    ]
+  },
+  "gates": [
+    "protected PR/Required/CodeQL",
+    "Netlify exact SHA ready and native browser visible",
+    "real authenticated provider readback if claiming operational",
+    "original Heartbeat consumer ACK before claiming autonomous cadence"
+  ]
+}

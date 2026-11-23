@@ -18,6 +18,7 @@ export function buildConnectorTrustReport(connector,{executions=[]}={}){
    check('residency','Verwerkingslocatie','EVIDENCE_DUE','Werkelijke opslag-, compute-, AI- en subverwerkerslocaties moeten per gegevensroute onafhankelijk worden bevestigd.'),
    check('storage','Veilige opslag van bronrecords','EVIDENCE_DUE','Er is nog geen onafhankelijke bron→tenantopslag-readback met herkomst en versie.'),
    check('portal','Echte waarden in het portaal','EVIDENCE_DUE','De huidige portaalweergave is uitsluitend bronmetadata. Geen gemeten KPI’s bewezen.'),
+   check('signalering','Gebruik in KPI-signaleringen','EVIDENCE_DUE','Ingestelde signaleringsregels kunnen een geselecteerd connectorveld volgen, maar tellen pas mee na echte providerinname plus een gekoppelde uitvoerings- en brondatabase-readback. Alleen een geslaagde veilige proef is onvoldoende.'),
    check('ai','AI-verwerking',mode==='PORTAL_AI'?'EVIDENCE_DUE':'DISABLED',mode==='PORTAL_AI'?'AI-gebruik is aangevraagd, maar de feitelijke toegestane modelroute is niet bewezen.':'Aanvullende AI-verwerking is niet toegestaan.'),
    check('revocation','Intrekken en verwijderen','EVIDENCE_DUE','Pauzeren is niet hetzelfde als het intrekken van providertokens en het aantoonbaar wissen van gegevens.'),
    check('audit','Onafhankelijke securitychecks','EVIDENCE_DUE','OAuth/PKCE, tenantisolatie, RLS, versleuteling, webhooks, rate limits, herstel en pentestbewijs moeten per route worden gecontroleerd.')

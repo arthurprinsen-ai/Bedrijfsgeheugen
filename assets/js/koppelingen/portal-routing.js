@@ -3,6 +3,8 @@ export const CONNECTOR_PORTAL_PAGES=Object.freeze([
   Object.freeze({id:'ondernemerscockpit',label:'Mijn overzicht',hint:'Bronstatus en besluitcontext'}),
   Object.freeze({id:'cijfers-maatstaven',label:'Cijfers & KPI’s',hint:'Omzet, kosten en prestaties'}),
   Object.freeze({id:'waarde-financiering',label:'Financiën',hint:'Waarde en financiële inzichten'}),
+  Object.freeze({id:'mensen',label:'Mensen',hint:'Verzuim en personeelsverloop'}),
+  Object.freeze({id:'processen',label:'Processen',hint:'Doorlooptijd en procesprestaties'}),
   Object.freeze({id:'sales-intelligence',label:'Klanten & verkoop',hint:'Leads, orders en klantontwikkeling'}),
   Object.freeze({id:'roadmap',label:'Projecten',hint:'Voortgang en uitvoering'}),
   Object.freeze({id:'datahubstatus',label:'Datahub',hint:'Datakwaliteit en verwerking'}),
@@ -17,7 +19,7 @@ export function normalizeConnectorRouting(routing,documentSchema,dataUse){
  if(routing==null)return Object.freeze({portalPages:Object.freeze([]),selectedFields:Object.freeze([])});
  if(!routing||typeof routing!=='object'||Array.isArray(routing)||Object.keys(routing).some(k=>!['portalPages','selectedFields'].includes(k)))fail();
  const pages=routing.portalPages,fields=routing.selectedFields;
- if(!Array.isArray(pages)||!Array.isArray(fields)||pages.length>9||fields.length>100)fail();
+ if(!Array.isArray(pages)||!Array.isArray(fields)||pages.length>11||fields.length>100)fail();
  if(pages.some(id=>typeof id!=='string'||!PAGE_SET.has(id))||new Set(pages).size!==pages.length)fail();
  if(fields.some(id=>typeof id!=='string'||!FIELD.test(id))||new Set(fields).size!==fields.length)fail();
  const available=new Set((documentSchema?.fields||[]).map(field=>typeof field==='string'?field:field?.key).filter(Boolean));
