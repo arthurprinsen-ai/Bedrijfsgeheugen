@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|materializer-v2-perspective-policy-20261123",
+  "event_date": "2026-11-23",
+  "owner": "original-powerhouse-materializer",
+  "user_instruction": "Los op ga verder: bestaande persoonlijke LinkedIn-strategie moet als werkelijk brongebonden eigen mening kunnen publiceren.",
+  "compiler": {
+    "failure_class": "PERSONAL_EDITORIAL_SOURCE_POLICY_CONFLICT",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-founder-perspective-materializer-20261123.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-founder-perspective-materializer-20261123.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-founder-perspective-materializer-20261123.test.mjs"
+    ]
+  },
+  "root_cause": "Original v2 SQL quarantines all business_topic personal candidate sources unless tagged as verified builder; new JS verified founder viewpoint would be skipped before editorial review.",
+  "correction": "Add exact independently direct-user-anchored founder viewpoint eligibility to original v2 materializer, preserving build-only source, personal-life and independent final provider gates.",
+  "prevention_rule": "Keep the same original v2 SQL materializer with strict direct user-fact lineage, checked research and exact separate perspective mode; do not convert external news to a self-lived client event, bypass security, or silently mark unpublished delivery as proven.",
+  "evidence": {
+    "provider_original_function": "public.powerhouse_materialize_source_backed_channel_candidates_v2",
+    "original_review_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6128",
+    "source_file": "docs/changes/2026-11-23-personal-founder-perspective-v2-reviewed-source.sql",
+    "tests": [
+      "tests/brain-personal-founder-perspective-materializer-20261123.test.mjs"
+    ],
+    "original_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+    "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  },
+  "boundaries": [
+    "No new publisher, sender, scheduler or parallel materializer",
+    "No public research as fabricated own lived experience",
+    "No loosening original SECURITY DEFINER search_path or channel copy hash/provider gates",
+    "No production outcome claim until provider exact source parity"
+  ],
+  "implementation_state": "PROTECTED_PR_CI_PENDING"
+}
