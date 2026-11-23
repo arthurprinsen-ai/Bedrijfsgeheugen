@@ -626,7 +626,7 @@ async function ensureLinkedInCompanyMeasuredLink(db:any,runDate:string,art:any){
     const expected=new URL(destination);
     if(!response.ok || final.protocol!=='https:' ||
        !['www.bedrijfsgeheugen.nl','bedrijfsgeheugen.nl'].includes(final.hostname) ||
-       final.pathname.replace(/\\/+$/,'')!==expected.pathname.replace(/\\/+$/,'')){
+       final.pathname.replace(/\/+$/,'')!==expected.pathname.replace(/\/+$/,'')){
       throw new Error('HTTP_'+response.status+'_FINAL_'+final.pathname);
     }
   }catch(e){
@@ -635,10 +635,10 @@ async function ensureLinkedInCompanyMeasuredLink(db:any,runDate:string,art:any){
   let body=clean(art?.body);
   if(!body.includes('/g/')){
     const cta=freeAction
-      ? 'Ontdek gratis waar kennis en opvolging in jouw bedrijf weglekken:\\n'+measuredUrl
-      : 'Benieuwd waar in jouw organisatie tijd, risico of besluitvorming blijft hangen? Doe de Frisse blik:\\n'+measuredUrl;
-    const hashIndex=body.search(/\\n#[A-Za-z0-9_]/);
-    body=hashIndex>=0 ? body.slice(0,hashIndex)+'\\n\\n'+cta+'\\n'+body.slice(hashIndex+1) : body+'\\n\\n'+cta;
+      ? 'Ontdek gratis waar kennis en opvolging in jouw bedrijf weglekken:\n'+measuredUrl
+      : 'Benieuwd waar in jouw organisatie tijd, risico of besluitvorming blijft hangen? Doe de Frisse blik:\n'+measuredUrl;
+    const hashIndex=body.search(/\n#[A-Za-z0-9_]/);
+    body=hashIndex>=0 ? body.slice(0,hashIndex)+'\n\n'+cta+'\n'+body.slice(hashIndex+1) : body+'\n\n'+cta;
   }
   const generationEvidence={
     ...(art?.generation_evidence||{}),measurable_link:measuredUrl,campaign_key:campaignKey,
