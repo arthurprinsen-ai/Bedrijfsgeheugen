@@ -166,7 +166,9 @@ test('Unified Brain Delivery performs an exact-SHA GitHub-native BG169 handoff a
   assert.match(workflow, /BG169 GitHub-native production transport/);
   assert.match(workflow, /BG169_GITHUB_NATIVE_MERGE_REJECTED/);
   assert.match(workflow, /-f sha="\$HEAD_SHA"/);
-  assert.match(workflow, /git merge-base --is-ancestor "\$HEAD_SHA" origin\/main/);
+  assert.match(workflow, /-f merge_method="squash"/);
+  assert.match(workflow, /BG169_SQUASH_TREE_PROVEN/);
+  assert.match(workflow, /git merge-base --is-ancestor "\$merged_sha" origin\/main/);
   assert.match(workflow, /transport="github-native"/);
   assert.match(workflow, /pr_number/);
   assert.match(workflow, /candidate_sha/);
