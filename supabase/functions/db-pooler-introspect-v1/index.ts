@@ -3,7 +3,8 @@
 // live monitor and recorded in the canonical ONE BRAIN security incident lineage.
 // This comment is a coverage marker, not a claim of in-request incident writeback.
 
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// Deno globals are supplied by the Supabase Edge runtime. Do not load a
+// type-only jsr.io manifest at bundle time: provider availability is not required.
 import postgres from "npm:postgres@3.4.7";
 import { isAuthorizedRepairRequest } from "./security.mjs";
 const REF="adhjwmvyoixzjtmiroln";
