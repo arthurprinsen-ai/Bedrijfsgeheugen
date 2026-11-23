@@ -33,7 +33,14 @@ test('BG169 resolves immutable explicitly dispatched PR identity and fails close
 });
 
 test('production is green only after exact candidate is verified in main', () => {
-  assert.match(handoff, /git merge-base --is-ancestor "\$HEAD_SHA" origin\/main/);
+  assert.match(handoff, /-f merge_method="squash"/);
+  assert.doesNotMatch(handoff, /-f merge_method="merge"/);
+  assert.match(handoff, /candidate_tree=/);
+  assert.match(handoff, /merged_tree=/);
+  assert.match(handoff, /first_parent=/);
+  assert.match(handoff, /PREMERGE_MAIN_PARENT_DRIFT/);
+  assert.match(handoff, /TREE_DRIFT/);
+  assert.match(handoff, /git merge-base --is-ancestor "\$merged_sha" origin\/main/);
   assert.match(handoff, /BG169_PROMOTION_NOT_VERIFIED/);
   assert.match(handoff, /execution_proof:true,verified:true/);
   assert.match(handoff, /transport="github-native"/);
