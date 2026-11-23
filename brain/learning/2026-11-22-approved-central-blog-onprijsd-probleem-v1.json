@@ -28,7 +28,8 @@
     "failure_1": "PR_MACHINE_METADATA_INVALID",
     "failure_2": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning,human_documentation",
     "protected_tests": "PENDING_REPEAT",
-    "external_provider_proof": "PENDING"
+    "external_provider_proof": "PENDING",
+    "learning_replay_contract": "Existing dependency-free Brain-prefixed regression for machine metadata validation; no production result inferred."
   },
   "compiler": {
     "failure_class": "GITHUB_DELIVERY",
@@ -39,7 +40,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-hygiene-janitor.test.mjs"
+      "tests/brain-delivery-hygiene-candidate-type-closure.test.mjs"
     ]
   },
   "current_state": "CANDIDATE_NOT_LIVE"
