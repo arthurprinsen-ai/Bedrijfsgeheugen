@@ -121,11 +121,16 @@ test('script: a missing service key or a failed write is loud, never silent', as
   await assert.rejects(() => runBlogAutoApproval({ date: TODAY, now: nowAfter, env, fetchImpl: fakeFetch({ writeOk: false }).impl }), /WRITE_FAILED:500/);
 });
 
-test('workflow: the approval step runs before the writer step, uses the script and adds no scheduler', () => {
+test('workflow: original authenticated queue now owns veto-gated approval and GitHub only independently reads it', () => {
   const text = readFileSync(new URL('../.github/workflows/powerhouse-daily-blog.yml', import.meta.url), 'utf8');
-  const approve = text.indexOf('Approve the same-date blog after the veto window');
+  const queue = readFileSync(new URL('../supabase/functions/powerhouse-blog-queue/index.ts', import.meta.url), 'utf8');
+  const approve = text.indexOf('Verify source-owned approval through original private blog exporter');
   const writer = text.indexOf('Reuse the existing writer for this obligation');
-  assert.ok(approve > 0 && approve < writer, 'approval step must precede the writer step');
-  assert.ok(text.includes('node tools/content-growth/blog-auto-approval.mjs "$DATE"'));
+  assert.ok(approve > 0 && approve < writer, 'source proof must precede the writer step');
+  assert.doesNotMatch(text, /node tools\\/content-growth\\/blog-auto-approval\\.mjs "\\$DATE"/);
+  assert.ok(text.includes('BLOG_ORIGINAL_QUEUE_EXPORT_NOT_READY'), 'fail closed after veto rather than green no-action');
+  assert.ok(queue.includes('decideBlogAutoApproval('));
+  assert.ok(queue.includes("db.rpc('record_content_publication_state',payload)"));
+  assert.ok(queue.includes('BLOG_ORIGINAL_AUTO_APPROVAL_READBACK_MISSING'));
   assert.equal((text.match(/cron:/g) || []).length, 1, 'no second schedule');
 });
