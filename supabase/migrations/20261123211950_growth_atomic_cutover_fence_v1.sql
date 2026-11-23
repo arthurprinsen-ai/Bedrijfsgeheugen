@@ -8,7 +8,7 @@ insert into public.brain_records
   (tenant_id, record_id, record_type, record_kind, subject_id, status, observed_at, provenance, payload, idempotency_key)
 values
   ('bedrijfsgeheugen', 'cutover-epoch:growth-learning', 'Governance', 'governance', 'growth-learning-store', 'OBSERVED', now(),
-   jsonb_build_object('source', 'migration:20261028220000_growth_atomic_cutover_fence_v1'),
+   jsonb_build_object('source', 'migration:growth_atomic_cutover_fence_v1'),
    jsonb_build_object('state', 'INACTIVE', 'epoch', 1),
    'cutover-epoch:growth-learning')
 on conflict do nothing;

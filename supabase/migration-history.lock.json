@@ -3560,8 +3560,12 @@
     {
       "version": "20261122162147",
       "name": "portal_connector_real_afas_source_readback_v1"
+    },
+    {
+      "version": "20261123211950",
+      "name": "growth_atomic_cutover_fence_v1"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-22T20:22:00.443Z"
+  "captured_at": "2026-11-23T21:21:13.000Z"
 }

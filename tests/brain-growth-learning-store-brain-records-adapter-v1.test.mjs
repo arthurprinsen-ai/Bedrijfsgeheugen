@@ -29,7 +29,7 @@ test('get pakt het record uit de payload en geeft undefined als het ontbreekt', 
 });
 
 test('de migratie houdt de fence dicht: vaste search_path, alleen service_role, geen nieuwe tabel', () => {
-  const sql = readFileSync(new URL('../supabase/migrations/20261028220000_growth_atomic_cutover_fence_v1.sql', import.meta.url), 'utf8');
+  const sql = readFileSync(new URL('../supabase/migrations/20261123211950_growth_atomic_cutover_fence_v1.sql', import.meta.url), 'utf8');
   assert.match(sql, /security definer\s+set search_path = ''/i);
   assert.match(sql, /revoke all on function public\.growth_insert_if_absent_with_cutover_fence[^;]*from public, anon, authenticated/i);
   assert.match(sql, /grant execute on function public\.growth_insert_if_absent_with_cutover_fence[^;]*to service_role/i);
