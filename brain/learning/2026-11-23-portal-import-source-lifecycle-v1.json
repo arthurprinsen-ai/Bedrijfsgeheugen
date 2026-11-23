@@ -39,5 +39,16 @@
     "Netlify exact published SHA",
     "authenticated independent UI + tenant readback",
     "named ONE BRAIN consumer ACK"
-  ]
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "positive_test": "Exact one-source removal preserves the other source rows and fingerprints; original source writer and server readback are required.",
+    "negative_test": "Cross-source fingerprint mismatch, missing or duplicate source IDs, changed tenant and no explicit user approval must not delete data.",
+    "production_readback": "PENDING",
+    "authenticated_csv_xlsx_user_journey": "PENDING",
+    "independent_brain_consumer_ack": "PENDING",
+    "source_verified": false
+  }
 }
