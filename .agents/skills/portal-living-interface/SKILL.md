@@ -24,6 +24,13 @@ Make the existing entrepreneur portal compelling, legible and effortless. Priori
 - Before award-readiness: test complete 320/375/390/430/768/1024/1440 flows and 200% zoom, focus order, sticky dock non-obscuring, iOS VoiceOver and Android TalkBack, keyboard, reduced motion and WCAG 2.2 AA; then run at least five uncoached entrepreneur tasks with measured completion, errors and clarity. **Source tests and provider browser PASS do not substitute for those human checks.**
 - Require a named owner and actual provider readback on the **current Netlify SHA**; never call the Red Dot standard met or award-ready solely because a visual or code patch shipped.
 
+## 23 november 2026 — klant kan foutieve CSV/Excel-bron veilig verwijderen
+
+- Elke in het bestaande Portaal V2 opgeslagen CSV/XLSX-bron moet vanuit de originele importgeschiedenis expliciet verwijderbaar zijn. Bevestig de onomkeerbare bronactie, valideer exacte tenant en dezelfde unieke bron-ID plus SHA-256-fingerprint in actuele `portal.dataImports.datasets`; geen verwisseling op bestandsnaam, geen stale of duplicate ID.
+- Verwijder uitsluitend de bedoelde bron via de bestaande `domainState.patch/flush` en controleer op `stateClient.load` onafhankelijk dat die bron verdwenen is en alle overige bronidentiteiten intact zijn. Verwijder de bronprojectie ook van de toegewezen bestaande portaalpagina door de originele state-subscription. Vóór die readback is de delete niet als voltooid bewezen.
+- Leg uit dat het verwijderen van actuele portaalbronrijen niet automatisch historische audits, backups of providerbronnen verwijdert. Geen automatische KPI, externe delete of verborgen alternatieve datastore.
+- Blijvende regressie: `tests/brain-portal-v2-data-import-v1.test.mjs`; productie EVIDENCE_DUE tot echte geautoriseerde twee-tenantbrowsercontrole en providerbewijs. Leermoment: `brain/learning/2026-11-23-portal-import-source-lifecycle-v1.json`.
+
 ## 22 november 2026 — data import moet inhoudelijk landen op de juiste pagina
 
 - Zodra de oorspronkelijke klantgebonden CSV/XLSX-import is bevestigd, moet de **inhoud** (rijen, originele kolommen en celwaarden) leesbaar en doorzoekbaar zijn op de volgens het door de klant beoordeelde `semantic.area` toegewezen **bestaande** portaalpagina, niet alleen in het uploadvenster. Alle bestanden zijn terug te vinden bij Data & AI, Datahubstatus en Wat je hebt ingevuld; oudere ongeclassificeerde bestanden uitsluitend in die centrale overzichten.

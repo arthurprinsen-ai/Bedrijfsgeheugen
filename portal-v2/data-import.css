@@ -60,3 +60,9 @@
 .bg-import-restricted[hidden]{display:none}
 .bg-import-history-item small{color:#526972;max-width:100%;flex-basis:100%;font-size:.8rem}
 @media(max-width:650px){.bg-import-context{padding:12px}.bg-import-context-grid,#bgImportMappings{grid-template-columns:1fr}.bg-import-context-grid label:nth-child(2){grid-column:auto}}
+
+/* Read-only import history, with a deliberate tenant-scoped removal action. */
+.bg-import-remove{font:inherit;font-size:.81rem;font-weight:650;border:1px solid #b85b54;background:#fff;color:#9e3934;border-radius:9px;padding:9px 11px;min-height:44px;cursor:pointer}
+.bg-import-remove:hover{background:#fff3f1}
+.bg-import-remove:focus-visible{outline:3px solid #126b67;outline-offset:2px}
+.bg-import-remove:disabled{opacity:.55;cursor:not-allowed}
