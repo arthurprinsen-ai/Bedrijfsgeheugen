@@ -43,6 +43,24 @@ export function validateImportCapacity(datasets,record){
     throw new Error("Deze import overschrijdt de veilige gezamenlijke opslaggrens van 450 KB. Gebruik voor grote datasets een koppeling.");
 }
 
+// Explicit source lifecycle: never remove by filename or a stale/unverified ID.
+export function withoutImportedDataset(datasets,candidate){
+  if(!Array.isArray(datasets)||!/^file-[a-f0-9]{32}$/.test(String(candidate?.id||""))){
+    throw new Error("Ongeldige bronselectie.");
+  }
+  if(!/^[a-f0-9]{64}$/.test(String(candidate?.fingerprint||""))){
+    throw new Error("De bronvingerafdruk ontbreekt.");
+  }
+  if(candidate.id!=="file-"+candidate.fingerprint.slice(0,32)){
+    throw new Error("De bronidentiteit is ongeldig of gewijzigd.");
+  }
+  const matches=datasets.filter(row=>row?.id===candidate.id);
+  if(matches.length!==1||matches[0].fingerprint!==candidate.fingerprint){
+    throw new Error("De bron is gewijzigd of is niet meer beschikbaar. Vernieuw het portaal.");
+  }
+  return datasets.filter(row=>row.id!==candidate.id);
+}
+
 const modalMarkup=[
 '<div class="bg-import-head"><div><span class="bg-import-kicker">DATA & KOPPELINGEN</span>',
 '<h2 id="portalDataImportTitle">Gegevens importeren</h2><p>Van CSV of Excel naar jouw Bedrijfsgeheugen.</p></div>',
@@ -198,6 +216,12 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
         event.preventDefault();dialog.close();navigatePortal(page);
       });
       row.append(destinationLink);
+      const remove=root.createElement("button");
+      remove.type="button";remove.className="bg-import-remove";
+      remove.textContent="Verwijder bron";remove.disabled=busy;
+      remove.setAttribute("aria-label","Verwijder geïmporteerde bron "+String(item.fileName||"bestand"));
+      remove.addEventListener("click",()=>void removeSaved(item));
+      row.append(remove);
       history.append(row);
     }
   }
@@ -234,6 +258,48 @@ export function mountDataImport({stateClient,domainState,root=globalThis.documen
     }catch(error){if(mine===revision)report(error.message||"Import niet mogelijk.","error");}
     finally{busy=false;}
   }
+  async function removeSaved(item){
+    if(busy)return;
+    const owner=principal(stateClient);
+    if(!owner||!domainState.initialized?.()){
+      report("Log eerst in met je bedrijfsaccount om een bron te verwijderen.","error");return;
+    }
+    // This is destructive to the current source projection. Never infer permission from a click.
+    const approved=globalThis.confirm?.(
+      "Bron \""+String(item.fileName||"bestand")+"\" en de bijbehorende rijen verwijderen uit het portaal? Dit kan niet met deze knop ongedaan worden gemaakt."
+    )===true;
+    if(!approved)return;
+    if(principal(stateClient)!==owner){
+      reset();if(dialog.open)dialog.close();return;
+    }
+    busy=true;updateSaveButton();report("Verwijdering gecontroleerd verwerken…");
+    try{
+      const current=domainState.get("portal.dataImports")||{};
+      const next=withoutImportedDataset(current.datasets,item);
+      if(principal(stateClient)!==owner)throw new Error("Gebruikerssessie gewijzigd.");
+      domainState.patch("portal.dataImports",{datasets:next});
+      const ack=await domainState.flush();
+      if(!["saved","idle"].includes(ack?.status))throw new Error("De verwijdering is nog niet opgeslagen.");
+      if(principal(stateClient)!==owner)throw new Error("Gebruikerssessie gewijzigd.");
+      const readback=await stateClient.load();
+      const actual=readback?.state?.portal?.dataImports?.datasets;
+      if(String(readback?.user?.id||"")!==owner||!Array.isArray(actual)
+        ||actual.length!==next.length
+        ||next.some((row,i)=>actual[i]?.id!==row.id||actual[i]?.fingerprint!==row.fingerprint)){
+        throw new Error("Onafhankelijke serverteruglezing van de verwijdering ontbreekt.");
+      }
+      report("De bron is uit de actuele portaalgegevens verwijderd. Historische auditregistraties vallen hier niet onder.","success");
+    }catch(error){
+      if(principal(stateClient)!==owner){
+        reset();if(dialog.open)dialog.close();return;
+      }
+      report("Verwijdering niet bevestigd: "+String(error.message||error)+". Vernieuw en controleer de bronlijst.","error");
+    }finally{
+      busy=false;updateSaveButton();
+      if(dialog.open&&principal(stateClient)===owner)renderSaved();
+    }
+  }
+
   async function persist(){
     if(!staged||busy)return;
     const {owner}=staged;
