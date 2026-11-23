@@ -335,7 +335,9 @@ function validPersonalSource(row:any) {
     && e.business_topic === true
     && e.corporate_voice === false
     && e.company_page_interchangeable === false;
-  const perspectiveMode = isVerifiedPersonalFounderPerspective(e);
+  // Source verifier above has already validated every founder-view field.
+  // Avoid a second unchecked transport for independently parsed helper tests.
+  const perspectiveMode = e.personal_founder_perspective_verified === true;
   const legacyPersonal = (truthMode || observationalMode)
     && e.personal_life_topic === true && e.business_topic === false
     && (e.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY || e.personal_life_only_verified === true);
@@ -913,7 +915,7 @@ Deno.serve(async (req) => {
     // signal ledger read-only; no parallel problem catalog, producer or sender.
     // External problems are context only and can NEVER prove Arthur experienced one.
     let personalEntrepreneurProblemSources:any[]=[];
-    if(personalProfessional){
+    if(personalBuilder){
       try{
         const {data:problemSignals,error:problemSignalError}=await db
           .from('powerhouse_mira_problem_signals_v1')
@@ -993,7 +995,7 @@ Deno.serve(async (req) => {
       : '';
     const editorialCouncil=buildEditorialCouncilBrief({channel:pending.channel,commercialFeedback,verifiedBrandLearnings,measuredNextPostTest,creativeExploration});
     let editorialSystem = (pending.channel==='linkedin_personal'
-      ? system + (personalProfessional ? ' '+PERSONAL_STEERING_STORY : '') + ' VERPLICHTE NOTION-REDACTIECONTRACT: de lengte volgt het ene echte voorval, zonder vast woordquotum; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; zorg voor één inhoudelijk gesprekspunt dat uit het echte voorval of de technische afweging voortkomt; stel alleen een korte specifieke vraag als je werkelijk nieuwsgierig bent naar ervaringen of tegenvoorbeelden, maar eindig nooit automatisch met een vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
+      ? system + (personalBuilder ? ' '+PERSONAL_STEERING_STORY : (personalPerspective ? ' '+PERSONAL_STEERING_STORY : '')) + ' VERPLICHTE NOTION-REDACTIECONTRACT: de lengte volgt het ene echte voorval, zonder vast woordquotum; een echt, concreet ik-hoofdstuk of geverifieerde overtuiging; begin bij mens/ondernemer in plaats van technische status; geen ruwe Markdown, tussenkoppen, opsomming of horizontale lijnen; geen links of emoji; nooit een ongecontroleerde statistiek of verzonnen ervaring; geen operationele rapportage over verzonden mails, CI, bewaking of publicatiestatus; geen sales-CTA; zorg voor één inhoudelijk gesprekspunt dat uit het echte voorval of de technische afweging voortkomt; stel alleen een korte specifieke vraag als je werkelijk nieuwsgierig bent naar ervaringen of tegenvoorbeelden, maar eindig nooit automatisch met een vraag; gebruik alleen als exact geverifieerde bron beschikbaar is een percentage of kwantitatieve publieke claim. Publiceer geen uitwisselbare bedrijfsmarketing, alleen een persoonlijk perspectief op ondernemers helpen anticiperen, besluiten en bijsturen.'
       : pending.channel==='linkedin_company' ? system + verifiedBrandLearningGuide + measuredNextPostGuide + creativeExplorationGuide : system + ' ' + STEERING_BRAND_CONTRACT + verifiedBrandLearningGuide + creativeExplorationGuide) + ' ' + linkedinLoopGuide + ' ' + CONTENT_FEEDBACK_GUIDE + (pending.channel==='blog' && pending.delivery_evidence?.blog_quality_repair ? ' HERSTEL AFGEKEURDE BLOG: schrijf een volledig nieuw, concreet lezersartikel over het dagelijkse bedrijfsprobleem achter het onderwerp. Bij boekhouden gaat dit over openstaande facturen, bank/administratieverschillen of maandcontrole voor de ondernemer, niet SEO of publiceren. Geef uitvoerbare controlevragen zonder onbewezen productfuncties. Gebruik gewoon Nederlands voor ondernemer en boekhouder. Geen geforceerd zevenstappenschema, finance-jargon, vertaalfouten of beloofde financiële verbetering. Gebruik editorial_quality_review alleen als private afkeuringsgegevens en bronfeiten om de concrete problemen te corrigeren, nooit als publicatietekst of als toestemming om beleid te omzeilen. Schrijf geen specifieke Twinfield-bedieningshandeling zonder gecontroleerde officiële bron; bij onverklaarde verschillen eerst controleren en zo nodig de boekhouder laten beoordelen. Gebruik geen uitgeversrollen, canonical owner, CPC, forecast-score of interne meetnamen. Voor koppelingen kan de lezer terecht op de bestaande https://www.bedrijfsgeheugen.nl/twinfield-koppeling en claim geen nieuwe hoofdpagina. Houd onderwerp en bronwaarheid; herstel is geen bewijs van conversiewinst.' : '');
     // Exact original buyer-first contract is appended before BOTH original AI calls.
     if(pending.channel==='linkedin_personal'||pending.channel==='linkedin_company') {
@@ -1020,8 +1022,8 @@ Deno.serve(async (req) => {
       editorialSystem += ' '+PERSONAL_TRUSTED_ADVISOR_DIRECTION_20261120
         + ' PERSOONLIJKE VISIEBRON: dit is een feitelijk geverifieerde eigen mening of onderzoeksafweging, NIET een eigen klantcase of voltooide bouwgebeurtenis. Geen verzonnen uitvoering, resultaten of ontmoetingen. Gebruik externe bronnen alleen als duidelijk gelabelde externe inzichten. Eén relevant dilemma, eigen afweging, herkenbare menselijke consequentie en een natuurlijke conclusie; leer van eerder gepubliceerde persoonlijke posts en herhaal geen onderwerp.';
     }
-    if(pending.channel==='linkedin_personal' && !personalProfessional){
-      editorialSystem='AUTHENTIEK PERSOONLIJK LINKEDIN — '+PERSONAL_FIRST_PERSON_STORY_CONTRACT
+    if(pending.channel==='linkedin_personal' && !personalBuilder){
+      if(!personalPerspective) editorialSystem='AUTHENTIEK PERSOONLIJK LINKEDIN — '+PERSONAL_FIRST_PERSON_STORY_CONTRACT
       + '. Schrijf uitsluitend een nieuw, controleerbaar ik-verhaal vanuit Arthurs EIGEN ervaring in verified_personal_source.source_text. '
       + 'Laat het echte voorval zelf de vorm bepalen: een stille observatie, herinnering, grappig detail of ongemakkelijk moment mogen allemaal. Dwing geen wending, humor, les of vraag af. '
       + 'Schrijf zo kort of lang als dit ene voorval verdient; gebruik natuurlijke alinea’s, geen tekstsjabloon. Begin bij Arthurs geverifieerde IK-ervaring. Geen onbevestigde dialoog, naam, locatie, tijd, gezinsdetail, mening, gevoel of uitkomst. '
