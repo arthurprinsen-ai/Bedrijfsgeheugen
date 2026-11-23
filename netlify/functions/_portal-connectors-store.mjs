@@ -23,6 +23,50 @@ export function createPortalConnectorsStore({fetchFn=globalThis.fetch,baseUrl=pr
     async saveReview(tenantId,review){const t=uuid(tenantId),cid=uuid(review.connectorId);if(!t||!cid)throw new Error('INVALID_REVIEW_SCOPE');const rows=await call('connector_reviews',{method:'POST',body:JSON.stringify({organisatie_id:t,connector_id:cid,execution_id:uuid(review.executionId),status:review.status||'pending',payload:review.payload||{}})});return rows?.[0]||null;},
     async getReview(tenantId,reviewId){const t=uuid(tenantId),rid=uuid(reviewId);if(!t||!rid)return null;const rows=await call(`connector_reviews?organisatie_id=eq.${t}&id=eq.${rid}&select=*&limit=1`);return rows?.[0]||null;},
     async decideReview(tenantId,reviewId,decision){const t=uuid(tenantId),rid=uuid(reviewId);if(!t||!rid)return null;const status=decision?.decision==='reject'?'rejected':'approved';const rows=await call(`connector_reviews?organisatie_id=eq.${t}&id=eq.${rid}`,{method:'PATCH',body:JSON.stringify({status,beslissing:decision||{},afgehandeld_op:new Date().toISOString()})});return rows?.[0]||null;},
+    async checkSourceStorage(tenantId){
+      const t=uuid(tenantId);if(!t)return false;
+      await call('connector_source_snapshots_v1?organisatie_id=eq.'+t+'&select=connector_id&limit=1');
+      return true;
+    },
+    async setAfasCredential(tenantId,connectorId,token){
+      const t=uuid(tenantId),cid=uuid(connectorId);
+      if(!t||!cid||typeof token!=='string')throw new Error('INVALID_CREDENTIAL_SCOPE');
+      const response=await call('rpc/connector_afas_vault_write',{method:'POST',body:JSON.stringify({p_organisatie_id:t,p_connector_id:cid,p_token:token})});
+      return response===true;
+    },
+    async readAfasCredential(tenantId,connectorId){
+      const t=uuid(tenantId),cid=uuid(connectorId);if(!t||!cid)return null;
+      const token=await call('rpc/connector_afas_vault_read',{method:'POST',body:JSON.stringify({p_organisatie_id:t,p_connector_id:cid})});
+      return typeof token==='string'&&token.length>20?token:null;
+    },
+    async revokeAfasCredential(tenantId,connectorId){
+      const t=uuid(tenantId),cid=uuid(connectorId);if(!t||!cid)return false;
+      return (await call('rpc/connector_afas_vault_revoke',{method:'POST',body:JSON.stringify({p_organisatie_id:t,p_connector_id:cid})}))===true;
+    },
+    async saveSourceSnapshot(tenantId,{connectorId,version,provider,getConnector,fields,rows,hash}={}){
+      const t=uuid(tenantId),cid=uuid(connectorId);
+      if(!t||!cid||provider!=='afas'||!Number.isInteger(version)||version<1
+        ||!Array.isArray(fields)||fields.length<1||fields.length>40
+        ||!Array.isArray(rows)||rows.length>100||!/^[a-f0-9]{64}$/.test(String(hash||'')))
+        throw new Error('INVALID_SOURCE_SNAPSHOT');
+      const body={organisatie_id:t,connector_id:cid,connector_versie:version,provider,
+        get_connector:getConnector,kolommen:fields,rijen:rows,aantal:rows.length,
+        bron_hash:hash,bron_gecontroleerd:true,ingelezen_op:new Date().toISOString()};
+      const result=await call('connector_source_snapshots_v1?on_conflict=organisatie_id,connector_id',{
+        method:'POST',headers:{...headers,prefer:'resolution=merge-duplicates,return=representation'},
+        body:JSON.stringify(body)
+      });
+      return result?.[0]||null;
+    },
+    async getSourceSnapshot(tenantId,connectorId){
+      const t=uuid(tenantId),cid=uuid(connectorId);if(!t||!cid)return null;
+      const rows=await call('connector_source_snapshots_v1?organisatie_id=eq.'+t+'&connector_id=eq.'+cid+'&select=*&limit=1');
+      return rows?.[0]||null;
+    },
+    async listSourceSnapshots(tenantId){
+      const t=uuid(tenantId);if(!t)return [];
+      return await call('connector_source_snapshots_v1?organisatie_id=eq.'+t+'&select=*&order=ingelezen_op.desc&limit=100')||[];
+    },
     async listReviewQueue(tenantId){const t=uuid(tenantId);if(!t)return[];return await call(`connector_reviews?organisatie_id=eq.${t}&status=eq.pending&select=*&order=aangemaakt_op.asc`)||[];}
   });
 }

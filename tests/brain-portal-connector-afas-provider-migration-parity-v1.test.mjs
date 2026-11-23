@@ -1,0 +1,22 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile,readdir} from 'node:fs/promises';
+const root=new URL('../supabase/',import.meta.url);
+test('original provider AFAS source migration exactly matches audited applied identity',async()=>{
+ const lock=JSON.parse(await readFile(new URL('migration-history.lock.json',root),'utf8'));
+ const applied=lock.applied.filter(x=>x.name==='portal_connector_real_afas_source_readback_v1');
+ assert.deepEqual(applied,[{version:'20261122162147',name:'portal_connector_real_afas_source_readback_v1'}]);
+ assert.equal(lock.applied.length,890,'source lock includes observed 890th provider-applied migration');
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
+ const files=await readdir(new URL('migrations/',root));
+ const current='20261122162147_portal_connector_real_afas_source_readback_v1.sql';
+ assert.ok(files.includes(current));
+ assert.ok(!files.includes('20261122162000_portal_connector_real_afas_source_readback_v1.sql'));
+ const sql=await readFile(new URL('migrations/'+current,root),'utf8');
+ assert.match(sql,/create table if not exists public\.connector_source_snapshots_v1/i);
+ assert.match(sql,/revoke all on function public\.connector_afas_vault_read/i);
+ const sourceMigrations=files.filter(x=>/^\d{14}_.+\.sql$/.test(x));
+ assert.equal(sourceMigrations.length,lock.applied.length,'no unregistered executable migration');
+ const sourceMap=new Map(sourceMigrations.map(x=>[x.slice(0,14),x.slice(15,-4)]));
+ for(const row of lock.applied)assert.equal(sourceMap.get(row.version),row.name,'provider identity: '+row.version);
+});

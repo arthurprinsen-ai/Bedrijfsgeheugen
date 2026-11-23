@@ -1,6 +1,7 @@
 // Canonical Notion: "Skill — Persoonlijk LinkedIn: persoonlijke ondernemersreis & leven"
 // and "Persoonlijk profiel — wat er wel en niet op mag" (read 2026-10-10).
 // This is a deterministic delivery veto, NOT a substitute for source verification.
+import {isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact} from './personal-first-person-story-gate.mjs';
 export const PERSONAL_EDITORIAL_POLICY = 'personal-linkedin-founder-editorial-v4';
 
 // Shared source of truth: pre-publication and generator use the same personal
@@ -32,12 +33,12 @@ export function personalEditorialViolations(value, evidence={}) {
   // No fixed word target. Source-led personal stories may be short or long.
   if(/(?:\*\*|__|(^|\n)\s*#{1,6}\s|(^|\n)\s*(?:-{3,}|\*{3,}|_{3,})\s*(?=\n|$)|(^|\n)\s*[-•]\s|\x60{3,}|\*(?=\S))/u.test(text))
     fail('PERSONAL_EDITORIAL_MARKDOWN','Verwijder zichtbare Markdown- en documentopmaak. LinkedIn-tekst is platte tekst.');
-  if(/https?:\/\/|www\./i.test(text))
-    fail('PERSONAL_EDITORIAL_URL','Een persoonlijk oprichtersverhaal bevat geen directe link in de post.');
+  if(/https?:\/\/|www\./i.test(text)&&!magazineGiftLinkIsExact(text,evidence))
+    fail('PERSONAL_EDITORIAL_URL','Een persoonlijk oprichtersverhaal bevat geen directe link in de post, behalve de exact bewezen gratis eigen magazinepublicatie.');
   if((text.match(/#[\p{L}\p{N}_]+/gu)||[]).length>3)
     fail('PERSONAL_EDITORIAL_HASHTAG_COUNT','Gebruik maximaal drie hashtags.');
-  if(/\p{Extended_Pictographic}/u.test(text))
-    fail('PERSONAL_EDITORIAL_EMOJI','Geen emoji in persoonlijke profieltekst.');
+  if(/\p{Extended_Pictographic}/u.test(text)&&!(isVerifiedPersonalMagazineGift(evidence)&&/^Goedemorgen en een fijne zaterdag! ☕\s*\n/iu.test(text)&&((text.match(/\p{Extended_Pictographic}/gu)||[]).length===1)))
+    fail('PERSONAL_EDITORIAL_EMOJI','Geen emoji in persoonlijke profieltekst buiten exact geverifieerde zaterdaggroet voor eigen gratis magazine.');
   if(/\b(?:pipeline|runtime|heartbeat|readback|provider[- ]?(?:receipt|id|bewijs)|debug|supabase|github|netlify|postgres|sql|api[- ]?request|statuscode|bewakingscycli|systeemstatus|technische status|groen(?:e)? (?:status|bewaking)|bronbewijs|feedbacklus|intelligentiela(?:ag|gen)[a-z]*)\b/iu.test(text))
     fail('PERSONAL_EDITORIAL_TECHNICAL_STATUS','Vertaal interne technische status naar één concreet menselijk gevolg.');
   // 2026-11-01: the real published personal post was a developer-style status

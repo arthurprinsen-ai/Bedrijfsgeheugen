@@ -1,0 +1,155 @@
+{
+  "fingerprint": "security|business-and-mo14|insufficient-enforced-csp-and-privileged-anon-rpc-review|20261120-v1",
+  "obligation_id": "SECURITY_ORIGINAL_WEB_BOUNDARY_20261120",
+  "owner": "existing Powerhouse Security Operations / website and backend owners (no parallel executor)",
+  "compiler": {
+    "failure_class": "WEB_HTTP_CSP_BOUNDARY_AND_PUBLIC_AUTHORITY_GAP",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-csp-web-boundary-20261120.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-csp-web-boundary-20261120.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "live_validation": "existing weekly .github/workflows/security-operations-proof.yml, only after protected main merge and provider LIVE readback",
+    "shadow": [
+      "tests/brain-security-csp-web-boundary-20261120.test.mjs",
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ],
+    "live_provider_probe": [
+      "https://www.bedrijfsgeheugen.nl/",
+      "https://pw-mo14-1.netlify.app/zaalplanner/",
+      "https://pw-mo14-1.netlify.app/veldplanner/"
+    ],
+    "mode_note": "Historical, shadow and CI-canary run source-owned security regression tests. Provider runtime validation is separate and must not be inferred from CI-only tests."
+  },
+  "root_cause": "Static public Bedrijfsgeheugen deploy had HSTS/nosniff/X-Frame-Options but no general CSP. The separate existing PW deploy lacked CSP, frame and MIME HTTP controls for its coach routes. Existing browser JS requires a gradual CSP approach; wholesale script-src enforcement would break legacy public pages.",
+  "source_evidence": {
+    "inspected_on": "2026-11-20",
+    "main_branch_headers_path": "_headers",
+    "main_branch_netlify_config": "netlify.toml",
+    "current_business_legacy_script_inventory": "not yet proven CSP-compatible; strict script-src stays report-only",
+    "mo14_readback_before_hardening": {
+      "csp": null,
+      "frame": null,
+      "nosniff": null
+    },
+    "supabase_project": "adhjwmvyoixzjtmiroln",
+    "supabase_security_advisor": {
+      "warnings": [
+        {
+          "name": "anon_security_definer_function_executable",
+          "count": 1,
+          "rpc": "public.powerhouse_external_cron_reconcile_v1(p_token text)",
+          "token_sha256_check": true,
+          "remediation": "https://supabase.com/docs/guides/database/database-linter?lint=0028_anon_security_definer_function_executable"
+        }
+      ],
+      "info": [
+        {
+          "name": "rls_enabled_no_policy",
+          "count": 186,
+          "meaning": "deny-by-default without policy; not automatically an exposure"
+        }
+      ]
+    },
+    "postgres_public_table_counts": {
+      "total": 208,
+      "rls_enabled": 208,
+      "rls_disabled": 0
+    },
+    "separate_existing_pw_tables": {
+      "tables": [
+        "public.pw_opstellingen",
+        "public.pw_beoordelingen"
+      ],
+      "rows_at_audit": [
+        0,
+        0
+      ],
+      "anonymous_select_insert_currently_allowed": true,
+      "action": "Need separate authenticated write path and compatibility check before disabling legacy permissions."
+    },
+    "privileged_function_action": "Do not revoke anon RPC blindly; the existing external cron uses high-entropy sha256 token check. Confirm caller lineage, introduce server-only caller, then remove public execute in a separate protected migration."
+  },
+  "correction": {
+    "bedrijfsgeheugen_csp_enforced": "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests",
+    "bedrijfsgeheugen_script_csp": "report-only pending third-party, inline script and OAuth compatibility audit",
+    "internal_staff": "no-store, deny framing, no-referrer",
+    "mo14_csp": "separate strict SHA-256 inline script hash enforced per isolated zaal and veld route, validated on live response",
+    "scheduled_guard": "extend existing security-operations-proof workflow weekly; no new scheduler, secret or automation"
+  },
+  "prevention": [
+    "Every static deployment must verify response-level headers, not only source files.",
+    "Never add unsafe-inline or unsafe-eval to enforced JS CSP as an easy bypass.",
+    "Do not break production public website scripts or OAuth with premature full strict CSP; use report-only discovery first.",
+    "RLS enabled without policies means deny-by-default; public broad SELECT/INSERT policies and SECURITY DEFINER EXECUTE grants require role-specific review.",
+    "Any public RPC granted elevated security must have independently tested authorization and a closed migration plan.",
+    "Never claim protected PR merged or browser restrictions enforced before exact provider readback."
+  ],
+  "tests": [
+    "tests/brain-security-csp-web-boundary-20261120.test.mjs",
+    "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+  ],
+  "status": "PR_CANDIDATE_NOT_LIVE",
+  "next_action": "Merge follow-up source metadata deny rules via original protected website lane and independently check new Netlify production HTTP 404s. Plan server-only authenticated replacement of token-guarded cron RPC without disabling current external cron, and migrate publish='.' to an allowlisted output in a separately proven rollout.",
+  "independent_business_live_proven": false,
+  "independent_mo14_live_proven": false,
+  "no_new_scheduler": true,
+  "production_readback_20261120": {
+    "source": "Independent browser/network response inspection against original production hosts",
+    "business": {
+      "url": "https://www.bedrijfsgeheugen.nl/",
+      "http_home": 200,
+      "private_paths_checked": 7,
+      "private_http_status": 404,
+      "public_portal_http_status": 200,
+      "enforced_csp": "object-src 'none'; base-uri 'self'; frame-ancestors 'self'; upgrade-insecure-requests",
+      "script_csp": "report-only",
+      "observed": true
+    },
+    "pw": {
+      "url": "https://pw-mo14-1.netlify.app/zaalplanner/",
+      "http_zaal": 200,
+      "http_field": 200,
+      "strict_csp_hashes": true,
+      "inline_javascript_injection_blocked": true,
+      "violation_events": 1,
+      "observed": true
+    },
+    "historic_deploy": {
+      "sample_legacy_url_redirected_to_netlify_team_protection": true,
+      "all_historic_deploys_checked": false
+    },
+    "supabase": {
+      "project": "adhjwmvyoixzjtmiroln",
+      "pw_tables": [
+        "pw_opstellingen",
+        "pw_beoordelingen"
+      ],
+      "pw_rls_enabled": true,
+      "anon_select": false,
+      "anon_insert": false,
+      "authenticated_select": false,
+      "authenticated_insert": false,
+      "info_rls_no_policy": 188,
+      "warning_anon_token_guarded_security_definer_rpc": 1
+    },
+    "note": "Observed original live controls are verified; added config/meta-file deny rules in this follow-up PR remain CANDIDATE until protected merge and exact deploy readback.",
+    "github_repository": {
+      "name": "arthurprinsen-ai/Bedrijfsgeheugen",
+      "visibility": "public",
+      "private": false,
+      "evidence": "GitHub REST repository metadata, 2026-11-20",
+      "caveat": "Website 404 controls do not protect public GitHub source history; private migration requires access and CI impact assessment.",
+      "not_changed_by_this_pr": true
+    }
+  }
+}

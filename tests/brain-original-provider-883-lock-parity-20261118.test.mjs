@@ -3,10 +3,11 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url)));
 test('native provider 883 exact original migration retained once in source history',()=>{
- assert.equal(lock.applied.length,883);
+ assert.ok(lock.applied.length>=883);
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.deepEqual(lock.applied.at(-1),{version:'20261118184000',name:'original_guardian_provider_scope_source_freshness_v4'});
- assert.equal(new Set(lock.applied.map(x=>x.version)).size,883);
+ assert.equal(lock.applied.filter(x=>x.version==='20261118184000'&&x.name==='original_guardian_provider_scope_source_freshness_v4').length,1);
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
+ assert.deepEqual(lock.applied.map(x=>x.version),[...lock.applied.map(x=>x.version)].sort());
 });
 test('883rd migration has executable original guardian source, not a second writer',()=>{
  const sql=readFileSync(new URL('../supabase/migrations/20261118184000_original_guardian_provider_scope_source_freshness_v4.sql',import.meta.url),'utf8');

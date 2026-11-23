@@ -33,9 +33,10 @@ test('verifier-only main advances do not require a new Netlify deploy', async ()
 });
 
 test('canonical live readback accepts an older live SHA only for an all-control-plane ancestor delta', async () => {
-  const [workflow,contract] = await Promise.all([
+  const [workflow,contract,applicabilitySource] = await Promise.all([
     readFile('.github/workflows/canonical-brand-shell-live-readback.yml','utf8'),
     readFile('brain/contracts/production-readback-v1.json','utf8').then(JSON.parse),
+    readFile('tools/delivery/netlify-deployment-applicability.mjs','utf8'),
   ]);
 
   assert.match(workflow,/Resolve runtime-applicable production commit/);
@@ -43,8 +44,12 @@ test('canonical live readback accepts an older live SHA only for an all-control-
   assert.match(workflow,/git diff --name-only "\$observed\.\.\.\$HEAD_COMMIT"/);
   assert.match(workflow,/control-plane-ancestor/);
   assert.match(workflow,/steps\.runtime\.outputs\.accepted_runtime_commit/);
-  assert.match(workflow,/tools\/site-shell\/contracts\.mjs/);
-  assert.match(workflow,/brain\/contracts\/production-readback-v1\.json/);
+  // The workflow now uses the shared deployment-applicability module rather than
+  // embedding the individual verifier paths; assert the whole delegation chain.
+  assert.match(workflow,/tools\/delivery\/netlify-deployment-applicability\.mjs/);
+  assert.match(workflow,/NETLIFY_GOVERNANCE_EXACT/);
+  assert.match(applicabilitySource,/tools\/site-shell\/contracts\.mjs/);
+  assert.match(applicabilitySource,/brain\/contracts\/production-readback-v1\.json/);
   assert.equal(contract.productionTruth.controlPlaneAncestorAllowed,true);
   assert.equal(contract.productionTruth.controlPlaneAncestorRequiresAllDeltaNonRuntime,true);
   assert.equal(contract.websiteReadback.controlPlaneVerifierCanReadLiveAncestor,true);

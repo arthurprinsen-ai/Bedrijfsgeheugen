@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-20",
+  "status": "PROTECTED_CANDIDATE_NEEDS_MERGE",
+  "fingerprint": "powerhouse|innovation|live-code-readback-stuck-on-withheld-netlify-api-credentials|20261120-v1",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN agent:agent-integration-engineer + original daily self-evolution workflow",
+  "root_cause": "The original read-only innovation continuity job does not receive NETLIFY_AUTH_TOKEN/NETLIFY_SITE_ID by design, while its current-deploy detector returned null with no credentials. Existing GitHub PR lineage and protected merge were not enough to prove currently served code; the original 14 remained open without fresh production readback.",
+  "prevention": "Reuse the existing canonical/immutable two-manifest public production identity verifier without new secrets; require exact current SHA/deploy ID and independent protected GitHub merge ancestry before classifying current code presence. No result, revenue, consumer ACK, learning application or terminal status is inferred from delivery alone.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-public-release-readback-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-public-release-readback-20261120.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "PRODUCTION_READBACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "before": "Public provider marker already used by original production release workflow, but original read-only innovation continuity returned null when Netlify credentials missing. 2026-11-20 existing 14 PLANNED/OPEN.",
+    "gate": "Exact 40-char main commit SHA and 24-char immutable Netlify deployment ID confirmed in two public HTTPS manifests, followed by native gh compare ancestor proof and original CAS writeback.",
+    "tests": [
+      "tests/brain-innovation-public-release-readback-20261120.test.mjs"
+    ],
+    "provider": "https://www.bedrijfsgeheugen.nl/release.json",
+    "proposed_change": "Existing original continuity script consumes original browser release verifier; no other consumer, source-of-truth, schedule, credential or production mutation."
+  },
+  "closure": "Protected Required+CodeQL, merge, actual original scoped or daily GitHub run, live pair of provider manifests, original Brain CAS+independent GET, then independently measured outcome and named consumer ACK; 14/14 stay open until each duty has its own proof."
+}

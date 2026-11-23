@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-20",
+  "status": "CODE_CANDIDATE_PENDING_PROTECTED_MERGE",
+  "obligation_id": "security-dual-site-continuous-guard-20261120",
+  "fingerprint": "security|pw-mo14|netlify-missing-csp-after-direct-html-deploy|20261120-v1",
+  "owner": "Existing Powerhouse Security Operations / website delivery",
+  "compiler": {
+    "failure_class": "PUBLIC_SECURITY_HEADERS_REMOVED_BY_UNSCOPED_DEPLOY",
+    "scope": "SECURITY_OPERATIONS",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "root_cause": "An alternative Netlify API upload of only changed PW HTML pages succeeded without staging the _headers file. The public coach and legacy root lost CSP, X-Frame-Options and nosniff although the canonical protected GitHub→Netlify workflow generates strict hashed policies.",
+  "prevention_rule": "Only the original authorized GitHub→Netlify pipeline may be treated as a secured PW release. Independently check actual provider headers on all published PW routes, including the legacy root sharing localStorage, after EVERY release and four times daily through the original security-operations-proof workflow. Fail closed on any missing or weaker CSP, blocked network egress, framing, caching or MIME protections; never equate a successful upload with security proof.",
+  "regression_contract": "The existing monitor must exercise Bedrijfsgeheugen public, PW root, PW zaal and PW veld. The PW root is required to have script-src 'self', script-src-attr 'none', connect-src 'self', noindex and no-store. Both coaches require per-build SHA-256 CSP, frame-ancestors none, XFO DENY, nosniff and no-store. Preserve the original weekly DR/credential/IAM closure; add four lightweight daily live checks with no duplicate scheduler or Make.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs",
+      "tests/brain-security-live-guard-contract-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-csp-web-boundary-20261120.test.mjs",
+      "tests/brain-site-security-source-exposure-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-live-headers-monitor-20261120.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_before": [
+      {
+        "deploy_id": "6b003721ccd464e932bd05a5",
+        "summary": "No header rules processed"
+      },
+      {
+        "deploy_id": "6b00bde12906b94471608077",
+        "summary": "No header rules processed"
+      }
+    ],
+    "actual_before": "Independent production HEAD showed absent CSP, XFO and nosniff across PW root, zaal and veld.",
+    "provider_after": {
+      "deploy_id": "6b00c8672aea33df756175fd",
+      "state": "READY",
+      "processed_header_rules": 4,
+      "published_at": "2026-11-20T22:23:43.364Z",
+      "workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44828504809",
+      "status": "LIVE_PROVEN"
+    },
+    "actual_after": "Independent HTTPS HEAD on all three PW routes confirms the strict policy and MIME/frame/cache protections.",
+    "business": "Bedrijfsgeheugen production homepage/portal return 200 and previously exposed internal repository assets return 404; main site script CSP remains report-only by design.",
+    "supabase": "208 public tables RLS enabled; one intentionally token-gated anon SECURITY DEFINER cron gateway remains an open, separately gated IAM migration.",
+    "candidate_status": "Recurring four-a-day main-branch workflow change remains unproven until protected merge and actual scheduled run."
+  },
+  "proof_boundary": "No 100%-hack-proof guarantee, no assertion that the unauthenticated token-gated cron gateway is fully closed, no guarantee that a privileged direct Netlify upload cannot bypass security headers without immediate monitoring detection.",
+  "customer_outcome": "Prevent previously observed security header regressions from being silently presented as a safe release. Keep youth data origin and company systems under explicit monitoring without disabling normal coaching or commercial workflows."
+}
