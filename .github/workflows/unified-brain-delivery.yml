@@ -402,6 +402,9 @@ jobs:
           import { readFileSync, writeFileSync } from 'node:fs';
           const pr=JSON.parse(process.env.PR_JSON);
           const compare=JSON.parse(readFileSync('/tmp/bg169-compare.json','utf8'));
+          if(!Number.isSafeInteger(compare.behind_by)||compare.behind_by<0) throw new Error('BG169_MAIN_ANCESTRY_UNVERIFIED');
+          if(compare.base_commit?.sha!==process.env.LANDING_MAIN_SHA) throw new Error('BG169_COMPARE_BASE_SHA_MISMATCH');
+          if(compare.behind_by===0&&(compare.merge_base_commit?.sha!==process.env.LANDING_MAIN_SHA||!['ahead','identical'].includes(compare.status))) throw new Error('BG169_COMPARE_ANCESTRY_CONTRADICTION');
           const runs=JSON.parse(readFileSync('/tmp/bg169-check-runs.json','utf8')).check_runs||[];
           const statuses=JSON.parse(readFileSync('/tmp/bg169-status.json','utf8')).statuses||[];
           const open=JSON.parse(readFileSync('/tmp/bg169-open-prs.json','utf8'));
@@ -424,7 +427,7 @@ jobs:
             candidateHeadSha:process.env.HEAD_SHA,
             validatedHeadSha:process.env.HEAD_SHA,
             currentMainSha:process.env.LANDING_MAIN_SHA,
-            behindBy:Number(compare.behind_by),
+            behindBy:compare.behind_by,
             mergeable:pr.mergeable===true,
             requiredChecks,
             openCandidates:open.map(x=>({number:x.number,body:x.body||''})),
