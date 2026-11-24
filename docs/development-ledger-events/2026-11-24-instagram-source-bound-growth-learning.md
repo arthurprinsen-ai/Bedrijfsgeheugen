@@ -1,0 +1,3 @@
+# 24 November 2026 — Instagram growth learning candidate
+
+Fingerprint powerhouse|instagram|source-bound-growth-learning|20261124-v1. Existing agents only. Source diagnosis and research: docs/changes/2026-11-24-instagram-source-bound-growth-learning.md. Regression tests/brain-instagram-frozen-growth-learning-20261124.test.mjs. Candidate connects measured/controlled caption hypothesis to exact frozen source and independent publisher verification; missing metrics remain unknown. No extra provider calls, scheduler, budget or unsolicited outreach. Protected tests, production parity, real post and independent learning proof pending; do not report live. External sources are hypotheses and platform guidance, not evidence of own growth.
