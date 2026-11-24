@@ -62,7 +62,17 @@
     "native_statement_equals_original_source_minus_trailing_semicolon_newline": true,
     "one_time_exact_original_base": "f0921c24e730d983fed3fb3f225a04fd7e1c5d72",
     "protected_security_verifier": "tools/ci/verified-original-provider-896-source-lock-reconciliation.mjs",
-    "negative_tamper_tests": "tests/brain-original-provider-896-source-parity-20261124.test.mjs"
+    "negative_tamper_tests": "tests/brain-original-provider-896-source-parity-20261124.test.mjs",
+    "pending_mira_release_deadlock": {
+      "native_applied": 896,
+      "native_version_matches": 0,
+      "native_rpc_present": false,
+      "protected_source_blob": "2408396c3423e7c93c1d1b58d65d921c21737482",
+      "native_failed_check": 138307171009,
+      "failed_required_run": 45354681217,
+      "rule": "Only exact immutable pending Mira source separated from historical applied regression population, restored before mandatory provider preview; not applied proof",
+      "execution": "CI_AND_NATIVE_PREVIEW_PENDING"
+    }
   },
   "implementation_state": "PROTECTED_SOURCE_PARITY_PR_PENDING_NOT_PRODUCTION_DELIVERY"
 }
