@@ -77,3 +77,27 @@ test('original orchestrator consumes sanitized personal guidance after channel p
  assert.match(orchestrator,/generationProvider!=='approved-frozen-source'\?personalLengthDraftReceipt/);
  assert.match(orchestrator,/PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED/);
 });
+
+
+test('exact native provider 896th migration and original four SQL blobs are canonical and immutable',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const {createHash}=await import('node:crypto');
+ const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+ const expected=[
+   ['20261124063737','original_social_loop_comparable_provider_windows','7539984b8e8929700e219842dba30d563c2e071f'],
+   ['20261124063938','original_social_analyst_variant_rotation_and_proof','36949527558ad6c0e0a85bd98b0ea7c43ece1fb5'],
+   ['20261124064216','original_personal_artifact_evidence_lossless_normalization','5c7f013f9cc253fd4837a7cf03222c6122d35c44'],
+   ['20261124064859','original_personal_observational_analyst','bdc24987007d4726b89557930064292139899851']
+ ];
+ assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
+ assert.equal(lock.applied.length,896,'provider readback at 24Nov 2026 had exactly 896 applied versions');
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,896,'one canonical version per applied migration');
+ for(let i=0;i<expected.length;i++){
+  const [version,name,blob]=expected[i];
+  assert.deepEqual(lock.applied[892+i],{version,name});
+  const path=new URL('../supabase/migrations/'+version+'_'+name+'.sql',import.meta.url);
+  const bytes=readFileSync(path);
+  const actual=createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');
+  assert.equal(actual,blob,'do not silently rewrite already-applied original SQL '+version);
+ }
+});
