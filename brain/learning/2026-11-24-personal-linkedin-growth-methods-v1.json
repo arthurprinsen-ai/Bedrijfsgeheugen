@@ -6,7 +6,7 @@
   "status": "CANDIDATE",
   "owner": "original-powerhouse-editorial-and-social-analytics",
   "root_cause": "Existing personal creative recipe emits only source-led shape without a bounded method hypothesis or comparable personal measurement selection.",
-  "fix": "Extend original recipe with one evidence-gated descriptive editorial hypothesis; preserve existing source/reviewer/publisher authority.",
+  "fix": "Extend original recipe with one evidence-gated descriptive editorial hypothesis; preserve existing source/reviewer/publisher authority. Existing bounded collector and daily diagnostics now project exact verified personal publication and provider-event evidence into the original method selector; no generic commercial CTA action for personal. No claim of editor consumption.",
   "prevention_rule": "Missing metrics, duplicate provider URN, cross-channel/cohort/window, absent independent proof, insufficient sample cannot select a measured candidate. No causal winner or publication authority.",
   "compiler": {
     "failure_class": "PERSONAL_GROWTH_METHOD_APPLICATION_GAP",
@@ -30,7 +30,17 @@
     "source_contract": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198#issuecomment-7124541382",
     "original_skill": ".agents/skills/personal-linkedin-life-only/SKILL.md",
     "original_recipe": "brain/creative/revenue-content-intelligence.mjs",
-    "observed_state": "SOURCE_CANDIDATE_ONLY; no runtime consumption or provider outcome claimed"
+    "observed_state": "SOURCE_CANDIDATE_ONLY; no runtime consumption or provider outcome claimed",
+    "native_baseline": {
+      "personal_posts_180d": 54,
+      "exact_urn": 41,
+      "explicit_method_tags": 0,
+      "age_aligned_impressions": 4,
+      "age_aligned_substantive_comments": 0,
+      "complete_observations": 0,
+      "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6144#issuecomment-7124657073"
+    },
+    "release_dependency": "PR #6139 provider-applied lock reconciliation; never bypass Required"
   },
-  "terminal_rule": "Protected release, actual original analyst evidence handoff, exact next source-backed recipe use, independent publication/measurement and learning proof."
+  "terminal_rule": "Protected release, actual original analyst evidence handoff, exact next source-backed recipe use, independent publication/measurement and learning proof. Require actual exact method tag and next editor consumption proof, not just analyst projection."
 }
