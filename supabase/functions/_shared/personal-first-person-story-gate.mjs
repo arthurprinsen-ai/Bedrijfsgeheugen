@@ -106,6 +106,11 @@ export function personalFounderDecisionSourceScopeViolations(text,evidence={}){
    && !/(?:niet geverifieerd|no claim|niet bevestigd)/iu.test(source);
  const sourceProvesOutcome=/(?:klantresultaten? (?:zijn|werd|is) geverifieerd|meetbaar bewezen resultaat|gerealiseerde besparing|snellere inzichten bewezen)/iu.test(source)
    && !/(?:niet geverifieerd|niet gemeten|geen klantresultaat)/iu.test(source);
+ // Present-tense frequency and direct observation are firsthand claims too.
+ // A founder's design preference does not verify recurring client experience.
+ const repeatedObservation=/(?:\b(?:ik|wij)\s+(?:zie[n]?|merk(?:en)?|ervaar|ervaren|hoor|horen)\s+(?:(?:dit|dat|het)\s+)?(?:wekelijks|dagelijks|regelmatig|vaak|telkens|steeds\s+weer)\b|\bwaar\s+(?:ik|wij)\s+(?:(?:vaak|regelmatig|wekelijks|dagelijks|telkens|steeds\s+weer)\s+)?tegenaan\s+(?:loop|lopen)\b|\b(?:ik|wij)\s+(?:zie[n]?|merk(?:en)?|ervaar|ervaren|hoor|horen)\s+bij\s+(?:een\s+)?klant(?:en)?\b)/iu.test(copy);
+ if(!sourceDescribesTeams&&repeatedObservation)
+   out.push('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM');
  if(!sourceDescribesTeams
    && /(?:\bin de praktijk botste\b|\b(?:ik|mijn|wij)\s+(?:zag|merkte|ervoer|hoorde)\b.{0,120}\b(?:teams|klanten?|processen)\b|\b(?:losse|andere)\s+teams die\b|\bbij een klant\b)/iu.test(copy))
    out.push('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM');
