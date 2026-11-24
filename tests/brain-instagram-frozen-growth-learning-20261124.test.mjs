@@ -43,3 +43,18 @@ test('missing comment counts or views without actual reach cannot masquerade as 
  assert.equal(evaluate({reach:120,views:160,comments:0}).proposed_test.hypothesis_id,'TEST_RELEVANT_CUSTOMER_DISCUSSION_QUESTION');
  assert.equal(evaluate({reach:120,views:160,shares:0}).proposed_test.hypothesis_id,'TEST_SHAREABLE_CONCRETE_BUSINESS_FRICTION');
 });
+
+test('duplicate native Meta IDs and immature provider snapshots cannot inflate the sample',()=>{
+ const now=new Date('2026-11-24T10:00:00Z');
+ const post=(key,media)=>({tenant_id:'bedrijfsgeheugen',platform:'instagram',channel_kind:'instagram_business',post_id:key,external_post_id:media,published_at:'2026-11-22T10:00:00Z'});
+ const a=post('a','17992107825115789'),duplicate=post('alias-a',a.external_post_id),b=post('b','18060985460558066');
+ const snap=(p,at='2026-11-24T09:00:00Z')=>({tenant_id:'bedrijfsgeheugen',post_id:p.post_id,source:'composio-instagram',source_event_id:'composio:instagram:'+p.external_post_id+':slot',data_quality:'OBSERVED',observed_at:at,metrics:{reach:140,views:180,shares:0,comments:0}});
+ const assess=(posts,snapshots)=>selectMeasuredNextPostTest({posts,snapshots,now,channel:'instagram_company'});
+ const repeated=assess([a,duplicate],[snap(a),snap(duplicate)]);
+ assert.equal(repeated.state,'WAIT_FOR_COMPARABLE_PROVIDER_METRICS');assert.equal(repeated.verified_comparable_posts,1);
+ const early=assess([a,b],[snap(a),snap(b,'2026-11-22T12:00:00Z')]);
+ assert.equal(early.state,'WAIT_FOR_COMPARABLE_PROVIDER_METRICS');assert.equal(early.verified_comparable_posts,1);
+ const distinct=assess([a,duplicate,b],[snap(a),snap(duplicate),snap(b)]);
+ assert.equal(distinct.verified_comparable_posts,2);assert.equal(distinct.cumulative_verified_exposure,280);
+ assert.equal(distinct.proposed_test.hypothesis_id,'TEST_SHAREABLE_CONCRETE_BUSINESS_FRICTION');
+});
