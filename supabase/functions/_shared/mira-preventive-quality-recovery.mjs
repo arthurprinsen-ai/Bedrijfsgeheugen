@@ -15,6 +15,12 @@ export const MIRA_PROVIDER_OUTPUT_PRESPEND_CONTRACT='mira-native-provider-output
 // NOT spendable again until a new candidate is justified by new evidence.
 export const MIRA_FACE_GATE_MIN=0.94;
 export const MIRA_MODEL_FACE_EVIDENCE=Object.freeze([
+  // Native OpenArt result verified 24 Nov; the terminal frame failed the
+  // original independent face gate. Format compliance is not identity proof.
+  Object.freeze({model:'wan3-0',modes:['element2video'],best_face_score:0.920,
+    rejected_histories:['YIsid7ndXoQRyMBHsGvq'],observed:['2026-11-24'],
+    source:'canonical media job b1ea15d9-7c9b-4667-8ac4-f9cc43147e4b; independent end-frame rejection',
+    observed_frame:'end',native_format:'1080x1920/8s/30fps/silent',quoted_credits:640}),
   Object.freeze({model:'veo3-1',modes:['image2video','element2video'],best_face_score:0.9,
     rejected_histories:['6GYKFxqd9aif8WacnMnL','B5uX1JhoC8hl0kiFTrnl'],
     observed:['2026-11-03','2026-11-07'],source:'brain_failure_occurrences VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'})
