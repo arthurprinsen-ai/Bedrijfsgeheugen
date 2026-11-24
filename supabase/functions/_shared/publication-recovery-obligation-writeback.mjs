@@ -89,13 +89,13 @@ export function planOriginalPublicationHandoffs(recovery,obligations){
     if(!ALLOWED_CHANNEL.has(channel)||unique.has(channel))continue;
     if(item?.phase!=='PENDING'||item?.status!=='AWAITING_DUE_TIME')continue;
     const scheduledFor=clean(item?.scheduledFor);
-    if(!/^20\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/.test(scheduledFor)
+    if(!/^20\d{2}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/.test(scheduledFor)
       ||!Number.isFinite(Date.parse(scheduledFor)))continue;
     const matches=obligations.filter(row=>row?.channel===channel);
     if(matches.length!==1)continue;
     const o=matches[0],previous=clean(o.next_action);
     if(o.status!=='PLANNED'||clean(o.external_id)
-      ||!/^HERSTEL VEREIST \\[PUBLICATION_SCHEDULE_MISSING\\]/.test(previous))continue;
+      ||!/^HERSTEL VEREIST \[PUBLICATION_SCHEDULE_MISSING\]/.test(previous))continue;
     const owner=clean(item.owner);
     if(!/^[a-zA-Z0-9 /._-]{5,120}$/.test(owner))continue;
     const nextAction='ORIGINAL_CHANNEL_SCHEDULE_CONFIRMED ['+scheduledFor+'] · '
