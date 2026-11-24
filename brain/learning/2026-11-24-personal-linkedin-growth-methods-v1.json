@@ -1,0 +1,80 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|linkedin-personal|growth-methods-selection|20261124-v1",
+  "status": "CANDIDATE",
+  "owner": "original-powerhouse-editorial-and-social-analytics",
+  "root_cause": "Existing personal creative recipe emits only source-led shape without a bounded method hypothesis or comparable personal measurement selection.",
+  "fix": "Extend original recipe with one evidence-gated descriptive editorial hypothesis; preserve existing source/reviewer/publisher authority. Existing bounded collector and daily diagnostics now project exact verified personal publication and provider-event evidence into the original method selector; no generic commercial CTA action for personal. No claim of editor consumption. Add nine source-led personal method candidates and a repeated-method challenger plus separate company format and family rotation with explicit source eligibility and verified recent history. Preserve original recipes and company/personal boundaries. Mandatory ten KPI coverage per channel in original diagnostics, strict observed post source and owner routing for missing period data. Explicitly bridge only original bedrijfsgeheugen LinkedIn company registry to canonical company obligation by exact provider ID and live_proven_at; preserve personal isolation. Native readback 41/41 vs 0/41 incorrect same-tenant match. Explicit eight pillars per channel, eight format candidates, bounded verified history, source eligibility and planned 20% exploration in existing recipe and diagnostics; no inferred permission.",
+  "prevention_rule": "Missing metrics, duplicate provider URN, cross-channel/cohort/window, absent independent proof, insufficient sample cannot select a measured candidate. No causal winner or publication authority. No rotation of unapproved media, no causal result or applied-learning claim from a recommendation.",
+  "compiler": {
+    "failure_class": "PERSONAL_GROWTH_METHOD_APPLICATION_GAP",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-growth-methods-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-growth-methods-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-growth-methods-20261124.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_contract": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198#issuecomment-7124541382",
+    "original_skill": ".agents/skills/personal-linkedin-life-only/SKILL.md",
+    "original_recipe": "brain/creative/revenue-content-intelligence.mjs",
+    "observed_state": "SOURCE_CANDIDATE_ONLY; no runtime consumption or provider outcome claimed",
+    "native_baseline": {
+      "personal_posts_180d": 54,
+      "exact_urn": 41,
+      "explicit_method_tags": 0,
+      "age_aligned_impressions": 4,
+      "age_aligned_substantive_comments": 0,
+      "complete_observations": 0,
+      "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6144#issuecomment-7124657073"
+    },
+    "release_dependency": "PR #6145 canonical provider parity and pending Mira native migration; exact protected CI required",
+    "content_marketing_research": [
+      "https://business.linkedin.com/advertise/linkedin-pages/best-practices",
+      "https://www.linkedin.com/business/marketing/blog/social-media-marketing/how-to-grow-your-organic-following-on-linkedin",
+      "https://contentmarketinginstitute.com/content-marketing-strategy/4-part-guide-to-crafting-a-winning-content-plan",
+      "https://contentmarketinginstitute.com/content-distribution-promotion/how-to-measure-content-marketing-the-updated-essential-guide"
+    ],
+    "kpi_user_instruction": "24 November 2026 user screenshot: 5 daily groups, 3 weekly, 1 monthly, 1 per experiment",
+    "original_company_publication_owner": {
+      "observed_at": "2026-11-24",
+      "project": "adhjwmvyoixzjtmiroln",
+      "registry_tenant": "bedrijfsgeheugen",
+      "obligation_tenant": "canonical",
+      "channel": "linkedin_company",
+      "registered_posts_180d": 41,
+      "exact_original_proof": 41,
+      "incorrect_same_tenant_matches": 0,
+      "personal_registry_posts": 54,
+      "personal_exact_original_proof": 20
+    },
+    "user_editorial_strategy": {
+      "personal_pillars": 8,
+      "company_pillars": 8,
+      "format_catalog": 8,
+      "exploration_target": 0.2,
+      "max_recent_verified_posts": 6,
+      "measurement_hours": [
+        24,
+        48,
+        72,
+        168,
+        720
+      ],
+      "state": "CANDIDATE_NOT_RUNTIME_PROVEN"
+    }
+  },
+  "terminal_rule": "Protected release, actual original analyst evidence handoff, exact next source-backed recipe use, independent publication/measurement and learning proof. Require actual exact method tag and next editor consumption proof, not just analyst projection. All KPI periods require original owner receipts; coverage is not value. Require actual pillar/format source eligibility and exact next artifact receipt."
+}
