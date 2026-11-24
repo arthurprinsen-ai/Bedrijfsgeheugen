@@ -1,0 +1,7 @@
+# Original analyst-to-build work order — 24 November 2026
+
+The original code selector only recognized three concrete components; verified learning-followup decisions never became source-scoped evaluation/build work orders, although original continuity reported the baseline/effect duty. Three exact historical source fingerprints can be safely examined offline with existing portal and blog regressions.
+
+The same original selector admits only three exact verified historical learning fingerprints, with a matching native original source revision, SHA, decision, rollback and quality receipt. Existing portal CSS and approved-blog implementation files are the only new permitted paths. The existing sandbox model must reproduce a current defect and compare the baseline with a minimal challenger; otherwise produce no source change. No live publisher, external sends, schema, auth or workflow changes. Preserve previous protected PR/no-change evidence through continuity. One work order per original run; existing protected review and no-change dedupe remain mandatory. The current quality receipt is NOT a verified effect.
+
+Regression: tests/brain-innovation-original-code-delivery-20261115.test.mjs, tests/brain-innovation-delivery-continuity-20261117.test.mjs. Rollback: protected revert. Acceptance: exact-head checks, merge, original code recovery, independent effect and learning. Parent #4198. No terminal success claimed.
