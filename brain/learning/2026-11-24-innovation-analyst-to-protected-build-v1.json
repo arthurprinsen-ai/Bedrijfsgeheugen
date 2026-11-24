@@ -14,7 +14,8 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
-      "tests/brain-innovation-delivery-continuity-20261117.test.mjs"
+      "tests/brain-innovation-delivery-continuity-20261117.test.mjs",
+      "tests/brain-all-agent-innovation-duty-20261030.test.mjs"
     ],
     "shadow": [
       "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
@@ -41,6 +42,12 @@
         "https://dora.dev/capabilities/continuous-delivery/"
       ],
       "status": "RESEARCH_AND_CODE_CANDIDATE_NOT_LIVE"
+    },
+    "agent_kpi_contract": {
+      "expected_roster": 14,
+      "actual_measured_coverage": null,
+      "version": "original-agent-kpi-20261124-v1",
+      "state": "PROTECTED_CANDIDATE_ONLY"
     }
   },
   "prevention": {
@@ -53,7 +60,9 @@
     "no_new_scheduler": true,
     "method_plan_version": "innovation-methods-20261124-v1",
     "method_evidence_required": true,
-    "independent_effect_still_required": true
+    "independent_effect_still_required": true,
+    "agent_kpi_definition_coverage": true,
+    "assignment_not_measured_kpi": true
   },
   "release_state": "PROTECTED_SOURCE_CANDIDATE_PENDING",
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
