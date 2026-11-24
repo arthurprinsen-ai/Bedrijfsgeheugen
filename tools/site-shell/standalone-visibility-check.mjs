@@ -103,14 +103,14 @@ async function waitForFontsBounded(page) {
   }, fontReadyTimeoutMs);
 }
 
-async function readVisibleState(page, url) {
+async function readVisibleState(page, url, navigationResponse) {
   // Client-side canonical locale navigation can replace the document after DOMContentLoaded.
   // Retry the full route load once; never accept a missing/partial visibility state.
   for (let attempt = 1; attempt <= 2; attempt++) {
     try {
       await waitForFontsBounded(page);
       await sleep(150);
-      return await page.evaluate(() => {
+      const state = await page.evaluate(() => {
                 const inspect = selector => {
                   const el = document.querySelector(selector);
                   if (!el) return { present: false };
@@ -144,8 +144,8 @@ async function readVisibleState(page, url) {
                     title:document.title||'',
                     description:document.querySelector('meta[name="description"]')?.content||'',
                     canonical:document.querySelector('link[rel="canonical"]')?.href||'',
-                    robots:document.querySelector('meta[name="robots"]')?.content||'',
-                    metaRobots:document.querySelector('meta[name="robots"]')?.content||'',
+                    robots:Array.from(document.querySelectorAll('meta[name]')).filter(n=>['robots','googlebot','bingbot'].includes(n.name.toLowerCase())).map(n=>n.content||'').join(', '),
+                    metaRobots:Array.from(document.querySelectorAll('meta[name]')).filter(n=>['robots','googlebot','bingbot'].includes(n.name.toLowerCase())).map(n=>n.content||'').join(', '),
                     lang:document.documentElement.lang||'',
                     htmlLang:document.documentElement.lang||'',
                     hasViewport:!!document.querySelector('meta[name="viewport"]'),
@@ -168,10 +168,13 @@ async function readVisibleState(page, url) {
                   layoutShifts: Array.isArray(window.__bgLayoutShifts) ? window.__bgLayoutShifts.slice(0, 12) : [],
                 };
       });
+      const headers = await navigationResponse.headers();
+      state.seo.xRobotsHeader = headers['x-robots-tag'] || '';
+      return state;
     } catch (error) {
       const navigationRace = /Execution context was destroyed|Cannot find context with specified id/i.test(String(error?.message || error));
       if (!navigationRace || attempt === 2) throw error;
-      await openReachable(page, url);
+      navigationResponse = await openReachable(page, url);
     }
   }
 }
@@ -292,8 +295,8 @@ try {
             assertBudget(route, viewport.name);
             const url = new URL(route, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).href;
             try {
-              await openReachable(page, url);
-              const state = await readVisibleState(page, url);
+              const navigationResponse = await openReachable(page, url);
+              const state = await readVisibleState(page, url, navigationResponse);
               for (const [name, item] of Object.entries({ header: state.header, main: state.main, h1: state.h1 })) {
                 if (!item.present || item.width < 1 || item.height < 1 || item.display === 'none' || item.visibility === 'hidden' || item.opacity <= 0) {
                   failures.push(`${route} ${viewport.name}: ${name} is not visibly rendered`);

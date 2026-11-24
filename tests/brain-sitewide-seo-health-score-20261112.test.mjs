@@ -98,3 +98,35 @@ test('method coverage never implies unobserved provider or user measurements',()
   assert.equal(report.method_coverage.find(x=>x.id===id).status,'NOT_MEASURED');
  assert.ok(report.method_coverage.every(x=>x.source.startsWith('https://')));
 });
+
+
+test('browser snapshot observes later restrictive robots meta and navigation header',()=>{
+ const browser=readFileSync('tools/site-shell/standalone-visibility-check.mjs','utf8');
+ const expression=browser.match(/metaRobots:(.*),\n/)[1];
+ const nodes=[{name:'robots',content:'index, follow'},{name:'ROBOTS',content:'noindex, follow'},{name:'description',content:'none'}];
+ const document={querySelectorAll:()=>nodes};
+ const collected=Function('document','return ('+expression+')')(document);
+ assert.equal(collected,'index, follow, noindex, follow');
+ const result=auditSeoPage({route:'/',snapshot:{...sample,metaRobots:collected},sitemapRoutes});
+ assert.ok(result.issues.some(i=>i.code==='INDEXABILITY'&&i.severity==='ERROR'));
+ nodes.splice(1,1);
+ assert.equal(Function('document','return ('+expression+')')(document),'index, follow');
+ nodes.push({name:'Googlebot',content:'noindex'});
+ assert.ok(auditSeoPage({route:'/',snapshot:{...sample,metaRobots:Function('document','return ('+expression+')')(document)},sitemapRoutes}).issues.some(i=>i.code==='INDEXABILITY'));
+ assert.ok(auditSeoPage({route:'/',snapshot:{...sample,xRobotsHeader:'googlebot: noindex'},sitemapRoutes}).issues.some(i=>i.code==='INDEXABILITY'));
+ assert.match(browser,/state\.seo\.xRobotsHeader = headers\['x-robots-tag'\]/);
+ assert.match(browser,/readVisibleState\(page, url, navigationResponse\)/);
+});
+
+
+test('final production sitemap generator excludes any restrictive robots directive, not just first meta',()=>{
+ const generator=readFileSync('tools/genereer-sitemap.mjs','utf8');
+ const implementation=generator.slice(generator.indexOf('function noindex(html)'),generator.indexOf('function canonical(html)'));
+ const noindex=Function(implementation+'; return noindex;')();
+ assert.equal(noindex('<meta name="robots" content="index, follow"><meta name="robots" content="noindex, follow">'),true);
+ assert.equal(noindex('<meta content="none" name="ROBOTS">'),true);
+ assert.equal(noindex('<meta name="googlebot" content="noindex">'),true);
+ assert.equal(noindex('<meta name="robots" content="index, follow"><meta name="description" content="noindex">'),false);
+ assert.equal(noindex('<meta name="robots" content="index, follow">'),false);
+ assert.match(generator,/if \(!html\.includes\('<body'\) \|\| noindex\(html\)\) continue;/);
+});

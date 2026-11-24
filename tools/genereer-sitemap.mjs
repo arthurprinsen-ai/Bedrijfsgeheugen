@@ -58,9 +58,15 @@ export function maakSitemap(urls, alternates = new Map()) {
 }
 
 function noindex(html) {
-  const tag = String(html).match(/<meta\b[^>]*name=(?:"robots"|'robots')[^>]*>/i)?.[0] || '';
-  const content = tag.match(/\bcontent=(?:"([^"]*)"|'([^']*)')/i);
-  return /(?:^|[,\s])noindex(?:[,\s]|$)/i.test(content?.[1] ?? content?.[2] ?? '');
+  const readAttr = (tag, name) => {
+    const match = tag.match(new RegExp('(?:^|\\s)' + name + '\\s*=\\s*(?:"([^"]*)"|\'([^\']*)\'|([^\\s>]+))', 'i'));
+    return match?.[1] ?? match?.[2] ?? match?.[3] ?? '';
+  };
+  for (const [tag] of String(html).matchAll(/<meta\b(?:[^>"']|"[^"]*"|'[^']*')*>/gi)) {
+    if (!['robots','googlebot','bingbot'].includes(readAttr(tag,'name').toLowerCase())) continue;
+    if (/(?:^|[,\s])(noindex|none)(?:[,\s]|$)/i.test(readAttr(tag,'content'))) return true;
+  }
+  return false;
 }
 
 function canonical(html) {
