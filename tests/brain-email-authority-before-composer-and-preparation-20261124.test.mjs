@@ -76,3 +76,24 @@ test('original source-trigger retains send_forbidden on terminal unauthorized ac
  assert.match(guard,/GRANT EXECUTE ON FUNCTION public\.powerhouse_require_source_for_direct_outreach_v1\(\) TO service_role/);
  assert.match(guard,/REVOKE ALL ON FUNCTION public\.powerhouse_require_source_for_direct_outreach_v1\(\) FROM PUBLIC,anon,authenticated/);
 });
+
+
+test('one already-scheduled original email watchdog refreshes scoped learning daily and never retries unauthorized waits',()=>{
+ const marker='CREATE OR REPLACE FUNCTION public.powerhouse_email_execution_watchdog_v1';
+ const n=sql.indexOf(marker);
+ assert.ok(n>0,'original watchdog upgrade must be staged through protected source');
+ const watchdog=sql.slice(n);
+ assert.match(watchdog,/powerhouse_refresh_email_learning_stats\(\)/);
+ assert.match(watchdog,/FRESH_ALREADY_RECOMPUTED/);
+ assert.match(watchdog,/REFRESHED_ORIGINAL/);
+ assert.match(watchdog,/LEARNING_REFRESH_FAILED/);
+ assert.match(watchdog,/v_learning_due/);
+ assert.match(watchdog,/Europe\/Amsterdam/);
+ assert.match(watchdog,/email_learning_last_recomputed_at/);
+ assert.match(watchdog,/authority_quarantine,reason/);
+ assert.match(watchdog,/RECIPIENT_AUTHORITY_UNVERIFIED/);
+ assert.match(watchdog,/send_forbidden/);
+ assert.match(watchdog,/v_email_learning_refresh_state not like 'LEARNING_REFRESH_FAILED:%'/);
+ assert.match(watchdog,/GRANT EXECUTE ON FUNCTION public\.powerhouse_email_execution_watchdog_v1\(timestamptz\) TO service_role/);
+ assert.doesNotMatch(watchdog,/cron\.schedule|CREATE\s+TABLE|GMAIL_SEND_EMAIL|send_message/i);
+});
