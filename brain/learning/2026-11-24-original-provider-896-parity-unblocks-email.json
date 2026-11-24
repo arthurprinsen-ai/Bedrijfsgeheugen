@@ -1,0 +1,68 @@
+{
+  "fingerprint": "powerhouse|delivery|native-provider-896-source-lock-reconciliation|20261124",
+  "event_date": "2026-11-24",
+  "owner": "existing-powerhouse-reliability",
+  "user_instruction": "Borg alle agents, laat ze werken en zet de oorspronkelijke e-mailketen live met echte KPI",
+  "compiler": {
+    "failure_class": "NATIVE_PROVIDER_VS_GITHUB_SOURCE_HISTORY_MISMATCH",
+    "scope": "RELEASE_GOVERNANCE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs"
+    ]
+  },
+  "root_cause": "Four native provider-applied social SQL versions 893–896 are still absent from protected main migration files and source lock, blocking every other original agent's required preflight. Original social PR6136 contains their source, but main has concurrent social code changes; direct cherry-pick of entire PR would overwrite newer code.",
+  "correction": "Restore only four original identical SQL blobs and append exactly the four native applied versions to the existing migration-history.lock.json. No provider DDL rerun, no new worker. Future protected social PR6136 may consume already merged SQL without duplicating it. The original protected CI admission now has a source-hash/statement-hash/immutable-base-pinned one-time recovery for only these already-applied versions; normal unapplied migration gate remains unchanged.",
+  "prevention_rule": "Source parity must compare full ordered original provider history; never rewrite historical SQL, reset provider or bypass protected CI; keep original email sender authorization and provider readback independent.",
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 896,
+    "prior_source_count": 892,
+    "original_owner_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6136",
+    "email_dependency": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6141",
+    "source_sha": [
+      [
+        "20261124063737",
+        "original_social_loop_comparable_provider_windows",
+        "7539984b8e8929700e219842dba30d563c2e071f"
+      ],
+      [
+        "20261124063938",
+        "original_social_analyst_variant_rotation_and_proof",
+        "36949527558ad6c0e0a85bd98b0ea7c43ece1fb5"
+      ],
+      [
+        "20261124064216",
+        "original_personal_artifact_evidence_lossless_normalization",
+        "5c7f013f9cc253fd4837a7cf03222c6122d35c44"
+      ],
+      [
+        "20261124064859",
+        "original_personal_observational_analyst",
+        "bdc24987007d4726b89557930064292139899851"
+      ]
+    ],
+    "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "provider_native_statement_md5": [
+      "e6880cd1a3b70097ae2b477bebc2cfd6",
+      "6855074f8eb8c2723e21cc931a5e1050",
+      "efd6420d1a0a6cfc6e601cb3a91ff012",
+      "000e953a8df582f4aed591a458000fe3"
+    ],
+    "native_statement_equals_original_source_minus_trailing_semicolon_newline": true,
+    "one_time_exact_original_base": "f0921c24e730d983fed3fb3f225a04fd7e1c5d72",
+    "protected_security_verifier": "tools/ci/verified-original-provider-896-source-lock-reconciliation.mjs",
+    "negative_tamper_tests": "tests/brain-original-provider-896-source-parity-20261124.test.mjs"
+  },
+  "implementation_state": "PROTECTED_SOURCE_PARITY_PR_PENDING_NOT_PRODUCTION_DELIVERY"
+}

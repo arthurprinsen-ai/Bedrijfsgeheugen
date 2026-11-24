@@ -10,6 +10,7 @@ import {verifyNativeProviderHealthVersionReconciliation, EXACT_BASE_SHA, PROPOSA
 import {verifyAlreadyApplied853OutreachMirror,SOURCE_853_BASE,SOURCE_853_ORIGINAL,SOURCE_853_MIRROR} from './verified-provider-853-original-outreach-source-mirror.mjs';
 import {verifyAlreadyAppliedProvider888SourceLockRecovery,EXACT_PROVIDER_888_BASE,ORIGINAL_SECURITY_SQL_PATH,ORIGINAL_FOUNDER_SQL_PATH} from './verified-provider-888-personal-security-history-reconciliation.mjs';
 import {verifyOriginalAfas890VersionReconciliation,EXACT_AFAS_BASE_SHA,AFAS_SOURCE_PROPOSAL,AFAS_NATIVE_SOURCE} from './verified-original-afas-890-version-reconciliation.mjs';
+import {verifyOriginalProvider896SourceLockReconciliation,EXACT_ORIGINAL_896_BASE,ORIGINAL_896_FILES} from './verified-original-provider-896-source-lock-reconciliation.mjs';
 
 const TESTS=process.argv.slice(2);
 assert.ok(TESTS.length>=5 && TESTS.every(p=>/^tests\/[a-z0-9._/-]+\.test\.mjs$/.test(p)), 'Pass the existing migration-lock test suite explicitly');
@@ -26,6 +27,7 @@ let nativeProviderHealthVersionReconciliation=null;
 let originalOutreach853Reconciliation=null;
 let originalProvider888Reconciliation=null;
 let originalAfas890Reconciliation=null;
+let originalProvider896Reconciliation=null;
 
 if (/^[a-f0-9]{40}$/.test(base)) {
   // Fail closed when the immutable review base is unavailable; checkout must fetch full history.
@@ -119,13 +121,32 @@ if (/^[a-f0-9]{40}$/.test(base)) {
       if(proof.ok)originalAfas890Reconciliation=proof;
     }
   }
-  if(!nativeProviderHealthVersionReconciliation){
+  // One strictly pinned original native provider 896 reconciliation:
+  // the four already-applied 24Nov SQL versions and their original Git blobs
+  // are independently attested (exact source .slice(0,-2) provider MD5).
+  // This never permits a generic lock change or an unapplied SQL candidate.
+  if(base===EXACT_ORIGINAL_896_BASE && changedMigrations.length===4){
+    const baseLockJSON=spawnSync('git',['show',base+':supabase/migration-history.lock.json'],
+      {cwd:root,encoding:'utf8',maxBuffer:5e6});
+    if(baseLockJSON.status===0){
+      const sourceSQL=Object.fromEntries(ORIGINAL_896_FILES.map(x=>[
+        x.file,readFileSync(path.join(root,x.file),'utf8')
+      ]));
+      const proof=verifyOriginalProvider896SourceLockReconciliation({
+        baseSha:base,baseLock:JSON.parse(baseLockJSON.stdout),
+        headLock:JSON.parse(readFileSync(lockPath,'utf8')),
+        changedMigrations,sourceSQL
+      });
+      if(proof.ok)originalProvider896Reconciliation=proof;
+    }
+  }
+  if(!nativeProviderHealthVersionReconciliation && !originalProvider896Reconciliation){
     if(!originalAfas890Reconciliation)
       if(!originalOutreach853Reconciliation)
         if(!originalProvider888Reconciliation)
           assert.deepEqual(changedMigrations.filter(x=>x.status!=='A'),[], 'Applied historical migrations must never be modified or deleted in an ordinary PR');
   }
-  proposed=(nativeProviderHealthVersionReconciliation||originalOutreach853Reconciliation||originalProvider888Reconciliation||originalAfas890Reconciliation)
+  proposed=(nativeProviderHealthVersionReconciliation||originalOutreach853Reconciliation||originalProvider888Reconciliation||originalAfas890Reconciliation||originalProvider896Reconciliation)
     ?[]:changedMigrations.map(x=>x.file);
   if (proposed.length) {
     assert.ok(event==='pull_request' || event==='merge_group' || (event==='workflow_dispatch' && /^\d+$/.test(pr)),
@@ -200,11 +221,13 @@ try {
 for (const filename of proposed) assert.ok(readFileSync(path.join(root,filename),'utf8').trim(),'Proposed SQL lost after test: '+filename);
 console.log(JSON.stringify({
   contract:'supabase-protected-pr-migration-admission-v1',
-  result:originalAfas890Reconciliation?'EXACT_890_ORIGINAL_AFAS_PROVIDER_APPLIED_SOURCE_RECONCILIATION_PREVIEW_REQUIRED':
+  result:originalProvider896Reconciliation?'EXACT_ORIGINAL_NATIVE_896_SOURCE_LOCK_RECONCILIATION_PREVIEW_REQUIRED':
+    originalAfas890Reconciliation?'EXACT_890_ORIGINAL_AFAS_PROVIDER_APPLIED_SOURCE_RECONCILIATION_PREVIEW_REQUIRED':
     originalProvider888Reconciliation?'EXACT_PROVIDER_APPLIED_888_SOURCE_LOCK_RECOVERY_PREVIEW_REQUIRED':
     nativeProviderHealthVersionReconciliation?'EXACT_PROVIDER_APPLIED_824_NATIVE_VERSION_SOURCE_PARITY_PREVIEW_REQUIRED':
     alreadyAppliedHistoryReconciliation?'EXACT_PROVIDER_APPLIED_818_RECONCILIATION_PREVIEW_REQUIRED':
     proposed.length?'PROPOSED_SOURCE_ONLY_PREVIEW_REQUIRED':'EXACT_PROVIDER_BASELINE_PARITY',
+  original_896_source_lock_reconciliation:originalProvider896Reconciliation?.state||null,
   original_888_source_lock_reconciliation:originalProvider888Reconciliation?.state||null,
   original_afas_890_source_version_reconciliation:originalAfas890Reconciliation?.state||null,
   native_provider_version_reconciliation:nativeProviderHealthVersionReconciliation?.state||null,
