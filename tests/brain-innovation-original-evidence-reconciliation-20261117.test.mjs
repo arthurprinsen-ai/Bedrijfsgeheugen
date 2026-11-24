@@ -207,3 +207,27 @@ test('one original daily engineering job owns nine-quality reconciliation and ha
   assert.equal((yaml.match(/^\s+- cron:/gm)||[]).length,1,'only original one daily schedule');
   assert.equal((yaml.match(/^  original-innovation-code-candidate:/gm)||[]).length,1,'no second code executor');
 });
+
+
+test('one exact guard_required source stays OPEN while other original candidates reconcile',()=>{
+  const f=fixture(),g=fixture();
+  const id='2a2b3c4d-abcd-4abc-8abc-123456789012';
+  const fingerprint='powerhouse-commercial-email-human-intent-leak-20261121-v1';
+  g.c.candidate_id=id;g.c.component_id='powerhouse-commercial-message-composer';
+  g.c.source_key='quality-learning-v1:'+fingerprint;g.c.baseline.quality_fingerprint=fingerprint;
+  g.ob.business_entity=id;g.ob.change_id=g.c.source_key;
+  g.op.id='bfcc8bca-10c0-4e70-b19f-d85f551141a0';g.op.change_id=g.c.source_key;
+  g.op.correlation_id='innovation-delivery:'+id;g.op.idempotency_key=g.op.correlation_id+':'+sourceSha.slice(0,16);
+  g.quality[0].fingerprint=fingerprint;g.quality[0].capability_id=g.c.component_id;g.quality[0].status='guard_required';
+  f.snapshot.candidates.push(g.c);f.snapshot.obligations.push(g.ob);f.snapshot.intakes.push(g.op);
+  f.report.counts={candidates:2,obligations:2,intakes:2};f.quality.push(g.quality[0]);
+  const p=plan(f);assert.equal(p.work.length,1);assert.equal(p.work[0].receipt.candidate_id,candidateId);
+  assert.equal(p.qualityBlocked.length,1);assert.equal(p.qualityBlocked[0].candidate_id,id);
+  assert.equal(p.qualityBlocked[0].terminal_success,false);assert.equal(p.qualityBlocked[0].consumer_ack_verified,false);
+  assert.equal(g.op.status,'PLANNED');assert.equal(g.ob.state,'OPEN');
+  g.quality[0].status='guarded';const next=plan(f);assert.equal(next.work.length,2);
+  assert.equal(next.qualityBlocked.length,0);
+  assert.equal(next.work[1].receipt.next_action,'ORIGINAL_COMMERCIAL_COMPOSER_REGRESSION_AND_EXACT_PRODUCTION_RECHECK');
+  g.quality[0].status='guard_required';g.quality[0].capability_id='wrong';
+  assert.throws(()=>plan(f),/QUALITY_SOURCE_NOT_VERIFIABLE/);
+});
