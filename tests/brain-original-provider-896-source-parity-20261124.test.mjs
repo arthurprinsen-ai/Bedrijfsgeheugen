@@ -5,7 +5,19 @@ import {createHash} from 'node:crypto';
 import {spawnSync} from 'node:child_process';
 import {verifyOriginalProvider896SourceLockReconciliation,EXACT_ORIGINAL_896_BASE,ORIGINAL_896_FILES,ORIGINAL_896_PENDING_MIRA}
  from '../tools/ci/verified-original-provider-896-source-lock-reconciliation.mjs';
-const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+const currentLock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+// Historical replay covers the exact original 896 population; the current
+// production ledger has independently acquired the formerly pending Mira version.
+const lock={...currentLock,applied:currentLock.applied.filter(x=>x.version<='20261124064859'&&x.version!=='20261124063700')};
+test('original pending Mira source is now independently applied and retains exact immutable bytes',()=>{
+ assert.equal(currentLock.project_ref,'adhjwmvyoixzjtmiroln');
+ assert.ok(currentLock.applied.length>=897);
+ assert.equal(new Set(currentLock.applied.map(x=>x.version)).size,currentLock.applied.length);
+ assert.deepEqual(currentLock.applied.filter(x=>x.version==='20261124063700'),[{version:'20261124063700',name:'mira_original_exact_job_claim_v1'}]);
+ const b=readFileSync(new URL('../'+ORIGINAL_896_PENDING_MIRA.file,import.meta.url));
+ assert.equal(createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex'),'2408396c3423e7c93c1d1b58d65d921c21737482');
+ assert.equal(createHash('md5').update(b).digest('hex'),'5845ceab54cf74d0d366578f1fd7cdb7');
+});
 const expected=[["20261124063737","original_social_loop_comparable_provider_windows","7539984b8e8929700e219842dba30d563c2e071f"],["20261124063938","original_social_analyst_variant_rotation_and_proof","36949527558ad6c0e0a85bd98b0ea7c43ece1fb5"],["20261124064216","original_personal_artifact_evidence_lossless_normalization","5c7f013f9cc253fd4837a7cf03222c6122d35c44"],["20261124064859","original_personal_observational_analyst","bdc24987007d4726b89557930064292139899851"]];
 test('original production history is exactly 896 and prior 892 remain immutable',()=>{
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
