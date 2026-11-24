@@ -90,3 +90,16 @@ test('recent verified post coverage is not a daily total, unique audience, subst
  assert.equal(diagnoseLinkedInKpiCoverage({state:'READ_ONLY_PROVIDER_OBSERVED',social:[{...p,source_event_id:null}]},at)[0].verified_recent_post_snapshots,0);
  assert.ok(queries.social.includes('r.source_event_id'));
 });
+
+
+test('company analytics registry uses only the original canonical company publication obligation and exact provider ID',()=>{
+ const clause=queries.social.match(/case when r\.tenant_id='bedrijfsgeheugen'[^\n]+?else false end company_publication_verified/)?.[0];
+ assert.ok(clause);
+ assert.ok(clause.includes("r.platform='linkedin'"));
+ assert.ok(clause.includes("r.channel_kind='linkedin_company'"));
+ assert.ok(clause.includes("o.tenant_id='canonical'"));
+ assert.ok(clause.includes("o.channel='linkedin_company'"));
+ assert.ok(clause.includes('o.external_id=r.external_post_id'));
+ assert.ok(clause.includes('o.live_proven_at is not null'));
+ assert.ok(!clause.includes('o.tenant_id=r.tenant_id'));
+});
