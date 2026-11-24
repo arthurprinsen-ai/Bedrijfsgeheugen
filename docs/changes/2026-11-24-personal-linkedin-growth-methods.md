@@ -1,0 +1,5 @@
+# Personal LinkedIn growth method selection — 24 November 2026
+
+The original creative recipe now selects one safe hypothesis from concrete detail, source-led structure and natural reflection; all existing identity and editorial controls are untouched. Comparison requires real, comparable 48h personal post observations, exact unique provider URNs, positive observed impressions and nonnegative observed substantive comments. Minimum five unique posts per method, at least two methods, mean per-post comments per impression and >0.001 descriptive difference. No causal proof; no publication authority. Insufficient observations stay NOT_MEASURED. The broader method library lives in the existing skill. The original analyst must supply tenant-scoped verified data and independently demonstrate downstream consumption; this candidate alone does not connect a new provider or prove production use.
+
+Original incident and mandate: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198#issuecomment-7124541382 . Regression: tests/brain-personal-growth-methods-20261124.test.mjs. No new writer, provider send, cron, access scope or spending.
