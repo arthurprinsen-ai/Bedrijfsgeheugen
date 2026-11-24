@@ -69,3 +69,13 @@ test('All existing producer, independent reviewer and editorial route share the 
  assert.match(reviewer,/FOUNDER_PERSPECTIVE_TRUTH_REQUIRED/);
  assert.match(editor,/isVerifiedPersonalFounderPerspective/);
 });
+
+test('24 November live false-negative: recurring present-tense experience is not a verified founder design preference',()=>{
+ const actual='Klanten willen sneller automatiseren, maar ik zie wekelijks dat onduidelijke data, losse applicatiekoppelingen en twijfels over datasoevereiniteit leiden tot dure fouten. Dit is het concrete dilemma waar ik vaak tegenaan loop: het verlangen naar onmiddellijke efficiëntie versus het risico op verlies van controle en juridische onzekerheid.';
+ for(const text of [actual,'Ik zie wekelijks dat onduidelijke data tot dure fouten leiden.','Dit is het concrete dilemma waar ik vaak tegenaan loop.','Ik merk regelmatig dat klanten problemen hebben.','Ik zie bij een klant hoe processen misgaan.']){
+  assert.ok(personalFounderDecisionSourceScopeViolations(text,ownerPerspective).includes('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM'));
+ }
+ assert.ok(personalFirstPersonCopyViolations(actual,ownerPerspective,day).includes('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM'));
+ assert.deepEqual(personalFounderDecisionSourceScopeViolations('Ik zie AI-geletterdheid als prioriteit. Mijn keuze is om data-eigendom vooraf vast te leggen.',ownerPerspective),[]);
+ assert.deepEqual(personalFounderDecisionSourceScopeViolations(goodCopy,ownerPerspective),[]);
+});
