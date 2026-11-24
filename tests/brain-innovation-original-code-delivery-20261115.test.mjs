@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {selectOriginalCodeCandidate,isExactOriginalInnovationImplementationPr,checkChangedPaths,classifyOriginalCodeDiff,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
+import {selectOriginalCodeCandidate,isExactOriginalInnovationImplementationPr,checkChangedPaths,classifyOriginalCodeDiff,CONTRACT,INNOVATION_METHOD_FAMILIES,originalInnovationMethodPlan,validateOriginalInnovationMethodEvidence} from '../scripts/brain/innovation-original-code-delivery.mjs';
 import {evaluateOriginalNochangeReview} from '../scripts/brain/innovation-original-code-nochange-review.mjs';
 import {verifyOriginalCandidateReceipt} from '../scripts/brain/innovation-original-code-pr-receipt.mjs';
 import {compileLearningEvaluationPlan,validateEvaluationContract} from '../scripts/brain/learning-canonicalization-gate.mjs';
@@ -227,4 +227,51 @@ test('same original workflow requires canonical evaluation and both original doc
   assert.match(src,/validateEvaluationContract\(lesson,plan\)/);
   assert.match(src,/compileLearningEvaluationPlan\(lesson\)/);
   assert.match(src,/ORIGINAL_DOC_SOURCE_OR_CONTENT_MISSING/);
+});
+
+
+test('verified original quality candidate reaches same scoped analyst and protected builder; unguarded and duplicates remain held',()=>{
+ const f=fixture(),c=f.snapshot.candidates[0],op=f.snapshot.intakes[0],ob=f.snapshot.obligations[0];
+ const fp='portal-visual-density-oversized-responsive-cascade-v1';
+ c.component_id='portal-v2';c.source_key='quality-learning-v1:'+fp;c.baseline={quality_fingerprint:fp};
+ c.proposed_action={kind:'bounded_learning_followup',source_quality_fingerprint:fp,human_review_required:true,direct_production_mutation:false,provider_dispatch_authorized:false};
+ op.change_id=ob.change_id=c.source_key;
+ const pre=op.evidence.original_agent_pre_review,decision=op.evidence.original_owner_decision;
+ pre.exact_source_action_digest=hash(c.proposed_action);pre.fingerprint='d'.repeat(64);
+ decision.original_action_digest=hash(c.proposed_action);decision.decision='BASELINE_AND_EVALUATION_DESIGN_REQUIRED';decision.actionable_work_package=false;
+ assert.equal(selectOriginalCodeCandidate(f).selected,false);
+ const receipt={contract:'ORIGINAL_INNOVATION_ALL_FOURTEEN_EVIDENCE_RECONCILIATION_V1',candidate_id:id,original_operation_id:op.id,original_owner:op.capability_id,source_revision:revision,source_sha256:payload,original_change_id:c.source_key,source_decision_fingerprint:decision.fingerprint,source_pre_review_fingerprint:pre.fingerprint,source_quality:{status:'verified',original_fingerprint:fp,source_evidence_sha256:'e'.repeat(64),historical_claim_not_current_production_proof:true,regression_ref_present:true},fingerprint:'f'.repeat(64),next_action:'ORIGINAL_MOBILE_VISUAL_DENSITY_EXACT_PRODUCTION_RECHECK',disposition:'HISTORICAL_VERIFIED_QUALITY_SOURCE_CURRENT_EFFECT_DUE',evidence_type:'HISTORICAL_FIRST_PARTY_QUALITY_EVENT_UNCONFIRMED_AS_CURRENT_PRODUCTION',independently_verified_current_effect:false,consumer_ack_verified:false,terminal_success:false,historical_baseline_not_current_effect:true,protected_review_required:true,automated_external_provider_dispatch:false};
+ op.evidence.original_evidence_reconciliation=receipt;
+ const w=selectOriginalCodeCandidate(f);assert.equal(w.selected,true);assert.equal(w.work_kind,'SOURCE_BOUND_BASELINE_CHALLENGER');assert.equal(w.current_effect_verified,false);assert.equal(w.automatic_production_mutation,false);assert.equal(w.source_quality_receipt_fingerprint,receipt.fingerprint);assert.deepEqual(w.allowed_source_paths,['portal-v2/csrd-impact.css','portal-v2/csrd-mobile-saas.css','portal-v2/app.css']);
+ assert.equal(selectOriginalCodeCandidate({...f,existingPrFor:()=>true}).selected,false);
+ receipt.source_quality.status='guard_required';assert.equal(selectOriginalCodeCandidate(f).selected,false);receipt.source_quality.status='verified';
+ receipt.source_revision='wrong';assert.throws(()=>selectOriginalCodeCandidate(f),/ORIGINAL_QUALITY_RECEIPT_SOURCE_OR_AUTHORITY_DRIFT/);receipt.source_revision=revision;
+ c.proposed_action.direct_production_mutation=true;pre.exact_source_action_digest=decision.original_action_digest=hash(c.proposed_action);assert.throws(()=>selectOriginalCodeCandidate(f),/LEARNING_SOURCE_POLICY_CONFLICT/);
+});
+
+test('method catalog covers all 14 families and original work order receives source-specific methods',()=>{
+  assert.equal(INNOVATION_METHOD_FAMILIES.length,14);
+  assert.equal(new Set(INNOVATION_METHOD_FAMILIES.map(f=>f.id)).size,14);
+  assert.ok(INNOVATION_METHOD_FAMILIES.every(f=>f.source.startsWith('https://')&&f.methods.length>=5&&f.evidence));
+  const w=selectOriginalCodeCandidate(fixture());
+  assert.deepEqual(w.innovation_method_plan,originalInnovationMethodPlan(w.component_id));
+  assert.ok(w.innovation_method_plan.families.some(f=>f.id==='ai'));
+  assert.ok(originalInnovationMethodPlan('portal-v2').families.some(f=>f.id==='customer'));
+  assert.ok(originalInnovationMethodPlan('unknown').families.some(f=>f.id==='risk'));
+  assert.equal(w.innovation_method_plan.effect_verified,false);
+  assert.equal(w.automatic_production_mutation,false);
+});
+test('method evidence must bind exact source, compare alternatives and cannot claim effect',()=>{
+  const w=selectOriginalCodeCandidate(fixture());
+  const e={version:w.innovation_method_plan.version,candidate_id:w.candidate_id,
+    source_revision:w.source_revision,source_sha256:w.source_sha256,
+    methods:['TDD','champion challenger'],baseline_ref:'test fixture baseline',metric:'failed contract count',
+    incumbent:'existing source version',challenger:'minimal bounded fix',comparison_ref:'same regression fixture',
+    decision_reason:'reproduced defect fixed',rollback:'protected revert',current_effect_verified:false};
+  assert.equal(validateOriginalInnovationMethodEvidence(w,e),true);
+  for(const wrong of [{methods:['TDD']},{methods:['TDD','TDD']},{methods:['TDD','unknown']},
+    {source_revision:'other'},{source_sha256:'wrong'},{candidate_id:'wrong'},
+    {baseline_ref:''},{challenger:e.incumbent},{comparison_ref:''},{current_effect_verified:true}])
+    assert.throws(()=>validateOriginalInnovationMethodEvidence(w,{...e,...wrong}),/INNOVATION_METHOD_EVIDENCE_INCOMPLETE/);
+  assert.throws(()=>validateOriginalInnovationMethodEvidence(w,null),/INNOVATION_METHOD_EVIDENCE_INCOMPLETE/);
 });

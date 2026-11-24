@@ -1,3 +1,4 @@
+import {personalLengthPreference,personalLengthGuide,personalLengthDraftReceipt} from '../_shared/personal-observational-length-guide.mjs';
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
 import {assessOfficialBlogDateTruth} from '../_shared/blog-official-date-truth.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
@@ -24,7 +25,7 @@ const retryIncompleteEditorialDraft:(...args:any[])=>any=retryIncompleteEditoria
 const incompleteStructuredArtifactReason:(...args:any[])=>any=incompleteStructuredArtifactReason_raw;
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
-import {resolveMiraFrozenWinner,miraResolvedCaption,miraResolvedEvidence,validateResolvedMiraCaptionForDelivery as validateResolvedMiraCaptionForDelivery_raw} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,miraResolvedCaption,miraResolvedEvidence,bindMiraGrowthExperiment,validateResolvedMiraCaptionForDelivery as validateResolvedMiraCaptionForDelivery_raw} from '../_shared/mira-frozen-winner-contract.mjs';
 const validateResolvedMiraCaptionForDelivery:(...args:any[])=>any=validateResolvedMiraCaptionForDelivery_raw;
 
 import { normalizeBlogMarkdownBlocks } from '../_shared/blog-markdown-source-contract.mjs';
@@ -986,7 +987,9 @@ Deno.serve(async (req) => {
     const measuredNextPostGuide = measuredNextPostTest?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'
       ? ' Het meegestuurde measured_next_post_test is slechts een te toetsen hypothese uit echte postmetingen. Pas uitsluitend die ene concrete, omkeerbare opening, vraag of CTA als test toe; behoud onderwerp, waarheids- en identiteitsregels. Presenteer dit nooit als bewezen oorzaak, winnaar, garantie of geobserveerde klantomzet. Voorzie geen tweede experimentele verandering.'
       : '';
-    const linkedinLoopGuide=typeof linkedinLoop?.instructie==='string'&&['NIEUW_EXPERIMENT','EXPERIMENT_LOOPT'].includes(linkedinLoop.state)?' '+linkedinLoop.instructie.slice(0,900):'';
+    const personalLengthDecision=personalLengthPreference(pending.channel,linkedinLoop?.personal_observational_analysis);
+    const personalLengthInstruction=personalLengthGuide(personalLengthDecision);
+    const linkedinLoopGuide=pending.channel==='linkedin_company'&&typeof linkedinLoop?.instructie==='string'&&['NIEUW_EXPERIMENT','EXPERIMENT_LOOPT'].includes(linkedinLoop.state)?' '+linkedinLoop.instructie.slice(0,900):'';
     const creativeExplorationGuide=creativeExploration.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS'
       ? ' De editorial_exploration is uitsluitend een klein te testen idee: pas exact de ene single_change toe binnen hetzelfde onderwerp. Nooit een tweede post, verzonnen conversie, garantie of bewezen winnaar. Behoud alle kanaal-, bron-, identiteit- en redactie-eisen.'
       : '';
@@ -1037,8 +1040,10 @@ Deno.serve(async (req) => {
     if(pending.channel==='linkedin_personal') {
       editorialSystem += ' GESPREKSKWALITEIT — echte inhoud, geen engagementtruc: Maak het verhaal de moeite waard om inhoudelijk op te reageren. Kies ÉÉN natuurlijke discussiekans die past bij de geverifieerde bron: een technische ontwerpafweging waar redelijke vakgenoten anders over kunnen denken, een eerlijke les of fout met ruimte voor een tegenvoorbeeld, een menselijk dilemma waarin lezers zich herkennen, of een concrete grens tussen automatiseren en menselijk beslissen. Schrijf eerst een op zichzelf waardevolle post met herkenbare situatie en een scherpe persoonlijke visie; een oprechte specifieke vraag mag uitsluitend wanneer echte ervaringsantwoorden iets toevoegen, is optioneel en NOOIT standaard aan begin of einde. Geen “wat vinden jullie?”, “herkenbaar?”, “eens?”, “reageer met JA”, “typ X”, likes, tags, deelverzoeken, comment-gated content, nepcontroverse of kunstmatige spanning. Varieer tussen menselijke observatie, persoonlijke ontwerpkeuze, onverwachte maar onderbouwde les, concreet technisch dilemma en af en toe een ervaringsvraag; herhaal geen openings- of slotformule. Geen klantgesprekken, reacties of resultaten verzinnen. Houd privacy en het onderscheid tussen visie, ontwerp en bewezen effect. In een echt privéverhaal mag menselijke herkenning ontstaan zonder geforceerde MKB- of AI-les. Optimaliseer voor echte vakinhoudelijke gesprekken en nuttige tegenvoorbeelden, niet voor kale reactieaantallen. Onderzoek blijft hypothese, nooit algoritmegarantie.';
     }
+    if(pending.channel==='linkedin_personal') editorialSystem += personalLengthInstruction;
     // Original editor owns the brief; source guidance never overrides hard gates or issues a delivery claim.
     stage = 'artifact-ai';
+    if(resolvedMira?.kind==='approved_frozen_library_mapping')resolvedMira=bindMiraGrowthExperiment(resolvedMira,{runDate,measured:measuredNextPostTest,creative:creativeExploration});
     const miraContext=resolvedMira?miraResolvedEvidence(resolvedMira):null;
     const artifactInput={channel:pending.channel,editorial_quality_review:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.quality_review||null:null,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraContext?{...miraContext,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
       editorial_council:editorialCouncil,commercial_feedback:commercialFeedback,verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,recent_personal_post_patterns:pending.channel==='linkedin_personal'?recentPersonalPosts.map(x=>({opening:x.slice(0,180),ending:x.slice(-180)})).slice(0,12):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,entrepreneur_problem_sources:personalBuilder?personalEntrepreneurProblemSources:null,entrepreneur_problem_context_status:personalBuilder?(personalEntrepreneurProblemSources.length?'SOURCE_CONTEXT_ONLY':'NO_VALID_EXTERNAL_CONTEXT'):null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
@@ -1084,7 +1089,7 @@ Deno.serve(async (req) => {
     if (pending.channel==='instagram_company') {
       // One approved frozen source controls this story, caption and exact video.
       bodyText=miraResolvedCaption(resolvedMira);
-      const check:any=validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext);
+      const check:any=validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext,resolvedMira);
       if(!check.ok)throw new Error(check.reason);
       const expectedScene=clean(resolvedMira.scene||resolvedMira.problem?.scene);
       const sceneValid=clean(instagramProof?.mira_entrepreneur_scene)===expectedScene;
@@ -1102,7 +1107,7 @@ Deno.serve(async (req) => {
         // The original full editorialSystem is several independent channel, experiment and
         // governance instructions; repeating it during repair kept producing contradictory prose.
         // This bounded retry is not an alternate publisher or quality-policy override.
-        const correctionPrompt = personalSource?.evidence?.observational_personal_theme_verified===true
+        const correctionPrompt = (personalSource?.evidence?.observational_personal_theme_verified===true
           && !personalProfessional
           ? OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT
           : personalSource?.evidence?.ai_native_builder_story_verified===true
@@ -1120,7 +1125,7 @@ Deno.serve(async (req) => {
           + 'Controleer de waarheid, leesbaarheid, variatie en inhoudelijke gesprekswaarde, zonder vast woordquotum. '+PERSONAL_TRUSTED_ADVISOR_DIRECTION_20261120)
             : personalPerspective
               ? ('Je bent eindredacteur van Arthurs authentieke persoonlijke trusted-advisor-visie. Gebruik alleen verified_personal_source, niet de afgekeurde draft als feit. Eén eigen aantoonbare mening, afweging of onderzoeksinzicht, in de ik-vorm. Onderzoek van derden is uitdrukkelijk externe context, geen zelf meegemaakte ervaring. Beschrijf geen niet-bewezen klantgesprek, resultaat of uitgevoerde functionaliteit. Start met herkenbare spanning bij de ondernemer en leg één inhoudelijke keuze uit. Geen technische interne status, verzonnen succes, marketing, service-overzicht, sales-CTA, link, emoji, hashtag of verplichte vraag. Antwoord uitsluitend in hetzelfde JSON-artifact. '+PERSONAL_TRUSTED_ADVISOR_DIRECTION_20261120)
-              : PERSONAL_LIFE_CORRECTION_PROMPT;
+              : PERSONAL_LIFE_CORRECTION_PROMPT)+personalLengthInstruction;
         const revisionInput={
           channel:'linkedin_personal',
           verified_personal_source:personalSource,
@@ -1206,8 +1211,8 @@ Deno.serve(async (req) => {
 
     stage = 'write-artifact';
     const artifactPayload={run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
-      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,commercial_feedback_use:generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
-      measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,source_freshness_fallback:sourceFreshnessFallback,
+      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,commercial_feedback_use:resolvedMira?.growth_experiment?'SINGLE_FROZEN_CAPTION_HYPOTHESIS_APPLIED':generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,personal_observational_length_draft:pending.channel==='linkedin_personal'&&generationProvider!=='approved-frozen-source'?personalLengthDraftReceipt(personalLengthDecision,bodyText):null,source_freshness_fallback:sourceFreshnessFallback,
       blog_quality_repair:blogRepairClaim?{contract:blogRepairClaim.contract,rejected_body_sha256:blogRepairClaim.rejected_body_sha256,rejection_codes:blogRepairClaim.rejection_codes,recommendation_id:blogRepairClaim.recommendation_id,requested_at:blogRepairClaim.requested_at,quality_review_id:blogRepairClaim.quality_review?.review_id||null}:null,seo_slug:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.seo_slug||null:null,
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
