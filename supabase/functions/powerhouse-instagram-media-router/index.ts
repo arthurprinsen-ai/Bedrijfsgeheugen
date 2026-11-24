@@ -172,7 +172,7 @@ Deno.serve(async req=>{
  // touch a post. This must be called by the ORIGINAL Mira producer before any
  // OpenArt generate_video request. Reject the observed Wan 2.7 config even
  // though OpenArt calls it '1080p': its real output was NOT native 9:16.
- if(action==='generation_preflight'){
+ if(action==='generation_preflight'||action==='claim_generation'){
    // A quality-rejected PH-P library winner may request a format preflight
    // ONLY when the frozen source, problem, exact scene, original rejected
    // provider history, budget and unique unsent claim all match.
@@ -195,6 +195,36 @@ Deno.serve(async req=>{
    const derivedInput=input.derivedReference
      ?await checkDerivedProducerInput(input.derivedReference):null;
    const eligible=config.ok&&(derivedInput===null||derivedInput.ok===true);
+   // Same authenticated original router, exact job-scoped atomic claim.
+   // No provider side effect occurs here. A lost claim response must be
+   // reconciled by the original producer, never interpreted as spend authority.
+   if(action==='claim_generation'){
+     const quote=Number(input.quoted_credits);
+     const worker='powerhouse-daily-publisher-openart-original';
+     if(!eligible||!initialFrozenLibrary||runDate!==today()||
+       clean(input.job_id)!==clean(job?.id)||clean(input.worker)!==worker||
+       clean(input.openart_project_id)!=='rUF5anXD47gVokckYjf9'||
+       clean(input.openart_reference_id)!==MIRA_MASTER_REFERENCE_ID||
+       clean(input.openart_reference_url)!==MIRA_MASTER_REFERENCE_URL||
+       !ready('openart')||clean(config.code)!=='PROVIDER_MODEL_CONTROLS_PRESENT_TEST_ONLY'||
+       !Number.isFinite(quote)||quote<=0||quote>640||
+       clean(ob?.status)!=='BLOCKED'||clean(ob?.last_error)!=='MEDIA_ASSET_REQUIRED'||
+       ob?.evidence?.veto?.active===true||ob?.evidence?.mira_source_veto_active===true||
+       clean(lineage?.state)!=='WINNER_FROZEN')
+       return json({ok:false,error:'ORIGINAL_EXACT_CLAIM_PREFLIGHT_REQUIRED',ready:false},422);
+     const claimed=await db.rpc('powerhouse_claim_instagram_media_job_v1',{
+       p_worker:worker,p_now:new Date().toISOString(),p_job_id:job.id
+     });
+     if(claimed.error)return json({ok:false,error:'ORIGINAL_EXACT_CLAIM_RPC_FAILED',ready:false},503);
+     if(claimed.data?.state!=='CLAIMED'||clean(claimed.data?.job_id)!==clean(job.id)||
+        clean(claimed.data?.publication_date)!==runDate)
+       return json({ok:false,error:'ORIGINAL_EXACT_CLAIM_NOT_ACQUIRED',ready:false,
+         next_action:'Reread same job and provider history; never generate without new exclusive claim.'},409);
+     return json({ok:true,state:'CLAIMED',runDate,job_id:job.id,worker,
+       source_recommendation_id:winnerContract.winner_recommendation_id,
+       quoted_credits:quote,approved_for_publish:false,actual_media_verified:false,
+       next_action:'Original connected OpenArt producer only: submit one candidate and immediately pin its real history.'});
+   }
    return json({ok:eligible,runDate,postType,source_recommendation_id:winnerContract.winner_recommendation_id,
      original_master_id:clean(job?.asset_manifest?.openart_reference_id),
      provider_generation_preflight:config,derived_reference_proof:derivedInput,
