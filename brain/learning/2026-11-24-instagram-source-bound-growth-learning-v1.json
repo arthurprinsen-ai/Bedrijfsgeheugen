@@ -1,0 +1,55 @@
+{
+  "fingerprint": "powerhouse|instagram|source-bound-growth-learning|20261124-v1",
+  "detected": "2026-11-24",
+  "event_date": "2026-11-24",
+  "owner": "existing content orchestrator, original social publisher, original 177 metrics and ONE BRAIN",
+  "root_cause": "Measured Instagram copy hypotheses existed but the original frozen library caption did not consume them; the publisher used calendar rotation for the frozen library branch and rejected the presence of the frozen daily winner; unobserved comments could be aggregated as zero and views used as reach for per-reach rates.",
+  "fix": "Use one source/date/winner-bound measured or exploratory caption variant, independently re-read accepted recommendation and original media proof before dispatch, retain exact source-led captions, require each metric's observed reach denominator.",
+  "correction": "Apply only one authorized reversible hypothesis and retain source, canonical problem, scene, fictional character disclosure, media and provider gates.",
+  "prevention_rule": "Never equate recommendation with publication, missing metrics with zero, views with reach, or external benchmarks with own causal growth. Outreach requires contextual lawful permission and capability. Use existing agents only.",
+  "implementation_state": "PROTECTED_PR_CI_PENDING",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "APPLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-frozen-growth-learning-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-frozen-growth-learning-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-frozen-growth-learning-20261124.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-instagram-frozen-growth-learning-20261124.test.mjs"
+  ],
+  "test": "tests/brain-instagram-frozen-growth-learning-20261124.test.mjs",
+  "protected_release_required": true,
+  "production_proof": "PENDING",
+  "provider_publish_proof": "NOT_CLAIMED",
+  "evidence": {
+    "sources": [
+      "https://about.fb.com/news/2024/10/best-practices-education-hub-creators-instagram/",
+      "https://about.fb.com/news/2024/12/trial-reels-try-content-non-followers-first-see-what-perfoms-best/",
+      "https://about.fb.com/news/2023/08/music-and-collabs-on-instagram/",
+      "https://about.fb.com/news/2026/01/2026-ai-drives-performance/",
+      "https://www.socialinsider.io/social-media-benchmarks/instagram-engagement-report",
+      "https://developers.facebook.com/docs/insights/overview/",
+      "https://developers.facebook.com/docs/graph-api/overview/rate-limiting/",
+      "https://about.fb.com/news/2024/02/labeling-ai-generated-images-on-facebook-instagram-and-threads/",
+      "https://www.acm.nl/nl/verkoop-aan-consumenten/reclame-en-verleiden/spam-voorkomen-uw-reclame"
+    ],
+    "source_files": [
+      "supabase/functions/_shared/mira-frozen-winner-contract.mjs",
+      "supabase/functions/_shared/measured-next-post-challenger.mjs",
+      "supabase/functions/powerhouse-content-orchestrator/index.ts",
+      "supabase/functions/powerhouse-social-publisher/index.ts"
+    ]
+  }
+}
