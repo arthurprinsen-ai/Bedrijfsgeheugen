@@ -13,5 +13,41 @@
   "next_action": "Review and integrate into original protected writer with actual provider tests and full merge tree verification.",
   "no_new_agent": true,
   "no_new_scheduler": true,
-  "no_policy_expansion": true
+  "no_policy_expansion": true,
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evidence": {
+    "issue": 4661,
+    "pr": 6179,
+    "admission_failure_run": 45479883878,
+    "admission_failure_job": 138749843583,
+    "source_observation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7142713623",
+    "local_synthetic_tests": 14,
+    "provider_integration_verified": false,
+    "production_verified": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-writer-reviewed-epoch.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-writer-reviewed-epoch.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-writer-reviewed-epoch.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-writer-reviewed-epoch.test.mjs"
+  ],
+  "evaluation_scope": "Synthetic isolated authorization validator fixtures only; shadow and canary evaluation modes are CI test runs, not production traffic or runtime proof."
 }
