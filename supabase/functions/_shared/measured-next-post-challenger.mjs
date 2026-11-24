@@ -31,9 +31,16 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
  const newest=new Map();
  for(const s of recent)if(!newest.has(s.post_id))newest.set(s.post_id,s);
  const qualifying=[];
+ const countedIgMedia=new Set();
  for(const p of sample){
    const s=newest.get(p.post_id);
    if(!s||instant(s.observed_at)<instant(p.published_at))continue;
+   // A post that is mature now does not make its early snapshot mature.
+   // Deduplicate on native Meta media ID, not a mutable internal registry row.
+   const igMediaId=channel==='instagram_company'?String(p.external_post_id||''):null;
+   if(channel==='instagram_company'&&(
+      instant(s.observed_at)-instant(p.published_at)<24*3600000||
+      countedIgMedia.has(igMediaId)))continue;
    const metrics=s.metrics;
    if(!metrics||typeof metrics!=='object'||metrics.metric_scope==='reactions_only'||metrics.views_unavailable===true)continue;
    const exposure=number(metrics.reach)??number(metrics.views)??number(metrics.impressions);
@@ -42,6 +49,7 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
      (channel!=='instagram_company'&&(comments===null||likes===null)))continue;
    const clicks=number(metrics.clicks)??number(metrics.link_clicks);
    const shares=number(metrics.shares),saved=number(metrics.saved);
+   if(channel==='instagram_company')countedIgMedia.add(igMediaId);
    qualifying.push({post_id:p.post_id,exposure,comments,likes,clicks,
      shares,saved,views:number(metrics.views),reach:number(metrics.reach),
      observed_at:s.observed_at});
