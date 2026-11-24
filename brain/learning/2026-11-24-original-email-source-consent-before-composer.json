@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse|email|recipient-authority-source-vs-sender-20261124",
+  "event_date": "2026-11-24",
+  "owner": "existing-one-brain-growth-revenue-original",
+  "user_instruction": "E-mailagents autonoom beslissend implementeren, bouwen, analyseren en werkelijk laten verzenden met geldige autorisatie, correcte inhoud en providerbewijs.",
+  "compiler": {
+    "failure_class": "SOURCE_TO_EXECUTOR_AUTHORITY_CONTRACT_DRIFT",
+    "scope": "COMMERCIAL_EMAIL",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-email-authority-before-composer-and-preparation-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-email-authority-before-composer-and-preparation-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-email-authority-before-composer-and-preparation-20261124.test.mjs"
+    ]
+  },
+  "root_cause": "Original daily SQL producer treated internal CRM approval and first-degree LinkedIn connection as sufficient to create marketing-email actions; original last-mile sender correctly requires separately documented recipient-specific marketing authority. Result: repeat unauthorized drafts, model waste, 0 lawful sends. Copy composer additionally repeatedly failed natural-copy rules.",
+  "correction": "Move documented recipient permission gate into the original producer before preparing actions, and into the original AI composer before paid generation. Strengthen original prompt for natural, source-true messages. Preserve sender's independent final gate. Also preserve terminal/quarantined send_forbidden=true in original source-selection BEFORE trigger.",
+  "prevention_rule": "User authorization to market and a first-degree LinkedIn relationship do not constitute recipient-specific marketing permission. Never create an outbound action from an authority-ineligible contact; preserve evidence, suppression and original sender's independent readback. No no-send false green. Original source guard must never clear send_forbidden on a terminal/no-authority action.",
+  "evidence": {
+    "production_source": "public.powerhouse_prepare_connection_relationship_email_v1",
+    "exact_crm_counts": {
+      "connections": 23295,
+      "addresses": 605,
+      "documented_permission": 0
+    },
+    "action_state_20261124": {
+      "prepared": 3,
+      "provider_verified_sent": 0
+    },
+    "prior_expired_20261122_23": 6,
+    "original_sender": "supabase/functions/powerhouse-autonomous-outreach/index.ts",
+    "original_composer": "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "exact_test": "tests/brain-email-authority-before-composer-and-preparation-20261124.test.mjs",
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "quarantined_actions_20261124": 3,
+    "expired_only_no_provider_claim": true,
+    "source_trigger_terminal_send_forbidden_false_inconsistency_observed": true,
+    "terminal_quarantine_correction_source": "docs/changes/2026-11-24-original-email-recipient-authority-reviewed-source.sql",
+    "terminal_verification_required": "After protected merge check old actions' terminal send_forbidden, exact function definition and provider version; prior actions may need original audited data readback before marking green."
+  },
+  "implementation_state": "PROTECTED_PR_CANDIDATE_WITH_OPERATIONAL_QUARANTINE_NOT_YET_DEPLOYED",
+  "no_shadow_sender": true,
+  "no_unauthorized_marketing": true
+}
