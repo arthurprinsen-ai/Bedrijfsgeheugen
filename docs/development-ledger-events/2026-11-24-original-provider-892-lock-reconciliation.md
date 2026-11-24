@@ -1,0 +1,3 @@
+# Original provider 892 lock — development ledger
+
+24 Nov 2026, original release/reliability owner, parent #4198. Required runs 45341795880 and 45342427912 failed on one executable protected migration missing in Git lock. Native comparison 891/891 exact version/name; 895 total. Append the 892nd already-applied and already-protected source after exact statement comparison (3/3). Source blob cca0bd2169f330c7c33fafd9cce6eab28dd02215. No changes to SQL, tests gating releases, runtime, or provider history. Later three native source versions remain under #6136. Regression tests/brain-original-provider-892-lock-reconciliation-20261124.test.mjs. Status protected candidate pending; no innovation effect claimed. Rollback: protected correction only.
