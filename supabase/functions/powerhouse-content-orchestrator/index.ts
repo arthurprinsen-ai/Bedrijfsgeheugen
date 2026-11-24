@@ -24,7 +24,7 @@ const retryIncompleteEditorialDraft:(...args:any[])=>any=retryIncompleteEditoria
 const incompleteStructuredArtifactReason:(...args:any[])=>any=incompleteStructuredArtifactReason_raw;
 import postgres from 'npm:postgres@3.4.7';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
-import {resolveMiraFrozenWinner,miraResolvedCaption,miraResolvedEvidence,validateResolvedMiraCaptionForDelivery as validateResolvedMiraCaptionForDelivery_raw} from '../_shared/mira-frozen-winner-contract.mjs';
+import {resolveMiraFrozenWinner,miraResolvedCaption,miraResolvedEvidence,bindMiraGrowthExperiment,validateResolvedMiraCaptionForDelivery as validateResolvedMiraCaptionForDelivery_raw} from '../_shared/mira-frozen-winner-contract.mjs';
 const validateResolvedMiraCaptionForDelivery:(...args:any[])=>any=validateResolvedMiraCaptionForDelivery_raw;
 
 import { normalizeBlogMarkdownBlocks } from '../_shared/blog-markdown-source-contract.mjs';
@@ -1039,6 +1039,7 @@ Deno.serve(async (req) => {
     }
     // Original editor owns the brief; source guidance never overrides hard gates or issues a delivery claim.
     stage = 'artifact-ai';
+    if(resolvedMira?.kind==='approved_frozen_library_mapping')resolvedMira=bindMiraGrowthExperiment(resolvedMira,{runDate,measured:measuredNextPostTest,creative:creativeExploration});
     const miraContext=resolvedMira?miraResolvedEvidence(resolvedMira):null;
     const artifactInput={channel:pending.channel,editorial_quality_review:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.quality_review||null:null,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraContext?{...miraContext,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
       editorial_council:editorialCouncil,commercial_feedback:commercialFeedback,verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,recent_personal_post_patterns:pending.channel==='linkedin_personal'?recentPersonalPosts.map(x=>({opening:x.slice(0,180),ending:x.slice(-180)})).slice(0,12):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,entrepreneur_problem_sources:personalBuilder?personalEntrepreneurProblemSources:null,entrepreneur_problem_context_status:personalBuilder?(personalEntrepreneurProblemSources.length?'SOURCE_CONTEXT_ONLY':'NO_VALID_EXTERNAL_CONTEXT'):null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
@@ -1084,7 +1085,7 @@ Deno.serve(async (req) => {
     if (pending.channel==='instagram_company') {
       // One approved frozen source controls this story, caption and exact video.
       bodyText=miraResolvedCaption(resolvedMira);
-      const check:any=validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext);
+      const check:any=validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext,resolvedMira);
       if(!check.ok)throw new Error(check.reason);
       const expectedScene=clean(resolvedMira.scene||resolvedMira.problem?.scene);
       const sceneValid=clean(instagramProof?.mira_entrepreneur_scene)===expectedScene;
@@ -1206,7 +1207,7 @@ Deno.serve(async (req) => {
 
     stage = 'write-artifact';
     const artifactPayload={run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
-      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,commercial_feedback_use:generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,commercial_feedback_use:resolvedMira?.growth_experiment?'SINGLE_FROZEN_CAPTION_HYPOTHESIS_APPLIED':generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
       measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,source_freshness_fallback:sourceFreshnessFallback,
       blog_quality_repair:blogRepairClaim?{contract:blogRepairClaim.contract,rejected_body_sha256:blogRepairClaim.rejected_body_sha256,rejection_codes:blogRepairClaim.rejection_codes,recommendation_id:blogRepairClaim.recommendation_id,requested_at:blogRepairClaim.requested_at,quality_review_id:blogRepairClaim.quality_review?.review_id||null}:null,seo_slug:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.seo_slug||null:null,
       recommendation_id:recommendation?.recommendation_id||null,
