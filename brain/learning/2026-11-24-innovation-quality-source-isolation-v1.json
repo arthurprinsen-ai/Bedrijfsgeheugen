@@ -1,0 +1,42 @@
+{
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|innovation|quality-source-guard-required-batch-starvation|20261124-v1",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs"
+    ]
+  },
+  "root_cause": "The exact commercial-email quality source changed to guard_required; a whole-batch throw prevented valid original innovation evidence from being reconciled. The newest candidate must remain unverified without starving other source-bound candidates.",
+  "evidence": {
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45177717260",
+    "observed_error": "ORIGINAL_INNOVATION_EVIDENCE_QUALITY_SOURCE_NOT_VERIFIABLE",
+    "candidate_id": "1c4b799c-1ef0-4586-ac73-0ec539d562d2",
+    "quality_status": "guard_required",
+    "production_source_count": 15,
+    "independent_outcomes": 0,
+    "original_registry": "public.brain_failure_registry"
+  },
+  "prevention": {
+    "isolate_exact_guard_required": true,
+    "preserve_other_identity_fail_closed": true,
+    "remain_open": true,
+    "no_fabricated_ack": true,
+    "no_second_scheduler": true,
+    "regression": "tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs"
+  },
+  "release_state": "PROTECTED_SOURCE_CANDIDATE_PENDING",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}
