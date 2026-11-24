@@ -13,7 +13,11 @@ on:
     inputs:
       functions:
         description: 'Required for manual runs: comma-separated registered function slugs, e.g. netlify-deploy-bridge'
-        required: true
+        required: false
+        type: string
+      replay_pr:
+        description: 'Original merged PR to re-attest; derives exact scope, rejects changed original runtime files'
+        required: false
         type: string
 
 permissions:
@@ -67,6 +71,7 @@ jobs:
         shell: bash
         env:
           REQUESTED_FUNCTIONS: ${{ inputs.functions || '' }}
+          REQUESTED_REPLAY_PR: ${{ inputs.replay_pr || '' }}
           BEFORE_SHA: ${{ github.event.before || '' }}
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -77,11 +82,45 @@ jobs:
           # A manual run without explicit functions can silently skip provider parity if
           # the latest main commit only modified Portal or other non-Edge files.
           # Prevent a vacuous green status before the Supabase PAT is exercised.
-          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -z "${REQUESTED_FUNCTIONS//[[:space:]]/}" ]; then
+          if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ] && [ -z "${REQUESTED_FUNCTIONS//[[:space:]]/}" ] && [ -z "$REQUESTED_REPLAY_PR" ]; then
             echo "::error::SUPABASE_EDGE_MANUAL_SCOPE_REQUIRED"
             exit 78
           fi
-          if [ -n "${REQUESTED_FUNCTIONS// /}" ]; then
+          if [ -n "$REQUESTED_REPLAY_PR" ]; then
+            # Read-only attestation of the ORIGINAL merged PR, never a caller subset.
+            [ "$GITHUB_EVENT_NAME" = workflow_dispatch ] && [[ "$REQUESTED_REPLAY_PR" =~ ^[1-9][0-9]*$ ]] && [ -z "$REQUESTED_FUNCTIONS" ] || {
+              echo "::error::SUPABASE_EDGE_REPLAY_SCOPE_INVALID"; exit 78
+            }
+            target_pr="$REQUESTED_REPLAY_PR"
+            target_json="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$target_pr")"
+            target_merge_sha="$(jq -r '.merge_commit_sha // ""' <<<"$target_json")"
+            [ "$(jq -r '.merged // false' <<<"$target_json")" = true ] &&
+              [ "$(jq -r '.base.ref // ""' <<<"$target_json")" = main ] &&
+              [ "$(jq -r '.base.repo.full_name // ""' <<<"$target_json")" = "$GITHUB_REPOSITORY" ] &&
+              [[ "$target_merge_sha" =~ ^[0-9a-f]{40}$ ]] || {
+              echo "::error::SUPABASE_EDGE_REPLAY_TARGET_INVALID"; exit 78
+            }
+            if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+              git fetch --no-tags --deepen=200 origin main
+            fi
+            git merge-base --is-ancestor "$target_merge_sha" "$GITHUB_SHA" || {
+              echo "::error::SUPABASE_EDGE_REPLAY_NOT_PROTECTED_ANCESTOR"; exit 78
+            }
+            # Actual protected merge delta, not mutable PR body or a caller list.
+            git diff --name-only "$target_merge_sha^1" "$target_merge_sha" > /tmp/changed-paths.txt
+            mapfile -t original_runtime_paths < <(grep -E '^supabase/(functions/|config[.]toml$)' /tmp/changed-paths.txt || true)
+            [ "${#original_runtime_paths[@]}" -gt 0 ] || {
+              echo "::error::SUPABASE_EDGE_REPLAY_NO_RUNTIME_PATHS"; exit 78
+            }
+            git diff --quiet "$target_merge_sha" "$GITHUB_SHA" -- "${original_runtime_paths[@]}" || {
+              echo "::error::SUPABASE_EDGE_REPLAY_ORIGINAL_SOURCE_SUPERSEDED"; exit 78
+            }
+            node tools/supabase/edge-runtime-scope.mjs /tmp/changed-paths.txt > /tmp/functions.txt
+            [ -s /tmp/functions.txt ] || {
+              echo "::error::SUPABASE_EDGE_REPLAY_EMPTY_SCOPE"; exit 78
+            }
+            echo "SUPABASE_EDGE_REPLAY_ORIGINAL_SCOPE_PROVEN:pr=$target_pr merge=$target_merge_sha"
+          elif [ -n "${REQUESTED_FUNCTIONS// /}" ]; then
             tr ',' '\n' <<<"$REQUESTED_FUNCTIONS" | sed 's/^ *//;s/ *$//' | grep -E '^[a-z0-9][a-z0-9-]*$' | sort -u > /tmp/functions.txt
           else
             base="$BEFORE_SHA"
