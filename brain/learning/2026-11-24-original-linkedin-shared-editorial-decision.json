@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|linkedin|original-editor-shared-strategy|20261124-v1",
+  "status": "CANDIDATE",
+  "owner": "original-powerhouse-editorial-and-social-analytics",
+  "root_cause": "Protected #6144 selector lived outside existing Edge bundle; daily analytics succeeded but read-only report is not actual editor consumption.",
+  "fix": "Extract exact selector into shared Edge-compatible pure module, re-export original BRAIN API, prepare original owner decision from explicit verified source and exact canonical publication history; defer to existing experiment. Shared orchestrator file deliberately not changed while #4265 holds overlapping candidate scope.",
+  "compiler": {
+    "failure_class": "EDITORIAL_STRATEGY_RUNTIME_CONSUMER_GAP",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-linkedin-shared-editorial-decision-20261124.test.mjs",
+      "tests/brain-personal-growth-methods-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-linkedin-shared-editorial-decision-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-linkedin-shared-editorial-decision-20261124.test.mjs"
+    ]
+  },
+  "evidence": {
+    "protected_strategy": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6144",
+    "analysis_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45436206273",
+    "registered_social_posts": 132,
+    "recent_measured_posts": 33,
+    "overlapping_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4265",
+    "runtime_consumption": "NOT_PROVEN",
+    "admission_replay": {
+      "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45436767667",
+      "job": 138596583618,
+      "failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning",
+      "correction": "Add missing prevention_rule, verified against actual material-writeback guard, no gate changes."
+    }
+  },
+  "terminal_rule": "Protected merge, shared source deployment and original editor call with independently verified actual next artifact, method, provider and measurement proof; no authority from helper.",
+  "prevention_rule": [
+    "Every material candidate must contain semantic root cause, prevention and evidence before admission; no gate bypass.",
+    "BRAIN and Edge share one selector; never accept cross-tenant, duplicate, unproven or future publication history.",
+    "Only exact original source eligibility and single-experiment ownership permit a candidate decision; no publication permission or applied-learning claim from helper."
+  ]
+}
