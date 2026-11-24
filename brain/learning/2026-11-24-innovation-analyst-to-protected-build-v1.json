@@ -27,7 +27,21 @@
     "original_source_count": 15,
     "original_quality_verified_effect_due": 7,
     "independent_outcomes": 0,
-    "source_authority": "public.brain_operations"
+    "source_authority": "public.brain_operations",
+    "method_research": {
+      "date": "2026-11-24",
+      "families": 14,
+      "source_refs": [
+        "https://committee.iso.org/sites/tc279/home/projects/published/published.html",
+        "https://www.oecd.org/en/publications/oslo-manual-2018_9789264304604-en.html",
+        "https://www.designcouncil.org.uk/resources/the-double-diamond/",
+        "https://aitriz.org/pages/triz",
+        "https://asq.org/quality-resources/quality-tools",
+        "https://airc.nist.gov/airmf-resources/playbook/",
+        "https://dora.dev/capabilities/continuous-delivery/"
+      ],
+      "status": "RESEARCH_AND_CODE_CANDIDATE_NOT_LIVE"
+    }
   },
   "prevention": {
     "same_original_agent": true,
@@ -36,7 +50,10 @@
     "baseline_before_challenger": true,
     "no_production_authority": true,
     "protected_review_required": true,
-    "no_new_scheduler": true
+    "no_new_scheduler": true,
+    "method_plan_version": "innovation-methods-20261124-v1",
+    "method_evidence_required": true,
+    "independent_effect_still_required": true
   },
   "release_state": "PROTECTED_SOURCE_CANDIDATE_PENDING",
   "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
