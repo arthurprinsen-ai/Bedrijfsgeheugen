@@ -67,3 +67,26 @@ test('company independently rotates source-compatible editorial formats and fami
  assert.equal(result.learning_applied,false);
  assert.ok(queries.social.includes('company_publication_verified'));
 });
+
+import {LINKEDIN_KPI_CONTRACT,diagnoseLinkedInKpiCoverage} from '../tools/content-growth/daily-performance-diagnostics.mjs';
+test('both original LinkedIn agents have all ten mandatory KPI obligations with exact cadence and owner',()=>{
+ assert.equal(LINKEDIN_KPI_CONTRACT.length,10);
+ assert.deepEqual(LINKEDIN_KPI_CONTRACT.map(k=>k.frequency),['DAILY','DAILY','DAILY','DAILY','WEEKLY','DAILY','WEEKLY','WEEKLY','MONTHLY','PER_EXPERIMENT']);
+ const r=diagnoseDailyPerformance({evidence:{state:'AUTH_REQUIRED'},now:at}).linkedin_kpi_coverage;
+ assert.deepEqual(r.map(x=>x.channel),['linkedin_personal','linkedin_company']);
+ for(const channel of r){assert.equal(channel.kpis.length,10);assert.ok(channel.kpis.every(k=>k.value===null));assert.equal(channel.all_kpis_proven,false);}
+});
+test('recent verified post coverage is not a daily total, unique audience, substantive comment or revenue claim',()=>{
+ const p={...personalRows[0],source_event_id:'provider-event',observed_at:'2026-11-24T10:00:00Z',metrics:{impressions:100,reach:50,comments:3,shares:0,saved:0}};
+ const r=diagnoseLinkedInKpiCoverage({state:'READ_ONLY_PROVIDER_OBSERVED',social:[p]},at);
+ const byKey=Object.fromEntries(r[0].kpis.map(k=>[k.key,k]));
+ assert.equal(byKey.impressions_unique_reach.complete_post_samples,1);
+ assert.equal(byKey.impressions_unique_reach.value,null);
+ assert.equal(byKey.substantive_comments.complete_post_samples,0);
+ assert.equal(byKey.shares_saves.complete_post_samples,1);
+ assert.equal(byKey.attributed_revenue.value,null);
+ assert.equal(r[1].verified_recent_post_snapshots,0);
+ assert.equal(diagnoseLinkedInKpiCoverage({state:'READ_ONLY_PROVIDER_OBSERVED',social:[p,p]},at)[0].verified_recent_post_snapshots,0);
+ assert.equal(diagnoseLinkedInKpiCoverage({state:'READ_ONLY_PROVIDER_OBSERVED',social:[{...p,source_event_id:null}]},at)[0].verified_recent_post_snapshots,0);
+ assert.ok(queries.social.includes('r.source_event_id'));
+});
