@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {selectOriginalCodeCandidate,isExactOriginalInnovationImplementationPr,checkChangedPaths,classifyOriginalCodeDiff,CONTRACT} from '../scripts/brain/innovation-original-code-delivery.mjs';
+import {selectOriginalCodeCandidate,isExactOriginalInnovationImplementationPr,checkChangedPaths,classifyOriginalCodeDiff,CONTRACT,INNOVATION_METHOD_FAMILIES,originalInnovationMethodPlan,validateOriginalInnovationMethodEvidence} from '../scripts/brain/innovation-original-code-delivery.mjs';
 import {evaluateOriginalNochangeReview} from '../scripts/brain/innovation-original-code-nochange-review.mjs';
 import {verifyOriginalCandidateReceipt} from '../scripts/brain/innovation-original-code-pr-receipt.mjs';
 import {compileLearningEvaluationPlan,validateEvaluationContract} from '../scripts/brain/learning-canonicalization-gate.mjs';
@@ -247,4 +247,31 @@ test('verified original quality candidate reaches same scoped analyst and protec
  receipt.source_quality.status='guard_required';assert.equal(selectOriginalCodeCandidate(f).selected,false);receipt.source_quality.status='verified';
  receipt.source_revision='wrong';assert.throws(()=>selectOriginalCodeCandidate(f),/ORIGINAL_QUALITY_RECEIPT_SOURCE_OR_AUTHORITY_DRIFT/);receipt.source_revision=revision;
  c.proposed_action.direct_production_mutation=true;pre.exact_source_action_digest=decision.original_action_digest=hash(c.proposed_action);assert.throws(()=>selectOriginalCodeCandidate(f),/LEARNING_SOURCE_POLICY_CONFLICT/);
+});
+
+test('method catalog covers all 14 families and original work order receives source-specific methods',()=>{
+  assert.equal(INNOVATION_METHOD_FAMILIES.length,14);
+  assert.equal(new Set(INNOVATION_METHOD_FAMILIES.map(f=>f.id)).size,14);
+  assert.ok(INNOVATION_METHOD_FAMILIES.every(f=>f.source.startsWith('https://')&&f.methods.length>=5&&f.evidence));
+  const w=selectOriginalCodeCandidate(fixture());
+  assert.deepEqual(w.innovation_method_plan,originalInnovationMethodPlan(w.component_id));
+  assert.ok(w.innovation_method_plan.families.some(f=>f.id==='ai'));
+  assert.ok(originalInnovationMethodPlan('portal-v2').families.some(f=>f.id==='customer'));
+  assert.ok(originalInnovationMethodPlan('unknown').families.some(f=>f.id==='risk'));
+  assert.equal(w.innovation_method_plan.effect_verified,false);
+  assert.equal(w.automatic_production_mutation,false);
+});
+test('method evidence must bind exact source, compare alternatives and cannot claim effect',()=>{
+  const w=selectOriginalCodeCandidate(fixture());
+  const e={version:w.innovation_method_plan.version,candidate_id:w.candidate_id,
+    source_revision:w.source_revision,source_sha256:w.source_sha256,
+    methods:['TDD','champion challenger'],baseline_ref:'test fixture baseline',metric:'failed contract count',
+    incumbent:'existing source version',challenger:'minimal bounded fix',comparison_ref:'same regression fixture',
+    decision_reason:'reproduced defect fixed',rollback:'protected revert',current_effect_verified:false};
+  assert.equal(validateOriginalInnovationMethodEvidence(w,e),true);
+  for(const wrong of [{methods:['TDD']},{methods:['TDD','TDD']},{methods:['TDD','unknown']},
+    {source_revision:'other'},{source_sha256:'wrong'},{candidate_id:'wrong'},
+    {baseline_ref:''},{challenger:e.incumbent},{comparison_ref:''},{current_effect_verified:true}])
+    assert.throws(()=>validateOriginalInnovationMethodEvidence(w,{...e,...wrong}),/INNOVATION_METHOD_EVIDENCE_INCOMPLETE/);
+  assert.throws(()=>validateOriginalInnovationMethodEvidence(w,null),/INNOVATION_METHOD_EVIDENCE_INCOMPLETE/);
 });
