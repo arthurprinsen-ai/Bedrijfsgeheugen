@@ -15,7 +15,7 @@ const mobileUiStyle='<style id="bg-sitewide-mobile-ui-20261111">\n'+fs.readFileS
 const mobileUiScript='<script src="/assets/sitewide-mobile-ui-20261111.js?v=20261111b" defer data-bg-sitewide-mobile-ui="1"></script>';
 
 const appManifest='<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/portal-v2/app.webmanifest" data-bg-app-manifest="1">';
-const appStyle='<style id="bg-app-experience-20261112">@import url("/assets/bg-app-experience.css?v=20261112");</style>';
+const appStyle='<style id="bg-app-experience-20261112">@import url("/assets/bg-app-experience.css?v=20261118-wa-dock");</style>';
 const appScript='<script src="/assets/bg-app-experience.js?v=20261112" defer data-bg-app-experience="1"></script>';
 const appIphone='<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Bedrijfsgeheugen">';
 const appIcon='<link rel="apple-touch-icon" href="https://www.bedrijfsgeheugen.nl/apple-touch-icon.png">';

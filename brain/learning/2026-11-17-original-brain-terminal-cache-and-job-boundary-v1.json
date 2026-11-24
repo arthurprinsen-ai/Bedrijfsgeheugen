@@ -1,0 +1,42 @@
+{
+  "contract": "P0_ORIGINAL_BRAIN_TERMINAL_GATE_SOURCE_DRIFT_20261117_V1",
+  "observed_on": "2026-11-17",
+  "fingerprint": "powerhouse|original-brain|merged-pr-terminal-gate-stopped-by-i18n-fragments-and-cross-job-test|20261117-v1",
+  "root_cause": "Original protected PR #5980 and #5981 passed exact-head Required+CodeQL and merged, but the post-merge BRAIN backend lane failed four checks, blocking original terminal closure. Three failures share a real offline static English cache gap: new Dutch text nodes on AFAS and systems-integrations pages were split by internal links, while the cache held whole-paragraph translations, not the two exact split segments. The fourth failure is test-only drift: original-intake recovery test captured all YAML content through model-freshness despite independently added original-delivery and original-code jobs; it falsely interpreted another job's GH_TOKEN as an intake credential.",
+  "correction": "Add exactly two independently transcribed native Dutch text-node keys with reviewed English translations in the original versioned config/bg-static-i18n-en.d source authority. Update only the original intake test extraction to stop at the next top-level workflow job instead of hardcoding model-freshness. New regression explicitly replays both source node fragments, checks no untranslated fallback, checks the original single cron and a synthetic neighboring job containing GITHUB_TOKEN cannot contaminate intake inspection.",
+  "prevention_rule": "Required and post-merge BRAIN gates must validate the same full source-derived English translation corpus, including text nodes split by HTML links; every new marketing route fragment must be accounted for before shipping. Tests that inspect YAML job isolation must stop at the next top-level job, not an assumed named job. A failed BRAIN terminalization always stays OPEN until true BRAIN success, provider readback, consumer and measured outcome.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-terminal-cache-and-job-boundary-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-terminal-cache-and-job-boundary-20261117.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_terminal_failure_one": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44168422800 (PR #5980); 4 backend failing tests",
+    "original_terminal_failure_two": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44169808282 (PR #5981); same 4 backend failing tests",
+    "missing_english_nodes": [
+      "AFAS source paragraph before linked webshop anchor, exact 453 characters",
+      "systems integration benefits bullet after linked named systems, exact 68 characters"
+    ],
+    "observed_original_test": "tests/brain-original-innovation-same-workflow-resume-20261115.test.mjs erroneously captures original-delivery and original-code jobs due to lookahead hardcoded to model-freshness; do not relax prohibited GH_TOKEN assertion for true intake job.",
+    "delivery_status": "SOURCE_CANDIDATE_REQUIRED_NOT_LIVE"
+  },
+  "automatic_external_side_effect": false,
+  "review_required": true,
+  "terminal_success": false,
+  "next_safe_action": "Protected exact-head Required+CodeQL and full BRAIN tests; merge through canonical reviewer path. Re-run same original terminal readback for prior merged PRs via existing workflow, not a new scheduler. Require independent provider proof and original ONE BRAIN PROCESSED/Heartbeat outcome before marking terminal.",
+  "source_refs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5980",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5981"
+  ]
+}

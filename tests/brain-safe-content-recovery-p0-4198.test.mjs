@@ -8,7 +8,9 @@ test('restore blocked source-backed content through canonical orchestrator, neve
  assert.match(source,/reason === 'SOURCE_DEADLINE_EXPIRED'/);
  // Fresh company-source rotation is allowed only in the original loop after
  // the strict pre-provider helper proves the authority remains unconsumed.
- assert.match(source,/\|\| retryableContentBlock \|\| retryableHeldPersonalDuplicate \|\| retryableCompanyEditorialBlock \|\| retryablePersonalObservationReview\)/);
+ assert.match(source,/\|\| retryableContentBlock \|\| retryableHeldPersonalDuplicate \|\| retryableVerifiedLatePersonalSource \|\| retryableCompanyEditorialBlock \|\| retryablePersonalObservationReview\)/);
+ assert.match(source,/planVerifiedLatePersonalSourceRebootstrap\(/);
+ assert.match(source,/capabilityConsumed:Boolean\(capabilityResult\.data\?\.consumed_at&&!capabilityResult\.data\?\.revoked_at\)/);
  assert.match(source,/planPersonalObservationalReviewRecovery\(/);
  assert.match(source,/maxAttempts:3/);
  assert.match(source,/planRejectedCompanyRegeneration\(/);

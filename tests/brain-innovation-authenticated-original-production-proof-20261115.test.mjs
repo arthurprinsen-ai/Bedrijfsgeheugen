@@ -17,6 +17,7 @@ const audit=(override={})=>({systemIntegration:{salesExecutionAudit:{
   state:'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED',
   totalEvents7d:164,sampledEvents:164,actionBackedSample:164,
   unsupportedSample:0,missingActionSample:0,currentActionNotDoneSample:1,
+  currentExecutionWithoutEventSample:0,
   scope:'FULL_LAST_7D',externalProviderProof:false,paidOutcomeProof:false,readOnly:true,
   ...override
 }}});
@@ -26,12 +27,14 @@ test('original immutable source census is sanitized and rejects fake provider ou
   assert.deepEqual(result,{
     scope:'FULL_LAST_7D',total:164,historical_writer_backed:164,
     unsupported:0,missing_actions:0,currently_not_done:1,
+    unlogged_execution_attempts:0,internal_source_gap_present:false,
     external_provider_proven:false,business_outcome_proven:false
   });
   for(const altered of [
     {sampledEvents:100},{totalEvents7d:501},{totalEvents7d:0,sampledEvents:0,actionBackedSample:0},
     {actionBackedSample:163},{unsupportedSample:1},
-    {currentActionNotDoneSample:165},{externalProviderProof:true},
+    {currentActionNotDoneSample:165},{currentExecutionWithoutEventSample:165},
+    {externalProviderProof:true},
     {paidOutcomeProof:true},{readOnly:false},{scope:'LATEST_100_ONLY'},
     {state:'END_TO_END_VERIFIED'}
   ])assert.equal(projectOriginalInnovationAdminProof(audit(altered),'FULL_LAST_7D'),null,JSON.stringify(altered));
@@ -120,6 +123,7 @@ test('existing deploySucceeded signed synthetic identities prove original admin 
   assert.deepEqual(proof.innovation_audit_counts,{
     scope:'FULL_LAST_7D',total:164,historical_writer_backed:164,
     unsupported:0,missing_actions:0,currently_not_done:1,
+    unlogged_execution_attempts:0,internal_source_gap_present:false,
     external_provider_proven:false,business_outcome_proven:false
   });
   assert.equal(proof.innovation_audit_failure_code,null);
@@ -150,6 +154,7 @@ test('canonical original release gate rejects fake-green auth, wrong cardinality
     innovation_audit_counts:{
       scope:'FULL_LAST_7D',total:164,historical_writer_backed:164,
       unsupported:0,missing_actions:0,currently_not_done:1,
+      unlogged_execution_attempts:0,internal_source_gap_present:false,
       external_provider_proven:false,business_outcome_proven:false
     }
   };
@@ -179,4 +184,33 @@ test('existing protected production verifier requires exact same signed admin pr
   assert.match(event,/probeInnovationAudit:true/);
   assert.match(event,/deploySucceeded/);
   assert.match(event,/portalAuthProofKey\(deploy\.commitRef\)/);
+});
+
+test('source-only signed admin proof reports one missing reexecution as RED without dropping valid earlier event or claiming delivery',()=>{
+  const body=audit({state:'CURRENT_EXECUTION_EVENT_MISSING',
+    currentExecutionWithoutEventSample:1});
+  const result=projectOriginalInnovationAdminProof(body,'FULL_LAST_7D');
+  assert.equal(result.historical_writer_backed,164);
+  assert.equal(result.unlogged_execution_attempts,1);
+  assert.equal(result.internal_source_gap_present,true);
+  assert.equal(result.external_provider_proven,false);
+  assert.equal(result.business_outcome_proven,false);
+  const proof={innovation_audit_proof:'PROVEN',innovation_audit_admin_verified:true,
+    innovation_audit_nonadmin_denied:true,innovation_audit_unauthenticated_denied:true,
+    innovation_audit_failure_code:null,synthetic_user_cleanup:'DELETED',
+    innovation_audit_counts:result};
+  const v=assertOriginalInnovationProductionReleaseProof(proof);
+  assert.equal(v.unlogged_execution_attempts,1);
+  assert.equal(v.internal_source_gap_present,true);
+  assert.equal(v.delivery_proven,false);
+  assert.equal(projectOriginalInnovationAdminProof(audit({
+    state:'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED',
+    currentExecutionWithoutEventSample:1
+  }),'FULL_LAST_7D'),null,'source-only state must not be green while new attempt is missing');
+  assert.equal(projectOriginalInnovationAdminProof(audit({
+    state:'CURRENT_EXECUTION_EVENT_MISSING',currentExecutionWithoutEventSample:0
+  }),'FULL_LAST_7D'),null,'cannot invent a missing event state');
+  assert.equal(projectOriginalInnovationAdminProof(audit({
+    state:'CURRENT_EXECUTION_EVENT_MISSING',currentExecutionWithoutEventSample:165
+  }),'FULL_LAST_7D'),null,'unlogged count bounded by validated historical events');
 });

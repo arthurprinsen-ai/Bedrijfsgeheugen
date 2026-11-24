@@ -1,0 +1,46 @@
+{
+  "fingerprint": "approved-central-blog|source-bound-protected-pr-contract|20261123-v1",
+  "observed_at": "2026-11-23",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_causes": [
+    "The existing approved-central-blog workflow created open PRs without delivery-hygiene machine metadata or source-bound Brain/ledger/human closure, so every valid queue item failed protected CI.",
+    "A 2026-09-17 typo-duplicate source stayed 'Pending' with an obsolete approval even though the canonical article had already been consolidated with a permanent redirect. Its unchanged writer recreated the same duplicate PR at least eleven times."
+  ],
+  "prevention": [
+    "Keep the original publisher sole writer; auto-materialize exact queue/source/approval identity, immutable Base-SHA and seven scoped candidate files at PR creation, including truthful CANDIDATE_NOT_LIVE closure artifacts.",
+    "Reject source slug when permanent 301 redirect already maps it to another canonical blog, and skip old pages already in main; do not republish or weaken protected SEO tests.",
+    "Publication counts only after Required, CodeQL, BG169, Netlify public URL/SHA readback and ONE BRAIN/Heartbeat. Existing user review and media boundaries remain enforced."
+  ],
+  "evidence": {
+    "original_closed_duplicates": [
+      6112,
+      6105,
+      6074,
+      6059,
+      6034,
+      5965,
+      5930,
+      5869,
+      5775,
+      5741,
+      5331
+    ],
+    "linked_source": "3deda36a-ac8a-81dd-a10f-cb24a260ba7b",
+    "protected_required_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45139429301",
+    "root_regression": "tests/brain-approved-central-blog-candidate-contract-20261123.test.mjs",
+    "provider_post_proof": "PENDING_NOT_A_NEW_POST"
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 11,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-approved-central-blog-candidate-contract-20261123.test.mjs"
+    ]
+  },
+  "current_state": "CODE_CANDIDATE_NOT_LIVE"
+}

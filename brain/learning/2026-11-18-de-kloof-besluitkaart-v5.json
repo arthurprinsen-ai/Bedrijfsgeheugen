@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-18",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|quarterly-report-framework-not-in-magazine|20261118-v5",
+  "failure_class": "CONTENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Het kader over ondernemersbeslissingen bestond alleen in Notion en naslag, niet in het magazine.",
+  "evidence": {
+    "at_utc": "2026-11-18T08:50:00Z",
+    "source": "opdracht Arthur 18 nov 2026 09:42"
+  },
+  "fix": "Besluitkaart-pagina en invulbaar werkblad toegevoegd; oud onderzoek en eigen samenvattingen als hypothese gelabeld.",
+  "prevention_rule": "Kader uit naslag komt pas in een uitgave met bron, jaar en label (feit, eigen analyse, hypothese) per claim.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge",
+    "PDF in portaal 26 pagina's, bytes gelijk aan repo"
+  ]
+}

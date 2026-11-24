@@ -1,0 +1,54 @@
+{
+  "version": "BG-SECURITY-LEARNING-v1",
+  "fingerprint": "security:root-publish:public-internal-source:20261120",
+  "compiler": {
+    "failure_class": "SECRET_EXPOSURE",
+    "scope": "WEBSITE",
+    "security_sensitive": true,
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "symptom": "Internal SQL migration and security CI JavaScript are reachable by anonymous GET on the public production website.",
+  "cause": "Netlify publishes repository root, including build-only artifacts not intended as public static assets; no private-source route denylist existed.",
+  "repair": {
+    "kind": "forced_404_source_routes",
+    "routing_file": "_redirects",
+    "rule": "404!",
+    "preserve": [
+      "/assets/",
+      "/data/",
+      "/portal-v2/",
+      "/.netlify/functions/"
+    ],
+    "test": "tests/brain-site-security-source-exposure-20261120.test.mjs",
+    "production_verification": "Require independent 404 GET and 200 homepage before GREEN."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-site-security-source-exposure-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-site-security-source-exposure-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-site-security-source-exposure-20261120.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Never publish repository source directories as website assets; use an allowlisted build directory as future architecture.",
+    "Fail closed if any database migration, CI script, private config or build manifest returns public HTTP 200.",
+    "Never silently revoke an intentionally token-gated anon database function; migrate it with independently verified caller and permissions."
+  ],
+  "status": "PENDING_EXTERNAL_PRODUCTION_PROOF",
+  "evidence": {
+    "source": "Independent live HTTPS browser readback on 2026-11-20",
+    "observed": {
+      "sql_migration_http": 200,
+      "ci_script_http": 200,
+      "package_manifest_http": 200
+    },
+    "verification_test": "tests/brain-site-security-source-exposure-20261120.test.mjs",
+    "production_closed": false,
+    "terminal_rule": "Only external HTTP 404 on production with public homepage HTTP 200 closes incident after protected merge."
+  }
+}

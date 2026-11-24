@@ -29,7 +29,7 @@ test('delivery preflight allows completion only for identity-bound LIVE_VERIFIED
       { type:'CANDIDATE_TESTS', producer:'BRAIN_DELIVERY', accepted:true, independent:true, taskIdentity:'completion-1', candidateIdentity:'candidate-1' },
       ...['PROTECTED_DELIVERY:BG169','PRODUCTION_IDENTITY:BG169','FUNCTIONAL_READBACK:PRODUCTION_READBACK','OBLIGATIONS_COMPLETE:PRODUCTION_READBACK','CAPABILITY_HANDOFF:BG167','LEARNING_WRITEBACK:BG168_BG166'].map(value => {
         const [type, producer] = value.split(':');
-        return { type, producer, accepted:true, independent:true, taskIdentity:'completion-1', candidateIdentity:'candidate-1', productionIdentity:'production-1',...(type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:completion-1',materialSourceRevision:'source-rev:candidate-1'}}:{}) };
+        return { type, producer, accepted:true, independent:true, taskIdentity:'completion-1', candidateIdentity:'candidate-1', productionIdentity:'production-1',...(type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:completion-1',materialSourceRevision:'source-rev:candidate-1'}}:type==='CAPABILITY_HANDOFF'?{exactProduction:true,metadata:{sourceRevision:'candidate-1',sourceReceiptRef:'original:handoff-readback',consumerAckRef:'original:consumer-processed-ack'}}:type==='LEARNING_WRITEBACK'?{exactProduction:true,metadata:{sourceRevision:'candidate-1',sourceReceiptRef:'original:learning-readback',learningApplicationRef:'original:verified-learning-application'}}:{}) };
       }),
     ],
   });

@@ -1,0 +1,37 @@
+{
+  "fingerprint": "portal-v2-voice-signal-advisor-v1",
+  "obligation_id": "portal-v2-voice-signal-advisor-v1",
+  "date": "2026-11-20",
+  "compiler": {
+    "failure_class": "PORTAL_CAPABILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Portal V2 had per-page questions, source signals and task workflows, but no single consent-driven voice control with customer-configured KPI thresholds, provenance-aware explanations and an owned follow-up action. Without a canonical user-scoped rule, a UI might show invented anomalies or fail to persist changes.",
+  "prevention_rule": "All customer alerts must depend on authenticated, non-demo tenant-sourced values or an explicit missing-data rule. Never classify absent values as threshold breaches. Author rules and assigned actions only through original Portal Domain State / BusinessInput with independent server readback; never create a second store or scheduler. The original Portal Living Interface and Company Intelligence skills, plus existing agent-data-quality/agent-security/agent-website-ux task descriptors, must retain this contract; a drift regression test blocks merge.",
+  "regression_contract": "Voice intent creates a reviewed command; tenant demo/anonymous inputs fail closed; threshold anomalies require numeric source; tasks require explicit owner, due date and triggered rule; production only after exact PR-head CI and Netlify evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-voice-signal-advisor-contract.test.mjs",
+      "tests/brain-portal-voice-signal-agent-skill-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Portal V2 existing app, router, state client, Domain State, 2026-11-20",
+    "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6082",
+    "regression_tests": [
+      "tests/brain-portal-voice-signal-advisor-contract.test.mjs",
+      "portal-v2/tests/voice-signals.test.mjs",
+      "tests/brain-portal-voice-signal-agent-skill-contract.test.mjs"
+    ],
+    "production_readback": "NOT_PROVEN",
+    "source_value_freshness": "unknown until verified by origin"
+  },
+  "outcome": {
+    "implementation": "SOURCE_CANDIDATE",
+    "production": "NOT_PROVEN",
+    "financial_value": "UNMEASURED"
+  }
+}

@@ -97,3 +97,18 @@ test('no second publisher, scheduler, media worker or provider is introduced',()
  assert.match(focus,/def seo_title\(title, focus\):/);
  assert.doesNotMatch(focus,/suffixes\s*=\s*\["wat verandert er voor jou/);
 });
+
+
+test('24 November source topic remains concrete while the existing preparation path survives',()=>{
+ const py=String.raw`import importlib.util
+spec=importlib.util.spec_from_file_location('publisher','tools/site-shell/publish_powerhouse_blog_artifact.py')
+mod=importlib.util.module_from_spec(spec); spec.loader.exec_module(mod)
+data={'title':'Bankverschillen oplossen met Twinfield: praktische controle op betaalreferenties en openstaande facturen','focus_keyword':'Bankverschillen oplossen','body':'Bankverschillen oplossen met Twinfield en betaalreferenties.'}
+f=mod.seo_focus(data); t=mod.seo_title(data['title'],f)
+assert 'bankverschillen' in t.casefold() and 'twinfield' in t.casefold(),repr(t)
+assert 30 <= len(t) <= 60 and 'wat verandert er voor jou?' not in t.casefold(),repr(t)
+assert mod.seo_title('Hoe bereid je je MKB-boekhouding voor op integratie met Twinfield?','MKB-boekhouding') == 'MKB-boekhouding koppelen aan Twinfield'
+`;
+ const result=spawnSync('python3',['-c',py],{encoding:'utf8'});
+ assert.equal(result.status,0,result.stderr+'\n'+result.stdout);
+});

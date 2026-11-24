@@ -1,0 +1,63 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|native-migration-lock|source-lock-871-provider-872-sales-reexecution|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original sales reexecution action migration 20261115235500 was independently applied in native Supabase and present as executable SQL on main, but the single original Git migration-history lock still had only 871 prior records; this blocks unrelated protected releases including original consumer handoff repair PR #5880.",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_SOURCE_LOCK_ACK_DUE",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "change": {
+    "source": "supabase/migration-history.lock.json",
+    "canonical_owner": "Original native Supabase provider and original Git migration history source-lock",
+    "changed_identities": 1,
+    "source_already_applied": true,
+    "additional_database_mutation": false,
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_agent": false
+  },
+  "evidence": {
+    "native_project": "adhjwmvyoixzjtmiroln",
+    "native_applied_count": 872,
+    "native_last_version": "20261115235500",
+    "native_last_name": "sales_action_reexecution_immutable_attempt_lineage_v1",
+    "native_observed_at": "2026-11-15T17:03:59.159987Z",
+    "original_source_count": 871,
+    "original_provider_endpoint": "supabase_migrations.schema_migrations",
+    "original_blocked_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5880",
+    "any_consumer_outcome_proven": false
+  },
+  "prevention": {
+    "original_history_immutable": true,
+    "provider_attested_version_name_only": true,
+    "never_fake_native_applied": true,
+    "not_repeat_sql": true,
+    "allow_later_verified_provider_append": true,
+    "do_not_forge_agent_processed_ack": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-872-source-lock-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-871-source-lock-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-872-source-lock-20261115.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "cause": "Native provider migration applied before Git lock source ACK, so unrelated protected PR gate fails",
+    "prevention_rule": "After each true native provider-applied migration, synchronize one canonical Git source lock from exact read-only version/name under original protected PR and historical prefix tests; never imitate provider execution or bypass tests.",
+    "regression_guard": "tests/brain-original-native-872-source-lock-20261115.test.mjs",
+    "next_owner": "Original Supabase migration authority and ONE BRAIN reliability agent",
+    "effect_proof": "REAL_NATIVE_PROVIDER_872_AND_PROTECTED_SOURCE_LOCK_EXACT_RELEASE_READBACK_REQUIRED"
+  }
+}

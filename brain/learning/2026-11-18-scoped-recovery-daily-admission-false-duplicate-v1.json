@@ -1,0 +1,53 @@
+{
+  "contract": "ORIGINAL_SCOPED_RECOVERY_DAILY_ADMISSION_CORRECTION_V1",
+  "fingerprint": "powerhouse|innovation|scoped-recovery-falsely-blocks-full-daily-workflow|20261118-v1",
+  "root_cause": "The existing first-per-day admission compared all workflow runs by created_at and event alone. It could not distinguish a bounded original_delivery_recovery workflow_dispatch (daily-admission, improve and model-freshness all SKIPPED) from a real daily learning workflow_dispatch. On 2026-11-18 07:04 UTC a successful scoped readback (#44256002607) caused the first true daily attempt (#44256077963) to fail as DUPLICATE_DAILY_RUN_SUPPRESSED, preventing original Engineering and learning jobs.",
+  "prevention_rule": "Use exact native GitHub six-job provenance to exclude bounded original intake/code/delivery recovery runs from daily admission. Also allow at most ONE new actual daily attempt if a preceding genuine daily conclusively FAILED only its read-only daily-admission and ALL five execution/recovery jobs were SKIPPED; a second abort or any actual previously started daily work must remain blocked. Unknown/partial/forged native proof always vetoes replay. Preserve one workflow, one schedule and original Brain lineage.",
+  "evidence": {
+    "production_original_supabase_cron_107": "2026-11-18T03:02:00Z succeeded; resulting self_improvement_cycle quality OWNER_HANDOFF_PENDING, not proof of Engineering code delivery",
+    "native_scoped_recovery": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44256002607",
+    "native_scoped_recovery_result": "success; job original-delivery-recovery success, daily-admission/improve/model-freshness skipped, all other bounded lanes skipped",
+    "native_misclassified_daily": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44256077963",
+    "native_daily_failure": "daily-admission exited 78 DUPLICATE_DAILY_RUN_SUPPRESSED prior_run_id=44256002607; improve/model-freshness/Engineering skipped",
+    "recovery_test": "tests/brain-daily-learning-run-admission-v1.test.mjs",
+    "effect_claim": "SOURCE_CANDIDATE_NOT_LIVE until exact-head protected Required/CodeQL merge and native postmerge daily-run readback",
+    "new_executor": false,
+    "new_scheduler": false,
+    "new_queue": false,
+    "provider_external_send": false,
+    "original_innovation_open_obligations": 14,
+    "independent_effect_verified": false,
+    "safe_original_daily_recovery": "Native prior run 44256077963 failed exclusively at daily-admission, all other five original jobs SKIPPED; original scoped run 44256002607 also had no real daily work.",
+    "new_bounded_retry_guard": "isProvenPreExecutionAdmissionAbort; PRE_EXECUTION_RETRY_BUDGET_EXCEEDED after two admission-only aborts; only one recovery once; never replay prior daily actioned work."
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-learning-run-admission-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-learning-run-admission-v1.test.mjs"
+    ],
+    "negative_cases": [
+      "scoped recovery success/failure/cancelled/timed_out",
+      "prior true daily failure",
+      "forged or partial job readback",
+      "scheduled run cannot be a scoped recovery",
+      "single cron unchanged",
+      "one admission-only aborted full run may retry once",
+      "two aborted full runs hard budget-veto",
+      "previous full daily admitted then later failed remains duplicate-suppressed",
+      "recovery and admission abort native job proof independently fetched"
+    ]
+  },
+  "original_owner": "ONE BRAIN original Engineering and Powerhouse Daily Self Evolution",
+  "rollback": "Protected revert of additive daily admission classifier and tests, retaining exact historical GitHub and Brain evidence",
+  "status": "PROTECTED_SOURCE_CANDIDATE_NOT_YET_LIVE",
+  "terminal_success": false
+}

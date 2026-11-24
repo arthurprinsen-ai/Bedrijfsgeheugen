@@ -6,7 +6,7 @@ import {MIRA_SOURCE_TOPIC_QUERIES,MIRA_SOURCE_ALTERNATE_QUERIES}
 // Additional short Dutch query phrasings for exactly the existing twelve
 // canonical PH-P subjects. Queries discover leads; they are NOT source evidence.
 export const MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES=Object.freeze({
- 'offertes-zonder-opvolging':'offerte opvolging bedrijven',
+ 'offertes-zonder-opvolging':'offerte geen reactie ondernemer',
  'directie-bottleneck':'directeur besluitvorming vertraging',
  'kennisoverdracht':'kennisverlies personeel bedrijven',
  'excel-chaos':'Excel fouten administraties',
@@ -26,6 +26,22 @@ export const MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES=Object.freeze({
 // existing original radar search slot; do not change global shared rotation,
 // add provider calls, or treat the search term as evidence or an approval.
 export const MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES=Object.freeze({
+  // The original general quote-followup query returned mainly vendor-launch news
+  // (real 16-Nov radar: 0.661/0.690), not an actual unresolved SME quote.
+  // Seek dated real-life 'stuck quote / no reply' evidence, without changing
+  // accepted-source score/date/URL/topic or adding another search slot.
+  'offertes-zonder-opvolging':'offerte blijft liggen klanten',
+  // Same original source slot; prefer common operational words to low-recall
+  // vendor headlines or the English verb 'excel' from school achievements.
+  'excel-chaos':'Excel administratie fouten',
+  'dubbele-invoer':'dubbele invoer administratie',
+  'projectmarge':'bouw meerwerk kosten',
+  'groei-zonder-winst':'krappe marges mkb',
+  'capaciteitsplanning':'bedrijven personeelstekort',
+  // 16-Nov independent Dutch invoice-error news demonstrates the missing
+  // real MKB payment process friction that generic 'onbetaalde facturen'
+  // news search often misses. This is DISCOVERY ONLY, never proof or approval.
+  'debiteuren':'bedrijven factuurfouten betalingsachterstanden',
   'klantafhankelijkheid':'mkb klantconcentratie omzet'
 });
 const familyLookup=new Map(MIRA_SOURCE_TOPIC_QUERIES.flatMap(f=>[

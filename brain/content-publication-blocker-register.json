@@ -4,6 +4,36 @@
  "rule": "Before building or changing any blog/post/newsletter flow, read this register. A listed blocker must not recur: apply its prevention, or document why it no longer applies.",
  "historical_blockers": [
   {
+    "fingerprint": "powerhouse|daily-blog|seo-action-verb-generic-title|20261118-v1",
+    "date": "2026-11-18",
+    "channels": [
+      "blog"
+    ],
+    "cause": "Canonical original source 'Hoe bereid je je MKB-boekhouding...' yielded SEO focus 'bereid' and generic lowercase title 'bereid: wat verandert er voor jou?' in protected blog PR #6028; required preflight correctly blocked.",
+    "prevention": "Original daily blog publisher seo_focus excludes leading generic action verbs, keeps source noun phrases/hyphens; source-bound seo_title outputs informative title <=60; exact regression and original publishing protections remain active; no duplicate sender, fabricated provider proof or bypass.",
+    "source": "brain/learning/2026-11-18-original-blog-seo-action-verb-title-v1.json"
+  },
+  {
+    "fingerprint": "powerhouse|linkedin-personal|late-verified-user-fact-stale-hold|20261118-v1",
+    "date": "2026-11-18",
+    "channels": [
+      "linkedin_personal"
+    ],
+    "cause": "Original content-loop does not rebootstrap an already existing hold/blocked PERSONAL_TRUTH_SOURCE_UNVERIFIED decision after a newer verified user-authored first-person source is materialized. Original source owner remained silent until manually called; original provider API then separately returned 429 insufficient_quota.",
+    "prevention": "Within original content-loop use original semantic first-person user fact gate and immutable same-day source arrival newer than held decision, check unconsumed original provider authority, no earlier side effect, and replay only the original orchestrator once. Retain independent personal review and valid provider receipt; API quota remains external.",
+    "source": "brain/learning/2026-11-18-original-personal-late-source-rebootstrap-v1.json"
+  },
+  {
+    "fingerprint": "powerhouse|daily-blog|committed-tree-preview-static-i18n-one-gap|20261118-v1",
+    "date": "2026-11-18",
+    "channels": [
+      "blog"
+    ],
+    "cause": "Original 18-Nov canonical protected blog writer run 44296846787 completed first-stage 76-entry EN cache but the committed-tree preview exposed a new exact 220-character joined heading/excerpt source; sole approved OpenAI translation provider returned HTTP 429 credit_balance_exhausted. No protected blog PR or external post.",
+    "prevention": "Inspect both original cache build phases and exact committed-tree source keys. Add only the independently observed source and reviewed faithful EN to the existing original-day translation patch, update the same regression and agent skill, keep provider billing truth non-green, use the original idempotent writer and protected CI/merge/Netlify/public NL+EN readback before LIVE_PROVEN.",
+    "source": "docs/changes/2026-11-18-original-blog-committed-preview-cache.md"
+  },
+  {
    "fingerprint": "metadata-only-mira-identity-false-positive-v1",
    "date": "2026-09-18",
    "channels": [

@@ -1,0 +1,59 @@
+{
+  "fingerprint": "site|rituals|interactie-beleving|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|interactie-beleving|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": false,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "Alleen stijl maakte site en portaal nog geen belevenis; het besluit van 17 nov (rust, exclusieve begeerte, me time) vraagt ook interactie. Daarnaast stonden letterlijke backslash-n-tekens in portal-v2/index.html, waardoor losse tekst linksboven in het portaal verscheen.",
+  "correction": "Eén gedeeld interactiescript (langzame onthulling, haarlijn-voortgang, zachte paginawissel, ademmoment, begroeting naar tijdstip) dat prefers-reduced-motion respecteert en zonder JS niets verbergt; letterlijke backslash-n-tekens vervangen door regeleinden.",
+  "prevention": [
+    "Interactie alleen als presentatie: geen tekst-, route- of logicawijziging en geen verborgen inhoud zonder vangnet.",
+    "Controleer gegenereerde of handgeschreven HTML op letterlijke backslash-n-reeksen tussen tags.",
+    "Echte V18-megamenu headings en gewone links kunnen buiten header.v17-header worden gerenderd: focus op de door JS gemarkeerde data-bg-megamenu-root en data-bg-megamenu-heading/link; bewaak zwart rgb(0,0,0), vet >=700, promo-uitzondering en page parity met echte browser.",
+    "Bij een megamenu met witte links én donkere promotiekaarten moet het gehele echte paneel getoetst worden op berekend contrast. Ordinary links zwart op wit; donkere card-H3 wit op donker; geen generieke zwarte kleur op promo-koppen."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-beleving.js",
+      "tools/bouw-v18-chrome-alles.mjs",
+      "portal-v2/index.html"
+    ],
+    "outcome": "Lokaal: gedragstest site en portaal desktop en mobiel, 24 gerelateerde tests groen. Live-readback open.",
+    "actual_browser_regression": {
+      "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44168414229",
+      "source": "tools/site-shell/v18-megamenu-browser-check.mjs",
+      "failure": "OVERS ONGELOOF heading expected rgb(0,0,0) got rgb(20,23,26); repeated on 12 attempts",
+      "root_cause": "Prior fallback selector scoped to header.v17-header while the dynamically marked menu root can be outside header; Rituals ink color overrode contract",
+      "candidate_fix": "Scope exact root/heading/ordinary link data attributes with high specificity; no test relaxation, no global nav or promo card overrides",
+      "status": "RETEST_REQUIRED"
+    },
+    "dark_promo_browser_regression": {
+      "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44171286227",
+      "observed": "Real browser v18-header-menu-contrast-check.mjs failed 12 consecutive attempts on dark promo H3 black on rgb(20,23,26) and rgb(7,31,85), ratio 1.17:1 and 1.34:1",
+      "root_cause": "Generated inline mega-menu CSS enforced black on all descendants of ordinary links; Solutions dark promo was marked as ordinary link; dark cards must remain white-on-dark while ordinary labels and headings remain black-on-white",
+      "correction": "Same original generator adds higher-specificity white color for H3 promo headings not marked data-bg-megamenu-heading inside actual header mega panels. Keep existing ordinary-link black contract; no test bypass.",
+      "test": "tools/site-shell/v18-header-menu-contrast-check.mjs original live browser required re-run",
+      "status": "CANDIDATE_RETEST_REQUIRED"
+    }
+  }
+}

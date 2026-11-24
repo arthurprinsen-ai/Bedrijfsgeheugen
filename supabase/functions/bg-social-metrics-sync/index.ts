@@ -1,3 +1,4 @@
+import { verifiedEditorialRegistrySelection } from '../_shared/linkedin-editorial-registry-proof.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
 import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
@@ -108,10 +109,44 @@ async function resolveInstagram(db:any,media:any){
 }
 // Shares only already LIVE_PROVEN organization publications into the existing
 // owned-brand social_posts index. No external publish, no metrics and no consent bypass.
+
+// The original #177 registry is the only writer for this measurement handoff.
+// Missing/ambiguous evidence stays unknown; existing non-null metadata is never overwritten.
+async function registerOriginalEditorialSelections(db:any,proofs:any[],batch:any[]){
+  let registered=0,unknown=0,conflicts=0;
+  for(const post of batch){
+    const matches=proofs.filter(p=>p.external_id===post.external_post_id&&p.status==='LIVE_PROVEN');
+    if(matches.length!==1){unknown++;continue;}
+    const proof=matches[0];
+    const {data:artifacts,error:artifactError}=await db.from('powerhouse_content_artifacts')
+      .select('channel,run_date,status,body,generation_evidence').eq('run_date',proof.publication_date)
+      .eq('channel',proof.channel).eq('status','published').limit(2);
+    if(artifactError||artifacts?.length!==1){unknown++;continue;}
+    const selection=await verifiedEditorialRegistrySelection({proof,artifact:artifacts[0],post});
+    if(!selection){unknown++;continue;}
+    const {data:existing,error:readError}=await db.from('social_posts').select('post_id,content_pillar,content_hash,format')
+      .eq('tenant_id',post.tenant_id).eq('platform','linkedin').eq('channel_kind',post.channel_kind)
+      .eq('external_post_id',post.external_post_id).maybeSingle();
+    if(readError||!existing){unknown++;continue;}
+    if(existing.content_pillar===selection.content_pillar){continue;}
+    if(existing.content_pillar!==null||(existing.content_hash&&existing.content_hash!==selection.content_hash)
+      ||(existing.format&&!['text','text_story'].includes(existing.format))){conflicts++;continue;}
+    let write=db.from('social_posts').update({content_pillar:selection.content_pillar})
+      .eq('tenant_id',post.tenant_id).eq('platform','linkedin').eq('channel_kind',post.channel_kind)
+      .eq('external_post_id',post.external_post_id).is('content_pillar',null);
+    write=existing.content_hash?write.eq('content_hash',existing.content_hash):write.is('content_hash',null);
+    write=existing.format?write.eq('format',existing.format):write.is('format',null);
+    const {data:updated,error:writeError}=await write.select('post_id');
+    if(writeError||updated?.length!==1){conflicts++;continue;}
+    registered++;
+  }
+  return {state:'SELECTED_PILLAR_LINEAGE_ONLY',registered,unknown,conflicts,learningApplied:false};
+}
+
 async function registerCompanyProofs(db:any){
   const since=new Date(Date.now()-35*86400000).toISOString().slice(0,10);
   const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
-    .select('tenant_id,channel,status,publication_date,external_id,published_at,live_proven_at')
+    .select('tenant_id,channel,status,publication_date,external_id,published_at,live_proven_at,evidence')
     .eq('tenant_id','canonical').eq('channel','linkedin_company').eq('status','LIVE_PROVEN')
     .gte('publication_date',since).not('live_proven_at','is',null)
     .order('publication_date',{ascending:false}).limit(35);
@@ -122,7 +157,9 @@ async function registerCompanyProofs(db:any){
     .upsert(batch,{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:true})
     .select('post_id');
   if(writeError)throw new Error('COMPANY_SOCIAL_REGISTRY_WRITE:'+writeError.message);
+  const editorialSelections=await registerOriginalEditorialSelections(db,proofs||[],batch);
   return {status:'VERIFIED_POSTS_INDEXED_ONLY',eligible:batch.length,registered:(inserted||[]).length,
+    editorial_selections:editorialSelections,
     metrics_scope:'UNKNOWN_NO_ORGANIZATION_ANALYTICS_PERMISSION',
     authority:'canonical_content_publication_obligations'};
 }
@@ -149,7 +186,9 @@ async function registerPersonalProofs(db:any){
     if(writeError){guardRejected.push({post_id:post.post_id,reason:clean(writeError.message).slice(0,70)});continue;}
     registered+=(inserted||[]).length;
   }
+  const editorialSelections=await registerOriginalEditorialSelections(db,proofs||[],batch);
   return {status:guardRejected.length?'PARTIAL_GUARD_REJECTED':'PROVIDER_ACKNOWLEDGED_POSTS_INDEXED_ONLY',
+    editorial_selections:editorialSelections,
     eligible:batch.length,registered,guard_rejected:guardRejected.slice(0,10),
     authority:'canonical_content_publication_obligations',decision:'linkedin-personal-provider-ack-truth-v1',
     metrics_scope:'REACTIONS_ONLY_VIA_PROVIDER_READBACK'};
@@ -228,17 +267,25 @@ async function reconcileOriginalPublicationMetricHandoffs(db:any){
  const {data:obs,error}=await db.from('content_publication_obligations')
   .select('tenant_id,publication_date,channel,status,external_id,published_at,live_proven_at,measured_at,learned_at,metrics,updated_at')
   .eq('tenant_id','canonical').eq('status','LIVE_PROVEN')
-  .in('channel',['linkedin_personal','linkedin_company'])
+  .in('channel',['linkedin_personal','linkedin_company','instagram'])
   .gte('publication_date',since).lte('publication_date',localDay())
   .not('live_proven_at','is',null).order('publication_date',{ascending:false}).limit(22);
  if(error)throw new Error('ORIGINAL_METRIC_OBLIGATION_READ:'+error.message);
  let savedCount=0,overdue=0,errors=0;const stages:any[]=[];
  for(const ob of obs||[]){
   const kind=ob.channel==='linkedin_personal'?'canonical':'bedrijfsgeheugen';
-  const {data:posts,error:pe}=await db.from('social_posts')
+  // The SAME original #177 owns all social media metric receipts. For IG,
+  // the identity is numeric Meta media ID plus owned-brand channel kind.
+  // An account aggregate or historical Buffer row never proves a post.
+  let postQuery=db.from('social_posts')
    .select('tenant_id,post_id,external_post_id,channel_kind,published_at')
-   .eq('tenant_id',kind).eq('platform','linkedin')
-   .eq('channel_kind',ob.channel).eq('external_post_id',ob.external_id).limit(2);
+   .eq('tenant_id',kind)
+   .eq('platform',ob.channel==='instagram'?'instagram':'linkedin')
+   .eq('external_post_id',ob.external_id);
+  postQuery=ob.channel==='instagram'
+   ?postQuery.in('channel_kind',['instagram_business','instagram_company'])
+   :postQuery.eq('channel_kind',ob.channel);
+  const {data:posts,error:pe}=await postQuery.limit(2);
   if(pe){errors++;stages.push({day:ob.publication_date,channel:ob.channel,stage:'POST_READ_ERROR'});continue;}
   const post=posts?.[0];
   if(posts?.length!==1){stages.push({day:ob.publication_date,channel:ob.channel,stage:'POST_IDENTITY_NOT_UNIQUE'});continue;}

@@ -32,7 +32,7 @@ test('same original generator makes one source-locked correction for final-truth
  assert.match(source,/editorial_rejection_codes:\[\.\.\.editorialViolations\.map/);
  assert.match(source,/personalTruthViolation\?\['PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED'\]/);
  assert.equal([...source.matchAll(/\bconst\s+revisionInput\s*=/g)].length,1,'no extra publisher/editor');
- assert.match(source,/personalEditorialViolations\(revisedText,personalSource\?\.evidence\|\|\{\}\)\.length===0/);
+ assert.match(source,/personalEditorialViolations\(revisedText,\{\.\.\.\(personalSource\?\.evidence\|\|\{\}\),recentPersonalPosts\}\)\.length===0/);
  assert.match(source,/personalFinalCopyValid\(revisedText,personalSource\?\.evidence\|\|\{\}\)/);
  assert.match(source,/if\(editorialViolations\.length\) throw new Error\('PERSONAL_EDITORIAL_CONTRACT_FAILED:/);
  assert.match(source,/if\(!personalFinalCopyValid\(bodyText,personalSource\?\.evidence\|\|\{\}\)\) throw new Error\('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED'\)/);

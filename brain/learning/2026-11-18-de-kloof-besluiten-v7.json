@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-18",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|quarterly-report-paraphrased-source-wrong|20261118-v7",
+  "failure_class": "CONTENT_ERROR",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Eigen samenvatting van Panteia-typen (kolom valkuil) week af van het kader in Notion; kader was alleen op twee pagina's toegepast.",
+  "evidence": {
+    "at_utc": "2026-11-18T09:15:00Z",
+    "source": "opdracht Arthur 18 nov 2026 10:06"
+  },
+  "fix": "Tabel teruggebracht naar de kenmerken uit de bron; besluitkaart-regel in elk bouwblok; eigen suggesties als zodanig benoemd.",
+  "prevention_rule": "Cijfers en kenmerken uit een bron worden overgenomen zoals in het kader staat; eigen duiding krijgt een apart label.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge",
+    "PDF 27 pagina's, bytes gelijk aan repo"
+  ]
+}

@@ -371,6 +371,15 @@ jobs:
           --routes-json '${{ steps.scope.outputs.routes }}'
           --routes-ok '${{ steps.scope.outputs.browser_required != 'true' || (steps.routes.outcome == 'success' && steps.pricing.outcome == 'success') }}'
           --output .artifacts/production-release-readback.json
+      - name: Reconcile protected original innovation code release into SAME ONE BRAIN operation
+        if: ${{ success() && steps.scope.outputs.deployment_required == 'true' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          node --test tests/brain-innovation-original-code-production-receipt-20261115.test.mjs
+          node scripts/brain/innovation-original-code-production-receipt.mjs --record
       - name: Capture production readback failure as Brain learning evidence
         if: failure()
         env:

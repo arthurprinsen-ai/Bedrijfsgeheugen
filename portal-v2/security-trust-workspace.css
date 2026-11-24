@@ -39,3 +39,20 @@
 .safety-compass :is(a,summary):focus-visible{outline:3px solid #2457ff;outline-offset:3px}
 @media(max-width:760px){.safety-compass-lead{grid-template-columns:1fr}.safety-signal{justify-items:start;text-align:left;padding:16px}.safety-metrics{grid-template-columns:1fr}.safety-metrics>div+div{border-left:0;border-top:1px solid #e0e8f1}.safety-areas,.safety-next{grid-template-columns:1fr}.safety-areas{padding:0 14px 14px}.safety-next{padding:0 14px 14px}.safety-area-title{margin:16px 14px 10px}}
 @media(prefers-reduced-motion:reduce){.safety-compass *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+/* Existing authenticated Security Trust Center: fresh heartbeat ONLY. */
+.guardian-live{grid-column:1/-1;display:grid;grid-template-columns:20px minmax(0,1fr);align-items:start;gap:12px;margin:0 0 4px;padding:15px 17px;border:1px solid #d9e1ec;border-radius:16px;background:#f5f7fb;color:#34475a}
+.guardian-live-dot{width:16px;height:16px;border:3px solid currentColor;border-radius:50%;margin-top:8px;background:currentColor;box-shadow:0 0 0 5px #ffffffbd}
+.guardian-live-main{display:grid;gap:4px;min-width:0}
+.guardian-live-caption{font-size:.69rem;letter-spacing:.09em;text-transform:uppercase;font-weight:850}
+.guardian-live-main strong{font-size:1.05rem;line-height:1.3;color:inherit}
+.guardian-live-meta{font-size:.81rem;font-variant-numeric:tabular-nums;line-height:1.5}
+.guardian-live-main small{font-size:.74rem;color:#52657c;line-height:1.55;max-width:75ch}
+.guardian-live--verified{border-color:#b0ddc8;background:#eef9f2;color:#116348}
+.guardian-live--critical{border-color:#edb8b9;background:#fff2f2;color:#a62830}
+.guardian-live--review{border-color:#e5cf9c;background:#fff8e9;color:#95621b}
+.guardian-live--unknown{border-color:#cfd6df;background:#f5f7fb;color:#566274}
+.guardian-live--verified .guardian-live-dot{animation:bgGuardianPulse 2.4s ease-in-out infinite}
+@keyframes bgGuardianPulse{0%,100%{box-shadow:0 0 0 4px #20956620;opacity:1}50%{box-shadow:0 0 0 11px #20956604;opacity:.7}}
+@media(max-width:560px){.guardian-live{padding:13px;gap:9px;grid-template-columns:18px minmax(0,1fr)}.guardian-live-main strong{font-size:.96rem}}
+@media(prefers-reduced-motion:reduce){.guardian-live--verified .guardian-live-dot{animation:none!important}}

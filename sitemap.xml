@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://www.bedrijfsgeheugen.nl/</loc><lastmod>2026-08-16</lastmod></url>
-  <url><loc>https://www.bedrijfsgeheugen.nl/afas-koppeling</loc><lastmod>2026-08-16</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/afas-koppeling</loc><lastmod>2026-11-17</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/afmaakindex</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/ai-act</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/ai-modelwijzer</loc><lastmod>2026-10-27</lastmod></url>
@@ -50,7 +50,7 @@
   <url><loc>https://www.bedrijfsgeheugen.nl/over-ons</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/privacy</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/product</loc><lastmod>2026-08-16</lastmod></url>
-  <url><loc>https://www.bedrijfsgeheugen.nl/systemen-koppelen</loc><lastmod>2026-08-16</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/systemen-koppelen</loc><lastmod>2026-11-17</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/twinfield-koppeling</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/voor-mkb</loc><lastmod>2026-08-16</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/webshop-koppeling</loc><lastmod>2026-08-16</lastmod></url>
@@ -117,5 +117,12 @@
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/hoe-jouw-mkb-zich-praktisch-voorbereidt-op-de-verwachte-twinfield-open/</loc><lastmod>2026-11-08</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/twinfield-en-mobiele-betalingen-praktijkplan-voor-mkb-om-verbindingen/</loc><lastmod>2026-11-12</lastmod></url>
   <url><loc>https://www.bedrijfsgeheugen.nl/blog/voorbereid-op-twinfield-integratie-praktisch-stappenplan-voor-mkb-dat/</loc><lastmod>2026-11-13</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/blog/stap-voor-stap-mkb-klaarmaken-voor-integratie-tussen-boekhouding-en-mo/</loc><lastmod>2026-11-15</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/blog/twinfield-koppelen-met-mobiele-betalingen-praktisch-stappenplan-voor-m/</loc><lastmod>2026-11-16</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/blog/bereid-je-boekhouding-voor-op-mobiele-betalingen-praktische-integratie/</loc><lastmod>2026-11-17</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/blog/hoe-bereid-je-je-mkb-boekhouding-voor-op-integratie-met-mobiele-betaal/</loc><lastmod>2026-11-18</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/blog/voorbereiden-op-een-twinfield-koppeling-voor-mobiele-betalingen-prakti/</loc><lastmod>2026-11-22</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/blog/voorbereiden-op-twinfield-api-praktisch-stappenplan-voor-mkb-om-mobiel/</loc><lastmod>2026-11-23</lastmod></url>
+  <url><loc>https://www.bedrijfsgeheugen.nl/blog/voorbereid-op-een-mogelijke-twinfield-api-hoe-je-als-mkb-je-boekhoudin/</loc><lastmod>2026-11-24</lastmod></url>
 </urlset>
 

@@ -1,0 +1,68 @@
+{
+  "fingerprint": "personal-linkedin|old-founder-source-producer-conflicts-with-lifestyle-only|20261116-v1",
+  "status": "SOURCE_CANDIDATE_NOT_DEPLOYED",
+  "date": "2026-11-16",
+  "owner": "original powerhouse-content-orchestrator editorial + original bg_schrijfregels source owner",
+  "incident_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+  "compiler": {
+    "failure_class": "EDITORIAL_SOURCE_POLICY_DRIFT",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 12
+  },
+  "root_cause": "12 October 7 personal LinkedIn active database writing rules and the existing v2 SQL source materializer still explicitly generate Bedrijfsgeheugen, AI-native founder/business journey candidates for linkedin_personal despite the binding November 15/16 personal-life-only contract. Later source and provider gates correctly refuse these, but the source producer remains misrouted and the lane has no verified personal event.",
+  "evidence": {
+    "production_original_day": "2026-11-16",
+    "original_channel_decision": "hold/blocked",
+    "actual_capability_reason": "PERSONAL_TRUTH_SOURCE_UNVERIFIED",
+    "original_personal_obligation_status": "PLANNED",
+    "current_correct_next_action": "PERSONAL_SOURCE_PROOF_REQUIRED",
+    "original_personal_provider_id": null,
+    "source_recommendation": "daily-dream-journey",
+    "source_recommendation_personal_life_topic": false,
+    "source_recommendation_business_topic": true,
+    "active_legacy_rules_count": 12,
+    "verified_personal_recommendation_count": 0,
+    "original_personal_artifact_count": 0,
+    "producer_rpc": "powerhouse_materialize_source_backed_channel_candidates_v2",
+    "source_migration_legacy": "supabase/migrations/20261007182000_personal_linkedin_predictive_dream_journey_v1.sql",
+    "enforced_source_truth": "supabase/functions/_shared/personal-first-person-story-gate.mjs",
+    "recent_protected_recovery": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5917",
+    "release_verified": false,
+    "live_post_verified_today": false
+  },
+  "prevention": [
+    "Retire the exact observed stale founder/business personal writing rules in original bg_schrijfregels, preserving other channel rules.",
+    "Replace only v2 original materialization with a v1-preserving wrapper, never write a new founder/business recommendation to personal, and quarantine current-day old AI business suggestions.",
+    "No new sender/scheduler, no provider side effect or source fact forgery, no lowering the final personal-life source, review SHA or duplicate gate.",
+    "Original owner must only use unused first-party confirmed non-sensitive personal life experiences, then exact final copy + provider author/readback + ONE BRAIN PROCESSED and Heartbeat.",
+    "No authentic source means ORIGINAL OPEN and evidence due, not a fake lifestyle story or falsely green publication."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-life-only-editorial-producer-20261116.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-life-only-editorial-producer-20261116.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs",
+      "tests/brain-personal-life-only-editorial-producer-20261116.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-personal-life-only-editorial-producer-20261116.test.mjs",
+    "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs",
+    "tests/delivery-regelgeving-actueel.test.mjs"
+  ],
+  "acceptance": [
+    "protected Required/CodeQL/Supabase Preview exact-head passed",
+    "protected merge in single original original lane",
+    "native 12 legacy rules become status=vervallen and one replacement active",
+    "native v2 materialization no longer creates business recommendation for personal",
+    "original next natural publisher still enabled",
+    "actual personal post only if authenticated, unused, fully user-fact backed and independently reviewed exact hash",
+    "provider and consumer readback proof before LIVE"
+  ]
+}

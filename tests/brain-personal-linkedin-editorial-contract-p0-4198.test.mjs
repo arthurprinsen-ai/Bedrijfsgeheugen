@@ -40,7 +40,7 @@ test('verification of numeric claim must match exact phrase and explicit source'
 
 test('generic company marketing and direct calls to buy stay out of personal',()=>{
   assert.ok(codes(valid+'\n\nBoek nu een gratis scan.').includes('PERSONAL_EDITORIAL_PROMOTION'));
-  assert.ok(codes(valid.replace('Welke verandering in jouw bedrijf zou je het liefst eerder zien aankomen?','Ontdek onze diensten.')).includes('PERSONAL_EDITORIAL_OPEN_QUESTION'));
+  assert.ok(codes(valid.replace('Welke verandering in jouw bedrijf zou je het liefst eerder zien aankomen?','Ontdek onze diensten.')).includes('PERSONAL_EDITORIAL_PROMOTION'));
   assert.ok(codes(valid.replace('Vandaag merkte ik','Vandaag ✨ merkte ik')).includes('PERSONAL_EDITORIAL_EMOJI'));
 });
 

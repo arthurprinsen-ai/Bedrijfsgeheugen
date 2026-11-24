@@ -17,8 +17,8 @@ function trustedEvidence() {
     proof('PRODUCTION_IDENTITY', 'BG169', production),
     proof('FUNCTIONAL_READBACK', 'PRODUCTION_READBACK', production),
     proof('OBLIGATIONS_COMPLETE', 'PRODUCTION_READBACK', { ...production, exactProduction:true, metadata:{ materialSourceRef:'material-readback:change-4', materialSourceRevision:'source-rev:candidate-abc' } }),
-    proof('CAPABILITY_HANDOFF', 'BG167', production),
-    proof('LEARNING_WRITEBACK', 'BG168_BG166', production),
+    proof('CAPABILITY_HANDOFF', 'BG167', {...production,exactProduction:true,metadata:{sourceRevision:CANDIDATE,sourceReceiptRef:'original:handoff-readback',consumerAckRef:'original:consumer-processed-ack'}}),
+    proof('LEARNING_WRITEBACK', 'BG168_BG166', {...production,exactProduction:true,metadata:{sourceRevision:CANDIDATE,sourceReceiptRef:'original:learning-readback',learningApplicationRef:'original:verified-learning-application'}}),
   ];
 }
 

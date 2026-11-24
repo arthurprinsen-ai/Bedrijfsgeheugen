@@ -5,6 +5,9 @@ import {createConnectorApi} from './api.js';
 import {toHumanStatus,activationEvidenceId} from './status.js';
 import {CONNECTOR_PORTAL_PAGES} from './portal-routing.js';
 import {connectorRecoveryAdvice} from './recovery.js';
+import {mountAfasLiveConnection} from './afas-live-ui.js';
+import {CONNECTOR_PROVIDER_CATALOG,CONNECTOR_PROVIDER_GROUPS,findConnectorProvider,buildCustomConnectorTemplate,providerCapabilityLabel} from './provider-catalog.js';
+import {TRANSFER_INTERVALS,transferSummary} from './transfer-policy.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const STEP_LABELS={source:'Bron',selection:'Selectie',information:'Informatie',target:'Doel',schedule:'Planning',test:'Test'};
@@ -14,7 +17,9 @@ export const WIZARD_CSS=`.bg-kw{margin-top:1.2rem;border-top:1px solid var(--lij
 export const DATA_USE_CSS=`.bg-kw__privacy{margin:1.2rem 0;padding:1rem;border:1px solid #cad4df;border-radius:18px;background:linear-gradient(130deg,#f4f8fc,#fff);min-width:0}.bg-kw__privacy legend{font-weight:800;padding:0 .3rem}.bg-kw__privacy>p{font-size:.88rem;max-width:58ch}.bg-kw__privacy-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.7rem}.bg-kw__privacy-grid label{display:flex;gap:.6rem;align-items:flex-start;padding:1rem;border:1px solid #cbd5df;border-radius:14px;background:#fff;cursor:pointer}.bg-kw__privacy-grid label:has(input:checked){border:2px solid #2742d6;background:#f2f5ff}.bg-kw__privacy-grid input{accent-color:#2742d6;min-width:20px;min-height:20px;margin-top:2px}.bg-kw__privacy-grid strong,.bg-kw__privacy-grid small{display:block}.bg-kw__privacy-grid small{font-size:.78rem;color:#4b5563;margin-top:.3rem}.bg-kw__sovereignty{margin-top:.8rem;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;font-size:.81rem}.bg-kw__sovereignty a{font-weight:700;text-underline-offset:3px}.bg-kw__sovereignty-status{border-radius:999px;background:#ecf0f4;padding:.3rem .6rem}.bg-kw__privacy-note{font-size:.78rem;color:#4b5563}@media(max-width:750px){.bg-kw__privacy-grid{grid-template-columns:1fr}.bg-kw__privacy{padding:.8rem}}`;
 export const ROUTING_CSS=`.bg-kw__routing{border:1px solid #cad4df;border-radius:16px;padding:1rem;margin:.8rem 0;background:#fff}.bg-kw__routing legend{font-weight:800}.bg-kw__routechoices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.45rem}.bg-kw__routechoices label{display:flex;align-items:flex-start;gap:.55rem;border:1px solid #d8e0e9;border-radius:12px;padding:.7rem;cursor:pointer}.bg-kw__routechoices input{min-width:20px;min-height:20px;accent-color:#2742d6}.bg-kw__routechoices label:has(input:checked){background:#f1f5ff;border-color:#2742d6}.bg-kw__routechoices small{display:block;color:#4b5563}.bg-kw__routing[hidden]{display:none}.bg-kw__repair{padding:.9rem;border:1px solid #dfbb80;border-radius:12px;background:#fffaf0;margin-top:1rem}.bg-kw__repair h3{margin:0 0 .3rem}.bg-kw__repair p{margin:.35rem 0}@media(max-width:700px){.bg-kw__routechoices{grid-template-columns:1fr}}`;
 export const TRUST_CSS=`.bg-kw__trust{margin:.75rem 0;padding:1rem;background:#f7faff;border:1px solid #d2dff0;border-radius:16px}.bg-kw__trust-row{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;padding:.75rem 0;border-top:1px solid #dde5ee}.bg-kw__trust-row strong{color:#223b60}.bg-kw__trust-row p{font-size:.8rem;color:#526078;line-height:1.5}.bg-kw__trust-badge{border-radius:999px;border:1px solid #e0bf88;background:#fff1da;color:#75460d;padding:.35rem .65rem;font-size:.73rem;white-space:nowrap}.bg-kw__trust-badge[data-proof="CONFIGURED"],.bg-kw__trust-badge[data-proof="CONTROL_PRESENT"],.bg-kw__trust-badge[data-proof="DISABLED"]{background:#edf2fa;border-color:#c7d6e5;color:#355477}.bg-kw__trust-summary{font-weight:750;color:#774c15}@media(max-width:390px){.bg-kw__trust-row{display:block}.bg-kw__trust-badge{display:inline-block;margin:.5rem 0}}@media(prefers-reduced-motion:reduce){.bg-kw__trust *{animation:none!important;transition:none!important}}`;
-export const wizardStyles=()=>WIZARD_CSS+DATA_USE_CSS+ROUTING_CSS+TRUST_CSS;
+export const DESIGN_CSS=`.bg-kw__custom,.bg-kw__transfer{border:1px solid #c5d7d8;border-radius:16px;padding:1rem;margin:1rem 0;background:#f8fbfb}.bg-kw__custom h3,.bg-kw__transfer legend{font-size:1.06rem;font-weight:800}.bg-kw__customgrid,.bg-kw__transfergrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem}.bg-kw__customgrid label,.bg-kw__transfergrid label{display:grid;gap:.35rem;font-size:.86rem;font-weight:650}.bg-kw__customgrid input,.bg-kw__customgrid select,.bg-kw__transfergrid input,.bg-kw__transfergrid select{box-sizing:border-box;min-width:0;width:100%;min-height:44px;border:1px solid #b7cacf;background:#fff;border-radius:9px;padding:8px 10px;color:#183c48}.bg-kw__custom button{margin-top:.8rem}.bg-kw__custom p,.bg-kw__transfer p{font-size:.82rem;max-width:80ch;color:#4b6170}.bg-kw__custom [data-bg-custom-status]{padding:.75rem;border-radius:10px;background:#eaf2f7}.bg-kw__transfer .bg-kw__transfer-note{color:#73551b;font-weight:600;margin-top:.8rem}.bg-kw__transfer label[data-bg-interval-wrap][hidden],.bg-kw__transfer label[data-bg-key-wrap][hidden]{display:none}.bg-kw__custom[hidden],.bg-kw__transfer[hidden]{display:none}.bg-kw__transfer span[data-bg-policy-availability]{display:block;background:#f0f5f4;border-radius:9px;padding:.6rem;margin-top:.55rem;font-size:.78rem}@media(max-width:700px){.bg-kw__custom,.bg-kw__transfer{padding:.8rem}.bg-kw__customgrid,.bg-kw__transfergrid{grid-template-columns:1fr}}`;
+export const MONITOR_CSS=`.bg-kw__saved-actions{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;margin:.55rem 0}.bg-kw__saved-actions button{min-height:44px;max-width:100%;border-radius:9px}.bg-kw__live-monitor{border:1px solid #cededa;border-radius:12px;padding:12px;margin-top:10px;background:#f4faf8}.bg-kw__live-monitor strong{display:block}.bg-kw__live-monitor p{font-size:.84rem;line-height:1.5}.bg-kw__live-monitor p[data-proof="true"]{color:#115d45}.bg-kw__live-monitor p[data-proof="false"]{color:#745318}.bg-kw__saved li{padding:.65rem 0;border-bottom:1px solid #dbe6e6}.bg-kw__saved li>p{font-size:.82rem}.bg-kw__draft-edit-note{font-size:.8rem;color:#615519}.bg-kw__saved-actions .knop{min-height:44px}@media(max-width:650px){.bg-kw__saved-actions button{width:100%}}`;
+export const wizardStyles=()=>WIZARD_CSS+DATA_USE_CSS+ROUTING_CSS+TRUST_CSS+DESIGN_CSS+MONITOR_CSS;
 
 export function renderEvidenceFlow(result={}){
   const stages=Array.isArray(result.stages)?result.stages:[];
@@ -48,6 +53,17 @@ export function renderWizardShell(){
       <button type="button" class="bg-kw__route" data-bg-route="template"><strong>Kies een voorbeeld</strong><span>Start met een veilige, herkenbare standaard.</span></button>
       <button type="button" class="bg-kw__route" data-bg-route="manual"><strong>Bouw zelf</strong><span>Kies bron, informatie en doel stap voor stap.</span></button>
     </div>
+    <section class="bg-kw__custom" data-bg-custom hidden aria-label="Een koppeling op maat ontwerpen">
+      <h3>Bouw een koppeling op maat</h3>
+      <p>Kies onafhankelijk welk systeem de bron is en welk systeem de gegevens ontvangt. Je kunt tientallen bronnen ontwerpen. Voor de meeste leveranciers moet de echte API- of OAuth-koppeling nog worden aangesloten.</p>
+      <div class="bg-kw__customgrid">
+        <label>Van welk systeem?<select data-bg-custom-source></select></label>
+        <label>Naar welk systeem?<select data-bg-custom-target></select></label>
+        <label>Gegevensvelden (komma-gescheiden)<input data-bg-custom-fields placeholder="orderId, wijzigingsdatum, bedrag" maxlength="550"></label>
+      </div>
+      <button type="button" class="knop" data-bg-custom-create>Maak ontwerp</button>
+      <p data-bg-custom-status role="status">Een opgeslagen ontwerp is nog geen live providerverbinding.</p>
+    </section>
     <div class="bg-kw__workspace" data-bg-workspace>
       <label class="bg-kw__intent"><span>Wat wil je automatisch laten gebeuren?</span><textarea data-bg-intent rows="3" placeholder="Bijvoorbeeld: haal PDF-facturen uit Outlook en zet de gegevens dagelijks in de Datahub"></textarea></label>
       <button type="button" class="knop" data-bg-make>Maak mijn koppeling</button>
@@ -63,6 +79,26 @@ export function renderWizardShell(){
        </div>
        <div class="bg-kw__sovereignty"><span data-bg-sovereignty-status class="bg-kw__sovereignty-status" role="status">Databeleid controleren…</span><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=data-ai-passport">Bekijk opslag, verwerking en AI-modelkeuze ↗</a></div>
        <p class="bg-kw__privacy-note">Toestemming voor AI-advies is geen toestemming voor modeltraining. Documentextractie en externe systemen hebben eigen gegevensstromen; controleer hun locaties en verwerkers vóór activatie. Een aangevraagd beleid is nog geen geverifieerde AI-infrastructuur.</p>
+     </fieldset>
+     <fieldset class="bg-kw__transfer" data-bg-transfer hidden>
+       <legend>Richting, ritme en gegevensverwerking</legend>
+       <p>Stel precies in wat de koppeling moet doen. Elke keuze wordt met de versie van het ontwerp vastgelegd. Automatische uitvoering werkt pas na afzonderlijk bewezen provider- en uitvoerderondersteuning.</p>
+       <div class="bg-kw__transfergrid">
+         <label>Richting<select data-bg-transfer-key="direction"><option value="SOURCE_TO_TARGET">Van bron naar doel →</option><option value="TARGET_TO_SOURCE">Terug van doel naar bron ←</option><option value="BIDIRECTIONAL">Beide kanten ↔</option></select></label>
+         <label>Wanneer gegevens ophalen?<select data-bg-transfer-key="trigger"><option value="MANUAL">Alleen als ik op verversen klik</option><option value="INTERVAL">Op vast interval</option><option value="WEBHOOK">Bij een melding / webhook</option><option value="CDC">Bij gewijzigde bronrecords (CDC)</option></select></label>
+         <label data-bg-interval-wrap hidden>Hoe vaak?<select data-bg-transfer-key="intervalMinutes"><option value="5">Iedere 5 minuten</option><option value="15">Iedere 15 minuten</option><option value="30">Iedere 30 minuten</option><option value="60">Elk uur</option><option value="180">Iedere 3 uur</option><option value="360">Iedere 6 uur</option><option value="720">Iedere 12 uur</option><option value="1440">Dagelijks</option><option value="10080">Wekelijks</option></select></label>
+         <label>Wat verandert er bij een sync?<select data-bg-transfer-key="mode"><option value="SNAPSHOT">Snapshot van geselecteerde data</option><option value="INCREMENTAL_UPSERT">Alleen nieuwe en gewijzigde records</option><option value="APPEND_ONLY">Alleen toevoegen, niets wijzigen</option></select></label>
+         <label data-bg-key-wrap>Unieke recordsleutel<select data-bg-transfer-key="primaryKey"></select></label>
+         <label data-bg-key-wrap>Wijzigingsveld (cursor)<select data-bg-transfer-key="cursorField"></select></label>
+         <label>Verwijderen in bron<select data-bg-transfer-key="deletionPolicy"><option value="KEEP">Nooit automatisch verwijderen</option><option value="TOMBSTONE">Markeer als verwijderd (verificatie vereist)</option><option value="REVIEW_FIRST">Vraag goedkeuring vóór doorzetten</option></select></label>
+         <label>Bij verschillende waarden<select data-bg-transfer-key="conflictPolicy"><option value="MANUAL_REVIEW">Eerst laten controleren</option><option value="SOURCE_WINS">Bron heeft voorrang (apart bewijs nodig)</option><option value="TARGET_WINS">Doel heeft voorrang (apart bewijs nodig)</option><option value="NEWEST_WINS">Nieuwste wijziging wint (apart bewijs nodig)</option></select></label>
+         <label>Historische gegevens<select data-bg-transfer-key="initialLoad"><option value="NONE">Alleen nieuwe inrichting; geen backfill</option><option value="LAST_30_DAYS">Laatste 30 dagen (verificatie vereist)</option><option value="ALL_AUTHORIZED">Alle toegestane historie (verificatie vereist)</option></select></label>
+         <label>Bij een fout<select data-bg-transfer-key="failurePolicy"><option value="SAFE_RETRY_THEN_REVIEW">Veilig opnieuw proberen, anders review</option><option value="HOLD_FOR_REVIEW">Stop en zet in controlelijst</option></select></label>
+         <label>Doel van deze datastroom<input maxlength="500" data-bg-transfer-key="purpose" placeholder="Bijv. Dagelijkse orderanalyse"></label>
+         <label>Verantwoordelijke rol<input maxlength="100" data-bg-transfer-key="owner" placeholder="Bijv. Finance of Operations"></label>
+       </div>
+       <p class="bg-kw__transfer-note">Tweerichtingsverkeer, verwijderen, historische imports, incrementeel verwerken en automatische verversing worden niet geactiveerd voordat de betreffende provideradapter, rechten en uitvoering aantoonbaar werken.</p>
+       <span data-bg-policy-availability role="status">Standaard: handmatige éénrichtingskoppeling. Extra uitvoerders zijn niet automatisch aangesloten.</span>
      </fieldset>
      <fieldset class="bg-kw__routing" data-bg-fields hidden><legend>Welke gegevens wil je gebruiken?</legend><p>Kies één of meer gegevensvelden. Alleen deze velden worden meegenomen in de doelmapping.</p><div class="bg-kw__routechoices" data-bg-fieldchoices></div></fieldset>
      <fieldset class="bg-kw__routing" data-bg-pages hidden><legend>Op welke pagina's wil je deze gegevens zien?</legend><p>Je kunt meerdere bestemmingen kiezen. Dit is een verzoek om gegevens te gebruiken; echte waarden verschijnen pas na geverifieerde opslag.</p><div class="bg-kw__routechoices" data-bg-pagechoices></div></fieldset>
@@ -123,6 +159,9 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   if(!container)return null;
   ensureStyles();
   container.insertAdjacentHTML('beforeend',renderWizardShell());
+  // Real provider ingestion has its own explicit auth/field-consent step.
+  // Keep the original sample-only wizard for other templates.
+  mountAfasLiveConnection(container,{api});
   const root=container.querySelector('[data-bg-wizard]');
   const message=root.querySelector('[data-bg-message]');
   const definitionOut=root.querySelector('[data-bg-definition]');
@@ -130,9 +169,141 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   const activate=root.querySelector('[data-bg-activate]');
   const activateReason=root.querySelector('[data-bg-activate-reason]');
   let state=null,draft=null,lastTest=null,draftDirty=false,dataUseMode='CONNECTION_ONLY';
+  const showDefinition=()=>{
+    if(!state){definitionOut.textContent='Nog geen bron en doel geselecteerd.';return;}
+    try{definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);}
+    catch(error){definitionOut.textContent='Kies eerst de vereiste unieke sleutel en wijzigingsvelden. '+String(error?.code||'Inrichting onvolledig');}
+  };
+  const customBox=root.querySelector('[data-bg-custom]');
+  const makeCustomSelect=(selector)=>{
+    const node=customBox.querySelector(selector);
+    for(const group of CONNECTOR_PROVIDER_GROUPS){
+      const tag=document.createElement('optgroup');tag.label=group;
+      for(const p of CONNECTOR_PROVIDER_CATALOG.filter(x=>x.group===group)){
+        const opt=document.createElement('option');opt.value=p.id;opt.textContent=p.name;
+        tag.append(opt);
+      }
+      node.append(tag);
+    }
+    return node;
+  };
+  const customSource=makeCustomSelect('[data-bg-custom-source]');
+  const customTarget=makeCustomSelect('[data-bg-custom-target]');
+  customSource.value='salesforce';customTarget.value='datahub';
+  customBox.querySelector('[data-bg-custom-fields]').value='recordId, wijzigingsdatum, bedrag';
+  const noteCustom=()=>{
+    const from=findConnectorProvider(customSource.value),to=findConnectorProvider(customTarget.value);
+    customBox.querySelector('[data-bg-custom-status]').textContent=
+      (from?.name||'Bron')+' → '+(to?.name||'Doel')+
+      ' · '+providerCapabilityLabel(customSource.value)+
+      '. De koppeling is pas echt actief na aanbiederautorisatie, provideradapter, bron- en doelbewijs.';
+  };
+  customSource.addEventListener('change',noteCustom);
+  customTarget.addEventListener('change',noteCustom);
+  noteCustom();
+  const renderTransfer=()=>{
+    const box=root.querySelector('[data-bg-transfer]');
+    box.hidden=!state;if(!state)return;
+    const p=state.answers.transferPolicy||{};
+    for(const field of box.querySelectorAll('[data-bg-transfer-key]')){
+      const key=field.dataset.bgTransferKey;
+      if(key==='primaryKey'||key==='cursorField'){
+        const old=field.value;field.replaceChildren();
+        const none=document.createElement('option');none.value='';none.textContent='Kies veld…';field.append(none);
+        for(const f of state.template.fields||[]){
+          const name=typeof f==='string'?f:f.key;
+          const opt=document.createElement('option');opt.value=name;opt.textContent=name;field.append(opt);
+        }
+      }
+      const value=p[key]==null?'':String(p[key]);
+      field.value=value;
+    }
+    const interval=box.querySelector('[data-bg-interval-wrap]');
+    interval.hidden=p.trigger!=='INTERVAL';
+    const fieldLabels=box.querySelectorAll('[data-bg-key-wrap]');
+    fieldLabels[0].hidden=p.mode!=='INCREMENTAL_UPSERT'&&p.direction!=='BIDIRECTIONAL';
+    fieldLabels[1].hidden=p.mode!=='INCREMENTAL_UPSERT';
+    const runtime=box.querySelector('[data-bg-policy-availability]');
+    try{
+      const pattern=transferSummary(p,{fields:state.template.fields||[]});
+      runtime.textContent=pattern.direction+' · '+pattern.cadence+
+        ' · dit is een ontwerp. Een interval, webhook of tweerichtingskeuze start niet zelf een synchronisatie.';
+    }catch(error){runtime.textContent='Onvolledig: kies een unieke sleutel en een wijzigingsveld voordat je kunt opslaan. '+String(error?.code||'');}
+  };
+
 
   const say=text=>{message.textContent=text||'';};
   const savedList=root.querySelector('[data-bg-saved-list]');
+  const restoreEditableCustom=(item)=>{
+    if(!String(item?.templateId||'').startsWith('custom-'))return false;
+    const sourceId=item.source?.providerId,targetId=item.target?.providerId;
+    const fieldNames=(item.documentSchema?.fields||[]).map(field=>typeof field==='string'?field:field?.key);
+    if(!sourceId||!targetId||!fieldNames.length||fieldNames.some(field=>typeof field!=='string'))return false;
+    let template;
+    try{template=buildCustomConnectorTemplate({sourceId,targetId,fields:fieldNames});}
+    catch{return false;}
+    if(state&&(!draft||draftDirty)
+      &&!window.confirm('Er zijn niet-opgeslagen wijzigingen. Wil je deze verlaten om de gekozen koppeling te bewerken?'))return false;
+    let restored=createWizardState(template);
+    restored=applyAnswer(restored,'selectedFields',Array.isArray(item.routing?.selectedFields)
+      ?item.routing.selectedFields.filter(field=>fieldNames.includes(field)):[]);
+    restored=applyAnswer(restored,'portalPages',Array.isArray(item.routing?.portalPages)?item.routing.portalPages:[]);
+    const mode=['CONNECTION_ONLY','PORTAL_INSIGHTS','PORTAL_AI'].includes(item.dataUse?.mode)
+      ?item.dataUse.mode:'CONNECTION_ONLY';
+    restored=applyAnswer(restored,'dataUseMode',mode);
+    restored=applyAnswer(restored,'transferPolicy',item.transferPolicy||restored.answers.transferPolicy);
+    if(item.source?.connectionId)restored=applyAnswer(restored,'connection',item.source.connectionId);
+    state=restored;draft=item;lastTest=null;draftDirty=false;dataUseMode=mode;
+    root.querySelectorAll('input[name="bgDataUseMode"]').forEach(radio=>{
+      radio.checked=radio.value===mode;
+    });
+    // Editing the old version is NEVER new proof; original PUT rechecks
+    // policy and invalidates activated/version-bound execution evidence.
+    invalidateEvidence('Bestaande instelling geopend. Wijzigingen eerst opslaan als concept; eerdere activatie- of testbewijzen tellen niet opnieuw.',true);
+    customBox.hidden=true;
+    renderQuestion(root,state);renderRouting();showDefinition();
+    say('Je bewerkt '+String(item.name||'de koppeling')+' (versie '+String(item.version)+
+      '). Bewaar je wijziging; de provider en frequentie moeten daarna opnieuw worden gecontroleerd.');
+    root.querySelector('[data-bg-transfer]')?.scrollIntoView?.({behavior:'smooth',block:'center'});
+    return true;
+  };
+  const monitorEntry=async(item,region)=>{
+    region.replaceChildren();
+    const heading=document.createElement('h4');heading.textContent='Echte uitvoeringscontrole';
+    region.append(heading);
+    try{
+      const report=await api.health(item.id);
+      if(report?.contract!=='CONNECTOR_PROOF_HEALTH_V1'||report.connectorId!==item.id)
+        throw new Error('INVALID_MONITOR_RECEIPT');
+      const add=(label,value)=>{
+        const p=document.createElement('p');
+        const bold=document.createElement('strong');bold.textContent=label;
+        p.append(bold,document.createTextNode(' '+String(value)));region.append(p);
+        return p;
+      };
+      add('Ingesteld:',report.requestedDirection+' · '+report.requestedCadence+' · '+report.requestedMode);
+      add('Configuratie:',report.configurationState==='Active'?'Actief opgeslagen ontwerp':report.configurationState||'Concept');
+      const proof=add('Werkelijke brondata:',report.actualSourceDataVerified
+        ?String(report.sourceRecordCount)+' rij(en) bevestigd via echte provider, serveropslag en teruglezing.'
+        :report.connectionVerified?'Providerverbinding bevestigd; nog geen bronrijen bewezen.'
+        :'Geen echt provider- en bronopslagbewijs voor deze versie.');
+      proof.dataset.proof=String(report.actualSourceDataVerified===true);
+      if(report.lastSourceReadAt){
+        add('Laatst bewezen opgehaald:',new Date(report.lastSourceReadAt).toLocaleString('nl-NL'));
+      }
+      if(report.lastExecutionState)add('Laatste uitvoering:',report.lastExecutionState);
+      add('Automatische verversing:',report.automaticExecutionVerified
+        ?'Onafhankelijk bevestigd'
+        :'Nog niet bewezen; een ingesteld interval of webhook is geen draaiende uitvoerder.');
+      if(report.automaticExecutionVerified!==true&&report.requestedCadence!=='Handmatig'){
+        add('Vervolgactie:','De canonieke uitvoerder moet dit interval eerst kunnen verwerken, met provider- en doelreadback.');
+      }
+    }catch{
+      const p=document.createElement('p');
+      p.textContent='De actuele bron- en uitvoeringsbewijzen konden niet veilig worden teruggelezen. Geen betrouwbare status beschikbaar.';
+      region.append(p);
+    }
+  };
   const refreshSaved=async()=>{
     try{
       const items=await api.list();
@@ -146,9 +317,42 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
         const name=document.createElement('strong');
         name.textContent=String(item.name||item.templateId||'Koppeling').slice(0,80);
         const description=document.createElement('p');
-        description.textContent=item.state==='Active'?'Configuratie actief. Echte brondata niet bewezen.':item.state==='Paused'?'Gepauzeerd':'Concept';
+        description.textContent=item.state==='Active'
+          ?'Configuratie actief. Bekijk de onafhankelijke status om echte bronverwerking te bevestigen.'
+          :item.state==='Paused'?'Gepauzeerd':'Concept';
+        if(item.transferPolicy){
+          try{
+            const summary=transferSummary(item.transferPolicy);
+            const detail=document.createElement('p');detail.className='bg-kw__draft-edit-note';
+            detail.textContent='Gewenste datastroom: '+summary.direction+' · '+summary.cadence+' · '+summary.mode+
+              '. Een ingestelde frequentie is geen bewijs van automatische synchronisatie.';
+            li.append(detail);
+          }catch{/* An invalid stored policy must not claim a valid cadence. */}
+        }
         li.append(name,description);
         if(typeof item.id==='string'&&item.id){
+          const buttons=document.createElement('div');buttons.className='bg-kw__saved-actions';
+          const monitorButton=document.createElement('button');
+          monitorButton.type='button';monitorButton.className='knop licht';
+          monitorButton.textContent='Bekijk echte synchronisatiestatus';
+          const monitor=document.createElement('section');monitor.className='bg-kw__live-monitor';
+          monitor.hidden=true;monitor.setAttribute('aria-label','Aantoonbare verwerking per connector');
+          monitorButton.setAttribute('aria-expanded','false');
+          monitorButton.addEventListener('click',async()=>{
+            if(!monitor.hidden){monitor.hidden=true;monitorButton.setAttribute('aria-expanded','false');return;}
+            monitor.hidden=false;monitorButton.setAttribute('aria-expanded','true');
+            monitor.textContent='Bron- en uitvoeringsbewijzen teruglezen…';
+            await monitorEntry(item,monitor);
+          });
+          buttons.append(monitorButton);
+          if(String(item.templateId||'').startsWith('custom-')){
+            const editButton=document.createElement('button');editButton.type='button';
+            editButton.className='knop licht';editButton.textContent='Bewerk richting en frequentie';
+            editButton.addEventListener('click',()=>{if(!restoreEditableCustom(item))
+              say('Dit ontwerp kan niet veilig als bewerkbare koppeling worden hersteld. Er is niets gewijzigd.');});
+            buttons.append(editButton);
+          }
+          li.append(buttons,monitor);
           const checkButton=document.createElement('button');
           checkButton.type='button';checkButton.className='knop licht';checkButton.textContent='Bekijk veiligheid en bronbewijs';
           const proof=document.createElement('section');proof.className='bg-kw__trust';proof.hidden=true;
@@ -194,6 +398,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   const renderRouting=()=>{
     const fieldsRoot=root.querySelector('[data-bg-fields]');
     const pagesRoot=root.querySelector('[data-bg-pages]');
+    renderTransfer();
     fieldsRoot.hidden=!state;
     pagesRoot.hidden=!state||dataUseMode==='CONNECTION_ONLY';
     const readout=root.querySelector('[data-bg-journey-readout]');
@@ -213,7 +418,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   const chooseTemplate=template=>{
     invalidateEvidence('Eerst deze gekozen koppeling veilig testen.');
     state=applyAnswer(createWizardState(template),'dataUseMode',dataUseMode);
-    definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+    showDefinition();
     renderQuestion(root,state);
     renderRouting();
     say(`${template.title} gekozen. Alleen ontbrekende keuzes worden nog gevraagd.`);
@@ -221,9 +426,9 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
 
   root.querySelector('[data-bg-save-draft]').addEventListener('click',async()=>{
     if(!state){say('Kies eerst een systeem of maak een AI-voorstel.');return;}
-    const definition=toConnectorDefinition(state);
-    if(!definition.mappings.length){say('Selecteer minimaal één gegevensveld.');return;}
     try{
+      const definition=toConnectorDefinition(state);
+      if(!definition.mappings.length){say('Selecteer minimaal één gegevensveld.');return;}
       if(draft){draft=await api.saveDraft(draft.id||draft.connectorId,definition);}
       else draft=await api.createDraft(definition);
       draftDirty=false;
@@ -241,7 +446,7 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     root.querySelector('[data-bg-template-list]').innerHTML=templateListHtml();
     root.querySelectorAll('[data-template-id]').forEach(item=>item.addEventListener('click',()=>chooseTemplate(findTemplate(item.dataset.templateId))));
     renderRouting();
-    definitionOut.textContent='Nog geen nieuwe koppeling geselecteerd.';
+    showDefinition();
     say('Kies een volgend systeem. Bestaande concepten blijven bewaard.');
   });
   void refreshSaved();
@@ -252,13 +457,31 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
   });
   root.querySelectorAll('[data-bg-route]').forEach(button=>button.addEventListener('click',()=>{
     const route=button.dataset.bgRoute;
-    if(route==='template'||route==='manual'){
+    if(route==='manual'){
+      customBox.hidden=false;noteCustom();customSource.focus();
+      say('Kies twee systemen onafhankelijk en leg daarna richting, frequentie, veldbetekenis en veiligheid vast. Dit is eerst een ontwerp.');
+    }else if(route==='template'){
+      customBox.hidden=true;
       const list=root.querySelector('[data-bg-template-list]');
       list.hidden=false;list.innerHTML=templateListHtml();
       list.querySelectorAll('[data-template-id]').forEach(item=>item.addEventListener('click',()=>chooseTemplate(findTemplate(item.dataset.templateId))));
       say(route==='manual'?'Kies eerst de bron die het dichtst bij je situatie ligt. Technische details kun je later aanpassen.':'Kies een voorbeeld dat het meest lijkt op wat je wilt bereiken.');
     }else root.querySelector('[data-bg-intent]').focus();
   }));
+  customBox.querySelector('[data-bg-custom-create]').addEventListener('click',()=>{
+    const fields=customBox.querySelector('[data-bg-custom-fields]').value.split(',').map(x=>x.trim()).filter(Boolean);
+    try{
+      const template=buildCustomConnectorTemplate({
+        sourceId:customSource.value,targetId:customTarget.value,fields
+      });
+      chooseTemplate(template);
+      customBox.hidden=true;
+      say('Ontwerp gemaakt: '+template.title+'. Configureer richting en frequentie en bewaar het als concept. Een aanbiederadapter en gebruikersautorisatie ontbreken nog.');
+    }catch(error){
+      customBox.querySelector('[data-bg-custom-status]').textContent=
+        'Controleer verschillende bron en doel, een geldig doel en 1–40 unieke veldnamen zonder spaties. '+String(error?.code||'');
+    }
+  });
   root.querySelector('[data-bg-make]').addEventListener('click',async()=>{
     const intent=root.querySelector('[data-bg-intent]').value.trim();
     if(!intent){say('Omschrijf eerst wat je automatisch wilt laten gebeuren.');return;}
@@ -275,12 +498,27 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
     }catch(error){say(error.code==='UNAUTHORIZED'?'Log opnieuw in om AI-begeleiding te gebruiken.':'AI-begeleiding is nu niet beschikbaar. Je kunt direct een voorbeeld kiezen.');}
   });
   root.addEventListener('change',event=>{
+    const transferKey=event.target?.dataset?.bgTransferKey;
+    if(state&&transferKey){
+      const p={...(state.answers.transferPolicy||{})};
+      let value=event.target.value;
+      if(transferKey==='intervalMinutes')value=Number(value);
+      if(transferKey==='primaryKey'||transferKey==='cursorField')value=value||null;
+      p[transferKey]=value;
+      if(transferKey==='trigger')
+        p.intervalMinutes=value==='INTERVAL'?1440:null;
+      invalidateEvidence('Richting, schema of verversbeleid is gewijzigd. Bestaand testbewijs is niet meer geldig.',true);
+      state=applyAnswer(state,'transferPolicy',p);
+      showDefinition();renderRouting();
+      say('Ontwerp aangepast. De werkelijke mogelijkheden en het abonnement worden bij activeren opnieuw gecontroleerd.');
+      return;
+    }
     if(event.target?.name==='bgDataUseMode'){
       dataUseMode=event.target.value;
       if(state){
         invalidateEvidence('Het toegestane datagebruik is gewijzigd. Een nieuwe test en nieuwe toestemming zijn nodig.',true);
         state=applyAnswer(state,'dataUseMode',dataUseMode);
-        definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+        showDefinition();
       }
       renderRouting();
       say(dataUseMode==='CONNECTION_ONLY'?'Alleen koppelen gekozen. Datahub-activatie vereist eerst je uitdrukkelijke keuze voor portaalgebruik.':'Jouw datagebruik wordt uitsluitend voor deze koppeling vastgelegd.');
@@ -294,19 +532,19 @@ export function mountConnectorWizard(container,{api=createConnectorApi(),askGuid
       if(event.target.checked)values.add(event.target.dataset[prop]);else values.delete(event.target.dataset[prop]);
       invalidateEvidence('Je gegevenskeuze is gewijzigd. Een nieuwe veilige test is nodig.',true);
       state=applyAnswer(state,key,[...values]);
-      definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+      showDefinition();
       renderRouting();
       return;
     }
     const key=event.target?.dataset?.bgAnswer;if(!key||!state)return;
     invalidateEvidence(undefined,true);
     state=applyAnswer(state,key,event.target.value);
-    definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);
+    showDefinition();
     renderQuestion(root,state);
   });
   root.addEventListener('click',async event=>{
     const answerKey=event.target?.dataset?.bgAnswerButton;
-    if(answerKey&&state){invalidateEvidence(undefined,true);state=applyAnswer(state,answerKey,true);definitionOut.textContent=JSON.stringify(toConnectorDefinition(state),null,2);renderQuestion(root,state);return;}
+    if(answerKey&&state){invalidateEvidence(undefined,true);state=applyAnswer(state,answerKey,true);showDefinition();renderQuestion(root,state);return;}
     if(event.target?.matches('[data-bg-safe-test]')&&state){
       try{
         if(!state.answers.selectedFields?.length){say('Kies minimaal één gegevensveld.');return;}

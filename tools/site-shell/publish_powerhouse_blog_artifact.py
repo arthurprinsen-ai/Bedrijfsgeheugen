@@ -108,6 +108,11 @@ def seo_focus(data):
     meaningful = words[leading:]
     # A pronoun inside the first words is no topic either ("MKB zich").
     meaningful = [word for word in meaningful if word.casefold() not in {"je", "jij", "jouw", "jullie", "u", "uw", "zich", "mijn", "ons", "onze", "we", "wij"}]
+    # "Hoe bereid je je MKB-boekhouding ..." begins with an action verb,
+    # not the topic. Keep the actual noun phrase and its hyphenation.
+    generic_actions = {"bereid", "bereiden", "voorbereiden", "voorbereid", "maak", "maken", "zorg", "zorgen"}
+    while meaningful and meaningful[0].casefold() in generic_actions:
+        meaningful = meaningful[1:]
     # Editorial verbs + prepositions are not a meaningful search topic.
     if [word.casefold() for word in meaningful[:2]] == ["publiceren", "voor"]:
         meaningful = meaningful[2:]
@@ -116,8 +121,8 @@ def seo_focus(data):
     raw_words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", raw)
     generic_focus = {"stap", "stappen", "stappenplan", "plan", "tips", "update", "gids",
                      "praktisch", "voorbereid", "voorbereiden", "introductie", "uitleg"}
-    raw_ok = (raw_words and raw_words[0].casefold() not in starters | generic_focus
-              and raw_words[-1].casefold() not in starters | generic_focus)
+    raw_ok = (raw_words and raw_words[0].casefold() not in starters | generic_focus | generic_actions
+              and raw_words[-1].casefold() not in starters | generic_focus | generic_actions)
     candidates = [raw] if raw_ok else []
     # Prefer the actual connected business subjects when a title explicitly
     # describes an integration BETWEEN two systems. "Stap" or "MKB" alone is
@@ -132,8 +137,16 @@ def seo_focus(data):
             exact_pair = f"{pair.group(1).strip()} en {pair.group(2).strip()}"
             if 15 <= len(exact_pair) <= 55:
                 candidates.append(exact_pair)
-    if len(meaningful) >= 2:
-        candidates.append(" ".join(meaningful[:2]))
+    if len(meaningful) >= 2 and meaningful[1].casefold() not in (starters | {"op", "met", "aan", "en", "of"}):
+        # Preserve the exact original hyphenated subject ONLY for an
+        # action-verb question. Do not silently rewrite older Twinfield
+        # and other already certified noun-phrase selection contracts.
+        source_question = bool(re.match(r"(?i)^hoe bereid (?:je|jij|u)\b", title))
+        pair = re.search(
+            r"(?<!\w)" + re.escape(meaningful[0]) + r"[\s-]+" + re.escape(meaningful[1]) + r"(?!\w)",
+            title, flags=re.I
+        )
+        candidates.append(pair.group(0) if source_question and pair else " ".join(meaningful[:2]))
     if meaningful and meaningful[0].casefold() not in starters:
         candidates.append(meaningful[0])
     haystack = (title + " " + body).casefold()
@@ -142,13 +155,24 @@ def seo_focus(data):
             return candidate
     return "Bedrijfsgeheugen"
 
-def seo_title(title, focus):
+def _seo_title_raw(title, focus):
     title = re.sub(r"\s+", " ", title).strip()
+    # Source-bound question-title normalization: do not turn the first verb
+    # ("bereid") into a generic "wat verandert er voor jou" SEO headline.
+    # The pattern only rearranges explicit subject and target from the source.
+    source_title = re.sub(r"\s*\([^)]*\)\s*\??$", "", title).rstrip(" ?")
+    preparation = re.fullmatch(
+        r"hoe bereid (?:je|jij|u) (?:je|jouw|uw) (.+?) voor op (?:integratie|koppeling) met (.+)",
+        source_title, re.I
+    )
+    if preparation:
+        candidate = f"{preparation.group(1).strip()} koppelen aan {preparation.group(2).strip()}"
+        if len(candidate) <= 60 and focus.casefold() in candidate.casefold():
+            return candidate[0].upper() + candidate[1:]
     if focus.casefold() not in title.casefold():
         title = f"{focus}: {title}"
     if len(title) <= 60:
         return title
-
     # Replacing an 80-character title with "Stap: wat verandert er voor jou?"
     # destroyed the actual topic and produced a misleading SEO keyword.
     # Keep the original source-verified subjects rather than inventing a
@@ -164,9 +188,15 @@ def seo_title(title, focus):
     compact = substantive[:61].rsplit(" ", 1)[0].rstrip(" ,.;:-")
     while compact and re.search(r"(?i)\s+(?:en|of|tussen|voor|met|in|op|de|het|een)$", compact):
         compact = compact.rsplit(" ", 1)[0]
-    if 30 <= len(compact) <= 60:
+    if 30 <= len(compact) <= 60 and focus.casefold() in compact.casefold():
         return compact
     return (focus[0].upper() + focus[1:] + ": praktische aanpak")[:60].rstrip(" ,.;:-")
+
+def seo_title(title, focus):
+    # A published title never starts lowercase: the focus keyword is lowercase,
+    # and "focus: suffix" / "focus: title" were published as-is (20261120).
+    value = _seo_title_raw(title, focus)
+    return value[:1].upper() + value[1:] if value else value
 
 def seo_meta(meta, focus):
     value = re.sub(r"\s+", " ", meta).strip()

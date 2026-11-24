@@ -39,8 +39,8 @@ test('personal source collection cannot claim personal lived experience nor rela
  assert.match(radar,/observational_personal_theme_verified:Boolean\(personalTopic\)/);
  assert.match(radar,/first_person_claims_present:false/);
  assert.match(radar,/max_age_days:MAX_AGE_DAYS/);
- assert.match(radar,/ok:errors\.length===0&&allSourceReady/);
- assert.match(radar,/state:allSourceReady\?'SOURCE_READY':'SOURCE_RECOVERY_DUE'/);
+ assert.match(radar,/ok:miraBusinessSourceReady/);
+ assert.match(radar,/state:!miraBusinessSourceReady\?'SOURCE_RECOVERY_DUE':allSourceReady\?'SOURCE_READY':'MIRA_SOURCE_READY_PERSONAL_RECOVERY_DUE'/);
  assert.match(radar,/runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS/);
 });
 test('existing source-to-recommendation materializer is called within original radar only',()=>{

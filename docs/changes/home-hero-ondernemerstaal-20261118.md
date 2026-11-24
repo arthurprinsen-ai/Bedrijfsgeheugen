@@ -1,0 +1,5 @@
+# Homepage: kop en lead in ondernemerstaal
+
+Arthur vroeg de site aansprekender te maken vanuit de problemen en beslissingen van ondernemers, met de oplossing en de "me time" als uitkomst. Leesbeoordeling van de live homepage: de eerste stap (gratis scan) was duidelijk, maar de kop "Je bedrijf verandert elke dag. Je besturing moet mee." zegt niet wat het product doet en de lead noemt onderdelen in plaats van probleem en uitkomst.
+Wijziging (alleen `tools/site-shell/apply-daily-steering-positioning.mjs`, NL en EN, plus de test): kop "Een week vrij, en je bedrijf loopt door." en een lead die het probleem noemt (kennis in hoofd, mailbox en Excel), wat Bedrijfsgeheugen vastlegt, de uitkomst (minder brandjes, tijd voor jezelf), dat het een laag bovenop AFAS, Exact Online en Microsoft 365 is, en de gratis scan als eerste stap. Geen nieuwe cijfers of garanties.
+Niet bewezen: live-readback, effect op doorklik naar de scan. Niet aangepast in deze PR: de Frisse blik (live is de V18-prototypeweergave zonder prijs en duur), de klantcase-placeholders op de homepage en de kopteksten van /oplossingen.

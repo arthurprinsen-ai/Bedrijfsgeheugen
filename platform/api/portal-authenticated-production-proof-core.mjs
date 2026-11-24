@@ -42,13 +42,16 @@ export function projectOriginalInnovationAdminProof(body,headerScope){
      audit.totalEvents7d>500||audit.sampledEvents!==audit.totalEvents7d||
      !integer(audit.actionBackedSample)||!integer(audit.unsupportedSample)||
      !integer(audit.missingActionSample)||!integer(audit.currentActionNotDoneSample)||
+     !integer(audit.currentExecutionWithoutEventSample)||
+     audit.currentExecutionWithoutEventSample>audit.actionBackedSample||
      audit.actionBackedSample+audit.unsupportedSample!==audit.totalEvents7d||
      audit.missingActionSample>audit.unsupportedSample||
      audit.currentActionNotDoneSample>audit.actionBackedSample||
      audit.externalProviderProof!==false||audit.paidOutcomeProof!==false||
      audit.readOnly!==true) return null;
-  const validState=audit.unsupportedSample===0?
-    'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED':'SOURCE_EXECUTION_GAP';
+  const validState=audit.unsupportedSample>0?'SOURCE_EXECUTION_GAP':
+    audit.currentExecutionWithoutEventSample>0?'CURRENT_EXECUTION_EVENT_MISSING':
+    'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED';
   if(audit.state!==validState)return null;
   return Object.freeze({
     scope:'FULL_LAST_7D',total:audit.totalEvents7d,
@@ -56,6 +59,9 @@ export function projectOriginalInnovationAdminProof(body,headerScope){
     unsupported:audit.unsupportedSample,
     missing_actions:audit.missingActionSample,
     currently_not_done:audit.currentActionNotDoneSample,
+    unlogged_execution_attempts:audit.currentExecutionWithoutEventSample,
+    internal_source_gap_present:audit.unsupportedSample>0||
+      audit.currentExecutionWithoutEventSample>0,
     external_provider_proven:false,business_outcome_proven:false
   });
 }
@@ -349,8 +355,10 @@ export function assertOriginalInnovationProductionReleaseProof(proof){
   const c=proof.innovation_audit_counts;
   if(!c||c.scope!=='FULL_LAST_7D'||
      !Number.isSafeInteger(c.total)||c.total<1||c.total>500||
-     ![c.historical_writer_backed,c.unsupported,c.missing_actions,c.currently_not_done]
-       .every(x=>Number.isSafeInteger(x)&&x>=0)||
+     ![c.historical_writer_backed,c.unsupported,c.missing_actions,c.currently_not_done,
+       c.unlogged_execution_attempts].every(x=>Number.isSafeInteger(x)&&x>=0)||
+     c.unlogged_execution_attempts>c.historical_writer_backed||
+     c.internal_source_gap_present!==(c.unsupported>0||c.unlogged_execution_attempts>0)||
      c.historical_writer_backed+c.unsupported!==c.total||
      c.missing_actions>c.unsupported||
      c.currently_not_done>c.historical_writer_backed||
@@ -361,6 +369,8 @@ export function assertOriginalInnovationProductionReleaseProof(proof){
     scope:'FULL_LAST_7D',events:c.total,
     historical_writer_backed:c.historical_writer_backed,
     unsupported:c.unsupported,currently_not_done:c.currently_not_done,
+    unlogged_execution_attempts:c.unlogged_execution_attempts,
+    internal_source_gap_present:c.internal_source_gap_present,
     original_admin_verified:true,nonadmin_denied:true,unauthenticated_denied:true,
     delivery_proven:false,revenue_proven:false
   });

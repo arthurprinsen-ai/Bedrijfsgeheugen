@@ -33,7 +33,7 @@ test('model incomplete output is exact provider evidence, not an editorial bypas
  const s=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
  assert.match(s,/retryIncompleteEditorialDraft\(/);
  assert.match(s,/error instanceof AIProviderIncompleteOutputError/);
- assert.match(s,/personalEditorialViolations\(revisedText,personalSource\?\.evidence\|\|\{\}\)\.length===0/);
+ assert.match(s,/personalEditorialViolations\(revisedText,\{\.\.\.\(personalSource\?\.evidence\|\|\{\}\),recentPersonalPosts\}\)\.length===0/);
  assert.match(s,/personalFinalCopyValid\(revisedText,personalSource\?\.evidence\|\|\{\}\)/);
  assert.match(s,/PERSONAL_EDITORIAL_CONTRACT_FAILED/);
  assert.match(s,/PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED/);

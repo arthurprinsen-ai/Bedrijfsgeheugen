@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|website-publication|deploy-ready-not-equal-canonical-article|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "compiler": {
+    "failure_class": "WEBSITE_DEPLOY_GREEN_BUT_DAILY_BLOG_UNPROVEN"
+  },
+  "root_cause": "The public website has READY main deployment while date-specific canonical blog approvals/publication and original Brain acknowledgements lag; treating deployment status as daily content proof causes false green. Stale original approved blog PRs also need current protected head checks.",
+  "prevention": [
+    "Separate exact Netlify production deploy SHA from date-specific canonical blog status and live HTML/canonical proof.",
+    "Never infer an article publication from homepage HTTP200, READY Netlify, generated artifact, approved PR or merge alone.",
+    "Keep original hourly blog owner, duplicate protection, approval and content quality; reconcile old PR via existing protected native expected-head CAS without bypass.",
+    "Require matching original One Brain consumer PROCESSED and separate measurement/learning proof before terminal GREEN."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-publication-agent-contract-20261117.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Netlify deploy 6afc13fecd16a265ddf6cef4 READY on main commit 53a6c99de87e987333cdc49b762119927af8abf1 (2026-11-17)",
+    "Canonical 2026-11-15 blog LIVE_PROVEN at 2026-11-17T08:49:35Z",
+    "Canonical 2026-11-16 blog APPROVED, no published_at/live_proven_at; PR #5918 OPEN",
+    "Canonical 2026-11-17 blog GENERATED, approved_at null",
+    "Original PR #5934 exact head Required/CodeQL SUCCESS but protected merge HTTP405 with 3 of 3 required contexts expected",
+    "Original brain_observe_failure occurrence production:2026-11-17:powerhouse-blog:pr5934:405-required-contexts"
+  ],
+  "limitations": "Documentation and agent contract update only; no runtime publication, protected merge or customer effect is claimed.",
+  "acceptance": "Relevant exact-head CI and CodeQL, protected merge, exact Netlify source parity, actual native publisher/consumer readback and proven canonical article; do not call full chain green while dates remain unproven."
+}

@@ -1,0 +1,24 @@
+{
+  "fingerprint": "site|rituals|binnenpaginas-stap-6|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|binnenpaginas-stap-6|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "BRAND_DIRECTION_DRIFT", "scope": "SITE", "machine_enforceable": false, "repeat_count": 1, "security_sensitive": false},
+  "root_cause": "Binnenpagina's hadden nog de luide kop (zwaar gewicht, strakke tracking, grote hero) van de oude richting, terwijl het besluit van 17 nov rust en exclusieve begeerte vraagt.",
+  "correction": "Eén gescopete stijllaag in de generator, alleen vorm, ritme en toon.",
+  "prevention": [
+    "Zet merkrichting als gescopete laag in de generator, nooit in gegenereerde HTML.",
+    "Controleer eerst of een parallelle sessie al een PR heeft voor hetzelfde pad."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs"],
+    "canary": ["tests/seo-homepage-context-slider-readability.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs", "tests/seo-homepage-context-slider-readability.test.mjs"],
+    "source": ["tools/bouw-v18-chrome-alles.mjs"],
+    "outcome": "Lokaal: screenshots voor/na en negen tests groen. Live-readback open."
+  }
+}

@@ -48,7 +48,7 @@ export function validateMachineReadablePrBody({body='',candidateHeadSha='',curre
 
 export function evaluateTerminalBranchWriteGuard({
   body='',observedHeadSha='',expectedHeadSha='',capturedMainEpochSha='',currentMainSha='',obligationId='',mutationKind='content',
-  mainSyncOverlap=[],mainSyncContractOverlap=[]
+  mainSyncOverlap,mainSyncContractOverlap,expectedOwner=''
 }={}){
   const observed=normalize(observedHeadSha).toLowerCase();
   const expected=normalize(expectedHeadSha).toLowerCase();
@@ -77,13 +77,25 @@ export function evaluateTerminalBranchWriteGuard({
   const mainSyncRequested=kind==='main-sync';
   if(mainSyncRequested&&(pathOverlap.length||contractOverlap.length)) reasons.push('MAIN_SYNC_OVERLAP_REQUIRES_RECONCILIATION');
 
+  if(lease.state==='MAIN_SYNC' && !['metadata','readback','main-sync'].includes(kind)) reasons.push('MAIN_SYNC_CONTENT_WRITE_FORBIDDEN');
+  if(mainSyncRequested){
+    if(!Array.isArray(mainSyncOverlap)||!Array.isArray(mainSyncContractOverlap)) reasons.push('MAIN_SYNC_OVERLAP_EVIDENCE_REQUIRED');
+    if(lease.state!=='MAIN_SYNC') reasons.push('MAIN_SYNC_PREWRITE_LEASE_REQUIRED');
+    if(lease.state==='MAIN_SYNC'){
+      if(!lease.owner||!normalize(expectedOwner)||lease.owner!==normalize(expectedOwner)) reasons.push('MAIN_SYNC_OWNER_MISMATCH');
+      if(!lease.scope||!actualObligation||lease.obligationId!==actualObligation||parseDeliveryMetadata(body).obligationId!==actualObligation) reasons.push('MAIN_SYNC_OBLIGATION_MISMATCH');
+      if(lease.headSha!==observed||lease.headSha!==expected) reasons.push('MAIN_SYNC_HEAD_MISMATCH');
+      if(lease.mainEpochSha!==current||captured!==current) reasons.push('MAIN_SYNC_TARGET_MISMATCH');
+      for(const label of ['Obligation-ID','Writer-Lease-State','Writer-Lease-Owner','Writer-Lease-Scope','Writer-Lease-Head','Writer-Lease-Main-Epoch','Writer-Lease-Obligation']){
+        if(field(body,label).length!==1) reasons.push('MAIN_SYNC_AMBIGUOUS_METADATA:'+label);
+      }
+    }
+  }
   const uniqueReasons=uniq(reasons);
   const epochReasons=new Set(['CAPTURED_MAIN_EPOCH_STALE','TERMINAL_LEASE_MAIN_EPOCH_DRIFT']);
   const mainSyncSafe=mainSyncRequested
-    && pathOverlap.length===0
-    && contractOverlap.length===0
-    && uniqueReasons.length>0
-    && uniqueReasons.every(reason=>epochReasons.has(reason));
+    && lease.state==='MAIN_SYNC'
+    && uniqueReasons.length===0;
   if(mainSyncSafe){
     return Object.freeze({
       ok:true,
@@ -105,16 +117,21 @@ export function evaluateTerminalBranchWriteGuard({
   }
 
   const reconciliationRequired=mainSyncRequested&&uniqueReasons.includes('MAIN_SYNC_OVERLAP_REQUIRES_RECONCILIATION');
+  const acquireSyncLease=mainSyncRequested&&lease.state==='TERMINAL_DELIVERY'
+    && uniqueReasons.includes('MAIN_SYNC_PREWRITE_LEASE_REQUIRED')
+    && uniqueReasons.every(reason=>reason==='MAIN_SYNC_PREWRITE_LEASE_REQUIRED'||epochReasons.has(reason));
   const epochOnly=uniqueReasons.length>0&&uniqueReasons.every(reason=>epochReasons.has(reason));
   const successorRequired=uniqueReasons.includes('TERMINAL_CANDIDATE_IMMUTABLE');
   const ok=uniqueReasons.length===0;
   const state=ok?'WRITE_ADMITTED'
     :reconciliationRequired?'SAME_LINEAGE_RECONCILIATION_REQUIRED'
+    :acquireSyncLease?'MAIN_SYNC_LEASE_ACQUISITION_REQUIRED'
     :epochOnly?'SAME_LINEAGE_SYNC_REQUIRED'
     :successorRequired?'SUCCESSOR_REQUIRED'
     :'WRITE_BLOCKED';
   const action=ok?'ALLOW_COMPARE_AND_SWAP_WRITE'
     :reconciliationRequired?'RECONCILE_EXISTING_CANDIDATE_OR_PROVE_UNSYNCHRONIZABLE'
+    :acquireSyncLease?'ACQUIRE_AND_READBACK_MAIN_SYNC_LEASE'
     :epochOnly?'REVALIDATE_AND_SYNC_EXISTING_CANDIDATE'
     :successorRequired?'CREATE_SUCCESSOR_FROM_CURRENT_MAIN'
     :'BLOCK_STALE_WRITE';

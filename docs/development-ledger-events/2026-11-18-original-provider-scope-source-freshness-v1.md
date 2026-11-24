@@ -1,0 +1,6 @@
+# Development ledger — 18-Nov original provider reconciliation
+Parent #4198. Read original protected main, native pg_get_functiondef, original #20 net._http_response #35277 and 5 later source rows with 1 base match. OpenAI native original personal 429 from 14:59 UTC, later unrelated gpt-5-mini 200 DOES NOT prove same-key personal recovery. Owner provided private paid provider screenshots: account balance details omitted from public code and issue.
+
+Source defect: native #171 historical-window quota warning and no-new-source narrative became overbroad even after independent new source ingestion; pending owner alert neither delivered nor consumed. Design: preserve enum and sender-gates, add last error timestamps, source counts, explicit scope and unverified current provider health, no automatic rekey/spend, no success claim. Integrate in existing #171 only.
+
+Candidate source migration: `20261118184000_original_guardian_provider_scope_source_freshness_v4.sql`. Exact native source was first read under existing original service boundary. Regression: `tests/brain-original-provider-scope-source-freshness-20261118.test.mjs`. Learning: `brain/learning/2026-11-18-original-provider-scope-source-freshness-v1.json`. Supabase native migration and task receipts required before terminal claims; Next original provider #20, #140 and #171 continue without sidecar.

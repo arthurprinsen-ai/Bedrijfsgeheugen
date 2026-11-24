@@ -40,11 +40,18 @@ test('original SQL rotation rejects BOTH already-held and new incomplete snippet
 });
 test('supply shortages are recorded in the SAME ONE BRAIN and cannot falsely be green',()=>{
  assert.ok(radar.includes("personalSourceReady=!personalRotation.error && personalRotation.data?.ok===true"));
- assert.ok(radar.includes("const allSourceReady=supply.ok&&personalSourceReady"));
- assert.ok(radar.includes('ok:errors.length===0&&allSourceReady'));
- assert.ok(radar.includes('sourceReady:allSourceReady'));
- assert.ok(radar.includes("personalSourceState:personalSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE'"));
+ assert.ok(radar.includes("const miraBusinessSourceReady=supply.ok&&errors.length===0"));
+ assert.ok(radar.includes("const allSourceReady=miraBusinessSourceReady&&personalPublishingSourceReady"));
+ assert.ok(radar.includes('ok:miraBusinessSourceReady'));
+ assert.ok(radar.includes('sourceReady:miraBusinessSourceReady'));
+ assert.ok(radar.includes('allSourceReady,'));
+ assert.ok(radar.includes('MIRA_SOURCE_READY_PERSONAL_RECOVERY_DUE'));
+ assert.ok(radar.includes('personalSourceRecovery:personalPublishingSourceReady?null:'));
+ assert.ok(radar.includes("personalSourceState:!personalStoryDue?'NOT_DUE':personalPublishingSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE'"));
  assert.ok(radar.includes('personal-radar:source-supply:'));
  assert.ok(radar.includes('brain_observe_failure'));
+ assert.ok(radar.includes('personalFirstPersonSourceViolations(candidate.evidence||{},runDate)'));
+ assert.ok(radar.includes('genuinePersonalStoryReady'));
+ assert.ok(radar.includes('original-personal:first-person-user-fact:'));
  assert.ok(radar.includes('provider_post_proven:false,no_second_scheduler:true'));
 });

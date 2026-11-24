@@ -67,6 +67,30 @@ test('a different query is never itself accepted as a fresh source or publishing
 
 });
 
+test('Mira quote search targets independent dated customer friction, not vendor-release wording',()=>{
+ assert.equal(MIRA_SOURCE_ALTERNATE_QUERIES['offertes-zonder-opvolging'],'ondernemers offertes opvolgen');
+ assert.equal(MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES['offertes-zonder-opvolging'],
+   'offerte blijft liggen klanten');
+ assert.equal(MIRA_SOURCE_DISTINCT_DISCOVERY_QUERIES['offertes-zonder-opvolging'],
+   'offerte geen reactie ondernemer');
+ let alternates=0,distinct=0;
+ for(let n=0;n<180;n++){
+  const date=new Date(Date.UTC(2026,10,1+n)).toISOString().slice(0,10);
+  const q=rotateDistinctMiraQueries(date,selectCanonicalRadarSourceQueries(date));
+  assert.equal(q.length,8);
+  assert.equal(q.filter(x=>x.channel==='instagram_company').length,6);
+  assert.equal(q.filter(x=>x.channel==='linkedin_personal').length,2);
+  assert.equal(new Set(q.map(x=>x.query)).size,8);
+  assert.equal(q.some(x=>x.query==='ondernemers offertes opvolgen'),false);
+  if(q.some(x=>x.query==='offerte blijft liggen klanten'))alternates++;
+  if(q.some(x=>x.query==='offerte geen reactie ondernemer'))distinct++;
+ }
+ assert.ok(alternates>0&&distinct>0);
+ // No relaxation of existing evidence eligibility or media proof gates.
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/classifyMiraSourceUrl\(sourceUrl\)\.ok/);
+});
+
 test('original company concentration query does not fetch broad finance/stock news as an MKB problem',()=>{
  assert.equal(MIRA_SOURCE_ALTERNATE_QUERIES['klantafhankelijkheid'],'ondernemer afhankelijk grote klant',
    'the globally shared canonical queries are never altered here');
@@ -96,4 +120,51 @@ test('original company concentration query does not fetch broad finance/stock ne
  assert.match(worker,/MAX_AGE_DAYS=45/);
  assert.match(worker,/sourceIntake/);
  assert.match(worker,/powerhouse_materialize_mira_problem_recommendation_v1/);
+});
+
+
+test('18 Nov same eight slots discover real invoice-processing failures instead of generic unpaid-invoice promotion',()=>{
+ const date='2026-11-18';
+ const original=selectCanonicalRadarSourceQueries(date);
+ const targeted=rotateDistinctMiraQueries(date,original);
+ assert.equal(original.length,8);
+ assert.equal(targeted.length,8);
+ assert.equal(targeted.filter(q=>q.channel==='instagram_company').length,6);
+ assert.equal(targeted.filter(q=>q.channel==='linkedin_personal').length,2);
+ assert.ok(original.some(x=>x.query==='ondernemers onbetaalde facturen'));
+ assert.ok(targeted.some(x=>x.query==='bedrijven factuurfouten betalingsachterstanden'));
+ assert.equal(targeted.some(x=>x.query==='ondernemers onbetaalde facturen'),false);
+ assert.equal(new Set(targeted.map(x=>x.query)).size,8);
+ assert.deepEqual(targeted.filter(x=>x.channel==='linkedin_personal'),original.filter(x=>x.channel==='linkedin_personal'));
+ assert.equal(MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES.debiteuren,'bedrijven factuurfouten betalingsachterstanden');
+ assert.equal(MIRA_SOURCE_ALTERNATE_QUERIES.debiteuren,'ondernemers onbetaalde facturen');
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/source_published_at:publication\.publishedAt/);
+ assert.match(radar,/businessEvidence\?\.admissible!==false/);
+ assert.match(materializer,/p_date-90/);
+ assert.match(materializer,/p_date-3/);
+});
+
+
+test('Nov 18 keeps exactly the original six business and two personal source searches, using shorter independently researchable MKB problems',()=>{
+ const date='2026-11-18';
+ const original=selectCanonicalRadarSourceQueries(date);
+ const rotated=rotateDistinctMiraQueries(date,original);
+ assert.equal(rotated.length,8);
+ const business=rotated.filter(x=>x.channel==='instagram_company');
+ assert.equal(business.length,6);
+ assert.equal(rotated.filter(x=>x.channel==='linkedin_personal').length,2);
+ assert.deepEqual(business.map(x=>x.query),[
+  'Excel administratie fouten','dubbele invoer administratie','bouw meerwerk kosten',
+  'krappe marges mkb','bedrijven personeelstekort',
+  'bedrijven factuurfouten betalingsachterstanden'
+ ]);
+ assert.deepEqual(rotated.filter(x=>x.channel==='linkedin_personal'),
+   original.filter(x=>x.channel==='linkedin_personal'));
+ const local=readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/distinct-source-queries.mjs',import.meta.url),'utf8');
+ assert.doesNotMatch(local,/fetch\(|cron\.schedule|net\.http_post|GMAIL_SEND_EMAIL|MEDIA_PUBLISH/);
+ assert.match(radar,/businessEvidence\?\.admissible!==false/);
+ assert.match(radar,/source_published_at:publication\.publishedAt/);
+ assert.match(materializer,/p_date-90/);
+ assert.match(materializer,/p_date-3/);
 });

@@ -6,12 +6,14 @@ const clean=value=>typeof value==='string'?value.trim():'';
 const OWNER_ONLY_CODES=new Set([
   'EMAIL_CANONICAL_AUTHORIZATION_REQUIRED',
   'CONTENT_GENERATION_BILLING_ACTION_REQUIRED',
-  'CHANNEL_CAPABILITY_PROOF_REQUIRED'
+  'CHANNEL_CAPABILITY_PROOF_REQUIRED',
+  'PERSONAL_SOURCE_PROOF_REQUIRED'
 ]);
 const PUBLIC_ACTIONS=Object.freeze({
   EMAIL_CANONICAL_AUTHORIZATION_REQUIRED:'Activeer de bestaande geautoriseerde e-mailverzendbevoegdheid en bevestig ontvanger-opt-in en suppressie; geen nieuw verzendsysteem.',
-  CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'Herstel zelf het tegoed of de betaalinstellingen van de bestaande AI-provider; agents mogen geen betaling doen.',
+  CONTENT_GENERATION_BILLING_ACTION_REQUIRED:'Controleer de betaalde AI-provider: API-organisatie en project, gekoppelde sleutel, beschikbaar API-tegoed en bestedingslimiet. Een betaald account bewijst geen actieve API-capaciteit; agents mogen geen betaling doen.',
   CHANNEL_CAPABILITY_PROOF_REQUIRED:'Open de originele providerconnectie, keur de benodigde machtigingen goed en laat dezelfde kanaaleigenaar opnieuw verifiëren.',
+  PERSONAL_SOURCE_PROOF_REQUIRED:'De oorspronkelijke persoonlijke bronagent zoekt eerst naar een nog ongebruikt, door Arthur zelf aangeleverd en bevestigd echt verhaal. Alleen als zo’n feitelijke bron ontbreekt: bevestig zelf een concrete eigen gebeurtenis. Niet opnieuw OAuth aanvragen, geen nieuwsbericht of zakelijke post als persoonlijk verhaal plaatsen.',
   LINKEDIN_COMPANY_ADMIN_OAUTH_REQUIRED:'Herstel de bestaande organisatie-OAuth via de geverifieerde originele reconnect-link, met organisatiebeheerders- en publicatierechten.'
 });
 const ORGANIZATION_AUTH_ERROR=/LINKEDIN_(?:COMPANY|ORG).*?(?:AUTH|OAUTH|REAUTH)|(?:COMPANY|ORG).*?OAUTH.*?REQUIRED/iu;

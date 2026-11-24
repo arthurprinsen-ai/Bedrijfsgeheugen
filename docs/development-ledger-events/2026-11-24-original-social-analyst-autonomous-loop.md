@@ -1,0 +1,14 @@
+# Original autonomous post analyst — 24 November 2026
+
+Original owner only: content orchestrator, social publisher and learning store. Production migrations 20261124063737, 20261124063938, 20261124064216 and 20261124064859 verified. Comparable 24–36h provider observations, exact treatment receipt, varied company hook candidates, lossless personal evidence decoding under existing identity gate. 65 personal objects, zero strings. Personal exact-copy observational analysis returned 11 posts; 160–179 words median 7 reactions (5 posts), 130–159 median 5 (4), 180–200 median 6.5 (2). TESTING, no causal effect or assigned-treatment claim.
+
+The source release is not merged. Required/CodeQL on exact newest head and protected approval remain mandatory. Original generator consumption and Instagram proof remain open. Never fabricate personal facts, mutate frozen copy, duplicate publish or bypass consent. Regression: tests/brain-original-social-analyst-20261124.test.mjs. Same PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6136.
+
+Ledger: actual database repair and smoke-test readback; no terminal release or commercial outcome claimed. Admission failure INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE resolved at source by adding this ledger, learning and human documentation.
+
+Generator handoff implemented in candidate: original orchestrator consumes sanitized soft personal length preference after channel policy, including bounded revisions. It records actual draft word count and preference match, never provider proof. Not deployed; natural provider readback remains required. Admission repair adds the canonical learning, ledger and human docs to same PR.
+
+**Provider source parity reconciliation 24 Nov:** original branch adds only the four previously applied source versions #893–#896 and exact provider-matching lock entries. Original 892 prior lock entries remain immutable; test pins original blobs. This unblocks unrelated original e-mail PR #6141 without bypassing Required, preview, consent or sender gates; no SQL was executed by this GitHub commit.
+
+## 24 November — historical regression versus current native source
+Protected #6145 restored four social SQL blobs; native Mira 20261124063700 subsequently applied. Historical 896 regression must pin its original ordered population and four exact SQL blobs, not assert that the live provider total never increases. The separate current source parity gate remains mandatory; current lock must remain unique and ordered, and any recorded Mira entry must have its exact native name and immutable Git blob. No historical SQL change or fabricated applied state. Original reliability successor https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6147 owns the lock; this PR changes no lock or database. Keep the original content generator, owner and independent provider/learning proof.

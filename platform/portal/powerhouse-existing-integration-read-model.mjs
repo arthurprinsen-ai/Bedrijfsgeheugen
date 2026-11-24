@@ -33,7 +33,10 @@ const SOURCES=Object.freeze([
   {name:'innovationIntakes',table:'brain_operations',
     query:'select=operation_type,capability_id,status,correlation_id,idempotency_key,change_id,payload_sha256,remote_ref,evidence,updated_at&operation_type=eq.INNOVATION_INTAKE&limit=101',max:100}
 ]);
-const metric=v=>v!==null&&v!==undefined&&v!==''&&Number.isFinite(Number(v))?Number(v):null;
+// Only numeric source scalars prove a measurement; coercible blanks, booleans
+// and containers must never become observed zeroes or clear evidence gaps.
+const metric=v=>(typeof v==='number'||(typeof v==='string'&&v.trim()!==''))
+  &&Number.isFinite(Number(v))?Number(v):null;
 const text=v=>typeof v==='string'?v.slice(0,90):null;
 const rows=v=>Array.isArray(v)?v:[];
 const usable=(readStates,key)=>readStates[key]==='LIVE';
@@ -187,6 +190,8 @@ export function projectPowerhouseIntegrationReadback({datasets={},readStates={},
     gaps.push('SALES_EXECUTION_SOURCE_AUDIT_UNAVAILABLE');
   if(Number(salesExecutionAudit?.unsupportedSample)>0)
     gaps.push('SALES_EXECUTION_EVENTS_WITHOUT_CURRENT_ACTION_PROOF');
+  if(Number(salesExecutionAudit?.currentExecutionWithoutEventSample)>0)
+    gaps.push('CURRENT_SALES_ACTION_EXECUTION_NOT_IMMUTABLY_LOGGED');
   return {
     contract:'POWERHOUSE_EXISTING_SYSTEMS_ADMIN_READBACK_V1',
     observedAt:at,
@@ -288,7 +293,7 @@ export async function readOriginalSalesExecutionAudit({
   const MAX_EVENTS=500,PAGE_SIZE=100;
   const unknown={state:'SOURCE_UNAVAILABLE',totalEvents7d:null,sampledEvents:null,
     actionBackedSample:null,unsupportedSample:null,missingActionSample:null,
-    currentActionNotDoneSample:null,
+    currentActionNotDoneSample:null,currentExecutionWithoutEventSample:null,
     scope:'UNKNOWN',externalProviderProof:false,paidOutcomeProof:false,readOnly:true};
   const observed=Date.parse(at);
   if(!/^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(String(baseUrl||''))||
@@ -332,6 +337,7 @@ export async function readOriginalSalesExecutionAudit({
     if(first.total===0)return {...unknown,state:'NO_EXECUTION_EVENTS_OBSERVED',
       totalEvents7d:0,sampledEvents:0,actionBackedSample:0,unsupportedSample:0,
       missingActionSample:0,currentActionNotDoneSample:0,
+      currentExecutionWithoutEventSample:0,
       scope:'FULL_LAST_7D',observedAt:at};
     if(first.total>MAX_EVENTS)return {...unknown,
       state:'SOURCE_SCOPE_EXCEEDS_SAFE_CAP',totalEvents7d:first.total,
@@ -377,6 +383,7 @@ export async function readOriginalSalesExecutionAudit({
       }
     }
     let supported=0,missing=0,currentActionNotDone=0;
+    const latestRecordedExecutionByAction=new Map();
     for(const event of events){
       const action=byId.get(event.entity_id);
       if(!action){missing++;continue;}
@@ -384,10 +391,9 @@ export async function readOriginalSalesExecutionAudit({
       const eventAt=Date.parse(event.occurred_at);
       const historyAt=Date.parse(proof?.executed_at);
       const currentStoredExecutionAt=Date.parse(action.executed_at);
-      // Original source writer was guarded by status=done AND executed_at when
-      // minting this immutable event. Match the writer identity, evidence ref,
-      // recorded historical timestamp, and still-linked action execution time.
-      // Never use mutable current status as historical truth.
+      // This source event is an IMMUTABLE, original guarded writer receipt.
+      // Later retries can change the same action's mutable executed_at, and
+      // must never retroactively invalidate its earlier event-time evidence.
       const originalWriterAtEvent=proof!==null&&typeof proof==='object'&&
         !Array.isArray(proof)&&
         proof.status==='done'&&proof.truth_class==='observed_action_state'&&
@@ -395,18 +401,35 @@ export async function readOriginalSalesExecutionAudit({
         proof.writer_contract_version==='v1'&&
         event.evidence_ref==='powerhouse_sales_actions:'+event.entity_id+':execution'&&
         Number.isFinite(historyAt)&&historyAt<=eventAt+300000&&
-        historyAt<=observed&&currentStoredExecutionAt===historyAt;
+        historyAt<=observed&&
+        (!Number.isFinite(currentStoredExecutionAt)||currentStoredExecutionAt>=historyAt);
       if(originalWriterAtEvent){
         supported++;
         if(action.status!=='done')currentActionNotDone++;
+        const previous=latestRecordedExecutionByAction.get(event.entity_id);
+        if(previous===undefined||historyAt>previous)
+          latestRecordedExecutionByAction.set(event.entity_id,historyAt);
       }
+    }
+    let currentExecutionWithoutEvent=0;
+    // Compare CURRENT executed_at with latest ORIGINAL attempt event per action.
+    // Without a matching event this is a source-lineage gap, not an historical
+    // event forgery or a provider delivery success.
+    for(const [actionId,action] of byId){
+      const current=Date.parse(action.executed_at);
+      const recorded=latestRecordedExecutionByAction.get(actionId);
+      if(Number.isFinite(current)&&recorded!==undefined&&current>recorded)
+        currentExecutionWithoutEvent++;
     }
     const unsupported=events.length-supported;
     return {
-      state:unsupported>0?'SOURCE_EXECUTION_GAP':'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED',
+      state:unsupported>0?'SOURCE_EXECUTION_GAP':
+        currentExecutionWithoutEvent>0?'CURRENT_EXECUTION_EVENT_MISSING':
+        'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED',
       totalEvents7d:first.total,sampledEvents:events.length,
       actionBackedSample:supported,unsupportedSample:unsupported,
       missingActionSample:missing,currentActionNotDoneSample:currentActionNotDone,
+      currentExecutionWithoutEventSample:currentExecutionWithoutEvent,
       scope:'FULL_LAST_7D',observedAt:at,externalProviderProof:false,
       paidOutcomeProof:false,readOnly:true
     };

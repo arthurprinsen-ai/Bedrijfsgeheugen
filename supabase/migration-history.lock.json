@@ -3484,8 +3484,112 @@
     {
       "version": "20261115170000",
       "name": "outcome_memory_source_readback_truth_v1"
+    },
+    {
+      "version": "20261115235500",
+      "name": "sales_action_reexecution_immutable_attempt_lineage_v1"
+    },
+    {
+      "version": "20261115235900",
+      "name": "company_intelligence_existing_daily_source_receipt_v1"
+    },
+    {
+      "version": "20261116105000",
+      "name": "original_infinity_missing_signal_isolated_mux_v3"
+    },
+    {
+      "version": "20261116110100",
+      "name": "personal_linkedin_life_only_producer_v1"
+    },
+    {
+      "version": "20261117094500",
+      "name": "original_result_guardian_existing_watchdog_v1"
+    },
+    {
+      "version": "20261117102500",
+      "name": "original_composer_email_channel_fairness_v1"
+    },
+    {
+      "version": "20261117110000",
+      "name": "original_guardian_news_source_provider_truth_v2"
+    },
+    {
+      "version": "20261117123000",
+      "name": "original_composer_bounded_fair_candidate_v2"
+    },
+    {
+      "version": "20261117162500",
+      "name": "powerhouse_cro_site_social_diagnostics_v1"
+    },
+    {
+      "version": "20261117192500",
+      "name": "original_cro_consumer_source_diagnostics_v1"
+    },
+    {
+      "version": "20261118174500",
+      "name": "original_provider_owner_notification_receipt_v3"
+    },
+    {
+      "version": "20261118184000",
+      "name": "original_guardian_provider_scope_source_freshness_v4"
+    },
+    {
+      "version": "20261118194000",
+      "name": "original_guardian_mira_vision_exhausted_owner_notice_v5"
+    },
+    {
+      "version": "20261119090000",
+      "name": "connection_relationship_email_activation_v1"
+    },
+    {
+      "version": "20261119090500",
+      "name": "company_signal_word_boundary_verified_entity_v1"
+    },
+    {
+      "version": "20261120134537",
+      "name": "security_pw_mo14_private_player_data_20261120"
+    },
+    {
+      "version": "20261120143500",
+      "name": "personal_verified_founder_source_v2_policy_alignment"
+    },
+    {
+      "version": "20261121090000",
+      "name": "reconnect_original_email_reply_in_commercial_stage14"
+    },
+    {
+      "version": "20261122162147",
+      "name": "portal_connector_real_afas_source_readback_v1"
+    },
+    {
+      "version": "20261123211950",
+      "name": "growth_atomic_cutover_fence_v1"
+    },
+    {
+      "version": "20261123214500",
+      "name": "personal_founder_perspective_v2_materializer_alignment"
+    },
+    {
+      "version": "20261124063700",
+      "name": "mira_original_exact_job_claim_v1"
+    },
+    {
+      "version": "20261124063737",
+      "name": "original_social_loop_comparable_provider_windows"
+    },
+    {
+      "version": "20261124063938",
+      "name": "original_social_analyst_variant_rotation_and_proof"
+    },
+    {
+      "version": "20261124064216",
+      "name": "original_personal_artifact_evidence_lossless_normalization"
+    },
+    {
+      "version": "20261124064859",
+      "name": "original_personal_observational_analyst"
     }
   ],
-  "captured_at": "2026-11-15T16:13:57.369674Z",
-  "project_ref": "adhjwmvyoixzjtmiroln"
+  "project_ref": "adhjwmvyoixzjtmiroln",
+  "captured_at": "2026-11-24T15:35:21.421985Z"
 }
