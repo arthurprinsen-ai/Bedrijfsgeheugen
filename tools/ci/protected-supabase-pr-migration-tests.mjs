@@ -10,7 +10,7 @@ import {verifyNativeProviderHealthVersionReconciliation, EXACT_BASE_SHA, PROPOSA
 import {verifyAlreadyApplied853OutreachMirror,SOURCE_853_BASE,SOURCE_853_ORIGINAL,SOURCE_853_MIRROR} from './verified-provider-853-original-outreach-source-mirror.mjs';
 import {verifyAlreadyAppliedProvider888SourceLockRecovery,EXACT_PROVIDER_888_BASE,ORIGINAL_SECURITY_SQL_PATH,ORIGINAL_FOUNDER_SQL_PATH} from './verified-provider-888-personal-security-history-reconciliation.mjs';
 import {verifyOriginalAfas890VersionReconciliation,EXACT_AFAS_BASE_SHA,AFAS_SOURCE_PROPOSAL,AFAS_NATIVE_SOURCE} from './verified-original-afas-890-version-reconciliation.mjs';
-import {verifyOriginalProvider896SourceLockReconciliation,EXACT_ORIGINAL_896_BASE,ORIGINAL_896_FILES} from './verified-original-provider-896-source-lock-reconciliation.mjs';
+import {verifyOriginalProvider896SourceLockReconciliation,EXACT_ORIGINAL_896_BASE,ORIGINAL_896_FILES,ORIGINAL_896_PENDING_MIRA} from './verified-original-provider-896-source-lock-reconciliation.mjs';
 
 const TESTS=process.argv.slice(2);
 assert.ok(TESTS.length>=5 && TESTS.every(p=>/^tests\/[a-z0-9._/-]+\.test\.mjs$/.test(p)), 'Pass the existing migration-lock test suite explicitly');
@@ -132,10 +132,14 @@ if (/^[a-f0-9]{40}$/.test(base)) {
       const sourceSQL=Object.fromEntries(ORIGINAL_896_FILES.map(x=>[
         x.file,readFileSync(path.join(root,x.file),'utf8')
       ]));
+      const pendingBase=spawnSync('git',['show',base+':'+ORIGINAL_896_PENDING_MIRA.file],
+        {cwd:root,encoding:'utf8',maxBuffer:5e6});
       const proof=verifyOriginalProvider896SourceLockReconciliation({
         baseSha:base,baseLock:JSON.parse(baseLockJSON.stdout),
         headLock:JSON.parse(readFileSync(lockPath,'utf8')),
-        changedMigrations,sourceSQL
+        changedMigrations,sourceSQL,
+        pendingBaseSQL:pendingBase.status===0?pendingBase.stdout:null,
+        pendingHeadSQL:readFileSync(path.join(root,ORIGINAL_896_PENDING_MIRA.file),'utf8')
       });
       if(proof.ok)originalProvider896Reconciliation=proof;
     }
@@ -206,7 +210,9 @@ const moved=[];
 try {
   // Apply historical-provider tests to their intended population. Proposed files are
   // separately inspected above and then restored, never deleted or disguised in Git.
-  for (const file of alreadyAppliedHistoryReconciliation?[]:proposed) {
+  const historicalTestPending=originalProvider896Reconciliation
+    ?[originalProvider896Reconciliation.pending_protected_source]:[];
+  for (const file of [...(alreadyAppliedHistoryReconciliation?[]:proposed),...historicalTestPending]) {
     const origin=path.join(root,file);
     const destination=path.join(temp,path.basename(file));
     renameSync(origin,destination);
@@ -219,6 +225,11 @@ try {
   rmSync(temp,{recursive:true,force:true});
 }
 for (const filename of proposed) assert.ok(readFileSync(path.join(root,filename),'utf8').trim(),'Proposed SQL lost after test: '+filename);
+if(originalProvider896Reconciliation){
+ const restored=readFileSync(path.join(root,ORIGINAL_896_PENDING_MIRA.file),'utf8');
+ const original=spawnSync('git',['show',base+':'+ORIGINAL_896_PENDING_MIRA.file],{cwd:root,encoding:'utf8',maxBuffer:5e6});
+ assert.ok(original.status===0 && restored===original.stdout,'Exact pending Mira source must be restored for native preview');
+}
 console.log(JSON.stringify({
   contract:'supabase-protected-pr-migration-admission-v1',
   result:originalProvider896Reconciliation?'EXACT_ORIGINAL_NATIVE_896_SOURCE_LOCK_RECONCILIATION_PREVIEW_REQUIRED':
@@ -232,6 +243,8 @@ console.log(JSON.stringify({
   original_afas_890_source_version_reconciliation:originalAfas890Reconciliation?.state||null,
   native_provider_version_reconciliation:nativeProviderHealthVersionReconciliation?.state||null,
   already_applied_reconciliation:alreadyAppliedHistoryReconciliation?.state||null,
+  pending_protected_source:originalProvider896Reconciliation?.pending_protected_source||null,
+  pending_protected_source_applied:false,
   base_sha:base||null,proposed_migrations:proposed,
   provider_applied_claim:false,hosted_preview_pass_claim:false
 }));
