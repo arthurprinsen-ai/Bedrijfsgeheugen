@@ -1,0 +1,34 @@
+{
+  "date": "2026-11-24",
+  "fingerprint": "delivery|supabase|stale-original-provider-receipts-after-descendant-deploy|20261124-v1",
+  "owner": "existing canonical Supabase Edge Production Authority and original terminal closure",
+  "compiler": {
+    "failure_class": "STALE_PROVIDER_READBACK_AFTER_AUTHORIZED_REDEPLOY",
+    "scope": "RELEASE_GOVERNANCE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-edge-production-writeback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/supabase-edge-production-writeback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/supabase-edge-production-writeback-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Original terminal evidence is invalidated by subsequent provider redeploys even when original changed paths remain identical; manual authority previously did not target original merged PR.",
+  "evidence": {
+    "original_pr": 6136,
+    "original_terminal_run": 45430547497,
+    "observed_receipts": 42,
+    "stale_receipts": 40,
+    "protected_main": "a7484bd2f68d1455912e8989af9486c7f52450fa",
+    "original_failure": "TERMINAL_SOURCE_PARITY_RECHECK_REQUIRED:bg-analytics-sync-composio"
+  },
+  "correction": "Explicit original merged PR replay derives exact protected merge runtime scope, fails closed on original source drift, reuses existing complete byte-for-byte provider verification and writes only the original receipt. No deployment or bypass.",
+  "release_state": "CANDIDATE_PENDING_PROTECTED_CI"
+}
