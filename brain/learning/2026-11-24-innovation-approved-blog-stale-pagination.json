@@ -13,13 +13,19 @@
   "root_cause": "get_rows discarded the continuation cursor, so the scheduled selector exhausted its local rows after skipping an existing artifact even when another due row was on the next page.",
   "compiler": {
     "failure_class": "QUEUE_STALL",
-    "scope": "RUNTIME"
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-innovation-approved-blog-stale-pagination.test.mjs"
     ],
     "shadow": [
+      "tests/brain-innovation-approved-blog-stale-pagination.test.mjs"
+    ],
+    "canary": [
       "tests/brain-innovation-approved-blog-stale-pagination.test.mjs"
     ]
   },
@@ -67,5 +73,28 @@
     "decision_reason": "Following the existing queue continuation preserves filters and order while unblocking the eligible slug. Exact identity validation and reconciliation stay in the wrapper. Repeated or absent continuation cursors fail closed.",
     "rollback": "Revert the core pagination change through existing_protected_delivery (required).",
     "current_effect_verified": false
+  },
+  "date": "2026-11-24",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "prevention": {
+    "regression_contract": "tests/brain-innovation-approved-blog-stale-pagination.test.mjs",
+    "follow_existing_queue_cursors": true,
+    "keep_original_filters_and_order": true,
+    "missing_or_repeated_cursor_fails_closed": true,
+    "forced_lookup_ambiguity_fails_closed": true,
+    "preserve_original_artifact_identity_and_bytes": true,
+    "protected_review_and_independent_effect_required": true,
+    "no_duplicate_publication": true
+  },
+  "evidence": {
+    "native_writer_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45437381849",
+    "original_admission_failure_run": 45438546408,
+    "original_admission_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: semantic_learning",
+    "fixture_baseline_correct": 0,
+    "fixture_challenger_correct": 1,
+    "fixture_denominator": 1,
+    "production_effect_verified": false
   }
 }
