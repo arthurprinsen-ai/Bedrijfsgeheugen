@@ -5,6 +5,10 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## AUTO_SHIP_AFTER_GREEN — alle agents/chats/skills (10 november 2026)
+
+**Standaardbevoegdheid:** nooit aan Arthur vragen of een normale, omkeerbare en volledig door verplichte checks, reviews en security/kwaliteit/consent goedgekeurde wijziging live mag. De originele aangewezen delivery-owner promoveert deze automatisch via de bestaande beschermde PR → merge → canonieke productie-keten en sluit uitsluitend bij onafhankelijke exact-SHA/providereffect/functionele readback en ontvangende ONE BRAIN/Heartbeat/Portaal-ACK. Checks groen ≠ live; merge ≠ live; READY ≠ functionele uitkomst. Fouten blijven open met automatische herstelactie via dezelfde lineage. Respecteer expliciete menselijke autorisatie, kostengoedkeuring en onomkeerbare risico's, zonder bypass of tweede uitvoerder. Zonder rechten geen schijn-livegang. Regressie `tests/brain-groen-draaiboek-20261108.test.mjs`.
+
 ## P0 24 november 2026 — bronkwaliteit per innovatie isoleren
 
 Een exact geïdentificeerde historische kwaliteitsbron met status guard_required blijft OPEN/PLANNED zonder kwaliteitsbewijs, consumer ACK, code- of productieautorisatie. De oorspronkelijke reconciliatie mag de overige geldige kandidaten niet blokkeren: afzonderlijke blocked_original_candidates met originele kandidaat/operation/owner/revision, veilige vervolgstap en zichtbare niet-nul exit na de overige CAS/readbacks. Ontbrekende of afwijkende bronidentiteit, schemafouten, eerdere conflicterende receipts en andere onverwachte toestanden blijven fail-closed. Nooit source status handmatig naar verified veranderen. Zodra het oorspronkelijke regressiebewijs geldig is, herbeoordeel dezelfde bron in de bestaande route; de commercial-message-composer heeft nu een expliciete proof-duty mapping. Geen tweede queue, scheduler, agent of side effect. Werkelijke effectmeting en originele consumer ACK blijven vereist. Bron: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45177717260, parent #4198.
