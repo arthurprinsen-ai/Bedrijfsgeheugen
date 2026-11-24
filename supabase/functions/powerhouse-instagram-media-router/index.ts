@@ -11,6 +11,7 @@ import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,ch
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 import {assessMiraOriginalGenerationReceipt,MIRA_ORIGINAL_GENERATION_RECEIPT_CONTRACT} from './pin-generation-history.mjs';
 import {assessMiraFrameVerifierResult} from './frame-verifier-result.mjs';
+import {RECOVERY,frameHash,eligibleRecoveryFrame,signRecoveryFrame,verifyRecoveryFrame} from './exact-recovery-frame-transfer.mjs';
 import {planMiraExactVideoVerificationResume,MIRA_EXACT_VERIFICATION_RESUME,recordMiraExactVerificationFailure} from './exact-video-verification-resume.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
@@ -42,13 +43,22 @@ async function observeSourceAutoProofFailure(db:any,runDate:string,historyId:str
 }
 
 Deno.serve(async req=>{
- if(req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
+ const frameRead=req.method==='GET';
+ if(!frameRead&&req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
  const base=Deno.env.get('SUPABASE_URL')||'',key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
  if(!base||!key)return json({ok:false,error:'CONFIG'},500);
  const db=createClient(base,key,{auth:{persistSession:false,autoRefreshToken:false}});
  const token=clean((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data);
- if(!token||req.headers.get('x-powerhouse-token')!==token)return json({ok:false,error:'UNAUTHORIZED'},401);
- let input:any={};try{input=await req.json()}catch{}
+ let input:any={};
+ if(frameRead){
+  const u=new URL(req.url),position=clean(u.searchParams.get('frame')),expires=Number(u.searchParams.get('expires')),signature=clean(u.searchParams.get('sig'));
+  if(u.searchParams.size!==3||!await verifyRecoveryFrame(token,position,expires,signature))return json({ok:false,error:'UNAUTHORIZED'},401);
+  input={action:'read_recovery_frame',runDate:RECOVERY.date,postType:'reel',position};
+ }else{
+  if(!token||req.headers.get('x-powerhouse-token')!==token)return json({ok:false,error:'UNAUTHORIZED'},401);
+  try{input=await req.json()}catch{}
+  if(input.action==='read_recovery_frame')return json({ok:false,error:'GET_CAPABILITY_REQUIRED'},405);
+ }
  const runDate=clean(input.runDate||input.publicationDate)||today(),action=clean(input.action)||'preflight';
  const [{data:ob},{data:art},{data:rec},{data:ints},{data:job},{data:winner},{data:lineage}]=await Promise.all([
   db.from('content_publication_obligations').select('*').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle(),
@@ -92,6 +102,32 @@ Deno.serve(async req=>{
  const miraBusinessProblem=winnerContract.problem||null;
  const expectedScene=sourceLed?winnerContract.scene:miraBusinessProblem.scene;
  const expectedProblemId=sourceLed?null:miraBusinessProblem.id;
+
+ // Original, exact same-day input-only frame recovery. A temporary capability
+ // exposes only one verified JPEG, never the scheduler credential or a post.
+ if(action==='issue_recovery_frame'||action==='read_recovery_frame'){
+  const position=clean(input.position),hash=frameHash(position);
+  if(!hash||runDate!==RECOVERY.date||postType!=='reel')return json({ok:false,error:'RECOVERY_FRAME_SCOPE_REQUIRED'},422);
+  const proofResult=await db.from('powerhouse_media_proof_evidence_v1').select('fingerprint,publication_date,provider,provider_status,exact_media_sha256,proof_lineage').eq('fingerprint','instagram-vision-proof:'+runDate+':'+hash).maybeSingle();
+  if(proofResult.error)return json({ok:false,error:'RECOVERY_FRAME_PROOF_UNAVAILABLE'},503);
+  if(!eligibleRecoveryFrame({runDate,localDate:today(),job,ob,winner,lineage,resolved:winnerContract,position,proof:proofResult.data}))return json({ok:false,error:'RECOVERY_FRAME_PROOF_REQUIRED'},422);
+  if(action==='issue_recovery_frame'){
+   const expires=Math.floor(Date.now()/1000)+300;
+   const sig=await signRecoveryFrame(token,position,expires);
+   const url=new URL(base+'/functions/v1/powerhouse-instagram-media-router');
+   url.searchParams.set('frame',position);url.searchParams.set('expires',String(expires));url.searchParams.set('sig',sig);
+   return json({ok:true,reference_candidate_only:true,approved_for_publish:false,authorized_to_spend:false,frame_sha256:hash,expires_at:new Date(expires*1000).toISOString(),url:url.toString(),source_history:RECOVERY.history});
+  }
+  const fx=await fetch(FRAME_EXTRACTOR,{method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},body:JSON.stringify({mediaUrl:RECOVERY.url,duration:8})});
+  const body=await fx.json().catch(()=>({}));
+  if(!fx.ok||body?.ok!==true||body.native_dimensions_verified!==true||body.native_width!==1080||body.native_height!==1920||!Array.isArray(body.frames))return json({ok:false,error:'RECOVERY_FRAME_EXTRACT_UNAVAILABLE'},503);
+  const selected=body.frames.find((x:any)=>x.position===position&&x.mediaType==='image/jpeg');
+  if(!selected||typeof selected.imageBase64!=='string'||selected.imageBase64.length>2000000)return json({ok:false,error:'RECOVERY_FRAME_BYTES_INVALID'},422);
+  let bytes:Uint8Array;try{bytes=Uint8Array.from(atob(selected.imageBase64),c=>c.charCodeAt(0))}catch{return json({ok:false,error:'RECOVERY_FRAME_BYTES_INVALID'},422)}
+  if(await digest(bytes)!==hash)return json({ok:false,error:'RECOVERY_FRAME_HASH_MISMATCH'},422);
+  return new Response(bytes as any,{status:200,headers:{'content-type':'image/jpeg','cache-control':'private, no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'}});
+ }
+
 
  // Persist the actual provider-created async history immediately after the
  // ORIGINAL atomic job claim and OpenArt submission. Previous task runs could
