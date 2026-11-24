@@ -84,6 +84,27 @@
       "correction_commit": "c528acb8c3ba1a7123c4af7e2632371ae86d12a8",
       "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
       "status": "FIX_COMMITTED_PENDING_EXACT_HEAD_CHECKS"
+    },
+    "exact_historical_security_replay": {
+      "failed_required_run": 45393579870,
+      "failed_source_contract_job": 138444624699,
+      "original_revoke_source": "supabase/migrations/20261105080000_original_linkedin_learning_source_truth.sql",
+      "original_revoke_source_git_blob": "39fb32b72d2cedbf465472c825d6164498222a43",
+      "native_functions": [
+        "bg_social_lus_meting(text,timestamptz,timestamptz)",
+        "bg_social_lus_beoordelen(date)",
+        "bg_social_lus_cyclus(text,date)"
+      ],
+      "native_acl": {
+        "anon": false,
+        "authenticated": false,
+        "service_role": true,
+        "public": false,
+        "search_path": ""
+      },
+      "scope": "exact three already-applied immutable source blobs only, no SQL or generic security exception",
+      "required": "native hosted replay, protected CI and actual provider readback; no new production claim",
+      "audit": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6145#issuecomment-7131653098"
     }
   },
   "implementation_state": "PROTECTED_SOURCE_PARITY_PR_PENDING_NOT_PRODUCTION_DELIVERY"
