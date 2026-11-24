@@ -61,3 +61,40 @@ test('two specialist diagnostics share one DOM snapshot but never duplicate rout
  assert.match(browser,/pages:seoPages,sitemapRoutes:routes/);
  assert.doesNotMatch(browser,/const seoPages = \[\];\s*const seoPages = \[\];/);
 });
+
+test('equal cardinality cannot hide missing and unexpected sitemap routes',()=>{
+ const good=auditSeoPage({route:'/',snapshot:sample,sitemapRoutes});
+ const missingReplaced=auditSeoPage({route:'/unexpected',snapshot:{...sample,canonical:'https://www.bedrijfsgeheugen.nl/unexpected'},sitemapRoutes});
+ const en=auditSeoPage({route:'/en/',snapshot:{...sample,canonical:'https://www.bedrijfsgeheugen.nl/en/',htmlLang:'en'},sitemapRoutes});
+ const report=summarizeSeoAudit({pages:[good,missingReplaced,en],sitemapRoutes});
+ assert.equal(report.health_score_percent,null);
+ assert.equal(report.coverage_complete,false);
+ assert.deepEqual(report.pages.missing,['/afas-koppeling']);
+ assert.deepEqual(report.pages.unexpected,['/unexpected']);
+ assert.equal(report.pages.scanned,2);
+ const duplicated=summarizeSeoAudit({pages:[good,en,en],sitemapRoutes});
+ assert.equal(duplicated.pages.duplicates.observations,1);
+ assert.equal(duplicated.coverage_complete,false);
+});
+
+test('hreflang needs observed self and reciprocal links, not assumed links',()=>{
+ const links=[{lang:'nl',href:'https://www.bedrijfsgeheugen.nl/'},{lang:'en',href:'https://www.bedrijfsgeheugen.nl/en/'}];
+ const nl=auditSeoPage({route:'/',snapshot:{...sample,hreflangCount:2,hreflang:links},sitemapRoutes});
+ const enBad=auditSeoPage({route:'/en/',snapshot:{...sample,htmlLang:'en',canonical:'https://www.bedrijfsgeheugen.nl/en/',hreflangCount:1,hreflang:[links[1]]},sitemapRoutes});
+ const report=summarizeSeoAudit({pages:[nl,enBad],sitemapRoutes});
+ assert.ok(report.issues.some(i=>i.code==='HREFLANG_RECIPROCAL'));
+ const enGood=auditSeoPage({route:'/en/',snapshot:{...sample,htmlLang:'en',canonical:'https://www.bedrijfsgeheugen.nl/en/',hreflangCount:2,hreflang:links},sitemapRoutes});
+ assert.ok(!summarizeSeoAudit({pages:[nl,enGood],sitemapRoutes}).issues.some(i=>i.code==='HREFLANG_RECIPROCAL'));
+ const noSelf=auditSeoPage({route:'/',snapshot:{...sample,hreflangCount:1,hreflang:[links[1]]},sitemapRoutes});
+ assert.ok(noSelf.issues.some(i=>i.code==='HREFLANG_SELF'));
+});
+
+test('method coverage never implies unobserved provider or user measurements',()=>{
+ const page=auditSeoPage({route:'/',snapshot:sample,sitemapRoutes});
+ const report=summarizeSeoAudit({pages:[page],sitemapRoutes});
+ assert.equal(report.method_coverage.length,12);
+ assert.equal(report.method_coverage.find(x=>x.id==='ON_PAGE').status,'PARTIALLY_OBSERVED');
+ for(const id of ['AI_SEARCH','MOBILE_PERFORMANCE','SEARCH_ANALYTICS','OFF_PAGE','EXPERIMENTATION'])
+  assert.equal(report.method_coverage.find(x=>x.id===id).status,'NOT_MEASURED');
+ assert.ok(report.method_coverage.every(x=>x.source.startsWith('https://')));
+});

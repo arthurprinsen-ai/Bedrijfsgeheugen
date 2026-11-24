@@ -1,0 +1,38 @@
+{
+  "fingerprint": "seo|original-sitewide-health-and-ahrefs-source-proof|20261112-v1:method-coverage-v2",
+  "date": "2026-11-24",
+  "state": "SOURCE_CANDIDATE",
+  "release_proven": false,
+  "owner": "Original Powerhouse SEO Order Engine / BG169",
+  "failure_class": "SEO_AUDIT_COVERAGE_FALSE_COMPLETE",
+  "root_cause": "Equal route counts were accepted even when the expected and observed sitemap route sets differed; declared locale targets lacked reciprocal verification; broader SEO methods had no explicit evidence status.",
+  "fix": [
+    "Require exact unique expected/observed route-set equality",
+    "Verify declared hreflang self and reciprocal links where observed",
+    "Expose source-grounded 12-method coverage; unmeasured external results stay unmeasured"
+  ],
+  "tests": [
+    "tests/brain-sitewide-seo-health-score-20261112.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-seo-health-score-20261112.test.mjs"
+    ]
+  },
+  "producer_evidence": [
+    "tools/site-shell/seo-health-score.mjs"
+  ],
+  "consumer_processed_ack": "NOT_YET_PROVEN",
+  "production_http_readback": "NOT_YET_PROVEN",
+  "prevention": [
+    "No health score on missing, unexpected or duplicate routes",
+    "No full SEO method pass based on DOM only",
+    "No new scheduler or producer"
+  ]
+}
