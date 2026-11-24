@@ -1,5 +1,6 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
+import {extractVisibleEmailReply,isExplicitUnsubscribeReply} from '../_shared/email-reply-visible-text.mjs';
 
 const CONTRACT='powerhouse-email-reply-learning-v1';
 const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
@@ -50,7 +51,8 @@ function normSubject(v:unknown){
 function classify(textRaw:string){
   const t=(' '+clean(textRaw).toLowerCase().replace(/\s+/g,' ')+' ');
   const hit=(xs:string[])=>xs.some(x=>t.includes(x));
-  if(hit([' uitschrijven',' afmelden',' niet meer mailen',' verwijder mij',' unsubscribe',' stop emailing',' do not contact',' no more emails']))
+  // Only the recipient's explicit, unquoted request may create a permanent opt-out.
+  if(isExplicitUnsubscribeReply(textRaw))
     return {reply_class:'unsubscribe',objection_code:'do_not_contact',intent_score:-1,next_action:'suppress'};
   if(hit([' meerdere keren per dag benaderd',' vergelijkbare dienstverlening',' andere zaken aan ons hoofd',' geen prioriteit',' te veel aanbiedingen',' too many similar pitches',' not a priority',' succes met je onderneming']))
     return {reply_class:'negative',objection_code:'vendor_fatigue_other_priorities',intent_score:-1,next_action:'suppress'};
@@ -114,7 +116,7 @@ Deno.serve(async(req:Request)=>{
       inbox.push(...await gmailFetch(apiKey,accountId,`after:${isoAfterDays(14)} from:${senderEmail}`));
     }
 
-    let ingested=0,duplicates=0,followups=0,suppressions=0;
+    let ingested=0,duplicates=0,followups=0,suppressions=0,quotedOnlySkipped=0;
     const results:any[]=[];
     for(const msg of inbox){
       const messageId=clean(msg?.messageId||msg?.id); if(!messageId)continue;
@@ -134,7 +136,10 @@ Deno.serve(async(req:Request)=>{
         .select('reply_event_id').eq('provider','gmail').eq('provider_message_id',messageId).maybeSingle();
       if(exists){duplicates++;continue;}
 
-      const text=clean(msg?.messageText||msg?.preview?.body);
+      // Gmail commonly quotes the entire original HTML/plain-text mail. Its
+      // visible "antwoord met afmelden" footer is never a recipient opt-out.
+      const text=extractVisibleEmailReply(msg?.messageText||msg?.preview?.body);
+      if(!text){quotedOnlySkipped++;continue;}
       const c=classify(text);
       const {data:reply,error:rErr}=await db.from('powerhouse_email_reply_events').insert({
         action_id:action.action_id,provider:'gmail',provider_message_id:messageId,
@@ -207,11 +212,11 @@ Deno.serve(async(req:Request)=>{
 
     await db.from('bg_gezondheid').insert({
       gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-email-reply-loop',soort:'commercial-learning',
-      status:'ok',detail:`eligible=${eligible.length}; inbox=${inbox.length}; ingested=${ingested}; followups=${followups}; suppressions=${suppressions}`,
-      gegevens:{contract:CONTRACT,eligible:eligible.length,inbox_messages:inbox.length,ingested,duplicates,followups,suppressions,results}
+      status:'ok',detail:`eligible=${eligible.length}; inbox=${inbox.length}; ingested=${ingested}; followups=${followups}; suppressions=${suppressions}; quoted_only_skipped=${quotedOnlySkipped}`,
+      gegevens:{contract:CONTRACT,eligible:eligible.length,inbox_messages:inbox.length,ingested,duplicates,followups,suppressions,quoted_only_skipped:quotedOnlySkipped,results}
     });
 
-    return json({ok:true,contract:CONTRACT,eligible:eligible.length,inbox_messages:inbox.length,ingested,duplicates,followups,suppressions,results});
+    return json({ok:true,contract:CONTRACT,eligible:eligible.length,inbox_messages:inbox.length,ingested,duplicates,followups,suppressions,quoted_only_skipped:quotedOnlySkipped,results});
   }catch(err:any){
     const internal=clean(err?.message||err).slice(0,300);
     console.error('POWERHOUSE_EMAIL_REPLY_LOOP_FAILED',internal);

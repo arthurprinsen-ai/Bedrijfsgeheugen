@@ -1,123 +1,40 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {createHash} from 'node:crypto';
-import {readFileSync} from 'node:fs';
-import {
-  classifyVerifiedOriginalParentPr,selectOriginalCodeCandidate,CONTRACT
-} from '../scripts/brain/innovation-original-code-delivery.mjs';
-
-const ID='55bb0754-355b-4940-aaea-aed7123e7e57';
-const SOURCE='quality-learning-v1:sales-cycle-legacy-execution-truth-projection-20261029';
-const REV='2026-10-29T12:43:19.144537+00:00';
-const HASH='a'.repeat(64),MERGE='c'.repeat(40),MAIN='d'.repeat(40);
-const OWNER='agent:agent-integration-engineer';
-const SCOPE=['platform/portal/powerhouse-existing-integration-read-model.mjs','portal-v2/control-plane-cockpit.js'];
-const digest=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
-
-function parentPr(patch={}){
- return {number:5109,url:'https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5109',
-   state:'MERGED',baseRefName:'main',mergeCommit:{oid:MERGE},
-   body:'Parent-P0: #4198\nCandidate-Type: implementation\nObligation-ID: powerhouse-sales-action-execution-truth-20261029',
-   files:[{path:'supabase/migrations/20261029122836_sales_cycle_execution_truth_guard_20261029.sql'}],
-   ...patch};
-}
-const compare={status:'ahead',merge_base_commit:{sha:MERGE}};
-const proof=()=>classifyVerifiedOriginalParentPr({
- parentPr:5109,pr:parentPr(),mainSha:MAIN,compare,childId:ID,childAllowedSourcePaths:SCOPE
+import {mkdtempSync,mkdirSync,writeFileSync,rmSync,readFileSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join,dirname} from 'node:path';
+import {verifyOriginalParentAncestry,verifyOriginalInnovationLearningClosure} from '../scripts/brain/innovation-original-code-delivery.mjs';
+const parent='722468c45cd3646755d79188a06dfb187468a946',main='cb0ff42d90f15e5d9670eb1572ca90305e2fc703';
+const pr={mergeCommit:{oid:parent}};
+const comparison={status:'ahead',behind_by:0,base_commit:{sha:parent},merge_base_commit:{sha:parent}};
+test('exact historical parent is independently contained in main; malformed or diverged ancestry fails closed',()=>{
+  assert.equal(verifyOriginalParentAncestry({pr,mainSha:main,comparison}),true);
+  for(const c of [{...comparison,status:'diverged'},{...comparison,behind_by:1},{...comparison,base_commit:{sha:main}},{...comparison,merge_base_commit:{sha:main}},{...comparison,behind_by:undefined}])
+    assert.equal(verifyOriginalParentAncestry({pr,mainSha:main,comparison:c}),false);
+  assert.equal(verifyOriginalParentAncestry({pr,mainSha:'bad',comparison}),false);
+  assert.equal(verifyOriginalParentAncestry({pr:{},mainSha:main,comparison}),false);
 });
-function scenario(){
- const action={action:'Extend the existing admin-only System Map read model to show source-joined execution truth; timestamped executed actions must be distinguished from unsupported legacy cycle stage events, without rewriting history or bypassing protected review.',
-   parent_pr:5109,writer:'existing',scheduler:'existing'};
- const rollback={strategy:'revert only future read-model presentation through protected source commit; preserve original events'};
- const c={candidate_id:ID,component_id:'powerhouse-sales-cycle-execution-read-model',
-   source_key:SOURCE,owner_agent:'engineering',safety_class:'review_required',status:'candidate',
-   created_at:'2026-10-29T12:43:19Z',proposed_action:action,rollback_plan:rollback};
- const o={business_entity:ID,change_id:SOURCE,owner:'original-agent:engineering',
-   state:'OPEN',payload_sha256:HASH,evidence:{source_revision:REV}};
- const op={id:'edebcb32-335b-49f0-b527-eb4289f95c5c',
-   operation_type:'INNOVATION_INTAKE',capability_id:OWNER,status:'PLANNED',remote_ref:null,version:2,
-   change_id:SOURCE,payload_sha256:HASH,correlation_id:'innovation-delivery:'+ID,
-   idempotency_key:'innovation-delivery:'+ID+':'+HASH.slice(0,16),
-   evidence:{
-     original_agent_pre_review:{original_owner:OWNER,source_revision:REV,
-       exact_source_action_digest:digest(action),exact_source_rollback_digest:digest(rollback),
-       consumer_ack_verified:false,external_side_effect:false},
-     original_owner_decision:{original_owner:OWNER,source_revision:REV,source_sha256:HASH,
-       original_action_digest:digest(action),decision:'CONCRETE_PROTECTED_CHANGE_PROPOSAL_DUE',
-       actionable_work_package:true,production_mutation_authorized:false,
-       consumer_ack_verified:false,fingerprint:'b'.repeat(64)}
-   }};
- return {snapshot:{candidates:[c],obligations:[o],intakes:[op]},
-   report:{contract:'ORIGINAL_INNOVATION_AGENT_OWNER_READBACK_V1',
-     counts:{candidates:1,obligations:1,intakes:1}}};
-}
-test('native parent proof binds independent protected main ancestry and disjoint child source',()=>{
- const p=proof();assert.ok(p);
- assert.equal(p.parent_pr,5109);assert.equal(p.original_candidate_id,ID);
- assert.equal(p.source_paths_disjoint,true);assert.equal(p.protected_main_ancestor,true);
- assert.equal(p.child_implementation_proven,false);assert.equal(p.child_consumer_ack_verified,false);
+test('actual original semantic admission failure is caught before PR generation, corrected record passes',()=>{
+  const root=mkdtempSync(join(tmpdir(),'innovation-closure-'));
+  try{
+    const paths=['scripts/brain/publish_approved_blog_v2_core.py','brain/learning/2026-11-24-innovation-fixture.json','docs/changes/fixture.md','docs/development-ledger-events/fixture.md'];
+    for(const p of paths){mkdirSync(dirname(join(root,p)),{recursive:true});writeFileSync(join(root,p),'fixture');}
+    const record={fingerprint:'approved-blog|stale-queue|first-page-only|20261124-v1',compiler:{failure_class:'QUEUE_STALL'},root_cause:'Continuation discarded',evaluation:{historical_replay:['tests/brain-innovation-fixture.test.mjs']},evidence:{fixture_only:true}};
+    const file=join(root,paths[1]);
+    writeFileSync(file,JSON.stringify(record));
+    assert.throws(()=>verifyOriginalInnovationLearningClosure({changedPaths:paths,rootDir:root}),/MATERIAL_CLOSURE_REQUIRED.*prevention/);
+    writeFileSync(file,JSON.stringify({...record,prevention:{follow_cursor:true}}));
+    assert.equal(verifyOriginalInnovationLearningClosure({changedPaths:paths,rootDir:root}).ok,true);
+    const missingEvidence={...record,prevention:{follow_cursor:true}};delete missingEvidence.evidence;
+    writeFileSync(file,JSON.stringify(missingEvidence));
+    assert.throws(()=>verifyOriginalInnovationLearningClosure({changedPaths:paths,rootDir:root}),/MATERIAL_CLOSURE_REQUIRED.*evidence/);
+    assert.throws(()=>verifyOriginalInnovationLearningClosure({changedPaths:paths.filter(p=>!p.includes('development-ledger')),rootDir:root}),/MATERIAL_CLOSURE_REQUIRED.*activity_ledger/);
+  }finally{rmSync(root,{recursive:true,force:true});}
 });
-test('unmerged, untrusted, overlapping or wrong-parent provider data are never accepted',()=>{
- const a={parentPr:5109,mainSha:MAIN,compare,childId:ID,childAllowedSourcePaths:SCOPE};
- const wrong=[
-   {...a,pr:parentPr({state:'OPEN'})},
-   {...a,pr:parentPr({baseRefName:'feature'})},
-   {...a,pr:parentPr({url:'https://github.com/attacker/other/pull/5109'})},
-   {...a,pr:parentPr({files:[{path:SCOPE[0]}]})},
-   {...a,pr:parentPr({body:'Candidate-Type: implementation\nOriginal-Candidate: '+ID})},
-   {...a,pr:parentPr({body:'Candidate-Type: recovery'})},
-   {...a,pr:parentPr({mergeCommit:{oid:'bad'}})},
-   {...a,pr:parentPr({number:5108})},
-   {...a,compare:{status:'diverged',merge_base_commit:{sha:MERGE}}},
-   {...a,compare:{status:'ahead',merge_base_commit:{sha:'f'.repeat(40)}}},
-   {...a,mainSha:'unknown'},
-   {...a,parentPr:'5109'}
- ];
- for(const candidate of wrong)assert.equal(classifyVerifiedOriginalParentPr(candidate),null);
-});
-test('old explicit parent is held when not independently proven, not mistaken for a duplicate when proven',()=>{
- const s=scenario();
- const held=selectOriginalCodeCandidate(s);
- assert.equal(held.selected,false);assert.equal(held.terminal_success,false);
- let called=false;
- const eligible=selectOriginalCodeCandidate({...s,verifiedParentFor:(n,x)=>{
-   called=true;assert.equal(n,5109);assert.equal(x.candidateId,ID);
-   assert.deepEqual(x.allowedSourcePaths,SCOPE);return proof();
- }});
- assert.equal(called,true);
- assert.equal(eligible.contract,CONTRACT);
- assert.equal(eligible.selected,true);assert.equal(eligible.candidate_id,ID);
- assert.deepEqual(eligible.verified_parent_pr,proof());
- assert.equal(eligible.candidate_pr_only,true);
- assert.equal(eligible.automatic_production_mutation,false);
- assert.equal(eligible.consumer_ack_verified,false);
-});
-test('proven parent never bypasses child exact-source PR dedupe or source drift',()=>{
- const s=scenario();
- const duplicate=selectOriginalCodeCandidate({...s,verifiedParentFor:proof,
-   existingPrFor:(id,sha,rev)=>id===ID&&sha===HASH&&rev===REV});
- assert.equal(duplicate.selected,false);assert.equal(duplicate.existing,1);
- for(const broken of [
-   {...proof(),parent_pr:5108},
-   {...proof(),source_paths_disjoint:false},
-   {...proof(),child_implementation_proven:true},
-   {...proof(),protected_main_ancestor:false},
-   {...proof(),merge_sha:'bad'}
- ])assert.equal(selectOriginalCodeCandidate({...s,verifiedParentFor:()=>broken}).selected,false);
- s.snapshot.intakes[0].payload_sha256='f'.repeat(64);
- assert.throws(()=>selectOriginalCodeCandidate({...s,verifiedParentFor:proof}),/SOURCE_BINDING_INCOMPLETE/);
-});
-test('parent exception is limited to the one source-owned sales read-model route',()=>{
- const s=scenario();
- s.snapshot.candidates[0].component_id='powerhouse-decision-cycle-evidence';
- assert.equal(selectOriginalCodeCandidate({...s,verifiedParentFor:proof}).selected,false);
-});
-test('provider-native GitHub source lookup is required in the actual original writer',()=>{
- const src=readFileSync('scripts/brain/innovation-original-code-delivery.mjs','utf8');
- assert.match(src,/function verifiedOriginalParentFor/);
- assert.match(src,/verifiedParentFor:verifiedOriginalParentFor/);
- assert.match(src,/compare\/.*mergeCommit/);
- assert.match(src,/parent_is_not_child_implementation/);
- assert.match(src,/child_implementation_proven:false/);
- assert.match(src,/NO_NEW_SOURCE_BOUND_SAFE_CODE_CANDIDATE/);
+test('original live writer invokes both canonical guards before publishing the candidate',()=>{
+  const src=readFileSync('scripts/brain/innovation-original-code-delivery.mjs','utf8');
+  assert.match(src,/return verifyOriginalParentAncestry\(\{pr,mainSha,comparison\}\)/);
+  assert.match(src,/verifyOriginalInnovationLearningClosure\(\{changedPaths:result.changed\}\);\s*for\(const path of result.learn\)/);
+  const wf=readFileSync('.github/workflows/powerhouse-daily-self-evolution.yml','utf8');
+  assert.ok(wf.indexOf('--validate')<wf.indexOf('Publish only the validated code candidate'));
 });

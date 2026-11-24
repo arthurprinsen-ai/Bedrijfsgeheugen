@@ -1,0 +1,50 @@
+{
+  "fingerprint": "powerhouse|bg169|github-native-squash-incompatible-merge|20261123-v1",
+  "observed_at": "2026-11-23",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_bg169_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45144449592",
+  "root_causes": [
+    "The original BG169 terminal guard returned TERMINAL_MERGE_ADMITTED after full Required+CodeQL and backend success, but its final GitHub API requested merge_method=merge while the provider allows only squashMergeAllowed=true.",
+    "The original postmerge verification falsely required exact candidate-head commit ancestry on protected main. Squash produces a new commit: exact candidate/merged Git tree equivalence plus provider merge-commit SHA must be verified instead."
+  ],
+  "fix": [
+    "In the SAME original Unified Brain Delivery BG169 terminal workflow check repository allow_squash_merge via GitHub provider before irreversible commit, and request the allowed squash method only.",
+    "Check exact provider returned merge sha, its ancestry in protected main, accepted PR merged identity/merge_commit_sha and exact tested source tree equality for squash. Preserve existing exact HEAD branch and main CAS, admission, CodeQL, Required and role boundaries."
+  ],
+  "prevention": [
+    "Never make a release transport assume a GitHub merge method different from repository permissions.",
+    "A squash release must preserve exact tested tree identity, not falsely infer source-head ancestry.",
+    "Mark no terminal / publication outcome from failure, PR creation, scheduler ACK, or provider HTTP response without independent readback."
+  ],
+  "evidence": {
+    "initial_native_failure": "gh: Merge commits are not allowed on this repository (HTTP 405)",
+    "observed_main_sha": "1be4597a0636f422b60a544a929dd3d08c7a7597",
+    "observed_original_pr": 6120,
+    "provider_policy": {
+      "squashMergeAllowed": true,
+      "mergeCommitAllowed": false,
+      "rebaseMergeAllowed": false
+    },
+    "actual_production_merge": "PENDING",
+    "protected_tests": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bg169-squash-transport-20261123.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bg169-squash-transport-20261123.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bg169-squash-transport-20261123.test.mjs"
+    ]
+  },
+  "current_state": "SOURCE_CANDIDATE_NOT_LIVE"
+}

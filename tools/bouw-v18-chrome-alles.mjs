@@ -160,7 +160,8 @@ for (const p of v18Paginas) {
   if (!home.includes('v18-speels')) {
     home = home.replace('</head>', SPEELS_CSS + '\n</head>');
     home = home.replace('</main>', VERTREK + '</main>');
-    home = home.replace('</body>', LEK + '\n' + EXTRA_HTML + '\n' + SPEELS_JS + '\n' + INTERACTIE_JS + '\n</body>');
+    // rust (besluit 17 nov): de gele LEK-teller staat alleen op /frisse-blik en /prijzen, niet op de homepage
+    home = home.replace('</body>', EXTRA_HTML + '\n' + SPEELS_JS + '\n' + INTERACTIE_JS + '\n</body>');
   }
   if (!home.includes('"@type":"Organization"')) {
     home = home.replace('</body>', ORGANISATIE_SCHEMA + '\n</body>');
@@ -276,11 +277,27 @@ if (fouten.length) {
 // zelf gehoste Fraunces + Instrument Sans, papieren kop, boogvormig videoraam,
 // stille cookiekaart. Alleen vorm; tekst, routes en gedrag blijven gelijk.
 {
-  const link = '<link rel="stylesheet" href="/assets/rituals-belevenis.css?v=20261117">';
+  // Megamenu-contract (V18): menulinks blijven zwart en vet. Inline, omdat
+  // het gelinkte stylesheet in de browsercheck van productie komt en dus nog niet de
+  // nieuwste versie heeft; zo klopt het contract op dezelfde build.
+  const megamenuContract = '<style data-rb-megamenu>html body header.v17-header a[data-bg-megamenu-link][href],html body header.v17-header a[data-bg-megamenu-link][href] *{color:#000!important;font-weight:700!important}html body header.v17-header :is(.mega,.bgkop-paneel) h3:not([data-bg-megamenu-heading]){color:#fff!important;font-weight:700!important}</style>';
+  const link = '<link rel="stylesheet" href="/assets/rituals-belevenis.css?v=20261118q">' + megamenuContract;
   for (const pad of await allePaginas()) {
     let h = await readFile(pad, 'utf8');
     if (!h.includes('</head>') || h.includes('rituals-belevenis.css')) continue;
     h = h.replace('</head>', link + '\n</head>');
+    await writeFile(pad, h, 'utf8');
+  }
+}
+
+// Rituals-beleving: interactielaag (onthulling bij scrollen, ademmoment, zachte
+// overgangen). Alleen presentatie; zonder JS blijft alles gewoon zichtbaar.
+{
+  const script = '<script src="/assets/rituals-beleving.js?v=20261118o" defer></script>';
+  for (const pad of await allePaginas()) {
+    let h = await readFile(pad, 'utf8');
+    if (!h.includes('</body>') || h.includes('rituals-beleving.js')) continue;
+    h = h.replace('</body>', script + '\n</body>');
     await writeFile(pad, h, 'utf8');
   }
 }

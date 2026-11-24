@@ -127,7 +127,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs
+          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs tests/brain-innovation-public-release-readback-20261120.test.mjs
           node scripts/brain/innovation-original-delivery-continuity.mjs --reconcile
       - name: Persist exact-run daily agent-learning checkpoint even after a failed step
         if: always()
@@ -229,7 +229,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs
+          node --test tests/brain-innovation-delivery-continuity-20261117.test.mjs tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs tests/brain-innovation-public-release-readback-20261120.test.mjs
           node scripts/brain/innovation-original-delivery-continuity.mjs --reconcile
 
   # The catalog remains fail-closed, but a stale supplier receipt must not
@@ -281,10 +281,24 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Verify original implementation selection, proof-bound parent and path guards
+      - name: Verify original implementation selection and path guards
+        run: node --test tests/brain-innovation-original-code-delivery-20261115.test.mjs
+      # First-party quality history is evidence, NOT current provider/consumer proof.
+      # Preserve the same original ONE BRAIN operation and avoid another scheduler.
+      - name: Verify exact original quality-source reconciliation and CAS invariants
+        run: node --test tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs
+      - name: Reconcile 14 original source-quality receipts using original version-CAS and independent GET
+        id: original_quality_reconcile
+        env:
+          SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL || secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY || secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          node --test tests/brain-innovation-original-code-delivery-20261115.test.mjs
-          node --test tests/brain-innovation-proven-parent-child-source-20261117.test.mjs
+          if node scripts/brain/innovation-original-evidence-reconciliation.mjs --writeback; then
+            echo "reconciled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::ORIGINAL_14_QUALITY_RECONCILIATION_WRITEBACK_FAILED"
+            echo "reconciled=false" >> "$GITHUB_OUTPUT"
+          fi
       - name: Select at most one source-bound original engineering work order
         id: candidate
         env:
@@ -305,12 +319,23 @@ jobs:
             ONE BRAIN candidate, owner, source revision, requested improvement,
             rollback and EXACT allowed_source_paths. Implement a real, small, reversible
             source correction in one of those exact source paths. Inspect the current
-            code and existing guards first; if the issue is already solved, make NO
+            code and existing guards first. Use innovation_method_plan in the work order:
+            select at least two applicable named methods, cite current baseline evidence,
+            compare the incumbent against a distinct reversible challenger on the same metric,
+            and explain the selection and rollback. No invented observations or effect claims.
+            For a changed candidate, the new learning JSON MUST contain innovation_method_evidence
+            with version, candidate_id, source_revision, source_sha256, methods (array of exact
+            catalog names), baseline_ref, metric, incumbent, challenger, comparison_ref,
+            decision_reason, rollback, current_effect_verified:false. Use actual local test
+            references and results; independent effect is a later original Heartbeat duty.
+            If the issue is already solved, make NO
             changes and report that fact. Never fabricate an implementation or success.
             Only change a listed allowed_source_path, create a NEW named
             tests/brain-innovation-*.test.mjs regression and a NEW
             brain/learning/2026-11-*-innovation-*.json learning record with
-            compiler.failure_class, root_cause, fingerprint and evaluation evidence.
+            compiler.failure_class, root_cause, fingerprint, explicit nonempty prevention
+            (or prevention_rule), and concrete test evidence. The existing material
+            writeback closure guard runs before PR creation; do not fabricate evidence.
             Determine REQUIRED evaluation modes using the existing
             scripts/brain/learning-canonicalization-gate.mjs compiler:
             historical_replay always, shadow for relevant recovery/security,
@@ -377,11 +402,6 @@ jobs:
             'Original-Source-Revision: '+w.source_revision,
             'Original-Source-SHA256: '+w.source_sha256,
             'Original-Correlation: '+w.correlation_id,
-            ...(w.verified_parent_pr?[
-              'Original-Verified-Parent-PR: '+w.verified_parent_pr.parent_url,
-              'Original-Verified-Parent-Merge-SHA: '+w.verified_parent_pr.merge_sha,
-              'Original-Parent-Is-Not-Child-Implementation: true'
-            ]:[]),
             'Review-Required: true',
             'Candidate only. Native original remains PLANNED until actual',
             'consumer ACK, Required/CodeQL, protected merge, exact production',
@@ -410,3 +430,8 @@ jobs:
           if ! gh pr merge "$PR_URL" --auto --squash; then
             echo "::warning::PROTECTED_AUTO_MERGE_NOT_ENABLED: candidate remains open; no green claim."
           fi
+      - name: Fail visibly when original quality reconciliation did not complete
+        if: ${{ always() && steps.original_quality_reconcile.outputs.reconciled == 'false' }}
+        run: |
+          echo "::error::ORIGINAL_14_QUALITY_RECONCILIATION_FAILED: original ONE BRAIN readback/CAS unresolved. Do not mark operation complete."
+          exit 1

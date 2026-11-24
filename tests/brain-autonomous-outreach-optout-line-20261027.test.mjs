@@ -7,7 +7,10 @@ test('every autonomous mail gets the opt-out line that the reply loop understand
  assert.match(src,/send\(key,acct,to,sub,withOptOutLine\(body\)\)/);
  assert.doesNotMatch(src,/send\(key,acct,to,sub,body\)/);
  const reply=readFileSync(new URL('../supabase/functions/powerhouse-email-reply-loop/index.ts',import.meta.url),'utf8');
- assert.match(reply,/' afmelden'/);
+ assert.match(reply,/isExplicitUnsubscribeReply\(textRaw\)/);
+ const visibleGuard=readFileSync(new URL('../supabase/functions/_shared/email-reply-visible-text.mjs',import.meta.url),'utf8');
+ assert.match(visibleGuard,/afmelden/);
+ assert.match(reply,/extractVisibleEmailReply/);
 });
 test('recipient authority and suppression gates are untouched',()=>{
  assert.match(src,/RECIPIENT_AUTHORITY_UNVERIFIED/);

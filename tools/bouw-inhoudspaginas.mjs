@@ -44,6 +44,8 @@ function routerLaatLinksDoor(html) {
 function inhoudBlok(p) {
   const blokken = (p.blokken || []).map(b => `<article><h2>${ontsnap(b.kop)}</h2><p>${ontsnap(b.tekst)}</p></article>`).join('\n');
   const cta = p.cta ? `<p><a class="cta" href="${p.cta.href}">${ontsnap(p.cta.tekst)} \u2192</a></p>` : '';
+  const cta2 = p.cta2 ? `<p><a class="cta" href="${p.cta2.href}">${ontsnap(p.cta2.tekst)} \u2192</a></p>` : '';
+  const covers = (p.covers || []).length ? `<div class="inhoud-covers">${p.covers.map(c => `<figure><a href="${c.href}"><img src="${c.src}" width="${c.breed}" height="${c.hoog}" alt="${ontsnap(c.tekst)}" loading="lazy"></a><figcaption>${ontsnap(c.tekst)}</figcaption></figure>`).join('')}</div>` : '';
   const slot = p.slot ? `<p>${ontsnap(p.slot)}</p>` : '';
   const kruimelLabel = ontsnap(p.kruimel || p.kicker || p.h1);
   const kruimelSchema = `<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"${kruimelLabel}","item":"https://www.bedrijfsgeheugen.nl${p.pad}"}]}<\/script>`;
@@ -55,9 +57,11 @@ function inhoudBlok(p) {
 <p>${ontsnap(p.intro)}</p>
 </div></section>
 <section class="inhoud-body"><div class="wrap">
+${covers}
 ${blokken}
 ${slot}
 ${cta}
+${cta2}
 </div></section>
 </div>
 `;
@@ -77,6 +81,7 @@ header a,header a:visited,header a:hover{color:#fff}
 .inhoud-body article{max-width:74ch;margin:0 0 30px}
 .inhoud-body h2{margin:0 0 8px;font-size:22px}
 .inhoud-body p{line-height:1.65}
+.inhoud-covers{display:flex;gap:24px;flex-wrap:wrap;margin:0 0 28px}.inhoud-covers figure{margin:0;flex:1 1 240px;max-width:340px}.inhoud-covers img{width:100%;height:auto;display:block;border-radius:6px;box-shadow:0 10px 30px rgba(10,22,48,.25)}.inhoud-covers figcaption{font-size:.85rem;opacity:.75;margin-top:8px}
 .inhoud-body a.cta{display:inline-block;margin-top:14px;text-decoration:none}
 @media(max-width:768px){.inhoud-kop{padding:104px 0 48px}.inhoud-body{padding:48px 0 72px}}
 </style>`;

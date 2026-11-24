@@ -11,3 +11,8 @@ Original ONE BRAIN duty: `INNOVATION_DELIVERY`; candidate `55bb0754-355b-4940-aa
 - Before merge: **no claim of built child or measured effect**. Run protected Required/CodeQL, then one original `original_code_recovery`, only if no duplicate run. Preserve source integrity and original Brain state.
 - Rollback: protected source revert; no destructive migration or external effects. Parent/protected PR cannot independently close original child.
 
+
+
+## 24 November — residual original-owner recovery
+
+Protected #5981 already implemented the original historical-parent selector. Preserve the current selector, methods and KPI contracts. The remaining native ancestry check uses the exact parent/main comparison; native readback for #5109 confirms ancestor equality. Original writer run 45437381849 built #6153 but admission run 45438546408 failed semantic_learning because explicit prevention was missing. Reuse the same canonical material closure validator in the original writer before opening any candidate PR, with negative tests for missing prevention/evidence/ledger and divergent ancestry. No duplicate selector or scheduler, no provider mutation, no effect or production claim. Rollback through protected revert.

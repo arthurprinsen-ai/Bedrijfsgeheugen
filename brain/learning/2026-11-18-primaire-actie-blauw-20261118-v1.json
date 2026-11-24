@@ -1,0 +1,39 @@
+{
+  "fingerprint": "site|rituals|primaire-actie-blauw|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|primaire-actie-blauw|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": false,
+    "repeat_count": 5,
+    "security_sensitive": false
+  },
+  "root_cause": "Een eerder besluit (oranje conversieknop, 10 sept) bleef via een late CSS-laag met hoge specificiteit winnen van het nieuwere merkbesluit (blauw voor primaire actie, 17 nov). Bij een nieuw merkbesluit werd niet gezocht naar eerdere besluiten die erdoor achterhaald worden.",
+  "correction": "Kleurvariabelen van de conversielaag op Rituals-blauw gezet; bewust herzien en vastgelegd.",
+  "prevention": [
+    "Na een merkbesluit: zoek eerdere besluiten over hetzelfde element (kleur, knop) en herzie ze expliciet.",
+    "Controleer de berekende kleur live, niet alleen de bron-CSS; een late !important-laag wint."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/cta-conversie.css"
+    ],
+    "outcome": "Lokaal: CTA-tests groen. Live-readback open."
+  }
+}

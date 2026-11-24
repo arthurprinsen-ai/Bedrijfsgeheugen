@@ -58,8 +58,8 @@ test('same original orchestrator and publisher reject a business proposal with A
    ai_native_builder_story_verified:true,source_lineage:['powerhouse_content_artifacts:old-business'],
    content_id:'ai-native-builder:2026-11-16'};
  const failures=personalFirstPersonSourceViolations(business,date);
- assert.ok(failures.includes('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN'));
- assert.ok(failures.includes('PERSONAL_COMPANY_SEPARATION_REQUIRED'));
+ assert.ok(failures.includes('PERSONAL_VERIFIED_BUILDER_SOURCE_REQUIRED'));
+ assert.ok(failures.includes('PERSONAL_VERIFIED_BUILDER_SOURCE_REQUIRED'));
  assert.ok(failures.includes('PERSONAL_GENERATED_OR_PUBLIC_ARTICLE_SOURCE_FORBIDDEN'));
 });
 test('fresh synthetic first-person event may pass content gate without ever authorizing a provider write',()=>{

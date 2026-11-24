@@ -1,0 +1,35 @@
+{
+  "fingerprint": "ci|seo|title-capital-after-focus-keyword|20261120-v1",
+  "date": "2026-11-20",
+  "owner": "agent-reliability",
+  "obligation_id": "ci|seo|title-capital-after-focus-keyword|20261120-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "GENERATOR_CONTRACT_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "seo_title bouwde '<zoekwoord>: <suffix>' met een kleine-letter zoekwoord zonder kapitalisatie; de bestaande tegen-test op gepubliceerde artikelen ving het pas na het renderen van de PR.",
+  "correction": "seo_title retourneert altijd een titel met hoofdletter; eigen unit-test op de generator zelf, los van gepubliceerde artikelen.",
+  "prevention": [
+    "Een generator die publieke tekst bouwt krijgt een eigen unit-test op de uitvoervorm, niet alleen een controle op reeds gepubliceerde artikelen.",
+    "Een uurlijkse schedule die uitblijft wordt hersteld met een rerun van de schedule-run, niet met workflow_dispatch (die slaat de goedkeuringsstap over)."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-seo-focus-pronoun-20261108.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-seo-title-capital-20261120.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-blog-seo-title-capital-20261120.test.mjs"
+    ],
+    "outcome": "Lokaal: nieuwe test groen, titel van 2026-11-20 wordt 'Boekhouding klaarmaakt: wat verandert er voor jou?'. PR-checks en live-readback open."
+  }
+}

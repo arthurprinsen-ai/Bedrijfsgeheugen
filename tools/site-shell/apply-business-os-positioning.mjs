@@ -20,8 +20,8 @@ const STYLE=`<style id="bg-one-roof-style">
 </style>`;
 const COPY={
  nl:{
-  home:{eyebrow:'BEDRIJFSGEHEUGEN · ÉÉN BEDRIJF',title:'Je bedrijf onder één dak. Je systemen blijven waar ze zijn.',
-   intro:'Doelen, mensen, processen, klanten, projecten en cijfers krijgen samenhang. Vanuit één werkplek kies je de volgende stap; de bestaande ONE BRAIN–Powerhouse–Heartbeat-keten verwerkt, controleert en leert waar de bron en toestemming dat toelaten.',
+  home:{eyebrow:'BEDRIJFSGEHEUGEN · ÉÉN BEDRIJF',title:'Je bedrijf onder één dak. Jij houdt de leiding.',
+   intro:'Doelen, mensen, processen, klanten, projecten en cijfers krijgen samenhang. Je systemen blijven waar ze zijn. Vanuit één werkplek kies jij de volgende stap; wat daarna volgt wordt verwerkt en gecontroleerd waar bron en toestemming dat toelaten.',
    stages:[['Begrijp je bedrijf','Koppel kennis, brondata, doelen en een gratis nulmeting aan dezelfde bedrijfscontext.'],['Organiseer het werk','Zie wie verantwoordelijk is, welke stap volgt en wat op bevestiging wacht.'],['Verbeter met bewijs','Een advies is nog geen resultaat. Controleer uitvoering en effect voordat je verder stuurt.']],
    cta:'Start de gratis Bedrijfslek-scan →',second:'Bekijk het portaal',third:'Pakketten en prijzen',note:'Geen vervanging van je bestaande ERP of CRM nodig. Beschikbaarheid van workflows en integraties hangt af van je pakket en geautoriseerde koppelingen.'},
   price:{eyebrow:'ZO WERKT JE ABONNEMENT',title:'Eén werkplek. Begin klein en verbind wat voor jouw bedrijf telt.',
@@ -30,8 +30,8 @@ const COPY={
    cta:'Doe eerst de gratis scan →',second:'Bekijk het portaal',third:'Vergelijk de pakketten',note:'Geen nieuwe prijslaag of automatische upgrade: abonnement en betaalvoorwaarden blijven uitsluitend gelden zoals hieronder gepubliceerd.'}
  },
  en:{
-  home:{eyebrow:'BEDRIJFSGEHEUGEN · ONE BUSINESS',title:'One home for your business. Keep the systems you already use.',
-   intro:'Bring goals, people, processes, customers, projects and financial data into one coherent view. Choose the next action in one workspace, with traceable source evidence and accountable execution through the existing ONE BRAIN–Powerhouse–Heartbeat chain.',
+  home:{eyebrow:'BEDRIJFSGEHEUGEN · ONE BUSINESS',title:'One home for your business. You stay in charge.',
+   intro:'Bring goals, people, processes, customers, projects and financial data into one coherent view. Your systems stay where they are. You choose the next action in one workspace, with traceable source evidence and accountable execution.',
    stages:[['Understand the business','Connect knowledge, authorised data sources and goals to a shared business context.'],['Coordinate the work','See ownership, next steps and handoffs still awaiting confirmation.'],['Improve with evidence','A recommendation is not a realised result: verify execution and outcomes first.']],
    cta:'Start a free business scan →',second:'View the portal',third:'Plans and pricing',note:'No need to replace your ERP or CRM. Available workflows and integrations depend on the plan and authorised data access.'},
   price:{eyebrow:'HOW THE SUBSCRIPTION WORKS',title:'One workspace. Start small and connect what matters.',

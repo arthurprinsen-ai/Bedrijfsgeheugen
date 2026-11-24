@@ -9,8 +9,17 @@ on:
       - 'powerhouse/assurance/security-operations-closure.json'
       - 'docs/powerhouse/POWERHOUSE_SECURITY_OPERATIONS_CLOSURE.md'
       - '.github/workflows/security-operations-proof.yml'
+      - '_redirects'
+      - '_headers'
+      - 'netlify.toml'
+      - 'tests/brain-site-security-source-exposure-20261120.test.mjs'
+      - 'tests/brain-security-live-headers-monitor-20261120.test.mjs'
+      - 'tools/security/verify-public-security-headers.mjs'
+      - 'tests/brain-security-live-guard-contract-20261120.test.mjs'
   schedule:
     - cron: '17 5 * * 1'
+    # Frequent lightweight live guard for both original Netlify sites.
+    - cron: '47 1,7,13,19 * * *'
   workflow_dispatch:
     inputs:
       require_live:
@@ -36,9 +45,38 @@ jobs:
         with:
           node-version: '22'
       - name: Contract tests
-        run: node --test tests/security-operations-proof.test.mjs
+        run: node --test tests/security-operations-proof.test.mjs tests/brain-site-security-source-exposure-20261120.test.mjs tests/brain-security-live-guard-contract-20261120.test.mjs
+      - name: HTTP browser defense regression tests
+        run: node --test tests/brain-security-csp-web-boundary-20261120.test.mjs tests/brain-security-live-headers-monitor-20261120.test.mjs
       - name: Structural fail-closed validation
         run: node scripts/security-operations-proof.mjs --check
-      - name: Full closure gate when explicitly required
+      - name: Detect publicly exposed internal source in actual production
+        if: github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        run: |
+          set -euo pipefail
+          base='https://www.bedrijfsgeheugen.nl'
+          public_status="$(curl -sSL --max-time 25 -o /dev/null -w '%{http_code}' "$base/" )"
+          test "$public_status" = 200 || { echo "::error::Homepage unavailable ($public_status)"; exit 1; }
+          for path in \
+            /supabase/migrations/20261014124402_scoped_external_reconcile_auth_retry_20261014.sql \
+            /scripts/security-operations-proof.mjs \
+            /package.json \
+            /config/brain-delivery-system.json \
+            /netlify.toml \
+            /.gitignore \
+            /.git/config \
+            /.bg-prebuilt-manifest.json \
+            /.vscode/settings.json; do
+            status="$(curl -sSL --max-time 25 -o /dev/null -w '%{http_code}' "$base$path")"
+            if [ "$status" != 404 ]; then
+              echo "::error::PRIVATE_SOURCE_EXPOSURE: route returned HTTP $status (must 404)"
+              exit 1
+            fi
+          done
+          echo "Private source routes verified HTTP 404; public homepage remains HTTP 200."
+      - name: Independent recurring production HTTP security proof
         if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.require_live) }}
+        run: node tools/security/verify-public-security-headers.mjs
+      - name: Full closure gate when explicitly required
+        if: ${{ (github.event_name == 'schedule' && github.event.schedule == '17 5 * * 1') || (github.event_name == 'workflow_dispatch' && inputs.require_live) }}
         run: node scripts/security-operations-proof.mjs --require-live

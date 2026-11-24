@@ -90,13 +90,22 @@ export function createSupabasePortalProjectionStore({
     if(data?.tenantId!==expectedTenant||!Array.isArray(data?.series))throw new Error('COMMERCIAL_FEEDBACK_TENANT_MISMATCH');
     return data;
   }
+  async function getSignalObservations(tenantId){
+    const expectedTenant=String(tenantId||'').trim();
+    if(!expectedTenant)throw new TypeError('PORTAL_MONITORING_TENANT_REQUIRED');
+    const data=await gateway({action:'signal_observations',tenantId:expectedTenant});
+    if(data?.tenantId!==expectedTenant||data?.contract!=='portal-signal-tenant-readback-v1'
+      ||!Array.isArray(data?.events)||data.events.length>50)
+      throw new Error('PORTAL_MONITORING_TENANT_OR_CONTRACT_MISMATCH');
+    return data;
+  }
   async function putLayer(tenantId,layer,next){
     const payload={...next,origin:layer};
     const data=await gateway({action:'put',tenantId:String(tenantId),layer,payload});
     return {stored:Boolean(data.stored),stale:Boolean(data.stale),record:data.record||payload};
   }
   return Object.freeze({
-    getLayer,getGovernance,getResourceBusinessValue,getEntrepreneurIntelligence,getValidatedFinancialForecasts,getCommercialFeedback,
+    getLayer,getGovernance,getResourceBusinessValue,getEntrepreneurIntelligence,getValidatedFinancialForecasts,getCommercialFeedback,getSignalObservations,
     async get(tenantId){
       const [legacy,canonical,aiGovernance,resourceBusinessValue]=await Promise.all([
         getLayer(tenantId,PORTAL_LAYERS.LEGACY),

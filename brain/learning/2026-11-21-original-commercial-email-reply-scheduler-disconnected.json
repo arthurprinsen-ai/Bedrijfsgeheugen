@@ -1,0 +1,65 @@
+{
+  "fingerprint": "powerhouse|email-reply-loop|canonical-cron116-stage14-dispatch-missing|20261121-v1",
+  "obligation_id": "powerhouse|email|original-116-reply-live-readback|20261121-v1",
+  "owner": "powerhouse-commercial-learning-v1 / powerhouse-email-reply-loop",
+  "detected_at": "2026-11-21",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "root_cause": "Original single commercial cron #116 runs 14 SQL stages but none invokes the already deployed powerhouse-email-reply-loop Edge. The intentionally removed standalone reply cron was not replaced by a stage14 handoff. Source and code-deploy green do not prove original inbox reply ingestion or meaningful learning.",
+  "production_evidence": {
+    "source": "read-only live Supabase project adhjwmvyoixzjtmiroln on 2026-11-21",
+    "original_job_id": 116,
+    "original_job": "powerhouse-commercial-learning-v1",
+    "job_active": true,
+    "last24h_attempts": 336,
+    "last24h_successes": 336,
+    "canonical_sql_stage_count": 14,
+    "original_stage14": "powerhouse_commercial_learning_cycle_v1",
+    "any_sql_function_referencing_reply_edge": false,
+    "former_parallel_cron_active": false,
+    "original_reply_loop_health_last": "2026-10-20T16:57:00Z",
+    "original_reply_events_total": 4,
+    "reply_events_after_20261121_release": 0,
+    "deployed_reply_edge_version": 1216,
+    "deployed_reply_provider_source_parity": "three files EXACT bytes equal to protected main, checked separately",
+    "specific_outbound_authority": "605 CRM emails; 0 records with independent email_marketing_permission proof; automatic new mail remains held"
+  },
+  "prevention": [
+    "Every active Edge owner must be proven reachable from an original active scheduler/job; a 100%-successful cron #116 is not evidence of Gmail replies.",
+    "Add only ONE stage14 additive dispatch to original job #116, never a new cron, queue, Gmail account or sender. Preserve all original stage calls and schedule.",
+    "Use original public.bg_roep_functie with existing Vault scheduler token, idempotent pg_net request_id registration in bg_functie_aanroep, original powerless reply action lineage.",
+    "On absent token or SQL error enqueue typed same-lineage incident via powerhouse_ops.enqueue; never invent HTTP readback, inbox receipt or positive reply.",
+    "Require protected SQL migration replay, exact original cron.job command readback, subsequent natural run and provider HTTP+bg_gezondheid status before operational GREEN.",
+    "Examine real reply-events and independently linked outcomes; if no eligible message exists report eligible=0, not delivered/replied/sold.",
+    "Strict no-send authority: first-degree LinkedIn, business email and human approval are not a legal marketing email basis."
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-email-reply-116-reconnect-20261121.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-email-reply-116-reconnect-20261121.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-email-reply-116-reconnect-20261121.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-email-reply-116-reconnect-20261121.test.mjs"
+  ],
+  "prevention_rule": "Original commercial scheduler #116 must dispatch the only original Gmail reply Edge in its existing stage14, produce a durable pg_net request identity, independently reconcile HTTP and a fresh authenticated Edge health receipt, then write actual provider reply/outcome into ONE BRAIN and Heartbeat. Cron success, green PR or active Edge are not proof of customer response or paid sales. Preserve recipient-specific legal email permission, suppressions and no-resend.",
+  "source_refs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/6098",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6096",
+    "https://supabase.com/docs/guides/cron/quickstart",
+    "https://supabase.com/docs/guides/functions/schedule-functions"
+  ]
+}

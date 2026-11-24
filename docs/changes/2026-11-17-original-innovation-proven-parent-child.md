@@ -23,3 +23,8 @@ No new agent, timer, delivery queue, table or provider sender is created. This i
 ## Verification, rollback and outcome
 
 Run new source-negative regression `tests/brain-innovation-proven-parent-child-source-20261117.test.mjs` plus original implementation selector tests in the original workflow preflight, then protected CI/CodeQL and source merge. After merge, dispatch `execution_scope=original_code_recovery` via the existing workflow only once after checking prior runs. The original child remains `PLANNED/OPEN` until actual original provider proof, independent deployed SHA, baseline/holdout and commercial/financial effect and Heartbeat learning. Rollback with protected source-only revert of the selector and workflow test step, preserving all original historical Brain records.
+
+
+## 24 November — residual original-owner recovery
+
+Protected #5981 already implemented the original historical-parent selector. Preserve the current selector, methods and KPI contracts. The remaining native ancestry check uses the exact parent/main comparison; native readback for #5109 confirms ancestor equality. Original writer run 45437381849 built #6153 but admission run 45438546408 failed semantic_learning because explicit prevention was missing. Reuse the same canonical material closure validator in the original writer before opening any candidate PR, with negative tests for missing prevention/evidence/ledger and divergent ancestry. No duplicate selector or scheduler, no provider mutation, no effect or production claim. Rollback through protected revert.

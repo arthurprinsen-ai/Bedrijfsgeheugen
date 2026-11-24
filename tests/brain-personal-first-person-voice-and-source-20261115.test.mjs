@@ -29,7 +29,7 @@ test('only a verified user-authored first-person lived story, not a public news 
  assert.deepEqual(personalFirstPersonCopyViolations(text,e,date),[]);
  assert.ok(personalFirstPersonSourceViolations({...e,personal_truth_verified:false},date).includes('PERSONAL_USER_EXPERIENCE_NOT_VERIFIED'));
  assert.ok(personalFirstPersonSourceViolations({...e,observational_personal_theme_verified:true},date).includes('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN'));
- assert.ok(personalFirstPersonSourceViolations({...e,ai_native_builder_story_verified:true,business_topic:true},date).includes('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN'));
+ assert.ok(personalFirstPersonSourceViolations({...e,ai_native_builder_story_verified:true,business_topic:true},date).includes('PERSONAL_VERIFIED_BUILDER_SOURCE_REQUIRED'));
  assert.ok(personalFirstPersonSourceViolations({...e,source_lineage:['powerhouse_mira_problem_signals_v1:uuid']},date).includes('PERSONAL_GENERATED_OR_PUBLIC_ARTICLE_SOURCE_FORBIDDEN'));
  assert.ok(personalFirstPersonSourceViolations({...e,source_lineage:['powerhouse_content_artifacts:2026-09-20:linkedin_personal']},date).includes('PERSONAL_USER_AUTHORED_PROVENANCE_REQUIRED'));
  assert.ok(personalFirstPersonSourceViolations({...e,sensitive_private_detail:true},date).includes('PERSONAL_PRIVATE_DETAIL_NOT_APPROVED'));
@@ -84,7 +84,7 @@ test('incident #5913: the actual news, marketing and AI fallback failures cannot
  const news='Rond 15.30 uur werd een pakketbezorger in Amsterdam getaserd na foutparkeren. Omstanders filmden de gebeurtenis.';
  assert.ok(personalLastMilePublicationViolations({...opts,text:news,evidence:{...opts.evidence,source_lineage:['powerhouse_mira_problem_signals_v1:d542a27e'],observational_personal_theme_verified:true,personal_truth_verified:false}}).includes('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN'));
  assert.ok(personalLastMilePublicationViolations({...opts,text:'Wachtwoorden: AI-agents loggen vandaag in zonder een wachtwoord te zien.',evidence:{...opts.evidence,observational_personal_theme_verified:true,public_theme_source_verified:true}}).includes('PERSONAL_PUBLIC_NEWS_OR_BUSINESS_FALLBACK_FORBIDDEN'));
- assert.ok(personalLastMilePublicationViolations({...opts,text:'Ik zag 211 interne acties en 20 uitkomsten bij Bedrijfsgeheugen.',evidence:{...opts.evidence,ai_native_builder_story_verified:true,business_topic:true}}).includes('PERSONAL_COMPANY_COPY_NOT_ALLOWED'));
+ assert.ok(personalLastMilePublicationViolations({...opts,text:'Ik zag 211 interne acties en 20 uitkomsten bij Bedrijfsgeheugen.',evidence:{...opts.evidence,ai_native_builder_story_verified:true,business_topic:true}}).includes('PERSONAL_VERIFIED_BUILDER_SOURCE_REQUIRED'));
 });
 
 test('incident #5913: transport invocation itself revalidates the exact review before create',()=>{
@@ -96,4 +96,108 @@ test('incident #5913: transport invocation itself revalidates the exact review b
  assert.ok(pub.includes('personalLastMilePublicationViolations({'));
  assert.ok(pub.includes('actualTextHash:exactFinalHash,sourceVerified:approval?.sourceVerified'));
  assert.ok(pub.includes('review:gate,expectedTextHash:textHash,sourceVerified:lastPersonalSource.ok===true'));
+});
+
+test('20 Nov owner exception: genuine first-person technology leadership may describe an independently evidenced build',()=>{
+ const b={
+  ...e, content_id:'builder:2026-11-20:verified-data-automation-design',
+  source_text:'Ik ontwierp in mijn eigen bedrijf een keten die data, BI, software en AI koppelt. Ik zag dat automatiseren zonder controle niet genoeg is, dus ik ontwierp een meet- en herstelstap.',
+  source_lineage:['powerhouse:engineering-event:verified-20261120'],
+  personal_life_topic:false,business_topic:true,
+  personal_truth_verified:false,personal_life_only_policy:undefined,
+  ai_native_builder_story_verified:true,ai_native_builder_policy:'personal-linkedin-ai-native-builder-v1',
+  build_event_verified:true,arthur_anchor_verified:true,first_person_claims_verified:true,
+  source_backed:true,corporate_voice:false,company_page_interchangeable:false,forced_business_moral:false
+ };
+ const copy='Ik bouw software die AI, data en BI samenbrengt. Ik ontwierp een manier om een repeterend proces niet alleen automatisch te starten maar ook te controleren. De keuze is dat een systeem de uitkomst moet meten, anders weet ik niet of de verbetering echt werkt.';
+ assert.deepEqual(personalFirstPersonSourceViolations(b,'2026-11-20'),[]);
+ assert.deepEqual(personalFirstPersonCopyViolations(copy,b,'2026-11-20'),[]);
+ assert.ok(personalFirstPersonSourceViolations({...b,build_event_verified:false},'2026-11-20').includes('PERSONAL_VERIFIED_BUILDER_SOURCE_REQUIRED'));
+ assert.ok(personalFirstPersonSourceViolations({...b,source_backed:false},'2026-11-20').includes('PERSONAL_VERIFIED_BUILDER_SOURCE_REQUIRED'));
+ assert.ok(personalFirstPersonSourceViolations({...b,company_page_interchangeable:true},'2026-11-20').includes('PERSONAL_VERIFIED_BUILDER_SOURCE_REQUIRED'));
+ assert.ok(personalFirstPersonCopyViolations(copy+' Boek nu een afspraak.',b,'2026-11-20').includes('PERSONAL_SALES_CTA_NOT_ALLOWED'));
+ assert.ok(personalFirstPersonSourceViolations({...b,source_lineage:['powerhouse_content_artifacts:unverified']},'2026-11-20').includes('PERSONAL_GENERATED_OR_PUBLIC_ARTICLE_SOURCE_FORBIDDEN'));
+});
+
+test('20 Nov builder editorial prompt cannot be overwritten by life-only assignment',()=>{
+ const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ assert.match(gen,/if\(pending\.channel==='linkedin_personal' && !personalBuilder\)/);
+ assert.match(gen,/P0 EXPERT-BOUWER/);
+ assert.match(gen,/AI, data intelligence, BI, software engineering en slimme automatisering/);
+});
+
+test('20 November integrated software + AI + BI + data founder positioning is not a four-tool relay',()=>{
+ const orchestrator=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ const skill=readFileSync('.agents/skills/personal-linkedin-life-only/SKILL.md','utf8');
+ const identity=JSON.parse(readFileSync('config/social-channel-identity-contract.json','utf8')).channels.linkedin_personal;
+ assert.match(orchestrator,/AI-native intelligent business software is één samenhangend ontwerp/);
+ assert.match(orchestrator,/GEEN losse tools of opvolgende lagen|geen losse tools of opvolgende lagen|geen losse tools of opvolgende lagen maar delen één bedrijfscontext/i);
+ assert.match(orchestrator,/één gedeelde bedrijfscontext, feedback tussen inzichten/);
+ assert.match(orchestrator,/on-gerealiseerde|ongerealiseerde|onuitgevoerde/i);
+ assert.match(skill,/one intelligent system/);
+ assert.match(skill,/Do not.*software does X, then data does Y/);
+ assert.equal(identity.unifiedSystemEditorialContract.model,'one_integrated_intelligent_business_software');
+ assert.equal(identity.unifiedSystemEditorialContract.forbidsLinearFourSeparateToolsFraming,true);
+ assert.equal(identity.unifiedSystemEditorialContract.claimsRequireSourceProof,true);
+});
+
+test('20 November personal AI builder uses original external entrepreneur problem evidence ONLY as context',()=>{
+ const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ const skill=readFileSync('.agents/skills/personal-linkedin-life-only/SKILL.md','utf8');
+ const channels=JSON.parse(readFileSync('config/powerhouse-source-backed-channel-contract-v1.json','utf8'));
+ assert.ok(gen.includes("if(personalBuilder){"),'external source read is restricted to genuine builder mode');
+ assert.ok(gen.includes(".from('powerhouse_mira_problem_signals_v1')"),'reuse existing original problem source, no parallel table');
+ assert.ok(gen.includes(".eq('eligible',true)")&&gen.includes("seenTopics=new Set"),'eligible and deduplicated source filtering');
+ assert.ok(gen.includes("personalEntrepreneurProblemSources.length>=12"),'bounded optional evidence');
+ assert.ok(gen.includes("proof_of_arthur_experience:false"),'external source is not author proof');
+ assert.ok(gen.includes("entrepreneur_problem_sources:personalBuilder?personalEntrepreneurProblemSources:null"),'model actually receives sources; not just a prompt referencing missing input');
+ assert.ok(gen.includes("entrepreneur_problem_context_status:personalBuilder?"),'missing external sources remain visibly empty');
+ assert.ok(gen.includes("als LEESBARE externe inspiratie"),'strict editorial boundaries');
+ assert.ok(gen.includes("zonder geforceerde link")||gen.includes("maak geen geforceerde link"),'no irrelevant friction insertion');
+ assert.ok(skill.includes("MKB Probleemradar")&&skill.includes("Voice of Customer"));
+ assert.ok(skill.includes("no new database")||skill.includes("no new database".toUpperCase())||skill.includes("no new database".toLowerCase())||skill.includes("no new database"),'canonical source registry declared');
+ const policy=channels.channels.linkedin_personal.personal_builder_context_intake;
+ assert.equal(policy.require_one_integrated_software_ai_bi_data_architecture,true);
+ assert.equal(policy.no_parallel_producer_publisher_or_problem_catalog,true);
+ assert.equal(policy.no_forced_business_bridge_to_private_life,true);
+ assert.equal(policy.independent_provider_post_readback,true);
+ assert.equal(policy.source_event_truth,'public signals never verify a personal Arthur experience');
+ assert.equal(channels.channels.linkedin_company.source_classes.includes('mkb_problem_radar'),true);
+});
+
+
+test('20 November meaningful personal conversation: no forced ending question, rigid length or engagement-bait prompts',()=>{
+ const gen=readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+ const skill=readFileSync('.agents/skills/personal-linkedin-life-only/SKILL.md','utf8');
+ const policy=JSON.parse(readFileSync('config/powerhouse-source-backed-channel-contract-v1.json','utf8')).channels.linkedin_personal.conversation_quality_20261120;
+ assert.ok(gen.includes('GESPREKSKWALITEIT — echte inhoud, geen engagementtruc'));
+ assert.ok(gen.includes('oprechte specifieke vraag')&&gen.includes('NOOIT standaard aan begin of einde'));
+ assert.ok(!gen.includes('eindig met één oprechte open vraag;'));
+ assert.ok(!gen.includes('blijft 130–200 woorden;'));
+ assert.ok(!gen.includes("Schrijf 150 tot 175 woorden in vier korte alinea's."),'observational repair stays natural');
+ assert.ok(!gen.includes('precies vier natuurlijke alinea’s.'),'builder repair stays natural');
+ assert.ok(!gen.includes('Eindig met exact één oprechte open vraag met vraagteken.'),'builder repair does not reimpose forced question');
+ assert.ok(gen.includes('Controleer de waarheid, leesbaarheid, variatie en inhoudelijke gesprekswaarde'),'repair checks substance rather than word count');
+ assert.ok(gen.includes("if(pending.channel==='linkedin_personal')"),'original editorial applies to all personal modes');
+ assert.ok(skill.includes('Genuine substantive conversations'));
+ assert.equal(policy.mandatory_question_in_every_post,false);
+ assert.equal(policy.mandatory_question_at_end,false);
+ assert.equal(policy.mandatory_word_quota,false);
+ assert.equal(policy.meaningful_standalone_value_without_any_comments,true);
+ assert.equal(policy.measurement.unavailable,'NOT_MEASURED');
+ assert.equal(policy.measurement.one_reversible_variable_at_a_time,true);
+ assert.equal(policy.independent_first_person_proof_unchanged,true);
+});
+
+test('20 November LinkedIn anti-bait guard preserves sincere specific experience questions',()=>{
+ const legitimate='Ik stond langs het veld en zag hoe anders een wedstrijd kan lopen. Welke ervaring heb jij als coach met zulke momenten?';
+ assert.deepEqual(personalFirstPersonCopyViolations(legitimate,e,date),[]);
+ for(const banned of [
+  'Ik stond langs het veld en zag hoe de wedstrijd liep. Typ JA in de reacties.',
+  'Ik stond langs het veld en keek naar de wedstrijd. Reageer met EENS.',
+  'Ik stond langs het veld bij een wedstrijd. Like als je dit ook hebt.',
+  'Ik stond langs het veld bij een wedstrijd. Deel deze post.'
+ ]){
+   assert.ok(personalFirstPersonCopyViolations(banned,e,date).includes('PERSONAL_ENGAGEMENT_BAIT_NOT_ALLOWED'),banned);
+ }
 });

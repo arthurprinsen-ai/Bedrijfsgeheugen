@@ -1,3 +1,5 @@
+import {renderBrandedOutreachHtml} from '../_shared/brand-outreach-signature.mjs';
+import {assessHumanOutreachCopy,hasDocumentedCommercialEmailAuthority} from '../_shared/outreach-human-copy-guard.mjs';
 import {composerHandoffForAction,outboundDeliveryGap,sourceResearchTaskForAction,providerUncertaintyNoResend} from '../_shared/outreach-composer-hold.mjs';
 import {verifiedGmailReadback} from '../_shared/verified-gmail-readback.mjs';
 import {createClient} from 'npm:@supabase/supabase-js@2';
@@ -21,7 +23,7 @@ async function gmailAccount(db:any,key:string){
  return{id,userId};
 }
 async function send(key:string,acct:{id:string;userId:string},to:string,subject:string,body:string){
- const r=await fetch(B+'/tools/execute/GMAIL_SEND_EMAIL',{method:'POST',headers:{'content-type':'application/json','x-api-key':key},body:JSON.stringify({connected_account_id:acct.id,user_id:acct.userId,arguments:{recipient_email:to,subject,body,is_html:false,user_id:'me'}}),signal:AbortSignal.timeout(20000)});
+ const r=await fetch(B+'/tools/execute/GMAIL_SEND_EMAIL',{method:'POST',headers:{'content-type':'application/json','x-api-key':key},body:JSON.stringify({connected_account_id:acct.id,user_id:acct.userId,arguments:{recipient_email:to,subject,body,is_html:true,user_id:'me'}}),signal:AbortSignal.timeout(20000)});
  const x:any=await r.json().catch(()=>({parse_error:true}));
  if(!r.ok||x?.successful!==true)throw{code:'COMPOSIO_GMAIL_SEND_UNCERTAIN',status:r.status,payload:safe(x)};
  const d=x?.data?.data||x?.data||x;
@@ -44,11 +46,12 @@ async function verifyRecipientAuthority(db:any,a:any,to:string):Promise<boolean>
  if(!recipient||!person||s(a?.evidence?.recipient_email)!==recipient||a?.evidence?.human_approved!==true)return false;
  const{data,error}=await db.from('bg_connecties').select('sleutel,linkedin_url,extra').eq('email',recipient).limit(10);
  if(error)throw{code:'RECIPIENT_AUTHORITY_READ',message:error.message};
- return (data||[]).some((c:any)=>(s(c?.sleutel)===person||s(c?.linkedin_url)===person)&&c?.extra?.human_approved===true);
+ return (data||[]).some((c:any)=>(s(c?.sleutel)===person||s(c?.linkedin_url)===person)&&
+   c?.extra?.human_approved===true&&hasDocumentedCommercialEmailAuthority(c.extra));
 }
 // Every autonomous mail carries a plain opt-out; the reply loop turns it into an active suppression.
 const OPT_OUT_LINE='Wil je geen mail meer van mij? Antwoord met "afmelden" en ik mail je niet meer.';
-function withOptOutLine(body:string){return /afmelden/i.test(body)?body:body.replace(/\s+$/,'')+'\n\n'+OPT_OUT_LINE;}
+function withOptOutLine(body:string){return renderBrandedOutreachHtml(body,{includeOptOut:true});}
 Deno.serve(async(req)=>{
  if(req.method!=='POST')return J({ok:false,error:'POST_ONLY'},405);
  const url=Deno.env.get('SUPABASE_URL')||'',role=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';if(!url||!role)return J({ok:false,error:'CONFIG'},500);
@@ -107,7 +110,7 @@ Deno.serve(async(req)=>{
   const composerBody:any=await composerResponse.json().catch(()=>({}));
   if(!composerResponse.ok||composerBody?.ok!==true)throw{code:'HUMAN_COMPOSER_UNAVAILABLE',status:composerResponse.status,payload:safe(composerBody),retryable:true};
   await db.rpc('powerhouse_refresh_message_plans_v1',{p_limit:100});
-  const{data:acts,error}=await db.from('powerhouse_sales_actions').select('action_id,person_key,company_key,person_name,company_name,message_draft,evidence,priority,updated_at').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);if(error)throw{code:'OUTREACH_READ',message:error.message};
+  const{data:acts,error}=await db.from('powerhouse_sales_actions').select('action_id,person_key,company_key,person_name,company_name,role,source_url,message_draft,evidence,priority,updated_at').eq('action_type','autonomous_email').eq('channel','email').eq('status','prepared').lte('due_at',now).order('priority',{ascending:false}).limit(5);if(error)throw{code:'OUTREACH_READ',message:error.message};
   
   for(const a of acts||[]){
    // P0: the original SQL watchdog can return an uncertain provider send
@@ -182,6 +185,32 @@ Deno.serve(async(req)=>{
      out.push({action_id:a.action_id,status:'held',reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN'});
      continue;
    }
+   // Replay-safe independent pre-send copy check: previously approved drafts
+   // cannot bypass the improved original composer by retaining stale score=1.0.
+   const humanCopy=assessHumanOutreachCopy(a,{},{
+     subject:sub,message:body,personalization_anchor:s(composer?.personalization_anchor)
+   });
+   if(composer?.natural_copy_ok!==true||!humanCopy.passed){
+     const originalCi=a.evidence?.commercial_intelligence||{};
+     const rejectedComposer={...(originalCi.composer||{}),quality_passed:false,
+       rejected_previous_message_hash:s(composer.message_hash)};
+     const ev={...(a.evidence||{}),commercial_intelligence:{...originalCi,
+       quality_passed:false,composer:rejectedComposer},execution_gate:{
+       contract:'human-outreach-natural-copy-presend-v1',blocked_at:now,
+       reason:'HUMAN_OUTREACH_COPY_REJECTED',
+       rejection_codes:humanCopy.reasons,observed_contact_intent:humanCopy.intent,
+       owner:'existing-powerhouse-commercial-message-composer',
+       next_action:'RECOMPOSE_SAME_ACTION_AFTER_VERIFIED_CONTEXT',
+       provider_attempted:false,duplicate_send_forbidden:true
+     }};
+     const{error:copyErr}=await db.from('powerhouse_sales_actions')
+       .update({evidence:ev,message_draft:'',updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');
+     if(copyErr)throw{code:'HUMAN_COPY_HOLD_WRITEBACK',message:copyErr.message};
+     out.push({action_id:a.action_id,status:'held',reason:'HUMAN_OUTREACH_COPY_REJECTED',
+       rejection_codes:humanCopy.reasons,provider_send_attempted:false});
+     continue;
+   }
+
    if(!to||!sub||!body){await db.from('powerhouse_sales_actions').update({status:'error',evidence:{...(a.evidence||{}),autonomous_outbound:{contract:C,failed_at:now,error:{code:'MISSING_RECIPIENT_SUBJECT_OR_BODY'},retryable:false}},updated_at:now}).eq('action_id',a.action_id);out.push({action_id:a.action_id,status:'error',reason:'MISSING_FIELDS'});continue}
    const{data:blocked,error:be}=await db.from('powerhouse_email_contact_suppressions').select('suppression_id,reason').eq('email',to.toLowerCase()).eq('active',true).maybeSingle();if(be)throw{code:'SUPPRESSION_READ',message:be.message};
    if(blocked){await db.from('powerhouse_sales_actions').update({status:'skipped',evidence:{...(a.evidence||{}),suppressed:{reason:blocked.reason,checked_at:now}},updated_at:now}).eq('action_id',a.action_id).eq('status','prepared');out.push({action_id:a.action_id,status:'skipped',reason:'CONTACT_SUPPRESSED'});continue}
