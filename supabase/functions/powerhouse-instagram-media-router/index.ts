@@ -75,6 +75,7 @@ Deno.serve(async req=>{
  const active=new Set((ints||[]).filter((x:any)=>['actief','active','connected','ready'].includes(clean(x.status).toLowerCase())).map((x:any)=>clean(x.integration).toLowerCase()));
  const ready=(p:string)=>p==='openart'?(active.has('openart')||active.has('openart_mcp')):active.has(p);
  const historical=!!clean(ob?.external_id);
+ if((frameRead||action==='issue_recovery_frame')&&(historical||ob?.live_proven_at||job?.republish_forbidden!==false||job?.status!=='WAITING_PROOF'||runDate!==today()))return json({ok:false,error:'RECOVERY_FRAME_SCOPE_REQUIRED'},422);
 
  if(historical&&(ob?.status==='BLOCKED'||ob?.evidence?.republish_forbidden===true)){
   const sameReplacement=job?.status==='REPLACEMENT_REQUIRED'&&clean(job?.replacement_of_external_id)===clean(ob.external_id);
