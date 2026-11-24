@@ -1,0 +1,37 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-11-24",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "mira|reel|wan3-element2video-end-frame-face-rejected|20261124-v1",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "APPLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "The previously untested Wan 3.0 element2video model passed output-format preflight but the actual original candidate failed independent end-frame identity verification.",
+  "prevention": "Record the actual model/mode rejection in the existing pre-spend evidence gate; require new approved evidence and preserve original identity and temporal thresholds.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ]
+  },
+  "evidence": {
+    "history_id": "YIsid7ndXoQRyMBHsGvq",
+    "job_id": "b1ea15d9-7c9b-4667-8ac4-f9cc43147e4b",
+    "observed_end_frame_score": 0.92,
+    "required_face_score": 0.94,
+    "native_format": "1080x1920/8s/30fps/silent",
+    "quoted_credits": 640,
+    "provider_publish_id": null,
+    "release_proven": false
+  }
+}
