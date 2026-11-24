@@ -151,7 +151,7 @@ export function selectPersonalGrowthMethod({mode='EXPLORE',seed='',cohortId='',o
     return {method,sample:rows.length,rate:rows.length?rows.reduce((sum,row)=>sum+row.substantiveComments/row.impressions,0)/rows.length:null};
   }).filter(group=>group.sample>=5).sort((a,b)=>b.rate-a.rate);
   if(comparable.length<2||comparable[0].rate-comparable[1].rate<=0.001)return fallback();
-  if(history[0]===comparable[0].method&&history[1]===comparable[0].method)return {...fallback(),decision:'DIVERSITY_CHALLENGER'};
+  if(history[0]===comparable[0].method&&history[1]===comparable[0].method&&allowed.some(x=>x!==comparable[0].method))return {...fallback(),decision:'DIVERSITY_CHALLENGER'};
   return {method:comparable[0].method,decision:'OBSERVATIONAL_CANDIDATE',measurement:'COMPARABLE_48H_PERSONAL_POSTS',comparison:comparable,authorizesPublication:false,causalLiftProven:false};
 }
 
@@ -216,14 +216,15 @@ export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=
       topic:opportunity.topic||null
     };
   }
+  const variation=selectCompanyContentVariation({seed:identity,...companyContentEvidence});
   return {
     channel:channel||'linkedin_company',
     mode,
     ...discovery,
     ...buildActivationLayer(identity,opportunity,channel||'linkedin_company'),
     textType:'proof_led_business_education',
-    format:COMPANY_FORMATS[stableIndex(identity,COMPANY_FORMATS.length)],
-    contentVariation:selectCompanyContentVariation({seed:identity,...companyContentEvidence}),
+    format:variation.format,
+    contentVariation:variation,
     emotion:'productive_discomfort',
     painTrigger:opportunity.pain||'hidden_business_risk',
     fomoTrigger:'cost_of_inaction',
