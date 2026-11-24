@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|innovation|verified-learning-no-analyst-to-build-route|20261124-v1",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
+      "tests/brain-innovation-delivery-continuity-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
+      "tests/brain-innovation-delivery-continuity-20261117.test.mjs"
+    ]
+  },
+  "root_cause": "The original code selector only recognized three concrete components; verified learning-followup decisions never became source-scoped evaluation/build work orders, although original continuity reported the baseline/effect duty. Three exact historical source fingerprints can be safely examined offline with existing portal and blog regressions.",
+  "evidence": {
+    "original_continuity_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45342057720",
+    "original_source_count": 15,
+    "original_quality_verified_effect_due": 7,
+    "independent_outcomes": 0,
+    "source_authority": "public.brain_operations"
+  },
+  "prevention": {
+    "same_original_agent": true,
+    "scope_exact_fingerprint": true,
+    "verified_historical_quality_not_current_effect": true,
+    "baseline_before_challenger": true,
+    "no_production_authority": true,
+    "protected_review_required": true,
+    "no_new_scheduler": true
+  },
+  "release_state": "PROTECTED_SOURCE_CANDIDATE_PENDING",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}
