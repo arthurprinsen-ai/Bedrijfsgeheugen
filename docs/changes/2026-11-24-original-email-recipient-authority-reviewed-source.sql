@@ -163,3 +163,165 @@ end
 $function$;
 REVOKE ALL ON FUNCTION public.powerhouse_require_source_for_direct_outreach_v1() FROM PUBLIC,anon,authenticated;
 GRANT EXECUTE ON FUNCTION public.powerhouse_require_source_for_direct_outreach_v1() TO service_role;
+
+
+-- Use only original already-running 10-minute email watchdog owner; refresh
+-- existing scoped email learning at most once each Amsterdam calendar date.
+-- Fail closed: learning error produces warning, never a false healthy email.
+-- Do not retry consent-rejected, forbidden or quarantined waiting actions.
+CREATE OR REPLACE FUNCTION public.powerhouse_email_execution_watchdog_v1(p_now timestamp with time zone DEFAULT now())
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_catalog'
+AS $function$
+declare
+  v_requeued int := 0;
+  v_overdue int := 0;
+  v_waiting int := 0;
+  v_held_research int := 0;
+  v_sent_24h int := 0;
+  v_status text;
+  v_email_learning_refresh_state text := 'NOT_EVALUATED';
+  v_email_learning_last_recomputed_at timestamptz;
+  v_learning_due timestamptz;
+  v_handoff_scorecard jsonb := jsonb_build_object('handoff_health','NOT_MEASURED');
+begin
+  update public.powerhouse_sales_actions a
+     set status='prepared',
+         updated_at=p_now,
+         evidence=coalesce(a.evidence,'{}'::jsonb) ||
+           jsonb_build_object(
+             'email_executor_watchdog',
+             jsonb_build_object(
+               'contract','powerhouse-email-execution-watchdog-v1',
+               'requeued_at',p_now,
+               'reason','stale_waiting_without_provider_ack'
+             )
+           )
+   where a.action_type='autonomous_email'
+     and lower(a.channel)='email'
+     and a.status='waiting'
+     -- Existing research waits are only resumed by the original composer after
+     -- source verification AND complete message quality approval.
+     and coalesce(a.evidence#>>'{execution_gate,reason}','') <> 'SOURCE_SPECIFIC_EVIDENCE_REQUIRED'
+     -- A terminal/permission-rejected candidate is NOT a retryable provider wait.
+     and coalesce(a.evidence#>>'{execution_gate,reason}','') <> 'RECIPIENT_AUTHORITY_UNVERIFIED'
+     and coalesce(a.evidence#>>'{authority_quarantine,reason}','') <> 'RECIPIENT_AUTHORITY_UNVERIFIED'
+     and coalesce(a.evidence->>'send_forbidden','false') <> 'true'
+     and a.updated_at < p_now - interval '20 minutes'
+     and not coalesce((a.evidence->>'provider_ack_verified')::boolean,false)
+     and not coalesce((a.evidence#>>'{autonomous_outbound,provider_ack_verified}')::boolean,false)
+     and not coalesce((a.evidence#>>'{native_gmail_executor,provider_ack_verified}')::boolean,false);
+  get diagnostics v_requeued=row_count;
+
+  select count(*) into v_overdue
+  from public.powerhouse_sales_actions a
+  where a.action_type='autonomous_email'
+    and lower(a.channel)='email'
+    and a.status='prepared'
+    and a.due_at <= p_now - interval '15 minutes';
+
+  select count(*) into v_waiting
+  from public.powerhouse_sales_actions a
+  where a.action_type='autonomous_email'
+    and lower(a.channel)='email'
+    and a.status='waiting';
+
+  select count(*) into v_held_research
+  from public.powerhouse_sales_actions a
+  where a.action_type='autonomous_email'
+    and lower(a.channel)='email'
+    and a.status='waiting'
+    and a.evidence#>>'{execution_gate,reason}'='SOURCE_SPECIFIC_EVIDENCE_REQUIRED';
+
+  select count(*) into v_sent_24h
+  from public.powerhouse_sales_actions a
+  where a.action_type='autonomous_email'
+    and lower(a.channel)='email'
+    and a.status='done'
+    and a.executed_at >= p_now - interval '24 hours'
+    and (
+      coalesce((a.evidence->>'provider_ack_verified')::boolean,false)
+      or coalesce((a.evidence#>>'{autonomous_outbound,provider_ack_verified}')::boolean,false)
+      or coalesce((a.evidence#>>'{native_gmail_executor,provider_ack_verified}')::boolean,false)
+    );
+
+  -- Refresh original derived 180-day learning at most once per Amsterdam day.
+  -- The same original watchdog is already invoked by the existing mux; no new cron.
+  v_learning_due := ((p_now AT TIME ZONE 'Europe/Amsterdam')::date::timestamp
+                      AT TIME ZONE 'Europe/Amsterdam');
+  begin
+    select max(last_recomputed_at) into v_email_learning_last_recomputed_at
+    from public.powerhouse_email_learning_stats
+    where channel='email' and evidence->>'contract'='powerhouse-email-reply-learning-v1';
+    if v_email_learning_last_recomputed_at is null
+      or v_email_learning_last_recomputed_at < v_learning_due then
+      perform public.powerhouse_refresh_email_learning_stats();
+      select max(last_recomputed_at) into v_email_learning_last_recomputed_at
+      from public.powerhouse_email_learning_stats
+      where channel='email' and evidence->>'contract'='powerhouse-email-reply-learning-v1';
+      v_email_learning_refresh_state := 'REFRESHED_ORIGINAL';
+    else
+      v_email_learning_refresh_state := 'FRESH_ALREADY_RECOMPUTED';
+    end if;
+  exception when others then
+    v_email_learning_refresh_state := 'LEARNING_REFRESH_FAILED:' || sqlstate;
+  end;
+
+  -- Existing scheduler/watchdog owner records the stage readback on every
+  -- natural run; no secondary metrics scheduler and no fabricated green.
+  begin
+    select to_jsonb(score) into v_handoff_scorecard
+    from public.powerhouse_commercial_handoff_scorecard_v1 score;
+  exception when others then
+    v_handoff_scorecard := jsonb_build_object('handoff_health','MEASUREMENT_FAILED','sqlstate',sqlstate);
+  end;
+  v_status := case when v_overdue>0 then 'fout'
+                   when v_email_learning_refresh_state like 'LEARNING_REFRESH_FAILED:%' then 'waarschuwing'
+                   when v_held_research>0 or coalesce(v_handoff_scorecard->>'handoff_health','NOT_MEASURED')
+                         not in ('PROVIDER_DELIVERY_PROVEN_OUTCOME_LEARNING_SEPARATE') then 'waarschuwing'
+                   else 'ok' end;
+
+  insert into public.bg_gezondheid(gemeten_op,onderdeel,soort,status,detail,gegevens)
+  values(
+    p_now,
+    'powerhouse-email-executor',
+    'autonomous-email-execution',
+    v_status,
+    case when v_overdue>0
+      then 'Prepared outreach is overdue and requires canonical executor consumption.'
+      when v_held_research>0 then 'Original emails are awaiting verified company evidence and composer approval; not provider sent.'
+      else 'Autonomous email queue has no overdue prepared actions.'
+    end,
+    jsonb_build_object(
+      'contract','powerhouse-email-execution-watchdog-v1',
+      'requeued_stale_waiting',v_requeued,
+      'overdue_prepared',v_overdue,
+      'waiting',v_waiting,
+      'awaiting_verified_source',v_held_research,
+      'original_handoff_scorecard_7d',v_handoff_scorecard,
+      'provider_verified_sent_24h',v_sent_24h,
+      'email_learning_refresh_state',v_email_learning_refresh_state,
+      'email_learning_last_recomputed_at',v_email_learning_last_recomputed_at,
+      'checked_at',p_now
+    )
+  );
+
+  return jsonb_build_object(
+    'contract','powerhouse-email-execution-watchdog-v1',
+    'healthy',v_email_learning_refresh_state not like 'LEARNING_REFRESH_FAILED:%'
+      and v_overdue=0 and v_held_research=0 and
+      v_handoff_scorecard->>'handoff_health'='PROVIDER_DELIVERY_PROVEN_OUTCOME_LEARNING_SEPARATE',
+    'requeued_stale_waiting',v_requeued,
+    'overdue_prepared',v_overdue,
+    'waiting',v_waiting,
+    'provider_verified_sent_24h',v_sent_24h,
+    'email_learning_refresh_state',v_email_learning_refresh_state,
+    'email_learning_last_recomputed_at',v_email_learning_last_recomputed_at,
+    'checked_at',p_now
+  );
+end;
+$function$;
+REVOKE ALL ON FUNCTION public.powerhouse_email_execution_watchdog_v1(timestamptz) FROM PUBLIC,anon,authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_email_execution_watchdog_v1(timestamptz) TO service_role;
