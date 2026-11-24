@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {generateKeyPairSync,sign} from 'node:crypto';
 import {readFileSync} from 'node:fs';
-import {validateInventory,classifyResponse,runSecurityGuardian,sha} from '../tools/security/site-guardian.mjs';
+import {validateInventory,classifyResponse,probeSite,runSecurityGuardian,sha} from '../tools/security/site-guardian.mjs';
 import {assertGitHubClaims,verifyGitHubActionsOidc,OIDC_AUDIENCE} from '../netlify/functions/_security-guardian-oidc.mjs';
 import {validateSecurityGuardianReport} from '../netlify/functions/security-guardian-ingest.mjs';
 import {classifyGuardianHeartbeat} from '../portal-v2/modules/security-trust-workspace.js';
@@ -41,6 +41,27 @@ test('critical CSP regression fails and protected site may not return public 200
  const source=readFileSync('tools/security/site-guardian.mjs','utf8');assert.match(source,/method:'HEAD',redirect:'manual'/);assert.doesNotMatch(source,/redirect:'follow'/);
  const weakened=new Headers(headers);weakened.delete('content-security-policy');
  assert.equal(classifyResponse({mode:'coach'},fakeResponse(200,'https://pw-mo14-1.netlify.app/zaalplanner/',weakened)).status,'FAIL');
+});
+test('exact historical coach alias validates one permanent hop and destination headers; rejects substitutions',async()=>{
+ const site=cfg.sites.find(s=>s.id==='pw-veldcoach'),target=cfg.sites.find(s=>s.id==='pw-zaalcoach').url;
+ const alias=(location,status=301)=>fakeResponse(status,site.url,new Headers({location}));
+ let calls=[];
+ const probe=async(location,status=301,destination=fakeResponse(200,target))=>{
+  calls=[];
+  return probeSite(site,async(url,options)=>{calls.push(url);assert.equal(options.redirect,'manual');return url===site.url?alias(location,status):destination;});
+ };
+ for(const location of ['/zaalplanner/',target]){
+  assert.equal((await probe(location)).status,'VERIFIED');assert.deepEqual(calls,[site.url,target]);
+ }
+ for(const location of ['https://attacker.example/zaalplanner/','//pw-mo14-1.netlify.app/zaalplanner/','/zaalplanner/?x=1','/other/']){
+  assert.equal((await probe(location)).code,'UNVERIFIED_REDIRECT');assert.deepEqual(calls,[site.url]);
+ }
+ assert.equal((await probe('/zaalplanner/',302)).status,'WARN');assert.equal(calls.length,1);
+ assert.equal((await probe('/zaalplanner/',301,alias('/other/'))).status,'WARN');
+ assert.equal((await probe('/zaalplanner/',301,fakeResponse(200,target,new Headers()))).status,'FAIL');
+ assert.equal((await probe('/zaalplanner/',301,fakeResponse(200,'https://attacker.example/'))).status,'WARN');
+ const unrelated=cfg.sites.find(s=>s.id==='pw-zaalcoach');
+ assert.equal((await probeSite(unrelated,async()=>alias('/zaalplanner/'))).status,'WARN');
 });
 test('all-site report only green with every exact response and all private source paths 404',async()=>{
  const fetcher=async url=>{
