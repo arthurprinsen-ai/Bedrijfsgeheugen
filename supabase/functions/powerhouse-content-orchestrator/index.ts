@@ -1057,7 +1057,7 @@ Deno.serve(async (req) => {
     }
     if(pending.channel==='linkedin_personal' && personalPerspective) {
       editorialSystem += ' '+PERSONAL_TRUSTED_ADVISOR_DIRECTION_20261120
-        + ' PERSOONLIJKE VISIEBRON: dit is een feitelijk geverifieerde eigen mening of onderzoeksafweging, NIET een eigen klantcase of voltooide bouwgebeurtenis. Geen verzonnen uitvoering, resultaten of ontmoetingen. Gebruik externe bronnen alleen als duidelijk gelabelde externe inzichten. Eén relevant dilemma, eigen afweging, herkenbare menselijke consequentie en een natuurlijke conclusie; leer van eerder gepubliceerde persoonlijke posts en herhaal geen onderwerp.';
+        + ' PERSOONLIJKE VISIEBRON: dit is een feitelijk geverifieerde eigen mening of onderzoeksafweging, NIET een eigen klantcase of voltooide bouwgebeurtenis. Geen verzonnen uitvoering, resultaten of ontmoetingen. Gebruik externe bronnen alleen als duidelijk gelabelde externe inzichten. Een eigen overtuiging is geen bewijs van herhaalde klantcontacten: schrijf niet ‘ik zie wekelijks’, ‘ik merk vaak bij klanten’ of ‘waar ik vaak tegenaan loop’ zonder bronbewijs van die werkelijke frequentie. Beschrijf de inhoudelijke keuze in de ik-vorm, bijvoorbeeld ‘ik kies ervoor’ of ‘voor mij is de eerste vraag’. Geen redactielabels zoals Feit:, Mening:, Ambitie: of Gemeten resultaat: in de publicatie; schrijf natuurlijk. Eén relevant dilemma, eigen afweging, herkenbare menselijke consequentie en een natuurlijke conclusie; leer van eerder gepubliceerde persoonlijke posts en herhaal geen onderwerp.';
     }
     if(pending.channel==='linkedin_personal' && !personalBuilder){
       if(!personalPerspective) editorialSystem='AUTHENTIEK PERSOONLIJK LINKEDIN — '+PERSONAL_FIRST_PERSON_STORY_CONTRACT

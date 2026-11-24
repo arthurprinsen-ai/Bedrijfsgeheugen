@@ -109,6 +109,16 @@ export function personalFounderDecisionSourceScopeViolations(text,evidence={}){
  if(!sourceDescribesTeams
    && /(?:\bin de praktijk botste\b|\b(?:ik|mijn|wij)\s+(?:zag|merkte|ervoer|hoorde)\b.{0,120}\b(?:teams|klanten?|processen)\b|\b(?:losse|andere)\s+teams die\b|\bbij een klant\b)/iu.test(copy))
    out.push('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM');
+ // A source-confirmed design choice does not establish recurring client contact.
+ // Replay the real 24-Nov unsent draft, including present-tense experience.
+ const recurringPersonalExperience=/(?:\b(?:ik|wij)\s+(?:zie|zien|merk|merken|ervaar|ervaren|hoor|horen|kom|komen|loop|lopen)\s+(?:dagelijks|wekelijks|vaak|regelmatig|steeds|telkens|herhaaldelijk)\b|\bwaar(?:mee)?\s+(?:ik|wij)\s+(?:dagelijks|wekelijks|vaak|regelmatig|steeds|telkens|herhaaldelijk)\s+tegenaan\s+(?:loop|lopen)\b)/iu;
+ const sourceProvesRecurrence=sourceDescribesTeams
+   && /\b(?:dagelijks|wekelijks|vaak|regelmatig|steeds|telkens|herhaaldelijk)\b/iu.test(source)
+   && !/(?:geen|niet bewezen|niet bevestigd|niet geverifieerd).{0,80}(?:herhaalde|terugkerende|klantcontact|klantervaring)/iu.test(source);
+ const presentClientExperience=/\b(?:ik|wij)\s+(?:zie|zien|merk|merken|ervaar|ervaren|hoor|horen)\b[^.!?\n]{0,100}\b(?:bij|van|met)\s+(?:(?:mijn|onze|een|de|veel|meerdere)\s+)?(?:klant(?:en)?|teams?)\b/iu;
+ if((recurringPersonalExperience.test(copy)&&!sourceProvesRecurrence)
+   ||(presentClientExperience.test(copy)&&!sourceDescribesTeams))
+   out.push('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM');
  if(!sourceProvesOutcome && (
    /\bhet resultaat was\b/iu.test(copy)
    || /\b(?:lever(?:t|de|en)|bracht|bespaarde|zorgde voor|leidde tot)\b.{0,80}\b(?:snellere?|betere?|meer|minder|effici[eë]nter|winst|omzet|tijd|geld|resultaten?|inzichten)\b/iu.test(copy)

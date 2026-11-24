@@ -66,6 +66,7 @@ function personalViolations(text: string, body: any, finalHash: string) {
   // keep the normal personal no-URL rule for every other source and copy.
   if(isVerifiedPersonalMagazineGift(body))
     require(magazineGiftLinkIsExact(text,body),'PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED','Deze exact geautoriseerde gratis magazinepost moet één correcte landingspaginalink bevatten.');
+  // 24-Nov recurring source-claim replay: the original independent copy gate must consume the same shared present-tense veto.
   for(const code of personalFirstPersonCopyViolations(text,body,body.calendar_date)){
     require(false,code,'Alleen een eigen, geverifieerd ik-verhaal uit een door Arthur aangeleverde bron mag op zijn persoonlijke profiel.');
   }

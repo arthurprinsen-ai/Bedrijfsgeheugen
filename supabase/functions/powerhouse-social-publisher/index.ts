@@ -488,6 +488,7 @@ async function publishLinkedInPersonalViaComposio(db:any,art:any,approval:any){
   // guard. The older production bundle preceded the protected reviewer update.
   // A successful reviewer or consumed capability never permits unsupported
   // first-person customer/team claims; veto before any provider POST.
+  // 24-Nov recurring source-claim replay: verify present-tense claims at the exact final provider-write gate too.
   const unverifiedFounderClaims=personalFounderDecisionSourceScopeViolations(commentary,approval?.evidence||{});
   if(unverifiedFounderClaims.length)
     throw new Error('PERSONAL_FOUNDER_SOURCE_SCOPE_LAST_MILE_VETO:'+unverifiedFounderClaims.join(','));

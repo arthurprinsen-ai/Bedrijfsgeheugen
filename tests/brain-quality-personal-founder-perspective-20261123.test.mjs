@@ -69,3 +69,14 @@ test('All existing producer, independent reviewer and editorial route share the 
  assert.match(reviewer,/FOUNDER_PERSPECTIVE_TRUTH_REQUIRED/);
  assert.match(editor,/isVerifiedPersonalFounderPerspective/);
 });
+
+test('Observed 24-Nov recurring customer claims cannot pass a design-only source',()=>{
+ const actual='Klanten willen sneller automatiseren, maar ik zie wekelijks dat onduidelijke data, losse applicatiekoppelingen en twijfels over datasoevereiniteit leiden tot dure fouten. Dit is het concrete dilemma waar ik vaak tegenaan loop.';
+ for(const copy of [actual,'Ik merk regelmatig bij klanten dat processen vastlopen.','Ik zie bij klanten dat data ontbreekt.','Dit is het dilemma waar ik vaak tegenaan loop.','Ik loop regelmatig tegen dit probleem aan.']){
+  assert.ok(personalFounderDecisionSourceScopeViolations(copy,ownerPerspective).includes('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM'),copy);
+ }
+ assert.ok(personalFirstPersonCopyViolations(actual,ownerPerspective,day).includes('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM'));
+ assert.deepEqual(personalFounderDecisionSourceScopeViolations('Ik kies voor AI-geletterdheid voordat ik automatisering ontwerp. Voor mij is de eerste vraag wie toegang heeft tot de data.',ownerPerspective),[]);
+ const single={...ownerPerspective,source_text:'Arthur bevestigt dat hij zelf meegemaakt heeft dat een klant één keer vragen stelde over toegang tot data. Dit is geen herhaalde klantervaring.'};
+ assert.ok(personalFounderDecisionSourceScopeViolations(actual,single).includes('PERSONAL_FOUNDER_UNVERIFIED_LIVED_TEAM_OR_CLIENT_CLAIM'));
+});
