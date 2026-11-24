@@ -5,6 +5,11 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## P0 24 november 2026 — bronkwaliteit per innovatie isoleren
+
+Een exact geïdentificeerde historische kwaliteitsbron met status guard_required blijft OPEN/PLANNED zonder kwaliteitsbewijs, consumer ACK, code- of productieautorisatie. De oorspronkelijke reconciliatie mag de overige geldige kandidaten niet blokkeren: afzonderlijke blocked_original_candidates met originele kandidaat/operation/owner/revision, veilige vervolgstap en zichtbare niet-nul exit na de overige CAS/readbacks. Ontbrekende of afwijkende bronidentiteit, schemafouten, eerdere conflicterende receipts en andere onverwachte toestanden blijven fail-closed. Nooit source status handmatig naar verified veranderen. Zodra het oorspronkelijke regressiebewijs geldig is, herbeoordeel dezelfde bron in de bestaande route; de commercial-message-composer heeft nu een expliciete proof-duty mapping. Geen tweede queue, scheduler, agent of side effect. Werkelijke effectmeting en originele consumer ACK blijven vereist. Bron: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45177717260, parent #4198.
+
+
 ## P0 15 november 2026 — herhaalde uitvoering krijgt eigen oorspronkelijke evidencecyclus
 
 De **oorspronkelijke** `public.powerhouse_advance_sales_action_v1(uuid)` genereerde slechts één `execution` per `powerhouse_sales_actions.action_id`. De originele writer leest `powerhouse_ensure_sales_cycle_v1` op een stabiele action source-ref en de al bestaande `powerhouse_append_cycle_event_v2` verbiedt terecht terugwaarts in één monotone cyclus gaan. Wanneer een eerder correct uitgevoerde `research_enrichment`-actie later terug op `waiting` en opnieuw op `done` komt, verandert het **actuele** `executed_at` zonder een nieuw immutable `execution`-record. Exacte geauthenticeerde immutable productieproof van 15 november 2026 (https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43728192839) wees dit aan: 164 historische events, 163 actueel uitvoerings-tijd-gelijke matches en één echte *missing attempt*, niet een falende admin-rol. Onafhankelijke SQL vond vier acties die later zijn uitgevoerd dan hun vorige writer-event.
