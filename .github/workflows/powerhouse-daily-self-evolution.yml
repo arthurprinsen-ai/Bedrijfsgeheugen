@@ -319,7 +319,16 @@ jobs:
             ONE BRAIN candidate, owner, source revision, requested improvement,
             rollback and EXACT allowed_source_paths. Implement a real, small, reversible
             source correction in one of those exact source paths. Inspect the current
-            code and existing guards first; if the issue is already solved, make NO
+            code and existing guards first. Use innovation_method_plan in the work order:
+            select at least two applicable named methods, cite current baseline evidence,
+            compare the incumbent against a distinct reversible challenger on the same metric,
+            and explain the selection and rollback. No invented observations or effect claims.
+            For a changed candidate, the new learning JSON MUST contain innovation_method_evidence
+            with version, candidate_id, source_revision, source_sha256, methods (array of exact
+            catalog names), baseline_ref, metric, incumbent, challenger, comparison_ref,
+            decision_reason, rollback, current_effect_verified:false. Use actual local test
+            references and results; independent effect is a later original Heartbeat duty.
+            If the issue is already solved, make NO
             changes and report that fact. Never fabricate an implementation or success.
             Only change a listed allowed_source_path, create a NEW named
             tests/brain-innovation-*.test.mjs regression and a NEW
