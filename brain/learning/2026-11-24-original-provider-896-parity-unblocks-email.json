@@ -72,6 +72,18 @@
       "failed_required_run": 45354681217,
       "rule": "Only exact immutable pending Mira source separated from historical applied regression population, restored before mandatory provider preview; not applied proof",
       "execution": "CI_AND_NATIVE_PREVIEW_PENDING"
+    },
+    "immutable_history_guard_regression": {
+      "observed_required_run": 45391872918,
+      "preflight_job": 138437791829,
+      "failed_tests": [
+        "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs",
+        "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs"
+      ],
+      "root_cause": "Unnecessary 896 exception to ordinary immutable-history guard; all four restoration files are additions.",
+      "correction_commit": "c528acb8c3ba1a7123c4af7e2632371ae86d12a8",
+      "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+      "status": "FIX_COMMITTED_PENDING_EXACT_HEAD_CHECKS"
     }
   },
   "implementation_state": "PROTECTED_SOURCE_PARITY_PR_PENDING_NOT_PRODUCTION_DELIVERY"
