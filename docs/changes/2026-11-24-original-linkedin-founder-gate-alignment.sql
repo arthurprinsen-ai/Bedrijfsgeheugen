@@ -12,6 +12,7 @@ declare
   observational_ok boolean;
   builder_ok boolean;
   founder_ok boolean;
+  founder_mode boolean;
 begin
   -- Preserve the original identity gate and decode only losslessly serialized JSON objects.
   if new.channel='linkedin_personal' and jsonb_typeof(new.generation_evidence)='string'
@@ -52,6 +53,7 @@ begin
       and jsonb_typeof(e->'source_lineage')='array'
       and jsonb_array_length(e->'source_lineage')>0;
 
+    founder_mode := (coalesce((e)->>'personal_founder_perspective_verified','false')='true' OR coalesce((e)->>'personal_founder_perspective_policy','')='personal-linkedin-trusted-advisor-perspective-v1' OR coalesce((e)->>'source_kind','')='verified_founder_perspective' OR EXISTS (SELECT 1 FROM public.powerhouse_content_recommendations f WHERE f.recommendation_id::text=public.powerhouse_jsonb_object_v1(new.generation_evidence)->>'recommendation_id' AND (f.evidence->>'personal_founder_perspective_verified'='true' OR f.evidence->>'personal_founder_perspective_policy'='personal-linkedin-trusted-advisor-perspective-v1')));
     founder_ok := EXISTS (
       SELECT 1 FROM public.powerhouse_content_recommendations r
       WHERE r.recommendation_id::text=public.powerhouse_jsonb_object_v1(new.generation_evidence)->>'recommendation_id'
@@ -131,7 +133,7 @@ begin
     if coalesce((e->>'corporate_style')::boolean,false)=true
        or coalesce((e->>'corporate_voice')::boolean,false)=true
        or coalesce((e->>'company_page_interchangeable')::boolean,false)=true
-       or not (truth_ok or observational_ok or builder_ok or founder_ok) then
+       or not (CASE WHEN founder_mode THEN founder_ok ELSE (truth_ok or observational_ok or builder_ok) END) then
       raise exception using
         errcode='P0001',
         message='LINKEDIN_PERSONAL_IDENTITY_GATE_BLOCKED: verified personal truth, verified observational personal-life source, or verified AI-native builder-event lineage required before scheduling/publishing';
@@ -169,6 +171,7 @@ begin
         and coalesce((g.e->>'corporate_voice')::boolean,false)=false
         and coalesce((g.e->>'company_page_interchangeable')::boolean,false)=false
         and (
+          (NOT (coalesce((g.e)->>'personal_founder_perspective_verified','false')='true' OR coalesce((g.e)->>'personal_founder_perspective_policy','')='personal-linkedin-trusted-advisor-perspective-v1' OR coalesce((g.e)->>'source_kind','')='verified_founder_perspective' OR EXISTS (SELECT 1 FROM public.powerhouse_content_recommendations f WHERE f.recommendation_id::text=public.powerhouse_jsonb_object_v1(a.generation_evidence)->>'recommendation_id' AND (f.evidence->>'personal_founder_perspective_verified'='true' OR f.evidence->>'personal_founder_perspective_policy'='personal-linkedin-trusted-advisor-perspective-v1'))) AND (
           (
             coalesce((g.e->>'business_topic')::boolean,false)=false
             and public.powerhouse_jsonb_true(g.e,'personal_life_topic') is true
@@ -197,6 +200,7 @@ begin
             and jsonb_typeof(g.e->'source_lineage')='array'
             and jsonb_array_length(g.e->'source_lineage')>0
           )
+          ))
           or (
             new.tenant_id='canonical' AND EXISTS (
       SELECT 1 FROM public.powerhouse_content_recommendations r

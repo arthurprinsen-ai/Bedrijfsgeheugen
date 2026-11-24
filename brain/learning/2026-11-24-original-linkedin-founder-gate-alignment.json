@@ -5,7 +5,7 @@
   "fingerprint": "powerhouse|linkedin-personal|founder-gate-alignment|20261124-v1",
   "status": "REVIEW_CANDIDATE_NOT_LIVE",
   "root_cause": "Original materializer and editor permit verified founder opinion, obligation trigger excludes it.",
-  "fix": "Review SQL uses native definitions and source contract, exact original lineage and negative live-copy replay; no DDL executed.",
+  "fix": "Review SQL derives founder mode from original recommendation and artifact evidence, rejects legacy-route fallback; tested actual candidate trigger bodies using isolated pg_temp fixtures. No persistent DDL.",
   "prevention_rule": "Valid source does not imply valid body; retain review and duplicate gates; no fake historical approval; protected migration only.",
   "compiler": {
     "failure_class": "ORIGINAL_FOUNDER_DATABASE_GATE_CONTRACT_DRIFT",
@@ -42,6 +42,52 @@
     ],
     "canary": [
       "Pending protected migration"
-    ]
+    ],
+    "isolated_trigger_replay": {
+      "scope": "pg_temp only; real source read; no production mutations",
+      "outcomes": [
+        {
+          "case_id": "actual_bad_copy",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "bad_copy_legacy_truth_flags",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "tampered_legacy_mode",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "verified_founder_opinion",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "wrong_artifact_channel",
+          "artifact_allowed": true,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "wrong_date",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "wrong_source_revision",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "wrong_tenant",
+          "artifact_allowed": true,
+          "obligation_allowed": false
+        }
+      ],
+      "all_expected_matched": true
+    }
   }
 }
