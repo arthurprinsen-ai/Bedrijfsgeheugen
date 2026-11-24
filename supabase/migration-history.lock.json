@@ -3564,8 +3564,12 @@
     {
       "version": "20261123211950",
       "name": "growth_atomic_cutover_fence_v1"
+    },
+    {
+      "version": "20261123214500",
+      "name": "personal_founder_perspective_v2_materializer_alignment"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-23T21:36:53.000Z"
+  "captured_at": "2026-11-24T06:48:08.124Z"
 }
