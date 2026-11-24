@@ -40,7 +40,9 @@ test('subject-specific normalization applies to source-pattern rather than hardc
   assert.equal(x.alt_title,'Administratie koppelen aan Apple Pay');
 });
 
-test('existing protected 22-Oct article and focus semantics remain unchanged',()=>{
+test('22-Oct source retains focus and a complete source-grounded influence relation',()=>{
   assert.equal(x.legacy_focus,'Nederlandse cyberoefeningen');
-  assert.equal(x.legacy_title,'Nederlandse cyberoefeningen: wat verandert er voor jou?');
+  assert.equal(x.legacy_title,'Nederlandse cyberoefeningen: invloed op bedrijfsbeslissingen');
+  assert.ok(x.legacy_title.length<=60);
+  assert.doesNotMatch(x.legacy_title,/wat verandert er voor jou/i);
 });

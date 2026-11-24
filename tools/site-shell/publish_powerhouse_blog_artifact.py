@@ -119,10 +119,24 @@ def seo_focus(data):
         while meaningful and meaningful[0].casefold() in {"de", "het", "een"}:
             meaningful = meaningful[1:]
     raw_words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", raw)
-    raw_ok = (raw_words and raw_words[0].casefold() not in starters
-              and raw_words[-1].casefold() not in starters
-              and raw_words[0].casefold() not in generic_actions)
+    generic_focus = {"stap", "stappen", "stappenplan", "plan", "tips", "update", "gids",
+                     "praktisch", "voorbereid", "voorbereiden", "introductie", "uitleg"}
+    raw_ok = (raw_words and raw_words[0].casefold() not in starters | generic_focus | generic_actions
+              and raw_words[-1].casefold() not in starters | generic_focus | generic_actions)
     candidates = [raw] if raw_ok else []
+    # Prefer the actual connected business subjects when a title explicitly
+    # describes an integration BETWEEN two systems. "Stap" or "MKB" alone is
+    # not a customer search intent; both subjects must be present in source.
+    if re.search(r"\b(?:integratie|koppeling|koppelen)\b", title, re.I):
+        pair = re.search(
+            r"\btussen\s+([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9 -]{0,35}?)\s+en\s+"
+            r"([A-Za-zÀ-ÿ][A-Za-zÀ-ÿ0-9 -]{0,35})(?:[.,:;!?]|$)",
+            title, re.I
+        )
+        if pair:
+            exact_pair = f"{pair.group(1).strip()} en {pair.group(2).strip()}"
+            if 15 <= len(exact_pair) <= 55:
+                candidates.append(exact_pair)
     if len(meaningful) >= 2 and meaningful[1].casefold() not in (starters | {"op", "met", "aan", "en", "of"}):
         # Preserve the exact original hyphenated subject ONLY for an
         # action-verb question. Do not silently rewrite older Twinfield
@@ -155,16 +169,37 @@ def _seo_title_raw(title, focus):
         candidate = f"{preparation.group(1).strip()} koppelen aan {preparation.group(2).strip()}"
         if len(candidate) <= 60 and focus.casefold() in candidate.casefold():
             return candidate[0].upper() + candidate[1:]
+    # Preserve a complete source-bound influence relation, not a truncated question.
+    influence = re.fullmatch(
+        r"hoe (.+?) (?:jouw|je|uw) (.+?) moeten? beïnvloeden(?:\s*:\s*.+)?",
+        source_title, re.I
+    )
+    if influence:
+        candidate = f"{influence.group(1).strip()}: invloed op {influence.group(2).strip()}"
+        if 30 <= len(candidate) <= 60 and focus.casefold() in candidate.casefold():
+            return candidate[0].upper() + candidate[1:]
     if focus.casefold() not in title.casefold():
         title = f"{focus}: {title}"
     if len(title) <= 60:
         return title
-    suffixes = ["wat verandert er voor jou?", "wat moet je weten?", "praktisch uitgelegd"]
-    for suffix in suffixes:
-        candidate = f"{focus}: {suffix}"
-        if len(candidate) <= 60:
+    # Replacing an 80-character title with "Stap: wat verandert er voor jou?"
+    # destroyed the actual topic and produced a misleading SEO keyword.
+    # Keep the original source-verified subjects rather than inventing a
+    # generic question, date, vendor API capability or measured outcome.
+    if ("integratie" in title.casefold() or "koppel" in title.casefold()) and " en " in focus.casefold():
+        candidate = f"{focus[0].upper() + focus[1:]} koppelen: stappenplan mkb"
+        if 30 <= len(candidate) <= 60:
             return candidate
-    return focus[:60].rstrip(" :-")
+    substantive = re.sub(
+        r"(?i)^(?:stap[ -]?voor[ -]?stap|voorbereid op|praktische gids|stappenplan)\s*:\s*",
+        "", title
+    ).strip()
+    compact = substantive[:61].rsplit(" ", 1)[0].rstrip(" ,.;:-")
+    while compact and re.search(r"(?i)\s+(?:en|of|tussen|voor|met|in|op|de|het|een)$", compact):
+        compact = compact.rsplit(" ", 1)[0]
+    if 30 <= len(compact) <= 60 and focus.casefold() in compact.casefold():
+        return compact
+    return (focus[0].upper() + focus[1:] + ": praktische aanpak")[:60].rstrip(" ,.;:-")
 
 def seo_title(title, focus):
     # A published title never starts lowercase: the focus keyword is lowercase,

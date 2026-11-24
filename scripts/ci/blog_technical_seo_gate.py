@@ -71,6 +71,28 @@ def meta(text: str, *, name: str | None = None, prop: str | None = None) -> list
 
 
 
+
+def validate_editorial_topic_keywords(title: str, keyword: str) -> None:
+    """Fail closed on topic-free SEO placeholders; specific single-word brands stay valid.
+
+    This guards the EXACT existing blog candidate, not historical articles.
+    An unseen model/source topic must be corrected by the original producer,
+    never forged by the pre-publication validator.
+    """
+    generic = {
+        "stap", "stappen", "stappenplan", "plan", "tips", "update",
+        "gids", "praktisch", "voorbereid", "voorbereiden", "uitleg",
+    }
+    if keyword.strip().casefold() in generic:
+        fail(f"SEO_EDITORIAL_TOPIC_MISSING_GENERIC_KEYWORD:{keyword}")
+    if re.fullmatch(
+        r"(?:stap|stappenplan|plan|tips|update|gids|voorbereid op):\s*"
+        r"(?:wat verandert er voor jou\?|wat moet je weten\?|praktisch uitgelegd)",
+        title.strip(), re.I,
+    ):
+        fail(f"SEO_EDITORIAL_GENERIC_TITLE_TEMPLATE_FORBIDDEN:{title}")
+
+
 def validate_public_href_targets(main_html: str, sitemap_xml: str) -> dict[str, int]:
     """Verify every article-body href and canonical internal destination, without network calls.
 
@@ -178,6 +200,7 @@ def main() -> None:
     if len(keyword_meta) != 1 or not keyword_meta[0].strip():
         fail("SEO_PRIMARY_KEYWORD_REQUIRED")
     keyword = keyword_meta[0].strip()
+    validate_editorial_topic_keywords(title, keyword)
     kw_tokens = significant_tokens(keyword)
     if not kw_tokens:
         fail("SEO_PRIMARY_KEYWORD_TOKENS_EMPTY")
