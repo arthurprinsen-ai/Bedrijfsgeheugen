@@ -1,0 +1,52 @@
+{
+  "fingerprint": "delivery|original-brain-history|bounded-provider-retry|20261124-v1",
+  "obligation_id": "delivery|original-brain-history|bounded-provider-retry|20261124-v1",
+  "owner": "existing original Obligation Terminal Closure / ONE BRAIN",
+  "compiler": {
+    "failure_class": "TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+    ],
+    "live_validation": "Exact protected CI then original terminal closure on real provider history; no fabricated success.",
+    "mode_note": "Mocked read failure replay is not production proof."
+  },
+  "root_cause": "Final BRAIN history consumer aborted on first truncated GitHub CLI JSON response; dispatch guard only retried command errors.",
+  "source_evidence": {
+    "pr": 6174,
+    "run": 45467060405,
+    "job": 138704661994,
+    "error": "unexpected end of JSON input",
+    "terminal_error": "TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED"
+  },
+  "correction": {
+    "bounded_attempts": 3,
+    "per_read_timeout_seconds": 30,
+    "backoff_seconds": [
+      2,
+      4
+    ],
+    "retry_transient_only": true,
+    "full_history_preserved": true
+  },
+  "prevention": [
+    "Test both original guard and terminal consumers using actual shell blocks.",
+    "Never dispatch or accept partial history; cap and identity errors fail closed."
+  ],
+  "tests": [
+    "tests/brain-original-terminal-extended-state-machine-v1.test.mjs"
+  ],
+  "status": "PR_CANDIDATE_NOT_LIVE",
+  "independent_live_proven": false,
+  "next_action": "Protected CI, merge and original terminal readback."
+}
