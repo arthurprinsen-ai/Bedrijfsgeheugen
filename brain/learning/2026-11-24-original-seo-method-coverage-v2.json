@@ -15,7 +15,8 @@
   "tests": [
     "tests/brain-sitewide-seo-health-score-20261112.test.mjs",
     "tests/brain-standalone-visibility-navigation-race-v1.test.mjs",
-    "tests/brain-website-layout-shift-evidence-20261022.test.mjs"
+    "tests/brain-website-layout-shift-evidence-20261022.test.mjs",
+    "tests/brain-sitewide-href-integrity-20261112.test.mjs"
   ],
   "compiler": {
     "failure_class": "CLASSIFIER_GAP",
@@ -27,7 +28,8 @@
     "historical_replay": [
       "tests/brain-sitewide-seo-health-score-20261112.test.mjs",
       "tests/brain-standalone-visibility-navigation-race-v1.test.mjs",
-      "tests/brain-website-layout-shift-evidence-20261022.test.mjs"
+      "tests/brain-website-layout-shift-evidence-20261022.test.mjs",
+      "tests/brain-sitewide-href-integrity-20261112.test.mjs"
     ]
   },
   "producer_evidence": [
@@ -42,7 +44,8 @@
     "No full SEO method pass based on DOM only",
     "No new scheduler or producer",
     "Never override restrictive robots directives; re-test conflicting tags, agent-specific directives and response headers against final output.",
-    "Before terminal delivery run every existing test that reads a changed browser source; preserve verified replacement navigation response, bounded retry, original visibility and CLS failure gates."
+    "Before terminal delivery run every existing test that reads a changed browser source; preserve verified replacement navigation response, bounded retry, original visibility and CLS failure gates.",
+    "Distinguish exact verified nonindexed functional destinations from missing SEO canonicals. Preserve restrictive login robots tags and all invalid-link checks; do not allow arbitrary /en/ routes."
   ],
   "observed_live_baseline": {
     "release_sha": "6463a356f79aeb7244c687d806e84078a190de6e",
