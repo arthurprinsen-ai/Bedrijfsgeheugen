@@ -6,6 +6,11 @@ import {createPublicKey,verify as verifySignature} from 'node:crypto';
 
 const ISS='https://token.actions.githubusercontent.com';
 const REPO='arthurprinsen-ai/Bedrijfsgeheugen';
+// GitHub provider readback: use_default=true, use_immutable_subject=true.
+// Pin immutable repository and owner identity as well as the existing workflow/ref.
+const OWNER_ID='236997948';
+const REPO_ID='1303700955';
+const SUBJECT='repo:arthurprinsen-ai@'+OWNER_ID+'/Bedrijfsgeheugen@'+REPO_ID+':ref:refs/heads/main';
 const WF=REPO+'/.github/workflows/security-operations-proof.yml@refs/heads/main';
 const AUD='https://www.bedrijfsgeheugen.nl/api/security-guardian-ingest';
 const B64=s=>Buffer.from(s,'base64url');
@@ -16,7 +21,8 @@ export function assertGitHubClaims(claim,now=Math.floor(Date.now()/1000)){
  !/^[0-9]+$/.test(String(claim?.run_id||''))||
  typeof claim.exp!=='number'||claim.exp<now||claim.exp>now+600||
  typeof claim.iat!=='number'||claim.iat>now+60||now-claim.iat>600||
- claim.sub!=='repo:'+REPO+':ref:refs/heads/main')
+ String(claim.repository_id||'')!==REPO_ID||String(claim.repository_owner_id||'')!==OWNER_ID||
+ claim.sub!==SUBJECT)
  throw Error('UNAUTHORIZED_GITHUB_WORKFLOW');
  return Object.freeze({runId:String(claim.run_id),repository:REPO,issuedAt:claim.iat});
 }

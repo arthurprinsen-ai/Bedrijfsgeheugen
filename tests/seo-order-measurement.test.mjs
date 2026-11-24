@@ -178,3 +178,47 @@ test('even an explicitly marked cross-origin EN scan link cannot create a false 
  assert.equal(sent.filter(e=>e.event_type==='primary_cta_click').length,1);
  assert.equal(sent.filter(e=>e.event_type==='selfscan_start').length,0);
 });
+
+test('critical CTA delivery uses durable ACK, bounded same-ID retry, and current consent', async () => {
+  const ORIGIN='https://www.bedrijfsgeheugen.nl';
+  const html=injectGrowthMeasurement('<html><body><main></main></body></html>',{canonical:ORIGIN+'/prijzen'});
+  const script=html.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/i)[1];
+  async function scenario(kind,consent=true,revoke=false) {
+    let granted=consent,seq=0;
+    const sent=[],timers=[],listeners={},beacons=[];
+    const location={origin:ORIGIN,href:ORIGIN+'/prijzen',pathname:'/prijzen',hostname:'www.bedrijfsgeheugen.nl'};
+    vm.runInNewContext(script,{
+      window:{location,addEventListener:()=>{}},location,URL,URLSearchParams,Blob,
+      document:{referrer:'',body:{getAttribute:()=>''},addEventListener:(n,h)=>{listeners[n]=h;}},
+      navigator:{webdriver:false,sendBeacon:(_url,b)=>{beacons.push(b);return true;}},
+      sessionStorage:{getItem:()=>'',setItem:()=>{}},localStorage:{getItem:()=>granted?'granted':null},
+      crypto:{randomUUID:()=>String(++seq)},setTimeout:(f,ms)=>{if(ms===750)timers.push(f);},
+      fetch:(_url,o)=>{const e=JSON.parse(o.body);sent.push(o.body);
+        if(kind==='offline')return Promise.reject(Error('offline'));
+        if(kind==='permanent')return Promise.resolve({ok:false,status:422});
+        if(kind==='rate')return Promise.resolve({ok:false,status:429});
+        const ack={accepted:true,event_id:kind==='mismatch'?'wrong':e.event_id,queue:kind==='missing'?'unknown':'durable'};
+        return Promise.resolve({ok:true,status:202,json:async()=>ack});
+      }
+    });
+    const button={href:'',getAttribute:n=>n==='data-bg-conversion'?'contact':null,closest:()=>null,hasAttribute:()=>false};
+    listeners.click({target:{closest:s=>s==='button,[role="button"]'?button:null}});
+    await new Promise(resolve=>setImmediate(resolve));
+    if(revoke)granted=false;
+    for(const f of timers.splice(0))f();
+    await new Promise(resolve=>setImmediate(resolve));
+    assert.equal(beacons.length,1,'only noncritical page view uses beacon');
+    assert.equal(timers.length,0,'never schedule more than one retry');
+    assert.ok(sent.every(s=>JSON.parse(s).event_type==='primary_cta_click'));
+    if(sent.length===2)assert.equal(sent[0],sent[1],'same payload and event ID on retry');
+    return sent.length;
+  }
+  assert.equal(await scenario('ok'),1);
+  assert.equal(await scenario('mismatch'),2);
+  assert.equal(await scenario('missing'),2);
+  assert.equal(await scenario('offline'),2);
+  assert.equal(await scenario('offline',false),1);
+  assert.equal(await scenario('offline',true,true),1);
+  assert.equal(await scenario('permanent'),1);
+  assert.equal(await scenario('rate'),1);
+});

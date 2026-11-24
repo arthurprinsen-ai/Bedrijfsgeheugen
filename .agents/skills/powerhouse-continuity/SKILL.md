@@ -2203,8 +2203,3 @@ De originele reliability-owner controleert drie afzonderlijke toestanden: (1) ex
 
 ## 24 November — exact historical security replay
 For the original 896 source recovery, use the existing exact Git-blob historical mirror recognition only for the three already-applied 63737/63938/64859 SQL files, after native statement hashes and actual function privileges are read back. Original 20261105080000 SQL revokes PUBLIC/anon/authenticated EXECUTE for the three existing functions; native ACL confirms only postgres/service_role and fixed empty search_path. Never edit historical SQL, use a generic exception, mark pending Mira applied, or grant browser rights. Negative tests must reject altered bytes and unlisted paths. Keep full security scanner, immutable history tests, hosted preview and provider ACL readback. Exact source-contract failure and evidence: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6145#issuecomment-7131653098 . This is source admission repair, not production deployment or completed agent autonomy.
-
-
-## Native main-sync prewrite (2026-11-24)
-
-Original #4661 owner: exact provider readback of MAIN_SYNC with leased head, current target main, owner and obligation is mandatory before native expected-head CAS. A stale TERMINAL_DELIVERY lease requests acquisition, never mutation. Unknown/truncated comparisons, rename-origin or shared-contract overlap fail closed. Preserve drift budget, original owner and existing protected gates. This does not authorize arbitrary caller bypass or prove global promotion arbitration.
