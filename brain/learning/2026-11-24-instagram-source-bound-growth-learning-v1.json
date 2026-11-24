@@ -50,6 +50,12 @@
       "supabase/functions/_shared/measured-next-post-challenger.mjs",
       "supabase/functions/powerhouse-content-orchestrator/index.ts",
       "supabase/functions/powerhouse-social-publisher/index.ts"
-    ]
+    ],
+    "measurement_integrity_extension": {
+      "state": "SOURCE_CANDIDATE_NOT_LIVE",
+      "rule": "Deduplicate native Meta media IDs; require snapshot observation age >=24h, not only current post age.",
+      "regression": "tests/brain-instagram-frozen-growth-learning-20261124.test.mjs",
+      "execution_proof": "PENDING"
+    }
   }
 }
