@@ -56,6 +56,21 @@
       "rule": "Deduplicate native Meta media IDs; require snapshot observation age >=24h, not only current post age.",
       "regression": "tests/brain-instagram-frozen-growth-learning-20261124.test.mjs",
       "execution_proof": "PENDING"
+    },
+    "agent_kpi_baseline": {
+      "period_start": "2026-11-17",
+      "period_end": "2026-11-23",
+      "due_obligations": 7,
+      "independently_proven": 0,
+      "measured": 0,
+      "learned": 0,
+      "publication_proof_rate": 0,
+      "measurement_coverage": null,
+      "learning_coverage": null,
+      "registry": "public.powerhouse_agent_objective_registry_v1",
+      "operating_targets": "existing social-CRO skill",
+      "source": "canonical content_publication_obligations",
+      "production_status": "OBSERVED_BASELINE_NOT_RELEASE_PROOF"
     }
   }
 }
