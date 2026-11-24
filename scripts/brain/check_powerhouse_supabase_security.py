@@ -13,6 +13,15 @@ SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 # only while their Git blob is byte-for-byte the reviewed production statement.
 # Any edit changes the blob SHA and immediately restores normal fail-closed checking.
 HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
+    # 2026-11-24 native 896 historical restoration (PR #6145, not new DDL).
+    # Original 20261105080000 revokes PUBLIC/anon/authenticated EXECUTE on
+    # all three existing signatures; CREATE OR REPLACE preserves those ACLs.
+    # Independent native pg_proc readback: fixed empty search_path, postgres
+    # and service_role EXECUTE only. Exact provider statement MD5s and Git
+    # blobs verified; hosted replay and native ACL readback remain required.
+    "supabase/migrations/20261124063737_original_social_loop_comparable_provider_windows.sql": "7539984b8e8929700e219842dba30d563c2e071f",
+    "supabase/migrations/20261124063938_original_social_analyst_variant_rotation_and_proof.sql": "36949527558ad6c0e0a85bd98b0ea7c43ece1fb5",
+    "supabase/migrations/20261124064859_original_personal_observational_analyst.sql": "bdc24987007d4726b89557930064292139899851",
     # Provider-applied 2026-10-14 runtime mux SQL; immutable historical source.
     # Live pg_proc ACL verified: anon=false, authenticated=false, service_role=true;
     # explicit fixed search_path. Arbitrary SQL executor remains restricted to service role.
