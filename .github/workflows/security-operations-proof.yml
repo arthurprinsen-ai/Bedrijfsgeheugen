@@ -16,7 +16,17 @@ on:
       - 'tests/brain-security-live-headers-monitor-20261120.test.mjs'
       - 'tools/security/verify-public-security-headers.mjs'
       - 'tests/brain-security-live-guard-contract-20261120.test.mjs'
+      - 'tools/security/site-guardian.mjs'
+      - 'tools/security/security-guardian-incidents.mjs'
+      - 'config/security-managed-sites.json'
+      - 'tests/brain-security-guardian-continuous-20261120.test.mjs'
+      - 'netlify/functions/_security-guardian-oidc.mjs'
+      - 'netlify/functions/security-guardian-ingest.mjs'
+      - 'portal-v2/modules/security-trust-workspace.js'
+      - 'portal-v2/security-trust-workspace.css'
   schedule:
+    # Frequent checks reuse the EXISTING Security Operations owner, not a new agent.
+    - cron: '7,22,37,52 * * * *'
     - cron: '17 5 * * 1'
     # Frequent lightweight live guard for both original Netlify sites.
     - cron: '47 1,7,13,19 * * *'
@@ -37,6 +47,8 @@ concurrency:
 
 jobs:
   contract:
+    # Preserve the original weekly DR and four-daily header proof; the new guardian has its own cadence in this same workflow.
+    if: github.event_name != 'schedule' || github.event.schedule == '17 5 * * 1' || github.event.schedule == '47 1,7,13,19 * * *'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -46,6 +58,8 @@ jobs:
           node-version: '22'
       - name: Contract tests
         run: node --test tests/security-operations-proof.test.mjs tests/brain-site-security-source-exposure-20261120.test.mjs tests/brain-security-live-guard-contract-20261120.test.mjs
+      - name: Verify continuous guardian and authenticated heartbeat ingestion
+        run: node --test tests/brain-security-guardian-continuous-20261120.test.mjs
       - name: HTTP browser defense regression tests
         run: node --test tests/brain-security-csp-web-boundary-20261120.test.mjs tests/brain-security-live-headers-monitor-20261120.test.mjs
       - name: Structural fail-closed validation
@@ -80,3 +94,55 @@ jobs:
       - name: Full closure gate when explicitly required
         if: ${{ (github.event_name == 'schedule' && github.event.schedule == '17 5 * * 1') || (github.event_name == 'workflow_dispatch' && inputs.require_live) }}
         run: node scripts/security-operations-proof.mjs --require-live
+
+  guardian:
+    name: Security Guardian — 16 managed sites and platform proof
+    if: github.ref == 'refs/heads/main' && ((github.event_name == 'schedule' && github.event.schedule == '7,22,37,52 * * * *') || github.event_name == 'workflow_dispatch' || github.event_name == 'push')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    permissions:
+      contents: read
+      issues: write
+      id-token: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify authentic security monitor, OIDC and fail-closed portal contracts
+        run: node --test tests/brain-security-guardian-continuous-20261120.test.mjs
+      - name: Probe all registered sites read-only with bounded retries
+        id: probe
+        run: node tools/security/site-guardian.mjs --output "$RUNNER_TEMP/security-guardian-report.json"
+      - name: Publish independently verified heartbeat to tenant-isolated EU Trust Center
+        id: ingest
+        env:
+          REPORT_FILE: ${{ runner.temp }}/security-guardian-report.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          audience='https%3A%2F%2Fwww.bedrijfsgeheugen.nl%2Fapi%2Fsecurity-guardian-ingest'
+          jwt="$(curl -fsS --max-time 15 -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" "$ACTIONS_ID_TOKEN_REQUEST_URL&audience=$audience" | jq -r '.value // empty')"
+          test -n "$jwt" || { echo "::error::OIDC_UNAVAILABLE"; exit 1; }
+          echo "::add-mask::$jwt"
+          curl -fsS --max-time 35 -X POST 'https://www.bedrijfsgeheugen.nl/api/security-guardian-ingest' \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $jwt" \
+            --data-binary @"$REPORT_FILE" -o "$RUNNER_TEMP/security-guardian-ack.json"
+          jq -e '.stored==true and .readback==true' "$RUNNER_TEMP/security-guardian-ack.json" >/dev/null ||
+            { echo "::error::SECURITY_TELEMETRY_READBACK_MISSING"; exit 1; }
+          echo "Security heartbeat acknowledged by existing tenant-secured EU service."
+      - name: Create deduplicated sanitized incidents and request original Engineering agent
+        if: always() && steps.probe.outcome == 'success'
+        run: node tools/security/security-guardian-incidents.mjs "$RUNNER_TEMP/security-guardian-report.json"
+      - name: Fail closed if any managed site or source exposure is not verified
+        if: always() && steps.probe.outcome == 'success'
+        run: |
+          node --input-type=module -e "
+            import{readFileSync}from'node:fs';
+            const r=JSON.parse(readFileSync(process.env.RUNNER_TEMP+'/security-guardian-report.json','utf8'));
+            if(r.status!=='VERIFIED'){console.error('SECURITY_GUARDIAN_ACTION_REQUIRED: '+r.failed+' high, '+r.warning+' review');process.exit(1)}
+          "
+
