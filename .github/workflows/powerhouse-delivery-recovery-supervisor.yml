@@ -407,13 +407,40 @@ jobs:
                   echo "::warning::PR#$number main refresh compare could not prove a merge base; automatic refresh forbidden."
                   continue
                 fi
-                main_paths="$(gh api "repos/$repo/compare/$merge_base...$refresh_main_sha" --jq '.files[]?.filename' 2>/dev/null || true)"
-                candidate_paths="$(gh api "repos/$repo/compare/$merge_base...$head" --jq '.files[]?.filename' 2>/dev/null || true)"
+                # Provider errors, incomplete comparisons and rename origins cannot be empty-overlap proof.
+                if ! main_diff="$(gh api "repos/$repo/compare/$merge_base...$refresh_main_sha")" ||
+                   ! candidate_diff="$(gh api "repos/$repo/compare/$merge_base...$head")"; then
+                  echo "::warning::MAIN_SYNC_COMPARE_UNAVAILABLE:PR#$number"; continue
+                fi
+                for diff in "$main_diff" "$candidate_diff"; do
+                  if ! jq -e --arg base "$merge_base" '.status=="ahead" and .behind_by==0 and .merge_base_commit.sha==$base and (.files | type=="array" and length<300 and all(.[]; (.filename|type=="string" and length>0)))' <<<"$diff" >/dev/null; then
+                    echo "::warning::MAIN_SYNC_COMPARE_INCOMPLETE:PR#$number"; continue 2
+                  fi
+                done
+                if ! jq -e '.files | length>0' <<<"$candidate_diff" >/dev/null; then
+                  echo "::warning::MAIN_SYNC_CANDIDATE_EMPTY:PR#$number"; continue
+                fi
+                main_paths="$(jq -r '.files[] | .filename, (.previous_filename // empty)' <<<"$main_diff")"
+                candidate_paths="$(jq -r '.files[] | .filename, (.previous_filename // empty)' <<<"$candidate_diff")"
                 path_overlap="$(comm -12 <(printf '%s\n' "$main_paths" | sed '/^$/d' | sort -u) <(printf '%s\n' "$candidate_paths" | sed '/^$/d' | sort -u) || true)"
                 if [ -n "$path_overlap" ]; then
                   echo "::warning::PR#$number main refresh has path overlap and requires reconciliation; automatic refresh forbidden."
                   printf '%s\n' "$path_overlap"
                   continue
+                fi
+                # Use existing trusted policy to check shared contracts, not just filenames.
+                contract_overlap="$(MAIN_PATHS="$main_paths" CANDIDATE_PATHS="$candidate_paths" node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {deriveHygieneConflictContracts} from './tools/delivery/delivery-hygiene.mjs';
+          const brain=JSON.parse(readFileSync('config/brain-delivery-system.json','utf8'));
+          const hygiene=JSON.parse(readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
+          const contracts=paths=>deriveHygieneConflictContracts(paths.split('\n').filter(Boolean),brain,hygiene);
+          const main=new Set(contracts(process.env.MAIN_PATHS));
+          console.log(JSON.stringify(contracts(process.env.CANDIDATE_PATHS).filter(x=>main.has(x))));
+          NODE
+                )"
+                if [ "$contract_overlap" != '[]' ]; then
+                  echo "::warning::MAIN_SYNC_CONTRACT_OVERLAP:PR#$number:$contract_overlap"; continue
                 fi
                 fresh_pr="$(gh api "repos/$repo/pulls/$number")"
                 fresh_main="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
@@ -460,6 +487,18 @@ jobs:
                   echo "::warning::PR#$number MAIN_SYNC transition readback failed; restoring terminal lease."
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
                   continue
+                fi
+                # The same executable guard must approve a fresh provider readback before native mutation.
+                guard_pr="$(gh api "repos/$repo/pulls/$number")"
+                guard_main="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+                guard_head="$(jq -r '.head.sha' <<<"$guard_pr")"
+                guard_body="$(jq -r '.body // ""' <<<"$guard_pr")"
+                if [ "$guard_body" != "$sync_body" ] || [ "$guard_main" != "$refresh_main_sha" ]; then
+                  echo "::warning::MAIN_SYNC_PREWRITE_DRIFT:PR#$number; no native CAS."; continue
+                fi
+                jq -n --arg body "$guard_body" --arg observed "$guard_head" --arg expected "$head" --arg captured "$refresh_main_sha" --arg main "$guard_main" --arg obligation "$lease_obligation" --arg owner "$lease_owner" --argjson contracts "$contract_overlap" '{body:$body,observedHeadSha:$observed,expectedHeadSha:$expected,capturedMainEpochSha:$captured,currentMainSha:$main,obligationId:$obligation,expectedOwner:$owner,mutationKind:"main-sync",mainSyncOverlap:[],mainSyncContractOverlap:$contracts}' >/tmp/main-sync-prewrite.json
+                if ! node tools/delivery/github-delivery-state-machine.mjs terminal-write-guard --input /tmp/main-sync-prewrite.json; then
+                  echo "::warning::MAIN_SYNC_PREWRITE_GUARD_DENIED:PR#$number"; continue
                 fi
                 emit_metric "$number" CAS_REQUEST "$next_drift_count"
                 if gh api --method PUT "repos/$repo/pulls/$number/update-branch" -f expected_head_sha="$head" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
