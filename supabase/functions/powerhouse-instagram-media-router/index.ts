@@ -172,7 +172,9 @@ Deno.serve(async req=>{
  // touch a post. This must be called by the ORIGINAL Mira producer before any
  // OpenArt generate_video request. Reject the observed Wan 2.7 config even
  // though OpenArt calls it '1080p': its real output was NOT native 9:16.
- if(action==='generation_preflight'||action==='claim_generation'){
+ if(action==='generation_preflight')return await handleGenerationPreflight();
+ if(action==='claim_generation')return await handleGenerationPreflight();
+ async function handleGenerationPreflight(){
    // A quality-rejected PH-P library winner may request a format preflight
    // ONLY when the frozen source, problem, exact scene, original rejected
    // provider history, budget and unique unsent claim all match.
