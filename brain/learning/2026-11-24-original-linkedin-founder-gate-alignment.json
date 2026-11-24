@@ -138,5 +138,16 @@
       "result": "SUCCESS",
       "cli": "2.119.0"
     }
+  },
+  "evidence": {
+    "test_evidence": {
+      "regression_source": "tests/brain-original-linkedin-founder-gate-alignment-20261124.test.mjs",
+      "isolated_native_trigger_scenarios": 19,
+      "isolated_native_expected_matches": true,
+      "scope": "pg_temp fixtures only; see evaluation.isolated_trigger_replay and evaluation.extended_isolated_trigger_replay; no production DDL or proof",
+      "migration_generation_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45464954693"
+    },
+    "original_admission_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45465179608",
+    "remaining": "Protected Required, CodeQL, Supabase preview, native deployment and independent production behavior remain mandatory."
   }
 }
