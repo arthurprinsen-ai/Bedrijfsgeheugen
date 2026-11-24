@@ -79,7 +79,7 @@ test('original orchestrator consumes sanitized personal guidance after channel p
 });
 
 
-test('exact native provider 896th migration and original four SQL blobs are canonical and immutable',async()=>{
+test('original 896 historical provider population and four SQL blobs remain canonical after native Mira migration',async()=>{
  const {readFileSync}=await import('node:fs');
  const {createHash}=await import('node:crypto');
  const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
@@ -90,11 +90,22 @@ test('exact native provider 896th migration and original four SQL blobs are cano
    ['20261124064859','original_personal_observational_analyst','bdc24987007d4726b89557930064292139899851']
  ];
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,896,'provider readback at 24Nov 2026 had exactly 896 applied versions');
- assert.equal(new Set(lock.applied.map(x=>x.version)).size,896,'one canonical version per applied migration');
+ // Preserve the original attested population rather than treating it as the live total.
+ // Current complete provider/source parity is independently enforced by the original migration gate.
+ assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length,'one canonical version per applied migration');
+ assert.ok(lock.applied.every((x,i)=>i===0||x.version>lock.applied[i-1].version),'canonical migration order');
+ const historic=lock.applied.filter(x=>x.version<='20261124064859'&&x.version!=='20261124063700');
+ assert.equal(historic.length,896,'exact original attested historical population');
+ assert.equal(historic[891].version,'20261123214500');
+ const mira=lock.applied.filter(x=>x.version==='20261124063700');
+ if(mira.length){
+  assert.deepEqual(mira,[{version:'20261124063700',name:'mira_original_exact_job_claim_v1'}]);
+  const bytes=readFileSync(new URL('../supabase/migrations/20261124063700_mira_original_exact_job_claim_v1.sql',import.meta.url));
+  assert.equal(createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex'),'2408396c3423e7c93c1d1b58d65d921c21737482');
+ }
  for(let i=0;i<expected.length;i++){
   const [version,name,blob]=expected[i];
-  assert.deepEqual(lock.applied[892+i],{version,name});
+  assert.deepEqual(historic[892+i],{version,name});
   const path=new URL('../supabase/migrations/'+version+'_'+name+'.sql',import.meta.url);
   const bytes=readFileSync(path);
   const actual=createHash('sha1').update('blob '+bytes.length+'\0').update(bytes).digest('hex');

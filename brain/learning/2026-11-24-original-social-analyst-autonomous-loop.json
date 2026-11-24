@@ -62,6 +62,14 @@
       "production_DDL_not_rerun": true,
       "dependent_original_email_PR": 6141,
       "release_status": "PROTECTED_CI_PENDING"
+    },
+    "historical_source_fixture_reconciliation": {
+      "original_population": 896,
+      "native_provider_observed": 897,
+      "original_recovery_merge": "b846dbfca8092b443ffae09d491c8458a32de423",
+      "canonical_successor": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6147",
+      "rule": "exact historical population through 64859 excluding only 63700; current full lock uniqueness/order and exact Mira identity/blob when recorded; original current parity gate remains mandatory",
+      "status": "CANDIDATE_TEST_REPAIR_NOT_DEPLOYED"
     }
   },
   "tests": [
