@@ -65,3 +65,15 @@ export function prepareOriginalLinkedInEditorialDecision({channel,runDate,source
  const selection=selectLinkedInEditorialStrategy({channel,seed:runDate,eligiblePillars:eligible&&!competing?source.eligiblePillars:[],eligibleFormats:eligible&&!competing?source.eligibleFormats:[],recentPillars:history.map(r=>r.pillar),recentFormats:history.map(r=>r.format)});
  return {contract:'ORIGINAL_LINKEDIN_EDITORIAL_DECISION-v1',channel,runDate,sourceId:eligible?source.sourceId:null,sourceRevision:eligible?source.sourceRevision:null,historyPostIds:history.map(r=>r.providerPostId),selection,existingExperimentOwner:experimentOwner||null,state:competing?'DEFER_TO_ORIGINAL_EXPERIMENT':!eligible?'SOURCE_ELIGIBILITY_REQUIRED':selection.pillar&&selection.format?'EDITORIAL_CANDIDATE':'ELIGIBLE_PILLAR_AND_FORMAT_REQUIRED',learningApplied:false,authorizesPublication:false};
 }
+
+/** Derive conservative editorial angles, not new factual claims. Existing source
+ * owner must independently validate truth and current recommendation first. */
+export function originalLinkedInSourceAngles({channel,verified,evidence={},founderPerspective=false,builder=false}={}){
+ if(verified!==true)return [];
+ if(channel==='linkedin_company')return ['herkenning','educatie'];
+ if(channel!=='linkedin_personal')return [];
+ if(founderPerspective===true||builder===true)return ['thought_leadership','kennisdeling','opinie'];
+ if(evidence.personal_truth_verified===true&&evidence.arthur_anchor_verified===true&&evidence.first_person_claims_verified===true)return ['storytelling','persoonlijke_reflectie'];
+ if(evidence.observational_personal_theme_verified===true&&evidence.public_theme_source_verified===true&&evidence.first_person_claims_present===false)return ['onderzoek','vernieuwing'];
+ return [];
+}
