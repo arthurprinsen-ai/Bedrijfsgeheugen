@@ -3,10 +3,10 @@
   "version": "v1",
   "date": "2026-11-24",
   "fingerprint": "powerhouse|linkedin-personal|founder-gate-alignment|20261124-v1",
-  "status": "REVIEW_CANDIDATE_NOT_LIVE",
+  "status": "CANDIDATE",
   "root_cause": "Original materializer and editor permit verified founder opinion, obligation trigger excludes it.",
-  "fix": "Review SQL derives founder mode from original recommendation and artifact evidence, rejects legacy-route fallback; tested actual candidate trigger bodies using isolated pg_temp fixtures. No persistent DDL.",
-  "prevention_rule": "Valid source does not imply valid body; retain review and duplicate gates; no fake historical approval; protected migration only.",
+  "fix": "Materialized reviewed exact trigger definitions into CLI-generated migration; original modes preserved; mandatory founder source branch; no direct production writes.",
+  "prevention_rule": "Use exact founder source and strict review, never fallback to legacy truth, preserve original modes and protected deployment, never republish an existing post.",
   "compiler": {
     "failure_class": "ORIGINAL_FOUNDER_DATABASE_GATE_CONTRACT_DRIFT",
     "scope": "SOCIAL",
@@ -16,32 +16,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "case_id": "actual_live_bad_copy",
-        "candidate_accepts": false,
-        "recurring_claim_detected": true
-      },
-      {
-        "case_id": "source_bound_opinion",
-        "candidate_accepts": true,
-        "recurring_claim_detected": false
-      },
-      {
-        "case_id": "wrong_channel",
-        "candidate_accepts": false,
-        "recurring_claim_detected": false
-      },
-      {
-        "case_id": "wrong_source_revision",
-        "candidate_accepts": false,
-        "recurring_claim_detected": false
-      }
+      "tests/brain-original-linkedin-founder-gate-alignment-20261124.test.mjs"
     ],
     "shadow": [
-      "Pending behavioral trigger replay"
+      "tests/brain-original-linkedin-founder-gate-alignment-20261124.test.mjs"
     ],
     "canary": [
-      "Pending protected migration"
+      "tests/brain-original-linkedin-founder-gate-alignment-20261124.test.mjs"
     ],
     "isolated_trigger_replay": {
       "scope": "pg_temp only; real source read; no production mutations",
@@ -150,6 +131,12 @@
       ],
       "all_expected_matched": true,
       "combined_trigger_scenarios": 19
+    },
+    "migration_generation": {
+      "run": 45464954693,
+      "path": "supabase/migrations/20261124185702_original_linkedin_founder_identity_gate_alignment.sql",
+      "result": "SUCCESS",
+      "cli": "2.119.0"
     }
   }
 }
