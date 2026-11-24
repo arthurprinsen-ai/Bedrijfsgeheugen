@@ -65,3 +65,14 @@ test('scope resolver remains single and syntactically complete',()=>{
   assert.match(production,/Terminal-Replay-PR/);
   assert.match(production,/TARGET_PR_NUMBER: \$\{\{ steps\.scope\.outputs\.target_pr \}\}/);
 });
+
+test('manual replay derives original protected merge scope and rejects superseded runtime paths',()=>{
+  assert.match(production,/replay_pr:/);
+  assert.match(production,/SUPABASE_EDGE_REPLAY_SCOPE_INVALID/);
+  assert.match(production,/git merge-base --is-ancestor "\$target_merge_sha" "\$GITHUB_SHA"/);
+  assert.match(production,/git diff --name-only "\$target_merge_sha\^1" "\$target_merge_sha"/);
+  assert.match(production,/git diff --quiet "\$target_merge_sha" "\$GITHUB_SHA" -- "\$\{original_runtime_paths\[@\]\}"/);
+  assert.match(production,/SUPABASE_EDGE_REPLAY_ORIGINAL_SOURCE_SUPERSEDED/);
+  assert.match(production,/SUPABASE_EDGE_REPLAY_EMPTY_SCOPE/);
+  assert.match(production,/SUPABASE_EDGE_REPLAY_ORIGINAL_SCOPE_PROVEN/);
+});

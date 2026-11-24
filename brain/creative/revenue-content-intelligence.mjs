@@ -1,3 +1,5 @@
+import {stableIndex,rotateEligible,selectLinkedInEditorialStrategy} from '../../supabase/functions/_shared/linkedin-editorial-strategy.mjs';
+export {LINKEDIN_EDITORIAL_PILLARS,LINKEDIN_EDITORIAL_FORMATS,selectLinkedInEditorialStrategy} from '../../supabase/functions/_shared/linkedin-editorial-strategy.mjs';
 const n=(value,fallback=0)=>Number.isFinite(Number(value))?Number(value):fallback;
 const clamp=(value,min=0,max=1)=>Math.min(max,Math.max(min,n(value)));
 
@@ -108,24 +110,9 @@ function buildActivationLayer(identity,opportunity={},channel=''){
   };
 }
 
-function stableIndex(value,length){
-  const text=String(value||'');
-  let hash=0;
-  for(const char of text)hash=(hash*31+char.charCodeAt(0))>>>0;
-  return length?hash%length:0;
-}
-
 // Personal editorial experiments are recommendations only: never a source or send permit.
 export const PERSONAL_GROWTH_METHODS=Object.freeze(['concrete_detail','source_led_structure','natural_reflection','verified_contrarian_view','practical_explanation','evidence_led_insight','design_tradeoff','lesson_from_verified_experience','source_led_question']);
 const COMPANY_CONTENT_FAMILIES=Object.freeze(['checklist','diagnostic','worked_example','evidence_benchmark','verified_case','myth_vs_fact','how_to','comparison','original_research','industry_explainer','template','product_education']);
-function rotateEligible(eligible,recent,seed){
- const history=Array.isArray(recent)?recent.filter(x=>eligible.includes(x)).slice(0,6):[];
- const least=Math.min(...eligible.map(x=>history.filter(y=>x===y).length));
- const pool=eligible.filter(x=>history.filter(y=>x===y).length===least);
- const alternatives=pool.filter(x=>x!==history[0]);
- const choices=alternatives.length?alternatives:pool;
- return choices[stableIndex(seed,choices.length)];
-}
 // Options are hypotheses, not permission to use a format or claim. Source/asset gates remain independent.
 export function selectCompanyContentVariation({seed='',recentFormats=[],recentFamilies=[],eligibleFormats=COMPANY_FORMATS,eligibleFamilies=[]}={}){
  const formats=COMPANY_FORMATS.filter(x=>Array.isArray(eligibleFormats)&&eligibleFormats.includes(x));
@@ -133,33 +120,6 @@ export function selectCompanyContentVariation({seed='',recentFormats=[],recentFa
  return {format:formats.length?rotateEligible(formats,recentFormats,seed):null,
   family:families.length?rotateEligible(families,recentFamilies,seed+':family'):null,
   decision:'SOURCE_AND_FORMAT_ELIGIBILITY_REQUIRED',authorizesPublication:false,causalLiftProven:false};
-}
-
-// Explicit user-approved editorial pillars, separate from format and method.
-// Candidate selection never asserts a source, provider capability or measured lift.
-export const LINKEDIN_EDITORIAL_PILLARS=Object.freeze({
- linkedin_personal:Object.freeze(['persoonlijk_ondernemerschap','thought_leadership','kennisdeling','storytelling','vernieuwing','opinie','persoonlijke_reflectie','onderzoek']),
- linkedin_company:Object.freeze(['herkenning','educatie','product','onderzoek','bewijs','innovatie','conversie','kennisproducten'])
-});
-export const LINKEDIN_EDITORIAL_FORMATS=Object.freeze(['tekstpost','carrousel','infographic','video','onderzoek','artikel','checklist','magazine_document']);
-export function selectLinkedInEditorialStrategy({channel,seed='',eligiblePillars=[],eligibleFormats=[],recentPillars=[],recentFormats=[],experimentModes=[]}={}){
- const catalog=LINKEDIN_EDITORIAL_PILLARS[channel];
- if(!catalog)return null;
- const allowed=(catalog,list)=>catalog.filter(x=>Array.isArray(list)&&list.includes(x));
- const history=(list,catalog)=>Array.isArray(list)?list.slice(0,6).filter(x=>catalog.includes(x)):[];
- const pillars=history(recentPillars,catalog),formats=history(recentFormats,LINKEDIN_EDITORIAL_FORMATS);
- const p=allowed(catalog,eligiblePillars),f=allowed(LINKEDIN_EDITORIAL_FORMATS,eligibleFormats);
- const modes=Array.isArray(experimentModes)?experimentModes.filter(x=>x==='EXPLORE'||x==='EXPLOIT').slice(0,30):[];
- const date=Date.parse(seed);
- const mode=modes.length?chooseDecisionMode(modes,.2):Number.isFinite(date)&&Math.floor(date/86400000)%5!==0?'EXPLOIT':'EXPLORE';
- return {channel,mode,explorationTarget:.2,modeBasis:modes.length?'RECORDED_EXPERIMENT_MODES':'PLANNED_CADENCE_NOT_OBSERVED',
-  pillar:p.length?rotateEligible(p,pillars,seed+':pillar'):null,
-  format:f.length?rotateEligible(f,formats,seed+':editorial-format'):null,
-  pillarCandidates:[...catalog].sort((a,b)=>pillars.filter(x=>x===a).length-pillars.filter(x=>x===b).length),
-  formatCandidates:[...LINKEDIN_EDITORIAL_FORMATS].sort((a,b)=>formats.filter(x=>x===a).length-formats.filter(x=>x===b).length),
-  recentPillars:pillars,recentFormats:formats,experimentRule:'CHANGE_ONE_MEASURABLE_VARIABLE_PER_TEST',
-  measurementWindowsHours:[24,48,72,168,720],decision:'SOURCE_AND_PROVIDER_ELIGIBILITY_REQUIRED',
-  learningApplied:false,causalLiftProven:false,authorizesPublication:false};
 }
 
 export function selectPersonalGrowthMethod({mode='EXPLORE',seed='',cohortId='',observations=[],recentMethods=[],eligibleMethods=PERSONAL_GROWTH_METHODS}={}){
