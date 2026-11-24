@@ -1,3 +1,4 @@
+import {personalLengthPreference,personalLengthGuide,personalLengthDraftReceipt} from '../_shared/personal-observational-length-guide.mjs';
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
 import {assessOfficialBlogDateTruth} from '../_shared/blog-official-date-truth.mjs';
 const loadContentFeedback:(...args:any[])=>any=loadContentFeedback_raw;
@@ -986,7 +987,9 @@ Deno.serve(async (req) => {
     const measuredNextPostGuide = measuredNextPostTest?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'
       ? ' Het meegestuurde measured_next_post_test is slechts een te toetsen hypothese uit echte postmetingen. Pas uitsluitend die ene concrete, omkeerbare opening, vraag of CTA als test toe; behoud onderwerp, waarheids- en identiteitsregels. Presenteer dit nooit als bewezen oorzaak, winnaar, garantie of geobserveerde klantomzet. Voorzie geen tweede experimentele verandering.'
       : '';
-    const linkedinLoopGuide=typeof linkedinLoop?.instructie==='string'&&['NIEUW_EXPERIMENT','EXPERIMENT_LOOPT'].includes(linkedinLoop.state)?' '+linkedinLoop.instructie.slice(0,900):'';
+    const personalLengthDecision=personalLengthPreference(pending.channel,linkedinLoop?.personal_observational_analysis);
+    const personalLengthInstruction=personalLengthGuide(personalLengthDecision);
+    const linkedinLoopGuide=pending.channel==='linkedin_company'&&typeof linkedinLoop?.instructie==='string'&&['NIEUW_EXPERIMENT','EXPERIMENT_LOOPT'].includes(linkedinLoop.state)?' '+linkedinLoop.instructie.slice(0,900):'';
     const creativeExplorationGuide=creativeExploration.state==='ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS'
       ? ' De editorial_exploration is uitsluitend een klein te testen idee: pas exact de ene single_change toe binnen hetzelfde onderwerp. Nooit een tweede post, verzonnen conversie, garantie of bewezen winnaar. Behoud alle kanaal-, bron-, identiteit- en redactie-eisen.'
       : '';
@@ -1037,6 +1040,7 @@ Deno.serve(async (req) => {
     if(pending.channel==='linkedin_personal') {
       editorialSystem += ' GESPREKSKWALITEIT — echte inhoud, geen engagementtruc: Maak het verhaal de moeite waard om inhoudelijk op te reageren. Kies ÉÉN natuurlijke discussiekans die past bij de geverifieerde bron: een technische ontwerpafweging waar redelijke vakgenoten anders over kunnen denken, een eerlijke les of fout met ruimte voor een tegenvoorbeeld, een menselijk dilemma waarin lezers zich herkennen, of een concrete grens tussen automatiseren en menselijk beslissen. Schrijf eerst een op zichzelf waardevolle post met herkenbare situatie en een scherpe persoonlijke visie; een oprechte specifieke vraag mag uitsluitend wanneer echte ervaringsantwoorden iets toevoegen, is optioneel en NOOIT standaard aan begin of einde. Geen “wat vinden jullie?”, “herkenbaar?”, “eens?”, “reageer met JA”, “typ X”, likes, tags, deelverzoeken, comment-gated content, nepcontroverse of kunstmatige spanning. Varieer tussen menselijke observatie, persoonlijke ontwerpkeuze, onverwachte maar onderbouwde les, concreet technisch dilemma en af en toe een ervaringsvraag; herhaal geen openings- of slotformule. Geen klantgesprekken, reacties of resultaten verzinnen. Houd privacy en het onderscheid tussen visie, ontwerp en bewezen effect. In een echt privéverhaal mag menselijke herkenning ontstaan zonder geforceerde MKB- of AI-les. Optimaliseer voor echte vakinhoudelijke gesprekken en nuttige tegenvoorbeelden, niet voor kale reactieaantallen. Onderzoek blijft hypothese, nooit algoritmegarantie.';
     }
+    if(pending.channel==='linkedin_personal') editorialSystem += personalLengthInstruction;
     // Original editor owns the brief; source guidance never overrides hard gates or issues a delivery claim.
     stage = 'artifact-ai';
     const miraContext=resolvedMira?miraResolvedEvidence(resolvedMira):null;
@@ -1134,7 +1138,7 @@ Deno.serve(async (req) => {
         // initial structured artifact. No retry for rejected prose, identity,
         // schema, authorization or provider HTTP errors.
         const revision=await retryIncompleteEditorialDraft(
-          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget,'low'),
+          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt+personalLengthInstruction,revisionInput,artifactTool,budget,'low'),
           2400,(error:unknown)=>error instanceof AIProviderIncompleteOutputError,
           largerArtifactTokenBudget,
           (first:number,next:number)=>console.warn('PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY',gov.model_id,first,next)
@@ -1207,7 +1211,7 @@ Deno.serve(async (req) => {
     stage = 'write-artifact';
     const artifactPayload={run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
       content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,commercial_feedback_use:generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
-      measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,source_freshness_fallback:sourceFreshnessFallback,
+      measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,personal_observational_length_draft:pending.channel==='linkedin_personal'&&generationProvider!=='approved-frozen-source'?personalLengthDraftReceipt(personalLengthDecision,bodyText):null,source_freshness_fallback:sourceFreshnessFallback,
       blog_quality_repair:blogRepairClaim?{contract:blogRepairClaim.contract,rejected_body_sha256:blogRepairClaim.rejected_body_sha256,rejection_codes:blogRepairClaim.rejection_codes,recommendation_id:blogRepairClaim.recommendation_id,requested_at:blogRepairClaim.requested_at,quality_review_id:blogRepairClaim.quality_review?.review_id||null}:null,seo_slug:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.seo_slug||null:null,
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
