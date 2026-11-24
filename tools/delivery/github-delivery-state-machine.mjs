@@ -193,7 +193,11 @@ export function evaluateTerminalMergeGuard({
   const reasons=[...contract.errors];
   if(!contract.terminal) reasons.push('TERMINAL_WRITER_LEASE_REQUIRED');
   if(normalize(candidateHeadSha).toLowerCase()!==normalize(validatedHeadSha).toLowerCase()) reasons.push('VALIDATED_HEAD_DRIFT');
-  if(Number(behindBy)!==0) reasons.push('BEHIND_MAIN');
+  if(!SHA40.test(normalize(candidateHeadSha))) reasons.push('CANDIDATE_HEAD_INVALID');
+  if(!SHA40.test(normalize(validatedHeadSha))) reasons.push('VALIDATED_HEAD_INVALID');
+  if(!SHA40.test(normalize(currentMainSha))) reasons.push('CURRENT_MAIN_INVALID');
+  if(!Number.isSafeInteger(behindBy)||behindBy<0) reasons.push('MAIN_ANCESTRY_UNVERIFIED');
+  else if(behindBy!==0) reasons.push('BEHIND_MAIN');
   if(mergeable!==true) reasons.push(mergeable===false?'MERGE_CONFLICT':'MERGEABILITY_UNRESOLVED');
   if(!requiredChecks.length) reasons.push('REQUIRED_CHECK_SET_EMPTY');
   const failed=requiredChecks.filter(c=>!conclusionOk(c.conclusion)).map(c=>c.name||c.context||'unknown');
