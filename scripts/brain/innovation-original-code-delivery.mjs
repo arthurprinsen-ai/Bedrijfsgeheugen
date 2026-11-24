@@ -46,6 +46,258 @@ const learningScopes=Object.freeze({
     action:'Analyze the current approved-blog wrapper/core behavior with existing offline regression fixtures, without modifying or weakening existing tests. Compare the current baseline with a minimal reversible challenger only for a reproduced implementation defect. Never invoke the live publisher, network or queue writes. If only a stale oracle or no defect is found, make no change and retain independent review.'
   })
 });
+
+// Versioned advisory method library. No method grants permission or adds a writer.
+// Each family cites a reference for its approach; related techniques are a repertoire,
+// not a claim that every method is mandated by or individually validated by that source.
+export const INNOVATION_METHOD_FAMILIES=Object.freeze([
+  {
+    "id": "strategy",
+    "methods": [
+      "horizon scanning",
+      "PESTEL",
+      "scenario planning",
+      "Delphi",
+      "backcasting",
+      "technology roadmapping",
+      "SWOT",
+      "Three Horizons"
+    ],
+    "source": "https://www.oecd.org/en/about/programmes/strategic-foresight.html",
+    "evidence": "Dated signals, competing scenarios, falsifiable assumptions and decision triggers"
+  },
+  {
+    "id": "customer",
+    "methods": [
+      "Double Diamond",
+      "Design Thinking",
+      "Jobs to Be Done",
+      "customer discovery",
+      "journey mapping",
+      "service blueprint",
+      "Kano",
+      "usability testing"
+    ],
+    "source": "https://www.designcouncil.org.uk/resources/the-double-diamond/",
+    "evidence": "Observed customer friction, alternatives, representative usability tasks and success rate"
+  },
+  {
+    "id": "creativity",
+    "methods": [
+      "TRIZ",
+      "contradiction matrix",
+      "SCAMPER",
+      "brainwriting",
+      "morphological analysis",
+      "analogical reasoning",
+      "first principles"
+    ],
+    "source": "https://aitriz.org/pages/triz",
+    "evidence": "Explicit contradiction, divergent concepts, feasibility and rejected alternatives"
+  },
+  {
+    "id": "product",
+    "methods": [
+      "Lean Startup",
+      "MVP",
+      "prototyping",
+      "QFD",
+      "Stage-Gate",
+      "TRL",
+      "assumption mapping",
+      "continuous discovery"
+    ],
+    "source": "https://www.stage-gate.com/about/stage-gate-innovation-performance-framework/discovery-to-launch-process/",
+    "evidence": "Critical hypothesis, smallest reversible prototype, readiness and go/no-go thresholds"
+  },
+  {
+    "id": "business",
+    "methods": [
+      "Business Model Canvas",
+      "Value Proposition Canvas",
+      "Blue Ocean",
+      "unit economics",
+      "pricing experiment",
+      "competitive benchmarking",
+      "open innovation"
+    ],
+    "source": "https://www.strategyzer.com/library/the-business-model-canvas",
+    "evidence": "Customer evidence, value proposition, contribution margin and downside"
+  },
+  {
+    "id": "portfolio",
+    "methods": [
+      "RICE",
+      "ICE",
+      "WSJF",
+      "impact effort matrix",
+      "multicriteria analysis",
+      "real options",
+      "portfolio balancing"
+    ],
+    "source": "https://committee.iso.org/sites/tc279/home/resources/standards-introduction.html",
+    "evidence": "Comparable impact, confidence, effort, risk, dependencies and explicit assumptions"
+  },
+  {
+    "id": "process",
+    "methods": [
+      "DMAIC",
+      "PDCA",
+      "Kaizen",
+      "Lean",
+      "Theory of Constraints",
+      "process mining",
+      "value stream mapping",
+      "5 Whys",
+      "Pareto",
+      "Ishikawa",
+      "Poka Yoke"
+    ],
+    "source": "https://asq.org/quality-resources/quality-tools",
+    "evidence": "Observed bottleneck, baseline cycle time, error rate and repeatable comparison"
+  },
+  {
+    "id": "experimentation",
+    "methods": [
+      "champion challenger",
+      "A/B test",
+      "holdout",
+      "design of experiments",
+      "statistical process control",
+      "causal inference",
+      "sensitivity analysis",
+      "sequential testing"
+    ],
+    "source": "https://itl.nist.gov/div898/handbook/pmd/section3/pmd31.htm",
+    "evidence": "Comparable population, metric, baseline, threshold, confounders and uncertainty"
+  },
+  {
+    "id": "engineering",
+    "methods": [
+      "TDD",
+      "contract testing",
+      "Agile",
+      "DevOps",
+      "DORA",
+      "performance profiling",
+      "shadow testing",
+      "canary",
+      "fault isolation",
+      "architecture tradeoff analysis"
+    ],
+    "source": "https://dora.dev/capabilities/continuous-delivery/",
+    "evidence": "Reproducible failure, current source, regression, least-scope change and rollback"
+  },
+  {
+    "id": "ai",
+    "methods": [
+      "model benchmark",
+      "RAG evaluation",
+      "agent trajectory evaluation",
+      "adversarial testing",
+      "human evaluation",
+      "calibration",
+      "ablation",
+      "NIST AI RMF"
+    ],
+    "source": "https://airc.nist.gov/airmf-resources/playbook/",
+    "evidence": "Representative eval cases, quality, latency, cost, safety, bias and provenance"
+  },
+  {
+    "id": "risk",
+    "methods": [
+      "FMEA",
+      "threat modeling",
+      "privacy by design",
+      "bow tie",
+      "risk matrix",
+      "pre mortem",
+      "data minimization"
+    ],
+    "source": "https://airc.nist.gov/airmf-resources/airmf/5-sec-core/",
+    "evidence": "Risk owner, controls, authorization, negative tests and residual risk"
+  },
+  {
+    "id": "sustainability",
+    "methods": [
+      "life cycle assessment",
+      "ecodesign",
+      "circular design",
+      "energy efficiency",
+      "material flow analysis"
+    ],
+    "source": "https://www.iso.org/standard/37456.html",
+    "evidence": "System boundary, functional unit, measured consumption and tradeoffs"
+  },
+  {
+    "id": "organization",
+    "methods": [
+      "co creation",
+      "innovation partnerships",
+      "communities of practice",
+      "change management",
+      "knowledge transfer",
+      "action learning"
+    ],
+    "source": "https://committee.iso.org/standard/68929.html",
+    "evidence": "Named stakeholders, adoption baseline, validated capability and learning transfer"
+  },
+  {
+    "id": "finance",
+    "methods": [
+      "FinOps",
+      "total cost of ownership",
+      "cost benefit analysis",
+      "NPV",
+      "sensitivity analysis",
+      "cost per outcome",
+      "capacity economics"
+    ],
+    "source": "https://www.finops.org/framework/",
+    "evidence": "Real usage, total cost, budget and uncertainty; distinguish forecasts from realized value"
+  }
+].map(f=>Object.freeze({...f,methods:Object.freeze(f.methods)})));
+const methodDomains=Object.freeze({
+  'portal-v2':['customer','product','creativity'],
+  'approved-blog-publisher':['process','experimentation','customer'],
+  'powerhouse-decision-cycle-evidence':['process','strategy','ai'],
+  'powerhouse-sales-cycle-execution-read-model':['business','process','experimentation'],
+  'powerhouse-commercial-message-plan':['customer','business','experimentation']
+});
+export function originalInnovationMethodPlan(component){
+  const domain=Object.hasOwn(methodDomains,component)?methodDomains[component]:[];
+  const ids=[...new Set([...domain,'engineering','experimentation','risk','portfolio','finance'])];
+  return Object.freeze({
+    version:'innovation-methods-20261124-v1',
+    families:ids.map(id=>INNOVATION_METHOD_FAMILIES.find(f=>f.id===id)),
+    steps:['current source and baseline','incumbent plus at least one alternative','compare on same metric and constraints','choose smallest reversible winner or no-change','protected implementation and regression','independent production and effect readback','learning in original ONE BRAIN'],
+    authority:'ADVISORY_ONLY_EXISTING_ORIGINAL_SCOPE',
+    effect_verified:false
+  });
+}
+// Enforce structured analysis metadata for an actual code candidate. This checks
+// completeness and identity, not whether model-authored measurements are true.
+// Existing executable regressions and independent production/effect guards remain mandatory.
+export function validateOriginalInnovationMethodEvidence(workorder,evidence){
+  const expected=originalInnovationMethodPlan(workorder.component_id);
+  const validMethods=new Set(expected.families.flatMap(f=>f.methods));
+  const present=x=>typeof x==='string'&&x.trim().length>=8;
+  if(!evidence||evidence.version!==expected.version||
+     evidence.candidate_id!==workorder.candidate_id||
+     evidence.source_revision!==workorder.source_revision||
+     evidence.source_sha256!==workorder.source_sha256||
+     !Array.isArray(evidence.methods)||evidence.methods.length<2||
+     new Set(evidence.methods).size!==evidence.methods.length||
+     !evidence.methods.every(m=>validMethods.has(m))||
+     !present(evidence.baseline_ref)||!present(evidence.metric)||
+     !present(evidence.incumbent)||!present(evidence.challenger)||
+     evidence.incumbent.trim()===evidence.challenger.trim()||
+     !present(evidence.comparison_ref)||!present(evidence.decision_reason)||
+     !present(evidence.rollback)||evidence.current_effect_verified!==false)
+    fail('INNOVATION_METHOD_EVIDENCE_INCOMPLETE');
+  return true;
+}
+
 const priority=['powerhouse-decision-cycle-evidence',
   'powerhouse-sales-cycle-execution-read-model','powerhouse-commercial-message-plan'];
 const text=value=>typeof value==='string'?value.trim():'';
@@ -201,6 +453,7 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
       decision_fingerprint:decision.fingerprint,
       proposed_action:action,rollback:JSON.stringify(c.rollback_plan).slice(0,1200),
       allowed_source_paths:allowedPaths,
+      innovation_method_plan:originalInnovationMethodPlan(c.component_id),
       work_kind:learning?'SOURCE_BOUND_BASELINE_CHALLENGER':'CONCRETE_PROTECTED_CHANGE',
       source_quality_receipt_fingerprint:qualityAction?.receipt_fingerprint??null,
       current_effect_verified:false,
@@ -300,6 +553,7 @@ async function main(){
       const lesson=JSON.parse(readFileSync(path,'utf8'));
       if(!lesson.compiler?.failure_class||!lesson.fingerprint||!lesson.root_cause)
         fail('LEARNING_ROOT_CAUSE_REQUIRED');
+      validateOriginalInnovationMethodEvidence(selected,lesson.innovation_method_evidence);
       const plan=compileLearningEvaluationPlan(lesson);
       const modes=validateEvaluationContract(lesson,plan);
       for(const [mode,tests] of Object.entries(modes.tests_by_mode)){
