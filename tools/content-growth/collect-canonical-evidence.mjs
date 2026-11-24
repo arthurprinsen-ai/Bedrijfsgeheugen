@@ -1,12 +1,12 @@
 const ref='adhjwmvyoixzjtmiroln';
 export const queries={
   social:[
-    "with ranked as (select s.tenant_id,s.post_id,s.external_post_id,s.platform,s.channel_kind,s.published_at,s.format,s.hook_type,s.cta_type,s.topic,s.content_pillar,s.narrative_type,m.observed_at,m.data_quality,m.source,m.metrics,",
+    "with ranked as (select s.tenant_id,s.post_id,s.external_post_id,s.platform,s.channel_kind,s.published_at,s.format,s.hook_type,s.cta_type,s.topic,s.content_pillar,s.narrative_type,m.observed_at,m.data_quality,m.source,m.source_event_id,m.metrics,",
     "row_number() over (partition by s.tenant_id,s.post_id order by m.observed_at desc nulls last,m.snapshot_id desc) rn",
     "from public.social_posts s left join public.social_metric_snapshots m on m.tenant_id=s.tenant_id and m.post_id=s.post_id",
     "where s.published_at>=now()-interval '180 days' and ((s.tenant_id='bedrijfsgeheugen' and (s.platform='instagram' or (s.platform='linkedin' and s.channel_kind='linkedin_company')))",
     "or (s.tenant_id='canonical' and s.platform='linkedin' and s.channel_kind='linkedin_personal')))",
-    "select r.tenant_id,r.post_id,r.external_post_id,r.platform,r.channel_kind,r.published_at,r.format,r.hook_type,r.cta_type,r.topic,r.content_pillar,r.narrative_type,r.observed_at,r.data_quality,r.source,r.metrics,",
+    "select r.tenant_id,r.post_id,r.external_post_id,r.platform,r.channel_kind,r.published_at,r.format,r.hook_type,r.cta_type,r.topic,r.content_pillar,r.narrative_type,r.observed_at,r.data_quality,r.source,r.source_event_id,r.metrics,",
     "w.observed_at trend_observed_at,w.data_quality trend_data_quality,w.metrics trend_metrics,w.source_event_id trend_source_event_id, case when r.tenant_id='canonical' and r.channel_kind='linkedin_personal' then exists (select 1 from public.content_publication_obligations o where o.tenant_id=r.tenant_id and o.channel=r.channel_kind and o.external_id=r.external_post_id and o.live_proven_at is not null) else false end personal_publication_verified, case when r.tenant_id='bedrijfsgeheugen' and r.channel_kind='linkedin_company' then exists (select 1 from public.content_publication_obligations o where o.tenant_id=r.tenant_id and o.channel=r.channel_kind and o.external_id=r.external_post_id and o.live_proven_at is not null) else false end company_publication_verified",
     "from ranked r left join lateral (select x.observed_at,x.data_quality,x.metrics,x.source_event_id from public.social_metric_snapshots x",
     "where x.tenant_id=r.tenant_id and x.post_id=r.post_id and x.data_quality in ('OBSERVED','PROVIDER_OBSERVED')",
