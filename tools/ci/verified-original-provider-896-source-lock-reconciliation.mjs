@@ -12,6 +12,12 @@ import {createHash} from 'node:crypto';
 // or reuse these attestations for another Git base/branch/source revision.
 export const EXACT_ORIGINAL_896_BASE='f0921c24e730d983fed3fb3f225a04fd7e1c5d72';
 export const EXACT_ORIGINAL_896_PROVIDER_PROJECT='adhjwmvyoixzjtmiroln';
+// Already protected, but NOT provider-applied: exact original #6138 bytes.
+export const ORIGINAL_896_PENDING_MIRA=Object.freeze({
+ version:'20261124063700',name:'mira_original_exact_job_claim_v1',
+ file:'supabase/migrations/20261124063700_mira_original_exact_job_claim_v1.sql',
+ blob:'2408396c3423e7c93c1d1b58d65d921c21737482'
+});
 export const ORIGINAL_896_FILES=Object.freeze([
  Object.freeze({version:'20261124063737',name:'original_social_loop_comparable_provider_windows',
   file:'supabase/migrations/20261124063737_original_social_loop_comparable_provider_windows.sql',
@@ -37,7 +43,7 @@ const gitBlob=s=>{
  return createHash('sha1').update('blob '+b.length+'\0').update(b).digest('hex');
 };
 export function verifyOriginalProvider896SourceLockReconciliation({
- baseSha='',baseLock,headLock,changedMigrations=[],sourceSQL={}
+ baseSha='',baseLock,headLock,changedMigrations=[],sourceSQL={},pendingBaseSQL,pendingHeadSQL
 }={}){
  const fail=reason=>Object.freeze({ok:false,reason});
  if(baseSha!==EXACT_ORIGINAL_896_BASE) return fail('UNEXPECTED_PROTECTED_BASE');
@@ -63,6 +69,14 @@ export function verifyOriginalProvider896SourceLockReconciliation({
   return fail('LOCK_METADATA_NOT_APPEND_ONLY');
  if(!equal(changedMigrations,ORIGINAL_896_FILES.map(x=>({status:'A',file:x.file}))))
   return fail('DIFFERENT_MIGRATION_DIFF_OR_HISTORICAL_REWRITE');
+ // The exact #6138 proposal must remain in Git and in native preview.
+ // It is outside the historic applied-ledger test population, never applied proof.
+ const pending=ORIGINAL_896_PENDING_MIRA;
+ if(baseLock.applied.some(x=>x.version===pending.version||x.name===pending.name)
+  ||headLock.applied.some(x=>x.version===pending.version||x.name===pending.name)
+  ||typeof pendingBaseSQL!=='string'||typeof pendingHeadSQL!=='string'
+  ||pendingBaseSQL!==pendingHeadSQL||gitBlob(pendingBaseSQL)!==pending.blob)
+  return fail('PENDING_MIRA_EXACT_PROTECTED_SOURCE_REQUIRED');
  if(Object.keys(sourceSQL).length!==ORIGINAL_896_FILES.length)
   return fail('EXACT_FOUR_SOURCES_REQUIRED');
  for(const x of ORIGINAL_896_FILES){
@@ -80,6 +94,7 @@ export function verifyOriginalProvider896SourceLockReconciliation({
   fixed_protected_base:baseSha,original_provider:EXACT_ORIGINAL_896_PROVIDER_PROJECT,
   prior_immutable_versions:892,provider_applied_versions:896,
   exact_restored_files:ORIGINAL_896_FILES.map(x=>x.file),
+  pending_protected_source:pending.file,pending_protected_source_applied:false,
   attested_native_statement_md5:ORIGINAL_896_FILES.map(x=>x.native_statement_md5),
   provider_history_attested_by_candidate:false,
   no_sql_replay_authorized:true,hosted_preview_required:true
