@@ -7,7 +7,7 @@
   "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "owner": "original content orchestrator and commercial learning",
   "root_cause": "Different measurement ages, repetitive variant selection, serialized evidence objects and absence of exact personal copy cohort analysis. A model experiment ID does not establish applied treatment.",
-  "prevention_rule": "First provider snapshot at 24–36h, exact same tenant and provider ID; require exact variant receipt for treatment; decode only valid JSON objects under original identity gate; personal observation must remain noncausal and preserve frozen sources. Require regression, learning record, ledger and docs before protected admission.",
+  "prevention_rule": "First provider snapshot at 24–36h, exact same tenant and provider ID; require exact variant receipt for treatment; decode only valid JSON objects under original identity gate; personal observation must remain noncausal and preserve frozen sources. Require regression, learning record, ledger and docs before protected admission. Generator consumes only sanitized personal observational preference after channel policy; records final draft word count, no frozen-copy modification or provider proof.",
   "evidence": {
     "production_migrations": [
       "20261124063737",
@@ -38,7 +38,13 @@
     ],
     "effect_size": null,
     "causal_effect_verified": false,
-    "protected_merge_verified": false
+    "protected_merge_verified": false,
+    "generator_consumption": {
+      "status": "IMPLEMENTED_IN_CANDIDATE_NOT_DEPLOYED",
+      "guidance": "sanitized soft length band",
+      "receipt": "MODEL_GUIDANCE_DRAFT_ONLY",
+      "provider_application_verified": false
+    }
   },
   "tests": [
     "tests/brain-original-social-analyst-20261124.test.mjs"
