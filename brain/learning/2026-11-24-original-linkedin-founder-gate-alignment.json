@@ -88,6 +88,68 @@
         }
       ],
       "all_expected_matched": true
+    },
+    "extended_isolated_trigger_replay": {
+      "scope": "pg_temp triggers and source fixture, persistent source read only",
+      "outcomes": [
+        {
+          "case_id": "baseline",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "corporate_voice",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "legacy_builder",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "legacy_observational",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "legacy_personal_truth",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "missing_direct_user_provenance",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "private_with_consent",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "private_without_consent",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "rejected_source",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "unverified_research",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "wrong_source_channel",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        }
+      ],
+      "all_expected_matched": true,
+      "combined_trigger_scenarios": 19
     }
   }
 }
