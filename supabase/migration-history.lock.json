@@ -3570,6 +3570,10 @@
       "name": "personal_founder_perspective_v2_materializer_alignment"
     },
     {
+      "version": "20261124063700",
+      "name": "mira_original_exact_job_claim_v1"
+    },
+    {
       "version": "20261124063737",
       "name": "original_social_loop_comparable_provider_windows"
     },
@@ -3587,5 +3591,5 @@
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-24T08:06:28.958Z"
+  "captured_at": "2026-11-24T15:35:21.421985Z"
 }

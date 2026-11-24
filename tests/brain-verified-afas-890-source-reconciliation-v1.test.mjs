@@ -6,7 +6,15 @@ import {verifyOriginalAfas890VersionReconciliation,
  from '../tools/ci/verified-original-afas-890-version-reconciliation.mjs';
 
 const sql=await readFile(new URL('../supabase/migrations/20261122162147_portal_connector_real_afas_source_readback_v1.sql',import.meta.url),'utf8');
-const current=JSON.parse(await readFile(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+const liveLock=JSON.parse(await readFile(new URL('../supabase/migration-history.lock.json',import.meta.url),'utf8'));
+// This is a replay of a pinned historical one-time reconciliation, not today's ledger.
+const current={...liveLock,applied:liveLock.applied.filter(x=>x.version<='20261122162147')};
+test('current ledger preserves exact 890 historical AFAS identities without duplicates',()=>{
+ assert.equal(current.applied.length,890);
+ assert.deepEqual(current.applied.at(-1),{version:'20261122162147',name:'portal_connector_real_afas_source_readback_v1'});
+ assert.equal(new Set(liveLock.applied.map(x=>x.version)).size,liveLock.applied.length);
+ assert.deepEqual(liveLock.applied.slice(0,890),current.applied);
+});
 const before={...current,applied:current.applied.slice(0,-1),captured_at:'2026-11-21T12:50:55.253Z'};
 const diff=[{status:'D',file:AFAS_SOURCE_PROPOSAL},{status:'A',file:AFAS_NATIVE_SOURCE}];
 const props={baseSha:EXACT_AFAS_BASE_SHA,changedMigrations:diff,baseLock:before,headLock:current,baseSQL:sql,nativeSQL:sql};
