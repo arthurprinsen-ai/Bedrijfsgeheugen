@@ -7,3 +7,5 @@ The source release is not merged. Required/CodeQL on exact newest head and prote
 Ledger: actual database repair and smoke-test readback; no terminal release or commercial outcome claimed. Admission failure INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE resolved at source by adding this ledger, learning and human documentation.
 
 Generator handoff implemented in candidate: original orchestrator consumes sanitized soft personal length preference after channel policy, including bounded revisions. It records actual draft word count and preference match, never provider proof. Not deployed; natural provider readback remains required. Admission repair adds the canonical learning, ledger and human docs to same PR.
+
+**Provider source parity reconciliation 24 Nov:** original branch adds only the four previously applied source versions #893–#896 and exact provider-matching lock entries. Original 892 prior lock entries remain immutable; test pins original blobs. This unblocks unrelated original e-mail PR #6141 without bypassing Required, preview, consent or sender gates; no SQL was executed by this GitHub commit.
