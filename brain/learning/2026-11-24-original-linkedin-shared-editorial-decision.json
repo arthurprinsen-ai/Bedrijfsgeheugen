@@ -32,7 +32,18 @@
     "registered_social_posts": 132,
     "recent_measured_posts": 33,
     "overlapping_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4265",
-    "runtime_consumption": "NOT_PROVEN"
+    "runtime_consumption": "NOT_PROVEN",
+    "admission_replay": {
+      "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45436767667",
+      "job": 138596583618,
+      "failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning",
+      "correction": "Add missing prevention_rule, verified against actual material-writeback guard, no gate changes."
+    }
   },
-  "terminal_rule": "Protected merge, shared source deployment and original editor call with independently verified actual next artifact, method, provider and measurement proof; no authority from helper."
+  "terminal_rule": "Protected merge, shared source deployment and original editor call with independently verified actual next artifact, method, provider and measurement proof; no authority from helper.",
+  "prevention_rule": [
+    "Every material candidate must contain semantic root cause, prevention and evidence before admission; no gate bypass.",
+    "BRAIN and Edge share one selector; never accept cross-tenant, duplicate, unproven or future publication history.",
+    "Only exact original source eligibility and single-experiment ownership permit a candidate decision; no publication permission or applied-learning claim from helper."
+  ]
 }
