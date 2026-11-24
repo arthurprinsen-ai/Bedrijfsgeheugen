@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "delivery|native-main-sync|prewrite-lease-required|20261124-v1",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "TERMINAL_CANDIDATE_MUTATED_WITHOUT_LEASE_TRANSITION",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "The original pure prewrite guard admitted zero-overlap stale TERMINAL_DELIVERY sync before an exact MAIN_SYNC lease readback; supervisor compare errors could be mistaken for empty overlap. The original native sync caller is not proven.",
+  "evidence": {
+    "issue": 4661,
+    "pr": 6140,
+    "failed_runs": [
+      45448999301,
+      45450729825
+    ],
+    "source_base": "65da89c6ef96808eda4cc69d2021c930b91dcc21"
+  },
+  "fix": "Require exact MAIN_SYNC owner/head/target/obligation, explicit overlap evidence and unique metadata; existing supervisor re-reads head/main and invokes guard before native CAS. Fail closed on unavailable or truncated compare, include renamed origins and shared-contract overlap.",
+  "prevention": [
+    "No blind retry or reset of original drift budget.",
+    "Existing protection unchanged. Global native auto-merge arbitration remains separate."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_PENDING_PROTECTED_CI"
+}
