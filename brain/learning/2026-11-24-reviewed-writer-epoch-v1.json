@@ -1,0 +1,17 @@
+{
+  "fingerprint": "delivery|reviewed-writer-execution-epoch|20261124-v1",
+  "status": "REFERENCE_VALIDATOR_REVIEW_DUE",
+  "root_cause": "Separately reviewed manifest moves protected main while v6 ties reviewed PR base to current execution main.",
+  "owner": "Original #4661 release-control owner",
+  "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7142713623",
+  "prevention": "Bind immutable reviewed source and independently verified execution epoch; retain current-main and exact-head checks, scoped digests, protected environment and fenced lease; no write authorization from validator.",
+  "verification": {
+    "local_synthetic_tests": 14,
+    "live": false,
+    "provider_integration_verified": false
+  },
+  "next_action": "Review and integrate into original protected writer with actual provider tests and full merge tree verification.",
+  "no_new_agent": true,
+  "no_new_scheduler": true,
+  "no_policy_expansion": true
+}
