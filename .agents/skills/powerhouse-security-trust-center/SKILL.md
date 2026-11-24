@@ -155,3 +155,8 @@ Fingerprint: security|guardian|one-original-owner|20261120.
 
 - Verify the actual repository OIDC subject template through GitHub's provider API before changing the security heartbeat verifier. This repository uses the default immutable subject (owner and repository IDs embedded in the subject). Pin both IDs independently, the exact protected workflow/ref, issuer, audience, event, time and RS256 signature; reject legacy or mismatched subjects. Never change repository-wide OIDC configuration to compensate for a consumer bug.
 - A signed but rejected heartbeat remains OPEN. Keep 401 fail-closed; after protected release require a real main-workflow 2xx with stored/readback true. A recorded WARN is a valid transport receipt, never a green security outcome. All unresolved site warnings retain their original incident lineage.
+
+
+## Historical coach route alias — 2026-11-24
+
+- The original veldplanner bookmark now permanently redirects to the verified unified zaal/veld application after CoachOne PR #22. Only that exact registered source, 301/308 and exact target are allowed one manually validated hop. Require the final HTTP 200, exact destination URL and strict coach headers; reject foreign URLs, additional hops, query variants and relaxed security. Keep every other redirect unverified. No inventory reduction or arbitrary redirect following.

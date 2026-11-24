@@ -86,7 +86,24 @@ export async function probeSite(site,fetcher=fetch){
  for(let attempt=0;attempt<2;attempt++){
   try{
    const response=await head(site,fetcher);
-   try{return {id:site.id,mode:site.mode,...classifyResponse(site,response)};}
+   try{
+    // Only the provider-proven historical coach alias may traverse one exact
+    // permanent redirect; never enable arbitrary redirect following.
+    if(site.id==='pw-veldcoach'&&site.mode==='coach'&&site.url===AUTHORIZED_SITE_URLS['pw-veldcoach']&&[301,308].includes(response.status)){
+     const location=response.headers.get('location');
+     const target=AUTHORIZED_SITE_URLS['pw-zaalcoach'];
+     if(location==='/zaalplanner/'||location===target){
+      const next=await head({...site,url:target},fetcher);
+      try{
+       const verified=classifyResponse({...site,url:target},next);
+       // A second hop, response URL mismatch or non-200 is not an accepted alias.
+       if(next.status!==200||next.url!==target)return {id:site.id,mode:site.mode,status:'WARN',code:'UNVERIFIED_REDIRECT'};
+       return {id:site.id,mode:site.mode,...verified,...(verified.status==='VERIFIED'?{code:'BOUNDED_HTTP_CHECK_PASSED'}:{})};
+      }finally{await next.body?.cancel?.().catch(()=>{});}
+     }
+    }
+    return {id:site.id,mode:site.mode,...classifyResponse(site,response)};
+   }
    finally{await response.body?.cancel?.().catch(()=>{});}
   }catch(e){last=e;}
  }
