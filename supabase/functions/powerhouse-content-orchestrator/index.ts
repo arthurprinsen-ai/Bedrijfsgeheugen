@@ -1106,7 +1106,7 @@ Deno.serve(async (req) => {
         // The original full editorialSystem is several independent channel, experiment and
         // governance instructions; repeating it during repair kept producing contradictory prose.
         // This bounded retry is not an alternate publisher or quality-policy override.
-        const correctionPrompt = personalSource?.evidence?.observational_personal_theme_verified===true
+        const correctionPrompt = (personalSource?.evidence?.observational_personal_theme_verified===true
           && !personalProfessional
           ? OBSERVATIONAL_PERSONAL_CORRECTION_PROMPT
           : personalSource?.evidence?.ai_native_builder_story_verified===true
@@ -1124,7 +1124,7 @@ Deno.serve(async (req) => {
           + 'Controleer de waarheid, leesbaarheid, variatie en inhoudelijke gesprekswaarde, zonder vast woordquotum. '+PERSONAL_TRUSTED_ADVISOR_DIRECTION_20261120)
             : personalPerspective
               ? ('Je bent eindredacteur van Arthurs authentieke persoonlijke trusted-advisor-visie. Gebruik alleen verified_personal_source, niet de afgekeurde draft als feit. Eén eigen aantoonbare mening, afweging of onderzoeksinzicht, in de ik-vorm. Onderzoek van derden is uitdrukkelijk externe context, geen zelf meegemaakte ervaring. Beschrijf geen niet-bewezen klantgesprek, resultaat of uitgevoerde functionaliteit. Start met herkenbare spanning bij de ondernemer en leg één inhoudelijke keuze uit. Geen technische interne status, verzonnen succes, marketing, service-overzicht, sales-CTA, link, emoji, hashtag of verplichte vraag. Antwoord uitsluitend in hetzelfde JSON-artifact. '+PERSONAL_TRUSTED_ADVISOR_DIRECTION_20261120)
-              : PERSONAL_LIFE_CORRECTION_PROMPT;
+              : PERSONAL_LIFE_CORRECTION_PROMPT)+personalLengthInstruction;
         const revisionInput={
           channel:'linkedin_personal',
           verified_personal_source:personalSource,
@@ -1138,7 +1138,7 @@ Deno.serve(async (req) => {
         // initial structured artifact. No retry for rejected prose, identity,
         // schema, authorization or provider HTTP errors.
         const revision=await retryIncompleteEditorialDraft(
-          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt+personalLengthInstruction,revisionInput,artifactTool,budget,'low'),
+          (budget:number)=>callAI(apiKey,gov.model_id,correctionPrompt,revisionInput,artifactTool,budget,'low'),
           2400,(error:unknown)=>error instanceof AIProviderIncompleteOutputError,
           largerArtifactTokenBudget,
           (first:number,next:number)=>console.warn('PERSONAL_EDITORIAL_TRUNCATED_BOUNDED_RETRY',gov.model_id,first,next)
