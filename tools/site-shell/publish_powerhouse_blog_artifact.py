@@ -169,6 +169,15 @@ def _seo_title_raw(title, focus):
         candidate = f"{preparation.group(1).strip()} koppelen aan {preparation.group(2).strip()}"
         if len(candidate) <= 60 and focus.casefold() in candidate.casefold():
             return candidate[0].upper() + candidate[1:]
+    # Preserve a complete source-bound influence relation, not a truncated question.
+    influence = re.fullmatch(
+        r"hoe (.+?) (?:jouw|je|uw) (.+?) moeten? beïnvloeden(?:\s*:\s*.+)?",
+        source_title, re.I
+    )
+    if influence:
+        candidate = f"{influence.group(1).strip()}: invloed op {influence.group(2).strip()}"
+        if 30 <= len(candidate) <= 60 and focus.casefold() in candidate.casefold():
+            return candidate[0].upper() + candidate[1:]
     if focus.casefold() not in title.casefold():
         title = f"{focus}: {title}"
     if len(title) <= 60:
