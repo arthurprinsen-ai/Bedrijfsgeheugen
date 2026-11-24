@@ -28,3 +28,13 @@ test('original existing release skill requires actual main-byte parity and same 
  assert.match(skill,/dezelfde oorspronkelijke terminalcheck/);
  assert.match(skill,/geen extra deploy\/parallel executor/);
 });
+
+
+test('original provider replay binds exact merge, scope and fail-closed source equality',()=>{
+ const wf=read('.github/workflows/supabase-edge-production-authority.yml');
+ for(const token of ['replay_pr:', 'SUPABASE_EDGE_REPLAY_SCOPE_INVALID','SUPABASE_EDGE_REPLAY_TARGET_INVALID','SUPABASE_EDGE_REPLAY_NOT_PROTECTED_ANCESTOR','SUPABASE_EDGE_REPLAY_ORIGINAL_SOURCE_SUPERSEDED','SUPABASE_EDGE_REPLAY_EMPTY_SCOPE','SUPABASE_EDGE_REPLAY_ORIGINAL_SCOPE_PROVEN']) assert.ok(wf.includes(token),token);
+ assert.ok(wf.includes('git diff --name-only "$target_merge_sha^1" "$target_merge_sha"'));
+ assert.ok(wf.includes('git diff --quiet "$target_merge_sha" "$GITHUB_SHA" -- "'+'$'+'{original_runtime_paths[@]}"'));
+ assert.ok(wf.indexOf('SUPABASE_EDGE_REPLAY_ORIGINAL_SOURCE_SUPERSEDED')<wf.indexOf('Publish exact provider readback evidence to merged PR'));
+ assert.ok(wf.includes('TARGET_PR_NUMBER: '+'$'+'{{ steps.scope.outputs.target_pr }}'));
+});
