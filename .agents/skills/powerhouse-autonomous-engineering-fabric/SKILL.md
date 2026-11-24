@@ -47,6 +47,11 @@ Permanent herstel: **exact 0 gewijzigde bestanden** is `NO_CODE_CHANGE_INDEPENDE
 
 # Powerhouse Autonomous Engineering Fabric v3
 
+## 24 november 2026 — originele analyst naar beschermde bouwopdracht
+
+Een historisch geverifieerde kwaliteitsbron is geen actueel effect. Voor de expliciet bron- en fingerprintgebonden Portal V2 visual density en approved-blog wrapper/core innovatiecases mag de bestaande Engineering-agent zelf de huidige baseline offline onderzoeken, een reproduceerbaar defect aantonen, een minimale omkeerbare challenger bouwen en bestaande regressies behouden. Exacte bronhash, revisie, eigenaar, eerdere CAS-receipt, toegestane source paths en review blijven vereist. Geen huidige fout: geen codewijziging; houd onafhankelijke effectcontrole open. Onbewezen bronnen, onbekende scope of provideracties blijven geblokkeerd. Dezelfde bestaande daily code candidate, maximaal één per run; geen nieuwe agent, queue, scheduler, productiemutatie, verzender of fictieve ACK. Heartbeat behoudt onafhankelijke outcome/learning proof. Regressie: tests/brain-innovation-original-code-delivery-20261115.test.mjs en tests/brain-innovation-delivery-continuity-20261117.test.mjs. P0 #4198.
+
+
 Fingerprint: `powerhouse|autonomous-engineering-fabric|v3`.
 
 ## Purpose
