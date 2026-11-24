@@ -44,28 +44,36 @@
       "guidance": "sanitized soft length band",
       "receipt": "MODEL_GUIDANCE_DRAFT_ONLY",
       "provider_application_verified": false
-    }
+    },
+    "production_cohort_readback": "11 independently linked posts; observational only",
+    "protected_evaluation_status": "PENDING_EXACT_HEAD_CI"
   },
   "tests": [
     "tests/brain-original-social-analyst-20261124.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "production cohort readback 11 independently linked posts",
-      "tests/brain-original-social-analyst-20261124.test.mjs (CI result pending)"
+      "tests/brain-original-social-analyst-20261124.test.mjs"
     ],
     "invariants": [
       "no second scheduler",
       "no duplicate publication",
       "no causal claim",
       "no bypass identity or permission"
+    ],
+    "shadow": [
+      "tests/brain-original-social-analyst-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-social-analyst-20261124.test.mjs"
     ]
   },
   "compiler": {
     "scope": "ONE_BRAIN",
     "failure_class": "SOCIAL_ANALYSIS_APPLICATION_EVIDENCE_GAP",
     "machine_enforceable": true,
-    "security_sensitive": true
+    "security_sensitive": true,
+    "repeat_count": 2
   },
   "terminal_rule": "Protected exact-head checks, source merge and independent generator consumption plus real provider readback; Instagram and measured causal lift remain open."
 }
