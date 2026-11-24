@@ -6,8 +6,8 @@
   "status": "CANDIDATE",
   "owner": "original-powerhouse-editorial-and-social-analytics",
   "root_cause": "Existing personal creative recipe emits only source-led shape without a bounded method hypothesis or comparable personal measurement selection.",
-  "fix": "Extend original recipe with one evidence-gated descriptive editorial hypothesis; preserve existing source/reviewer/publisher authority. Existing bounded collector and daily diagnostics now project exact verified personal publication and provider-event evidence into the original method selector; no generic commercial CTA action for personal. No claim of editor consumption.",
-  "prevention_rule": "Missing metrics, duplicate provider URN, cross-channel/cohort/window, absent independent proof, insufficient sample cannot select a measured candidate. No causal winner or publication authority.",
+  "fix": "Extend original recipe with one evidence-gated descriptive editorial hypothesis; preserve existing source/reviewer/publisher authority. Existing bounded collector and daily diagnostics now project exact verified personal publication and provider-event evidence into the original method selector; no generic commercial CTA action for personal. No claim of editor consumption. Add nine source-led personal method candidates and a repeated-method challenger plus separate company format and family rotation with explicit source eligibility and verified recent history. Preserve original recipes and company/personal boundaries.",
+  "prevention_rule": "Missing metrics, duplicate provider URN, cross-channel/cohort/window, absent independent proof, insufficient sample cannot select a measured candidate. No causal winner or publication authority. No rotation of unapproved media, no causal result or applied-learning claim from a recommendation.",
   "compiler": {
     "failure_class": "PERSONAL_GROWTH_METHOD_APPLICATION_GAP",
     "scope": "SOCIAL",
@@ -40,7 +40,13 @@
       "complete_observations": 0,
       "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6144#issuecomment-7124657073"
     },
-    "release_dependency": "PR #6139 provider-applied lock reconciliation; never bypass Required"
+    "release_dependency": "PR #6139 provider-applied lock reconciliation; never bypass Required",
+    "content_marketing_research": [
+      "https://business.linkedin.com/advertise/linkedin-pages/best-practices",
+      "https://www.linkedin.com/business/marketing/blog/social-media-marketing/how-to-grow-your-organic-following-on-linkedin",
+      "https://contentmarketinginstitute.com/content-marketing-strategy/4-part-guide-to-crafting-a-winning-content-plan",
+      "https://contentmarketinginstitute.com/content-distribution-promotion/how-to-measure-content-marketing-the-updated-essential-guide"
+    ]
   },
   "terminal_rule": "Protected release, actual original analyst evidence handoff, exact next source-backed recipe use, independent publication/measurement and learning proof. Require actual exact method tag and next editor consumption proof, not just analyst projection."
 }
