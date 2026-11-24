@@ -23,7 +23,7 @@
   },
   "root_cause": "Original daily SQL producer treated internal CRM approval and first-degree LinkedIn connection as sufficient to create marketing-email actions; original last-mile sender correctly requires separately documented recipient-specific marketing authority. Result: repeat unauthorized drafts, model waste, 0 lawful sends. Copy composer additionally repeatedly failed natural-copy rules.",
   "correction": "Move documented recipient permission gate into the original producer before preparing actions, and into the original AI composer before paid generation. Strengthen original prompt for natural, source-true messages. Preserve sender's independent final gate. Also preserve terminal/quarantined send_forbidden=true in original source-selection BEFORE trigger.",
-  "prevention_rule": "User authorization to market and a first-degree LinkedIn relationship do not constitute recipient-specific marketing permission. Never create an outbound action from an authority-ineligible contact; preserve evidence, suppression and original sender's independent readback. No no-send false green. Original source guard must never clear send_forbidden on a terminal/no-authority action.",
+  "prevention_rule": "User authorization to market and a first-degree LinkedIn relationship do not constitute recipient-specific marketing permission. Never create an outbound action from an authority-ineligible contact; preserve evidence, suppression and original sender's independent readback. No no-send false green. Original source guard must never clear send_forbidden on a terminal/no-authority action. Learning must be refreshed and independently read back in original existing Growth execution; do not equate historical status=done with a provider-verified Gmail send.",
   "evidence": {
     "production_source": "public.powerhouse_prepare_connection_relationship_email_v1",
     "exact_crm_counts": {
@@ -44,7 +44,26 @@
     "expired_only_no_provider_claim": true,
     "source_trigger_terminal_send_forbidden_false_inconsistency_observed": true,
     "terminal_quarantine_correction_source": "docs/changes/2026-11-24-original-email-recipient-authority-reviewed-source.sql",
-    "terminal_verification_required": "After protected merge check old actions' terminal send_forbidden, exact function definition and provider version; prior actions may need original audited data readback before marking green."
+    "terminal_verification_required": "After protected merge check old actions' terminal send_forbidden, exact function definition and provider version; prior actions may need original audited data readback before marking green.",
+    "email_learning_refresh_20261124": {
+      "function": "public.powerhouse_refresh_email_learning_stats()",
+      "original_run_readback_at": "2026-11-24T08:12:46.363125Z",
+      "window_days": 180,
+      "segments": 14,
+      "historical_done_action_count": 36,
+      "linked_replies": 2,
+      "positive_replies": 0,
+      "meetings": 0,
+      "orders": 0,
+      "realized_revenue_eur": 0,
+      "independent_gmail_provider_readback_7d": 8,
+      "evidence_class": "DB_ANALYTICS_REFRESHED_NOT_NEW_PROVIDER_SEND",
+      "initial_staleness_before_refresh": "2026-10-28",
+      "original_source": "public.powerhouse_email_learning_stats",
+      "original_scorecard": "public.powerhouse_commercial_handoff_scorecard_v1",
+      "owner": "email-growth-learning existing Growth & Revenue OS",
+      "next_step": "Refresh on existing Growth run only, readback and compare 7d vs 180d, record applied learning; no new schedule or sender."
+    }
   },
   "implementation_state": "PROTECTED_PR_CANDIDATE_WITH_OPERATIONAL_QUARANTINE_NOT_YET_DEPLOYED",
   "no_shadow_sender": true,
