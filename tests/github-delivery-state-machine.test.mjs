@@ -62,3 +62,22 @@ test('terminal merge requires current epoch, exact validated head, green require
   assert.equal(successor.ok,false);
   assert.match(successor.reasons.join(','),/CANONICAL_SUCCESSOR_EXISTS/);
 });
+
+test('terminal merge refuses absent or malformed exact provider ancestry and SHA evidence',()=>{
+  const input={body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[]};
+  assert.equal(evaluateTerminalMergeGuard(input).ok,true);
+  for(const behindBy of [null,undefined,'', '0',false,[],{},NaN,Infinity,-1,0.5]){
+    const result=evaluateTerminalMergeGuard({...input,behindBy});
+    assert.equal(result.ok,false);
+    assert.ok(result.reasons.includes('MAIN_ANCESTRY_UNVERIFIED'));
+  }
+  for(const field of ['candidateHeadSha','validatedHeadSha','currentMainSha']){
+    for(const invalid of ['',null,'not-a-sha']){
+      const result=evaluateTerminalMergeGuard({...input,[field]:invalid});
+      assert.equal(result.ok,false,field);
+    }
+  }
+  const noIdentity=evaluateTerminalMergeGuard({...input,candidateHeadSha:'',validatedHeadSha:'',currentMainSha:''});
+  assert.equal(noIdentity.ok,false);
+  assert.equal(noIdentity.identity,null);
+});
