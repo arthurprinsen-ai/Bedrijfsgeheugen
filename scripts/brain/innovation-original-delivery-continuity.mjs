@@ -270,8 +270,13 @@ export function examineOriginalDelivery({candidate,obligation,operation,githubPr
     candidate,obligation,operation,decision,alreadyVerified
   });
   if(originalQualityAction){
-    assert(stage==='BASELINE_OR_SAFE_SCOPE_DUE','ORIGINAL_QUALITY_CANNOT_REPLACE_CODE_OR_IMPACT');
-    stage=originalQualityAction.stage;
+    if(stage==='BASELINE_OR_SAFE_SCOPE_DUE')stage=originalQualityAction.stage;
+    else {
+      // The same historical quality receipt may coexist with independently
+      // identity-validated protected PR/no-change evidence. Never overwrite its stage.
+      assert((prior||noop)&&originalQualityAction.historical_source_status==='verified',
+        'ORIGINAL_QUALITY_CANNOT_REPLACE_CODE_OR_IMPACT');
+    }
   }
   // Neither a PR nor a deploy can attest measured business impact.
   const assessment={contract:CONTRACT,candidate_id:candidate.candidate_id,

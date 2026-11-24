@@ -1,3 +1,4 @@
+import {prepareOriginalLinkedInEditorialDecision,originalLinkedInSourceAngles} from '../_shared/linkedin-editorial-strategy.mjs';
 import {personalLengthPreference,personalLengthGuide,personalLengthDraftReceipt} from '../_shared/personal-observational-length-guide.mjs';
 import {loadContentFeedback as loadContentFeedback_raw,CONTENT_FEEDBACK_GUIDE} from '../_shared/content-feedback-context.mjs';
 import {assessOfficialBlogDateTruth} from '../_shared/blog-official-date-truth.mjs';
@@ -984,6 +985,39 @@ Deno.serve(async (req) => {
     });
     measuredNextPostTest=editorialExperiment.measured;
     creativeExploration=editorialExperiment.creative;
+    // Use the same protected ONE BRAIN selector in the original editor only.
+    // No new provider action; every existing truth, quality and publisher gate remains.
+    let originalEditorialDecision:any=null;
+    if(['linkedin_personal','linkedin_company'].includes(pending.channel)){
+      const channel=pending.channel;
+      const source=channel==='linkedin_personal'?personalSource:recommendation;
+      try{
+        const verified=!!source&&(channel==='linkedin_personal'?validPersonalSource(source):recommendationEligible(source,channel));
+        const tenant=channel==='linkedin_personal'?'canonical':'bedrijfsgeheugen';
+        const {data:posts,error:historyError}=await db.from('social_posts')
+          .select('tenant_id,platform,channel_kind,external_post_id,published_at,content_pillar,format')
+          .eq('tenant_id',tenant).eq('platform','linkedin').eq('channel_kind',channel)
+          .not('published_at','is',null).order('published_at',{ascending:false}).limit(60);
+        if(historyError)throw new Error('ORIGINAL_LINKEDIN_HISTORY_UNAVAILABLE');
+        const ids=[...new Set((posts||[]).map((p:any)=>clean(p.external_post_id)).filter((id:string)=>/^urn:li:(share|ugcPost):[0-9]+$/.test(id)))];
+        let exactProofs:any[]=[];
+        if(ids.length){
+          const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+            .select('tenant_id,channel,external_id,live_proven_at').eq('tenant_id','canonical')
+            .eq('channel',channel).in('external_id',ids).not('live_proven_at','is',null);
+          if(proofError)throw new Error('ORIGINAL_LINKEDIN_PROOF_UNAVAILABLE');
+          exactProofs=proofs||[];
+        }
+        const sourceId=clean(source?.recommendation_id);
+        const sourceRevision=verified&&sourceId?await digest(JSON.stringify({id:sourceId,reason:source.reason||null,evidence:source.evidence||null})):null;
+        const angles=originalLinkedInSourceAngles({channel,verified,evidence:source?.evidence||{},founderPerspective:personalPerspective,builder:personalBuilder});
+        originalEditorialDecision=prepareOriginalLinkedInEditorialDecision({channel,runDate,at:new Date().toISOString(),posts:posts||[],obligations:exactProofs,experimentOwner:editorialExperiment.owner,source:{channel,verified,sourceId,sourceRevision,eligiblePillars:angles,eligibleFormats:executor_capabilities[channel]?.executable===true?['tekstpost']:[]}});
+      }catch{
+        originalEditorialDecision={contract:'ORIGINAL_LINKEDIN_EDITORIAL_DECISION-v1',channel,runDate,state:'SOURCE_HISTORY_UNAVAILABLE',learningApplied:false,authorizesPublication:false};
+      }
+    }
+    const originalEditorialBrief=originalEditorialDecision?.state==='EDITORIAL_CANDIDATE'?{pillar:originalEditorialDecision.selection.pillar,format:originalEditorialDecision.selection.format,mode:originalEditorialDecision.selection.mode}:null;
+
     const measuredNextPostGuide = measuredNextPostTest?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'
       ? ' Het meegestuurde measured_next_post_test is slechts een te toetsen hypothese uit echte postmetingen. Pas uitsluitend die ene concrete, omkeerbare opening, vraag of CTA als test toe; behoud onderwerp, waarheids- en identiteitsregels. Presenteer dit nooit als bewezen oorzaak, winnaar, garantie of geobserveerde klantomzet. Voorzie geen tweede experimentele verandering.'
       : '';
@@ -1041,11 +1075,12 @@ Deno.serve(async (req) => {
       editorialSystem += ' GESPREKSKWALITEIT — echte inhoud, geen engagementtruc: Maak het verhaal de moeite waard om inhoudelijk op te reageren. Kies ÉÉN natuurlijke discussiekans die past bij de geverifieerde bron: een technische ontwerpafweging waar redelijke vakgenoten anders over kunnen denken, een eerlijke les of fout met ruimte voor een tegenvoorbeeld, een menselijk dilemma waarin lezers zich herkennen, of een concrete grens tussen automatiseren en menselijk beslissen. Schrijf eerst een op zichzelf waardevolle post met herkenbare situatie en een scherpe persoonlijke visie; een oprechte specifieke vraag mag uitsluitend wanneer echte ervaringsantwoorden iets toevoegen, is optioneel en NOOIT standaard aan begin of einde. Geen “wat vinden jullie?”, “herkenbaar?”, “eens?”, “reageer met JA”, “typ X”, likes, tags, deelverzoeken, comment-gated content, nepcontroverse of kunstmatige spanning. Varieer tussen menselijke observatie, persoonlijke ontwerpkeuze, onverwachte maar onderbouwde les, concreet technisch dilemma en af en toe een ervaringsvraag; herhaal geen openings- of slotformule. Geen klantgesprekken, reacties of resultaten verzinnen. Houd privacy en het onderscheid tussen visie, ontwerp en bewezen effect. In een echt privéverhaal mag menselijke herkenning ontstaan zonder geforceerde MKB- of AI-les. Optimaliseer voor echte vakinhoudelijke gesprekken en nuttige tegenvoorbeelden, niet voor kale reactieaantallen. Onderzoek blijft hypothese, nooit algoritmegarantie.';
     }
     if(pending.channel==='linkedin_personal') editorialSystem += personalLengthInstruction;
+    if(originalEditorialBrief) editorialSystem += ' Gebruik de meegeleverde original_editorial_strategy als brongebonden redactionele invalshoek voor deze tekstpost. Geen extra experiment, nieuwe feitelijke claim, verkoopbrug, media of publicatiebevoegdheid. Bestaande waarheids- en reviewregels hebben voorrang. Noem de interne pillar of experimentmodus niet in de openbare tekst.';
     // Original editor owns the brief; source guidance never overrides hard gates or issues a delivery claim.
     stage = 'artifact-ai';
     if(resolvedMira?.kind==='approved_frozen_library_mapping')resolvedMira=bindMiraGrowthExperiment(resolvedMira,{runDate,measured:measuredNextPostTest,creative:creativeExploration});
     const miraContext=resolvedMira?miraResolvedEvidence(resolvedMira):null;
-    const artifactInput={channel:pending.channel,editorial_quality_review:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.quality_review||null:null,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraContext?{...miraContext,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
+    const artifactInput={channel:pending.channel,original_editorial_strategy:originalEditorialBrief,editorial_quality_review:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.quality_review||null:null,brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,recommendation,mira_entrepreneur_context:miraContext?{...miraContext,canonical_mira_reference_id:MIRA_MASTER_REFERENCE_ID,canonical_mira_reference_url:MIRA_MASTER_REFERENCE_URL}:null,
       editorial_council:editorialCouncil,commercial_feedback:commercialFeedback,verified_brand_content_learnings:verifiedBrandLearnings,measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,tracking_url:companyTrackingUrl,recent_company_posts:pending.channel==='linkedin_company'?recentCompanyPosts.map(x=>x.slice(0,850)).slice(0,15):null,recent_personal_post_patterns:pending.channel==='linkedin_personal'?recentPersonalPosts.map(x=>({opening:x.slice(0,180),ending:x.slice(-180)})).slice(0,12):null,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,entrepreneur_problem_sources:personalBuilder?personalEntrepreneurProblemSources:null,entrepreneur_problem_context_status:personalBuilder?(personalEntrepreneurProblemSources.length?'SOURCE_CONTEXT_ONLY':'NO_VALID_EXTERNAL_CONTEXT'):null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
     if(pending.channel==='linkedin_personal'){
       // Prevent commercial and brand intelligence from contaminating a verified life story.
@@ -1211,7 +1246,7 @@ Deno.serve(async (req) => {
 
     stage = 'write-artifact';
     const artifactPayload={run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
-      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,commercial_feedback_use:resolvedMira?.growth_experiment?'SINGLE_FROZEN_CAPTION_HYPOTHESIS_APPLIED':generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      content_brief:recommendation?.reason||pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{commercial_feedback:commercialFeedback,original_editorial_strategy:originalEditorialDecision?{...originalEditorialDecision,receipt_state:originalEditorialBrief?'DRAFT_CONTEXT_ONLY':'NO_NEW_EDITORIAL_SELECTION',draft_body_sha256:await digest(bodyText),learningApplied:false,authorizesPublication:false}:null,commercial_feedback_use:resolvedMira?.growth_experiment?'SINGLE_FROZEN_CAPTION_HYPOTHESIS_APPLIED':generationProvider==='approved-frozen-source'?'AVAILABLE_NOT_CONSUMED_BY_FROZEN_ARTIFACT':'MODEL_INPUT_CONTEXT_ONLY',model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
       measured_next_post_test:measuredNextPostTest,editorial_exploration:creativeExploration,editorial_experiment_owner:editorialExperiment.owner,linkedin_loop:linkedinLoop,personal_observational_length_draft:pending.channel==='linkedin_personal'&&generationProvider!=='approved-frozen-source'?personalLengthDraftReceipt(personalLengthDecision,bodyText):null,source_freshness_fallback:sourceFreshnessFallback,
       blog_quality_repair:blogRepairClaim?{contract:blogRepairClaim.contract,rejected_body_sha256:blogRepairClaim.rejected_body_sha256,rejection_codes:blogRepairClaim.rejection_codes,recommendation_id:blogRepairClaim.recommendation_id,requested_at:blogRepairClaim.requested_at,quality_review_id:blogRepairClaim.quality_review?.review_id||null}:null,seo_slug:pending.channel==='blog'?pending.delivery_evidence?.blog_quality_repair?.seo_slug||null:null,
       recommendation_id:recommendation?.recommendation_id||null,
