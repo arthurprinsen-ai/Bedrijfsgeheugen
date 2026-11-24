@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {planPromotionSlot} from '../tools/delivery/main-wide-promotion-slot.mjs';
+const A='a'.repeat(40),B='b'.repeat(40),C='c'.repeat(40),repo='owner/repo';
+const pr=(number,head,epoch=A,refreshes=0)=>({number,state:'open',draft:false,head:{sha:head,repo:{full_name:repo}},base:{ref:'main',repo:{full_name:repo}},auto_merge:{enabled_by:{login:'owner'}},body:['Obligation-ID: o'+number,'Base-SHA: '+epoch,'Writer-Lease-State: TERMINAL_DELIVERY','Writer-Lease-Owner: owner'+number,'Writer-Lease-Obligation: o'+number,'Writer-Lease-Head: '+head,'Writer-Lease-Main-Epoch: '+epoch,'Writer-Lease-Drift-Refreshes: '+refreshes].join('\n')});
+const base={repo,mainSha:A,complete:true,prs:[pr(1,B),pr(2,C,A,2)]};
+const authority={exclusiveWriterVerified:true,requiredContextVerified:true,strictMainVerified:true,appId:999};
+const ledger={complete:true,revision:1,grants:[]};
+const desired={number:2,head:C,owner:'owner2',obligation:'o2',currentMainSha:A,behindBy:0,requiredGreen:true,codeqlGreen:true,mergeable:true};
+const plan=(x={})=>planPromotionSlot({...base,authority,ledger,desired,...x});
+test('shadow sees both native auto-merge requests and gives exhausted original lease priority without writing',()=>{const r=planPromotionSlot(base);assert.equal(r.state,'PROVIDER_FENCE_UNPROVEN');assert.deepEqual(r.terminal_candidates.map(c=>c.number),[2,1]);assert.equal(r.auto_merge.length,2);assert.equal(r.mutation_authority,false)});
+test('incomplete inventory, unknown native auto-merge and duplicate provider rows deny',()=>{for(const x of [{complete:false},{prs:[{...pr(1,B),auto_merge:undefined}]},{prs:[pr(1,B),pr(1,C)]},{prs:[pr(1,B),pr(2,B)]}])assert.equal(plan(x).state,'INVENTORY_UNPROVEN')});
+test('unverified or common Actions app never supplies exclusive authority',()=>{assert.equal(plan({authority:{...authority,appId:15368}}).state,'PROVIDER_FENCE_UNPROVEN');assert.equal(plan({authority:{...authority,exclusiveWriterVerified:false}}).state,'PROVIDER_FENCE_UNPROVEN')});
+test('old native grant must be revoked and independently read back before transferring even across disjoint recovery candidates',()=>{const g={number:1,head:B,epoch:A,appId:999,state:'success',readback:true};assert.equal(plan({ledger:{...ledger,grants:[g]}}).state,'REVOKE_AND_READBACK_BEFORE_TRANSFER');assert.equal(plan({ledger:{...ledger,grants:[{...g,state:'revoked',readback:false}]}}).state,'GRANT_LEDGER_UNPROVEN');assert.equal(plan({ledger:{...ledger,grants:[{...g,state:'revoked'}]}}).state,'PROPOSE_SINGLE_GRANT')});
+test('current epoch movement and unknown ancestry cannot propose a grant or reset a budget',()=>{assert.equal(plan({mainSha:B}).state,'RESERVE_ONLY_NO_SYNC_AUTHORITY');assert.equal(plan({desired:{...desired,behindBy:null}}).state,'EXACT_TERMINAL_EVIDENCE_REQUIRED');assert.equal(plan({desired:{...desired,owner:'other'}}).state,'NO_EXACT_REQUEST')});
+test('valid proposal is bound to one head/main and ledger revision and never writes',()=>{const r=plan();assert.equal(r.state,'PROPOSE_SINGLE_GRANT');assert.deepEqual(r.grant,{number:2,head:C,epoch:A,appId:999,expectedLedgerRevision:1});assert.equal(r.provider_write,false);assert.equal(r.mutation_authority,false)});
+test('existing supervisor runs shadow on complete slurped provider pages before ranking; no permission expansion',()=>{const w=readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');assert.match(w,/--paginate --slurp "repos\/\$repo\/pulls\?state=open&base=main&per_page=100"/);assert.ok(w.indexOf('main-wide-promotion-slot.mjs')<w.indexOf('recovery-pr-prioritizer.mjs'));assert.doesNotMatch(w,/statuses:\s*write|checks:\s*write/)});
+
+test('existing grant is revoked if exact current check evidence is lost',()=>{const g={number:2,head:C,epoch:A,appId:999,state:'success',readback:true};assert.equal(plan({ledger:{...ledger,grants:[g]}}).state,'HOLD_EXISTING_GRANT');assert.equal(plan({ledger:{...ledger,grants:[g]},desired:{...desired,requiredGreen:false}}).state,'REVOKE_AND_READBACK_BEFORE_TRANSFER')});
