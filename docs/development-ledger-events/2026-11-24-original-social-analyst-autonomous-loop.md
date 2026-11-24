@@ -5,3 +5,5 @@ Original owner only: content orchestrator, social publisher and learning store. 
 The source release is not merged. Required/CodeQL on exact newest head and protected approval remain mandatory. Original generator consumption and Instagram proof remain open. Never fabricate personal facts, mutate frozen copy, duplicate publish or bypass consent. Regression: tests/brain-original-social-analyst-20261124.test.mjs. Same PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6136.
 
 Ledger: actual database repair and smoke-test readback; no terminal release or commercial outcome claimed. Admission failure INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE resolved at source by adding this ledger, learning and human documentation.
+
+Generator handoff implemented in candidate: original orchestrator consumes sanitized soft personal length preference after channel policy, including bounded revisions. It records actual draft word count and preference match, never provider proof. Not deployed; natural provider readback remains required. Admission repair adds the canonical learning, ledger and human docs to same PR.
