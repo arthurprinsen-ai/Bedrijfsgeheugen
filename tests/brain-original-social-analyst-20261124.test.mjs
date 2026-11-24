@@ -35,3 +35,18 @@ test('lossless normalization keeps original identity gate and never changes post
  assert.match(normalization,/set generation_evidence = \(generation_evidence#>>'\{\}'\)::jsonb/);
  assert.doesNotMatch(normalization,/disable trigger|set status\s*=|set body\s*=/i);
 });
+
+const personalAnalysis = await read('20261124064859_original_personal_observational_analyst');
+test('personal observational cohort requires exact copy and provider receipt, not model assignment',()=>{
+ assert.match(personalAnalysis,/d\.delivery_ref=o\.external_id/);
+ assert.match(personalAnalysis,/independent_public_full_copy_matched'='true'/);
+ assert.match(personalAnalysis,/independent_public_readback_verified'='true'/);
+ assert.match(personalAnalysis,/final_text_hash'=encode\(sha256\(convert_to\(a\.body,'UTF8'\)\),'hex'\)/);
+ assert.match(personalAnalysis,/source_event_id is not null/);
+ assert.match(personalAnalysis,/cohorts where n>=4 and length_group<>'other'/);
+ assert.match(personalAnalysis,/'variant_assignment_proven',false/);
+ assert.match(personalAnalysis,/'causal_effect_proven',false/);
+ assert.match(personalAnalysis,/'linkedin-personal-observed-length-v1'/);
+ assert.match(personalAnalysis,/status='TESTING' and public\.social_learnings\.evidence_refs is distinct from excluded\.evidence_refs/);
+ assert.doesNotMatch(personalAnalysis,/cron\.schedule|update public\.powerhouse_content_artifacts/i);
+});
