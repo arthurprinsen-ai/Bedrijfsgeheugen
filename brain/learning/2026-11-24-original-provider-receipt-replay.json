@@ -1,0 +1,50 @@
+{
+  "date": "2026-11-24",
+  "fingerprint": "delivery|supabase|stale-original-provider-receipts-after-descendant-deploy|20261124-v1",
+  "owner": "existing canonical Supabase Edge Production Authority and original terminal closure",
+  "compiler": {
+    "failure_class": "STALE_PROVIDER_READBACK_AFTER_AUTHORIZED_REDEPLOY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-provider-receipt-recovery-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-provider-receipt-recovery-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-provider-receipt-recovery-20261102.test.mjs"
+    ]
+  },
+  "root_cause": "Original terminal evidence is invalidated by subsequent provider redeploys even when original changed paths remain identical; manual authority previously did not target original merged PR.",
+  "evidence": {
+    "original_pr": 6136,
+    "original_terminal_run": 45430547497,
+    "observed_receipts": 42,
+    "stale_receipts": 40,
+    "protected_main": "a7484bd2f68d1455912e8989af9486c7f52450fa",
+    "original_failure": "TERMINAL_SOURCE_PARITY_RECHECK_REQUIRED:bg-analytics-sync-composio",
+    "admission_failure": {
+      "run": 45437527010,
+      "job": 138599307040,
+      "code": "LEARNING_EVALUATION_TEST_PATH_INVALID",
+      "corrected_to": "tests/brain-terminal-provider-receipt-recovery-20261102.test.mjs"
+    }
+  },
+  "correction": "Explicit original merged PR replay derives exact protected merge runtime scope, fails closed on original source drift, reuses existing complete byte-for-byte provider verification and writes only the original receipt. No deployment or bypass.",
+  "release_state": "CANDIDATE_PENDING_PROTECTED_CI",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "tests": [
+    "tests/brain-terminal-provider-receipt-recovery-20261102.test.mjs"
+  ],
+  "prevention": [
+    "Use actual executable tests/brain-* canonical evaluation paths before opening PR; retain underlying provider regression.",
+    "Require unchanged original runtime paths, complete provider byte equality and current receipt readback; no direct deployment or bypass."
+  ]
+}
