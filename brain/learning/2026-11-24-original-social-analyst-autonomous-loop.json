@@ -7,7 +7,7 @@
   "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
   "owner": "original content orchestrator and commercial learning",
   "root_cause": "Different measurement ages, repetitive variant selection, serialized evidence objects and absence of exact personal copy cohort analysis. A model experiment ID does not establish applied treatment.",
-  "prevention_rule": "First provider snapshot at 24–36h, exact same tenant and provider ID; require exact variant receipt for treatment; decode only valid JSON objects under original identity gate; personal observation must remain noncausal and preserve frozen sources. Require regression, learning record, ledger and docs before protected admission. Generator consumes only sanitized personal observational preference after channel policy; records final draft word count, no frozen-copy modification or provider proof.",
+  "prevention_rule": "First provider snapshot at 24–36h, exact same tenant and provider ID; require exact variant receipt for treatment; decode only valid JSON objects under original identity gate; personal observation must remain noncausal and preserve frozen sources. Require regression, learning record, ledger and docs before protected admission. Generator consumes only sanitized personal observational preference after channel policy; records final draft word count, no frozen-copy modification or provider proof. Existing native source history must be reconciled to the exact already-applied provider list, without changing historical SQL or claiming producer/provider rollout from source-only merge.",
   "evidence": {
     "production_migrations": [
       "20261124063737",
@@ -46,7 +46,23 @@
       "provider_application_verified": false
     },
     "production_cohort_readback": "11 independently linked posts; observational only",
-    "protected_evaluation_status": "PENDING_EXACT_HEAD_CI"
+    "protected_evaluation_status": "PENDING_EXACT_HEAD_CI",
+    "provider_history_source_reconciliation": {
+      "project_ref": "adhjwmvyoixzjtmiroln",
+      "applied_migrations": 896,
+      "old_source_lock_entries": 892,
+      "exact_appended_versions": [
+        "20261124063737",
+        "20261124063938",
+        "20261124064216",
+        "20261124064859"
+      ],
+      "source_lineage": "same original protected PR 6136 SQL blobs",
+      "source_only": true,
+      "production_DDL_not_rerun": true,
+      "dependent_original_email_PR": 6141,
+      "release_status": "PROTECTED_CI_PENDING"
+    }
   },
   "tests": [
     "tests/brain-original-social-analyst-20261124.test.mjs"
