@@ -12,7 +12,7 @@ export function diagnosePersonalGrowth(evidence={},at=new Date()){
   for(const row of owned){
    const published=ms(row.published_at), observed=ms(row.trend_observed_at);
    if(published===null||observed===null||observed>at.getTime()||at.getTime()-published<54*3600000||at.getTime()-published>180*86400000||observed-published<42*3600000||observed-published>54*3600000)continue;
-   if(row.personal_publication_verified!==true||!['OBSERVED','PROVIDER_OBSERVED'].includes(row.trend_data_quality)||typeof row.trend_source_event_id!=='string'||!row.trend_source_event_id.trim()||row.format!=='text_story'||!personalMethods.has(row.hook_type))continue;
+   if(!/^urn:li:(share|ugcPost):[0-9]+$/.test(String(row.external_post_id||''))||row.personal_publication_verified!==true||!['OBSERVED','PROVIDER_OBSERVED'].includes(row.trend_data_quality)||typeof row.trend_source_event_id!=='string'||!row.trend_source_event_id.trim()||row.format!=='text_story'||!personalMethods.has(row.hook_type))continue;
    const impressions=strictCount(row.trend_metrics?.impressions),substantiveComments=strictCount(row.trend_metrics?.substantive_comments);
    if(impressions===null||impressions===0||substantiveComments===null||row.trend_metrics?.impressions_unavailable===true||row.trend_metrics?.substantive_comments_unavailable===true)continue;
    observations.push({channel:'linkedin_personal',cohortId,format:'text_story',windowHours:48,providerReadbackVerified:true,providerPostId:row.external_post_id,method:row.hook_type,impressions,substantiveComments});
