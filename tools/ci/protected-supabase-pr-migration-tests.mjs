@@ -144,7 +144,7 @@ if (/^[a-f0-9]{40}$/.test(base)) {
       if(proof.ok)originalProvider896Reconciliation=proof;
     }
   }
-  if(!nativeProviderHealthVersionReconciliation && !originalProvider896Reconciliation){
+  if(!nativeProviderHealthVersionReconciliation){
     if(!originalAfas890Reconciliation)
       if(!originalOutreach853Reconciliation)
         if(!originalProvider888Reconciliation)
