@@ -1,7 +1,8 @@
 import {buildChannelTrends,socialChannel} from './social-funnel-trend.mjs';
-import {selectPersonalGrowthMethod} from '../../brain/creative/revenue-content-intelligence.mjs';
+import {selectPersonalGrowthMethod,selectCompanyContentVariation,PERSONAL_GROWTH_METHODS} from '../../brain/creative/revenue-content-intelligence.mjs';
 
-const personalMethods=new Set(['concrete_detail','source_led_structure','natural_reflection']);
+const personalMethods=new Set(PERSONAL_GROWTH_METHODS);
+const publishedHistory=(rows,channel,proof,at)=>rows.filter(row=>socialChannel(row)===channel&&row[proof]===true&&/^urn:li:(share|ugcPost):[0-9]+$/.test(String(row.external_post_id||''))&&ms(row.published_at)!==null&&ms(row.published_at)<=at.getTime()).sort((a,b)=>ms(b.published_at)-ms(a.published_at)).filter((row,i,all)=>all.findIndex(x=>x.external_post_id===row.external_post_id)===i).slice(0,6);
 const strictCount=value=>Number.isInteger(value)&&value>=0?value:null;
 export function diagnosePersonalGrowth(evidence={},at=new Date()){
  const rows=Array.isArray(evidence.social)?evidence.social.slice(0,300):[];
@@ -21,9 +22,16 @@ export function diagnosePersonalGrowth(evidence={},at=new Date()){
  const seed=at.toISOString().slice(0,10);
  // Scheduled exploration prevents a descriptive candidate from becoming a permanent default.
  const mode=Math.floor(at.getTime()/86400000)%5===0?'EXPLORE':'EXPLOIT';
- const hypothesis=selectPersonalGrowthMethod({mode,seed,cohortId,observations});
- return {channel:'linkedin_personal',registered_posts:owned.length,explicit_method_tags:owned.filter(row=>personalMethods.has(row.hook_type)).length,eligible_observations:observations.length,cohortId,hypothesis,
+ const recentMethods=evidence.state==='READ_ONLY_PROVIDER_OBSERVED'?publishedHistory(owned,'linkedin_personal','personal_publication_verified',at).map(row=>row.hook_type):[];
+ const hypothesis=selectPersonalGrowthMethod({mode,seed,cohortId,observations,recentMethods});
+ return {channel:'linkedin_personal',registered_posts:owned.length,explicit_method_tags:owned.filter(row=>personalMethods.has(row.hook_type)).length,eligible_observations:observations.length,cohortId,hypothesis,recentMethods,
   next_action:'HANDOFF_TO_ORIGINAL_PERSONAL_EDITOR_FOR_UNUSED_VERIFIED_SOURCE',measurement_gate:'EXACT_PROVIDER_URN_AND_OBSERVED_SUBSTANTIVE_COMMENTS_AND_IMPRESSIONS',learning_applied:false,authorizesPublication:false};
+}
+export function diagnoseCompanyContentVariation(evidence={},at=new Date()){
+ const rows=Array.isArray(evidence.social)?evidence.social.slice(0,300):[];
+ const history=evidence.state==='READ_ONLY_PROVIDER_OBSERVED'?publishedHistory(rows,'linkedin_company','company_publication_verified',at):[];
+ const recentFormats=history.map(row=>row.format),recentFamilies=history.map(row=>row.narrative_type);
+ return {channel:'linkedin_company',recentFormats,recentFamilies,variation:selectCompanyContentVariation({seed:at.toISOString().slice(0,10),recentFormats,recentFamilies}),next_action:'ORIGINAL_COMPANY_EDITOR_VERIFY_SOURCE_AND_SUPPORTED_FORMAT',learning_applied:false,authorizesPublication:false};
 }
 const nonneg=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0?v:(typeof v==='string'&&/^\d+(\.\d+)?$/.test(v)?Number(v):null);
 const metric=(m,key)=>m&&Object.hasOwn(m,key)?nonneg(m[key]):null;
@@ -111,7 +119,7 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
  return {
    contract:'POWERHOUSE-DAILY-POST-BLOG-CONVERSION-DIAGNOSTICS-v1',generated_at:at.toISOString(),
    source_state,source_quality:sourceMap,source_gaps:gaps,social_posts:social,
-   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),personal_growth:diagnosePersonalGrowth(evidence,at),website_pages:pages,
+   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),personal_growth:diagnosePersonalGrowth(evidence,at),company_content_variation:diagnoseCompanyContentVariation(evidence,at),website_pages:pages,
    next_day_hypotheses:actions.slice(0,6),
    action_gate:'REVIEW_IN_EXISTING_EXPERIMENT_AND_PROTECTED_PUBLICATION_LANE',
    instructions:'No inference of low views without comparable cohort; missing metrics are unknown not zero. No cause claim without experiment, and no revenue without paid order readback.',
