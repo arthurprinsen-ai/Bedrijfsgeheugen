@@ -42,3 +42,28 @@ test('original analyst rejects missing real substantive metrics, absent proof, c
  }
  assert.equal(diagnosePersonalGrowth({state:'AUTH_REQUIRED',social:personalRows},at).eligible_observations,0);
 });
+
+import {PERSONAL_GROWTH_METHODS,selectCompanyContentVariation} from '../brain/creative/revenue-content-intelligence.mjs';
+import {diagnoseCompanyContentVariation} from '../tools/content-growth/daily-performance-diagnostics.mjs';
+test('personal source-led experiments rotate away from repeated methods without inventing a source or a winner',()=>{
+ assert.ok(PERSONAL_GROWTH_METHODS.length>=9);
+ const repeated=selectPersonalGrowthMethod({...input,recentMethods:['concrete_detail','concrete_detail']});
+ assert.equal(repeated.decision,'DIVERSITY_CHALLENGER');
+ assert.notEqual(repeated.method,'concrete_detail');
+ assert.equal(repeated.authorizesPublication,false);
+ const limited=selectPersonalGrowthMethod({eligibleMethods:['design_tradeoff'],recentMethods:['concrete_detail']});
+ assert.equal(limited.method,'design_tradeoff');
+ assert.equal(selectPersonalGrowthMethod({eligibleMethods:[]}).method,null);
+});
+test('company independently rotates source-compatible editorial formats and families, never promises a send',()=>{
+ const r=selectCompanyContentVariation({seed:'today',recentFormats:['carousel','carousel'],eligibleFormats:['carousel','diagnostic'],recentFamilies:['checklist','checklist'],eligibleFamilies:['checklist','how_to']});
+ assert.equal(r.format,'diagnostic');assert.equal(r.family,'how_to');assert.equal(r.authorizesPublication,false);
+ assert.equal(selectCompanyContentVariation({eligibleFormats:['unsupported'],eligibleFamilies:[]}).format,null);
+ assert.equal(selectCompanyContentVariation({}).family,null);
+ const companyRows=personalRows.slice(0,2).map(r=>({...r,tenant_id:'bedrijfsgeheugen',channel_kind:'linkedin_company',company_publication_verified:true,format:'carousel'}));
+ const result=diagnoseCompanyContentVariation({state:'READ_ONLY_PROVIDER_OBSERVED',social:[...companyRows,...personalRows]},at);
+ assert.deepEqual(result.recentFormats,['carousel','carousel']);
+ assert.notEqual(result.variation.format,'carousel');
+ assert.equal(result.learning_applied,false);
+ assert.ok(queries.social.includes('company_publication_verified'));
+});
