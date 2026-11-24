@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|linkedin|original-editorial-registry-proof|20261124-v1",
+  "status": "CANDIDATE",
+  "owner": "original bg-social-metrics-sync #177",
+  "root_cause": "New shared strategy writes draft metadata but original registry does not consume selection lineage after provider readback; existing history pillar unknown.",
+  "fix": "Exact artifact and independent provider proof joined by original collector; null-only CAS on own channel provider ID.",
+  "prevention_rule": "Never backfill unknown historical pillars, accept frozen generation, cross tenant, unreviewed copy, changed body or competing experiment; selected pillar is not semantic or learning proof.",
+  "compiler": {
+    "failure_class": "ORIGINAL_LINKEDIN_PILLAR_REGISTRY_HANDOFF_MISSING",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-linkedin-strategy-registry-proof-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-linkedin-strategy-registry-proof-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-linkedin-strategy-registry-proof-20261124.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6154",
+    "previous": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6155",
+    "native": "v1181; 41 company and 17 personal eligible historical rows; last six per channel zero recorded pillars",
+    "runtime": "CANDIDATE_NOT_LIVE"
+  }
+}
