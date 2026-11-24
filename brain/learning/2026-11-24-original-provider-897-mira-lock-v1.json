@@ -12,13 +12,19 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-original-provider-896-source-parity-20261124.test.mjs"
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs",
+      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-original-provider-896-source-parity-20261124.test.mjs"
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs",
+      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-original-provider-896-source-parity-20261124.test.mjs"
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs",
+      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
     ]
   },
   "root_cause": "Native protected GitOps applied the previously pending Mira migration after #6145 restored four historical migrations; main ledger still at 896. Historical 896 test must replay that fixed population independently of current exact ledger parity.",
@@ -46,7 +52,19 @@
     },
     "native_main_state": "FUNCTIONS_DEPLOYED",
     "terminal_closure_brain_failed_run": 45398191368,
-    "innovation_release": 6137
+    "innovation_release": 6137,
+    "terminal_brain_historical_afas_regression": {
+      "run": 45398191368,
+      "job": 138460066224,
+      "original_observed_ledger": 896,
+      "expected_historical_population": 890,
+      "root": "historical fixtures incorrectly consume current ledger",
+      "fix": "pin historical population through exact provider version 20261122162147; retain complete current inventory and negative guard tests",
+      "tests": [
+        "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+        "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
+      ]
+    }
   },
   "prevention": {
     "no_sql_replay": true,
