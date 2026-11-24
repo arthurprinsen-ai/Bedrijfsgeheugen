@@ -192,7 +192,13 @@ jobs:
             echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$effective_active_runs effective active runs; recovery dispatch suppressed until authoritative backlog drains."
             exit 0
           fi
-          gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
+          # Collect complete native pages; concatenated JSON is not an inventory.
+          gh api --paginate --slurp "repos/$repo/pulls?state=open&base=main&per_page=100" > /tmp/open-pr-pages.json
+          jq -e 'if type=="array" and all(.[]; type=="array") then add // [] else error("INCOMPLETE_NATIVE_PR_PAGES") end' /tmp/open-pr-pages.json > /tmp/open-prs.json
+          # Shadow-only central slot planning. No status writes, lease or grant.
+          if ! node tools/delivery/main-wide-promotion-slot.mjs /tmp/open-prs.json /tmp/promotion-slot-shadow.json "$repo" "$current_main_sha"; then
+            echo "::warning::PROMOTION_SLOT_SHADOW_UNAVAILABLE"
+          fi
           # One bounded evidence read; sorting is advisory only. Every PR still
           # traverses the original live merge, lease, overlap and GitHub CAS gates.
           # On provider failure or malformed evidence retain the original order.
