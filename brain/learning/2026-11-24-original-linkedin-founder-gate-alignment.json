@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|linkedin-personal|founder-gate-alignment|20261124-v1",
+  "status": "REVIEW_CANDIDATE_NOT_LIVE",
+  "root_cause": "Original materializer and editor permit verified founder opinion, obligation trigger excludes it.",
+  "fix": "Review SQL uses native definitions and source contract, exact original lineage and negative live-copy replay; no DDL executed.",
+  "prevention_rule": "Valid source does not imply valid body; retain review and duplicate gates; no fake historical approval; protected migration only.",
+  "compiler": {
+    "failure_class": "ORIGINAL_FOUNDER_DATABASE_GATE_CONTRACT_DRIFT",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "case_id": "actual_live_bad_copy",
+        "candidate_accepts": false,
+        "recurring_claim_detected": true
+      },
+      {
+        "case_id": "source_bound_opinion",
+        "candidate_accepts": true,
+        "recurring_claim_detected": false
+      },
+      {
+        "case_id": "wrong_channel",
+        "candidate_accepts": false,
+        "recurring_claim_detected": false
+      },
+      {
+        "case_id": "wrong_source_revision",
+        "candidate_accepts": false,
+        "recurring_claim_detected": false
+      }
+    ],
+    "shadow": [
+      "Pending behavioral trigger replay"
+    ],
+    "canary": [
+      "Pending protected migration"
+    ]
+  }
+}
