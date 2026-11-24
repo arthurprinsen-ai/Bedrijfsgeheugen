@@ -17,7 +17,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-original-linkedin-editor-runtime-consumption-20261124.test.mjs"
+      "tests/brain-original-linkedin-editor-runtime-consumption-20261124.test.mjs",
+      "tests/brain-content-feedback-context-20261028.test.mjs"
     ],
     "shadow": [
       "tests/brain-original-linkedin-editor-runtime-consumption-20261124.test.mjs"
@@ -30,7 +31,14 @@
     "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6150",
     "analysis": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45436206273",
     "old_mira": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4265",
-    "runtime": "CANDIDATE_NOT_DEPLOYED"
+    "runtime": "CANDIDATE_NOT_DEPLOYED",
+    "feedback_regression": {
+      "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45439440799",
+      "job": 138606482680,
+      "failure": "feedback must survive artifact write",
+      "cause": "new evidence key preceded existing stable feedback field",
+      "correction": "preserve exact existing feedback-first artifact write contract; append new decision evidence after it; no test modification"
+    }
   },
   "terminal_rule": "Protected deploy and independent exact editor runtime readback; next original eligible artifact receipt, independently verified provider publication and measurement, actual subsequent learning. No false closure."
 }
