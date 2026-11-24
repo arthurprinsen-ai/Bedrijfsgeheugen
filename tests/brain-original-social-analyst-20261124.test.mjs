@@ -50,3 +50,29 @@ test('personal observational cohort requires exact copy and provider receipt, no
  assert.match(personalAnalysis,/status='TESTING' and public\.social_learnings\.evidence_refs is distinct from excluded\.evidence_refs/);
  assert.doesNotMatch(personalAnalysis,/cron\.schedule|update public\.powerhouse_content_artifacts/i);
 });
+
+import {personalLengthPreference,personalLengthGuide,personalLengthDraftReceipt} from '../supabase/functions/_shared/personal-observational-length-guide.mjs';
+const observed={contract:'personal_exact_copy_observational_length_v1',causal_effect_proven:false,variant_assignment_proven:false,metric:'reactions',preferred_length:'160-179',cohorts:[{length_group:'130-159',n:4,median_reactions:5},{length_group:'160-179',n:5,median_reactions:7},{length_group:'180-200',n:2,median_reactions:6.5}]};
+test('personal authoring consumes only a sufficiently evidenced personal observational preference',()=>{
+ const p=personalLengthPreference('linkedin_personal',observed);
+ assert.equal(p.preferred_length,'160-179');
+ assert.match(personalLengthGuide(p),/Geen verplicht quotum/);
+ assert.match(personalLengthGuide(p),/Bronwaarheid/);
+ assert.equal(personalLengthPreference('linkedin_company',observed),null);
+ assert.equal(personalLengthPreference('linkedin_personal',{...observed,causal_effect_proven:true}),null);
+ assert.equal(personalLengthPreference('linkedin_personal',{...observed,cohorts:[observed.cohorts[1]]}),null);
+ assert.equal(personalLengthPreference('linkedin_personal',{...observed,preferred_length:'180-200'}),null);
+ const receipt=personalLengthDraftReceipt(p,Array(167).fill('woord').join(' '));
+ assert.equal(receipt.draft_word_count,167);
+ assert.equal(receipt.draft_in_preferred_band,true);
+ assert.equal(receipt.provider_application_verified,false);
+ assert.equal(personalLengthDraftReceipt(p,'kort').draft_in_preferred_band,false);
+});
+test('original orchestrator consumes sanitized personal guidance after channel policy and records draft only',async()=>{
+ const orchestrator=await readFile(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
+ assert.match(orchestrator,/personalLengthPreference\(pending.channel,linkedinLoop\?\.personal_observational_analysis\)/);
+ assert.match(orchestrator,/if\(pending.channel==='linkedin_personal'\) editorialSystem \+= personalLengthInstruction/);
+ assert.match(orchestrator,/correctionPrompt\+personalLengthInstruction/);
+ assert.match(orchestrator,/generationProvider!=='approved-frozen-source'\?personalLengthDraftReceipt/);
+ assert.match(orchestrator,/PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED/);
+});
