@@ -110,3 +110,25 @@ test('existing original admin-only portal shows all agent assignments and never 
  assert.equal(r.innovationPortfolio.agentDutyCoverage.customerOrRevenueUpliftVerified,false);
  assert.equal(r.guarantees.newScheduledExecutors,0);
 });
+
+test('every original agent has source-bound specialist and common KPI definitions; no metrics inferred from assignments',()=>{
+ const r=buildAllAgentInnovationDuties({agents:DEFAULT_AGENT_TEAM,innovationPortfolio:portfolio,at});
+ assert.equal(r.kpiDefinitionCoverage,DEFAULT_AGENT_TEAM.length);
+ assert.equal(r.kpiMeasuredCoverage,0);
+ assert.equal(r.kpiMeasurementStatus,'INDEPENDENT_HEARTBEAT_READBACK_DUE');
+ for(const a of r.assignments){
+   assert.equal(a.kpiContract.owner,a.agentId);
+   assert.ok(a.kpiContract.metrics.length>=4);
+   assert.deepEqual(a.kpiContract.windows,['7d_closed','28d_closed']);
+   assert.equal(new Set(a.kpiContract.metrics.map(m=>m.id)).size,a.kpiContract.metrics.length);
+   for(const m of a.kpiContract.metrics){
+     assert.equal(m.actual,null); assert.equal(m.target,null);
+     assert.equal(m.baseline,null); assert.equal(m.denominator,null);
+     assert.equal(m.status,'UNKNOWN'); assert.ok(m.definition.length>10);
+     assert.ok(['higher','lower'].includes(m.direction));
+   }
+ }
+ assert.ok(r.assignments.find(a=>a.agentId==='agent-growth-market').kpiContract.metrics.some(m=>m.id==='paid_orders'));
+ const snapshot=buildDailySelfEvolutionSnapshot({now:at});
+ assert.equal(snapshot.all_registered_agents_innovation_duty.kpiDefinitionCoverage,DEFAULT_AGENT_TEAM.length);
+});

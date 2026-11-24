@@ -5,6 +5,26 @@
  */
 export const ALL_AGENT_INNOVATION_DUTY_CONTRACT='POWERHOUSE_ALL_AGENT_INNOVATION_DUTY_V1';
 
+
+// KPI definitions are part of the existing assignment projection, not a metrics store.
+// Never infer numerical results from assignment coverage. The original Heartbeat
+// consumer owns observations, denominators, window and source proof.
+const specialistKpis=[["agent-integration-engineer","verified_production_innovations","count","protected release + original operation production readback","higher"],["agent-integration-engineer","verified_outcome_rate","percent","independent Heartbeat measured outcomes / matured original innovation obligations","higher"],["agent-code-quality","escaped_defect_rate","percent","original quality events escaped to production / reviewed releases","lower"],["agent-reliability","recovery_duration_p95","minutes","original failure registry detection-to-verified-recovery timestamps","lower"],["agent-security","open_critical_findings","count","original current independently verified security findings","lower"],["agent-cost","cost_per_verified_outcome","EUR/outcome","original realized cost / verified outcome count","lower"],["agent-performance","p95_latency","ms","original representative runtime latency telemetry","lower"],["agent-data-quality","source_completeness","percent","original required source fields verified / required fields","higher"],["agent-website-ux","task_success_rate","percent","original representative consented task successes / eligible tasks","higher"],["agent-seo-content","qualified_organic_leads","count","original attributed consent-eligible qualified organic leads","higher"],["agent-growth-market","paid_orders","count","original independently verified paid orders with attribution","higher"],["agent-integration-composio","verified_transfer_rate","percent","original provider-readback verified transfers / eligible due transfers","higher"],["agent-social-delivery-recovery","verified_publication_rate","percent","original due publication obligations with independent provider proof / eligible due obligations","higher"],["agent-governance-ai-act","verified_control_coverage","percent","original applicable controls independently evidenced / applicable controls","higher"],["agent-product-opportunity","verified_value_opportunities","count","original opportunities with independently measured realized customer value","higher"]];
+const sharedKpis=[
+ ['independent_outcome_rate','percent','original matured duties with independent effect proof / eligible matured duties','higher'],
+ ['on_time_delivery_rate','percent','original due duties independently verified by deadline / eligible due duties','higher'],
+ ['applied_learning_rate','percent','original due learning obligations with next-natural-run proof / eligible due learning obligations','higher']
+];
+export function originalAgentKpiContract(agentId){
+  const rows=[...sharedKpis,...specialistKpis.filter(r=>r[0]===agentId).map(r=>r.slice(1))];
+  return {version:'original-agent-kpi-20261124-v1',owner:agentId,source:'existing ONE BRAIN and Heartbeat',
+    windows:['7d_closed','28d_closed'],measurementStatus:'SOURCE_READBACK_DUE',
+    metrics:rows.map(([id,unit,definition,direction])=>({id,unit,definition,direction,
+      actual:null,baseline:null,target:null,denominator:null,observedAt:null,sourceRef:null,
+      status:'UNKNOWN',targetPolicy:'original owner sets evidence-based target after comparable baseline'})),
+    assignmentIsNotMeasurement:true,independentProofRequired:true};
+}
+
 const domainMatches={
   'consented-conversion-recovery':['Website','UX','SEO','Growth','Commercial','Data','Data Quality','Integration','Automation'],
   'next-natural-agent-learning':['Product','Operations','Data','Growth','Commercial','Reliability','Quality'],
@@ -59,6 +79,7 @@ export function buildAllAgentInnovationDuties({agents=[],innovationPortfolio=nul
     const overlap=scored[0]?.overlap??0;
     assignments.push({
       agentId:agent.id,
+      kpiContract:originalAgentKpiContract(agent.id),
       originalDomains:[...domains].sort(),
       innovationId:selection.id,
       innovationFingerprint:selection.fingerprint,
@@ -89,6 +110,9 @@ export function buildAllAgentInnovationDuties({agents=[],innovationPortfolio=nul
     observedAt:when,
     agentCount:agents.length,
     assignedCount:sorted.length,
+    kpiDefinitionCoverage:sorted.filter(x=>x.kpiContract.metrics.length>=3).length,
+    kpiMeasuredCoverage:0,
+    kpiMeasurementStatus:'INDEPENDENT_HEARTBEAT_READBACK_DUE',
     uncoveredAgentIds:[],
     assignments:sorted,
     appliedToNaturalRunVerified:false,
