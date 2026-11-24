@@ -1,4 +1,30 @@
 import {buildChannelTrends,socialChannel} from './social-funnel-trend.mjs';
+import {selectPersonalGrowthMethod} from '../../brain/creative/revenue-content-intelligence.mjs';
+
+const personalMethods=new Set(['concrete_detail','source_led_structure','natural_reflection']);
+const strictCount=value=>Number.isInteger(value)&&value>=0?value:null;
+export function diagnosePersonalGrowth(evidence={},at=new Date()){
+ const rows=Array.isArray(evidence.social)?evidence.social.slice(0,300):[];
+ const owned=rows.filter(row=>socialChannel(row)==='linkedin_personal');
+ const cohortId='canonical:linkedin_personal:text_story:48h';
+ const observations=[];
+ if(evidence.state==='READ_ONLY_PROVIDER_OBSERVED'){
+  for(const row of owned){
+   const published=ms(row.published_at), observed=ms(row.trend_observed_at);
+   if(published===null||observed===null||observed>at.getTime()||at.getTime()-published<54*3600000||at.getTime()-published>180*86400000||observed-published<42*3600000||observed-published>54*3600000)continue;
+   if(row.personal_publication_verified!==true||!['OBSERVED','PROVIDER_OBSERVED'].includes(row.trend_data_quality)||typeof row.trend_source_event_id!=='string'||!row.trend_source_event_id.trim()||row.format!=='text_story'||!personalMethods.has(row.hook_type))continue;
+   const impressions=strictCount(row.trend_metrics?.impressions),substantiveComments=strictCount(row.trend_metrics?.substantive_comments);
+   if(impressions===null||impressions===0||substantiveComments===null||row.trend_metrics?.impressions_unavailable===true||row.trend_metrics?.substantive_comments_unavailable===true)continue;
+   observations.push({channel:'linkedin_personal',cohortId,format:'text_story',windowHours:48,providerReadbackVerified:true,providerPostId:row.external_post_id,method:row.hook_type,impressions,substantiveComments});
+  }
+ }
+ const seed=at.toISOString().slice(0,10);
+ // Scheduled exploration prevents a descriptive candidate from becoming a permanent default.
+ const mode=Math.floor(at.getTime()/86400000)%5===0?'EXPLORE':'EXPLOIT';
+ const hypothesis=selectPersonalGrowthMethod({mode,seed,cohortId,observations});
+ return {channel:'linkedin_personal',registered_posts:owned.length,explicit_method_tags:owned.filter(row=>personalMethods.has(row.hook_type)).length,eligible_observations:observations.length,cohortId,hypothesis,
+  next_action:'HANDOFF_TO_ORIGINAL_PERSONAL_EDITOR_FOR_UNUSED_VERIFIED_SOURCE',measurement_gate:'EXACT_PROVIDER_URN_AND_OBSERVED_SUBSTANTIVE_COMMENTS_AND_IMPRESSIONS',learning_applied:false,authorizesPublication:false};
+}
 const nonneg=v=>typeof v==='number'&&Number.isFinite(v)&&v>=0?v:(typeof v==='string'&&/^\d+(\.\d+)?$/.test(v)?Number(v):null);
 const metric=(m,key)=>m&&Object.hasOwn(m,key)?nonneg(m[key]):null;
 const ms=v=>{const n=Date.parse(v||'');return Number.isFinite(n)?n:null;};
@@ -51,9 +77,9 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
    if(comments===null)signals.push('COMMENTS_UNAVAILABLE');
    if(observedSource&&exposure!==null&&exposure>=50&&comments===0)signals.push('OBSERVED_ZERO_COMMENTS');
    if(observedSource&&exposure!==null&&exposure>=50&&engagement===0)signals.push('OBSERVED_ZERO_ENGAGEMENT');
-   const suggestion=signals.includes('OBSERVED_ZERO_ENGAGEMENT')?'TEST_SITUATION_CONSEQUENCE_CLEAR_POINTE':
-     signals.includes('OBSERVED_ZERO_COMMENTS')?'TEST_RELEVANT_NON_MANIPULATIVE_QUESTION':'COLLECT_COMPARABLE_PROVIDER_EVIDENCE';
    const channel=socialChannel({...item,tenant_id:tenantId});
+   const suggestion=channel==='linkedin_personal'?'USE_SOURCE_LED_PERSONAL_GROWTH_HYPOTHESIS':signals.includes('OBSERVED_ZERO_ENGAGEMENT')?'TEST_SITUATION_CONSEQUENCE_CLEAR_POINTE':
+     signals.includes('OBSERVED_ZERO_COMMENTS')?'TEST_RELEVANT_NON_MANIPULATIVE_QUESTION':'COLLECT_COMPARABLE_PROVIDER_EVIDENCE';
    const localTime=age===null?null:new Intl.DateTimeFormat('nl-NL',{timeZone:'Europe/Amsterdam',weekday:'long',hour:'2-digit',hourCycle:'h23'}).format(new Date(age));
    social.push({tenant_id:tenantId,post_id:id,platform,channel,published_at:item.published_at||null,published_day_hour_nl:localTime,
      topic:item.topic||null,content_pillar:item.content_pillar||null,narrative_type:item.narrative_type||null,
@@ -85,7 +111,7 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
  return {
    contract:'POWERHOUSE-DAILY-POST-BLOG-CONVERSION-DIAGNOSTICS-v1',generated_at:at.toISOString(),
    source_state,source_quality:sourceMap,source_gaps:gaps,social_posts:social,
-   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),website_pages:pages,
+   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),personal_growth:diagnosePersonalGrowth(evidence,at),website_pages:pages,
    next_day_hypotheses:actions.slice(0,6),
    action_gate:'REVIEW_IN_EXISTING_EXPERIMENT_AND_PROTECTED_PUBLICATION_LANE',
    instructions:'No inference of low views without comparable cohort; missing metrics are unknown not zero. No cause claim without experiment, and no revenue without paid order readback.',
