@@ -37,7 +37,7 @@ test('original public route, semantic visibility and input-excluded CLS gates re
   assert.match(source, /if \(!entry\.hadRecentInput\)/);
   assert.match(source, /formatClsFailure\(route, viewport\.name, state\.cls, state\.layoutShifts\)/);
   assert.match(source, /loadPublicRoutes\(\)/);
-  assert.match(source, /readVisibleState\(page, url\)/);
+  assert.match(source, /readVisibleState\(page, url, navigationResponse\)/);
   assert.match(source, /main content is effectively empty/);
   assert.match(source, /is not visibly rendered/);
   assert.match(source, /browser\.close\(\)/);
