@@ -66,8 +66,18 @@ test('OIDC pinned to official GitHub Actions main workflow, expiry, issuer, repo
  const jwk=publicKey.export({format:'jwk'});jwk.kid='test-key';jwk.use='sig';
  const t=Math.floor(now/1000),payload={iss:'https://token.actions.githubusercontent.com',aud:OIDC_AUDIENCE,repository:'arthurprinsen-ai/Bedrijfsgeheugen',
   workflow_ref:'arthurprinsen-ai/Bedrijfsgeheugen/.github/workflows/security-operations-proof.yml@refs/heads/main',
-  ref:'refs/heads/main',event_name:'schedule',run_id:'123456',sub:'repo:arthurprinsen-ai/Bedrijfsgeheugen:ref:refs/heads/main',iat:t-10,exp:t+120};
+  ref:'refs/heads/main',event_name:'schedule',run_id:'123456',repository_id:'1303700955',repository_owner_id:'236997948',sub:'repo:arthurprinsen-ai@236997948/Bedrijfsgeheugen@1303700955:ref:refs/heads/main',iat:t-10,exp:t+120};
  assert.doesNotThrow(()=>assertGitHubClaims(payload,t));
+ for(const event_name of ['push','workflow_dispatch','schedule'])assert.doesNotThrow(()=>assertGitHubClaims({...payload,event_name},t));
+ for(const changes of [
+  {sub:'repo:arthurprinsen-ai/Bedrijfsgeheugen:ref:refs/heads/main'},
+  {repository_id:'1303700956'},{repository_owner_id:'236997949'},
+  {repository_id:undefined},{repository_owner_id:undefined},
+  {sub:'repo:arthurprinsen-ai@236997948/Bedrijfsgeheugen@1303700956:ref:refs/heads/main'},
+  {sub:'repo:arthurprinsen-ai@236997949/Bedrijfsgeheugen@1303700955:ref:refs/heads/main'},
+  {workflow_ref:'arthurprinsen-ai/Bedrijfsgeheugen/.github/workflows/other.yml@refs/heads/main'},
+  {aud:'https://example.invalid'},{event_name:'pull_request'}
+ ])assert.throws(()=>assertGitHubClaims({...payload,...changes},t),/UNAUTHORIZED/);
  assert.throws(()=>assertGitHubClaims({...payload,ref:'refs/heads/attacker'},t),/UNAUTHORIZED/);
  assert.throws(()=>assertGitHubClaims({...payload,exp:t-1},t),/UNAUTHORIZED/);
  const base64=s=>Buffer.from(JSON.stringify(s)).toString('base64url');

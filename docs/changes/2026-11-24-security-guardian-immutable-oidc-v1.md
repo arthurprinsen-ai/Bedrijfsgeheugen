@@ -1,0 +1,3 @@
+# Security Guardian immutable OIDC subject
+
+Original #6084 release is live, but run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45457361575 returned HTTP 401 after deployment. Provider subject-template readback confirms immutable default subject. Pin owner ID and repository ID both in the subject and separate signed claims. Preserve existing issuer, audience, workflow, main ref, event, expiry and signature checks. Reject legacy, mismatched and missing IDs; no provider setting changes. Existing site warnings remain open. Protected CI, production source readback, real signed heartbeat with stored/readback true and authenticated Trust Center observation are required. Do not treat WARN as green.
