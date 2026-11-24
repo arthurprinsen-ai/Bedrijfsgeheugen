@@ -44,7 +44,11 @@ test('the existing owner and protected publisher recompute the same exact source
  const pub=readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts',import.meta.url),'utf8');
  assert.ok(source.includes('bodyText=miraResolvedCaption(resolvedMira);'));
  assert.ok(source.includes('editorial_exploration:creativeExploration'));
- assert.ok(pub.includes('validateResolvedMiraCaptionForDelivery(runDate,art.body,captionEvidence)'));
+ assert.ok(source.includes('validateResolvedMiraCaptionForDelivery(runDate,bodyText,miraContext,resolvedMira)'));
+ assert.ok(pub.includes('validateResolvedMiraCaptionForDelivery(runDate,art.body,captionEvidence,independentResolved)'));
+ assert.ok(pub.includes('independentResolved=resolveMiraFrozenWinner(runDate,'));
+ assert.ok(pub.includes("db.from('powerhouse_instagram_media_jobs_v1')"));
+ assert.ok(pub.includes('independentMediaOk&&clean(proof.mira_business_problem_id)'));
  assert.ok(pub.includes('MIRA_MEDIA_CAPTION_SCENE_MISMATCH'));
 });
 
