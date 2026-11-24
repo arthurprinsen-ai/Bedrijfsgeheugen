@@ -37,6 +37,12 @@ for(const name of workflows) test(name+' requires successful exact candidate BRA
     esac
     case "$2" in *event=pull_request*) exit 93;; esac
   }
+  # Model the bounded transport wrapper without executing the real network CLI.
+  timeout(){
+    [ "$1" = 30s ] && [ "$2" = gh ] && [ "$3" = api ] || exit 94
+    shift
+    "$@"
+  }
   seq(){ printf '1\\n'; }
   sleep(){ :; }
   ${gate}
@@ -47,7 +53,8 @@ for(const name of workflows) test(name+' requires successful exact candidate BRA
       [payload]).filter(page=>page.length||payload.length===0).map(workflow_runs=>({total_count:payload.length,workflow_runs}))
     )}});
   const row={id:1,head_sha:'c'.repeat(40),head_branch:'main',event:'workflow_dispatch',display_title:`BRAIN delivery PR #1 ${sha}`,status:'completed',conclusion:'success',created_at:'2026-11-15T08:15:00Z'};
-  assert.equal(run([row]).status,0);
+  const exact=run([row]);
+  assert.equal(exact.status,0,exact.stderr);
   const many=Array.from({length:205},(_,i)=>({...row,id:1000+i,
     display_title:'BRAIN delivery PR #999 '+('d'.repeat(40))}));
   many[180]={...row,id:1180};
