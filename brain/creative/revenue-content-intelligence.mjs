@@ -134,6 +134,34 @@ export function selectCompanyContentVariation({seed='',recentFormats=[],recentFa
   family:families.length?rotateEligible(families,recentFamilies,seed+':family'):null,
   decision:'SOURCE_AND_FORMAT_ELIGIBILITY_REQUIRED',authorizesPublication:false,causalLiftProven:false};
 }
+
+// Explicit user-approved editorial pillars, separate from format and method.
+// Candidate selection never asserts a source, provider capability or measured lift.
+export const LINKEDIN_EDITORIAL_PILLARS=Object.freeze({
+ linkedin_personal:Object.freeze(['persoonlijk_ondernemerschap','thought_leadership','kennisdeling','storytelling','vernieuwing','opinie','persoonlijke_reflectie','onderzoek']),
+ linkedin_company:Object.freeze(['herkenning','educatie','product','onderzoek','bewijs','innovatie','conversie','kennisproducten'])
+});
+export const LINKEDIN_EDITORIAL_FORMATS=Object.freeze(['tekstpost','carrousel','infographic','video','onderzoek','artikel','checklist','magazine_document']);
+export function selectLinkedInEditorialStrategy({channel,seed='',eligiblePillars=[],eligibleFormats=[],recentPillars=[],recentFormats=[],experimentModes=[]}={}){
+ const catalog=LINKEDIN_EDITORIAL_PILLARS[channel];
+ if(!catalog)return null;
+ const allowed=(catalog,list)=>catalog.filter(x=>Array.isArray(list)&&list.includes(x));
+ const history=(list,catalog)=>Array.isArray(list)?list.slice(0,6).filter(x=>catalog.includes(x)):[];
+ const pillars=history(recentPillars,catalog),formats=history(recentFormats,LINKEDIN_EDITORIAL_FORMATS);
+ const p=allowed(catalog,eligiblePillars),f=allowed(LINKEDIN_EDITORIAL_FORMATS,eligibleFormats);
+ const modes=Array.isArray(experimentModes)?experimentModes.filter(x=>x==='EXPLORE'||x==='EXPLOIT').slice(0,30):[];
+ const date=Date.parse(seed);
+ const mode=modes.length?chooseDecisionMode(modes,.2):Number.isFinite(date)&&Math.floor(date/86400000)%5!==0?'EXPLOIT':'EXPLORE';
+ return {channel,mode,explorationTarget:.2,modeBasis:modes.length?'RECORDED_EXPERIMENT_MODES':'PLANNED_CADENCE_NOT_OBSERVED',
+  pillar:p.length?rotateEligible(p,pillars,seed+':pillar'):null,
+  format:f.length?rotateEligible(f,formats,seed+':editorial-format'):null,
+  pillarCandidates:[...catalog].sort((a,b)=>pillars.filter(x=>x===a).length-pillars.filter(x=>x===b).length),
+  formatCandidates:[...LINKEDIN_EDITORIAL_FORMATS].sort((a,b)=>formats.filter(x=>x===a).length-formats.filter(x=>x===b).length),
+  recentPillars:pillars,recentFormats:formats,experimentRule:'CHANGE_ONE_MEASURABLE_VARIABLE_PER_TEST',
+  measurementWindowsHours:[24,48,72,168,720],decision:'SOURCE_AND_PROVIDER_ELIGIBILITY_REQUIRED',
+  learningApplied:false,causalLiftProven:false,authorizesPublication:false};
+}
+
 export function selectPersonalGrowthMethod({mode='EXPLORE',seed='',cohortId='',observations=[],recentMethods=[],eligibleMethods=PERSONAL_GROWTH_METHODS}={}){
   const allowed=PERSONAL_GROWTH_METHODS.filter(x=>Array.isArray(eligibleMethods)&&eligibleMethods.includes(x));
   const history=Array.isArray(recentMethods)?recentMethods.filter(x=>PERSONAL_GROWTH_METHODS.includes(x)).slice(0,6):[];
@@ -187,6 +215,7 @@ export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=
       lengthPolicy:'only_as_long_as_the_event_needs',
       compareRecentPostsFor:['opening','narrative_arc','length','humor','ending'],
       objective:'authentic_personal_conversation',
+      editorialStrategy:selectLinkedInEditorialStrategy({...personalGrowthEvidence?.editorialStrategy,channel:'linkedin_personal',seed}),
       personalGrowthHypothesis:selectPersonalGrowthMethod({mode,seed,cohortId:personalGrowthEvidence?.cohortId,observations:personalGrowthEvidence?.observations,recentMethods:personalGrowthEvidence?.recentMethods,eligibleMethods:personalGrowthEvidence?.eligibleMethods}),
       // Business radar opportunities are not evidence of Arthur's life.
       topic:null,
@@ -225,6 +254,7 @@ export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=
     textType:'proof_led_business_education',
     format:variation.format,
     contentVariation:variation,
+    ...(channel==='linkedin_company'||!channel?{editorialStrategy:selectLinkedInEditorialStrategy({...companyContentEvidence?.editorialStrategy,channel:'linkedin_company',seed})}:{}),
     emotion:'productive_discomfort',
     painTrigger:opportunity.pain||'hidden_business_risk',
     fomoTrigger:'cost_of_inaction',

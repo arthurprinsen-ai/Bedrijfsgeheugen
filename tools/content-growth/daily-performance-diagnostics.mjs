@@ -1,5 +1,5 @@
 import {buildChannelTrends,socialChannel} from './social-funnel-trend.mjs';
-import {selectPersonalGrowthMethod,selectCompanyContentVariation,PERSONAL_GROWTH_METHODS} from '../../brain/creative/revenue-content-intelligence.mjs';
+import {selectPersonalGrowthMethod,selectCompanyContentVariation,PERSONAL_GROWTH_METHODS,selectLinkedInEditorialStrategy} from '../../brain/creative/revenue-content-intelligence.mjs';
 
 const personalMethods=new Set(PERSONAL_GROWTH_METHODS);
 const publishedHistory=(rows,channel,proof,at)=>rows.filter(row=>socialChannel(row)===channel&&row[proof]===true&&/^urn:li:(share|ugcPost):[0-9]+$/.test(String(row.external_post_id||''))&&ms(row.published_at)!==null&&ms(row.published_at)<=at.getTime()).sort((a,b)=>ms(b.published_at)-ms(a.published_at)).filter((row,i,all)=>all.findIndex(x=>x.external_post_id===row.external_post_id)===i).slice(0,6);
@@ -76,6 +76,18 @@ export function diagnoseLinkedInKpiCoverage(evidence={},at=new Date()){
     coverage_is_not_kpi_result:true};
   });
   return {channel,kpis,verified_recent_post_snapshots:unique.length,registered_posts:owned.length,all_kpis_proven:false,authorizesPublication:false};
+ });
+}
+
+
+export function diagnoseLinkedInEditorialStrategy(evidence={},at=new Date()){
+ const rows=Array.isArray(evidence.social)?evidence.social.slice(0,300):[];
+ return ['linkedin_personal','linkedin_company'].map(channel=>{
+  const history=evidence.state==='READ_ONLY_PROVIDER_OBSERVED'?publishedHistory(rows,channel,channel==='linkedin_personal'?'personal_publication_verified':'company_publication_verified',at):[];
+  // Existing registry taxonomy only; do not guess pillar from copy or map an unsupported format.
+  const formatMap={text_story:'tekstpost',text:'tekstpost',carousel:'carrousel',infographic:'infographic',video:'video',article:'artikel',document:'magazine_document',checklist:'checklist',research:'onderzoek'};
+  const recommendation=selectLinkedInEditorialStrategy({channel,seed:at.toISOString().slice(0,10),recentPillars:history.map(r=>r.content_pillar),recentFormats:history.map(r=>formatMap[r.format])});
+  return {channel,history_post_count:history.length,recommendation,source_owner_action:'ORIGINAL_EDITOR_SELECT_EXPLICIT_ELIGIBLE_PILLAR_AND_FORMAT',application_receipt_required:true,learning_applied:false,authorizesPublication:false};
  });
 }
 
@@ -158,7 +170,7 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
  return {
    contract:'POWERHOUSE-DAILY-POST-BLOG-CONVERSION-DIAGNOSTICS-v1',generated_at:at.toISOString(),
    source_state,source_quality:sourceMap,source_gaps:gaps,social_posts:social,
-   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),personal_growth:diagnosePersonalGrowth(evidence,at),company_content_variation:diagnoseCompanyContentVariation(evidence,at),linkedin_kpi_coverage:diagnoseLinkedInKpiCoverage(evidence,at),website_pages:pages,
+   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),personal_growth:diagnosePersonalGrowth(evidence,at),company_content_variation:diagnoseCompanyContentVariation(evidence,at),linkedin_kpi_coverage:diagnoseLinkedInKpiCoverage(evidence,at),linkedin_editorial_strategy:diagnoseLinkedInEditorialStrategy(evidence,at),website_pages:pages,
    next_day_hypotheses:actions.slice(0,6),
    action_gate:'REVIEW_IN_EXISTING_EXPERIMENT_AND_PROTECTED_PUBLICATION_LANE',
    instructions:'No inference of low views without comparable cohort; missing metrics are unknown not zero. No cause claim without experiment, and no revenue without paid order readback.',

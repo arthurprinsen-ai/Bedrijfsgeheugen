@@ -103,3 +103,33 @@ test('company analytics registry uses only the original canonical company public
  assert.ok(clause.includes('o.live_proven_at is not null'));
  assert.ok(!clause.includes('o.tenant_id=r.tenant_id'));
 });
+
+import {LINKEDIN_EDITORIAL_PILLARS,LINKEDIN_EDITORIAL_FORMATS,selectLinkedInEditorialStrategy} from '../brain/creative/revenue-content-intelligence.mjs';
+import {diagnoseLinkedInEditorialStrategy} from '../tools/content-growth/daily-performance-diagnostics.mjs';
+test('user-approved pillar catalogs and format catalog are exact; no permission from suggestion',()=>{
+ assert.equal(LINKEDIN_EDITORIAL_PILLARS.linkedin_personal.length,8);
+ assert.equal(LINKEDIN_EDITORIAL_PILLARS.linkedin_company.length,8);
+ assert.equal(LINKEDIN_EDITORIAL_FORMATS.length,8);
+ const a=selectLinkedInEditorialStrategy({channel:'linkedin_personal',seed:'2026-11-24',eligiblePillars:['product','conversie'],eligibleFormats:['video']});
+ assert.equal(a.pillar,null);assert.equal(a.format,'video');assert.equal(a.authorizesPublication,false);
+ assert.equal(selectLinkedInEditorialStrategy({channel:'instagram_company'}),null);
+ const empty=selectLinkedInEditorialStrategy({channel:'linkedin_company'});
+ assert.equal(empty.pillar,null);assert.equal(empty.format,null);
+});
+test('rotate eligible pillars and formats using at most six recent verified-history slots and 20 percent planned experiments',()=>{
+ const x=selectLinkedInEditorialStrategy({channel:'linkedin_personal',seed:'2026-11-24',eligiblePillars:['opinie','onderzoek'],eligibleFormats:['tekstpost','carrousel'],recentPillars:['opinie','opinie','opinie','opinie','opinie','opinie','onderzoek'],recentFormats:['tekstpost','tekstpost'],experimentModes:['EXPLOIT','EXPLOIT','EXPLOIT','EXPLOIT']});
+ assert.equal(x.pillar,'onderzoek');assert.equal(x.format,'carrousel');assert.equal(x.recentPillars.length,6);assert.equal(x.mode,'EXPLORE');assert.equal(x.learningApplied,false);
+ assert.equal(selectLinkedInEditorialStrategy({channel:'linkedin_company',experimentModes:['EXPLORE','EXPLOIT','EXPLOIT','EXPLOIT','EXPLOIT']}).mode,'EXPLOIT');
+ assert.deepEqual(x.measurementWindowsHours,[24,48,72,168,720]);
+});
+test('original diagnostic consumes only exact verified own-channel history; selection remains with original source owner',()=>{
+ const rows=[{...personalRows[0],content_pillar:'opinie'},{...personalRows[1],content_pillar:'onderzoek',personal_publication_verified:false},{...personalRows[2],tenant_id:'bedrijfsgeheugen',channel_kind:'linkedin_company',company_publication_verified:true,content_pillar:'product',format:'carousel'}];
+ const [a,b]=diagnoseLinkedInEditorialStrategy({state:'READ_ONLY_PROVIDER_OBSERVED',social:rows},at);
+ assert.deepEqual(a.recommendation.recentPillars,['opinie']);assert.deepEqual(b.recommendation.recentPillars,['product']);
+ assert.equal(a.recommendation.pillar,null);assert.equal(b.recommendation.format,null);
+ assert.equal(a.application_receipt_required,true);assert.equal(b.learning_applied,false);
+ assert.equal(diagnoseLinkedInEditorialStrategy({state:'AUTH_REQUIRED',social:rows},at)[0].history_post_count,0);
+ assert.equal(buildCreativeRecipe({channel:'linkedin_personal',personalGrowthEvidence:{editorialStrategy:{eligiblePillars:['opinie']}}}).editorialStrategy.pillar,'opinie');
+ assert.equal(buildCreativeRecipe({channel:'linkedin_company',companyContentEvidence:{editorialStrategy:{eligiblePillars:['product']}}}).editorialStrategy.pillar,'product');
+ assert.equal('editorialStrategy' in buildCreativeRecipe({channel:'instagram_company'}),false);
+});
