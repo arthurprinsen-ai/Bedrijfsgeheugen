@@ -1,0 +1,65 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "status": "PRODUCTION_SQL_VERIFIED_PROTECTED_SOURCE_MERGE_OPEN",
+  "fingerprint": "powerhouse|social|comparable-window-exact-copy-variant-lineage|20261124",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original content orchestrator and commercial learning",
+  "root_cause": "Different measurement ages, repetitive variant selection, serialized evidence objects and absence of exact personal copy cohort analysis. A model experiment ID does not establish applied treatment.",
+  "prevention_rule": "First provider snapshot at 24–36h, exact same tenant and provider ID; require exact variant receipt for treatment; decode only valid JSON objects under original identity gate; personal observation must remain noncausal and preserve frozen sources. Require regression, learning record, ledger and docs before protected admission.",
+  "evidence": {
+    "production_migrations": [
+      "20261124063737",
+      "20261124063938",
+      "20261124064216",
+      "20261124064859"
+    ],
+    "personal_objects": 65,
+    "personal_string_records": 0,
+    "personal_observed_posts": 11,
+    "preferred_length": "160-179",
+    "personal_cohorts": [
+      {
+        "words": "130-159",
+        "n": 4,
+        "median": 5
+      },
+      {
+        "words": "160-179",
+        "n": 5,
+        "median": 7
+      },
+      {
+        "words": "180-200",
+        "n": 2,
+        "median": 6.5
+      }
+    ],
+    "effect_size": null,
+    "causal_effect_verified": false,
+    "protected_merge_verified": false
+  },
+  "tests": [
+    "tests/brain-original-social-analyst-20261124.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "production cohort readback 11 independently linked posts",
+      "tests/brain-original-social-analyst-20261124.test.mjs (CI result pending)"
+    ],
+    "invariants": [
+      "no second scheduler",
+      "no duplicate publication",
+      "no causal claim",
+      "no bypass identity or permission"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "SOCIAL_ANALYSIS_APPLICATION_EVIDENCE_GAP",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected exact-head checks, source merge and independent generator consumption plus real provider readback; Instagram and measured causal lift remain open."
+}
