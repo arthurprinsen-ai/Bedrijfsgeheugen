@@ -202,3 +202,17 @@ test('manual delivery recovery uses the SAME original workflow and daily admissi
  assert.match(recovery,/node scripts\/brain\/innovation-original-delivery-continuity\.mjs --reconcile/);
  assert.doesNotMatch(recovery,/codex-action|gh pr create|gh pr merge|NETLIFY_AUTH_TOKEN|NETLIFY_SITE_ID|contents: write|pull-requests: write/);
 });
+
+
+test('verified quality analysis receipt does not erase a genuine no-change or protected PR stage',()=>{
+ const fp='portal-visual-density-oversized-responsive-cascade-v1';
+ for(const options of [{noop:true},{pr:true}]){
+  const f=fixture({...options,decision:'BASELINE_AND_EVALUATION_DESIGN_REQUIRED'});
+  const {candidate:c,obligation:b,operation:o}=f;
+  c.component_id='portal-v2';c.proposed_action={kind:'bounded_learning_followup'};c.baseline={quality_fingerprint:fp};
+  o.evidence.original_owner_decision.fingerprint='1'.repeat(64);o.evidence.original_agent_pre_review={fingerprint:'2'.repeat(64)};
+  const receipt={contract:'ORIGINAL_INNOVATION_ALL_FOURTEEN_EVIDENCE_RECONCILIATION_V1',candidate_id:id,original_operation_id:opId,original_owner:o.capability_id,source_revision:rev,source_sha256:sha,original_change_id:c.source_key,source_decision_fingerprint:'1'.repeat(64),source_pre_review_fingerprint:'2'.repeat(64),source_quality:{status:'verified',original_fingerprint:fp,source_evidence_sha256:'3'.repeat(64),historical_claim_not_current_production_proof:true},fingerprint:'4'.repeat(64),next_action:'ORIGINAL_MOBILE_VISUAL_DENSITY_EXACT_PRODUCTION_RECHECK',disposition:'HISTORICAL_VERIFIED_QUALITY_SOURCE_CURRENT_EFFECT_DUE',evidence_type:'HISTORICAL_FIRST_PARTY_QUALITY_EVENT_UNCONFIRMED_AS_CURRENT_PRODUCTION',independently_verified_current_effect:false,consumer_ack_verified:false,terminal_success:false,historical_baseline_not_current_effect:true,protected_review_required:true,automated_external_provider_dispatch:false};
+  o.evidence.original_evidence_reconciliation=receipt;
+  const a=examineOriginalDelivery(f);assert.equal(a.stage,options.noop?'NO_CHANGE_INDEPENDENT_OWNER_REVIEW_DUE':'PROVIDER_PR_READBACK_DUE');assert.equal(a.terminal_success,false);assert.equal(a.independent_impact_verified,false);
+ }
+});
