@@ -6,7 +6,10 @@ test('original provider AFAS source migration exactly matches audited applied id
  const lock=JSON.parse(await readFile(new URL('migration-history.lock.json',root),'utf8'));
  const applied=lock.applied.filter(x=>x.name==='portal_connector_real_afas_source_readback_v1');
  assert.deepEqual(applied,[{version:'20261122162147',name:'portal_connector_real_afas_source_readback_v1'}]);
- assert.equal(lock.applied.length,890,'source lock includes observed 890th provider-applied migration');
+ const historical=lock.applied.filter(x=>x.version<='20261122162147');
+ assert.equal(historical.length,890,'historical provider population contains exactly 890 identities');
+ assert.deepEqual(historical.at(-1),applied[0]);
+ assert.ok(lock.applied.length>=historical.length,'current source preserves historical population');
  assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
  const files=await readdir(new URL('migrations/',root));
  const current='20261122162147_portal_connector_real_afas_source_readback_v1.sql';
