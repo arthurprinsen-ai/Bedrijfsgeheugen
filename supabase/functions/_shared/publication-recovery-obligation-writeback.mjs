@@ -79,6 +79,35 @@ export function planOriginalPublicationHandoffs(recovery,obligations){
     }
     updates.push(Object.freeze({channel,previous,nextAction,code,handoff,owner}));
   }
+  // A warning can precede the original dated decision. Once the original
+  // channel decision carries an exact valid schedule, its obsolete
+  // PUBLICATION_SCHEDULE_MISSING receiver warning must self-heal on the
+  // SAME canonical tick, without publishing early or inventing a deadline.
+  // Only a pre-due pending decision may clear this precise stale warning.
+  for(const item of recovery.pending||[]){
+    const channel=clean(item?.channel);
+    if(!ALLOWED_CHANNEL.has(channel)||unique.has(channel))continue;
+    if(item?.phase!=='PENDING'||item?.status!=='AWAITING_DUE_TIME')continue;
+    const scheduledFor=clean(item?.scheduledFor);
+    if(!/^20\\d{2}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$/.test(scheduledFor)
+      ||!Number.isFinite(Date.parse(scheduledFor)))continue;
+    const matches=obligations.filter(row=>row?.channel===channel);
+    if(matches.length!==1)continue;
+    const o=matches[0],previous=clean(o.next_action);
+    if(o.status!=='PLANNED'||clean(o.external_id)
+      ||!/^HERSTEL VEREIST \\[PUBLICATION_SCHEDULE_MISSING\\]/.test(previous))continue;
+    const owner=clean(item.owner);
+    if(!/^[a-zA-Z0-9 /._-]{5,120}$/.test(owner))continue;
+    const nextAction='ORIGINAL_CHANNEL_SCHEDULE_CONFIRMED ['+scheduledFor+'] · '
+      +owner+': volg oorspronkelijke gedateerde beslissing; controleer inhoud, '
+      +'goedkeuring en exact providerbewijs vóór LIVE_PROVEN. Geen tweede publicatie.';
+    updates.push(Object.freeze({
+      channel,previous:o.next_action,nextAction,owner,
+      code:'PUBLICATION_SCHEDULE_RECONCILED',
+      handoff:'ORIGINAL_DUE_TIME_RESTORED'
+    }));
+    unique.add(channel);
+  }
   return {ok:true,contract:PUBLICATION_HANDOFF_WRITEBACK_CONTRACT,
     updates,unresolved,alreadyIdentical,routedToOriginalOwner};
 }
