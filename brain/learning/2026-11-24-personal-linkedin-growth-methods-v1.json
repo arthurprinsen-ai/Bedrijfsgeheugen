@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|linkedin-personal|growth-methods-selection|20261124-v1",
+  "status": "CANDIDATE",
+  "owner": "original-powerhouse-editorial-and-social-analytics",
+  "root_cause": "Existing personal creative recipe emits only source-led shape without a bounded method hypothesis or comparable personal measurement selection.",
+  "fix": "Extend original recipe with one evidence-gated descriptive editorial hypothesis; preserve existing source/reviewer/publisher authority.",
+  "prevention_rule": "Missing metrics, duplicate provider URN, cross-channel/cohort/window, absent independent proof, insufficient sample cannot select a measured candidate. No causal winner or publication authority.",
+  "compiler": {
+    "failure_class": "PERSONAL_GROWTH_METHOD_APPLICATION_GAP",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-growth-methods-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-growth-methods-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-growth-methods-20261124.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_contract": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198#issuecomment-7124541382",
+    "original_skill": ".agents/skills/personal-linkedin-life-only/SKILL.md",
+    "original_recipe": "brain/creative/revenue-content-intelligence.mjs",
+    "observed_state": "SOURCE_CANDIDATE_ONLY; no runtime consumption or provider outcome claimed"
+  },
+  "terminal_rule": "Protected release, actual original analyst evidence handoff, exact next source-backed recipe use, independent publication/measurement and learning proof."
+}
