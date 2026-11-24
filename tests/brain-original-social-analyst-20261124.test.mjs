@@ -72,7 +72,8 @@ test('original orchestrator consumes sanitized personal guidance after channel p
  const orchestrator=await readFile(new URL('../supabase/functions/powerhouse-content-orchestrator/index.ts',import.meta.url),'utf8');
  assert.match(orchestrator,/personalLengthPreference\(pending.channel,linkedinLoop\?\.personal_observational_analysis\)/);
  assert.match(orchestrator,/if\(pending.channel==='linkedin_personal'\) editorialSystem \+= personalLengthInstruction/);
- assert.match(orchestrator,/correctionPrompt\+personalLengthInstruction/);
+ assert.match(orchestrator,/PERSONAL_LIFE_CORRECTION_PROMPT\)\+personalLengthInstruction;/);
+ assert.match(orchestrator,/callAI\(apiKey,gov\.model_id,correctionPrompt,revisionInput,artifactTool,budget,'low'\)/);
  assert.match(orchestrator,/generationProvider!=='approved-frozen-source'\?personalLengthDraftReceipt/);
  assert.match(orchestrator,/PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED/);
 });
