@@ -5,6 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {readCanonicalRows, evaluateOriginalOwnerHandoff} from './innovation-original-owner-readback.mjs';
 import {trustedBrainReadConfig} from './planned-action-review-audit.mjs';
 import {compileLearningEvaluationPlan, validateEvaluationContract} from './learning-canonicalization-gate.mjs';
+import {sourceQualityNextAction} from './innovation-original-delivery-continuity.mjs';
 
 export const CONTRACT='ORIGINAL_INNOVATION_BOUNDED_CODE_CANDIDATE_V1';
 export const WORK_ORDER='artifacts/quality/original-innovation-code-workorder.json';
@@ -25,6 +26,25 @@ const scopes=Object.freeze({
   'powerhouse-commercial-message-plan':[
     'supabase/functions/powerhouse-commercial-message-composer/index.ts'
   ]
+});
+// Exact historical fingerprints, not arbitrary candidate-provided paths.
+// The analyst must establish a current reproducible defect before changing code.
+const learningScopes=Object.freeze({
+  'portal-visual-density-oversized-responsive-cascade-v1':Object.freeze({
+    component:'portal-v2',
+    paths:Object.freeze(['portal-v2/csrd-impact.css','portal-v2/csrd-mobile-saas.css','portal-v2/app.css']),
+    action:'Reproduce current portal visual-density baseline using existing portal-visual-density contract and compare unchanged CSS with a minimal reversible challenger. Check all 24 route/viewport combinations and regression guards. If no current reproducible defect exists, do not modify code. Never claim production effect from local tests.'
+  }),
+  'approved-blog-stale-queue-existing-main-idempotency-v1':Object.freeze({
+    component:'approved-blog-publisher',
+    paths:Object.freeze(['scripts/publish_approved_blog_v2.py','scripts/brain/publish_approved_blog_v2_core.py']),
+    action:'Analyze current approved-blog stale-queue selection and exact existing-artifact reconciliation with synthetic fixtures and existing regression tests. Compare unchanged behavior and a minimal reversible fix only if a current defect is reproduced. Do not run the live publisher, network requests or queue writes. No code change if current behavior is correct.'
+  }),
+  'delivery-recovery|pipeline|backend|approved-blog-core-boundary-oracle-v1':Object.freeze({
+    component:'approved-blog-publisher',
+    paths:Object.freeze(['scripts/publish_approved_blog_v2.py','scripts/brain/publish_approved_blog_v2_core.py']),
+    action:'Analyze the current approved-blog wrapper/core behavior with existing offline regression fixtures, without modifying or weakening existing tests. Compare the current baseline with a minimal reversible challenger only for a reproduced implementation defect. Never invoke the live publisher, network or queue writes. If only a stale oracle or no defect is found, make no change and retain independent review.'
+  })
 });
 const priority=['powerhouse-decision-cycle-evidence',
   'powerhouse-sales-cycle-execution-read-model','powerhouse-commercial-message-plan'];
@@ -70,7 +90,11 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
     String(a.created_at).localeCompare(String(b.created_at)));
   let eligible=0,existing=0,held=0;
   for(const c of candidates){
-    if(!Object.hasOwn(scopes,c.component_id)){held++;continue;}
+    const learning=c.proposed_action?.kind==='bounded_learning_followup';
+    const learningKey=c.baseline?.quality_fingerprint;
+    const learningScope=learning&&Object.hasOwn(learningScopes,learningKey)?learningScopes[learningKey]:null;
+    const allowedPaths=learning?learningScope?.paths:scopes[c.component_id];
+    if(!allowedPaths||learning&&learningScope.component!==c.component_id){held++;continue;}
     const obligation=obligations.get(c.candidate_id),op=intakes.get('innovation-delivery:'+c.candidate_id);
     if(!obligation||!op)fail('ORIGINAL_IDENTITY_MISSING');
     const owner='agent:agent-integration-engineer';
@@ -86,7 +110,7 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
        op.correlation_id!=='innovation-delivery:'+c.candidate_id||
        op.idempotency_key!=='innovation-delivery:'+c.candidate_id+':'+obligation.payload_sha256.slice(0,16)||
        text(obligation.evidence?.source_revision)==='')fail('SOURCE_BINDING_INCOMPLETE');
-    const action=text(c.proposed_action?.action);
+    const action=learning?learningScope.action:text(c.proposed_action?.action);
     if(action.length<60||action.length>1800||!obj(c.rollback_plan)||
        !text(JSON.stringify(c.rollback_plan))){held++;continue;}
     if(!pre||pre.original_owner!==owner||
@@ -98,10 +122,25 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
        decision.source_revision!==obligation.evidence.source_revision||
        decision.source_sha256!==obligation.payload_sha256||
        decision.original_action_digest!==digest(c.proposed_action)||
-       decision.decision!=='CONCRETE_PROTECTED_CHANGE_PROPOSAL_DUE'||
-       decision.actionable_work_package!==true||
+       decision.decision!==(learning?'BASELINE_AND_EVALUATION_DESIGN_REQUIRED':'CONCRETE_PROTECTED_CHANGE_PROPOSAL_DUE')||
+       decision.actionable_work_package!==!learning||
        decision.production_mutation_authorized!==false||
        decision.consumer_ack_verified!==false)fail('ORIGINAL_OWNER_DECISION_CONFLICT');
+    let qualityAction=null;
+    if(learning){
+      const receipt=op.evidence?.original_evidence_reconciliation;
+      if(c.source_key!=='quality-learning-v1:'+learningKey||
+         c.proposed_action.source_quality_fingerprint!==learningKey||
+         c.proposed_action.human_review_required!==true||
+         c.proposed_action.direct_production_mutation!==false||
+         c.proposed_action.provider_dispatch_authorized!==false)fail('LEARNING_SOURCE_POLICY_CONFLICT');
+      // Unverified or absent historical source cannot authorize a work order.
+      if(!receipt||receipt.source_quality?.status!=='verified'||
+         receipt.source_quality?.regression_ref_present!==true){held++;continue;}
+      qualityAction=sourceQualityNextAction({candidate:c,obligation,operation:op,decision});
+      if(!qualityAction||qualityAction.historical_source_status!=='verified')
+        fail('LEARNING_SOURCE_RECEIPT_CONFLICT');
+    }
     // Reconcile exact prior protected PRs and no-change review in the ORIGINAL operation.
     // A no-change review is NOT implementation evidence; it only prevents repeat model
     // spend against the same source revision while independent evaluation is due.
@@ -147,7 +186,7 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
     const parent=c.proposed_action.parent_pr;
     if(parent!==undefined&&parent!==null){
       if(!/^[1-9][0-9]{2,5}$/.test(String(parent))||
-         !historicalParentFor(Number(parent),c,scopes[c.component_id])){
+         !historicalParentFor(Number(parent),c,allowedPaths)){
         held++;continue;
       }
     }
@@ -161,7 +200,10 @@ export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>f
       correlation_id:op.correlation_id,idempotency_key:op.idempotency_key,
       decision_fingerprint:decision.fingerprint,
       proposed_action:action,rollback:JSON.stringify(c.rollback_plan).slice(0,1200),
-      allowed_source_paths:scopes[c.component_id],
+      allowed_source_paths:allowedPaths,
+      work_kind:learning?'SOURCE_BOUND_BASELINE_CHALLENGER':'CONCRETE_PROTECTED_CHANGE',
+      source_quality_receipt_fingerprint:qualityAction?.receipt_fingerprint??null,
+      current_effect_verified:false,
       protected_review_required:true,automatic_production_mutation:false,
       candidate_pr_only:true,consumer_ack_verified:false});
   }
