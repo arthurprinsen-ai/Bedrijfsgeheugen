@@ -40,6 +40,45 @@ const fraction=(a,b)=>a!==null&&b!==null&&b>0?Number((a/b).toFixed(4)):null;
 const recentReceipt=(value,clock,hours=72)=>{const time=ms(value);return time!==null&&time<=clock+300000&&clock-time<=hours*3600000;};
 const trustedPostQualities=new Set(['OBSERVED','OBSERVED_PARTIAL_SCOPE','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED']);
 const trustedSourceQualities=new Set(['OBSERVED','OBSERVED_PARTIAL_SCOPE','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED']);
+
+// Mandatory KPI coverage for both existing LinkedIn owners. Post snapshots are
+// cumulative post counters, not daily account totals or deduplicated audience reach.
+export const LINKEDIN_KPI_CONTRACT=Object.freeze([
+ ['impressions_unique_reach','DAILY','original_social_analytics',['impressions','reach']],
+ ['substantive_comments','DAILY','original_social_analytics',['substantive_comments']],
+ ['shares_saves','DAILY','original_social_analytics',['shares','saved']],
+ ['profile_page_visits','DAILY','original_social_analytics',[]],
+ ['follower_growth','WEEKLY','original_social_analytics',[]],
+ ['qualified_conversations','DAILY','original_relationship_revenue',[]],
+ ['intake_meetings','WEEKLY','original_relationship_revenue',[]],
+ ['customer_conversion','WEEKLY','original_growth_revenue',[]],
+ ['attributed_revenue','MONTHLY','original_growth_revenue',[]],
+ ['growth_technique_effect','PER_EXPERIMENT','original_content_learning',[]]
+].map(([key,frequency,owner,postMetrics])=>Object.freeze({key,frequency,owner,postMetrics:Object.freeze(postMetrics)})));
+export function diagnoseLinkedInKpiCoverage(evidence={},at=new Date()){
+ const rows=Array.isArray(evidence.social)?evidence.social.slice(0,300):[];
+ return ['linkedin_personal','linkedin_company'].map(channel=>{
+  const proof=channel==='linkedin_personal'?'personal_publication_verified':'company_publication_verified';
+  const owned=rows.filter(row=>socialChannel(row)===channel);
+  const recent=evidence.state==='READ_ONLY_PROVIDER_OBSERVED'?owned.filter(row=>{
+   const observed=ms(row.observed_at),published=ms(row.published_at);
+   return row[proof]===true&&/^urn:li:(share|ugcPost):[0-9]+$/.test(String(row.external_post_id||''))&&typeof row.source_event_id==='string'&&row.source_event_id.trim()&&['OBSERVED','PROVIDER_OBSERVED'].includes(row.data_quality)&&published!==null&&observed!==null&&observed>=published&&observed<=at.getTime()&&at.getTime()-observed<=24*3600000;
+  }):[];
+  const unique=recent.filter((row,i,all)=>all.filter(x=>x.external_post_id===row.external_post_id).length===1);
+  const kpis=LINKEDIN_KPI_CONTRACT.map(({key,frequency,owner,postMetrics})=>{
+   const coverage=Object.fromEntries(postMetrics.map(metric=>[metric,unique.filter(row=>row.metrics?.[metric+'_unavailable']!==true&&strictCount(row.metrics?.[metric])!==null).length]));
+   const complete=postMetrics.length?unique.filter(row=>postMetrics.every(metric=>row.metrics?.[metric+'_unavailable']!==true&&strictCount(row.metrics?.[metric])!==null)).length:0;
+   return {key,frequency,owner,value:null,post_metric_coverage:coverage,complete_post_samples:complete,
+    state:postMetrics.length?(complete?'POST_SNAPSHOTS_AVAILABLE_PERIOD_TOTAL_UNVERIFIED':'MISSING_OR_PARTIAL_POST_EVIDENCE'):'ORIGINAL_OWNER_PERIOD_EVIDENCE_REQUIRED',
+    next_action:postMetrics.length?'VERIFY_PROVIDER_PERIOD_AND_COVERAGE':'REQUIRE_ORIGINAL_OWNER_PERIOD_RECEIPT',
+    // Do not sum cumulative reach, substitute comments for substantive comments,
+    // or attribute customer/revenue outcomes from likes or clicks.
+    coverage_is_not_kpi_result:true};
+  });
+  return {channel,kpis,verified_recent_post_snapshots:unique.length,registered_posts:owned.length,all_kpis_proven:false,authorizesPublication:false};
+ });
+}
+
 export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
  const at=now instanceof Date?now:new Date(now);
  if(Number.isNaN(at.getTime()))throw Error('INVALID_DIAGNOSTIC_CLOCK');
@@ -119,7 +158,7 @@ export function diagnoseDailyPerformance({evidence={},now=new Date()}={}){
  return {
    contract:'POWERHOUSE-DAILY-POST-BLOG-CONVERSION-DIAGNOSTICS-v1',generated_at:at.toISOString(),
    source_state,source_quality:sourceMap,source_gaps:gaps,social_posts:social,
-   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),personal_growth:diagnosePersonalGrowth(evidence,at),company_content_variation:diagnoseCompanyContentVariation(evidence,at),website_pages:pages,
+   social_channel_trends:buildChannelTrends(evidence.social,{now:at}),personal_growth:diagnosePersonalGrowth(evidence,at),company_content_variation:diagnoseCompanyContentVariation(evidence,at),linkedin_kpi_coverage:diagnoseLinkedInKpiCoverage(evidence,at),website_pages:pages,
    next_day_hypotheses:actions.slice(0,6),
    action_gate:'REVIEW_IN_EXISTING_EXPERIMENT_AND_PROTECTED_PUBLICATION_LANE',
    instructions:'No inference of low views without comparable cohort; missing metrics are unknown not zero. No cause claim without experiment, and no revenue without paid order readback.',
