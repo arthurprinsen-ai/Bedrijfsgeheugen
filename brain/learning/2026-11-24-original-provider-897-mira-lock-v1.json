@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|delivery|original-provider-897-mira-lock-one-behind|20261124-v1",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs",
+      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs",
+      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-896-source-parity-20261124.test.mjs",
+      "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+      "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Native protected GitOps applied the previously pending Mira migration after #6145 restored four historical migrations; main ledger still at 896. Historical 896 test must replay that fixed population independently of current exact ledger parity.",
+  "evidence": {
+    "native_project": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-24T15:35:21.421985Z",
+    "git_base": "b846dbfca8092b443ffae09d491c8458a32de423",
+    "original_recovery_pr": 6145,
+    "original_mira_pr": 6138,
+    "prior_lock": 896,
+    "native_total": 897,
+    "old_identity_mismatches": 0,
+    "source_version": "20261124063700",
+    "source_name": "mira_original_exact_job_claim_v1",
+    "source_blob": "2408396c3423e7c93c1d1b58d65d921c21737482",
+    "native_reconstructed_md5": "5845ceab54cf74d0d366578f1fd7cdb7",
+    "matched_statements": 5,
+    "source_exact": true,
+    "acl": {
+      "public": false,
+      "anon": false,
+      "authenticated": false,
+      "service_role": true,
+      "search_path": "public, pg_catalog"
+    },
+    "native_main_state": "FUNCTIONS_DEPLOYED",
+    "terminal_closure_brain_failed_run": 45398191368,
+    "innovation_release": 6137,
+    "terminal_brain_historical_afas_regression": {
+      "run": 45398191368,
+      "job": 138460066224,
+      "original_observed_ledger": 896,
+      "expected_historical_population": 890,
+      "root": "historical fixtures incorrectly consume current ledger",
+      "fix": "pin historical population through exact provider version 20261122162147; retain complete current inventory and negative guard tests",
+      "tests": [
+        "tests/brain-portal-connector-afas-provider-migration-parity-v1.test.mjs",
+        "tests/brain-verified-afas-890-source-reconciliation-v1.test.mjs"
+      ]
+    }
+  },
+  "prevention": {
+    "no_sql_replay": true,
+    "no_provider_history_edit": true,
+    "preserve_all_896_identities": true,
+    "current_inventory_exact": true,
+    "historical_replay_preserved": true,
+    "verify_protected_merge_and_native_readback": true
+  },
+  "release_state": "PROTECTED_SOURCE_CANDIDATE_PENDING",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}
