@@ -6,7 +6,7 @@
   "status": "CANDIDATE",
   "owner": "original-powerhouse-editorial-and-social-analytics",
   "root_cause": "Existing personal creative recipe emits only source-led shape without a bounded method hypothesis or comparable personal measurement selection.",
-  "fix": "Extend original recipe with one evidence-gated descriptive editorial hypothesis; preserve existing source/reviewer/publisher authority. Existing bounded collector and daily diagnostics now project exact verified personal publication and provider-event evidence into the original method selector; no generic commercial CTA action for personal. No claim of editor consumption. Add nine source-led personal method candidates and a repeated-method challenger plus separate company format and family rotation with explicit source eligibility and verified recent history. Preserve original recipes and company/personal boundaries. Mandatory ten KPI coverage per channel in original diagnostics, strict observed post source and owner routing for missing period data.",
+  "fix": "Extend original recipe with one evidence-gated descriptive editorial hypothesis; preserve existing source/reviewer/publisher authority. Existing bounded collector and daily diagnostics now project exact verified personal publication and provider-event evidence into the original method selector; no generic commercial CTA action for personal. No claim of editor consumption. Add nine source-led personal method candidates and a repeated-method challenger plus separate company format and family rotation with explicit source eligibility and verified recent history. Preserve original recipes and company/personal boundaries. Mandatory ten KPI coverage per channel in original diagnostics, strict observed post source and owner routing for missing period data. Explicitly bridge only original bedrijfsgeheugen LinkedIn company registry to canonical company obligation by exact provider ID and live_proven_at; preserve personal isolation. Native readback 41/41 vs 0/41 incorrect same-tenant match.",
   "prevention_rule": "Missing metrics, duplicate provider URN, cross-channel/cohort/window, absent independent proof, insufficient sample cannot select a measured candidate. No causal winner or publication authority. No rotation of unapproved media, no causal result or applied-learning claim from a recommendation.",
   "compiler": {
     "failure_class": "PERSONAL_GROWTH_METHOD_APPLICATION_GAP",
@@ -47,7 +47,19 @@
       "https://contentmarketinginstitute.com/content-marketing-strategy/4-part-guide-to-crafting-a-winning-content-plan",
       "https://contentmarketinginstitute.com/content-distribution-promotion/how-to-measure-content-marketing-the-updated-essential-guide"
     ],
-    "kpi_user_instruction": "24 November 2026 user screenshot: 5 daily groups, 3 weekly, 1 monthly, 1 per experiment"
+    "kpi_user_instruction": "24 November 2026 user screenshot: 5 daily groups, 3 weekly, 1 monthly, 1 per experiment",
+    "original_company_publication_owner": {
+      "observed_at": "2026-11-24",
+      "project": "adhjwmvyoixzjtmiroln",
+      "registry_tenant": "bedrijfsgeheugen",
+      "obligation_tenant": "canonical",
+      "channel": "linkedin_company",
+      "registered_posts_180d": 41,
+      "exact_original_proof": 41,
+      "incorrect_same_tenant_matches": 0,
+      "personal_registry_posts": 54,
+      "personal_exact_original_proof": 20
+    }
   },
   "terminal_rule": "Protected release, actual original analyst evidence handoff, exact next source-backed recipe use, independent publication/measurement and learning proof. Require actual exact method tag and next editor consumption proof, not just analyst projection. All KPI periods require original owner receipts; coverage is not value."
 }
