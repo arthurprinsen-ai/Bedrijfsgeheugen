@@ -115,7 +115,26 @@ function stableIndex(value,length){
   return length?hash%length:0;
 }
 
-export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=''}={}){
+// Personal editorial experiments are recommendations only: never a source or send permit.
+const PERSONAL_GROWTH_METHODS=['concrete_detail','source_led_structure','natural_reflection'];
+export function selectPersonalGrowthMethod({mode='EXPLORE',seed='',cohortId='',observations=[]}={}){
+  const fallback=()=>({method:PERSONAL_GROWTH_METHODS[stableIndex(seed,PERSONAL_GROWTH_METHODS.length)],decision:'CONTROLLED_EXPLORATION',measurement:'NOT_MEASURED',authorizesPublication:false});
+  if(mode!=='EXPLOIT'||!String(cohortId).trim()||!Array.isArray(observations))return fallback();
+  const seen=new Set(), duplicate=new Set(), valid=[];
+  for(const row of observations){
+    if(!row||row.channel!=='linkedin_personal'||row.cohortId!==cohortId||row.format!=='text_story'||row.windowHours!==48||row.providerReadbackVerified!==true||!PERSONAL_GROWTH_METHODS.includes(row.method)||!/^urn:li:(share|ugcPost):[0-9]+$/.test(String(row.providerPostId||''))||!Number.isInteger(row.impressions)||row.impressions<=0||!Number.isInteger(row.substantiveComments)||row.substantiveComments<0)continue;
+    if(seen.has(row.providerPostId))duplicate.add(row.providerPostId);
+    seen.add(row.providerPostId); valid.push(row);
+  }
+  const comparable=PERSONAL_GROWTH_METHODS.map(method=>{
+    const rows=valid.filter(row=>row.method===method&&!duplicate.has(row.providerPostId));
+    return {method,sample:rows.length,rate:rows.length?rows.reduce((sum,row)=>sum+row.substantiveComments/row.impressions,0)/rows.length:null};
+  }).filter(group=>group.sample>=5).sort((a,b)=>b.rate-a.rate);
+  if(comparable.length<2||comparable[0].rate-comparable[1].rate<=0.001)return fallback();
+  return {method:comparable[0].method,decision:'OBSERVATIONAL_CANDIDATE',measurement:'COMPARABLE_48H_PERSONAL_POSTS',comparison:comparable,authorizesPublication:false,causalLiftProven:false};
+}
+
+export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed='',personalGrowthEvidence={}}={}){
   const identity=`${seed}:${opportunity.topic||''}:${opportunity.pain||''}:${mode}`;
   const discovery=needDiscoveryLayer(opportunity);
   if(channel==='linkedin_personal'){
@@ -147,6 +166,7 @@ export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=
       lengthPolicy:'only_as_long_as_the_event_needs',
       compareRecentPostsFor:['opening','narrative_arc','length','humor','ending'],
       objective:'authentic_personal_conversation',
+      personalGrowthHypothesis:selectPersonalGrowthMethod({mode,seed,cohortId:personalGrowthEvidence?.cohortId,observations:personalGrowthEvidence?.observations}),
       // Business radar opportunities are not evidence of Arthur's life.
       topic:null,
       guardrails:[
