@@ -34,6 +34,7 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
  const token=typeof raw==='number'?raw:typeof raw==='string'&&/^[1-9]\d*$/.test(raw)?Number(raw):NaN;
  requireCondition(Array.isArray(rows)&&rows.length===1&&positive(token),'ACQUIRE_NOT_CONFIRMED');
  const db=createSupabaseLeaseVerifier({query:authorizedPgQuery});
+ let prepareAttempted=false,readbackComplete=false;
  try {
    const verify=async()=>requireCondition(await db.verifyLease({obligation,holder,token,branch,head,main}),'REVIEWED_LEASE_LOST');
    await verify();
@@ -45,24 +46,15 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
    // A lost/ambiguous reply leaves the global reservation unresolved, never retryable.
    const pendingRevision=revision+1;
    requireCondition(positive(pendingRevision),'PREWRITE_REVISION_INVALID');
-   const intent={repository:REPO,...expected,generation,revision:pendingRevision,commit:prepared.commit,tree:prepared.tree};
+   const intent={repository:REPO,state:'prewrite_pending',...expected,generation,revision:pendingRevision,commit:prepared.commit,tree:prepared.tree};
    const intentDigest=createHash('sha256').update(JSON.stringify(intent)).digest('hex');
-   const args=[REPO,holder,generation,revision,manifest.prNumber,head,main,expected.manifestSha256,branch,obligation,prepared.commit,prepared.tree,intentDigest];
-   const persisted=await authorizedPgQuery('select generation, revision, state from delivery_control.prepare_prewrite($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',args);
-   requireCondition(persisted?.length===1&&safeInteger(persisted[0].generation)===generation&&safeInteger(persisted[0].revision)===pendingRevision&&persisted[0].state==='prewrite_pending','PREWRITE_INTENT_NOT_CONFIRMED');
-   const proof=await authorizedPgQuery(`select exists (select 1 from delivery_control.promotion_reservation r
-     join delivery_control.promotion_prewrite_intent i on i.repository=r.repository and i.generation=r.generation and i.revision=r.revision
-     join delivery_control.promotion_reservation_event e on e.repository=i.repository and e.generation=i.generation and e.revision=i.revision
-     where r.repository=$1 and r.holder=$2 and r.generation=$3 and r.revision=$4::bigint+1 and r.pr_number=$5 and r.head_sha=$6 and r.main_sha=$7 and r.manifest_digest=$8
-     and r.state='prewrite_pending' and r.valid_until>clock_timestamp()
-     and i.holder=r.holder and i.pr_number=r.pr_number and i.head_sha=r.head_sha and i.main_sha=r.main_sha and i.manifest_digest=r.manifest_digest
-     and i.branch=$9 and i.obligation=$10 and i.commit_sha=$11 and i.tree_sha=$12 and i.intent_digest=$13
-     and e.action='prepare_prewrite' and e.state=r.state and e.holder=r.holder and e.pr_number=r.pr_number and e.head_sha=r.head_sha and e.main_sha=r.main_sha and e.manifest_digest=r.manifest_digest and e.evidence_digest=$13) as verified`,args);
-   requireCondition(proof?.length===1&&proof[0].verified===true,'PREWRITE_INTENT_READBACK_UNPROVEN');
+   prepareAttempted=true;
+   const proof=await prepareReviewedPrewrite({intent:{...intent,intentDigest},authorizedPgQuery});
+   requireCondition(proof.state==='PREWRITE_DURABLE_INTENT_OBSERVED_OWNER_REVIEW',proof.state);
    // A database record is not provider exclusivity. The protected native adapter
    // must independently attest the exact pending generation/revision and object.
    const pending=await slot.readPendingReservation({...intent,intentDigest});
-   requireCondition(pending?.state==='EXCLUSIVE_PREWRITE_PENDING'&&pending.providerEnforced===true&&pending.mutationAuthority===true&&pending.nativeBypassDenied===true&&pending.appId===5916428&&pending.activeGrantCount===0&&[...Object.keys(intent),'intentDigest'].every(k=>pending[k]===(k==='intentDigest'?intentDigest:intent[k])),'MAIN_WIDE_PENDING_PROVIDER_FENCE_UNPROVEN');
+   requireCondition(pending?.state==='EXCLUSIVE_PREWRITE_PENDING'&&pending.providerEnforced===true&&pending.mutationAuthority===true&&pending.nativeBypassDenied===true&&pending.appId===5916428&&pending.activeGrantCount===0&&[...Object.keys(intent).filter(k=>k!=='state'),'intentDigest'].every(k=>pending[k]===(k==='intentDigest'?intentDigest:intent[k])),'MAIN_WIDE_PENDING_PROVIDER_FENCE_UNPROVEN');
    await identity(); await verify();
    // Provider must perform exact expected-old-ref CAS; a plain REST fast-forward
    // or force=true update is not sufficient. Do not retry an ambiguous response.
@@ -72,10 +64,14 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
    const commit=await transport.readCommit(prepared.commit);
    requireCondition(commit?.sha===prepared.commit&&commit.tree===prepared.tree&&Array.isArray(commit.parents)&&commit.parents.length===2&&commit.parents[0]===head&&commit.parents[1]===main,'CAS_COMMIT_READBACK_MISMATCH');
    requireCondition(await github.readHead('main')===main,'MAIN_MOVED_AFTER_CAS_RECONCILE_ONLY');
+   readbackComplete=true;
    return Object.freeze({status:'PUBLISHED_PENDING_FULL_BRAIN',newHead:prepared.commit,tree:prepared.tree,leaseGeneration:token,slotRevision:pendingRevision,slotGeneration:generation,globalReservationResolved:false,mergeAuthorized:false,productionVerified:false});
  }finally{
+   // Even an ambiguous prepare may have committed. Retain lease until proven readback.
+   if(!prepareAttempted||readbackComplete){
    const released=await authorizedPgQuery('select writer_control.release($1,$2,$3) as released',[obligation,holder,token]);
    requireCondition(released?.length===1&&released[0].released===true,'WRITER_LEASE_RELEASE_NOT_CONFIRMED');
+   }
  }
 }
 
@@ -136,4 +132,47 @@ export async function collectPrewriteReadback({intent,github}={}) {
   const observation=Object.freeze({...id,independentReadback:true,mainBefore,branchBefore,mainAfter,branchAfter,commitObject,transportOutcome:'ambiguous',credentialQuiescenceVerified:false,inFlightTransportExcluded:false});
   return Object.freeze({...classifyPrewriteResolution({intent,observation}),observation});
  }catch{return hold('NATIVE_READBACK_UNAVAILABLE')}
+}
+
+// Staging-only adapter for the existing durable SQL intent contract.
+// This adapter never transports, grants, retries or resolves a reservation.
+// A lost response can mean the intent committed: fail closed and reconcile.
+export async function prepareReviewedPrewrite({intent,authorizedPgQuery}={}) {
+ const result=state=>Object.freeze({state,mutationAuthority:false,releaseAuthorized:false,retryAuthorized:false,mergeAuthorized:false});
+ if(classifyPrewriteResolution({intent,observation:null}).state==='INTENT_IDENTITY_UNPROVEN'||
+    !positive(intent.revision-1)||!HASH.test(intent.intentDigest||''))
+  return result('PREWRITE_INPUT_UNPROVEN');
+ if(typeof authorizedPgQuery!=='function')return result('PREWRITE_SQL_ADAPTER_REQUIRED');
+ const i=Object.freeze({...intent});
+ const numberEquals=(value,expected)=>value===expected||(typeof value==='string'&&/^[1-9][0-9]*$/.test(value)&&value===String(expected));
+ try {
+  const rows=await authorizedPgQuery(
+   'select generation,revision,state from delivery_control.prepare_prewrite($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
+   [i.repository,i.holder,i.generation,i.revision-1,i.prNumber,i.head,i.main,i.manifestSha256,i.branch,i.obligation,i.commit,i.tree,i.intentDigest]);
+  if(!Array.isArray(rows)||rows.length!==1||!numberEquals(rows[0].generation,i.generation)||
+     !numberEquals(rows[0].revision,i.revision)||rows[0].state!=='prewrite_pending')
+   return result('PREWRITE_PREPARE_UNCONFIRMED');
+ } catch {return result('PREWRITE_PREPARE_UNCONFIRMED')}
+ try {
+  const rows=await authorizedPgQuery(
+   `select i.repository,i.generation,i.revision,i.holder,i.pr_number,i.head_sha,i.main_sha,i.branch,i.obligation,
+    i.commit_sha,i.tree_sha,i.manifest_digest,i.intent_digest,e.evidence_digest,r.state
+    from delivery_control.promotion_prewrite_intent i
+    join delivery_control.promotion_reservation r on r.repository=i.repository and r.generation=i.generation
+     and r.revision=i.revision and r.holder=i.holder and r.pr_number=i.pr_number and r.head_sha=i.head_sha
+     and r.main_sha=i.main_sha and r.manifest_digest=i.manifest_digest
+    join delivery_control.promotion_reservation_event e on e.repository=i.repository and e.generation=i.generation
+     and e.revision=i.revision and e.holder=i.holder and e.pr_number=i.pr_number and e.head_sha=i.head_sha
+     and e.main_sha=i.main_sha and e.manifest_digest=i.manifest_digest and e.action='prepare_prewrite' and e.state=r.state
+    where i.repository=$1 and i.generation=$2 and r.state='prewrite_pending' and r.valid_until>clock_timestamp()`,
+   [i.repository,i.generation]);
+  const r=rows?.[0];
+  if(!Array.isArray(rows)||rows.length!==1||r.state!=='prewrite_pending'||!numberEquals(r.generation,i.generation)||
+     !numberEquals(r.revision,i.revision)||!numberEquals(r.pr_number,i.prNumber)||
+     r.repository!==i.repository||r.holder!==i.holder||r.head_sha!==i.head||r.main_sha!==i.main||
+     r.branch!==i.branch||r.obligation!==i.obligation||r.commit_sha!==i.commit||r.tree_sha!==i.tree||
+     r.manifest_digest!==i.manifestSha256||r.intent_digest!==i.intentDigest||r.evidence_digest!==i.intentDigest)
+   return result('PREWRITE_DURABLE_READBACK_UNPROVEN');
+  return result('PREWRITE_DURABLE_INTENT_OBSERVED_OWNER_REVIEW');
+ }catch{return result('PREWRITE_DURABLE_READBACK_UNAVAILABLE')}
 }
