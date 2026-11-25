@@ -22,5 +22,12 @@
     "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
     "isolated_assertions_passed": 21,
     "production_verified": false
+  },
+  "compiler": {
+    "failure_class": "CI_EVENT_ADMISSION_UNPROVEN",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
