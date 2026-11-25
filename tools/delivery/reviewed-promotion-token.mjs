@@ -8,7 +8,8 @@ const APP_ID=5916428;
 const INSTALLATION_ID=185660155;
 const need=(v,c)=>{if(v!==true)throw Error(c)};
 const statusOnly=p=>p&&p.statuses==='write'&&p.metadata==='read'&&Object.keys(p).length===2;
-const safeToken=t=>typeof t==='string'&&/^ghs_[A-Za-z0-9_-]+$/.test(t);
+// Provider-issued credential is opaque; only enforce safe Bearer transport syntax.
+const safeToken=t=>typeof t==='string'&&/^[A-Za-z0-9._~+/-]+=*$/.test(t);
 export async function proveScopedPromotionToken({appId,privateKey,fetchImpl=globalThis.fetch,now=Date.now()}){
  need(appId===APP_ID,'PROMOTION_APP_ID_UNPROVEN');
  let appAuth;

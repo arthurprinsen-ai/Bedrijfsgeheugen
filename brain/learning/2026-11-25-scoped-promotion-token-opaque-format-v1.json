@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "delivery|scoped-promotion-token-opaque-format|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "Original #4661 release-control owner",
+  "root_cause": "Legacy token regex rejects dots in current provider stateless format; native failure after HTTP 201 leaves issuance/revocation uncertain.",
+  "fix": "Treat token as opaque with Bearer transport syntax, exercise old/new/future token shapes and reject unsafe header bytes.",
+  "prevention_rule": "Use provider's documented opaque credential contract, never parse or log tokens, no retry before ambiguous token expiry or proven revocation.",
+  "compiler": {
+    "failure_class": "PROVIDER_TOKEN_FORMAT_DRIFT",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-writer-reviewed-promotion-token.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-writer-reviewed-promotion-token.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-writer-reviewed-promotion-token.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45573089520/job/139064281954",
+    "provider_contract": "https://github.blog/changelog/2026-10-02-stateless-github-app-installation-tokens-rolled-out/",
+    "observed": "PROMOTION_TOKEN_ISSUANCE_AMBIGUOUS",
+    "retry_not_before": "2026-11-25T09:06:00Z",
+    "production_verified": false
+  }
+}
