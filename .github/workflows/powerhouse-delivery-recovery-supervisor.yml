@@ -6,6 +6,11 @@ on:
   # another repository-wide recovery scan.
   workflow_dispatch:
     inputs:
+      release_app_auth_probe:
+        description: 'Read-only dedicated App authentication proof (no grant or ref writes)'
+        type: boolean
+        required: false
+        default: false
       patch_handoff:
         description: 'Run protected v6 patch handoff (requires separately approved manifest)'
         type: boolean
@@ -28,7 +33,7 @@ concurrency:
 
 jobs:
   supervise:
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.patch_handoff != true)
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.patch_handoff != true && inputs.release_app_auth_probe != true)
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -640,7 +645,7 @@ jobs:
           done < <(jq -c '.[] | select(.merged_at != null)' <<<"$closed")
 
   authorized-patch-handoff:
-    if: github.event_name == 'workflow_dispatch' && inputs.patch_handoff == true && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && inputs.patch_handoff == true && inputs.release_app_auth_probe != true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: writer-patch-approval
     timeout-minutes: 8
@@ -671,3 +676,36 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           WRITER_HOLDER: github-actions:${{ github.run_id }}:${{ github.run_attempt }}
         run: node scripts/ci/authorized-writer-handoff.mjs
+
+  release-app-auth-proof:
+    if: github.event_name == 'workflow_dispatch' && inputs.release_app_auth_probe == true && inputs.patch_handoff != true && github.ref == 'refs/heads/main' && github.repository == 'arthurprinsen-ai/Bedrijfsgeheugen'
+    runs-on: ubuntu-latest
+    environment: powerhouse-release-controller
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify dedicated App identity and scoped installation (read-only)
+        env:
+          RELEASE_APP_ID: ${{ vars.POWERHOUSE_RELEASE_APP_ID }}
+          RELEASE_APP_KEY: ${{ secrets.POWERHOUSE_RELEASE_APP_PRIVATE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node --input-type=module <<'JS'
+          import { verifyReleaseApp } from './tools/delivery/release-app-identity.mjs';
+          try {
+            if (process.env.GITHUB_REF !== 'refs/heads/main' || process.env.GITHUB_REPOSITORY !== 'arthurprinsen-ai/Bedrijfsgeheugen' || process.env.RELEASE_APP_ID !== '5916428') throw Error('APP_PROBE_CONTEXT_DENIED');
+            const proof = await verifyReleaseApp({appId: Number(process.env.RELEASE_APP_ID), privateKey: process.env.RELEASE_APP_KEY});
+            console.log(JSON.stringify({state:proof.state,appId:proof.appId,installationId:proof.installationId,repository:proof.repository,authenticated:proof.authenticated,mutationAuthority:false,executionSha:process.env.GITHUB_SHA}));
+          } catch (err) {
+            const code = String(err?.message || '');
+            console.error(/^APP_[A-Z_]+(?:[0-9]+)?$|^DEDICATED_APP_CREDENTIAL_REQUIRED$/.test(code) ? code : 'APP_PROBE_FAILED');
+            process.exitCode = 1;
+          }
+          JS
