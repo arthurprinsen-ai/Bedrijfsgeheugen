@@ -1,20 +1,23 @@
 // Reviewed union transport boundary. Never called by the production entrypoint
 // until an independent, provider-enforced main-wide reservation exists.
+import { createHash } from 'node:crypto';
 import { createSupabaseLeaseVerifier } from './writer-real-adapters.mjs';
 const SHA=/^[a-f0-9]{40}$/;
 const HASH=/^[a-f0-9]{64}$/;
 const positive=n=>Number.isSafeInteger(n)&&n>0;
+const safeInteger=n=>typeof n==='string'&&/^[1-9]\d*$/.test(n)?Number(n):n;
+const REPO='arthurprinsen-ai/Bedrijfsgeheugen';
 function requireCondition(ok,code){if(ok!==true)throw Error(code);}
 export async function publishReviewedUnion({manifest,preflight,prepared,holder,authorizedPgQuery,github,slot,transport,ttlSeconds=120}){
  const head=manifest?.expectedHead, main=preflight?.executionMainSha, branch=manifest?.branch, obligation=manifest?.obligation;
  requireCondition(!!prepared&&!!preflight&&HASH.test(preflight.manifestSha256||'')&&prepared.manifestSha256===preflight.manifestSha256&&prepared.state==='PREPARED_NOT_PUBLISHED'&&prepared.writeAuthorized===false&&preflight.writeAuthorized===false&&head===prepared.head&&head===preflight.headSha&&main===prepared.main&&branch===preflight.branch&&obligation===preflight.obligation&&manifest.expectedBase===preflight.prBaseSha&&[head,main,prepared.commit,prepared.tree].every(s=>typeof s==='string'&&SHA.test(s))&&prepared.commit!==head&&prepared.commit!==main,'UNION_IDENTITY_UNPROVEN');
  requireCondition(typeof branch==='string'&&branch!=='main'&&branch.length>0&&typeof obligation==='string'&&obligation.length>0&&typeof holder==='string'&&/^github-actions:\d+:\d+$/.test(holder)&&positive(manifest.prNumber)&&positive(ttlSeconds)&&ttlSeconds<=300,'REVIEWED_WRITER_CONTEXT_INVALID');
- requireCondition(typeof authorizedPgQuery==='function'&&typeof github?.readReviewedPR==='function'&&typeof github?.readHead==='function'&&typeof slot?.readReservation==='function'&&typeof transport?.inspect==='function'&&typeof transport?.pushExact==='function'&&typeof transport?.readCommit==='function','REVIEWED_CAS_ADAPTER_REQUIRED');
+ requireCondition(typeof authorizedPgQuery==='function'&&typeof github?.readReviewedPR==='function'&&typeof github?.readHead==='function'&&typeof slot?.readReservation==='function'&&typeof slot?.readPendingReservation==='function'&&typeof transport?.inspect==='function'&&typeof transport?.pushExact==='function'&&typeof transport?.readCommit==='function','REVIEWED_CAS_ADAPTER_REQUIRED');
  const expected={prNumber:manifest.prNumber,head,main,branch,obligation,holder,manifestSha256:preflight.manifestSha256};
  const readSlot=async()=>{
    const s=await slot.readReservation(expected);
-   requireCondition(s?.state==='EXCLUSIVE_PREWRITE_RESERVED'&&s.providerEnforced===true&&s.mutationAuthority===true&&s.appId===5916428&&positive(s.revision)&&s.prNumber===expected.prNumber&&s.head===head&&s.main===main&&s.branch===branch&&s.obligation===obligation&&s.holder===holder&&s.manifestSha256===expected.manifestSha256&&s.activeGrantCount===0&&s.nativeBypassDenied===true,'MAIN_WIDE_PROVIDER_RESERVATION_UNPROVEN');
-   return s.revision;
+   requireCondition(s?.state==='EXCLUSIVE_PREWRITE_RESERVED'&&s.providerEnforced===true&&s.mutationAuthority===true&&s.appId===5916428&&positive(s.generation)&&positive(s.revision)&&s.prNumber===expected.prNumber&&s.head===head&&s.main===main&&s.branch===branch&&s.obligation===obligation&&s.holder===holder&&s.manifestSha256===expected.manifestSha256&&s.activeGrantCount===0&&s.nativeBypassDenied===true,'MAIN_WIDE_PROVIDER_RESERVATION_UNPROVEN');
+   return Object.freeze({generation:s.generation,revision:s.revision});
  };
  const identity=async()=>{
    const p=await github.readReviewedPR(manifest.prNumber);
@@ -25,7 +28,7 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
  const object=await transport.inspect(prepared.commit);
  requireCondition(object?.tree===prepared.tree&&Array.isArray(object.parents)&&object.parents.length===2&&object.parents[0]===head&&object.parents[1]===main,'UNION_OBJECT_MISMATCH');
  await identity();
- const revision=await readSlot(); // no lease acquisition on an unproven global slot
+ const reserved=await readSlot(); const {generation,revision}=reserved; // no lease acquisition on an unproven global slot
  const rows=await authorizedPgQuery('select token, valid_until from writer_control.acquire($1,$2,$3,$4,$5,$6)',[obligation,holder,branch,head,main,ttlSeconds]);
  const raw=rows?.[0]?.token;
  const token=typeof raw==='number'?raw:typeof raw==='string'&&/^[1-9]\d*$/.test(raw)?Number(raw):NaN;
@@ -35,17 +38,41 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
    const verify=async()=>requireCondition(await db.verifyLease({obligation,holder,token,branch,head,main}),'REVIEWED_LEASE_LOST');
    await verify();
    await identity();
-   requireCondition(await readSlot()===revision,'MAIN_WIDE_RESERVATION_CHANGED');
+   const again=await readSlot();
+   requireCondition(again.revision===revision&&again.generation===generation,'MAIN_WIDE_RESERVATION_CHANGED');
    await verify();
+   // Persist the exact write intent atomically before any irreversible transport.
+   // A lost/ambiguous reply leaves the global reservation unresolved, never retryable.
+   const pendingRevision=revision+1;
+   requireCondition(positive(pendingRevision),'PREWRITE_REVISION_INVALID');
+   const intent={repository:REPO,...expected,generation,revision:pendingRevision,commit:prepared.commit,tree:prepared.tree};
+   const intentDigest=createHash('sha256').update(JSON.stringify(intent)).digest('hex');
+   const args=[REPO,holder,generation,revision,manifest.prNumber,head,main,expected.manifestSha256,branch,obligation,prepared.commit,prepared.tree,intentDigest];
+   const persisted=await authorizedPgQuery('select generation, revision, state from delivery_control.prepare_prewrite($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',args);
+   requireCondition(persisted?.length===1&&safeInteger(persisted[0].generation)===generation&&safeInteger(persisted[0].revision)===pendingRevision&&persisted[0].state==='prewrite_pending','PREWRITE_INTENT_NOT_CONFIRMED');
+   const proof=await authorizedPgQuery(`select exists (select 1 from delivery_control.promotion_reservation r
+     join delivery_control.promotion_prewrite_intent i on i.repository=r.repository and i.generation=r.generation and i.revision=r.revision
+     join delivery_control.promotion_reservation_event e on e.repository=i.repository and e.generation=i.generation and e.revision=i.revision
+     where r.repository=$1 and r.holder=$2 and r.generation=$3 and r.revision=$4::bigint+1 and r.pr_number=$5 and r.head_sha=$6 and r.main_sha=$7 and r.manifest_digest=$8
+     and r.state='prewrite_pending' and r.valid_until>clock_timestamp()
+     and i.holder=r.holder and i.pr_number=r.pr_number and i.head_sha=r.head_sha and i.main_sha=r.main_sha and i.manifest_digest=r.manifest_digest
+     and i.branch=$9 and i.obligation=$10 and i.commit_sha=$11 and i.tree_sha=$12 and i.intent_digest=$13
+     and e.action='prepare_prewrite' and e.state=r.state and e.holder=r.holder and e.pr_number=r.pr_number and e.head_sha=r.head_sha and e.main_sha=r.main_sha and e.manifest_digest=r.manifest_digest and e.evidence_digest=$13) as verified`,args);
+   requireCondition(proof?.length===1&&proof[0].verified===true,'PREWRITE_INTENT_READBACK_UNPROVEN');
+   // A database record is not provider exclusivity. The protected native adapter
+   // must independently attest the exact pending generation/revision and object.
+   const pending=await slot.readPendingReservation({...intent,intentDigest});
+   requireCondition(pending?.state==='EXCLUSIVE_PREWRITE_PENDING'&&pending.providerEnforced===true&&pending.mutationAuthority===true&&pending.nativeBypassDenied===true&&pending.appId===5916428&&pending.activeGrantCount===0&&[...Object.keys(intent),'intentDigest'].every(k=>pending[k]===(k==='intentDigest'?intentDigest:intent[k])),'MAIN_WIDE_PENDING_PROVIDER_FENCE_UNPROVEN');
+   await identity(); await verify();
    // Provider must perform exact expected-old-ref CAS; a plain REST fast-forward
    // or force=true update is not sufficient. Do not retry an ambiguous response.
-   const response=await transport.pushExact({branch,expectedHead:head,newHead:prepared.commit,main,token,revision});
+   const response=await transport.pushExact({branch,expectedHead:head,newHead:prepared.commit,main,token,revision:pendingRevision,generation,intentDigest});
    requireCondition(response?.accepted===true,'NATIVE_EXPECTED_HEAD_CAS_UNPROVEN');
    requireCondition(await github.readHead(branch)===prepared.commit,'CAS_BRANCH_READBACK_MISMATCH');
    const commit=await transport.readCommit(prepared.commit);
    requireCondition(commit?.sha===prepared.commit&&commit.tree===prepared.tree&&Array.isArray(commit.parents)&&commit.parents.length===2&&commit.parents[0]===head&&commit.parents[1]===main,'CAS_COMMIT_READBACK_MISMATCH');
    requireCondition(await github.readHead('main')===main,'MAIN_MOVED_AFTER_CAS_RECONCILE_ONLY');
-   return Object.freeze({status:'PUBLISHED_PENDING_FULL_BRAIN',newHead:prepared.commit,tree:prepared.tree,leaseGeneration:token,slotRevision:revision,mergeAuthorized:false,productionVerified:false});
+   return Object.freeze({status:'PUBLISHED_PENDING_FULL_BRAIN',newHead:prepared.commit,tree:prepared.tree,leaseGeneration:token,slotRevision:pendingRevision,slotGeneration:generation,globalReservationResolved:false,mergeAuthorized:false,productionVerified:false});
  }finally{
    const released=await authorizedPgQuery('select writer_control.release($1,$2,$3) as released',[obligation,holder,token]);
    requireCondition(released?.length===1&&released[0].released===true,'WRITER_LEASE_RELEASE_NOT_CONFIRMED');
