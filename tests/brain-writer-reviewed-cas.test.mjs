@@ -26,7 +26,7 @@ test('prepared union must bind the immutable manifest digest',async()=>{const f=
 
 test('dedicated App identity must remain exact after lease acquisition',async()=>{const f=fixture();const read=f.input.slot.readReservation;f.input.slot.readReservation=async e=>{const r=await read(e);return f.state.slotReads===2?{...r,appId:5916429}:r};await assert.rejects(publishReviewedUnion(f.input),/MAIN_WIDE_PROVIDER_RESERVATION_UNPROVEN/);assert.equal(f.state.pushes,0);assert.ok(f.calls.at(-1).includes('.release('))});
 
-const intent={repository:'arthurprinsen-ai/Bedrijfsgeheugen',state:'prewrite_pending',prNumber:6165,generation:1,revision:2,holder:'github-actions:123:1',branch:'fix/original',head:'a'.repeat(40),main:'b'.repeat(40),commit:'c'.repeat(40),tree:'d'.repeat(40),manifestSha256:'e'.repeat(64)};
+const intent={repository:'arthurprinsen-ai/Bedrijfsgeheugen',state:'prewrite_pending',prNumber:6165,generation:1,revision:2,holder:'github-actions:123:1',branch:'fix/original',obligation:'original',head:'a'.repeat(40),main:'b'.repeat(40),commit:'c'.repeat(40),tree:'d'.repeat(40),manifestSha256:'e'.repeat(64)};
 const observed={...intent,independentReadback:true,branchBefore:intent.commit,branchAfter:intent.commit,mainBefore:intent.main,mainAfter:intent.main,transportOutcome:'accepted',commitObject:{sha:intent.commit,tree:intent.tree,parents:[intent.head,intent.main]}};
 const unchanged={branchBefore:intent.head,branchAfter:intent.head};
 const resolutions=[
@@ -68,3 +68,6 @@ const readCases=[
 ];
 
 for(const [name,mut,state] of readCases)test('native readback: '+name,async()=>{const f=readFixture();mut(f);const r=await collectPrewriteReadback(f);assert.equal(r.state,state);assert.equal(r.mutationAuthority,false);assert.equal(r.releaseAuthorized,false);assert.equal(r.retryAuthorized,false);});
+
+const obligationCases=[['missing intent',{obligation:undefined},{},'INTENT_IDENTITY_UNPROVEN'],['blank intent',{obligation:' '},{},'INTENT_IDENTITY_UNPROVEN'],['wrong receipt',{}, {obligation:'other'},'READBACK_IDENTITY_UNPROVEN'],['missing receipt',{}, {obligation:undefined},'READBACK_IDENTITY_UNPROVEN'],['exact binding',{}, {},'EXACT_WRITE_OBSERVED_OWNER_REVIEW']];
+for(const [name,di,doo,state] of obligationCases)test('obligation binding: '+name,()=>{const r=classifyPrewriteResolution({intent:{...intent,...di},observation:{...observed,...doo}});assert.equal(r.state,state);assert.equal(r.mutationAuthority,false);assert.equal(r.releaseAuthorized,false);});

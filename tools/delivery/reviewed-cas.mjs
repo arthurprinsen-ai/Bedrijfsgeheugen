@@ -60,10 +60,11 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
      !positive(i.prNumber)||!positive(i.generation)||!positive(i.revision)||
      typeof i.holder!=='string'||!/^github-actions:\d+:\d+$/.test(i.holder)||
      typeof i.branch!=='string'||!i.branch||i.branch==='main'||
+     typeof i.obligation!=='string'||!i.obligation.trim()||
      ![i.head,i.main,i.commit,i.tree].every(x=>typeof x==='string'&&SHA.test(x))||
      i.commit===i.head||i.commit===i.main||typeof i.manifestSha256!=='string'||!HASH.test(i.manifestSha256))
     return result('INTENT_IDENTITY_UNPROVEN');
-  const fields=['repository','prNumber','generation','revision','holder','branch','head','main','commit','tree','manifestSha256'];
+  const fields=['repository','prNumber','generation','revision','holder','branch','obligation','head','main','commit','tree','manifestSha256'];
   if(!o||fields.some(k=>o[k]!==i[k])||o.independentReadback!==true||
      ![o.branchBefore,o.branchAfter,o.mainBefore,o.mainAfter].every(x=>typeof x==='string'&&SHA.test(x)))
     return result('READBACK_IDENTITY_UNPROVEN');
@@ -91,7 +92,7 @@ export async function collectPrewriteReadback({intent,github}={}) {
  const invalid=classifyPrewriteResolution({intent,observation:null});
  if(invalid.state==='INTENT_IDENTITY_UNPROVEN')return hold(invalid.state);
  if(typeof github?.readReviewedPR!=='function'||typeof github?.readHead!=='function'||typeof github?.readCommit!=='function')return hold('PROVIDER_READ_ADAPTER_REQUIRED');
- const keys=['repository','prNumber','generation','revision','holder','branch','head','main','commit','tree','manifestSha256'];
+ const keys=['repository','prNumber','generation','revision','holder','branch','obligation','head','main','commit','tree','manifestSha256'];
  const id=Object.fromEntries(keys.map(k=>[k,intent[k]]));
  const validPR=p=>p?.open===true&&p.number===id.prNumber&&p.branch===id.branch&&p.obligation===intent.obligation&&typeof p.headSha==='string'&&SHA.test(p.headSha);
  if(typeof intent.obligation!=='string'||!intent.obligation.trim())return hold('INTENT_OBLIGATION_UNPROVEN');
