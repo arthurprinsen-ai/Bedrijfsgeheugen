@@ -1,0 +1,70 @@
+{
+  "date": "2026-10-19",
+  "obligation": "mira-openai-exact-media-verification-20261019",
+  "fingerprint": "mira-openai-exact-media-verification-20261019",
+  "root_cause": "Existing exact image and temporal verifiers still depended on Anthropic and failed VISION_PROVIDER_REQUEST_FAILED after real OpenArt media generation.",
+  "intervention": "Use one strict OpenAI Responses transport for both existing proof stages and migrate only their existing approved fictional Mira governance use case.",
+  "prevention": "Preserve exact OpenArt output, distinguish provider outage from identity failure, migrate both proof stages together, reject incomplete or malformed verdicts, retain all original thresholds.",
+  "compiler": {
+    "failure_class": "VISION_PROVIDER_REQUEST_FAILED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "MIRA_OPENAI_EXACT_MEDIA_PROOF_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-openai-vision-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-openai-vision-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-openai-vision-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "red_observed": true,
+    "focused_transport_passed": true,
+    "runtime_proof_verified": false,
+    "baseline_suite": {
+      "tests": 105,
+      "passed": 82,
+      "failed": 23
+    },
+    "candidate_suite": {
+      "tests": 107,
+      "passed": 85,
+      "failed": 22
+    },
+    "preexisting_failure_names": [
+      "Instagram canonical publisher runs before any Buffer read",
+      "Buffer outage defers LinkedIn without blocking Instagram",
+      "tests/brain-instagram-canonical-mira-identity-v1.test.mjs",
+      "Instagram Composio account selection resolves the canonical bedrijfsgeheugen.nl identity",
+      "instagram transport auth is checked before dispatch claim and fallback stays circuit-bounded",
+      "setup fails closed on ambiguity and missing auth",
+      "tests/brain-instagram-composio-proxy-base-v1.test.mjs",
+      "tests/brain-instagram-credential-provider-identity-dedupe-v1.test.mjs",
+      "tests/brain-instagram-daily-winner-replay-baseline-v1.test.mjs",
+      "Meta direct is the primary Instagram transport and keeps existing hard gates",
+      "Meta readback failure cannot cause a blind republish",
+      "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
+      "tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs",
+      "Instagram daily winner is persisted ex ante and immutable per date",
+      "Instagram provider readback normalizes winner format and keeps learning lineage",
+      "winner flow stays server-only and reuses canonical reconciliation/secret RPCs",
+      "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "Instagram publishing is Composio-primary and never Make fallback",
+      "Composio Instagram path keeps exact proof and provider readback",
+      "skills canonically forbid Make and route Instagram through Composio",
+      "content loop isolates Instagram routing and invokes it before publish when media is ready",
+      "transient frames still require canonical Mira vision proof"
+    ]
+  },
+  "status": "CODE_CANDIDATE_UNDER_PROTECTED_REQUIRED_CI",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  ]
+}

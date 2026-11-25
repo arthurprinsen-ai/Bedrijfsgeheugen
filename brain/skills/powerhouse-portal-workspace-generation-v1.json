@@ -1,0 +1,17 @@
+{
+  "skill": "powerhouse-portal-workspace-generation-v1",
+  "fingerprint": "powerhouse|portal-v2|workspace-mount-generation|v1",
+  "owner": "ONE BRAIN / Portal V2 UI navigation",
+  "authority": "active DOM root and canonical tenant domain-state; immutable GitHub/Netlify deployment proof",
+  "instruction": "In asynchronous Portal V2 workspace navigation, never lock a shared DOM root by a boolean waiting flag. Assign a fresh mount generation on every render and verify generation after every stylesheet/module await, before delegating UI, and before appending any legacy parity evidence. Prevent obsolete async completions from writing to a new customer's route or defeating next page initialization. Keep canvassen writeback on canonical domainState and fail-closed save receipts; retain browser test for visibility and confirmation.",
+  "routing": [
+    "portal-v2/workspace-shell.js",
+    "portal-v2/page-shell.js"
+  ],
+  "tests": [
+    "tests/brain-portal-workspace-generation-v1.test.mjs",
+    "tests/integration/portal-v2-production-canvassen.spec.js"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442"
+}

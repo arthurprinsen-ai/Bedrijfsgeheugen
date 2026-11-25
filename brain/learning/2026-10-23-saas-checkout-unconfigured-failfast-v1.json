@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-10-23",
+  "version": "v1",
+  "fingerprint": "saas|checkout|unconfigured-billing-calls-store-before-block|20261023-v1",
+  "obligation_id": "saas|checkout|config-failfast-before-provider|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "status": "CANDIDATE_UNVERIFIED",
+  "compiler": {
+    "failure_class": "UNCONFIGURED_BILLING_STORAGE_ACCESS",
+    "scope": "SAAS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Checkout requests read Supabase plan state before the existing Stripe configuration precondition. In the current production settings both Stripe server secrets are absent; this storage access is unnecessary and can mask the true billing_not_configured condition.",
+  "observed_evidence": {
+    "netlify_key_presence": {
+      "STRIPE_SECRET_KEY": false,
+      "STRIPE_WEBHOOK_SECRET": false
+    },
+    "saas_subscriptions": 0,
+    "saas_checkout_intents": 0,
+    "provider_purchase_proven": false,
+    "verification_date": "2026-10-23"
+  },
+  "fix": "Keep the existing public plan and customer input validation, but run canonical billingReadiness before any plan-store, checkout-intent or Stripe calls. Preserve full configured-provider, catalog parity, webhook and idempotency logic.",
+  "prevention_rule": "Never touch billing/customer storage or invoke a payment provider when any required Stripe server configuration is absent; fail closed with 503 billing_not_configured and no writes, no synthetic subscriptions. Re-use the same Brain learning and single production scheduler. A green code release alone does not imply commercial availability.",
+  "tests": [
+    "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-saas-checkout-unconfigured-failfast-v1.test.mjs"
+    ],
+    "invariants": [
+      "no storage or Stripe calls without both keys",
+      "invalid user input remains 400",
+      "configured path preserves source-of-truth validation",
+      "no second scheduler or store",
+      "no customer or purchase fabricated"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "preview": null,
+    "production": null,
+    "live_billing_accepted": false
+  }
+}

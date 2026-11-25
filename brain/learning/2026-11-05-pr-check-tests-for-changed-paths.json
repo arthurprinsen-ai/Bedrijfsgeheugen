@@ -1,0 +1,42 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|required-test|changed-path-test-selection|20261105-v1",
+  "owner": "existing required-test PR check",
+  "compiler": {
+    "failure_class": "PAGE_TESTS_RAN_ONLY_AFTER_MERGE",
+    "scope": "REQUIRED_PR_CHECK_CHANGED_PATH_TESTS",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The required PR check runs a curated test list. Tests that read a changed page or file ran only in the post-merge backend lane, so PR #5447 turned main red (run 42039250029) after merge.",
+  "prevention_rule": "The required PR check also runs every existing test that references a changed file by its exact repo path, plus changed test files. A test that already fails on the base commit is reported as KNOWN_RED_ON_BASE and does not block; a new failure blocks. Overflow beyond 40 tests fails visibly.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-changed-path-test-selection-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-afas-oci-intent-answer-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original BRAIN run 42039250029 after PR #5447: AFAS page test failed only after merge"
+    ],
+    "current": [
+      "Simulated page regression is blocked (exit 1, tests/brain-seo-afas-oci-intent-answer-20261025.test.mjs)",
+      "Replay on main~3..main selects 9 tests; tests/seo-estate-policy-v3.test.mjs is red on base already and is reported, not blocking"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

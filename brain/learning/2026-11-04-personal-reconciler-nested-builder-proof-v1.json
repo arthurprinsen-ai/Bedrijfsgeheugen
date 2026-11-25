@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CANDIDATE_NEEDS_PROTECTED_MERGE_AND_PROVIDER_READBACK",
+  "fingerprint": "one-brain-reconciler|nested-founder-proof|false-personal-source-unverified|20261104-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN content-reconciler and original social publisher",
+  "failure_class": "PERSONAL_SOURCE_PROOF_SHAPE_FALSE_NEGATIVE",
+  "root_cause": "ONE BRAIN original public.powerhouse_reconcile_content_outcomes_v1 reads ai_native_builder_story_verified only from top-level original decision.delivery_evidence, but original personal orchestrator and independent publisher store complete builder proof in nested decision.delivery_evidence.identity_gate_evidence. On 2026-11-04 genuine top flag=false while nested flag=true, all required source, owner, identity, evidence lineage fields true. Reconciler writes status BLOCKED and personal_truth_verified=false to the publication obligation, erasing usable source context and continually blocking an otherwise editor-approved but not-yet-published personal post.",
+  "evidence": {
+    "utc_observed": "2026-11-04T05:14:00Z",
+    "owner_source": "powerhouse_channel_decisions.run_date=2026-11-04 channel=linkedin_personal",
+    "original_source_recommendation": "fdfb9a10-c56e-4fe1-88b3-f8275c2860a8",
+    "original_runnable_edge_version": 604,
+    "source_preconditions": "nested identity_gate_evidence valid: ai_native_builder_story_verified/build_event_verified/arthur_anchor_verified/source_backed/business_topic true, corporate_voice/company_page_interchangeable/forced_business_moral false, correct policy, identity, nonempty source lineage",
+    "false_block": "content_publication_obligations.status=BLOCKED last_error=PERSONAL_SOURCE_UNVERIFIED",
+    "independent_posts_proven_20261104": 0
+  },
+  "fix": "In the existing original security-definer reconciler, accept an additional fully independently verified nested AI-native founder proof path. Require exactly the source, identity, provenance, no-corporate-voice and non-empty lineage contract already enforced by the original publisher. Preserve top-level personal and observational source paths, all provider truth, zero false LIVE_PROVEN claims and idempotency. No extra executor, cron, LinkedIn permission or direct main mutation.",
+  "prevention_rule": "Canonical source-truth normalization must cover only structurally valid nested identity proof, and the reconciler must not set PERSONAL_SOURCE_UNVERIFIED if the original publisher would independently accept the same immutable evidence. Tests must replay valid nested and forged variants, preserve provider receipt truth and reject fake green.",
+  "tests": [
+    "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-reconciler-nested-builder-proof-20261104.test.mjs"
+    ],
+    "invariants": [
+      "original existing function",
+      "no direct provider send",
+      "no duplicate-gate relaxation",
+      "no fake external_id",
+      "original privacy and identity checks remain",
+      "no new scheduler"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "PERSONAL_SOURCE_PROOF_SHAPE_FALSE_NEGATIVE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected merge + schema migration applied + same original owner decision source gate readback and original scheduled publisher side effect or genuine constraint; 4 daily channels may only be LIVE_PROVEN on independently confirmed provider IDs/URLs."
+}

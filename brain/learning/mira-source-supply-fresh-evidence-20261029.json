@@ -1,0 +1,34 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "mira|source-supply|no-unique-dated-daily-winner|20261029-v1",
+  "status": "SOURCE_CHANGE_PENDING_PROTECTED_RELEASE",
+  "root_cause": "An eight-query source radar yielded too few fresh, original, verifiably publication-dated entrepreneur signals for a new daily Mira winner; the broad general-purpose query was less targeted than the PH-P010/PH-P011 problem contract.",
+  "prevention_rule": "Use exactly the existing eight daily searches with more specific invoice/receivables queries. Preserve genuine provider timestamps, maximum source age, 90-day URL/hash dedupe, same-topic spacing, source-backed winner immutability, and exact media-identity approval; never synthesize dates, reuse frozen sources, or start a second scheduler.",
+  "evidence": {
+    "kind": "public-safe aggregate engineering evidence",
+    "recent_eligible_signals": 27,
+    "missing_verifiable_publication_date": 26,
+    "source_change_verified_in_production": false,
+    "provider_reel_published": false,
+    "source_code": [
+      "supabase/functions/powerhouse-mira-problem-radar/index.ts"
+    ],
+    "tests": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ],
+    "raw_private_signals_excluded": true
+  },
+  "compiler": {
+    "failure_class": "MIRA_FRESH_DATED_SOURCE_EXHAUSTED",
+    "scope": "SINGLE_CANONICAL_MIRA_RADAR",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ]
+  },
+  "regression_contract": "An unchanged eight-query call budget, strict source-publication freshness gate, no duplicate topic/source and mandatory canonical media identity proof."
+}

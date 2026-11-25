@@ -1,0 +1,33 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-11-07",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "mira|reel|paid-generation-of-model-with-recorded-face-gate-failures|20261107-v1",
+  "compiler": {
+    "failure_class": "PRESPEND_MODEL_FACE_EVIDENCE_NOT_CONSULTED",
+    "scope": "INSTAGRAM_MIRA",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "The pre-spend gate only checked output format (9:16, mute, 1080p). Veo 3.1 had already failed the independent face gate on real paid runs (0.900 on 2026-11-03 history 6GYKFxqd9aif8WacnMnL and again on 2026-11-07 history B5uX1JhoC8hl0kiFTrnl, 280 credits) but the recorded failures never influenced admission, so the same model was paid for again.",
+  "prevention": "assessMiraProviderBeforeSpend now consults MIRA_MODEL_FACE_EVIDENCE. A model/mode whose best measured face score is below 0.940 returns MIRA_MODEL_FACE_GATE_FAILED_BEFORE and generation_preflight answers 422. There is no caller-supplied bypass; re-enabling needs a reviewed source change with new measured evidence. Thresholds, budget and publisher are unchanged.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ]
+  },
+  "evidence": {
+    "run_date": "2026-11-07",
+    "credits_spent_before_block": 280,
+    "best_recorded_face_score": 0.9,
+    "required_face_score": 0.94,
+    "no_quality_gate_relaxation": true,
+    "no_second_scheduler": true,
+    "release_proven": false
+  }
+}

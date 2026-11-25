@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql = fs.readFileSync('supabase/migrations/20260922082500_instagram_mira_reel_recommendation_normalization_v1.sql','utf8');
+const sql = fs.readFileSync('supabase/migration-history/repository-only/20260922082500_instagram_mira_reel_recommendation_normalization_v1.sql','utf8');
 
 test('Mira daily-life Instagram recommendations are normalized at the DB boundary', () => {
   assert.match(sql,/before insert or update on public\.powerhouse_content_recommendations/i);

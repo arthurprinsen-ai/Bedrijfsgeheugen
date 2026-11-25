@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const migration='supabase/migrations/20260915124500_powerhouse_signal_forecast_materialization.sql';
+const migration='supabase/migration-history/repository-only/20260915124500_powerhouse_signal_forecast_materialization.sql';
 
 test('predictive signals feed canonical forecasts and zero-value opportunities stay outbound-safe',()=>{
   const sql=readFileSync(migration,'utf8');

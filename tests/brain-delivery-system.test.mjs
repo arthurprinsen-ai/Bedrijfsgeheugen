@@ -149,10 +149,10 @@ test('canonical chat learning checkpoints are shared Brain governance work', asy
   assert.equal(plan.integration.required, true);
 });
 
-test('a future workflow is automatically classified as shared Brain delivery work', async () => {
+test('a future unmapped workflow defaults to backend control-plane without product-lane fan-out', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({ changedPaths:['.github/workflows/future-agent-scenario.yml'], headSha:'fedcba1234567890', policy });
-  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation','backend','portal','website']);
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
 });
 
 test('legacy customer portal changes belong to the portal lane', async () => {
@@ -413,4 +413,25 @@ test('delivery-control workflow edits stay in control-plane lanes without portal
     policy
   });
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation','backend']);
+});
+
+
+test('production SQL history is non-executable delivery evidence', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const path = 'docs/production-sql-history/20261006095958_normalize_publication_evidence_objects_v1.sql';
+  const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abcdef1234567890', policy });
+  assert.deepEqual(plan.lanes, []);
+  assert.deepEqual(plan.nonExecutableSharedPaths, [path]);
+  assert.equal(plan.integration.required, false);
+});
+
+test('root .gitignore is classified to the protected backend lane without widening hidden paths', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const classified = createDeliveryPlan({changedPaths:['.gitignore'], headSha:'abcdef1234567890', policy});
+  assert.deepEqual(classified.lanes.map(lane => lane.id), ['backend']);
+  assert.throws(
+    () => createDeliveryPlan({changedPaths:['.unknown-sensitive-dotfile'], headSha:'abcdef1234567890', policy}),
+    /unclassified delivery path/,
+    'unknown hidden paths must remain fail-closed'
+  );
 });

@@ -1,0 +1,52 @@
+{
+  "contract": "powerhouse-salesrobot-provider-receipt-closed-loop-v1",
+  "date": "2026-10-20",
+  "fingerprint": "commercial|salesrobot|receipt-before-done|20261020",
+  "parent_issue": 4198,
+  "compiler": {
+    "failure_class": "UNVERIFIED_PROVIDER_SEND_MARKED_DONE",
+    "scope": "CODE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The existing LinkedIn sales machine previously marked a newly approved DM action done directly from a successful Composio SALESROBOT_SEND_MESSAGE response, without independent SalesRobot inbox proof or canonical outcome. It also checked action human approval but not the contact-level CRM authority.",
+  "evidence": {
+    "observed_legacy_receipts": 5,
+    "canonical_provider_event": "powerhouse_runtime_events.salesrobot_linkedin_dm_sent",
+    "inbox_proof_fields": [
+      "provider_inbox_readback",
+      "inbox_message_id",
+      "provider_prospect_uuid",
+      "inbox_message_sent_by_me",
+      "provider_step_status"
+    ],
+    "current_provider_license": "TRIAL_EXPIRED",
+    "crm_approved_recipients": 0,
+    "external_messages_sent_by_patch": 0
+  },
+  "tests": [
+    "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+  ],
+  "prevention": [
+    "No DM done/outcome from Composio ACK alone; hold original waiting with no-resend guard.",
+    "Use exact independently verified inbox message ID and prospect UUID in canonical runtime event before sent outcome is created.",
+    "Verify CRM contact authorization as well as action approval.",
+    "Leave blocked external license/session unresolved and do not misrepresent it as production-ready."
+  ],
+  "change": "Add contact-level authorization and reconcile exact external inbox receipts to the existing action/outcome without introducing another sender or scheduler.",
+  "verification_required": [
+    "protected Required CI",
+    "CodeQL",
+    "Supabase Preview",
+    "merged-source production readback",
+    "read-only canary",
+    "licensed external provider and real authorized proof for full end-to-end"
+  ],
+  "state": "SOURCE_CANDIDATE_NOT_YET_VERIFIED"
+}

@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-preview|netlify-closed-pr-race|20261029-v1",
+  "fingerprint": "ci|netlify-preview-closed-pr-race|portal-v2-live-preview|20261029-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "POST_MERGE_RACE_RED_CHECK",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 12,
+    "security_sensitive": false
+  },
+  "root_cause": "After the alias fix (#5103) the Portal V2 Live Preview runs kept ending red. Auto-merge closes a PR within minutes; the workflow_run then starts after the merge, the numbered PR alias no longer serves the PR head, release.json never shows the head SHA, and the wait loop fails after 9 minutes with 'Timed out waiting for immutable Netlify preview'. The alias branch itself ran correctly.",
+  "observed_evidence": {
+    "source": "GitHub Actions runs of portal-v2-live-preview.yml after merge 148a73d, PR states and job logs",
+    "runs_failed_after_alias_fix_observed": 12,
+    "example_pr": "#5135 closed 5 seconds after its run started",
+    "required_check": false,
+    "registry_fingerprint_logged": true,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "The wait step reads the PR state every round. A closed or merged PR writes a notice, sets PREVIEW_PR_CLOSED=1 and exits 0; every later step except the evidence upload is skipped. An open PR keeps the full wait and still fails on a real provider failure or timeout. No new token permission.",
+  "prevention_rule": "A check that waits on a per-PR resource must first confirm that the PR is still open. A green or red result is only meaningful for an open PR. After a fix, prove it on a PR that stays open before closing the fingerprint.",
+  "tests": [
+    "tests/brain-netlify-preview-alias-status-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-preview-alias-status-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-preview-alias-status-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-preview-alias-status-v1.test.mjs"
+    ],
+    "invariants": [
+      "a closed or merged PR never ends the preview run red",
+      "an open PR still fails on provider failure or timeout",
+      "no actions: write permission is added",
+      "all later steps are skipped for a closed PR"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

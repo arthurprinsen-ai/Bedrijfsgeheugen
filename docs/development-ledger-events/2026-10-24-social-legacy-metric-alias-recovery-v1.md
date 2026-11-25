@@ -1,0 +1,5 @@
+# Normalize real historical social metrics; do not silently learn from all-null records (24 October 2026)
+
+Observed post `6ac273bd7995959786a1c776`, published 2026-10-04, original Buffer provider snapshot 2026-10-05 with `Impressions=1125`, `Reach=857`, `Reactions=5`, `Comments=0`. New 24-hour evaluation was produced but **all metric_vector fields were null**, because the evaluator only parsed lowercase keys. No social_learning result followed; the stored evaluation was falsely excluded from future due work.
+
+Fix within the same authoritative Netlify hourly evaluator model and Supabase social-learning-store: map only semantic provider names, preserve real zero and missing/null distinctions, avoid treating `Reactions` as `likes` or uncertain `Eng. Rate` as a normalized fraction. A historical all-null evaluation does not close a due window; re-evaluate it on the original stored snapshot with the same deterministic evaluation ID. Rate/safety tests added. No new scheduler or fabricated orders, revenue, clicks or historical observations.

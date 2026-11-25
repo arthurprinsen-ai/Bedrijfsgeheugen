@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "portal|customer-production-acceptance|deploy-green-without-two-real-tenant-outcome-and-learning-proof|20261023-v1",
+  "obligation_id": "portal|two-real-tenants|independent-signed-evidence-admission|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "related": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585"
+  ],
+  "status": "CANDIDATE_UNVERIFIED",
+  "failure_class": "FALSE_SUCCESS_RISK_PORTAL",
+  "root_cause": "An exact SHA deployment and synthetic authenticated API proof cannot by themselves substantiate two independent real customer journeys, outcome measurements, provider connector executions, financial readback or learning writeback.",
+  "observed_evidence": {
+    "source": "read-only Supabase production on 2026-10-23",
+    "portal_state_layers": 1,
+    "connector_definitions": 0,
+    "connector_executions": 0,
+    "portal_financial_forecasts_v1": 0,
+    "live_two_real_customer_proof": false
+  },
+  "failed_approaches": [
+    "Equating code release and workflow success with customer outcome success",
+    "Counting synthetic authenticated API proof as two genuine customers",
+    "Training models from action status without independent realized outcome receipts"
+  ],
+  "fix": "Add Ed25519 signed, bounded, two-tenant evidence admission for exact release, real sign-ins, negative isolation, sourceRevision->Brain ACK, action, measured result, independent provider/finance proof, closed learning lineage and registered portal page coverage. Never auto-promote to productionAccepted.",
+  "prevention_rule": "No LIVE customer acceptance may be promoted solely from successful CI, provider readiness, synthetic login, result count, model forecast, unverified signer, or status labels. An independent validator must authenticate upstream receipts; missing provider/client reality remains BLOCKED.",
+  "regression_tests": [
+    "tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs"
+  ],
+  "existing_daily_owner": ".github/workflows/universal-closed-loop-learning.yml",
+  "canonical_skill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+  "compiler": {
+    "failure_class": "FALSE_SUCCESS_RISK_PORTAL",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-independent-customer-production-acceptance-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "local_tests": null,
+    "exact_head_required": null,
+    "exact_head_codeql": null,
+    "independent_customer_accepted": false,
+    "release_readback": null
+  },
+  "terminal_rule": "Exact HEAD Required and CodeQL, protected merge, exact Netlify/Supabase provider readback, two real independent authenticated tenant/customer journeys and independent validation of signed upstream evidence required. A passing local contract test is never actual customer acceptance."
+}

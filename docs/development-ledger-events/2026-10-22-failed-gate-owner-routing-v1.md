@@ -1,0 +1,14 @@
+# Development ledger — 2026-10-22 existing watchdog failed-gate owner handoff
+
+- Event: `FAILED_GATE_SAME_OWNER_ROUTING_CANDIDATE`
+- Obligation and fingerprint: `delivery|failed-gate|watchdog-observation-only|20261022-v1`
+- Base main SHA: `4ce0846ca51227169389241d3a122b274795a0b2`
+- Baseline evidence: Required #39800626684 on #4656, website browser job #119901773175 failed at phone CLS 0.168 (maximum 0.100)
+- Verified root cause of *routing gap*: Required Gate Watchdog checks presence of any completed run and never creates an executable owner handoff for terminal red checks
+- Explicit non-goals: no new scheduler, new PR per signal, branch rewrite, automatic unreviewed source fix, CSS guess, weakened browser/CodeQL gate, security bypass or false-green metric
+- Source correction: `.github/scripts/required-gate-watchdog.mjs`, `.github/workflows/required-gate-watchdog.yml`, `tools/delivery/failed-gate-owner-routing.mjs`
+- Regression: `tests/brain-required-failed-gate-owner-routing-v1.test.mjs`
+- Learning: `brain/learning/2026-10-22-failed-gate-owner-routing-v1.json`
+- Next: exact-head tests, CodeQL, machine-readable skill projection, protected merge, workflow run readback, then source remediation owner and true release acceptance
+- Evidence status: CANDIDATE; live and autonomous arbitrary code repair NOT PROVEN
+

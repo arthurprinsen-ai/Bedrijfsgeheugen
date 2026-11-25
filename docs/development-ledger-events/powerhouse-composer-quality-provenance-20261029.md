@@ -1,0 +1,4 @@
+2026-10-29 | powerhouse-lean-agent-loop-runtime-coverage-20261029 | SOURCE_CANDIDATE_NOT_LIVE
+Verified baseline: 4383 source sales actions in 14 days; no agent_id/skill_version/before_metric/after_metric top-level evidence. External sales outcomes: EUR 0 positive in 14 days (no causal lift claimed).
+Actual source: commercial composer computes score from quality checks, previously ignores error in its quality-row upsert. Fix: fail closed; attach actor/skill/metric only to existing composer evidence; real numeric score and previous measured score or null, never synthetic. Keep CRM/publication authority, duplicate gates and RLS untouched.
+Tests in tests/brain-commercial-composer-quality-provenance-20261029.test.mjs. Await protected CI, merge, Supabase production deployment and source readback; other writers remain open.

@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "linkedin-company|windsor-provider-observed-unlinked|exact-author-urn-link-v1",
+  "obligation_id": "social:provider-company-metric-proof-and-canonical-learning-link-v1",
+  "failure_class": "LINKEDIN_COMPANY_PROVIDER_METRICS_UNLINKED_DESPITE_INDEPENDENT_PUBLISHER_AUTHOR_PROOF",
+  "root_cause": "Existing provider Windsor analytics posts show exact per-share impression/click/like/comment counts but are labeled PROVIDER_OBSERVED_UNLINKED because independent company-account identity was previously unavailable. Canonical LIVE_PROVEN publication obligation now independently carries author_urn and LinkedIn provider readback author equal to Windsor account_id 18234216, with exact URN and owned-brand social_posts index; the missing proof-bound reconciliation kept real provider data outside social_metric_snapshots and daily creative feedback.",
+  "observed_evidence": {
+    "source": "powerhouse_growth_source_daily_v1",
+    "provider": "windsor.ai linkedin_organic",
+    "observed_at": "2026-10-24T13:18:19.800Z",
+    "link_quality": "PROVIDER_OBSERVED_UNLINKED",
+    "exact_organization": "urn:li:organization:18234216",
+    "exact_matches_recent": 11,
+    "post_sample": "urn:li:share:7519277505673986048",
+    "sample_impressions": 1,
+    "source_true": "Independent publication linkedin_readback.author and author_urn both present; zero provider snapshots had been attributed to recently indexed company posts."
+  },
+  "fix": "Extend the EXISTING bg-social-metrics-sync six-hour source function, after its publication identity registry update, with bounded identity-proven analytics reconciliation. It reads existing Windsor source rows, canonical provider LIVE_PROVEN proof and existing owned-brand social post records; only exact matching organization account + exact publisher URN + independently verified author + nonnegative metrics are idempotently upserted into the existing social_metric_snapshots. Creative challenger accepts verified impressions (not video views) and new LINKED source quality.",
+  "prevention_rule": "Do not infer company account from URN alone, nickname or tenant matching. Fail closed without independent LIVE_PROVEN provider author, matching Windsor account_id and provider URN, mature date, recent source or valid finite counts. Do not mix personal accounts, duplicate provider-event IDs, infer orders or engage in provider writes; no extra scheduler or permission bypass.",
+  "tests": [
+    "tests/brain-linkedin-company-windsor-proof-link-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "LINKEDIN_COMPANY_PROVIDER_METRICS_UNLINKED_DESPITE_INDEPENDENT_PUBLISHER_AUTHOR_PROOF",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-windsor-proof-link-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-company-windsor-proof-link-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-windsor-proof-link-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Required+CodeQL and Supabase preview exact head, protected merge and Edge deployment, existing six-hour cron real provider readback, then newly populated real social_metric_snapshots exact IDs. No numeric marketing uplift without mature commercial attribution."
+}

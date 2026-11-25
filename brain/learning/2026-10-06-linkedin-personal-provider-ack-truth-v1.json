@@ -1,0 +1,36 @@
+{
+  "fingerprint": "social-recovery|linkedin-personal-permission-bound-provider-ack-truth|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "linkedin-personal-provider-ack-truth-20261006-v1",
+  "root_cause": "LinkedIn personal publication had a durable provider post id plus successful create acknowledgement, but later GET_POST_CONTENT readback returned a permission-limited 403. The recovery runner required provider_truth_verified=true for every channel, contradicting the canonical publisher contract that a confirmed personal LinkedIn create side effect is authoritative and must never be republished merely because later readback permissions are narrower.",
+  "prevention_rule": "Recovery GREEN keeps exact provider readback as the default. Only linkedin_personal may satisfy provider side-effect truth without exact readback, and only when provider_create_success=true, provider_publication_ack_verified=true, readback_permission_limited=true, republish_forbidden=true, and a durable external_id exists. LinkedIn company and Instagram continue to require exact provider_truth_verified=true.",
+  "compiler": {
+    "failure_class": "LINKEDIN_PERSONAL_PROVIDER_READBACK_PERMISSION_FALSE_NEGATIVE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "source": [
+      "supabase/functions/social-recovery-runner/index.ts",
+      "supabase/functions/powerhouse-social-publisher/index.ts"
+    ],
+    "regression": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  }
+}

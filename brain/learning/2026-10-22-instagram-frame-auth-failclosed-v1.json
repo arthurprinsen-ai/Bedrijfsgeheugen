@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|instagram-frame-extractor-auth-oracle-fail-open|20261022-v1",
+  "observed_at": "2026-10-22",
+  "root_causes": [
+    "Netlify Mira frame extraction trusted any verifier HTTP code except 401, including failures and rate limiting, as scheduler-token validation."
+  ],
+  "prevention": [
+    "Accept only authenticated empty-payload probe 400 JSON ok=false/error=INVALID_INPUT; reject every other provider status/malformed body/network error.",
+    "Verify the existing Supabase verifier checks x-powerhouse-token before producing the empty-input error.",
+    "Preserve canonical producer, Mira 0.94 face threshold and three-frame temporal proof; never bypass publisher authorization."
+  ],
+  "evidence": {
+    "regressions": [
+      "tests/brain-instagram-frame-auth-failclosed-20261022.test.mjs"
+    ],
+    "initial_code": "return r.status!==401",
+    "production_readback": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "SECURITY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-frame-auth-failclosed-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-frame-auth-failclosed-20261022.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-frame-auth-failclosed-20261022.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

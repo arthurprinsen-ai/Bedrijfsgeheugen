@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "content-growth|false-green|unreadable-metrics-allow-success|20261024-v1",
+  "obligation_id": "growth:canonical-daily-source-truth-gate:20261024-v1",
+  "failure_class": "DAILY_GROWTH_PROVIDER_AUTH_OR_READBACK_FAILURE_FALSIFIED_AS_SUCCESS",
+  "root_cause": "Existing 04:20 UTC Content growth learning workflow checked only truthiness of daily_performance_diagnostics.source_state. States AUTH_REQUIRED, SOURCE_ERROR or NOT_COLLECTED are truthy, so no provider data can produce a green daily learning artifact.",
+  "observed_evidence": {
+    "workflow": ".github/workflows/content-growth-learning.yml",
+    "source_states": [
+      "READ_ONLY_PROVIDER_OBSERVED",
+      "AUTH_REQUIRED",
+      "SOURCE_ERROR"
+    ],
+    "canonical_source": "tools/content-growth/collect-canonical-evidence.mjs",
+    "production_execution": "NEXT_SCHEDULED_RUN_NOT_YET_OBSERVED"
+  },
+  "fix": "Add deterministic pure provider-truth validator and tests within existing scheduled growth workflow. Require READ_ONLY_PROVIDER_OBSERVED with at least one actual social post and source-quality row before treating the daily provider learning as evidence-backed. Always preserve bounded diagnostic artifacts even when authentication or provider readback fails.",
+  "prevention_rule": "Do not turn missing provider credentials, empty observations, stale or errored readback into a successful growth learning evaluation; retain truthfully classified evidence and allow existing canonical recovery ownership. No duplicate scheduler, provider fallback, synthetic likes/impressions, lead or revenue assertions.",
+  "tests": [
+    "tests/brain-daily-provider-proof-gate-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_GROWTH_PROVIDER_AUTH_OR_READBACK_FAILURE_FALSIFIED_AS_SUCCESS",
+    "scope": "CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-provider-proof-gate-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-provider-proof-gate-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-provider-proof-gate-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Required+CodeQL exact-head green, protected merge, next scheduled daily artifact with independent authenticated source and nonempty brand observations; green GitHub YAML is not real live metric coverage."
+}

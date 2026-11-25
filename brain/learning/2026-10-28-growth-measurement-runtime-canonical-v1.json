@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|seo-cro|growth-measurement-runtime-canonical|20261028-v1",
+  "fingerprint": "website|cro|baked-measurement-config-from-intermediate-build-state|20261028-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "MEASUREMENT_CONFIG_BAKED_BEFORE_FINAL_PAGE_STATE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "seo-apply bakes canonical, page_role, funnel_stage and intent into the inline growth measurement script while the page head still holds an intermediate canonical. Later build steps correct the head canonical and the body data attributes, but the baked script config is never refreshed and, because cfg won over the page, 68 of 70 sampled public pages sent canonical /over-ons with role support and stage discover. All page-level funnel, CTA and experiment evidence was therefore attributed to /over-ons.",
+  "observed_evidence": {
+    "source": "live pages 2026-10-28 and public.growth_events",
+    "sampled_non_blog_pages": 70,
+    "pages_with_wrong_baked_canonical": 68,
+    "human_page_views_over_ons_since_2026_10_25": 2203,
+    "human_page_views_total_since_2026_10_25": 2510,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "Resolve canonical, page_role, funnel_stage, intent and keyword cluster at runtime from the final page (link rel=canonical on the same host, body data-bg-* attributes). The baked values stay as fallback. No new tracker, cookie, identity or collector.",
+  "prevention_rule": "Measurement identity must be read from the final delivered page, never frozen from an intermediate build state; a replay with a stale baked config must still report the page's own canonical and role.",
+  "tests": [
+    "tests/brain-growth-measurement-runtime-canonical-v1.test.mjs",
+    "tests/seo-order-measurement.test.mjs",
+    "tests/brain-seo-cro-all-primary-cta-tracking-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-measurement-runtime-canonical-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-measurement-runtime-canonical-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-measurement-runtime-canonical-v1.test.mjs"
+    ],
+    "invariants": [
+      "runtime canonical wins over baked canonical",
+      "baked values are fallback",
+      "other-host canonical ignored",
+      "no PII in events",
+      "no new collector or scheduler",
+      "production readback of per-page events required"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

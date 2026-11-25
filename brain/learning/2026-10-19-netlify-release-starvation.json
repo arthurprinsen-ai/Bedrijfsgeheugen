@@ -1,0 +1,34 @@
+{
+  "fingerprint": "deployment|latest-push-cancels-running-upload|20261019",
+  "date": "2026-10-19",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "netlify-release-live-gap-starvation-20261019",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4442",
+  "compiler": {
+    "failure_class": "DEPLOY_CANCELLATION_STARVATION",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "The protected Production Source Snapshot workflow uses a shared concurrency group with cancel-in-progress:true. A newly pushed main commit cancels the authorized exact-source manual production deployment while it waits 180 seconds for native Git to converge. The newer push can be documentation-only; the applicability check previously compares only HEAD^..HEAD and misses older runtime code never actually published. 2026-10-19 forced run #39221955351 was cancelled by later main push #389cc824... while Netlify still published #d3a73d88.",
+  "prevention_rule": "Never cancel an in-flight authorized Netlify source upload solely because a new main push occurs. Queue the latest pending reconciliation, and compare its full runtime change set with the last independently confirmed live commit; if provider state/ancestry cannot be verified, require a deployment instead of declaring no-op. Preserve exact-source/OIDC/merge/readback controls.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-live-gap-cancel-starvation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-live-gap-cancel-starvation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-live-gap-cancel-starvation-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "test_file": "tests/brain-netlify-live-gap-cancel-starvation-v1.test.mjs",
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39221955351",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

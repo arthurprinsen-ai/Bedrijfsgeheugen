@@ -1,0 +1,92 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "IMPLEMENTED_SOURCE_CANDIDATE_NOT_YET_PROVEN_IN_PRODUCTION",
+  "fingerprint": "powerhouse|innovation|original-agent-source-decision-after-pre-review|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Existing native ONE BRAIN source registries and daily GitHub self-evolution wrote 14 original source-bound innovation pre-reviews but had no next bounded owner decision. All 14 originals remained PLANNED without remote_ref or original independently proven consumer acknowledgement. A repeated pre-review is not an implementation.",
+  "compiler": {
+    "failure_class": "ORIGINAL_INNOVATION_AGENT_PRE_REVIEW_WITHOUT_NEXT_SOURCE_BOUND_OWNER_DECISION",
+    "severity": "P0_HANDOFF_STALL",
+    "affected_original_owners": [
+      "agent:agent-integration-engineer",
+      "agent:agent-growth-market"
+    ],
+    "repeat_count": 14,
+    "machine_enforceable": true,
+    "forbidden_false_success": true
+  },
+  "change": {
+    "original_source": "public.brain_operations.INNOVATION_INTAKE",
+    "original_obligation": "public.brain_obligations.INNOVATION_DELIVERY",
+    "original_candidates": "public.powerhouse_optimization_candidate_v1",
+    "same_workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "same_existing_script_pre_review": "scripts/brain/innovation-original-agent-pre-review.mjs",
+    "next_original_decision_script": "scripts/brain/innovation-original-owner-decision.mjs",
+    "exact_existing_native_transition_rpc": "public.brain_transition_operation",
+    "updated_original_agent_registry": "platform/agents/agent-team.mjs",
+    "updated_original_skills": [
+      ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+      ".agents/skills/powerhouse-autonomous-engineering-fabric/SKILL.md"
+    ],
+    "new_cron": false,
+    "new_queue": false,
+    "new_table": false,
+    "new_agent": false,
+    "new_external_provider_sender": false,
+    "original_operation_status_preserved": "PLANNED"
+  },
+  "evidence": {
+    "native_source_as_of": "2026-11-15",
+    "actual_original_candidates": 14,
+    "actual_original_intakes_planned": 14,
+    "exact_prior_original_agent_pre_reviews": 14,
+    "actual_original_intakes_verified": 0,
+    "original_engineering_intakes": 13,
+    "original_cro_intakes": 1,
+    "verified_external_agent_receipts": 0,
+    "native_op_remote_ref_present": 0,
+    "original_brain_financial_forecast_rows": 0,
+    "realized_customer_savings_rows": 0,
+    "preexisting_executable_code_and_review_proven_in_production": false,
+    "original_source_stage": "PRE_REVIEW_RECORDED_IMPLEMENTATION_NOT_EXECUTED",
+    "protected_merge_not_yet_proven": true,
+    "postmerge_natural_cron_readback_due": true
+  },
+  "prevention": {
+    "original_work_never_silently_dropped": true,
+    "original_engineering_and_cro_tasks_assigned_by_exact_source": true,
+    "prevent_repeated_pre_review_only_stall": true,
+    "require_original_review_fingerprint_and_sha_recheck": true,
+    "require_original_version_cas_and_independent_native_get": true,
+    "forbid_duplicate_remote_effect": true,
+    "block_false_verified_ack": true,
+    "prevent_false_business_value": true,
+    "classify_generic_learning_as_design_due": true,
+    "classify_concrete_code_as_protected_release_due": true,
+    "classify_cro_measurement_as_holdout_baseline_due": true,
+    "keep_original_ops_planned": true,
+    "no_new_scheduler": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-owner-decision-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-owner-decision-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-original-owner-decision-20261115.test.mjs"
+    ],
+    "exact_native_same_daily_workflow_both_modes_expected": true,
+    "customer_result_not_claimed": true
+  },
+  "semantic_learning": {
+    "cause": "An agent skill task and a registered PLANNED native intake do not mean the original agent has acted; pre-review alone repeatedly stalled. Original next decision with owner, source and rollback can be completed as a bounded independent phase without pretending external implementation.",
+    "prevention_rule": "In the SAME original daily and bounded recovery workflow, after original source-bound pre-review use original read-all-source, version CAS, same operation evidence and independent native GET for each original engineering/CRO decision. Never self-certify consumer ACK, external dispatch or financial benefit; real protected execution and effect must occur downstream.",
+    "regression_guard": "tests/brain-innovation-original-owner-decision-20261115.test.mjs",
+    "next_owner": "Original agent-integration-engineer protected implementation, original agent-growth-market controlled treatment/holdout, original ONE BRAIN/Heartbeat result and learning consumer",
+    "effect_proof": "SOURCE_CHANGE_PR_EXACT_REQUIRED_CODEQL_PROTECTED_MAIN_AND_NEXT_ORIGINAL_NATIVE_RUN_READBACK_DUE"
+  }
+}

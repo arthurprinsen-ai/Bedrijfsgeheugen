@@ -1,0 +1,35 @@
+{
+  "fingerprint": "commercial-composer-openai-json-input-v1",
+  "date": "2026-10-27",
+  "failure_class": "PROVIDER_REQUEST_CONTRACT_VIOLATION",
+  "scope": "CONTENT",
+  "root_cause": "De OpenAI Responses-aanroep vroeg text.format json_object, maar de input bevatte het woord JSON niet. OpenAI weigert dat met 400, waardoor de commerciële berichtencomposer (outreach-mails) niets kon opstellen.",
+  "source_of_truth": "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+  "prevention": [
+    "De inputtekst van elke json_object-aanroep bevat expliciet het woord JSON",
+    "Regressietest controleert dat de input het woord JSON bevat"
+  ],
+  "evidence": {
+    "production_run": "OpenAI 400: Response input messages must contain the word 'json' in some form to use 'text.format' of type 'json_object'",
+    "test": "tests/brain-commercial-composer-openai-json-input-20261027.test.mjs",
+    "code_paths": [
+      "supabase/functions/powerhouse-commercial-message-composer/index.ts"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PROVIDER_REQUEST_CONTRACT_VIOLATION",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-composer-openai-json-input-20261027.test.mjs"
+    ]
+  },
+  "outcome": {
+    "false_green_removed": false,
+    "provider_readback_required": true
+  }
+}

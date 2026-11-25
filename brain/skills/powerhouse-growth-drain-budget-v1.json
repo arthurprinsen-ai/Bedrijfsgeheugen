@@ -1,0 +1,16 @@
+{
+  "skill": "powerhouse-growth-drain-budget-v1",
+  "fingerprint": "powerhouse|growth|bounded-replay-resume|v1",
+  "owner": "Powerhouse Growth / Brein operating loop",
+  "authority": "existing Netlify Blobs + Supabase datahub + provider delivery receipts",
+  "instruction": "Never start a scheduled replay when less than the bounded worst-case provider window remains. Persist a stable per-item datahub receipt; do not interpret 499 client-disconnect as failed side effect. Scan Blob listings page-by-page, alternate event/outcome priority, skip already-persisted disabled transport, resume only when authorized and verify provider response. Preserve existing event IDs, tenant scope, authorization and original durable keys.",
+  "routing": [
+    "netlify/functions/growth-drain.mjs",
+    "netlify/functions/growth-replay.mjs"
+  ],
+  "tests": [
+    "tests/brain-growth-drain-time-budget-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_NOT_RELEASED",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4446"
+}

@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "mode": "ratchet",
+  "budgets": {
+    "github": {
+      "maxTopLevelTriggeredWorkflows": 15,
+      "maxOpenImplementationPRs": 10,
+      "maxLivePRsPerObligation": 1,
+      "maxSuccessorDepth": 1,
+      "maxDirectPrTriggerWorkflows": 7,
+      "maxDirectPrAdmissionWorkflows": 2,
+      "maxLifecyclePrAuthorityWorkflows": 5,
+      "targetDirectPrAdmissionWorkflows": 2
+    },
+    "netlify": {
+      "maxActiveBedrijfsgeheugenProjects": 5,
+      "defaultEphemeralTtlDays": 7
+    },
+    "supabase": {
+      "maxActiveEdgeFunctions": 40
+    },
+    "notion": {
+      "maxPrivateRootItems": 50
+    },
+    "runtime": {
+      "maxPollingSeconds": 120,
+      "maxIdenticalDeploysPer30Minutes": 2
+    }
+  },
+  "baseline": {
+    "github": {
+      "workflowFiles": 123,
+      "openPullRequests": 78,
+      "directPrTriggerWorkflows": [
+        "codeql.yml",
+        "obligation-terminal-closure.yml",
+        "powerhouse-merged-branch-cleanup.yml",
+        "powerhouse-obligation-terminalizer.yml",
+        "powerhouse-terminal-writer-lease-closure-guard.yml",
+        "required-test.yml",
+        "writer-production-reconcile.yml"
+      ],
+      "directPrTriggerCount": 7,
+      "lifecyclePrAuthorityWorkflows": [
+        "obligation-terminal-closure.yml",
+        "powerhouse-merged-branch-cleanup.yml",
+        "powerhouse-obligation-terminalizer.yml",
+        "powerhouse-terminal-writer-lease-closure-guard.yml",
+        "writer-production-reconcile.yml"
+      ],
+      "lifecyclePrAuthorityCount": 5,
+      "directPrAdmissionWorkflows": [
+        "codeql.yml",
+        "required-test.yml"
+      ],
+      "directPrAdmissionCount": 2
+    },
+    "netlify": {
+      "projects": 16
+    },
+    "supabase": {
+      "edgeFunctions": 115,
+      "migrations": 591
+    },
+    "notion": {
+      "privateRootItems": 12,
+      "untitledRootItems": 0
+    }
+  },
+  "policy": "Existing debt is tolerated only as a downward ratchet. Exactly two PR admission authorities are allowed: Required test for canonical admission and Powerhouse CodeQL for security. Five closed-only lifecycle/recovery authorities are tracked separately. Specialists run on merge_group or consume successful Required workflow_run events. Any increase fails."
+}

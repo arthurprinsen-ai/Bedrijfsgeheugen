@@ -1,0 +1,30 @@
+{
+  "id": "material-writeback-two-tree-diff-v1",
+  "date": "2026-10-06",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "github|ci|material-writeback|shallow-merge-base|two-tree|v1",
+  "root_cause": "Required preflight intentionally uses shallow history. material-writeback-closure-guard derived changed paths with git diff base...head, which requires a merge base. When the immutable base was fetched as a separate shallow object, both commit trees existed but merge-base discovery failed before closure semantics could run.",
+  "prevention": {
+    "changed_path_authority": "Compare the exact base and head commit trees with git diff --name-only <base> <head>.",
+    "ancestry_requirement": "none",
+    "shallow_checkout_safe": true,
+    "fail_closed_semantics_preserved": true
+  },
+  "evidence": {
+    "observed_pr": 3976,
+    "observed_head": "396f8391b9968aff17c88e306a498686ea1b9fa7",
+    "failed_step": "Enforce material writeback closure",
+    "failure": "git diff --name-only <base>...<head> could not resolve a merge base in shallow preflight"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI_SHALLOW_MERGE_BASE_DEPENDENCY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

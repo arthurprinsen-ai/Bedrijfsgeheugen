@@ -86,34 +86,73 @@ export function compileSystemOfContext({companyKey,companyName,graph={},evidence
   });
 }
 
+const observedAmount=value=>{
+  if(value===null||value===undefined||value==='')return null;
+  const numeric=Number(value);
+  return Number.isFinite(numeric)?numeric:null;
+};
+
+// The original SQL Outcome Memory joins the immutable runtime event by exact
+// source event ID. Pure JS callers must supply that readback explicitly;
+// metadata-only evidence is never an independent observation.
+const independentlyObservedSalesOutcome=o=>{
+  const e=o?.evidence||{},read=o?.source_event_readback||o?.sourceEventReadback||{};
+  const nonEmpty=x=>txt(x).length>0;
+  const observedAt=Date.parse(txt(o?.occurred_at||o?.created_at));
+  const originAt=Date.parse(txt(read.occurred_at));
+  return !['sent','not_executed','execution_completed'].includes(txt(o?.outcome_type))
+    && e.synthetic_business_result!==true
+    && e.source_data_quality==='VERIFIED'
+    && nonEmpty(e.source_event_id)&&nonEmpty(e.source_event_type)
+    && nonEmpty(e.source_dedupe_key)
+    && read.independently_verified===true&&read.data_quality==='VERIFIED'
+    && txt(read.event_id)===txt(e.source_event_id)
+    && txt(read.event_type)===txt(e.source_event_type)
+    && txt(read.dedupe_key)===txt(e.source_dedupe_key)
+    && norm(read.company_key)===norm(o.company_key)
+    && txt(read.person_key)===txt(o.person_key)
+    && Number.isFinite(observedAt)&&Number.isFinite(originAt)&&originAt<=observedAt
+    && read.evidence&&typeof read.evidence==='object'
+    && Object.keys(read.evidence).length>0;
+};
+
 export function buildOutcomeMemory({salesOutcomes=[],realizedValues=[],decisionCycles=[]}={}){
   const cycleById=new Map(arr(decisionCycles).map(x=>[txt(x.cycle_id||x.cycleId),x]));
   const items=[];
   for(const o of arr(salesOutcomes)){
+    const evidence=o?.evidence&&typeof o.evidence==='object'?o.evidence:{};
     items.push(freeze({
       memoryKey:'sales_outcome:'+txt(o.outcome_id||o.dedupe_key),
       kind:'sales_outcome',subjectKey:o.subject_key||null,personKey:o.person_key||null,
       companyKey:norm(o.company_key),outcomeType:o.outcome_type||null,
-      realizedValue:Number(o.revenue_eur||0),unit:'EUR',observedAt:o.occurred_at||o.created_at||null,
+      realizedValue:observedAmount(o.revenue_eur),unit:'EUR',
+      observedAt:o.occurred_at||o.created_at||null,
       canonicalRef:'powerhouse_sales_outcomes:'+txt(o.outcome_id||o.dedupe_key),
-      evidence:freeze({...o.evidence}),verified:Boolean(o.evidence&&Object.keys(o.evidence).length)
+      evidence:freeze({...evidence}),
+      verified:independentlyObservedSalesOutcome(o)
     }));
   }
   for(const r of arr(realizedValues)){
     const cycle=cycleById.get(txt(r.cycle_id))||{};
+    const provenance=r?.provenance&&typeof r.provenance==='object'?r.provenance:{};
+    const verified=Boolean(
+      txt(r.evidence_ref)&&observedAmount(r.numeric_value)!==null
+      &&provenance.independent_readback_verified===true
+      &&txt(provenance.source_revision)&&txt(provenance.baseline_id)
+      &&txt(provenance.period_id)
+    );
     items.push(freeze({
       memoryKey:'realized_value:'+txt(r.observation_id),
       kind:'realized_value',subjectKey:cycle.subject_key||null,personKey:null,companyKey:'',
-      outcomeType:r.value_type||null,realizedValue:Number(r.numeric_value||0),
+      outcomeType:r.value_type||null,realizedValue:observedAmount(r.numeric_value),
       unit:r.currency||r.unit||null,observedAt:r.observed_at||null,
       canonicalRef:'powerhouse_realized_values:'+txt(r.observation_id),
-      evidence:freeze({evidenceRef:r.evidence_ref||null,provenance:r.provenance||{}}),
-      verified:Boolean(r.evidence_ref)
+      evidence:freeze({evidenceRef:r.evidence_ref||null,provenance:{...provenance}}),
+      verified
     }));
   }
   return freeze({schemaVersion:'outcome-memory.v1',items:freeze(items),verifiedCount:items.filter(x=>x.verified).length});
 }
-
 export function classifyExecutionBoundary(action={}){
   const status=txt(action.status).toLowerCase();
   const gate=action?.evidence?.execution_gate||{};
@@ -124,7 +163,7 @@ export function classifyExecutionBoundary(action={}){
   return 'policy_review';
 }
 
-export function buildCompoundIntelligence({context={},outcomeMemory={},actions=[],opportunities=[]}={}){
+export function buildCompoundIntelligence({context={},outcomeMemory={},actions=[],opportunities=[],optimization=null}={}){
   const outcomes=arr(outcomeMemory.items);
   const verified=outcomes.filter(x=>x.verified);
   const pending=arr(actions).filter(a=>!['done','skipped','expired','error'].includes(txt(a.status).toLowerCase()));
@@ -133,6 +172,7 @@ export function buildCompoundIntelligence({context={},outcomeMemory={},actions=[
   const state=pending.length?'act_and_observe':verified.length?'learn_and_reprioritize':open.length?'decide_next_action':'enrich_context';
   return freeze({
     schemaVersion:'compound-intelligence.v1',
+    optimizationDecision:optimization===null?null:decideCompanyOptimization(optimization),
     companyKey:context.companyKey||null,
     loopState:state,
     verifiedOutcomes:verified.length,pendingActions:pending.length,openOpportunities:open.length,
@@ -145,4 +185,107 @@ export function buildCompoundIntelligence({context={},outcomeMemory={},actions=[
     }),
     rule:'each observed outcome must improve prioritization, policy, prediction or next-best-action'
   });
+}
+
+
+// Canonical decision SUPPORT for the existing Powerhouse action fabric.
+// This pure function never dispatches, changes source truth, or closes ONE BRAIN.
+// All scenarios are source-proven; a missing cost is not a cost of zero.
+export function decideCompanyOptimization({
+  tenantId, candidates=[], observation={}, authorization={}, execution={}, effect={}, learning={}
+}={}){
+  const tenant=txt(tenantId);
+  const result=(status,reason,candidate=null,extra={})=>freeze({
+    status,reason,tenantId:tenant||null,
+    candidateId:candidate?txt(candidate.candidate_id):null,
+    originalOwner:candidate?txt(candidate.owner_agent):null,
+    ...extra,
+    authority:'original Powerhouse executor and ONE BRAIN only',
+    dispatched:false,closed:false
+  });
+  if(!tenant)return result('SOURCE_EVIDENCE_DUE','TENANT_ID_REQUIRED');
+  if(txt(observation.tenant_id)!==tenant || observation.source_health!=='healthy'
+    ||!txt(observation.source_revision)||!txt(observation.correlation_id))
+    return result('SOURCE_EVIDENCE_DUE','TENANT_SOURCE_REVISION_OR_CORRELATION_DUE');
+
+  const hasRefs=x=>Array.isArray(x?.source_refs)&&x.source_refs.some(v=>txt(v));
+  const amount=x=>typeof x==='number'&&Number.isFinite(x)&&Math.abs(x)<=1e12;
+  const scoped=arr(candidates).filter(c=>txt(c?.tenant_id)===tenant
+    &&txt(c?.candidate_id)&&txt(c?.status).toLowerCase()==='candidate');
+  if(!scoped.length)return result('CANDIDATE_OR_MEASUREMENT_DUE','NO_TENANT_SCOPED_CANDIDATE');
+  if(new Set(scoped.map(c=>txt(c.candidate_id))).size!==scoped.length)
+    return result('SOURCE_EVIDENCE_DUE','DUPLICATE_CANONICAL_CANDIDATE_CONFLICT');
+
+  const valid=scoped.flatMap(c=>{
+    const f=c?.expected_impact?.financial_forecast,b=c?.baseline||{},sc=arr(f?.scenarios);
+    if(txt(c.safety_class)!=='safe_reversible'||!txt(c.owner_agent)
+      ||!txt(c.proposed_action?.action)||!txt(c.rollback_plan?.action)
+      ||!txt(b.baseline_id)||!txt(b.period_id)||!hasRefs(b)
+      ||f?.status!=='MODELLED_NOT_REALIZED'||f?.evidence_health?.status!=='healthy'
+      ||txt(f.source_revision)!==txt(observation.source_revision)
+      ||txt(f.baseline_id)!==txt(b.baseline_id)||txt(f.period_id)!==txt(b.period_id)
+      ||txt(f.metric_id)!=='NET_SAVINGS_EUR'||txt(f.unit).toUpperCase()!=='EUR'
+      ||!hasRefs(f)||sc.length!==4)return [];
+    const values=new Map();
+    for(const name of ['no_action','downside','base','upside']){
+      const found=sc.filter(s=>txt(s?.case)===name);
+      if(found.length!==1||!hasRefs(found[0])||!amount(found[0].net_value_eur))return [];
+      values.set(name,found[0].net_value_eur);
+    }
+    // Only risk-bounded net-positive scenarios can be offered for autonomous
+    // execution. Losing-downside proposals remain human/policy review.
+    if(values.get('no_action')!==0||values.get('downside')<0
+      ||values.get('base')<=0||values.get('upside')<values.get('base'))return [];
+    return [{candidate:c,base:values.get('base')}];
+  }).sort((a,b)=>b.base-a.base||txt(a.candidate.candidate_id).localeCompare(txt(b.candidate.candidate_id)));
+  if(!valid.length)return result('MEASUREMENT_OR_POLICY_REVIEW_DUE',
+    'NO_SOURCE_BACKED_SAFE_REVERSIBLE_NET_POSITIVE_SCENARIO');
+  const selected=valid[0].candidate;
+  const grant=authorization||{};
+  const lease=grant.owner_lease||{};
+  if(grant.tenant_id!==tenant||grant.candidate_id!==selected.candidate_id
+    ||grant.policy_granted!==true||grant.reversible_allowed!==true
+    ||txt(grant.correlation_id)!==txt(observation.correlation_id)
+    ||!txt(grant.policy_revision)||!txt(grant.idempotency_key)
+    ||lease.active!==true||txt(lease.owner)!==txt(selected.owner_agent))
+    return result('ORIGINAL_POLICY_GATE_DUE','AUTHORIZATION_OR_SINGLE_OWNER_LEASE_DUE',selected);
+  const ref={
+    sourceRevision:txt(observation.source_revision),
+    correlationId:txt(observation.correlation_id),
+    idempotencyKey:txt(grant.idempotency_key),
+    forecastBaseNetEur:valid[0].base
+  };
+  if(!execution||Object.keys(execution).length===0)
+    return result('READY_FOR_ORIGINAL_EXECUTOR','GOVERNED_REVERSIBLE_ACTION_ELIGIBLE_NOT_EXECUTED',selected,ref);
+  if(execution.independent_readback!==true || execution.status!=='INDEPENDENTLY_VERIFIED'
+    ||txt(execution.tenant_id)!==tenant
+    ||txt(execution.candidate_id)!==txt(selected.candidate_id)
+    ||txt(execution.source_revision)!==txt(observation.source_revision)
+    ||txt(execution.correlation_id)!==txt(observation.correlation_id)
+    ||txt(execution.idempotency_key)!==txt(grant.idempotency_key)
+    ||!txt(execution.provider_receipt_id)||!hasRefs(execution))
+    return result('EXECUTION_PROOF_DUE','PROVIDER_OR_TENANT_READBACK_MISSING',selected,ref);
+  if(!effect||effect.independently_verified!==true
+    ||txt(effect.tenant_id)!==tenant||txt(effect.candidate_id)!==txt(selected.candidate_id)
+    ||txt(effect.baseline_id)!==txt(selected.baseline.baseline_id)
+    ||txt(effect.period_id)!==txt(selected.baseline.period_id)
+    ||txt(effect.source_revision)!==txt(observation.source_revision)
+    ||txt(effect.correlation_id)!==txt(observation.correlation_id)
+    ||effect.comparator!=='NO_ACTION'||!txt(effect.method_version)
+    ||!hasRefs(effect)||!amount(effect.gross_savings_eur)
+    ||!amount(effect.implementation_cost_eur)||!amount(effect.operating_cost_eur)
+    ||effect.gross_savings_eur<0||effect.implementation_cost_eur<0||effect.operating_cost_eur<0
+    ||!amount(effect.net_savings_eur)
+    ||Math.abs(effect.net_savings_eur-(effect.gross_savings_eur-
+       effect.implementation_cost_eur-effect.operating_cost_eur))>0.01)
+    return result('INDEPENDENT_MEASUREMENT_DUE','COST_BASELINE_COUNTERFACTUAL_OR_METRIC_DUE',selected,ref);
+  if(learning?.independently_verified!==true
+    ||txt(learning.candidate_id)!==txt(selected.candidate_id)
+    ||txt(learning.tenant_id)!==tenant
+    ||txt(learning.source_revision)!==txt(observation.source_revision)
+    ||txt(learning.correlation_id)!==txt(observation.correlation_id)
+    ||!txt(learning.next_decision_id)||!hasRefs(learning))
+    return result('NEXT_DECISION_LEARNING_DUE','NO_VERIFIED_NEXT_DECISION_CHANGE',selected,ref);
+  return result('ONE_BRAIN_CLOSURE_REVIEW_DUE','ALL_PROOFS_PRESENT_ORIGINAL_AUTHORITY_MUST_CLOSE',
+    selected,{...ref,observedNetEur:effect.net_savings_eur});
 }

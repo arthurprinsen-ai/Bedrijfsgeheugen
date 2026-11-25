@@ -1,0 +1,55 @@
+/* Rituals-belevenis portaal (besluit Arthur 17 nov 2026): ontvangst in plaats van dashboard.
+   Serif voor koppen, inkt-zijbalk met één gouden detail (actieve pagina), gereedschapsknoppen als stille
+   tekstlinks, haarlijnen, trage overgangen. Alleen vorm; alle functies, routes en teksten blijven.
+   Zelf gehoste Fraunces en Instrument Sans (SIL OFL), zelfde bestanden als de website. */
+@font-face{font-family:"Fraunces R";src:url("/assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Fraunces R";src:url("/assets/fonts/fraunces-latin-wght-italic.woff2") format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:"Instrument Sans R";src:url("/assets/fonts/instrument-sans-latin-wght-normal.woff2") format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
+:root{--rb-papier:#FBFAF7;--rb-inkt:#14171A;--rb-goud:#FFE86B;--rb-zacht:rgba(20,23,26,.64);--rb-lijn:rgba(20,23,26,.12);--rb-serif:"Fraunces R","Iowan Old Style",Georgia,serif;--rb-sans:"Instrument Sans R","Instrument Sans",system-ui,sans-serif}
+html body{font-family:var(--rb-sans)!important;background:var(--rb-papier)!important}
+html body .main :where(h1,h2,h3){font-family:var(--rb-serif)!important;font-weight:420!important;letter-spacing:-.012em!important;color:var(--rb-inkt)!important;font-variation-settings:"opsz" 96}
+html body .main .welcome h1{font-size:clamp(1.9rem,3vw,2.6rem)!important;line-height:1.1!important}
+html body .main .welcome p{color:var(--rb-zacht)!important;font-size:1rem!important}
+html body .main :where(.owner-os,.business-os-home) :where(h1,h2){font-size:clamp(1.7rem,2.6vw,2.3rem)!important;line-height:1.12!important}
+
+/* Zijbalk: inkt, stil, één gouden detail */
+html body .sidebar{background:var(--rb-inkt)!important;background-image:none!important;border-right:0!important}
+html body .sidebar .brand{font-family:var(--rb-serif)!important;font-weight:450!important;letter-spacing:-.01em;font-size:1.08rem!important}
+html body .sidebar .nav button{color:rgba(255,255,255,.78)!important;font-weight:450!important;background:transparent!important;border:0!important;border-left:2px solid transparent!important;border-radius:0 10px 10px 0!important;transition:color .5s ease,border-color .5s ease,background-color .5s ease!important}
+html body .sidebar .nav button:hover{color:#fff!important;background:rgba(255,255,255,.05)!important}
+html body .sidebar .nav button.active,html body .sidebar .nav button[aria-current="page"]{color:#fff!important;background:rgba(255,255,255,.07)!important;border-left-color:var(--rb-goud)!important;box-shadow:none!important;outline:0!important}
+html body .sidebar .nav button i{opacity:.55}
+html body .sidebar :where(.nav-title,.nav-group-title,.nav-section),html body .sidebar .nav > :where(div,button)[class*="group"]{color:rgba(255,255,255,.5)!important}
+html body .sidebar .scan{background:rgba(255,255,255,.06)!important;border:1px solid rgba(255,255,255,.12)!important}
+html body .sidebar .scan strong{font-family:var(--rb-serif)!important;font-weight:450!important;color:#fff!important}
+html body .sidebar .scan p{color:rgba(255,255,255,.7)!important}
+html body .sidebar .scan button{background:var(--rb-papier)!important;color:var(--rb-inkt)!important}
+
+/* Gereedschap in de kop: stille tekstlinks (functies blijven bereikbaar) */
+html body .topbar .smallbtn{background:transparent!important;border:0!important;border-radius:0!important;border-bottom:1px solid transparent!important;padding:6px 4px!important;color:var(--rb-zacht)!important;letter-spacing:.14em!important;font-size:.64rem!important;transition:color .5s ease,border-color .5s ease!important}
+html body .topbar .smallbtn:hover{background:transparent!important;color:var(--rb-inkt)!important;border-bottom-color:var(--rb-inkt)!important}
+html body .topbar .search{background:transparent!important;border:0!important;border-bottom:1px solid var(--rb-lijn)!important;border-radius:0!important}
+html body .topbar .ai{border-radius:999px!important;padding-inline:22px!important}
+
+/* Ontvangst: ruimte, geen blauwe meldingsbalken, kaarten als papier */
+html body .main :where(.card,.kpi,.legacy-card,.eh-card,.daily-steering,.owner-os,.company-state,.portal-overview-depth){border-radius:18px!important;border-color:var(--rb-lijn)!important;background-color:#fff!important}
+html body .main :where(.owner-os,.daily-steering,.company-state){padding:clamp(22px,3vw,40px)!important}
+html body .main :where([class*="notice"],[class*="banner"],.owner-note,.owner-state){background:transparent!important;border:0!important;border-left:2px solid var(--rb-goud)!important;border-radius:0!important;color:var(--rb-inkt)!important;box-shadow:none!important}
+html body .main :where(.owner-link,.legacy-next a){border-radius:999px!important;color:var(--rb-inkt)!important;background:transparent!important}
+html body .main :where(.owner-link,.legacy-next a):hover{background:var(--rb-inkt)!important;color:#fff!important}
+html body .main :where(.owner-eyebrow,.legacy-kicker,.eh-eyebrow,.daily-steering-eyebrow){color:var(--rb-zacht)!important}
+html body .main :where(.livepill,.eh-status,.v2globalstatus,.pill){background:transparent!important;color:var(--rb-inkt)!important}
+@media(max-width:760px){html body .main :where(.owner-os,.daily-steering,.company-state){padding:20px!important}}
+@media(prefers-reduced-motion:reduce){html body *{transition:none!important}}
+html body .main .owner-status{background:transparent!important;border:0!important;border-left:2px solid var(--rb-goud)!important;border-radius:0!important;color:var(--rb-zacht)!important;font-weight:450!important;padding:6px 14px!important}
+html body .topbar .smallbtn.ai,html body .topbar .ai{background:var(--rb-inkt)!important;color:#fff!important;border:1px solid var(--rb-inkt)!important;border-radius:999px!important;padding:10px 22px!important;letter-spacing:.1em!important}
+html body .topbar .ai:hover{background:transparent!important;color:var(--rb-inkt)!important}
+
+/* Beleving (interactie): zachte reacties, geen schokken. */
+html{scroll-behavior:smooth}
+html body :focus-visible{outline:2px solid var(--rb-inkt);outline-offset:3px;border-radius:4px}
+html body .sidebar :focus-visible{outline-color:var(--rb-goud)}
+::selection{background:var(--rb-goud);color:var(--rb-inkt)}
+html body .main :where(.card,[class*="card"]){transition:box-shadow .7s ease,border-color .7s ease}
+html body .main :where(.card,[class*="card"]):hover{box-shadow:0 18px 40px -28px rgba(20,23,26,.35)}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

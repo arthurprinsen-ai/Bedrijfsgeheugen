@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-12",
+  "fingerprint": "powerhouse|content-handoff|blog-deploy-proof-wrongly-requires-social-id|20261112-v1",
+  "parent_issue": 4198,
+  "obligation_id": "blog-deploy-proof-original-handoff-20261112",
+  "title": "Independent first-party blog deployment readback is the provider publication identity",
+  "root_cause": "Original powerhouse_content_handoff_receipts_v1 used the global social external_id predicate for all channels. Production 2026-10-25 blog had LIVE_PROVEN timestamp, first-party HTTPS blog URL, exact HTTP 200 and Netlify deploy ID, but external_id was null and BRAIN classified it OVERDUE_PUBLICATION.",
+  "root_source": "public.content_publication_obligations, original ONE BRAIN assurance owner #171",
+  "affected_scope": "one proven 2026-10-25 original blog publication; social posts unchanged",
+  "control": "On original blog use exact first-party URL, live_proven_at, LIVE_PROVEN/MEASURED/LEARNED state, independently recorded public HTTP 200 and nonempty Netlify deployment ID. On Instagram/LinkedIn keep external_id, provider_truth_verified, HTTPS canonical URL and live time. No publication or measurement inferred from status alone.",
+  "measured_audit": "Current original blog MEASURED records may still lack GA4/GSC provider-linked event IDs; therefore only publish stage can advance. Exact metric, analysis and later proved experiment remain separate original obligations.",
+  "owner": "powerhouse-runtime-scheduler-mux-v1 / existing Powerhouse content handoff",
+  "test": "tests/brain-original-blog-netlify-provider-proof-20261112.test.mjs",
+  "governance": {
+    "one_executor": true,
+    "no_second_scheduler": true,
+    "requires_required_ci": true,
+    "codeql": true,
+    "protected_merge": true,
+    "independent_production_readback": true,
+    "duplicate_post_forbidden": true
+  },
+  "consumer": "ONE BRAIN / Heartbeat original content closed-loop",
+  "remediation_status": "CANDIDATE",
+  "evidence": [
+    {
+      "source": "Supabase production original",
+      "date": "2026-10-25",
+      "channel": "blog",
+      "status": "MEASURED",
+      "has_external_id": false,
+      "has_live_proven_at": true,
+      "https_blog_url_proven": true,
+      "http_status": 200,
+      "netlify_deploy_id": "6addd26df8c80a10be5828d9",
+      "old_brain_stage": "OVERDUE_PUBLICATION"
+    }
+  ],
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-blog-netlify-provider-proof-20261112.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders",
+    "powerhouse-social-cro-funnel"
+  ],
+  "prevention_rule": "Do not demand a social-media external_id for verified first-party blogs. Require original HTTPS /blog URL, HTTP 200, exact Netlify deploy ID, live time, and source state. For social channels always demand exact external post ID, original provider truth and readback. NEVER infer GA4/GSC metric, analysis, later learning or commercial result from deployment proof."
+}

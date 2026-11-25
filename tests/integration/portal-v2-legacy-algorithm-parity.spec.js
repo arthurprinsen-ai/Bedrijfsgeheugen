@@ -40,9 +40,17 @@ test('legacy financial and AI algorithms execute inside native V2 workspaces',as
 test('strategy, compliance, due diligence, advice and roadmap calculations are native V2',async({page})=>{
  const preview=process.env.PREVIEW_URL;if(!preview)throw new Error('PREVIEW_URL is required');
  await boot(page,preview);
- for(const [pageId,calculation] of [['compliance-governance','compliance-risk'],['strategie-naar-maandagochtend','priority-filter'],['due-diligence','red-flags'],['advies','cross-model-weight'],['roadmap','roadmap-value']]){
+ for(const [pageId,calculation] of [['strategie-naar-maandagochtend','priority-filter'],['due-diligence','red-flags'],['advies','cross-model-weight'],['roadmap','roadmap-value']]){
   const parity=await open(page,pageId);
   await expect(parity).toBeVisible();
   await expect(parity.getByText(calculation,{exact:true})).toBeVisible();
  }
+});
+
+test('anonymous preview cannot execute protected compliance calculations',async({page})=>{
+ const preview=process.env.PREVIEW_URL;if(!preview)throw new Error('PREVIEW_URL is required');
+ await boot(page,preview);
+ await page.evaluate(async()=>{const shell=await import('/portal-v2/page-shell.js');shell.openPortalPage('compliance-governance');});
+ await expect(page.locator('#portalView')).not.toHaveAttribute('data-page-id','compliance-governance');
+ await expect(page.locator('[data-functional-workspace="compliance-governance"]')).toHaveCount(0);
 });

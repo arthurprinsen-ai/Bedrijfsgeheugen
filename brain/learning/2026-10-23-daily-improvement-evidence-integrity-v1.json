@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "learning|daily-self-evolution|synthetic-probe-metrics-confused-with-observed|20261023-v1",
+  "obligation_id": "learning|daily-self-evolution|synthetic-probe-metrics-confused-with-observed|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_learning_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4367",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "AUTONOMOUS_AGENT_SYNTHETIC_METRIC_ADMISSION",
+  "root_cause": "The existing read-only autonomous improvement probe constructed architecture fitness using fixed example reliability 99.9, latency 100 and cost/outcome 10, together with a 30-observation champion, despite reading no actual provider measurements. A green-looking flat metric packet could be mistaken for production learning.",
+  "source_evidence": [
+    "Existing source scripts/brain/continuous-improvement/run-autonomous-improvement.mjs previously contained fixed values and 30-observation champion",
+    "scripts/brain/continuous-improvement/autonomous-runtime.mjs supports null/unknown measurements and HOLD without champion",
+    "Daily Self Evolution workflow already executes this probe independently of its model-freshness check"
+  ],
+  "fix": "Replace all fixed performance/experiment examples in the live read-only probe with null metrics and no champion. Attach provenance marker measured_performance:false, evaluated_champion:false, synthetic_performance_samples:false, automatic_promotion_allowed:false. Verify regression assertions.",
+  "prevention_rule": "Never claim agent productivity, financial outcomes, latency or champion/challenger improvement from fixture constants or invented sample counts. Unobserved dimensions remain unknown and experiment portfolio HOLD; controlled changes require real independently verified evidence, approved tests, release gates and production readback.",
+  "tests": [
+    "tests/brain-autonomous-improvement-runtime.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer"
+  ],
+  "compiler": {
+    "failure_class": "AUTONOMOUS_AGENT_SYNTHETIC_METRIC_ADMISSION",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-autonomous-improvement-runtime.test.mjs"
+    ],
+    "invariants": [
+      "Unknown metrics may not be replaced with flat fake values",
+      "No verified champion means HOLD",
+      "No direct production mutation",
+      "No new scheduler/agent/memory owner",
+      "All protected CI and independent release evidence remain mandatory"
+    ],
+    "workflow_reference": ".github/workflows/powerhouse-daily-self-evolution.yml"
+  },
+  "promotion": "Existing Required+CodeQL and protected merge; independently observed daily workflow artifact after release. Evidence of faster/smarter agents still unproven.",
+  "readback": {
+    "production_modified": false,
+    "additional_scheduler": false,
+    "performance_gain_proven": false,
+    "model_upgrade_executed": false
+  }
+}

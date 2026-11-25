@@ -1,0 +1,83 @@
+{
+  "fingerprint": "portal|powerhouse-existing-system-integration-status|20261029-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "date": "2026-10-29",
+  "owner": "existing Portal V2 Control Plane",
+  "authority": "ONE BRAIN/Heartbeat existing read models",
+  "sourceRefs": [
+    "public.powerhouse_one_brain_runtime_health_v1",
+    "public.powerhouse_one_brain_capability_inventory_v1",
+    "public.powerhouse_one_brain_intelligence_inventory_v1",
+    "public.powerhouse_autonomous_experiment_readiness_v1",
+    "public.powerhouse_revenue_event_spine_health_v1"
+  ],
+  "prevention": "Always render source accessibility and actual runtime/agent/outcome proof separately; fail closed on no source, missing load receipt, no payment, lack of consent, auth or tenant isolation.",
+  "rootCause": "Presenting source-connected infrastructure without independent stage-level executed learning and business outcome creates false-green status.",
+  "regression": "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
+  "ownership": "Backend stage proof remains under PR #5148, CRO event ACK remains under PR #5144.",
+  "noNewScheduler": true,
+  "noNewWriter": true,
+  "noNewStore": true,
+  "proofGates": [
+    "Required/BRAIN/CodeQL exact PR head",
+    "protected merge",
+    "Netlify deploy exact source",
+    "authenticated admin readback",
+    "verified independent outcome",
+    "real skill load/apply evidence"
+  ],
+  "compiler": {
+    "failure_class": "OBSERVABILITY",
+    "scope": "SITE_PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED: protected merge and exact Netlify/admin/API production proof required"
+    ]
+  },
+  "evidence": {
+    "observation": "29 Oct source audit: 32/32 WIRED, 18/18 required jobs active yet AMBER; 19 actions without economics, 1753 overdue forecast calibration; source connected is not executed proof.",
+    "regression": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "protected_main_proven": false,
+    "authenticated_admin_portal_readback_proven": false,
+    "realized_business_outcome_proven": false,
+    "existing_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918#issuecomment-6503569386"
+  },
+  "recovery_20261029": {
+    "failed_run": "40925783664",
+    "failure": "LEARNING_CANONICALIZATION_FAILED: LEARNING_FAILURE_CLASS_REQUIRED",
+    "root_cause": "The candidate Brain learning JSON missed compiler.failure_class and machine-readable evaluation evidence required by protected CI admission.",
+    "fix": "Add explicit trusted compiler classification, bounded canonical scope and machine-checkable regression/evaluation evidence.",
+    "prevent": "All future candidate learning records are preflighted against the existing Brain learning compiler before protected admission; do not treat an open PR as live.",
+    "verified": false
+  },
+  "production_config_fallback_20261029": {
+    "fingerprint": "portal|powerhouse-existing-system-status|missing-supabase-url-env|20261029",
+    "status": "CODE_FIX_PROTECTED_PR_NOT_PRODUCT_VERIFIED",
+    "observation": "Netlify website config has SUPABASE_SERVICE_ROLE_KEY and BG_PORTAL_EU_SUPABASE_URL in function scope, but SUPABASE_URL is absent.",
+    "cause": "The new Powerhouse Control Plane source read-model addressed only missing SUPABASE_URL and would have returned PARTIAL even if deployed.",
+    "fix": "Reuse the existing BG_PORTAL_EU_SUPABASE_URL as server-only fallback after established Powerhouse admin authorization. Do not create or expose another secret.",
+    "prevention_test": "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
+    "required_readback": [
+      "Required/BRAIN/CodeQL exact updated PR head",
+      "protected merge",
+      "actual Netlify deploy",
+      "authenticated admin source readback of five canonical views"
+    ],
+    "verified": false
+  }
+}

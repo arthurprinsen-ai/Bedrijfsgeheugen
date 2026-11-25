@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_PENDING_RUNTIME_VERIFICATION",
+  "owner": "original-powerhouse-content-loop",
+  "fingerprint": "powerhouse|social|late-independent-review|20261104-v1",
+  "failure_class": "PREPUBLISH_REVIEW_ONLY_AT_DUE",
+  "root_cause": "Original publisher returned on not_due before independent editorial and provider readiness checks; the hourly content loop classified preventive risks but did not prepare the same source with the original reviewer ahead of the deadline.",
+  "evidence": {
+    "source": "Supabase content-closed-loop:2026-11-04",
+    "observed_at": "2026-11-04T09:14:36Z",
+    "preventive_status": "PREVENTIVE_ACTION_REQUIRED",
+    "actual_live_proven_channels": 1,
+    "total_expected_channels": 4,
+    "personal": "PUBLISHED with independent GET denied",
+    "instagram": "WAITING_ASSET",
+    "blog": "GENERATED, approved_at missing",
+    "original_cron_job": 140
+  },
+  "fix": "Use original publisher prepare_only after generation and before provider delivery, early independent review + non-mutating auth preflight; original content-loop gates only the selected social dispatch, preserving original final publish-only quality review.",
+  "prevention_rule": "The original source agent prepares verified content before due; only READY_FOR_FINAL_RECHECK proceeds to original final reviewer and single provider create. Failed preflight is same-owner recovery, not executor shutdown.",
+  "contract_ref": "brain/contracts/original-social-first-time-right-prepublish-v1.json",
+  "regression_ref": "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "PREPUBLISH_REVIEW_ONLY_AT_DUE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 3
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-preventive-readiness-original-loop-20261103.test.mjs"
+    ],
+    "invariants": [
+      "no duplicate scheduler",
+      "no send during preparation",
+      "original final reviewer mandatory",
+      "original source repair remains active",
+      "same provider idempotency"
+    ]
+  },
+  "verification": [
+    "exact-head Required and CodeQL",
+    "protected merge",
+    "Supabase exact source readback for both original functions",
+    "natural cron #140 and ONE BRAIN readiness readback",
+    "provider truth for every channel separately",
+    "actual outcome measurement"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "fingerprint": "powerhouse|innovation|same-sales-action-reexecution-silently-dropped-by-monotonic-cycle|20261115-v1",
+  "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+  "original_operation_id": "edebcb32-335b-49f0-b527-eb4289f95c5c",
+  "original_owner": "agent:agent-integration-engineer",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original powerhouse_advance_sales_action_v1 always resolves one source_signal_ref cycle per action. The original monotonic powerhouse_append_cycle_event_v2 rank prevents a second execution stage, while powerhous_sales_actions.executed_at can legitimately advance on subsequent internal research_enrichment execution. Verified canonical source: 164 last-seven-day original execution events, 163 source-linked to current executed_at, one historical action now reexecuted and status done at a newer executed_at but its second event was not minted. Another exact read-only source count found four original actions with a later current executed_at than their historical execution events.",
+  "prevention_rule": "Keep original monotonic decision stages and immutable historical events. When original guarded action status=done and current executed_at strictly advances beyond latest original writer-status-done event, the SAME original function serializes on source action row and appends one new 5-stage attempt cycle with stable execution timestamp-scoped idempotency keys; never repeat the old cycle's execution event. Do not infer provider delivery or revenue. Original full-week admin readback validates all event-time writer receipts independently of mutable action executed_at, but flags current mutable executed_at with no matching original immutable attempt as a separate RED source gap. No separate worker/scheduler/table/provider action. Existing signed immutable production admin proof must preserve a separate currentExecutionWithoutEventSample=1 as explicitly RED while confirming historical receipts, denying nonadmin/anonymous access and preserving external-provider-proof=false; accept only a consistent fail-closed source state, never turn this into a fake completed innovation.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-sales-reexecution-attempt-cycle-20261115.test.mjs",
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-sales-reexecution-attempt-cycle-20261115.test.mjs",
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-sales-reexecution-attempt-cycle-20261115.test.mjs",
+      "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+      "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_immutable_event_count_7d": 164,
+    "original_signed_admin_internal_historical_current_time_matched": 163,
+    "original_signed_admin_internal_unsupported": 1,
+    "signed_admin_prod_release_sha": "44432cdf7dc7329e198d34c30a8eb42e3d816884",
+    "signed_admin_prod_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43728192839",
+    "source_writer": "public.powerhouse_advance_sales_action_v1",
+    "existing_decision_cycle": "public.powerhouse_decision_cycles",
+    "existing_events": "public.powerhouse_cycle_events",
+    "existing_attemptable_actions_observed": 4,
+    "protected_migration_production_applied": false,
+    "actual_new_attempts_provider_verified": false,
+    "original_consumer_ack": false,
+    "external_provider_delivery": false,
+    "realized_financial_benefit": false,
+    "generated_portal_system_map_hash": "0f50f26b5b628a76b7759e871e9b17da66d67c322c0253b00be5d5487d9dda8e",
+    "signed_admin_current_retry_gap_supported": true,
+    "signed_admin_current_retry_gap_production_verified": false
+  },
+  "change_scope": [
+    "supabase/migrations/20261115235500_sales_action_reexecution_immutable_attempt_lineage_v1.sql",
+    "platform/portal/powerhouse-existing-integration-read-model.mjs",
+    "portal-v2/control-plane-cockpit.js",
+    "tests/brain-innovation-sales-execution-readback-20261115.test.mjs",
+    "tests/brain-original-sales-reexecution-attempt-cycle-20261115.test.mjs",
+    "brain/learning/2026-11-15-original-sales-reexecution-attempt-cycle-v1.json",
+    "docs/changes/2026-11-15-original-sales-reexecution-attempt-cycle.md",
+    "docs/development-ledger-events/2026-11-15-original-sales-reexecution-attempt-cycle.md",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "portal-v2/index.html",
+    "platform/api/portal-authenticated-production-proof-core.mjs",
+    "tests/brain-innovation-authenticated-original-production-proof-20261115.test.mjs"
+  ],
+  "production_status": "PROTECTED_CANDIDATE_NOT_YET_APPLIED",
+  "no_new_scheduler": true,
+  "no_parallel_agent": true,
+  "no_new_table": true,
+  "no_provider_side_effect": true,
+  "rollback": "Protected revert of original function migration via verified prior pg_get_functiondef; immutable new events never deleted, external side effects unchanged."
+}

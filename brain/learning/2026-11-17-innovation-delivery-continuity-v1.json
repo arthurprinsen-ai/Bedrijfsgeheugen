@@ -1,0 +1,37 @@
+{
+  "contract": "ORIGINAL_INNOVATION_DELIVERY_CONTINUITY_LEARNING_V1",
+  "observed_on": "2026-11-17",
+  "fingerprint": "powerhouse|innovation|built-code-unreconciled-original-brain-after-merge|20261117-v1",
+  "root_cause": "Original Self Evolution generated protected code candidate PRs but did not regularly reconcile actual GitHub merge, independent deployed provider ancestry or the original Brain consumer and impact stage. A merged protected PR remained PLANNED/OPEN; a successful daily job was not an implementation receipt.",
+  "correction": "Run bounded original-candidate delivery continuity after owner decisions within the same daily workflow even when unrelated earlier steps fail. Use exact original candidate/owner/revision/hash, native GitHub PR and Netlify production readbacks, versioned original Brain CAS and independent GET; never auto-close or synthesize effect.",
+  "prevention_rule": "No original innovation may leave its identity behind. Each daily run must reconcile all source candidates against original Brain, distinguish baseline/design, protected PR, real deployed source and independent measured impact, and preserve nonterminal state until truth-backed Heartbeat learning.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-delivery-continuity-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-delivery-continuity-20261117.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_before": "14 INNOVATION_DELIVERY OPEN and 14 INNOVATION_INTAKE PLANNED (13 Engineering, 1 CRO), confirmed original Supabase readback 17 Nov 2026. PR #5908 was MERGED but original remained PLANNED; historical BRAIN terminal close failed.",
+    "local_test": "11 exact-source/provider-drift/preview-misclassification/no-false-green scenarios passed before protected PR.",
+    "new_workflow": "Same powerhouse-daily-self-evolution improve job; no new scheduler, execution authority, publisher, table or queue.",
+    "what_is_not_proven": "No natural production run of new watchdog yet; no authorization to deploy unreviewed code or perform outbound actions; no measured benefit, provider-verified CRO result, approved external integration or closed innovation."
+  },
+  "review_required": true,
+  "automatic_external_side_effect": false,
+  "terminal_success": false,
+  "next_safe_action": "Protected exact-head CI and merge, natural existing self-evolution run, check all 14 original Brain receipts and provider GitHub/Netlify evidence; introduce independently measured baseline/actual/holdout before any innovation closure.",
+  "source_refs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5908"
+  ]
+}

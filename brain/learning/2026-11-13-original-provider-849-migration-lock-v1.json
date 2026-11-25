@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|supabase|original-provider-849-source-lock-parity|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_PROVIDER_849_APPLIED_BEFORE_IMMUTABLE_LOCK",
+    "scope": "PROTECTED_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original protected SEO migration was already applied in real Supabase production as the 849th provider ledger row while the original Git migration-history source lock still contained only 848 exact identities; this makes BRAIN backend parity tests fail although the SQL was applied.",
+  "prevention_rule": "Compare the entire read-only original provider migration version/name ledger against the original Git lock before editing. Preserve the 848 exact matching source entries, append only the actually verified provider 849 identity and timestamp, never invent APPLIED or replay SQL, and gate all source-lock changes through the original protected BRAIN/CodeQL path.",
+  "evidence": [
+    "2026-11-13 17:07:59.213504 UTC Supabase original provider schema_migrations returned 849 applied versions, last 20261113164000/original_seo_one_chain_outcome_assurance_v2 with 4 recorded SQL statements.",
+    "A programmatic index-by-index comparison of the full 848-row original Git lock against the first 848 real provider rows returned zero mismatches.",
+    "Live pg_get_functiondef confirms new original SEO exact-ACK-and-outcome guard. BRAIN workflow 43468449750 backend lane emitted 17 migration-lock parity failures; latest original SEO assurance returned pass=false and WAIT_PRODUCTION_ACTION, which must stay RED until an actual CRO outcome."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-849-migration-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-provider-849-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-849-migration-lock-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "no_new_migration": true,
+    "no_provider_sql_replay": true,
+    "no_new_scheduler": true,
+    "no_publication": true,
+    "unchanged_original_848_prefix": true,
+    "protected_exact_head_required": true
+  },
+  "production_success": false,
+  "status": "SOURCE_ONLY_PROTECTED_CANDIDATE_NOT_MERGED",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}

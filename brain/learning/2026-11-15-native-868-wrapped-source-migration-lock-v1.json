@@ -1,0 +1,61 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "supabase|migration-history|native-868-wrapped-serp-retry-source-lock|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "NATIVE_APPLIED_MIGRATION_SOURCE_LOCK_LAG",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Protected original wrapped-source recovery PR #5852 merged source migration 20261115121500; native production Supabase applied it, but original GitOps migration-history.lock.json remained at 867. This made unrelated protected backend PR #5851 fail source inventory integrity (867 != 868), despite no database changes in that PR.",
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "verified_at_utc": "2026-11-15T11:42:57.174Z",
+    "original_release_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5852",
+    "original_release_main_sha": "2aa0866c5975def2e6833023b39351b53c1fdfca",
+    "source_lock_before": 867,
+    "native_provider_applied": 868,
+    "first_867_native_source_pairs_identical": true,
+    "source_pairs_missing_or_conflicting": 0,
+    "new_provider_only_count": 1,
+    "new_version": "20261115121500",
+    "new_name": "original_wrapped_serp_source_dispatch_wakeup_v1",
+    "native_provider_sql": "with expected as (...867 original applied source identities), actual as (select version,name from supabase_migrations.schema_migrations) select count of missing_or_changed_source_prefix=0,provider_only=1",
+    "original_migration_source": "supabase/migrations/20261115121500_original_wrapped_serp_source_dispatch_wakeup_v1.sql",
+    "migration_reapplied_by_this_change": false,
+    "actual_new_external_customer_sends_claimed": false,
+    "regression": "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+  },
+  "prevention": {
+    "append_only_existing_lock": true,
+    "exact_native_version_and_name_required": true,
+    "all_original_prefix_pairs_equal": true,
+    "unchanged_migration_source": true,
+    "no_new_sql_migration": true,
+    "no_direct_database_mutation": true,
+    "no_new_scheduler": true,
+    "no_customer_send": true
+  },
+  "semantic_learning": {
+    "failure": "PROVIDER_NATIVE_APPLIED_868_SOURCE_LOCK_867",
+    "cause": "Source migration merged/applied before exact GitOps history lock confirmation; independent native 868 provider equality missing from later protected CI",
+    "prevention_rule": "Reconcile solely actual already-applied native provider migration identity into original lock, preserving exact prior 867 version/name pairs; always independently compare source lock to production and fail closed on conflict.",
+    "regression_guard": "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+    "next_owner": "original Supabase migration-history GitOps owner under ONE BRAIN P0 #4198",
+    "effect_proof": "PENDING_EXACT_HEAD_CI_AND_PROTECTED_MAIN_NATIVE_READBACK"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_SOURCE_ONLY_CANDIDATE"
+}

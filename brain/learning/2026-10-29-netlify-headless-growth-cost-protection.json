@@ -1,0 +1,34 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "netlify-headless-growth-cost-protection-20261029",
+  "fingerprint": "powerhouse|netlify|synthetic-cro-events-preview-cost|20261029",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "COST",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-headless-growth-cost-guard-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Netlify P0 usage_exceeded 503 coexists with ~123,501 HeadlessChrome/149 requests and 22,458 /api/growth-event requests within 14 hours across production and old PR previews. The website measurement injection emits page_view for browser automation as though it were real CRO traffic. The exact Netlify quota/billing credit metric is not independently available.",
+  "change": "Suppress all CRO tracking from the existing injected measurement script whenever navigator.webdriver is exactly true, before visitor session generation and side-effect listeners. Keep regular browser analytics, CTA and form signals unchanged.",
+  "prevention": "Do not count synthetic headless CI-browser traffic as real visitor traffic or send paid growth-event functions. Cover with regression tests and real visitor measurement tests. Additionally bound GitHub browser preview page loads and recover Netlify provider billing/quota before claiming public LIVE.",
+  "evidence": {
+    "source": "Netlify Team PrinsenCo observability, 2026-10-29 00:00–14:00 UTC",
+    "headless": "HeadlessChrome/149 123501 requests / 2.88GB bandwidth",
+    "growthEndpoint": 22458,
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5118",
+    "tests": [
+      "tests/brain-netlify-headless-growth-cost-guard-20261029.test.mjs",
+      "tests/seo-order-measurement.test.mjs"
+    ],
+    "productionStatus": "P0 HTTP 503 usage_exceeded even though Netlify deployment says ready. This change does NOT restore quota or public serving.",
+    "live": false
+  }
+}

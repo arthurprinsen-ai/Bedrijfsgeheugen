@@ -1,0 +1,54 @@
+{
+  "fingerprint": "powerhouse|brain|portal-seven-source-fixture-stale|20261102-v1",
+  "obligation_id": "powerhouse-brain-portal-seven-source-readback-20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Historical original admin portal integration test fixture contained LIVE states and provider mock for only five views. Current canonical integration read model legitimately added sixth loop-integrity and seventh terminal-control authority views; full READABLE requires seven. Old fixture expected five fetches and false READABLE when the two indispensable sources were missing.",
+  "owner": "Original ONE BRAIN backend regression and original admin Portal Control Plane source owner",
+  "prevention_rule": "The exact original read-only allowlist and provider-authenticated actual source topology determine completeness; tests must assert seven scoped readbacks, prevent service-key disclosure, and require PARTIAL+source-specific gap for missing loop or terminal evidence. A complete source read is not full E2E execution, paid order or causally proven ROI. Portal reports x/7 source coverage and preserves non-green integrationState until independent proof.",
+  "evidence": {
+    "original_full_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41413309140",
+    "backend_job_id": 125171470101,
+    "total": 5365,
+    "passed": 5332,
+    "failed": 31,
+    "affected_tests": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "previous_fixture_views": 5,
+    "original_source_views": [
+      "health",
+      "capabilities",
+      "layers",
+      "experiments",
+      "revenue",
+      "loops",
+      "terminal"
+    ],
+    "code_source": "platform/portal/powerhouse-existing-integration-read-model.mjs",
+    "security_boundary": "netlify/functions/powerhouse-control-plane.mjs: authorized admin before service-role read; read-only HTTPS GET",
+    "runtime_changes": "only existing Portal UI display of source coverage; no changes to server read model or provider",
+    "portal_authenticated_readback": "PENDING",
+    "full_backend_proof": "PENDING",
+    "paid_orders": "NOT_CLAIMED"
+  },
+  "fix": "Bring original fixture up to the existing seven-view source authority, assert exactly seven allowed read-only requests, test failure of sixth/seventh readback, and display explicit observed x/7 in current owner-only Portal. Preserve end-to-end unproven semantics, existing source/read writer ownership, and provider security. Update existing agent skill, AGENTS, ONE BRAIN and human docs.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}

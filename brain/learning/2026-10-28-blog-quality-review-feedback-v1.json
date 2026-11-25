@@ -1,0 +1,41 @@
+{
+  "fingerprint": "content|blog-semantic-quality-feedback|20261028-v1",
+  "obligation_id": "content-publication-quality-recovery-20261028",
+  "compiler": {
+    "failure_class": "SEMANTIC_QUALITY_FEEDBACK_MISSING",
+    "scope": "GENERAL"
+  },
+  "root_cause": "Native385/request15205 produced and persisted a fresh structural-reader-ready article, yet independent semantic review found unclear Dutch and an unsupported Twinfield/ERP blocking instruction. Existing canonical repair recognized only automatic structural violations and could not consume exact-source editorial rejection, so an instruction-only handoff would strand the bad copy.",
+  "prevention_rule": "Add only an authenticated explicit blog/day typed quality review to the existing repair owner. Verify exact current body SHA under the same locks before claiming; accept bounded rejection enums/notes/public source facts, retain private notes and only export review ID. Keep original recommendation/URL and all tenant/day/provider/token/state/timestamp/cooldown guards. Atomically complete only a changed-body repair so further exact-source semantic feedback can work immediately. Independently re-review actual new copy before existing daily writer/public proof; no blind language blacklist or ad-hoc artifact overwrite.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-repair-preserved-state-20261028.test.mjs",
+      "tests/brain-blog-quality-recovery-20261028.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "predecessor_pr": 5049,
+    "predecessor_main": "4a75ba4e475ad1bfc34730732b09fb778134ed10",
+    "native": 385,
+    "canonical_request": 15205,
+    "observed_body_sha256": "8e55580621bc618686745dcaeca7f39758ea20b7e9f7b2cec7579809e846b968",
+    "rejection_codes": [
+      "UNCLEAR_READER_LANGUAGE",
+      "UNSUPPORTED_PRODUCT_ACTION"
+    ],
+    "source_facts_verified": [
+      "https://www.wolterskluwer.com/nl-nl/solutions/twinfield-accounting/functies/afletteren",
+      "https://www.bedrijfsgeheugen.nl/twinfield-koppeling"
+    ],
+    "red_green": "Five new regressions fail before;20 combined recovery tests pass. Includes exact-body feedback, wrong-hash/no writes, side-effect denial, completion/new review, unchanged-body denial and private authenticated request integration.",
+    "broad_checks": "Full backend exit0,60 recursive Brain script files,20 focused recovery tests pass. Independent whole-branch reviewer reran20, no important findings; diff clean."
+  },
+  "outcome": {
+    "source": "LOCAL_TESTED_NOT_DEPLOYED",
+    "blog_live": "NOT_PROVEN",
+    "revenue_lift": "NOT_PROVEN"
+  }
+}

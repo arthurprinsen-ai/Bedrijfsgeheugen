@@ -1,0 +1,44 @@
+{
+  "fingerprint": "delivery|ci|unstandardized-job-evidence-correlation|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "obligation_id": "engineering|cicd|semconv-readonly-provider-proof|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "OPTIMIZATION",
+  "source_authority": "existing hourly Powerhouse repository janitor GitHub completed jobs",
+  "root_cause": "Existing p50/p95 CI job telemetry and agent priorities had no standard, exact-commit-task evidence projection usable for consistent cross-agent comparisons.",
+  "fix": "Add bounded, local OpenTelemetry CI/CD semantic-convention field projection over the same completed GitHub job sample; no additional provider request, scheduler, exporter, queue or side effect.",
+  "prevention": "Project only completed jobs with validated IDs, 40-character source SHA, real timestamps and bounded task names. Never claim critical path, SLA, delivery or production readback from a sampled CI job set. Suppress the entire projection on partial provider reads or insufficient independent samples.",
+  "regression_test": "tests/brain-ci-cicd-semconv-evidence-v1.test.mjs",
+  "execution_scope": "READ_ONLY_EVIDENCE",
+  "tests": [
+    "incomplete_provider_fail_closed",
+    "min_sample_five_runs_twenty_tasks",
+    "job_identity_dedupe",
+    "negative_tainted_names",
+    "false_success_prevention",
+    "existing_hourly_janitor_same_schedule"
+  ],
+  "future_measurement": [
+    "sampled_ci_wait_p50_p95",
+    "same_commit_task_duration",
+    "repeated_fingerprint_recurrence",
+    "exact_production_commit_and_authenticated_readback"
+  ],
+  "progress": "source_candidate_not_deployed",
+  "reference_urls": [
+    "https://opentelemetry.io/docs/specs/semconv/cicd/cicd-spans/",
+    "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-cicd-semconv-evidence-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

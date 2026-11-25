@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|billing|trial-mails|20261027-v1",
+  "compiler": {
+    "failure_class": "TRIAL_ENDS_WITHOUT_CONTACT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-saas-trial-mails-v1.test.mjs",
+      "tests/brain-saas-free-trial-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-generator-trial-v1.test.mjs",
+      "tests/brain-afsluiten-english-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-saas-trial-mails-v1.test.mjs"
+    ]
+  },
+  "root_cause": "A trial ended silently: nobody was contacted before expiry, so there was no chance to convert and no data on what works.",
+  "prevention": "A daily job mails each trial on day 23, day 29 and at expiry, with text built from what the account did (scans, integrations, AI questions). Every mail is claimed once per trial and mail (unique key), skips suppressed addresses, carries an opt-out line and never retries after an unclear send. Two variants per mail are assigned per trial and a weekly report shows sent and converted-within-14-days per variant; no automatic variant choice before 30 sent mails per variant.",
+  "evidence": {
+    "tests": [
+      "tests/brain-saas-trial-mails-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "edge function deployed, sample mail with all 18 texts sent to the owner only, selection query verified with a rolled-back test trial; no real customer mail sent yet"
+  },
+  "limitations": [
+    "The 30-day data retention is a promise in the mails; no purge job exists yet, so data is currently kept longer",
+    "Greeting is 'Hoi,' because the trial form collects no first name",
+    "Replies come to the connected Gmail account; the reply loop turns 'afmelden' into a suppression"
+  ]
+}

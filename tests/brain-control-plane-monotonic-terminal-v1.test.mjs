@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const path='supabase/migrations/20260918141000_powerhouse_control_plane_monotonic_terminal_v1.sql';
+const path='supabase/migration-history/repository-only/20260918141000_powerhouse_control_plane_monotonic_terminal_v1.sql';
 
 test('terminal operation truth cannot be reopened', async()=>{
   const sql=await readFile(path,'utf8');

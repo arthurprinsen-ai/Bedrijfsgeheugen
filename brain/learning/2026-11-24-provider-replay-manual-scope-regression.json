@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "delivery|provider|manual-replay-regression-contract-drift|20261124-v1",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "REGRESSION_TEST_CONTRACT_DRIFT",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Merged #6151 introduced a second explicit read-only replay input, but historical full BRAIN regression still required functions as the sole valid input.",
+  "evidence": {
+    "original_pr": 6151,
+    "original_terminal_run": 45440410676,
+    "brain_run": 45440492591,
+    "failed_job": 138610655699,
+    "failed_test": "manual Edge provider parity requires an explicit non-empty function selection"
+  },
+  "fix": "Execute original and new input guard Bash blocks in existing canonical Brain regression, including ambiguous input, invalid PR and non-manual replay denial; retain source parity and no-deploy assertions.",
+  "prevention": [
+    "Run existing full BRAIN regression in protected candidate before claiming terminal success; preserve old function-mode and new replay-mode negative controls.",
+    "Never mark the original failed terminal as successful based on successor tests alone."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-edge-manual-attestation-scope.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-edge-manual-attestation-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-edge-manual-attestation-scope.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-supabase-edge-manual-attestation-scope.test.mjs"
+  ],
+  "status": "CANDIDATE_PENDING_PROTECTED_CI"
+}

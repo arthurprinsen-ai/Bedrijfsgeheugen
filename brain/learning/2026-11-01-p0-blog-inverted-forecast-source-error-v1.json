@@ -1,0 +1,41 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "fingerprint": "blog|factual-freshness|cpnl-inverted-future-opening-after-source-rewrite|20261101-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original powerhouse-content-orchestrator and protected blog queue/export",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "root_cause": "Live original 2026-11-01 auto blog repair 18292 produced a different but still false CPNL opening claim: 'Onze forecast verwacht dat ... op 6 oktober 2026 opengaat'. Previous official guard only searched future tense before the date; it missed reversed order. Original Postgres row run_date arrived as Date, and reader-ready forwarded String(Date) yielding BLOG_RUN_DATE_INVALID instead of the true source error.",
+  "observed_evidence": {
+    "original_http_request": 18292,
+    "original_response": "HTTP200 generated:true",
+    "original_auto_repair_state": "completed_at 2026-11-01T13:12:10.790Z",
+    "actual_rejected_new_text": "Onze forecast verwacht dat de Circular Plastics NL-subsidie op 6 oktober 2026 opengaat",
+    "required_official_close": "2026-10-06",
+    "current_day": "2026-11-01",
+    "actual_cms_publication": false,
+    "official_url": "https://www.rvo.nl/subsidies-financiering/cpnl"
+  },
+  "prevention_rule": "Normalize actual original Postgres run_date Date to canonical YYYY-MM-DD, then reject past-closed CPNL future opening clauses independent of word order before original AI artifact write AND original queue/export. A legitimate historical closure must pass; unrelated subsidy must not be blocked. Reopen only genuine unsent original blog under existing CAS, independently verify corrected title/body and public CMS readback; no false PROVEN.",
+  "fix_candidate": "Shared official date guard plus original reader date normalization; original queue/export source-parity redeploy; no new scheduler/provider.",
+  "compiler": {
+    "failure_class": "FACTUAL_DATE_DRIFT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-official-future-forecast-20261101.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-official-future-forecast-20261101.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "pending": "protected Required/CodeQL/Supabase Preview; original Edge runtime source parity; accurate content and genuine independent provider article readback; 7 natural runs"
+  },
+  "release_status": "SOURCE_CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-11-01-p0-blog-forecast-order-source-error.md",
+  "activity_ledger": "docs/development-ledger-events/2026-11-01-p0-blog-forecast-order-source-error.md"
+}

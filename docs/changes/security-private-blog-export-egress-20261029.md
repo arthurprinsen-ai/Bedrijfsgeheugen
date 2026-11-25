@@ -1,0 +1,5 @@
+# Security improvement: separate private drafts from approved public blogs
+
+The blog exporter previously allowed requests without verified service identity, and the public repository candidate process could expose a blog draft before approval. This changes the last-mile contract: the exporter requires verified service authorization and an explicit approval timestamp, and the public GitHub publishing workflow no longer includes internal Brain or development-ledger payloads in blog publication commits. Any missing credential or approval blocks only that publication lane; other independently authorized scheduled work continues.
+
+An emergency version of the Edge exporter is already ACTIVE, but the repository change is not considered deployed or incident resolved until protected checks, main-branch merge and independent negative/positive production readback succeed. Historical public copies require separate exposure assessment. The canonical incident is kept in the private Supabase Brain incident register; this document contains no confidential incident data.

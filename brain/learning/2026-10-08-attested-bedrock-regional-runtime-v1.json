@@ -1,0 +1,38 @@
+{
+  "fingerprint": "attested-bedrock-regional-runtime-v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_BEDROCK_REGION_OR_PROVIDER_EGRESS",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Customer infrastructure selection and signed runtime configuration do not establish actual AWS provider identity, Bedrock physical-region residency or network egress approval.",
+  "prevention": [
+    "Reject unrecognized physical AWS region or cross-region inference model IDs before any outbound calls",
+    "Require independent provider, egress and residency receipts plus exact signed tenant/model/policy binding",
+    "Use STS SigV4 request signing from server-owned secrets and no fallback to another provider",
+    "Keep #4152 open until customer-authorized provider readback and authenticated production run"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-attested-bedrock-regional-adapter-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-attested-bedrock-regional-adapter-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-attested-bedrock-regional-adapter-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-attested-bedrock-regional-adapter-v1.test.mjs"
+    ],
+    "source": [
+      "platform/runtime/attested-bedrock-adapter.mjs",
+      "platform/runtime/attested-cloud-ai.mjs"
+    ],
+    "outcome": "Signed AWS regional Converse transport implementation proposed; no customer AWS runtime or live deployment evidenced."
+  }
+}

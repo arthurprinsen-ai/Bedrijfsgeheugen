@@ -1,0 +1,38 @@
+{
+  "fingerprint": "linkedin-company-oauth-production-sql-history-20261006-v1",
+  "executable": false,
+  "production_authority": "Supabase project adhjwmvyoixzjtmiroln",
+  "purpose": "Record already-applied production migration lineage without replaying credential-bearing historical SQL from Git.",
+  "applied_versions": [
+    "20261006102646",
+    "20261006102754",
+    "20261006103336",
+    "20261006103408",
+    "20261006103432",
+    "20261006103445",
+    "20261006103617",
+    "20261006103856"
+  ],
+  "terminal_invariant": {
+    "channel": "linkedin_company",
+    "requires": [
+      "fresh organization-admin OAuth",
+      "canonical organization urn:li:organization:18234216",
+      "successful organization provider create",
+      "exact provider post URN and author readback",
+      "normalized provider commentary equivalence through powerhouse_normalize_publication_text_v1",
+      "durable LinkedIn share/ugcPost URN"
+    ],
+    "published_without_exact_readback_is_terminal": false,
+    "terminal_proof": {
+      "external_id": "urn:li:share:7513196691630575616",
+      "status": "LIVE_PROVEN",
+      "provider_truth_verified": true,
+      "company_oauth_fresh_verified": true,
+      "linkedin_company_admin_oauth_proven": true,
+      "organization_write_scope_verified": true,
+      "normalization_rule": "MEASURABLE_URL_TO_LNKD_IN_PLUS_LINKEDIN_PAREN_ESCAPE"
+    }
+  },
+  "note": "Already-applied production SQL remains non-executable. Terminal provider proof is bound to the existing share and the active production runtime v23/v31/v115."
+}

@@ -1,0 +1,52 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|linkedin|legacy-substring-personal-final-truth-veto|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "The original personal final-copy invariant did not use the exact shared non-builder marketing classifier. A legacy unbounded substring 'klant' marked ordinary source-backed 'klantenservice' as a forbidden business bridge. Additionally the original bounded correction was invoked for editorialViolations only; a truth-only refusal threw before a source-bound correction could be attempted.",
+  "scope": "Same original powerhouse-content-orchestrator / original personal identity and editorial gates",
+  "evidence": {
+    "observed_at": "2026-11-15T10:39:33.111Z",
+    "original_stage": "artifact-ai",
+    "original_error": "ORCHESTRATOR_ERROR artifact-ai PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED",
+    "selected_source_mode": "observational_personal_theme_verified=true",
+    "source_situation": "daily online shopping and customer service",
+    "previous_legacy_bridge_substring": "/klant/ matched within klantenservice",
+    "provider_id": null,
+    "post_proven": false,
+    "consumer_processed": false
+  },
+  "remediation": {
+    "shared_nonbuilder_veto": true,
+    "observational_everyday_terms_source_aligned": true,
+    "one_source_locked_truth_only_rewrite": true,
+    "old_final_gate_remains_required": true,
+    "original_publisher_only": true,
+    "schedule_unchanged": true
+  },
+  "regression": "tests/brain-personal-final-truth-editorial-parity-20261115.test.mjs",
+  "next_action": "Protected exact-head CI; production original Edge source equality; first natural original one-loop regeneration, original immutable LinkedIn claim, provider-ID/GET and named original BRAIN PROCESSED + measured Heartbeat effect.",
+  "compiler": {
+    "failure_class": "PERSONAL_FINAL_TRUTH_EDITORIAL_MISMATCH",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-final-truth-editorial-parity-20261115.test.mjs",
+      "tests/brain-personal-editorial-bounded-revision.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "PERSONAL_TRUTH_ONLY_COPY_REJECTED_WITHOUT_BOUNDED_SOURCE_REPAIR",
+    "cause": "Legacy substring false positive for source-backed everyday customer service; only editorial violations could trigger revision",
+    "prevention_rule": "One shared nonbuilder business veto for editorial and final copy; one source-grounded truth-only rewrite preserving all independent gates",
+    "regression_guard": "tests/brain-personal-final-truth-editorial-parity-20261115.test.mjs",
+    "next_owner": "Original personal content editor / Reliability and Data Quality",
+    "effect_proof": "AWAITING_PROTECTED_RELEASE_AND_REAL_PROVIDER_OUTCOME"
+  }
+}

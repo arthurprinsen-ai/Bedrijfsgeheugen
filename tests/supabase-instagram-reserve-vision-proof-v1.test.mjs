@@ -31,8 +31,12 @@ test('existing five-minute content loop owns media verification recovery',()=>{
 
 test('verifier hashes exact bytes and enforces role-specific Instagram dimensions',()=>{
   assert.match(edge,/crypto\.subtle\.digest\('SHA-256'/);
-  assert.match(edge,/const expectedHeight=verificationRole==='video_frame'\?1920:1350/);
-  assert.match(edge,/const dimsOk=size\.width===1080&&size\.height===expectedHeight/);
+  // Role-specific dimensions are owned by the shared Mira proof policy (static 1080x1350, video frame 1080x1920).
+  const policy=fs.readFileSync('supabase/functions/_shared/mira-reference-candidate-proof.mjs','utf8');
+  assert.match(edge,/miraProofDimensions\(size\.width,size\.height,verificationRole\)/);
+  assert.match(edge,/const dimsOk=dimensionPolicy\.ok/);
+  assert.match(policy,/static_image:\{width:1080,height:1350\}/);
+  assert.match(policy,/video_frame:\{width:1080,height:1920\}/);
   assert.match(edge,/semantic_verified===true/);
   assert.match(edge,/mira_present===true/);
   assert.match(edge,/identity_class==='mira_daily_life'/);

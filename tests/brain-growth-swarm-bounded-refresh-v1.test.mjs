@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 
-const migration=readFileSync('supabase/migrations/20260929165000_growth_swarm_bounded_refresh_v1.sql','utf8');
+const migration=readFileSync('supabase/migration-history/repository-only/20260929165000_growth_swarm_bounded_refresh_v1.sql','utf8');
 
 test('growth swarm refresh avoids population-wide person and company views',()=>{
   assert.doesNotMatch(migration,/powerhouse_person_intelligence_v1/);

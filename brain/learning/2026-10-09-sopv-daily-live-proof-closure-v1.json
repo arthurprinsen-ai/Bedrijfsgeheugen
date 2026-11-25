@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|daily-blog|native-live-proof-closure-20261009-v1",
+  "obligationId": "daily-blog:2026-10-09:immutable-live-proof",
+  "date": "2026-10-09",
+  "status": "PUBLIC_LIVE_READBACK_PASS_PROTECTED_LEDGER_MERGE_PENDING",
+  "root_causes": [
+    "Original daily selection used previously approved unpriced-problem slug which is intentionally 301-redirected to an older canonical, making its live-readback fail with a canonical mismatch",
+    "The native live-watchdog created a one-file ledger-proof PR without same-PR learning, human documentation and append-only development-ledger records, so GitHub admission blocked the otherwise validated proof"
+  ],
+  "prevention": [
+    "Do not treat a successful Netlify deploy or a 200 response to a redirected URL as proof; require exact canonical, exact data-content-id and an article heading",
+    "Keep historical canonical-consolidation redirects unchanged; use the existing already-published SOPV artifact and canonical source-backed identity for the current publication obligation",
+    "Write the three semantic closure artifacts in the same protected candidate as the date-keyed immutable live proof, and retain the required protected CodeQL/CI/merge gates"
+  ],
+  "tests": [
+    "tests/brain-daily-blog-20261009-canonical-candidate.test.mjs",
+    "tools/content-growth/live-readback.mjs",
+    "GitHub Actions Native daily blog live watchdog #37920475011"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-20261009-canonical-candidate.test.mjs"
+    ],
+    "failed_readback_run": 37918931429,
+    "successful_readback_run": 37920475011,
+    "provider_public_probe": 1570,
+    "source_protected_pr": 4258,
+    "immutable_ledger_candidate_pr": 4260
+  },
+  "compiler": {
+    "failure_class": "DAILY_BLOG_PROOF_CLOSURE_ARTIFACT_OMISSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "netlify_deploy_id": "6ac8c38172d5dd0008a6169a",
+    "netlify_commit_ref": "47441ea9ed428202a7f1ccca5dc8cd5038d544bb",
+    "public_url": "https://www.bedrijfsgeheugen.nl/blog/sopv-2026-plasticverwerkers-productietest-subsidie/",
+    "http_code": 200,
+    "exact_canonical": true,
+    "exact_content_id": true,
+    "article_heading": true,
+    "canonical_supabase_obligation": "LIVE_PROVEN",
+    "side_effect": "existing article publishing already externally demonstrated; PR #4260 only records readback"
+  },
+  "implementation": "No extra publisher, scheduler, fallback or duplicate article; retain original proof recorded by existing watcher."
+}

@@ -1,5 +1,17 @@
 project_id = "bedrijfsgeheugen"
 
+[functions.powerhouse-blog-export]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/powerhouse-blog-export/index.ts"
+# Confidential blog export: service JWT plus explicit publication approval required.
+
+[functions.powerhouse-blog-queue]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-blog-queue/index.ts"
+# Existing privileged write protected by x-powerhouse-token.
+
 [functions.powerhouse-predictive-engine]
 enabled = true
 verify_jwt = false
@@ -19,3 +31,233 @@ entrypoint = "./functions/bg-notion-sync/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-opdrachtenradar/index.ts"
+
+[functions.supabase-migration-repair-bridge]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/supabase-migration-repair-bridge/index.ts"
+
+# Independent reviewer; preserve currently deployed unauthenticated-JWT mode.
+# The publisher must receive an explicit PASS and exact final-text hash before sending.
+[functions.bg-pre-publish-review]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-pre-publish-review/index.ts"
+
+[functions.powerhouse-social-publisher]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-social-publisher/index.ts"
+
+[functions.social-recovery-runner]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/social-recovery-runner/index.ts"
+
+[functions.powerhouse-relationship-public-research]
+# Original #116 source-only relationship research, never an email sender.
+# Protected-main Supabase GitHub Integration is the only production Edge writer.
+# Public JWT bypass remains guarded by original x-powerhouse-token service auth.
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-relationship-public-research/index.ts"
+
+[functions.powerhouse-mira-problem-radar]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-mira-problem-radar/index.ts"
+
+[functions.powerhouse-visual-assurance-sync]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-visual-assurance-sync/index.ts"
+
+[functions.powerhouse-email-reply-loop]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-email-reply-loop/index.ts"
+
+
+[functions.powerhouse-runtime-verifier-v1]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-runtime-verifier-v1/index.ts"
+
+
+[functions.powerhouse-commercial-heartbeat-runner]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-commercial-heartbeat-runner/index.ts"
+
+[functions.portal-state-eu]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/portal-state-eu/index.ts"
+
+[functions.netlify-deploy-bridge]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/netlify-deploy-bridge/index.ts"
+
+[functions.powerhouse-composio-linkedin-setup]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-composio-linkedin-setup/index.ts"
+
+[functions.powerhouse-autonomous-outreach]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-autonomous-outreach/index.ts"
+
+[functions.powerhouse-salesrobot-ingest]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-salesrobot-ingest/index.ts"
+
+# Canonical public-proxy-only scan endpoint; existing SHA-256 service-token gate
+# enforces authentication within the Edge function. No direct anonymous claims.
+[functions.powerhouse-scan-ingest]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-scan-ingest/index.ts"
+
+# Canonical content generator: required for protected-main provider source parity.
+# Authentication is enforced inside this function via the existing scheduler token.
+[functions.powerhouse-content-orchestrator]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-content-orchestrator/index.ts"
+
+# Existing canonical email composer uses its internal x-powerhouse-token gate.
+# Register alongside content generation so native Git deployment cannot omit feedback.
+# Preserve the deployed verify_jwt=false; do not introduce another executor.
+[functions.powerhouse-commercial-message-composer]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-commercial-message-composer/index.ts"
+
+# Existing canonical content-loop; custom x-powerhouse-token authentication is
+# implemented in its entrypoint, so preserve its current verify_jwt=false.
+[functions.powerhouse-content-loop]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-content-loop/index.ts"
+
+# Existing exact-Mira production stages. Entrypoints enforce the scheduler token.
+[functions.powerhouse-instagram-media-router]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-media-router/index.ts"
+
+[functions.powerhouse-instagram-media-verifier]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-media-verifier/index.ts"
+
+[functions.powerhouse-instagram-temporal-verifier]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-instagram-temporal-verifier/index.ts"
+
+# Read-only Composio analytics ingestion; only the verified scheduler may invoke.
+[functions.bg-social-metrics-sync]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-social-metrics-sync/index.ts"
+
+# Existing revenue learning store: preserve its current non-JWT invocation
+# because its entrypoint requires a validated x-bg-service-token SHA-256 hash.
+# Register it in canonical preview and release deployment for source parity.
+[functions.revenue-learning-store]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/revenue-learning-store/index.ts"
+
+[functions.social-learning-store]
+# Canonical tenant-isolated social-learning gateway. Existing SHA-256
+# x-bg-service-token authentication preserves verify_jwt=false; no anonymous access.
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/social-learning-store/index.ts"
+
+# Existing canonical SEO opportunity resolver: internal x-powerhouse-token gate.
+# Preserve deployed verify_jwt=false; never expose the scheduler token.
+[functions.powerhouse-seo-opportunity-resolver]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-seo-opportunity-resolver/index.ts"
+
+# Mollie checkout (27 okt 2026): Netlify roept dit aan met de service role als bearer; sleutel uit Vault MOLLIE_API_KEY.
+[functions.bg-mollie-checkout]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/bg-mollie-checkout/index.ts"
+
+# Mollie webhook: publiek bereikbaar (Mollie stuurt geen JWT); verwerkt alleen een betaling-id en haalt de waarheid zelf bij Mollie op.
+[functions.bg-mollie-webhook]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-mollie-webhook/index.ts"
+
+# Proefperiode-mails (27 okt 2026): dagelijkse cron met scheduler-token (geen JWT); modes preview | samples | live | report.
+[functions.bg-trial-lifecycle-mail]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-trial-lifecycle-mail/index.ts"
+
+[functions.bg-benchmark-intake]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-benchmark-intake/index.ts"
+
+[functions.bg-bedrijfsprofiel]
+enabled = true
+verify_jwt = true
+entrypoint = "./functions/bg-bedrijfsprofiel/index.ts"
+
+# Existing scheduler-token-protected external intelligence producer; register the
+# function for protected-main Git deployment and provider source parity.
+# The entrypoint validates x-powerhouse-token before performing any work;
+# preserve the currently deployed verify_jwt=false (no browser auth bypass).
+[functions.bg-externe-signalen]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-externe-signalen/index.ts"
+
+# Existing canonical browser-side, privacy-minimal CRO telemetry receiver.
+# This function already runs publicly with provider verify_jwt=false: browser
+# requests do not carry Supabase JWTs. Preserve its exact existing auth mode.
+# Edge code enforces allowed origins, consent for detailed events, strict data
+# shape/limits, idempotent database UID writes and 503 on database failure.
+# This declaration is required by protected Supabase Edge Production Authority.
+[functions.bg-interactie]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-interactie/index.ts"
+
+# Existing daily Kansenradar: release-manifest parity with deployed v12.
+# Provider verify_jwt=false is preserved; the original cron now sends a
+# scheduler token that the Edge source verifies BEFORE service-role operations.
+# No public invocation, second scheduler, new provider or OAuth bypass.
+[functions.bg-kansenradar]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-kansenradar/index.ts"
+ 
+# Original DataForSEO producer: protected-main release parity for the EXISTING
+# scheduler-token-protected Edge function, no new cron, sender or service.
+# Preserve native deployed verify_jwt=false; entrypoint validates the original
+# x-powerhouse-token before service-role provider/cache work.
+[functions.powerhouse-dataforseo-intelligence]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-dataforseo-intelligence/index.ts"
+
+# Original GA4/Data Spine collection via existing pg_cron #42 and bg_roep_functie.
+# Preserve verified production verify_jwt=false: original private
+# x-powerhouse-token (Vault) is checked in Edge BEFORE provider work.
+# This declaration enables protected-main production deployment/parity.
+[functions.bg-analytics-sync-composio]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-analytics-sync-composio/index.ts"

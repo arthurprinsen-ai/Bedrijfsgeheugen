@@ -16,6 +16,20 @@
       "required": true
     },
     {
+      "id": "function:bg-dagoverzicht",
+      "type": "function",
+      "authority": "supabase/functions/bg-dagoverzicht/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:bg-interactie",
+      "type": "function",
+      "authority": "supabase/functions/bg-interactie/index.ts",
+      "evidence_contract": "tests/brain-supabase-runtime-pressure-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:bg-notion-sync",
       "type": "function",
       "authority": "supabase/functions/bg-notion-sync/index.ts",
@@ -254,6 +268,20 @@
       "required": true
     },
     {
+      "id": "function:social-recovery-runner",
+      "type": "function",
+      "authority": "supabase/functions/social-recovery-runner/index.ts",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:supabase-migration-repair-bridge",
+      "type": "function",
+      "authority": "supabase/functions/supabase-migration-repair-bridge/index.ts",
+      "evidence_contract": "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:ai-modelwijzer-lead",
       "type": "netlify_function",
       "authority": "netlify/functions/ai-modelwijzer-lead.mjs",
@@ -436,10 +464,10 @@
       "required": true
     },
     {
-      "id": "netlify_function:stripe-webhook",
+      "id": "netlify_function:social-publication-delivery-deploy",
       "type": "netlify_function",
-      "authority": "netlify/functions/stripe-webhook.mjs",
-      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "authority": "netlify/functions/social-publication-delivery-deploy.mjs",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
       "required": true
     },
     {
@@ -611,6 +639,13 @@
       "required": true
     },
     {
+      "id": "rpc:bg_uitkomst_vastleggen",
+      "type": "rpc",
+      "authority": "supabase/functions/bg-dagoverzicht/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:brain_create_obligation",
       "type": "rpc",
       "authority": "supabase/functions/growth-datahub-ingest/index.ts",
@@ -762,6 +797,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260929214500_powerhouse_source_backed_channel_selection_v1.sql",
       "evidence_contract": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_normalize_publication_text_v1",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/brain-linkedin-composio-capability-proof.test.mjs",
       "required": true
     },
     {
@@ -919,6 +961,34 @@
       "required": true
     },
     {
+      "id": "rpc:record_data_sovereignty_provider_observation_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261007112412_netlify_runtime_residency_truth_v2.sql",
+      "evidence_contract": "tests/data-sovereignty-control-plane.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:record_security_management_observation_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261007155500_data_ai_security_trust_center_v1.sql",
+      "evidence_contract": "tests/brain-security-trust-center-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:refresh_data_sovereignty_snapshot_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261007110248_data_sovereignty_runtime_and_connector_truth_v1.sql",
+      "evidence_contract": "tests/data-sovereignty-control-plane.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:refresh_security_trust_snapshot_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261007155500_data_ai_security_trust_center_v1.sql",
+      "evidence_contract": "tests/brain-security-trust-center-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.bg_buffer_ingest_status",
       "type": "table",
       "authority": "supabase/migrations/20260917154000_production_schema_replay_parity_v1.sql",
@@ -1070,6 +1140,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql",
       "evidence_contract": "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_freshness_contradiction_cache_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261006095838_cache_research_freshness_and_split_one_brain_v1.sql",
+      "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
       "required": true
     },
     {
@@ -1364,6 +1441,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260928110707_workshop_scan_preprovision_customer_portal.sql",
       "evidence_contract": "tests/brain-supabase-migration-history-parity-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "view:public.bg_vandaag",
+      "type": "view",
+      "authority": "supabase/migrations/20260928142227_bg_vandaag_manual_dm_handoff_security_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
       "required": true
     }
   ]

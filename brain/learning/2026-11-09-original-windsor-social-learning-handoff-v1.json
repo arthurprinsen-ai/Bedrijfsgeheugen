@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-09",
+  "status": "CANDIDATE_PROTECTED_MERGE_AND_PRODUCTION_READBACK_DUE",
+  "fingerprint": "powerhouse|social-learning|windsor-staged-quality-schema-handoff|20261109-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original bg-social-metrics-sync six-hour source observer; original minute39 social_learning_applications backfill; original powerhouse-content-orchestrator generator",
+  "root_cause": "Source schema drift at the existing Windsor -> original social metric reader boundary: on 8 Nov original staged company post rows changed quality from PROVIDER_OBSERVED_UNLINKED to PROVIDER_OBSERVED with explicit evidence.post_identity=PROVIDER_OBSERVED_UNLINKED; provider post id/share_id/share_url/date now reside in metrics, not the old evidence attributes. Both original reader query and verified matcher rejected those genuine source rows and returned 0 matched snapshots although independent original publisher and organization author agreed.",
+  "evidence": {
+    "provider_observed_at_utc": "2026-11-08T14:27:03.278516Z",
+    "original_staged_source": "powerhouse_growth_source_daily_v1",
+    "source_quality": "PROVIDER_OBSERVED",
+    "source_identity": "PROVIDER_OBSERVED_UNLINKED",
+    "source_provider": "windsor.ai",
+    "provider_connector": "linkedin_organic",
+    "provider_post_urn": "urn:li:share:7524367540987301888",
+    "published_at_utc": "2026-11-06T07:10:19.789Z",
+    "verified_author_urn": "urn:li:organization:18234216",
+    "staged_impressions": 183,
+    "matched_original_snapshots_before": 0,
+    "actual_causal_effect": null,
+    "sample_provenance": "independent LIVE_PROVEN content_publication_obligations; source row and provider metric properties; no invented analytics",
+    "readback_at_utc": "2026-11-09T13:29:00Z"
+  },
+  "change": "Update only original shared verifier and existing bg-social-metrics-sync query to accept the new provider-observed staging variant when explicit UNLINKED identity marker and exact post URN, company author, native provider fields, share URL, source date and numeric metrics all verify. Preserve legacy support, idempotent snapshots and original single owner. Mark absence of original company post metric linkage as an unhealthy handoff even if personal/Instagram succeed.",
+  "prevention": "Treat native provider source quality and provider-native field placement as separately versioned source contracts. Regression must replay both verified native schemas and reject forged organization, mismatched share identity, date, provenance, author, missing impressions and account-only aggregate; never turn cron HTTP200, reactions-only, impressions or unpaired before-after into proven improvement. Same single writer and next original scheduler; no parallel system.",
+  "tests": [
+    "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs",
+    "tests/brain-linkedin-company-windsor-proof-link-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs",
+      "tests/brain-linkedin-company-windsor-proof-link-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "invariants": [
+      "single original bg-social-metrics-sync observer + original runtime mux minute39",
+      "no sender, no scheduler, no new analytics store",
+      "exact independent company owner and provider URN",
+      "source observed age <=72h",
+      "source date and post published date align",
+      "snapshot deduped by original source event id",
+      "effect remains NULL without control group"
+    ]
+  },
+  "compiler": {
+    "scope": "SOCIAL_LEARNING",
+    "failure_class": "NATIVE_WINDSOR_SOURCE_SCHEMA_DRIFT_UNLINKED_POST",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Do not report LIVE until protected Required + CodeQL pass, protected merge, deployed exact source parity, original source-metrics sync readback, original minute39 evaluation and verified application. Successful provider engagement is descriptive, not revenue or causal lift."
+}

@@ -1,0 +1,26 @@
+{
+  "id": "ai-model-eol-regional-evidence-20261025",
+  "root_cause": "Legacy AWS Nova model variants have region-specific EOL dates which were not represented explicitly in the existing stale supplier review list.",
+  "prevention": "Record scoped lifecycle evidence per exact model ID and named regions, fail closed for other regions/accounts and preserve six-claim independent freshness verification.",
+  "tests": {
+    "path": "tests/brain-ai-model-stale-worklist.test.mjs",
+    "result": "REQUIRES_PROTECTED_CI"
+  },
+  "evidence": {
+    "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+    "production": "NOT_CLAIMED",
+    "full_supplier_verification": "NOT_CLAIMED"
+  },
+  "safe_action": "Run canonical historical replay and Required/CodeQL; never renew catalog checked_on or verified_at from lifecycle-only evidence.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-stale-worklist.test.mjs"
+    ]
+  },
+  "fingerprint": "aws-nova|regional-eol|20261025"
+}

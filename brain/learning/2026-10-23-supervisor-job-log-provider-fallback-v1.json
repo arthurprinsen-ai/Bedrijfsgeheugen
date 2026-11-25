@@ -1,0 +1,37 @@
+{
+  "fingerprint": "ci|supervisor|github-job-log-provider-read-partial-after-merge|20261023-v1",
+  "parent_issue": 4661,
+  "related_pr": 4800,
+  "owner": "Existing Powerhouse Repository Janitor telemetry",
+  "failure_class": "CI",
+  "root_cause": "Postmerge Janitor run 39971461584 could not read the first completed Supervisor job log (39968527525) through gh api's redirect-backed job-log endpoint; GitHub connector independently read that exact 87KB job log. Observed artifact correctly remained PARTIAL_PROVIDER_OBSERVATION.",
+  "prevention": [
+    "Use bounded read-only native job-log API as primary and supported gh run view --job <id> --log fallback",
+    "Keep exact job ID, verified repo and timestamped actual runtime messages",
+    "Never convert missing log to zero drift, CAS success or production improvement",
+    "Retain one existing hourly Janitor and one Recovery Supervisor, no duplicate scheduler/write/CI bypass"
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs"
+    ],
+    "provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39971461584",
+    "failed_sample_run": 39968527525,
+    "failed_log_job": 120464700413,
+    "local_regression": "PENDING_PROTECTED_CI",
+    "actual_postmerge_readback": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_PENDING_PROTECTED_CI"
+}

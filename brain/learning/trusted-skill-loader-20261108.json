@@ -1,0 +1,25 @@
+{
+  "fingerprint": "brain|trusted-skill-loader|independent-load-receipt|20261108",
+  "compiler": {
+    "failure_class": "LOADER_RECEIPT_NOT_ISSUED_BY_CODE"
+  },
+  "root_cause": "De validator eist een loader-receipt dat niet uit de prose van de agent komt, maar geen code gaf zo'n receipt uit. Daardoor kon geen natuurlijke run ooit VERIFIED_EVIDENCE halen en bleef elke event UNKNOWN_NOT_ATTESTED.",
+  "prevention_rule": "Een loader-receipt wordt alleen door code uitgegeven uit de echte bytes van de skill in de repo (hash, versie content-<hash12>); een agent mag zijn eigen receipt of verifier nooit invullen. Het receipt bewijst alleen wat is geladen, nooit dat het is toegepast.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-skill-loader.test.mjs",
+      "tests/brain-agent-skill-execution-evidence.test.mjs"
+    ]
+  },
+  "tests": {
+    "command": "node --test tests/brain-trusted-skill-loader.test.mjs tests/agent-skill-execution-evidence.test.mjs",
+    "status": "PASSED_LOCALLY_NOT_YET_CONFIRMED_ON_CURRENT_HEAD"
+  },
+  "evidence": {
+    "baseline": "live powerhouse_cycle_events, laatste 24 uur: 1114 events, 0 agent_id, 0 skill_version",
+    "github_run": "NOT_VERIFIED",
+    "production_readback": "NOT_VERIFIED",
+    "natural_next_run": "EVIDENCE_DUE: de loader is nog niet bedraad in een natuurlijke run; onafhankelijke verifier en bedrading volgen"
+  },
+  "prevention": "Geen scheduler, tabel, migratie, database-write of aanpassing van de geplande taak; terugdraaien is een revert van de PR."
+}

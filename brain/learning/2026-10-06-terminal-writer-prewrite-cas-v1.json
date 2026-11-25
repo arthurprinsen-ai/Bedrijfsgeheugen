@@ -1,0 +1,35 @@
+{
+  "version": "TERMINAL-WRITER-PREWRITE-CAS-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|terminal-writer|immutable-candidate-prewrite-cas|v1",
+  "obligation_id": "terminal-writer-prewrite-cas-20261006-v1",
+  "root_cause": {
+    "escaped_defect": "A stale delivery writer could still rewrite an open PR branch from an older lease snapshot before the terminal merge guard rejected the stale main epoch.",
+    "example": "Retired #3861 repeatedly reintroduced older Supabase workflow source while current main had already advanced."
+  },
+  "prevention": {
+    "terminal_candidate": "Writer-Lease-State TERMINAL_DELIVERY makes the candidate branch content-immutable.",
+    "preterminal_cas": "Every branch mutation must match both expected current head SHA and captured current-main epoch.",
+    "drift": "Any head or main-epoch drift returns CREATE_SUCCESSOR_FROM_CURRENT_MAIN; stale snapshots are never replayed onto the existing PR branch.",
+    "merge_guard": "Exact-head checks and current-main terminal merge admission remain independently fail-closed."
+  },
+  "regression": [
+    "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "STALE_TERMINAL_WRITER_PREWRITE_MUTATION"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+    ],
+    "observed_failure": "#3861 stale lease snapshot repeatedly rewrote an open recovery candidate before merge-time main-epoch rejection",
+    "proof_boundary": "pre-write head SHA plus current-main epoch compare-and-swap; terminal candidate content immutability"
+  }
+}

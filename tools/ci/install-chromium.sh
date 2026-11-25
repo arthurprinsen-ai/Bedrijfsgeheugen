@@ -18,13 +18,15 @@
 # drie pogingen met een schone apt-cache ertussen, voor het geval een spiegel
 # tijdelijk uit de pas loopt.
 #
+# Trigger-scope live proof v3: CI-only changes must not start production snapshot or release readback.
+#
 # Gebruik in een workflow:
 #   - name: Install Chromium
 #     run: bash tools/ci/install-chromium.sh
 #
 # Optioneel:
 #   PLAYWRIGHT_PACKAGE  npm-pakket dat eerst wordt geinstalleerd. Standaard
-#                       @playwright/test@1.55.0. Gebruik "playwright@1.55.0"
+#                       @playwright/test@1.61.0. Gebruik "playwright@1.61.0"
 #                       waar de workflow alleen de library nodig heeft, of
 #                       "none" wanneer Playwright al via pip is geinstalleerd.
 #   PLAYWRIGHT_CLI      commando dat de browser installeert. Standaard
@@ -33,7 +35,7 @@
 
 set -euo pipefail
 
-PLAYWRIGHT_PACKAGE="${PLAYWRIGHT_PACKAGE:-@playwright/test@1.55.0}"
+PLAYWRIGHT_PACKAGE="${PLAYWRIGHT_PACKAGE:-@playwright/test@1.61.0}"
 PLAYWRIGHT_CLI="${PLAYWRIGHT_CLI:-npx playwright}"
 POGINGEN="${POGINGEN:-3}"
 

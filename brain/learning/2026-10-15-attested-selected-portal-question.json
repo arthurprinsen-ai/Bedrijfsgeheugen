@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|selected-ai-model|authenticated-portal-question-adapter|20261015",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The legacy 'Vraag het je portaal' function used a fixed Anthropic provider despite newly saved customer AI model preferences. To prevent unnoticed data transfer, it was blocked for selected models; there was no authorized tenant-provider path for grounded portal QA.",
+  "prevention_rule": "When the tenant selected a model, the portal-question handler now exclusively invokes the same server-owned, signed tenant inference gateway used by the model smoke test, passing only authenticated server-projection context bounded to 9000 chars. A mismatch, unprovisioned provider, unavailable consent, invalid region, or unresolved supplier status fails closed, with no legacy fallback. The browser cannot pass its own context or provider to the gateway.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "paths": [
+      "tests/portal-question-handler.test.mjs",
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "result": "Pending Required CI"
+  },
+  "outcome": {
+    "implementation": "Tenant selected provider QA route and server-context trust boundary",
+    "production_readback": "NOT_YET_PROVEN",
+    "provider_activation": "REQUIRES_EXISTING_VERIFIED_RUNTIME_REGISTRY"
+  }
+}

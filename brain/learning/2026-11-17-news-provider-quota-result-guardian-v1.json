@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|commercial|news-432-false-green-cron|20261117-v1",
+  "obligation_id": "powerhouse|commercial|news-432-false-green-cron|20261117-v1",
+  "failure_class": "SOURCE_PROVIDER_QUOTA_MASKED_BY_GREEN_CRON",
+  "compiler": {
+    "failure_class": "SOURCE_PROVIDER_QUOTA_MASKED_BY_GREEN_CRON",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original cron #20 only records successful pg_net enqueue; native actual HTTP response is 500 with TAVILY_432 (plan quota exceeded). The source-specific company news feed has had no new ingests since Nov 8, but cron health stays OK and customer source gates naturally reject unknown facts.",
+  "observed_evidence": {
+    "date": "2026-11-17",
+    "cron20_latest": "2026-11-17T06:31:00Z",
+    "cron20_sql_status": "succeeded",
+    "provider_http_status": 500,
+    "provider_error": "TAVILY_432",
+    "last_company_news": "2026-11-08",
+    "approved_with_email": 123,
+    "approved_with_recent_news": 2,
+    "confirmed_commercial_send_today": 0
+  },
+  "fix": "Enhance existing #171 Result Guardian with actual pg_net 432 and independent company-news freshness / provider health readback; do not assume cron-success implies provider success. Preserve original #20 news owner, #116 research owner, composer/legal send gating and ONE BRAIN lineage.",
+  "prevention_rule": "Always reconcile cron enqueue -> actual provider result -> accepted fresh source -> exact research/composer/consumer -> external provider-ID. Quota failure should be classified and suppress unjustified alternate candidate generation; never blind retry/buy credits.",
+  "tests": [
+    "tests/brain-guardian-news-provider-truth-20261117.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-guardian-news-provider-truth-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-guardian-news-provider-truth-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-guardian-news-provider-truth-20261117.test.mjs"
+    ]
+  },
+  "terminal_rule": "Only after protected release, native production #171 tick with TAVILY_PLAN_LIMIT_EXCEEDED and original independent provider receipts, later genuine permitted source and legal Gmail send if available; do not mark ALL_GREEN from a health event.",
+  "provider_sent_claim": false,
+  "cost_authorization_claim": false,
+  "owner": "existing-powerhouse-reliability",
+  "original_source_owner": "bg-bedrijfsnieuws-#20",
+  "original_commercial_owner": "powerhouse-commercial-#116",
+  "release_status": "CANDIDATE_NOT_PRODUCTION_PROVEN"
+}

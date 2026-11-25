@@ -1,0 +1,32 @@
+{
+  "fingerprint": "portal-businessinput-history-1000-limit",
+  "obligationId": "p0-4215-business-input-history-pagination-20261009-v1",
+  "date": "2026-10-09",
+  "status": "PENDING_PROTECTED_VALIDATION",
+  "root_causes": [
+    "Tenant Brain read repair returned only the first 1000 records."
+  ],
+  "prevention": [
+    "Use complete tenant-scoped ordered pagination."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-business-input-history-pagination-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-business-input-history-pagination-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-business-input-history-pagination-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-business-input-history-pagination-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "BUSINESS_INPUT_OLDEST_1000_READBACK_LOSS",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  }
+}

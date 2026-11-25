@@ -68,6 +68,32 @@ function transformHome(input) {
   return html.slice(0, homeStart) + scope + html.slice(homeEnd);
 }
 
+const FREE_WORKBOOK_CTA = '<p data-bg-free-seven-leaks-v1 style="font-size:.92rem;margin:.7rem 0 0"><a href="/assets/downloads/7-verborgen-bedrijfslekken.pdf" download="7-verborgen-bedrijfslekken.pdf">Download gratis het werkboek: 7 verborgen bedrijfslekken →</a></p>';
+
+// The V18 homepage is regenerated AFTER checked-in index.html. Preserve the
+// first-party reciprocal offer in the final, canonical money-page projection,
+// not just the historical index source that the build overwrites.
+export function ensureHomeFreeWorkbook(input) {
+  const html = String(input);
+  const homeStart = html.indexOf('id="view-home"');
+  const homeEnd = homeStart < 0 ? -1 : html.indexOf('</main>', homeStart);
+  if (homeStart < 0 || homeEnd < 0) throw new Error('free workbook: generated homepage view not found');
+  const scope = html.slice(homeStart, homeEnd);
+  if (scope.includes('data-bg-free-seven-leaks-v1')) {
+    if (!scope.includes('href="/assets/downloads/7-verborgen-bedrijfslekken.pdf"')) {
+      throw new Error('free workbook: existing marker has no valid download asset');
+    }
+    return html;
+  }
+  const riskMarker = 'data-money-risk-reversal="true"';
+  const riskIndex = scope.indexOf(riskMarker);
+  if (riskIndex < 0) throw new Error('free workbook: money-page risk reversal missing');
+  const paragraphClose = scope.indexOf('</p>', riskIndex);
+  if (paragraphClose < 0) throw new Error('free workbook: risk reversal paragraph incomplete');
+  const insertAt = homeStart + paragraphClose + '</p>'.length;
+  return html.slice(0, insertAt) + FREE_WORKBOOK_CTA + html.slice(insertAt);
+}
+
 function transformProduct(input) {
   let html = String(input);
   if (/data-money-primary[^>]+href=["']\/frisse-blik["']/i.test(html) && /30 minuten, geen verplichting/i.test(html)) return html;
@@ -102,7 +128,7 @@ export async function applyMoneyPageOrderConversion() {
   const results = [];
   for (const path of pages) {
     let html = await readFile(path, 'utf8');
-    if (path === 'index.html') html = transformHome(html);
+    if (path === 'index.html') html = ensureHomeFreeWorkbook(transformHome(html));
     if (path === 'product.html') html = transformProduct(html);
 
     if (!hasPrimary(html, path)) {

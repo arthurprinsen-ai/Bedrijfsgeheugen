@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "email|autonomous-outreach-without-optout-line|20261027-v1",
+  "obligation_id": "outreach-optout-line-20261027",
+  "failure_class": "OUTBOUND_EMAIL_WITHOUT_VISIBLE_OPTOUT",
+  "root_cause": "The autonomous sender relied on the reply loop to recognise opt-outs but the mail itself never told the recipient how to opt out, so a recipient segment could not responsibly be approved.",
+  "observed_evidence": {
+    "actual_sources": ["supabase/functions/powerhouse-autonomous-outreach/index.ts", "supabase/functions/powerhouse-email-reply-loop/index.ts", "public.powerhouse_email_contact_suppressions"],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Append a plain opt-out sentence to every autonomous mail body at send time; keep recipient authority and suppression gates unchanged.",
+  "prevention_rule": "No recipient segment is approved for autonomous mail unless the mail itself offers an opt-out that the reply loop turns into an active suppression.",
+  "tests": ["tests/brain-autonomous-outreach-optout-line-20261027.test.mjs"],
+  "compiler": {"failure_class": "OUTBOUND_EMAIL_WITHOUT_VISIBLE_OPTOUT", "scope": "EMAIL_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": true},
+  "evaluation": {
+    "historical_replay": ["tests/brain-autonomous-outreach-optout-line-20261027.test.mjs"],
+    "shadow": ["tests/brain-autonomous-outreach-optout-line-20261027.test.mjs"],
+    "canary": ["tests/brain-autonomous-outreach-optout-line-20261027.test.mjs"]
+  },
+  "terminal_rule": "Merged main, deployed powerhouse-autonomous-outreach, then the next sent mail body contains the opt-out sentence (Gmail readback) and a test reply 'afmelden' creates an active suppression."
+}

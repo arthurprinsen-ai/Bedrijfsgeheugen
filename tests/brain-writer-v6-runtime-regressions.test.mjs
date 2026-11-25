@@ -1,0 +1,54 @@
+import { strict as assert } from 'node:assert';
+import { test } from 'node:test';
+import { createHash } from 'node:crypto';
+import { createSupabaseLeaseVerifier, createGitHubWriterAdapter } from '../tools/delivery/writer-real-adapters.mjs';
+import { runAuthorizedWriterHandoff } from '../tools/delivery/writer-authorized-runner.mjs';
+import { verifyHandoffManifest, publishThroughExistingWriter, contentSha256 } from '../tools/delivery/writer-patch-handoff.mjs';
+const a='a'.repeat(40), b='b'.repeat(40), branch='fix/4942-backend-continuation-20261026-448bccff';
+const pr={number:4967,headSha:a,baseSha:b,branch,open:true};
+const file={path:'tests/sample.mjs',content:'after',expectedOldSha256:contentSha256('before'),contentSha256:contentSha256('after')};
+const manifest={contract:'brain-writer-patch-handoff-v1',prNumber:4967,expectedHead:a,expectedBase:b,branch,obligation:'system-map-merge-integrity-20261025',files:[file]};
+const v=(m=manifest,paths=[file.path])=>verifyHandoffManifest(m,{pr,allowedPaths:paths});
+const falsy=async(arg,pattern)=>assert.rejects(arg,pattern);
+test('01 approved exact manifest passes',()=>assert.equal(v().files,1));
+test('02 denies unlisted paths',()=>assert.throws(()=>v(manifest,[]),/PATH_NOT_IN_APPROVED_SCOPE/));
+test('03 denies missing contract',()=>assert.throws(()=>v({...manifest,contract:'wrong'}),/INVALID_HANDOFF_CONTRACT/));
+test('04 denies stale head',()=>assert.throws(()=>v({...manifest,expectedHead:b}),/STALE_CANDIDATE/));
+test('05 denies stale base',()=>assert.throws(()=>v({...manifest,expectedBase:a}),/STALE_CANDIDATE/));
+test('06 denies other PR',()=>assert.throws(()=>v({...manifest,prNumber:1}),/STALE_CANDIDATE/));
+test('07 denies workflow modification',()=>assert.throws(()=>v({...manifest,files:[{...file,path:'.github/workflows/test.yml'}]},['.github/workflows/test.yml']),/PROTECTED_PATH/));
+test('08 denies migrations',()=>assert.throws(()=>v({...manifest,files:[{...file,path:'supabase/migrations/x.sql'}]},['supabase/migrations/x.sql']),/PROTECTED_PATH/));
+test('09 denies traversal',()=>assert.throws(()=>v({...manifest,files:[{...file,path:'../x'}]},['../x']),/UNSAFE_PATH/));
+test('10 denies duplicate path',()=>assert.throws(()=>v({...manifest,files:[file,file]}),/DUPLICATE_PATH/));
+test('11 denies empty file list',()=>assert.throws(()=>v({...manifest,files:[]}),/INVALID_FILE_COUNT/));
+test('12 denies invalid digest',()=>assert.throws(()=>v({...manifest,files:[{...file,contentSha256:'x'}]}),/INVALID_CONTENT_DIGEST/));
+test('13 SHA256 matches known hash',()=>assert.equal(contentSha256('abc'),createHash('sha256').update('abc').digest('hex')));
+test('14 missing verified lease fails before write',async()=>{let n=0;await falsy(publishThroughExistingWriter({manifest,pr,allowedPaths:[file.path],readFile:async()=> 'before',verifyLease:async()=>null,applyCas:async()=>{n++;}}),/EXCLUSIVE_LEASE_NOT_VERIFIED/);assert.equal(n,0);});
+test('15 stale source fails before write',async()=>{let n=0;await falsy(publishThroughExistingWriter({manifest,pr,allowedPaths:[file.path],readFile:async()=> 'wrong',verifyLease:async()=>({verified:true,headSha:a,generation:1}),applyCas:async()=>{n++;}}),/SOURCE_DRIFT/);assert.equal(n,0);});
+test('16 corrupt replacement fails before write',async()=>{let n=0;await falsy(publishThroughExistingWriter({manifest:{...manifest,files:[{...file,content:'corrupt'}]},pr,allowedPaths:[file.path],readFile:async()=> 'before',verifyLease:async()=>({verified:true,headSha:a,generation:1}),applyCas:async()=>{n++;}}),/PATCH_INTEGRITY_FAILED/);assert.equal(n,0);});
+test('17 verified success gives not-live status',async()=>{const r=await publishThroughExistingWriter({manifest,pr,allowedPaths:[file.path],readFile:async()=> 'before',verifyLease:async()=>({verified:true,headSha:a,generation:1}),applyCas:async()=>({applied:true,newHead:b})});assert.equal(r.status,'PUBLISHED_PENDING_FULL_BRAIN');});
+test('18 invalid CAS result denied',async()=>await falsy(publishThroughExistingWriter({manifest,pr,allowedPaths:[file.path],readFile:async()=> 'before',verifyLease:async()=>({verified:true,headSha:a,generation:1}),applyCas:async()=>({applied:false,newHead:b})}),/CAS_PUBLICATION_NOT_VERIFIED/));
+test('19 Supabase verifier rejects invalid fencing token',async()=>await falsy(createSupabaseLeaseVerifier({query:async()=>[]}).verifyLease({token:0}),/INVALID_FENCE_TOKEN/));
+test('20 Supabase verifier rejects absent authorization',()=>assert.throws(()=>createSupabaseLeaseVerifier({}),/AUTHORIZED_SQL_EXECUTOR_REQUIRED/));
+test('21 GitHub adapter rejects missing token',()=>assert.throws(()=>createGitHubWriterAdapter({owner:'owner',repo:'repo'}),/GITHUB_WRITER_CONTEXT_REQUIRED/));
+test('22 runner rejects missing writer context',async()=>await falsy(runAuthorizedWriterHandoff({}),/AUTHORIZED_WRITER_CONTEXT_REQUIRED/));
+
+test('23 outbound GitHub API origin is pinned and redirects forbidden',async()=>{
+ let calls=[];
+ const adapter=createGitHubWriterAdapter({owner:'arthurprinsen-ai',repo:'Bedrijfsgeheugen',token:'test-token',fetchImpl:async(url,opts)=>{
+  calls.push({url:String(url),opts});
+  return {ok:true,status:200,json:async()=>({object:{sha:a}})};
+ }});
+ assert.equal(await adapter.readHead('fix/verified-branch'),a);
+ assert.equal(calls.length,1);
+ assert.equal(calls[0].url,'https://api.github.com/repos/arthurprinsen-ai/Bedrijfsgeheugen/git/ref/heads/fix/verified-branch');
+ assert.equal(calls[0].opts.redirect,'error');
+ await assert.rejects(adapter.readHead('https://evil.example/escape'),/INVALID_BRANCH|GITHUB_ROUTE_NOT_ALLOWED|GITHUB_ROUTE_TRAVERSAL_DENIED/);
+ await assert.rejects(adapter.readHead('../escape'),/INVALID_BRANCH/);
+ await assert.rejects(adapter.readFile('../secret',a),/GITHUB_ROUTE_TRAVERSAL_DENIED/);
+ assert.equal(calls.length,1);
+});
+test('24 alternate GitHub owner and repo are not trusted destinations',()=>{
+ assert.throws(()=>createGitHubWriterAdapter({owner:'untrusted',repo:'Bedrijfsgeheugen',token:'x'}),/GITHUB_WRITER_CONTEXT_REQUIRED/);
+ assert.throws(()=>createGitHubWriterAdapter({owner:'arthurprinsen-ai',repo:'evil',token:'x'}),/GITHUB_WRITER_CONTEXT_REQUIRED/);
+});

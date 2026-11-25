@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|cro|weekly-growth-missing-comparable-closed-periods|20261030-v1",
+  "date": "2026-10-30",
+  "status": "OBSERVED",
+  "owner": "existing Powerhouse Growth/CRO + ONE BRAIN/Heartbeat",
+  "root_cause": "Original CRO portal presented aggregated 30-day website metrics and social comparative trends without an equivalent verified closed-week website trend. Sparse daily rows could make unobserved days look like zeros; CTA/lead/order observations could be misread as paid outcomes.",
+  "evidence": {
+    "source": "public.growth_page_daily",
+    "current_observation": "For the 14 full business-calendar days before 2026-10-30, existing source exposed only 11 distinct calendar dates, with 4398 recent page-view observations, zero CTA/lead/order rollup observations and no independently proven paid order. Missing days are not zero.",
+    "original_loop": "public.powerhouse_loop_assurance_state_v1",
+    "independent_paid_order_proof": false
+  },
+  "repair": "Add a pure closed-week 7d versus prior 7d projection to the ORIGINAL admin-only CRO Netlify route and existing Andere data portal, with 14-day completeness checks, explicit unknowns, source freshness, zero-baseline protection, and displayed observed CTA rate. No parallel worker, store, publisher or payment authority.",
+  "prevention": "Never classify sparse/invalid source rows, zero baseline or low sample as independently proven uplift; always keep provider-verified paid orders, lead permission and revenue outcomes separate. Next natural Brain/Heartbeat and commercial owner must act only on canonical evidence obligations.",
+  "tests": [
+    "tests/brain-cro-weekly-growth-evidence-20261030.test.mjs"
+  ],
+  "delivery": {
+    "state": "SOURCE_CANDIDATE",
+    "protected_required": false,
+    "codeql": false,
+    "merged": false,
+    "netlify_readback": false,
+    "authenticated_portal_readback": false,
+    "natural_agent_adoption": false,
+    "paid_order_proven": false
+  },
+  "next_actions": [
+    "Verify exact-head Required, BRAIN and CodeQL",
+    "Protected merge; exact Netlify deploy and 2-tenant CRO admin auth/negative test",
+    "Confirm 14 complete days and independent event receipts before weekly growth status can be comparable",
+    "Link qualified lead, contract/order, independent payment and later learning to same original obligation"
+  ],
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "CRO_PERIOD_COVERAGE_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-weekly-growth-evidence-20261030.test.mjs"
+    ]
+  }
+}

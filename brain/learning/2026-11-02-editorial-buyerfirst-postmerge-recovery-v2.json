@@ -1,0 +1,81 @@
+{
+  "fingerprint": "powerhouse|content|editorial-specialists-not-unified-with-evidence-application|20261102-v1",
+  "incident_key": "powerhouse|content|buyer-first-editorial-append-binding-after-protected-merge|20261102-v2",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "evidence": {
+    "original_brain_run": 41414751648,
+    "exact_head_sha": "77b552fe7fa392a76cc376731523596f1f6c4410",
+    "tests": 5371,
+    "passed": 5342,
+    "failed": 27,
+    "skipped": 2,
+    "original_parent_pr": 5251,
+    "original_merge_sha": "d2ca14e8bfbd5680fed38c62f9242b214d87a9f2"
+  },
+  "root_cause": "Original BRAIN test checks explicit mutation of editorialSystem for buyer-first guidance, but first council implementation concatenated a separate buyerFirstGuide. Final instruction content was present, while the exact tested source contract had drifted.",
+  "source_fix": "Preserve declaration and ordering; append buyer-first and council to original editorialSystem before original two callAI invocations.",
+  "prevention": [
+    "BEFORE_ARTIFACT_GENERATION_BRAND_GUIDE_DECLARED",
+    "EXPLICIT_ORIGINAL_BUYER_FIRST_APPEND",
+    "COUNCIL_GUIDANCE_APPLIED_BEFORE_TWO_UNCHANGED_AI_CALLS",
+    "HARD_SOURCE_CMS_CONSENT_PROVIDER_APPROVAL_GATES_INTACT",
+    "ORIGINAL_FULL_BRAIN_PROTECTED_MERGE_AND_PROVIDER_PARITY_REQUIRED",
+    "NO_UNPROVEN_ORDER_OR_REVENUE_CLAIM"
+  ],
+  "regressions": [
+    "tests/brain-brand-learning-editorial-tdz-v1.test.mjs",
+    "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
+    "tests/brain-content-artifact-incomplete-retry.test.mjs",
+    "tests/brain-editorial-council-one-loop-20261102.test.mjs"
+  ],
+  "release": {
+    "merged": false,
+    "production_source_parity_verified": false,
+    "natural_publisher_proof_verified": false,
+    "commercial_result_verified": false
+  },
+  "owner": "original powerhouse-content-orchestrator / ONE BRAIN / Heartbeat",
+  "human_documentation": "docs/changes/2026-11-02-editorial-buyerfirst-postmerge-recovery.md",
+  "observed_on": "2026-11-02",
+  "schema": "brain-learning-observation-v1",
+  "source_type": "canonical_original_brain_full_suite_and_protected_main_source_code",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brand-learning-editorial-tdz-v1.test.mjs",
+      "tests/brain-editorial-council-one-loop-20261102.test.mjs",
+      "tests/brain-content-artifact-incomplete-retry.test.mjs",
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Full original BRAIN run #41414751648, exact head 77b552fe7fa392a76cc376731523596f1f6c4410, 27 of 5371 failed; original buyer-first append assertion RED before bounded correction.",
+    "pending": "Protected exact-head Required + original full BRAIN success, CodeQL, native merge, original Supabase Git Integration source parity and genuine provider post + recurrence evidence",
+    "latest_original_full_brain": {
+      "run_id": 41416749639,
+      "head_sha": "51918e5bc67f0493f32b88e447f55be76324fe69",
+      "tests": 5377,
+      "passed": 5346,
+      "failed": 29,
+      "skipped": 2,
+      "original_buyer_first_test": "PASSED",
+      "remaining_invariant": "FULL_BRAIN_FAILED"
+    }
+  },
+  "release_status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "measured_views": null,
+  "verified_paid_orders": null,
+  "reconciliation": {
+    "protected_main_epoch": "9c314f70b791e46c1c69123692650ab8a82a8882",
+    "main_changes": "Independent original personal dedupe original source/test fixes, no changed-file path overlap",
+    "preserve_original_source_gate": true,
+    "release_status": "CANDIDATE_NOT_PROVEN"
+  }
+}

@@ -23,15 +23,28 @@ export function projectRevenueCandidate(candidate={}){
   };
 }
 
-export function createRevenueProjector({source,store,now=()=>new Date()}={}){
+export function createRevenueProjector({source,store,now=()=>new Date(),batchSize=100,budgetMs=12000}={}){
   return async()=>{
+    const started=Date.now();
     const activeStore=store||createRevenueLearningStore();const activeSource=source||activeStore;
     const candidates=await activeSource.listProjectionCandidates(now().toISOString());let projected=0;
-    for(const candidate of candidates){
+    const recordFailure=(candidate,error)=>activeStore.recordObligation({id:`projection:${candidate.contentId}:${candidate.windowHours}`,type:'PROJECTION_FAILED',status:'OPEN',contentId:candidate.contentId,windowHours:candidate.windowHours,error:String(error?.message||error)});
+    const single=async candidate=>{
       try{await activeStore.upsertEvidence(projectRevenueCandidate(candidate));projected++;}
-      catch(error){await activeStore.recordObligation({id:`projection:${candidate.contentId}:${candidate.windowHours}`,type:'PROJECTION_FAILED',status:'OPEN',contentId:candidate.contentId,windowHours:candidate.windowHours,error:String(error?.message||error)});}
+      catch(error){await recordFailure(candidate,error);}
+    };
+    // Bounded batches: one gateway call per batch instead of one per candidate, so the hourly run
+    // finishes inside the scheduled-function limit. Per-item fallback keeps failure attribution.
+    for(let i=0;i<candidates.length;i+=batchSize){
+      if(Date.now()-started>budgetMs)break;
+      const chunk=candidates.slice(i,i+batchSize);
+      if(typeof activeStore.upsertEvidenceBatch==='function'){
+        try{await activeStore.upsertEvidenceBatch(chunk.map(projectRevenueCandidate));projected+=chunk.length;continue;}
+        catch(error){/* fall through to per-item so one bad row cannot hide the rest */}
+      }
+      for(const candidate of chunk){if(Date.now()-started>budgetMs)break;await single(candidate);}
     }
-    return {projected,total:candidates.length};
+    return {projected,total:candidates.length,unprojected:Math.max(0,candidates.length-projected)};
   };
 }
 

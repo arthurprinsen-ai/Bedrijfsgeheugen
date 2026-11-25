@@ -9,7 +9,7 @@ test('Powerhouse portal visual assurance is one cross-system contract',()=>{
   const portalLane=policy.lanes.find(lane=>lane.id==='portal');
 
   assert.equal(contract.loop_key,'portal-visual-density');
-  assert.equal(contract.fingerprint,'portal-visual-density-oversized-responsive-cascade-v1');
+  assert.equal(contract.fingerprint,'portal-product-experience-responsive-reliability-v2');
   assert.equal(contract.authority.supabase_registry,'public.powerhouse_loop_assurance_registry_v1');
   assert.equal(contract.authority.supabase_receipts,'public.powerhouse_loop_assurance_receipts_v1');
   assert.equal(contract.authority.supabase_quality,'public.powerhouse_quality_events');
@@ -22,9 +22,9 @@ test('Powerhouse portal visual assurance is one cross-system contract',()=>{
   assert.equal(contract.authority.notion_verified_state_page_id,'3deda36a-ac8a-8106-909c-c74f4185942e');
   assert.equal(contract.authority.notion_system_map_page_id,'3dcda36a-ac8a-8152-be3d-edbb32b06239');
 
-  assert.equal(contract.routes.length,3);
-  assert.equal(contract.viewports.length,3);
-  assert.equal(contract.routes.length*contract.viewports.length,9);
+  assert.equal(contract.routes.length,6);
+  assert.equal(contract.viewports.length,4);
+  assert.equal(contract.routes.length*contract.viewports.length,24);
   assert.deepEqual(contract.stages,['input','decision','action','readback','outcome','measurement','learning','guard']);
 
   for(const path of [

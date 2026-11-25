@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|tenant-ai-activation|canonical-portal-merge-loss|20261015",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "composePortalProjectionLayers replaces the entire legacy portal object whenever a canonical Brain layer includes its own portal object. A tenant AI model preference and activation request saved to legacy tenant storage can therefore disappear from the composed authoritative server view despite a successful write.",
+  "prevention_rule": "Compose the portal namespace at top level, retaining legacy-only tenant keys such as aiModelPreferences and aiModelActivationRequest while preserving explicit canonical precedence for duplicate keys. Test both precedence and re-read by the activation gateway. No provider activation or signed proof can be derived from restored preferences.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "paths": [
+      "tests/portal-projection-layers.test.mjs",
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ],
+    "status": "Pending protected CI"
+  },
+  "outcome": {
+    "code": "Projection merge regression patch",
+    "production": "NOT_YET_VERIFIED",
+    "provider_activation": "NOT_CLAIMED"
+  }
+}

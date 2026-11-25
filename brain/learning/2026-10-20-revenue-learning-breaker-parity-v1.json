@@ -1,0 +1,36 @@
+{
+  "fingerprint": "revenue-learning|undefined-read-breaker|degraded-202-as-success|20261020",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "revenue-learning|deployed-source-parity-and-degraded-outcome-truth|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "EDGE_RUNTIME_REFERENCE_ERROR_AND_FALSE_SUCCESS",
+    "scope": "REVENUE_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Production Supabase revenue-learning-store v10 contains two undeclared breaker identifiers in the projection read path and diverges from main. A provider HTTP 202 response with degraded=true was interpreted as an empty successful projection by the canonical Netlify store adapter.",
+  "prevention_rule": "Reconcile exact deployed Edge source through protected source control, declare both breaker identifiers, keep bounded DB reads and existing service-token authentication, and reject degraded=true even on HTTP 2xx. Require provider result and exact deployed source readback; never translate unavailable data to zero successes.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-breaker-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-revenue-learning-breaker-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-revenue-learning-breaker-parity-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "live_error": "Netlify POST /.netlify/functions/revenue-learning-project 2026-10-20T11:01:08Z HTTP 502; downstream error READ_BREAKER_MS is not defined (503)",
+    "provider_source_version": "revenue-learning-store v10",
+    "production_redeploy": "PENDING",
+    "netlify_exact_main_deploy": "PENDING"
+  },
+  "production_verified": false
+}

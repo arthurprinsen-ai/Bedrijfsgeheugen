@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|cross-browser|playwright-181-os-packages-install-30m-timeout|20261105-v1",
+  "owner": "original Website Cross-Browser Screenshot Assurance GitHub Actions workflow",
+  "compiler": {
+    "failure_class": "BROWSER_OS_DEPENDENCY_INSTALL_TIMEOUT",
+    "scope": "WEBSITE_CROSS_BROWSER",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "After earlier ffmpeg-static postinstall 504 was avoided, canonical workflow_dispatch run 42054614527 on candidate source #5457 installed the Playwright npm package successfully but `npx playwright install --with-deps chromium firefox webkit` resolved 181 new Ubuntu OS packages; installation never completed and the GitHub job hit the original 30-minute timeout. No screenshot was made; upload-artifact also failed. This is a new browser OS prerequisite incident, not page visual acceptance.",
+  "prevention": "Run the original three-engine screenshot/interaction/CLS acceptance in the vendor's official version-pinned Playwright v1.55.0-noble browser container (all three browser executables plus OS dependencies preinstalled), rather than apt-installing 181 packages on every run; still npm install only Playwright package with --ignore-scripts, explicitly check all three executable paths exist, execute original real screenshot quality gates and preserve artifact or fail. Never mark green on a preflight alone.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cross-browser-playwright-container-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cross-browser-playwright-container-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cross-browser-playwright-container-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42054614527",
+    "job_id": 127339487008,
+    "started": "2026-11-05T15:24:13Z",
+    "cancelled": "2026-11-05T15:54:38Z",
+    "requested_os_packages": 181,
+    "failed_step": "Install Playwright engines",
+    "test_contracts_passed": true,
+    "real_browser_screenshots_complete": false,
+    "image": "mcr.microsoft.com/playwright:v1.55.0-noble",
+    "official_docs": "https://playwright.dev/docs/docker",
+    "protected_fix_pr": 5457
+  },
+  "production_readback": "EVIDENCE_DUE",
+  "regression_outcome": "REQUIRES_PROTECTED_REQUIRED_CODEQL_AND_ORIGINAL_REAL_SCREENSHOT_PROVIDER_ARTIFACT"
+}

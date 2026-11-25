@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
 test('daily blog GENERATED state has a repository-native hourly closed loop', async () => {
@@ -28,4 +29,22 @@ test('daily blog GENERATED state has a repository-native hourly closed loop', as
   assert.match(exporter, /obligation_idempotency_key/);
   assert.match(renderer, /urllib\.error\.HTTPError/);
   assert.match(renderer, /NO_ACTION:NO_APPROVED_BLOG_ARTIFACT/);
+});
+
+test('daily blog renderer strips render-blocking third-party resources', async () => {
+  const [renderer, page] = await Promise.all([
+    readFile('tools/site-shell/publish_powerhouse_blog_artifact.py','utf8'),
+    readFile('blog/circular-plastics-nl-cpnl-subsidie-40-miljoen-budget-en-deadline-6-okt/index.html','utf8')
+  ]);
+  assert.match(renderer, /Daily blog pages are static-first/);
+  assert.match(renderer, /fonts\\\.googleapis\\\.com/);
+  assert.match(renderer, /gc\\\.zgo\\\.at\/count\\\.js/);
+  assert.doesNotMatch(page, /googletagmanager|fonts\.googleapis\.com|gc\.zgo\.at\/count\.js/);
+});
+
+test('daily blog critical path excludes site-wide stijl.js', () => {
+  const page = fs.readFileSync('blog/circular-plastics-nl-cpnl-subsidie-40-miljoen-budget-en-deadline-6-okt/index.html', 'utf8');
+  const generator = fs.readFileSync('tools/site-shell/publish_powerhouse_blog_artifact.py', 'utf8');
+  assert.doesNotMatch(page, /<script src="\/assets\/stijl\.js" defer><\/script>/);
+  assert.match(generator, /assets\/stijl\\\.js/);
 });

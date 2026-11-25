@@ -1,0 +1,33 @@
+{
+  "fingerprint": "content|blog-driver-date-identity|20261028-v1",
+  "obligation_id": "content-publication-quality-recovery-20261028",
+  "compiler": {
+    "failure_class": "DRIVER_DATE_REPRESENTATION",
+    "scope": "GENERAL"
+  },
+  "root_cause": "Actual postgres@3.4.7 src/types.js parses DATE OID1082 (also1114/1184) into JavaScript Date. Blog repair claim and final guard expected strings. Correct current date/channel/unsent rows were skipped after RPC auth succeeded.",
+  "prevention_rule": "Normalize valid database Date values to UTC calendar-day identity at both repair boundaries; preserve all ownership, exact requested day, source, token, tenant, channel and provider guards. Test driver-shaped inputs and require actual canonical generation/persistence, not merely authenticated HTTP200.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-quality-recovery-20261028.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "predecessor_pr": 5047,
+    "predecessor_main": "5ac9fcb3aac16658719244480477df551450ab9c",
+    "native_orchestrator_version": 383,
+    "canonical_request": 15186,
+    "observed_result": "200 generated:false NO_PENDING_ARTIFACT; exact unsent blog rows present and rejected source unchanged",
+    "driver_source": "https://github.com/porsager/postgres/blob/v3.4.7/src/types.js",
+    "red_green": "Date fixtures failed before normalization; eleven recovery tests pass including wrong-day and invalid-Date denial",
+    "review": "Independent review: no important defects;11 tests passed. Test models the documented parser output; no actual database-parser integration assertion."
+  },
+  "outcome": {
+    "current_candidate": "LOCAL_TESTED_NOT_DEPLOYED",
+    "blog_publication": "NOT_PROVEN",
+    "revenue_lift": "NOT_PROVEN"
+  }
+}

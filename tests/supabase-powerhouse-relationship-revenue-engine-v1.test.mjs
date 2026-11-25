@@ -18,7 +18,8 @@ test('relationship revenue engine is Powerhouse-first and vendor-optional',()=>{
   assert.match(migration,/public_web/);
   assert.match(migration,/optional_vendor_fallback/);
   assert.match(skill,/Powerhouse first-party/i);
-  assert.match(skill,/vendor.*optional/i);
+  assert.match(skill,/Optionele vendor fallback/i);
+  assert.match(skill,/Externe vendors zijn nooit canonical truth/);
 });
 
 test('relationship warmth never fabricates a buying trigger or sends unsolicited outbound',()=>{
@@ -48,7 +49,7 @@ test('new RPC is a required Powerhouse quality surface',()=>{
 
 
 test('relationship research is executed from canonical public evidence stores before trigger materialization',()=>{
-  const auto=fs.readFileSync('supabase/migrations/20260928104500_powerhouse_relationship_research_auto_enrichment_v1.sql','utf8');
+  const auto=fs.readFileSync('supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql','utf8');
   assert.match(auto,/powerhouse_execute_relationship_research_v1/);
   assert.match(auto,/bg_bedrijfsnieuws/);
   assert.match(auto,/bg_externe_signalen/);

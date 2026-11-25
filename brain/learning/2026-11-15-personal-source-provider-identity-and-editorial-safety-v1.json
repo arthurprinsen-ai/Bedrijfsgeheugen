@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|linkedin|dual-provider-source-context-and-editorial-risk|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "SOURCE_CANDIDATE",
+  "owner": "original powerhouse-mira-problem-radar, original personal source rotation, publisher and reviewer",
+  "failure_class": "CLASSIFIER_GAP",
+  "scope": "CONTENT",
+  "root_cause": "Tavily advanced undated result discarded before DataForSEO dated fallback; DataForSEO News only supplies ~123-146-character snippets. Original personal topic classifier accepted violent crime/police force articles based only on parcel-delivery keyword and source length.",
+  "prevention_rule": "Keep source identity immutable, retain undated Tavily long context from SAME original external query and merge with a dated DataForSEO result ONLY when its canonical HTTPS hostname and path match. Reject traumatic personal headlines at original source intake and retain quarantine. Underlength or unsupported sources never become green. One existing eight-call radar and #140 content executor, no second publisher.",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-source-provider-editorial-safety-20261115.test.mjs",
+      "tests/brain-original-personal-radar-source-parity-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_signal_id": "d542a27e-1d60-4e98-ac66-d4d7dd7bd8c5",
+    "source_recommendation_id": "578a438c-7658-44f2-8e89-d4181da70c2f",
+    "date": "2026-11-15",
+    "quarantined_sources": 1,
+    "skipped_personal_candidates": 1,
+    "original_personal_provider_id": null,
+    "runtime_edge_version_before_candidate": 1056,
+    "original_migration_version": "20261115162500",
+    "dataforseo_observed_snippet_character_range": [
+      123,
+      146
+    ],
+    "original_radar": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+    "no_parallel_scheduler": true
+  },
+  "acceptance": [
+    "Protected exact-head Required, CodeQL and Supabase Preview",
+    "Merge to main without bypassing protection",
+    "Original Edge provider source byte parity",
+    "Suitable original personal source selected",
+    "Unique authorized personal LinkedIn provider post ID and independent GET",
+    "Named ONE BRAIN processed consumer receipt and Heartbeat measurement"
+  ],
+  "false_green_forbidden": true,
+  "new_scheduler": false,
+  "new_publisher": false
+}

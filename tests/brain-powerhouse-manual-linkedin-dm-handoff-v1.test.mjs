@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const ui=fs.readFileSync('intern/vandaag/index.html','utf8');
 const fn=fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts','utf8');
-const migration=fs.readFileSync('supabase/migrations/20260928162500_bg_vandaag_manual_dm_handoff_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260928162500_bg_vandaag_manual_dm_handoff_v1.sql','utf8');
 const skill=fs.readFileSync('.agents/skills/powerhouse-manual-sales-handoff/SKILL.md','utf8');
 
 test('Arthur Actions only renders irreducibly manual sales work',()=>{

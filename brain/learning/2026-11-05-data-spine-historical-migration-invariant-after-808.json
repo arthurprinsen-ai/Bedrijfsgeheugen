@@ -1,0 +1,43 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "SOURCE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "brain|data-spine|historical-807th-lock-test-broke-after-valid-808th|20261105-v1",
+  "owner": "original GitHub Required / ONE BRAIN / data-spine regression owner",
+  "compiler": {
+    "failure_class": "HISTORICAL_ASSERTION_MISTAKEN_FOR_CURRENT_LATEST_MIGRATION",
+    "scope": "ORIGINAL_DATA_SPINE_TEST",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Exact-head original BRAIN verification of protected #5468 (run 42063349533 backend test #1378) failed because the test demanded historical 20261105132000 remain the *last* applied migration. Its original 807th position is preserved and verified, but protected #5450 applied the legitimate 808th version 20261105134200 and original #5462 amended the provider-verified lock to 808. All other 5,889+ BRAIN tests passed.",
+  "prevention_rule": "Assert immutable historical migration position, exact version/name and least-privilege SQL. Never assert that any historical migration must remain the newest after future authorized migrations; use latest provider-source parity as a separate independent gate. Keep preview, Required, CodeQL and original BRAIN fail-closed.",
+  "evidence": {
+    "source_prs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5450",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5462",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5468"
+    ],
+    "original_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42063349533",
+    "failed_test_index": 1378,
+    "provider_applied_versions": 808,
+    "immutable_807th": "20261105132000",
+    "verified_808th": "20261105134200"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ]
+  },
+  "production_readback": "REQUIRES_EXACT_HEAD_PROTECTED_CI_AND_ORIGINAL_BRAIN_REPLAY",
+  "regression_outcome": "PENDING_EXACT_HEAD_CI",
+  "no_parallel_scheduler": true
+}

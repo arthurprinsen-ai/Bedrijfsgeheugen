@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|owner-portal|financial-tenant-scope-and-decision-readback|20261015-v2",
+  "compiler": {
+    "failure_class": "PORTAL_OWNER_EVIDENCE_AND_ACTION_ISOLATION",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The first owner experience connected its tabs to generic executive evidence and existing pages, but the UI never requested the independently validated tenant financial forecasts and canonical human decision state. A compact overview opened the same default tab for all five intents.",
+  "prevention_rule": "Bind financial figures only through authenticated /api/portal-forecasts, server-resolved tenant, independently reviewed time series and separately labelled observed vs predicted periods. Route human approvals and rejections through existing canonical decision handler, with fail-closed stale status, readback and idempotency. Never infer provider execution or realized outcomes from approval.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4407",
+    "validation": "PENDING_PROTECTED_CI",
+    "external_providers": "NOT_CALLED",
+    "production": "NOT_VERIFIED"
+  },
+  "outcome": {
+    "status": "CANDIDATE_NOT_YET_ACCEPTED",
+    "financial_actuals": "ONLY_TENANT_REVIEWED_HISTORY",
+    "independent_outcome_proof": "NOT_CLAIMED"
+  }
+}

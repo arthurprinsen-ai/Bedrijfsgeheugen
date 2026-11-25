@@ -1,6 +1,6 @@
 import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js';
-import { brancheVergelijking, brancheProfiel, onderzoekVoor } from './external-data.js';
-import { komendeMijlpalen } from './regelgeving.js';
+import { brancheVergelijking, brancheProfiel, onderzoekVoor, HERKOMST } from './external-data.js';
+import { komendeMijlpalen, regelsVoorBranche, REGELGEVING } from './regelgeving.js';
 import { beoordeelPortefeuille, rangschikRisicos, STATUS } from './compliance-engine.js';
 import { bouwPassport } from './passport.js';
 import { PROFILE_DIMENSIONS } from './modules/company-input.js';
@@ -38,8 +38,24 @@ const euro = value => (value == null ? null : Math.round(value));
 /** Moeite bepaalt hoe snel iets kan; een harde datum weegt zwaarder dan waarde. */
 const MOEITE = Object.freeze({ klein: 1, middel: 2, groot: 3 });
 
-function bevinding({ id, titel, bewijs, waarde = null, moeite = 'middel', bron, pagina, datum = null, soort, dim = null, duur = null }) {
-  return { id, titel, bewijs, waarde: euro(waarde), moeite, bron, pagina, datum, soort, dim, duur };
+function bevinding({ id, titel, bewijs, waarde = null, moeite = 'middel', bron, pagina, datum = null, soort, dim = null, duur = null, extern = null }) {
+  return { id, titel, bewijs, waarde: euro(waarde), moeite, bron, pagina, datum, soort, dim, duur, extern };
+}
+
+/**
+ * Herkomst van een extern cijfer: wanneer is het voor het laatst nagekeken en
+ * wanneer moet dat opnieuw. Een bevinding op een cijfer dat over zijn
+ * herzieningsdatum is, blijft staan (de afwijking is nog steeds wat de klant
+ * ingevuld heeft), maar draagt dit mee zodat een scherm het kan tonen en de
+ * prioriteit er niet blind op vertrouwt.
+ */
+function externeHerkomst(sleutel, peil) {
+  const meta = HERKOMST[sleutel];
+  if (!meta) return null;
+  return Object.freeze({
+    dataset: sleutel, peildatum: meta.peildatum, herzienUiterlijk: meta.herzienUiterlijk,
+    verouderd: String(meta.herzienUiterlijk) < String(peil)
+  });
 }
 
 /* ---------- de regels ---------- */
@@ -59,7 +75,7 @@ function handmatigWerk(state) {
 }
 
 /** Eigen cijfers die onder de branchenorm liggen. */
-function onderDeNorm(state) {
+function onderDeNorm(state, peil = new Date().toISOString().slice(0, 10)) {
   const branche = at(state, 'portal.market.industry');
   const profiel = brancheProfiel(branche);
   /* Alleen vergelijken waar de klant iets heeft ingevuld. Een berekening geeft
@@ -92,7 +108,8 @@ function onderDeNorm(state) {
       bewijs: `${rij.eigen.toLocaleString('nl-NL')}${rij.eenheid} tegenover ${rij.norm.toLocaleString('nl-NL')}${rij.eenheid} in ${branche || 'het gemiddelde NL-bedrijf'}`,
       waarde, moeite: waarde ? 'groot' : 'middel',
       bron: `Branchenormen: CBS, Eurostat, DNB en sectorprognoses${profiel?.inst ? ` · ${profiel.inst}` : ''}`,
-      pagina: rij.maatstaf === 'DSO' || rij.maatstaf === 'Brutomarge' ? 'cijfers-maatstaven' : 'mensen-organisatie'
+      pagina: rij.maatstaf === 'DSO' || rij.maatstaf === 'Brutomarge' ? 'cijfers-maatstaven' : 'mensen',
+      extern: externeHerkomst('branches', peil)
     });
   });
 }
@@ -113,15 +130,29 @@ function complianceGaten(state) {
   }));
 }
 
-/** Wetgeving met een datum die eraan komt. */
+/**
+ * Wetgeving met een datum die eraan komt, voor zover de branche van de klant
+ * erdoor geraakt wordt. Voorheen stonden hier de eerste drie mijlpalen van het
+ * hele register, ook als ze over een andere sector gingen.
+ */
 function komendeVerplichtingen(state, peil) {
-  return komendeMijlpalen(peil, 12).slice(0, 3).map(mijlpaal => bevinding({
-    id: `regel-${mijlpaal.id}-${mijlpaal.datum}`, soort: 'verplichting',
-    titel: mijlpaal.regel,
-    bewijs: mijlpaal.wat,
-    waarde: null, moeite: 'middel', datum: mijlpaal.datum,
-    bron: 'Regelgevingsregister', pagina: 'compliance-governance'
-  }));
+  const profiel = brancheProfiel(at(state, 'portal.market.industry'));
+  const relevant = new Set(regelsVoorBranche(profiel?.wet || []).map(regel => regel.id));
+  return komendeMijlpalen(peil, 12).filter(mijlpaal => relevant.has(mijlpaal.id)).slice(0, 3).map(mijlpaal => {
+    const regel = REGELGEVING.find(item => item.id === mijlpaal.id);
+    return bevinding({
+      id: `regel-${mijlpaal.id}-${mijlpaal.datum}`, soort: 'verplichting',
+      titel: mijlpaal.regel,
+      bewijs: `${mijlpaal.wat} Datum: ${mijlpaal.datum}.${regel?.raakt ? ` Raakt: ${regel.raakt}` : ''}`,
+      waarde: null, moeite: 'middel', datum: mijlpaal.datum,
+      bron: 'Regelgevingsregister', pagina: 'compliance-governance',
+      extern: regel ? Object.freeze({
+        dataset: 'regelgeving', regelId: regel.id, categorie: regel.categorie, url: regel.url || null,
+        peildatum: regel.peildatum, herzienUiterlijk: regel.herzienUiterlijk,
+        verouderd: String(regel.herzienUiterlijk) < String(peil)
+      }) : null
+    });
+  });
 }
 
 /** Controls in het Data & AI Passport die nog niet bewezen zijn. */
@@ -185,7 +216,7 @@ function duursteOnderdelen(state) {
  * markt, niet over wat het bij dit bedrijf oplevert. Wel staat erbij wat dit
  * onderdeel hier per jaar kost en welke afdelingen het raakt.
  */
-function externOnderzoek(state) {
+function externOnderzoek(state, peil = new Date().toISOString().slice(0, 10)) {
   const kosten = arr(calc('dimension-costs', state));
   if (!kosten.length) return [];
   const zwak = kosten.filter(d => d.niveau < d.streefniveau).slice(0, 3);
@@ -199,7 +230,8 @@ function externOnderzoek(state) {
       titel: kaart.advies,
       bewijs: `${kaart.t} — ${kaart.cijfer}. Bij jou staat ${d.label.toLowerCase()} op niveau ${d.niveau} van ${d.streefniveau} en kost ${Math.round(d.kosten).toLocaleString('nl-NL')} euro per jaar${raakt?.afdelingen.length ? `; het raakt ${raakt.afdelingen.join(', ')}` : ''}`,
       waarde: null, moeite: 'middel', duur: 6,
-      bron: kaart.bron, pagina: 'onderzoek'
+      bron: kaart.bron, pagina: 'onderzoek',
+      extern: externeHerkomst('onderzoek', peil)
     }));
   }
   return uit;
@@ -401,7 +433,7 @@ function conclusieAchterhaald(state) {
   })];
 }
 
-const REGELS = [duursteOnderdelen, externOnderzoek, borging, strategieZonderWerk, conclusieAchterhaald, financieleWeerbaarheid, roadmapStilstand, openBesluiten, scanKansen, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
+const REGELS = [komendeVerplichtingen, duursteOnderdelen, externOnderzoek, borging, strategieZonderWerk, conclusieAchterhaald, financieleWeerbaarheid, roadmapStilstand, openBesluiten, scanKansen, handmatigWerk, onderDeNorm, complianceGaten, passportGaten, businesscase];
 
 /**
  * De volgorde. Waarde per jaar gedeeld door moeite is de basis; een harde datum

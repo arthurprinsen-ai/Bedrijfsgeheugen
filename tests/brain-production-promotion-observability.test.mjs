@@ -31,9 +31,10 @@ test('production workflow persists promotion-required state and reads deploy ide
   assert.match(workflow,/--deploy-id/);
 });
 
-test('Netlify build already emits deploy identity in release.json',async()=>{
-  const builder=await readFile('tools/bouw-release-evidence.mjs','utf8');
-  assert.match(builder,/process\.env\.DEPLOY_ID/);
-  assert.match(builder,/deploy_id/);
-  assert.match(builder,/commit_ref/);
+test('canonical release identity stamper emits deploy identity in release.json',async()=>{
+  const stamper=await readFile('tools/site-shell/restamp-release-identity.mjs','utf8');
+  assert.match(stamper,/env\.DEPLOY_ID/);
+  assert.match(stamper,/deploy_id/);
+  assert.match(stamper,/commit_ref/);
+  assert.match(stamper,/release\.json/);
 });

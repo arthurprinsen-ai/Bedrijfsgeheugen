@@ -1,0 +1,60 @@
+{
+  "fingerprint": "powerhouse|engineering|daily-tuning|37797973046",
+  "obligationId": "powerhouse-daily-engineering-tuning-37797973046",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "Daily CI tuning proposals need a protected delivery contract, mandatory closure records and nonduplicating candidate retirement; a stale invalid candidate previously blocked measured tuning.",
+  "prevention": [
+    "One title and canonical integration writer for each active tuning obligation",
+    "Reject missing delivery metadata; retire only proven stale bot-owned invalid PRs",
+    "Preserve required CI, security, exact SHA, CodeQL, protected merge and production evidence",
+    "Keep observational performance measurement and bounded reversible tuning"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-engineering-tuning-candidate.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_run_id": "37797973046",
+    "base_sha": "eec45d899e2f39cca946ab66522123ffca0e4c88",
+    "observed_at": "2026-10-08T15:07:17.633Z",
+    "signal_snapshot": {
+      "queue_wait_seconds_p95": 120,
+      "execution_seconds_p95": 76,
+      "required_queue_wait_seconds_p95": 68,
+      "required_total_seconds_p95": 333,
+      "workflow_fanout_per_sha_p95": 19,
+      "direct_pull_request_workflow_count": 2,
+      "direct_pr_workflow_budget": 2,
+      "duplicate_workflow_runs_7d": 41,
+      "duplicate_open_obligations": 4,
+      "retired_pr_churn_7d": 20,
+      "failure_rate": 0.014,
+      "skipped_rate": 0.5374,
+      "sampled_jobs": 214,
+      "evidence_ready": false,
+      "cooldown_active": false,
+      "prior_trial_status": "NO_PENDING_TRIAL",
+      "calibration_mode": "SHADOW_RECOMMENDATIONS",
+      "calibration_high_priority_recommendations": [
+        "reduce-workflow-fanout"
+      ]
+    },
+    "optimizer_decisions": [
+      "insufficient-runner-evidence-no-runtime-tuning",
+      "ratchet-direct-pr-workflow-budget-down",
+      "required-fast-gate-slo-breach"
+    ],
+    "parameter_changes": [],
+    "required_status": "PENDING_PROTECTED_CHECKS",
+    "production_readback": "PENDING",
+    "realized_business_value": "NOT_MEASURED"
+  }
+}

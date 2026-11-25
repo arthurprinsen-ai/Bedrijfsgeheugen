@@ -1,0 +1,51 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|linkedin|original-radar-accepts-truncated-source|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "SOURCE_CANDIDATE",
+  "owner": "original powerhouse-mira-problem-radar and public.powerhouse_ensure_personal_source_rotation_v2",
+  "failure_class": "CLASSIFIER_GAP",
+  "scope": "CONTENT",
+  "root_cause": "Original personal radar search returns mostly 140-char snippets; original SQL source rotation accepts >=60 and falsely counts existing 143-char truncated candidate as eligible; downstream personal editor after PR #5868 requires >=240.",
+  "prevention_rule": "Only the original 2 of 8 daily personal searches use existing Tavily advanced/3 chunks; both original radar and original source-rotation selection require >=240 nontruncated dated direct HTTPS and source uniqueness. Persist shortages in original ONE BRAIN. Never bypass independent publishing/identity/dedupe authorization. The 20261115162000 protected no-resurrection contract remains authoritative for quarantine and DO NOTHING; the follow-on v4 retains it unchanged.",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 6,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-personal-radar-source-parity-20261115.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-mira-radar-http-contract-20261113.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_id": "6418326b-bded-487d-b1dd-1ec22ea0af66",
+    "source_date": "2026-11-15",
+    "observed_source_characters": 143,
+    "old_source_minimum": 60,
+    "original_editor_minimum": 240,
+    "observed_failed_generation_attempts": 6,
+    "original_personal_provider_id": null,
+    "source_rotation_migration": "supabase/migrations/20261115162500_original_personal_source_supplier_completeness_v4.sql",
+    "original_radar": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+    "no_parallel_scheduler": true,
+    "no_resurrection_migration": "supabase/migrations/20261115162000_personal_observation_source_no_resurrection_v1.sql",
+    "protected_source_parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5874"
+  },
+  "acceptance": [
+    "Protected Required, CodeQL and Supabase Preview",
+    "Canonical main merge",
+    "Native Supabase applied migration version/name readback",
+    "Original Edge deployed source parity",
+    "Genuine eligible unused source",
+    "LinkedIn original provider ID and independent GET",
+    "ONE BRAIN named PROCESSED consumer receipt and Heartbeat measured learning"
+  ],
+  "false_green_forbidden": true,
+  "new_scheduler": false,
+  "new_publisher": false
+}

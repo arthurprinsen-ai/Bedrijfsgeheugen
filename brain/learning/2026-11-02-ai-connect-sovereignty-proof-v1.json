@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-ai-connect-sovereignty-proof-20261102-v1",
+  "fingerprint": "portal|connectors|sample-dry-run-mistaken-for-live-verification|20261102-v1",
+  "compiler": {
+    "failure_class": "CONNECTOR_SAMPLE_PASS_WITHOUT_PROVIDER_PROOF",
+    "scope": "PORTAL_CONNECTORS_DATA_SOVEREIGNTY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Sample email/upload source and local Datahub safe test can return successful stage evidence and a test execution id, while the original activation evaluator checked only passed stages and same-version id, not whether external source and target providers were actually queried. Portal had no explicit per-connector downstream use selection.",
+  "fix": "Introduce server-derived proofLevel gate and default-deny tenant connector data-use mode; separate sample test from external provider-verified activation; integrate customer-selected portal/AI use and existing sovereignty policy with readable UI.",
+  "tests": [
+    "tests/connector-ai-sovereignty-consent-20261102.test.mjs",
+    "tests/connector-reference-flow.test.mjs",
+    "tests/connector-engine.test.mjs",
+    "tests/connector-koppelingen-status.test.mjs",
+    "tests/portal-connectors-handler.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-connect-sovereignty-proof-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ai-connect-sovereignty-proof-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ai-connect-sovereignty-proof-20261102.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Never promote an example, static readiness declaration or local target dry-run into externally verified activation or a healthy production status.",
+    "Connected data usage requires tenant-specific, per-connector permission; default CONNECTION_ONLY, deny training and ungoverned AI model routes.",
+    "Always disclose actual storage/processing/model regions from provider receipts, never infer from the Supabase primary region or a requested deployment profile.",
+    "Provider authentication and actual source-to-destination execution require independent signed-off evidence and current protected release readback.",
+    "Remain within the original Portal V2, connector, data sovereignty, ONE BRAIN, Heartbeat and protected release owners; no parallel executor or direct production change.",
+    "Learning canonicalization requires a real tests/brain-*.test.mjs evaluation entry point; import and execute the full original connector suites rather than weakening the CI gate."
+  ],
+  "owner": "original Portal V2 UX + connector engine + ONE BRAIN/Heartbeat + protected release writer",
+  "proof_state": "SOURCE_CANDIDATE_NOT_LIVE_NOT_PROVIDER_VERIFIED"
+}

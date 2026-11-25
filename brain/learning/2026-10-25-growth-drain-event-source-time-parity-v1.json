@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "obligation_id": "netlify|growth-drain|event-source-time-parity|20261025-v1",
+  "fingerprint": "growth-drain|created-at-not-occurred-at|false-fresh-cohort|20261025",
+  "parent_issue": 4446,
+  "related_issue": 4198,
+  "failure_class": "GROWTH_DRAIN_EVENT_INGESTION_SOURCE_TIME_CONFUSION",
+  "root_cause": "The production drain persistently acknowledged 3-4 events/minute, but 2026-10-25 source-vs-created time readback found 168 of 176 newly inserted events occurred more than an hour before ingestion; only 7 source events genuinely occurred after the release and 0 were CTA clicks. Success and freshness had been conflated in agent-level interpretation.",
+  "fix": "Add privacy-safe source occurrence age counters to the existing single scheduled growth-drain. Distinguish <=5 minutes, >5 and <=60 minutes, >60 minutes, and unknown/future dates while preserving the original event receipt, independent DataHub provider ACK, existing 10.5s budget, integrity gates and no second scheduler. Explicit backlogClearanceUnproven guards against interpreting one successful batch as complete catch-up.",
+  "evidence": {
+    "sql": "2026-10-25: 176 recently inserted growth_events, 168 source occurred >1h before insert, 7 source occurred post-release, 0 verified primary CTA clicks",
+    "netlify": "Production 17:00-17:17 UTC provider-persisted 3-4 per minute, failed=0, budgetExpired=true"
+  },
+  "prevention_rules": [
+    "Never present newly ingested backlog as contemporaneous visitors or conversions",
+    "Do not equate HTTP204 with a fully emptied queue",
+    "Retain independent provider ACK, source occurrence timestamp and immutable receipt",
+    "Keep no new contact authority, consent bypass or fabricated revenue",
+    "Metrics must be aggregate and cannot contain visitor identity"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GROWTH_DRAIN_EVENT_INGESTION_SOURCE_TIME_CONFUSION",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required+CodeQL+Netlify merge and exact deployed SHA; independent live scheduled log with sourceTime backlog/fresh counters plus Supabase source-date verification. Paid orders and qualified lead CTA evidence remain separate."
+}

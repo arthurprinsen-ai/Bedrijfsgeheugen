@@ -1,0 +1,31 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "mira|provider-no-results|dataforseo-40102-misclassified|20261029-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "root_cause": "The eight-query canonical Google News radar correctly recognized an empty task 40101, but incorrectly classified equally empty DataForSEO task 40102 (overall success 20000) as a provider fault and appended it to error logs.",
+  "prevention_rule": "Classify only 40101 and 40102 as no-results when both HTTP and top-level provider response succeeded; do not mark a source eligible or treat an empty SERP as an original story. All other provider statuses fail closed. Keep existing eight provider query slots and source freshness/uniqueness checks.",
+  "evidence": {
+    "public_reference": "https://dataforseo.com/help-center/what-does-the-40102-error-mean",
+    "reported_no_results_examples": 2,
+    "source_query_budget_unchanged": 8,
+    "production_verified": false,
+    "provider_reel_published": false,
+    "private_payload_excluded": true,
+    "tests": [
+      "tests/brain-mira-dataforseo-no-results-20261029.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PROVIDER_EMPTY_RESULT_CLASSIFICATION",
+    "scope": "SINGLE_CANONICAL_MIRA_RADAR",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-dataforseo-no-results-20261029.test.mjs"
+    ]
+  }
+}

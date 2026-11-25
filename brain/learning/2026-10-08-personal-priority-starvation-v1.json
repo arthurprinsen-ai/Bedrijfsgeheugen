@@ -1,0 +1,42 @@
+{
+  "version": "personal-priority-starvation-commercial-channel-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "content-orchestrator-blocked-personal-priority-100-starves-company-priority-99-v1",
+  "failure_class": "RUNTIME_INVARIANT",
+  "root_cause": "Existing content orchestrator did not preserve a truthful blocked personal first-person claim without verified source, and repeatedly reprioritized it above an independently executable company obligation.",
+  "intervention": "Preserve the blocked personal claim while personal_truth_verified and safe observational source proof are absent; reopen the same claim only on new valid evidence and let lower-priority independent company/blog proceed.",
+  "prevention": "An unverified personal first-person story can never consume all content generation attempts while an independent due company/blog channel is eligible. Never publish social with unverified identity or truth.",
+  "evidence": {
+    "personal_state": "blocked",
+    "personal_reason": "PERSONAL_SOURCE_UNVERIFIED",
+    "personal_priority": 100,
+    "company_priority": 99,
+    "company_post_urn": "urn:li:share:7513894237386719236",
+    "provider_truth_verified": true,
+    "company_publication_date": "2026-10-08",
+    "actual_next_day_effect": "PENDING_DEPLOY_AND_NEXT_NATURAL_RUN"
+  },
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-blocked-channel-fairness-v1.test.mjs"
+    ]
+  },
+  "closure_required": [
+    "Required and CodeQL pass exact HEAD",
+    "protected merge",
+    "production Supabase Edge orchestrator deploy",
+    "natural next-run proof independent channel not starved"
+  ],
+  "next_action": "Merge under protected gates, deploy existing canonical orchestrator, verify natural content loop without parallel publisher."
+}

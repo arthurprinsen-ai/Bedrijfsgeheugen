@@ -1,0 +1,36 @@
+{
+  "fingerprint": "p0-4215-netlify-eu-edge-service-hash-mismatch-20261020",
+  "date": "2026-10-20",
+  "obligation": "p0-4215-portal-service-token-hash-parity-20261020",
+  "root_cause": "Netlify production BG_PORTAL_EU_SERVICE_TOKEN is set for functions/runtime yet its SHA-256 differs from the one TOKEN_HASH accepted by live portal-state-eu Edge v220. Canonical EU URL matches; authenticated Portal release readback HTTP 502.",
+  "intervention": "Accept the existing Netlify production gateway credential by SHA-256 alongside the existing service token hash, preserving older internal clients. Do not store the raw secret, permit new unauthenticated access, or change tenant rules.",
+  "prevention": "Require protected CI, CodeQL, preview, exact Edge deployment, authenticated HTTP 200 for two tenant accounts; retire legacy hash only after client migration.",
+  "compiler": {
+    "failure_class": "PORTAL_SERVICE_TOKEN_HASH_MISMATCH",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "PORTAL_GATEWAY_SERVICE_CREDENTIAL_PARITY",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-portal-service-hash-parity.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-portal-service-hash-parity.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-portal-service-hash-parity.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "production_hash_mismatch": "independently checked against deployed Edge v220, no raw credential persisted",
+    "required_ci": "pending",
+    "live": "not deployed"
+  },
+  "status": "CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215"
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-11-01",
+  "fingerprint": "powerhouse|content-generation|approved-openai-quota-and-governed-fallback-suspended|20261031-v1",
+  "maturity": "OBSERVED",
+  "candidateOnly": true,
+  "owner": "original powerhouse-content-orchestrator and authorized AI provider account billing/governance owner",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "root_cause": "Original approved gpt-5-mini provider exhausted API credits and emitted 429 insufficient_quota repeatedly across three independent generation lanes; original fixed two-hour billing cooldown permitted six same-day futile calls per lane. The approved Composio/Groq fallback is lifecycle SUSPENDED and cannot be silently used.",
+  "observed_evidence": {
+    "date": "2026-11-01",
+    "affected_original_channels": [
+      "linkedin_personal",
+      "linkedin_company",
+      "blog"
+    ],
+    "observed_attempts_per_lane": 6,
+    "provider_response": "429 insufficient_quota",
+    "approved_fallback_lifecycle": "SUSPENDED",
+    "provider_side_effect": false,
+    "original_publication_proven": false
+  },
+  "prevention_rule": "Preserve original exclusive execution. A persistent provider billing failure extends the same original channel's cooldown exponentially (2h,4h,8h,12h cap); it remains actionable and requires legitimate provider credit restoration or independently governance-verified ACTIVE supported fallback. Never auto-pay, bypass approval, reuse duplicates, suppress unrelated channel work or report original provider delivery without exact external ID. All original Pulse/Brain/Portal and email/Mira hard gates continue unchanged.",
+  "fix_candidate": "Original shared content-generation-fairness.mjs and tests; no provider/DB permission update or external sends. Source candidate must be deployed via protected existing Edge lane and verified.",
+  "approval_boundaries": "Only authorized billing/governance owner may change paid provider balance or fallback lifecycle. No automatic restoration of SUSPENDED route and no second publisher.",
+  "compiler": {
+    "failure_class": "PROVIDER_BILLING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 6,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-generation-fairness.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-generation-fairness.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "observed": "Original 1 November Supabase channel_decisions, six provider failures each, 09:39 UTC. No external posts/blog/email proven.",
+    "regression": "Progressive cooldown, capped retries, other-channel fairness, unchanged editorial and exact provider side effects.",
+    "pending": "Required/BRAIN/CodeQL; protected source code merge; original function redeploy/readback; natural authorized generator retry after legitimate quota restoration and seven daily verified deliveries."
+  },
+  "release_status": "CANDIDATE_UNMERGED_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-11-01-p0-api-credit-circuit-and-idempotent-resume.md",
+  "activity_ledger": "docs/development-ledger-events/2026-11-01-p0-api-credit-circuit-and-idempotent-resume.md"
+}

@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|growth-intelligence|atomic-cutover-v6-1|20261027-v1",
+  "compiler": {
+    "failure_class": "NON_ATOMIC_IDEMPOTENT_WRITE",
+    "scope": "GROWTH_LEARNING_STORE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-learning-store-atomic-cutover-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-learning-store-atomic-cutover-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-learning-store-atomic-cutover-v1.test.mjs"
+    ]
+  },
+  "root_cause": "De vorige learning-store las eerst en schreef daarna (get dan put). Twee gelijktijdige schrijvers konden beide slagen, en een door de uitkomst zelf meegegeven providerVerified-vlag gold als betaalbewijs.",
+  "prevention": "Alleen een adapter met insertIfAbsentWithCutoverFence (één transactie met epoch en legacy-sleutel) wordt geaccepteerd, betaalbewijs komt van verifyPayment bij de provider, en een duplicaat vereist een onafhankelijke leesactie met inhoudsvergelijking.",
+  "evidence": {
+    "tests": [
+      "tests/brain-growth-learning-store-atomic-cutover-v1.test.mjs",
+      "tools/growth-intelligence/learning-store.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "inert: geen aanroeper in de repo en geen adapter in de database; geen runtime-effect"
+  },
+  "limitations": [
+    "De tests gebruiken een nagebouwde opslag in het geheugen en bewijzen geen gelijktijdigheid tussen twee databasesessies",
+    "De databasefunctie, de epoch-regel op oude schrijfpaden en de provider-verificatie zijn nog niet gebouwd"
+  ]
+}

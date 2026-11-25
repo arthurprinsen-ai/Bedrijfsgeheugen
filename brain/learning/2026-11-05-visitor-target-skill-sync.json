@@ -1,0 +1,41 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "seo|visitor-target-skill-sync|20261105-v1",
+  "owner": "seo-revenue-growth",
+  "compiler": {
+    "failure_class": "SKILLS_MISSING_VISITOR_TARGET",
+    "scope": "SEO_SKILL_SYNC",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The visitor target (PR #5456) lived only in seo-revenue-growth; the growth-swarm, seo-conversion-orders and linkedin-company-growth skills did not carry it.",
+  "prevention_rule": "Every skill that plans website traffic, SEO or LinkedIn distribution carries the daily visitor target and the LinkedIn UTM rule.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-visitor-growth-target-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-visitor-growth-target-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-visitor-growth-target-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "PR #5456 merged with the target in config/visitor-growth-target.json"
+    ],
+    "current": [
+      "Three further skills updated; tests/brain-visitor-growth-target-20261105.test.mjs still passes"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

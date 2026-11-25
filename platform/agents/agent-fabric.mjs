@@ -50,7 +50,7 @@ function opportunityPriority(signal) {
   return 'P3';
 }
 
-export function createAgentFabric({ registry, learningMemory = createLearningMemory(), eventSink = NOOP_EVENT_SINK, now = () => new Date().toISOString() } = {}) {
+export function createAgentFabric({ registry, learningMemory = createLearningMemory(), eventSink = NOOP_EVENT_SINK, learningApplicationVerifier = null, now = () => new Date().toISOString() } = {}) {
   if (!registry?.route) throw new TypeError('registry is required');
   if (!learningMemory?.findMatches || !learningMemory?.recordVerified) throw new TypeError('learningMemory is invalid');
   if (!eventSink?.append) throw new TypeError('eventSink.append is required');
@@ -58,6 +58,8 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
   const activeByFingerprint = new Map();
   const metadata = new Map();
   const waitingResume = new Map();
+  // Runtime-only single-flight fence; the canonical writer must also persist cross-run idempotency.
+  const learningApplicationClaims = new Set();
   let sequence = 0;
 
   function emit(type, work, info, extra = {}) {
@@ -170,10 +172,53 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
     const matches = learningMemory.findMatches({ tenantId:work.tenantId, domains:info.domains, fingerprint:info.problemClass });
     const consumer = requesterAgentId ?? work.primaryAgentId;
     for (const match of matches) {
-      learningMemory.markReused(match.id, { agentId:consumer });
-      emit('LEARNING_REUSED', work, info, { learningId:match.id, requesterAgentId:consumer });
+      // Querying a lesson is not executing its preventive action.
+      // Never mutate reuseCount or emit LEARNING_REUSED from a read-only query.
+      emit('LEARNING_SUGGESTED', work, info, { learningId:match.id, requesterAgentId:consumer });
     }
     return matches;
+  }
+
+  async function applyLearning({ workId, learningId, requesterAgentId, runId, sourceRevision, actionFingerprint, executionRef } = {}) {
+    const work = workById.get(workId);
+    const info = metadata.get(workId);
+    if (!work || !info) throw new Error('AgentWork not found');
+    const match = learningMemory.findMatches({ tenantId:work.tenantId, domains:info.domains, fingerprint:info.problemClass })
+      .find(item => item.id === learningId);
+    if (!match) throw new Error('LEARNING_APPLICATION_TENANT_OR_FINGERPRINT_MISMATCH');
+    const consumer = requesterAgentId ?? work.primaryAgentId;
+    for (const [name,value] of Object.entries({runId,sourceRevision,actionFingerprint,executionRef,consumer})) {
+      if (typeof value !== 'string' || !value.trim()) throw new Error('LEARNING_APPLICATION_MISSING_' + name.toUpperCase());
+    }
+    if (match.actionFingerprint && match.actionFingerprint !== actionFingerprint) {
+      throw new Error('LEARNING_APPLICATION_ACTION_MISMATCH');
+    }
+    // A caller-supplied verified:true is insufficient. The injected original Brain
+    // verifier must independently retrieve exact-run production evidence.
+    if (typeof learningApplicationVerifier !== 'function') throw new Error('LEARNING_APPLICATION_VERIFIER_REQUIRED');
+    const claimKey = [work.tenantId,workId,learningId,runId].join('|');
+    if (learningApplicationClaims.has(claimKey)) throw new Error('LEARNING_APPLICATION_ALREADY_CLAIMED');
+    learningApplicationClaims.add(claimKey);
+    try {
+      const expected = Object.freeze({tenantId:work.tenantId,workId,learningId,agentId:consumer,
+        runId,sourceRevision,actionFingerprint,executionRef});
+      const proof = await learningApplicationVerifier(expected);
+      if (proof?.verified !== true || proof?.independent !== true || proof?.exactProduction !== true ||
+          proof?.tenantId !== expected.tenantId || proof?.workId !== workId ||
+          proof?.learningId !== learningId || proof?.agentId !== consumer ||
+          proof?.runId !== runId || proof?.sourceRevision !== sourceRevision ||
+          proof?.actionFingerprint !== actionFingerprint || proof?.executionRef !== executionRef ||
+          typeof proof?.evidenceRef !== 'string' || !proof.evidenceRef.trim()) {
+        throw new Error('LEARNING_APPLICATION_INDEPENDENT_PROOF_REQUIRED');
+      }
+      const record = learningMemory.markReused(learningId,{agentId:consumer});
+      emit('LEARNING_APPLICATION_VERIFIED',work,info,{learningId,requesterAgentId:consumer,
+        runId,sourceRevision,executionRef,evidenceRef:proof.evidenceRef});
+      return Object.freeze({applied:true,learningId,runId,evidenceRef:proof.evidenceRef,reuseCount:record.reuseCount});
+    } catch(error) {
+      learningApplicationClaims.delete(claimKey);
+      throw error;
+    }
   }
 
   function recordLearning({ workId, actionFingerprint, evidence, impact, confidence } = {}) {
@@ -200,5 +245,5 @@ export function createAgentFabric({ registry, learningMemory = createLearningMem
   function listWork({ tenantId } = {}) { return Object.freeze([...workById.values()].filter(work => !tenantId || work.tenantId === tenantId)); }
   function getMetadata(id) { return metadata.get(id) ?? null; }
 
-  return Object.freeze({ intake, intakeOpportunity, transition, resume, getWork, listWork, getMetadata, suggestLearning, recordLearning });
+  return Object.freeze({ intake, intakeOpportunity, transition, resume, getWork, listWork, getMetadata, suggestLearning, applyLearning, recordLearning });
 }

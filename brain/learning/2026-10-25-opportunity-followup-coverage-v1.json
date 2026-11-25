@@ -1,0 +1,75 @@
+{
+  "contract": "opportunity-next-action-coverage-v1",
+  "observed_at": "2026-10-25",
+  "state": "CANDIDATE_NOT_LIVE",
+  "owner_issue": "#4198",
+  "gap": {
+    "open_opportunities": 837,
+    "no_next_action_date": 618,
+    "overdue_next_action": 219,
+    "with_future_action": 0,
+    "verified_realized_value_entries": 0,
+    "expired_sales_actions": 6808
+  },
+  "diagnosis": "Canonical opportunities are qualified daily, but many have neither a future scheduled next action nor an accountable durable review; status and action evidence must remain separate.",
+  "canonical_systems": [
+    "powerhouse_opportunities",
+    "revenue_learning_obligations",
+    "brain_records",
+    "growth-intelligence-daily",
+    "powerhouse-commercial-heartbeat"
+  ],
+  "prevention": {
+    "approach": "same existing daily Brain loop, no additional scheduler, no second CRM, no new tables",
+    "fairness": "max 24 canonical internal review obligations per daily invocation, 8 high-priority slots and remaining capacity for evidence research; deterministic identity",
+    "no_contact": "Do not send automated email, LinkedIn DMs or solicit scans from inferred engagement; privacy suppression remains authoritative",
+    "action_truth": "PLANNED_NOT_EXECUTED cannot be counted as delivered, provider-confirmed, customer reply or realized revenue",
+    "update_safety": "PostgREST conditional exact-opportunity key, open status, and original due-date cutoff; perform upserts before guarded patch",
+    "source_quality": "Unverified search/social/news signals produce internal research only; proposals require independent first-party proofs",
+    "completion": "Only exact-head Required, CodeQL, native preview when applicable, protected merge, production cron delivery receipt, and durable readback can prove live."
+  },
+  "measured_effect": "NOT_VERIFIED",
+  "next_proof": [
+    "test new deterministic planner",
+    "test existing daily integration",
+    "review CI with exact SHA",
+    "verify confirmed provider readback",
+    "read back non-PII follow-up due-date coverage from production after release"
+  ],
+  "links": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  ],
+  "failure_class": "OPPORTUNITY_FOLLOWUP_COVERAGE_GAP",
+  "scope": "GENERAL",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-opportunity-followup-coverage-20261025.test.mjs",
+      "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs"
+    ]
+  },
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "commercial|opportunity|no-next-action-date-or-overdue|20261025-v1",
+  "obligation_id": "growth|canonical-opportunity-followup-coverage|20261025-v1",
+  "parent_issue": 4198,
+  "related_pr": 4895,
+  "root_cause": "Canonical opportunities are qualified daily, but many have neither a future scheduled next action nor an accountable durable review; status and action evidence must remain separate.",
+  "fix": "Use canonical daily growth assessment to produce idempotent, bounded internal review obligations and guarded future next_action_at writeback, without granting contact authority.",
+  "tests": [
+    "tests/brain-opportunity-followup-coverage-20261025.test.mjs",
+    "tests/brain-commercial-opportunity-daily-integration-20261025.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "OPPORTUNITY_FOLLOWUP_COVERAGE_GAP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Required and CodeQL on exact head, protected merge and independent production next_action_at and obligation readback are mandatory; planning is not outreach or realized revenue."
+}

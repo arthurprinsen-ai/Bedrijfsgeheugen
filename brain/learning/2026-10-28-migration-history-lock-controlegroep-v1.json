@@ -1,0 +1,23 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "fingerprint": "supabase|migration-history-lock-missing-production-applied|20261028-controlegroep-v1",
+  "obligation_id": "migration-history-lock-controlegroep-20261028",
+  "failure_class": "MIGRATION_HISTORY_LOCK_DRIFT",
+  "root_cause": "Three migrations applied in the production registry (20261027195341, 20261028090000, 20261028230000) were not recorded in supabase/migration-history.lock.json, so the local-only executable migration check failed on main.",
+  "observed_evidence": {
+    "actual_sources": ["supabase_migrations.schema_migrations on production project, read-only query, 2026-10-28: all three versions present with matching names"]
+  },
+  "fix": "Lock entries added for the three production-applied versions. No SQL or runtime change.",
+  "prevention_rule": "Every executable migration applied in production must be recorded in the migration-history lock in the same change that introduces it.",
+  "tests": ["tests/brain-migration-history-lock-controlegroep-20261028.test.mjs", "tests/supabase-migration-history-integrity.test.mjs"],
+  "compiler": {"failure_class": "MIGRATION_HISTORY_LOCK_DRIFT", "scope": "SUPABASE_MIGRATIONS", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-migration-history-lock-controlegroep-20261028.test.mjs"],
+    "shadow": ["tests/brain-migration-history-lock-controlegroep-20261028.test.mjs"],
+    "canary": ["tests/brain-migration-history-lock-controlegroep-20261028.test.mjs"]
+  },
+  "terminal_rule": "Terminal once the integrity test and the controlegroep regression test are green in CI."
+}

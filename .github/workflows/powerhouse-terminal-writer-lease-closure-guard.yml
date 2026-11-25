@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - name: Reopen unmerged terminal-delivery lease
+      - name: Reopen unmerged active writer lease
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
@@ -23,12 +23,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if ! grep -qx 'Writer-Lease-State: TERMINAL_DELIVERY' <<<"$PR_BODY"; then
-            echo "No active terminal writer lease; closure is allowed."
+          if ! grep -Eq '^Writer-Lease-State: (TERMINAL_DELIVERY|MAIN_SYNC)$' <<<"$PR_BODY"; then
+            echo "No active terminal/main-sync writer lease; closure is allowed."
             exit 0
           fi
-          if ! grep -qx 'Writer-Lease-Owner: powerhouse-terminal-delivery' <<<"$PR_BODY"; then
-            echo "::error::Terminal lease has no canonical owner; fail closed."
+          lease_owner="$(sed -n 's/^Writer-Lease-Owner: //p' <<<"$PR_BODY" | tail -n1)"
+          lease_head="$(sed -n 's/^Writer-Lease-Head: //p' <<<"$PR_BODY" | tail -n1)"
+          lease_epoch="$(sed -n 's/^Writer-Lease-Main-Epoch: //p' <<<"$PR_BODY" | tail -n1)"
+          lease_obligation="$(sed -n 's/^Writer-Lease-Obligation: //p' <<<"$PR_BODY" | tail -n1)"
+          if [ -z "$lease_owner" ] || ! [[ "$lease_head" =~ ^[0-9a-f]{40}$ ]] || ! [[ "$lease_epoch" =~ ^[0-9a-f]{40}$ ]] || [ -z "$lease_obligation" ]; then
+            echo "::error::Terminal lease metadata is incomplete; fail closed."
             exit 1
           fi
           repo="$GITHUB_REPOSITORY"
@@ -58,4 +62,4 @@ jobs:
           gh api --method PATCH "repos/$repo/pulls/$PR_NUMBER" -f state=open >/tmp/reopen.json
           state="$(gh api "repos/$repo/pulls/$PR_NUMBER" --jq '.state')"
           test "$state" = open
-          echo "::notice::Reopened PR#$PR_NUMBER because an active TERMINAL_DELIVERY lease cannot be closed before merge or explicit release."
+          echo "::notice::Reopened PR#$PR_NUMBER because an active terminal/main-sync lease cannot be closed before merge or explicit release."

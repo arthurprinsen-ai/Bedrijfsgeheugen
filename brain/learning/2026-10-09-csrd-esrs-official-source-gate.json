@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|portal|csrd-esrs-current-eu-law-source-gate-v1",
+  "obligationId": "p0-4215-eu-csrd-esrs-official-reference-gate-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Official EUR-Lex legal acts + protected GitHub and real tenant production readback",
+  "root_causes": [
+    "Existing portal regulatory review exposes legalStatus REVIEW_REQUIRED but no explicit versioned official Directive (EU) 2026/470 + revised ESRS (EU) 2026/1563 source gate.",
+    "P0 #4215 production has no independently evidenced two real authenticated customer tenant write→ONE BRAIN→impact readback; generic site browser runs do not prove tenant-specific CSRD scope."
+  ],
+  "prevention": [
+    "Screen the new >1000 average employees and >EUR 450m turnover conjunctive rule only for financial years beginning in or after 2027; all transitional periods remain review-required.",
+    "Preserve official EU act identifiers and URLs in existing portal regulatory impact trace; require national transposition, legal human review, actual business data and materiality before legal applicability.",
+    "No new scheduler, Brain, portal-state authority or fake customer tests. Parent P0 remains open."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-csrd-official-legal-source-v1.test.mjs",
+    "portal-v2/tests/regulatory-context-trace.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-csrd-official-legal-source-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-csrd-official-legal-source-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-csrd-official-legal-source-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CSRD_OFFICIAL_SOURCE_APPLICABILITY_UNGROUNDED",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected exact-head Required and CodeQL",
+    "Netlify exact-main production readback after merge",
+    "actual authenticated two tenant BusinessInput→ONE BRAIN→roadmap readback",
+    "complete form inventory and outbox/revocation 200-field/1000-signal tests",
+    "authoritative legal applicability for each customer incl national implementation"
+  ]
+}

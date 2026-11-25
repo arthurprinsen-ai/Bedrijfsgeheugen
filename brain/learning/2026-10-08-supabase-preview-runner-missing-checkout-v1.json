@@ -1,0 +1,35 @@
+{
+  "version": "powerhouse-supabase-preview-runner-checkout-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "github|required-test|supabase-preview|module-not-found|missing-checkout|v1",
+  "root_cause": "PR #4118 native Supabase Preview succeeded on exact HEAD 0cc7bef79ad615414fe8187b3786a5922c580f65, but Required's supabase_preview job invoked node tools/ci/supabase-preview-diagnosis.mjs on an empty runner without actions/checkout. Node returned MODULE_NOT_FOUND and canonical test falsely represented a provider gate failure.",
+  "intervention": "Add actions/checkout@v5 in the existing supabase_preview job with ref needs.preflight.outputs.change_head_sha and persist-credentials false, before executing the sole provider classifier. Add regression test of checkout order and SHA wiring.",
+  "prevention": "No local repository code execution in a fresh GitHub runner before exact-head checkout. Keep Supabase-owned provider outcome, Required, CodeQL, and protected merge enforced.",
+  "compiler": {
+    "failure_class": "RUNNER_WORKTREE_MISSING",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_log": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37751320123/job/113225405716",
+    "supabase_native_outcome": "success on PR #4118 exact HEAD 0cc7bef79ad615414fe8187b3786a5922c580f65",
+    "github_required_failure": "Error: Cannot find module tools/ci/supabase-preview-diagnosis.mjs"
+  },
+  "closure_required": [
+    "Required test + CodeQL success on exact HEAD",
+    "Protected auto-merge into main",
+    "Main source readback",
+    "PR #4118 rebase/sync and native provider proof, then protected merge"
+  ],
+  "next_action": "Do not claim release green until main readback and downstream PR #4118 checks complete."
+}

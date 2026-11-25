@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-30",
+  "fingerprint": "powerhouse|cro|growth-brain-queue-delivery-disabled-and-unproven-conversion|20261030-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "owner": "existing Powerhouse Growth/SEO + commercial Heartbeat + ONE BRAIN",
+  "source_snapshot": {
+    "read_at_utc": "2026-10-30T07:41:06Z",
+    "growth_queue_queued": 199325,
+    "growth_queue_delivery_disabled": 189878,
+    "growth_queue_robot_blocked": 26356,
+    "conversion_proof": "no linked qualified lead or verified paid order in 30d",
+    "experiment": "1 treatment, 0 matured control; minimum 20 per arm"
+  },
+  "root_cause": "Growth DataHub persists source evidence while legacy BG211 delivery remains disabled; the canonical commercial decision packet does not explicitly reconcile exact event, Brain, experiment, lead, payment and applied-learning readbacks. Real buyer and payment outcomes are absent.",
+  "change": "Extend existing heartbeatGrowthTick with deterministic, fail-closed seven-gate CRO commercial proof and one advisory existing-owner repair proposal; do not auto-schedule, send or promote.",
+  "test": "tools/growth-intelligence/heartbeat-adapter.test.mjs",
+  "proof_requirements": [
+    "provider source event ACK and readback",
+    "actual CTA observed",
+    "canonical Brain delivery record",
+    "treatment and holdout with pre-treatment assignments and matured outcome",
+    "independently verified qualified buyer",
+    "independently verified payment provider ID",
+    "ONE BRAIN applied learning and matching attribution lineage"
+  ],
+  "explicitly_not_proven": [
+    "deployed source",
+    "next natural Heartbeat runtime application",
+    "actual consented CTA or CRO treatment exposure",
+    "qualified customer",
+    "paid order",
+    "revenue uplift",
+    "closed-loop business result"
+  ],
+  "safety": "No legacy BG211 replay, additional scheduler, parallel Brain or CRM, privacy bypass, synthetic traffic, changed OAuth status or automatic experiment promotion.",
+  "next_step": "Existing canonical Brain/Heartbeat owner supplies trusted aggregated readbacks to croCommercialProof and independently confirms actual action/outcome feedback; protected Required+BRAIN+CodeQL, merge and live provider check required.",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-commercial-proof-closure-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-commercial-proof-closure-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-cro-commercial-proof-closure-v1.test.mjs",
+    "tools/growth-intelligence/heartbeat-adapter.test.mjs"
+  ],
+  "production_proven": false,
+  "prevention_rule": "Never treat BG211 delivery-disabled, queued Growth events, browser HTTP ACK, one treatment arm, lead intent or estimated sales outcome as proof of a closed CRO/commercial learning loop; independently verify every gate and subsequent natural Heartbeat application."
+}

@@ -1,0 +1,3 @@
+# Production readback — deployment applicability summary
+
+The existing `production-release-readback.yml` already emits `deployment_status` but did not expose this distinction in the GitHub Actions run summary. Add a human-readable summary containing the classifier result, reason and `deploymentRequired` flag, and explicitly state that applicability is not runtime proof. No new workflow, scheduler, deployment or website change. Governance-only pushes remain ignored by the existing workflow filter. This is **GitHub Actions visibility**, not a customer-portal dashboard change. Required and CodeQL must pass before protected merge.

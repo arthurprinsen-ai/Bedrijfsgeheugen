@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|portal|system-map-app-entry-hash-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "SOURCE_CONTRACT_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "owner": "Original ONE BRAIN backend verifier / existing Portal and Netlify production truth owner",
+  "root_cause": "Canonical System Map generator wrote a deterministic explanationInventory digest but portal-v2/index.html could retain an old app.js?bg_explain hash. Existing integrity preflight compared only the generated System Map tracked path, not the immutable HTML entry. The same source pair repeatedly failed original BRAIN #2917/#3162 despite independent source merge.",
+  "prevention_rule": "The original protected generator --write must always use one source digest and stamp both canonical tracked System Map and portal app entry, with exactly one module entry. Validation with no --write must fail closed on either stale source. Original release integrity asserts exact SHA, two-pass deterministic generation, both tracked files, equal embedded digest and zero dirty git diff on both. Historical, shadow and canary regression must pass; no extra writer, stale-cache release, test skip, fake provider receipt or tenant bypass. After merge independently verify exact production Netlify commit, logged-in readback, current original full BRAIN=0, and recurrence in next run before PROVEN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-entry-system-map-atomic-stamp-20261102.test.mjs",
+      "tests/brain-portal-control-plane-bootstrap-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-entry-system-map-atomic-stamp-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-entry-system-map-atomic-stamp-20261102.test.mjs"
+    ]
+  },
+  "evidence": {
+    "initial_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41428302145",
+    "reported_failures": [
+      2917,
+      3162
+    ],
+    "source_owner_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5275",
+    "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+    "status": "CANDIDATE_NOT_PROVEN",
+    "merge_proven": false,
+    "production_readback_proven": false,
+    "no_recurrence_proven": false,
+    "commercial_result_proven": false
+  }
+}

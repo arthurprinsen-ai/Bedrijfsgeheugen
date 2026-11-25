@@ -1,0 +1,67 @@
+{
+  "date": "2026-11-02",
+  "schema": "brain-learning-observation-v1",
+  "obligation_id": "original-weekblog-ubuntu26-drop-sudo-recovery-20261102-v1",
+  "fingerprint": "powerhouse|blog|codex-action-ubuntu26-dbus-sandbox|20261102-v1",
+  "failure_class": "OPENAI_CODEX_ACTION_RUNNER_DBUS_PRIVILEGE_WITHDRAWAL",
+  "status": "SOURCE_CANDIDATE",
+  "state": "EVIDENCE_DUE",
+  "original_owners": [
+    "existing .github/workflows/weekblog.yml",
+    "existing .github/workflows/blog-bijwerken.yml",
+    "original ONE BRAIN/CMS editorial owner"
+  ],
+  "observed": {
+    "workflow_run": 41451022810,
+    "job_id": 125295966048,
+    "step": "Artikel schrijven",
+    "runner": "ubuntu-26.04.1",
+    "action": "openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675",
+    "error": "Could not restrict access to /run/dbus/system_bus_socket",
+    "article_written": false,
+    "external_failure_source": "https://github.com/openai/codex-action/issues/188"
+  },
+  "root_cause": "Floating ubuntu-latest picked GitHub-hosted Ubuntu 26.04.1, on which the pinned Codex-action drop-sudo cannot restrict root-owned system D-Bus socket access; the content-generation step failed before any artifact. This is unrelated to whether OpenAI API credits were available.",
+  "intervention": "Pin the original two authoring jobs to GitHub-hosted ubuntu-24.04; retain action digest, drop-sudo revocation, :workspace, existing editorial checks, shared writer and candidate-PR-only publication.",
+  "prevention_rule": "Every original Codex-enabled blog authoring workflow MUST run on Ubuntu 24.04 while upstream 26.04 drop-sudo socket limitation persists; NEVER switch to unsafe or disable provider privileges, alter secure writer topology, skip review or treat a ready draft as approved/published.",
+  "regressions": [
+    "tests/brain-blog-codex-hosted-sandbox-20261102.test.mjs",
+    "tests/brain-native-openai-blog-provider-20261019.test.mjs",
+    "tests/repo-writeback-safety.test.mjs"
+  ],
+  "independent_verification_due": [
+    "canonical learning gate runs historical replay, shadow and canary on original safe Codex runner contract",
+    "protected exact-head Required and CodeQL",
+    "original BRAIN",
+    "protected merge, checkout and production release evidence",
+    "next actual original Weekblog run shows drop-sudo setup + article generation and PR candidate, approved CMS and live blog provider/browser proof"
+  ],
+  "production_readback": {
+    "verified": false
+  },
+  "commercial_lift_verified": false,
+  "compiler": {
+    "failure_class": "OPENAI_CODEX_ACTION_RUNNER_DBUS_PRIVILEGE_WITHDRAWAL",
+    "scope": "BLOG_AUTHORING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-codex-hosted-sandbox-20261102.test.mjs"
+    ],
+    "additional_regression_tests": [
+      "tests/brain-native-openai-blog-provider-20261019.test.mjs",
+      "tests/repo-writeback-safety.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-codex-hosted-sandbox-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-codex-hosted-sandbox-20261102.test.mjs"
+    ]
+  },
+  "humanDocs": "docs/changes/2026-11-02-weekblog-codex-ubuntu-2604-sandbox.md",
+  "telemetry_boundary": "A protected workflow runner correction does not approve content or prove delivery. No direct publication, new agent/scheduler, automatic CMS consent or revenue."
+}

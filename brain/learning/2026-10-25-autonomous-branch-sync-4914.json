@@ -1,0 +1,20 @@
+{
+  "fingerprint": "ci|autonomous-branch-sync|admission-and-drift|20261025-v1",
+  "compiler": {
+    "failure_class": "CONTROL_PLANE_ADMISSION_AND_BRANCH_DRIFT",
+    "scope": "CI"
+  },
+  "root_cause": "Open PR branch synchronization was manual and initial PR omitted mandatory machine metadata and material writeback closure.",
+  "prevention": "Use safe compare-and-swap native branch update on main push; maintain machine metadata, semantic learning, activity ledger and human docs per material change.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-branch-sync-4914.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": "Dedicated canonical test tests/brain-autonomous-branch-sync-4914.test.mjs; exact-head Required pending",
+    "production_readback": "NOT_VERIFIED",
+    "merge": "NOT_MERGED"
+  },
+  "regression_contract": "Required and CodeQL must pass on exact head; verify update-branch through live run and readback after protected merge"
+}

@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse|owner-value-evidence|avoid-optimistic-and-double-counted-outcomes|20261015",
+  "compiler": {
+    "failure_class": "VERIFIED_VALUE_UI_PROOF_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The new owner portal counted verified executive outcomes but did not expose source-pinned realized EUR and recovered hours from the canonical Brain verified-value projection. A naive UI could double-count reused evidence or treat approval, forecast or expected economics as realized business value.",
+  "prevention_rule": "Derive displayed realized value only from the tenant-bound verifiedValues server projection that already requires execution, independent verification, realized flag and evidence IDs. Enforce client tenant exact match; de-duplicate unique id and reused proof per unit; keep EUR/time separated, reject unsupported units, omit unsupported date-window claims and fail closed on missing projection.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "new_tests": [
+      "tests/portal-v2-owner-verified-value.test.mjs",
+      "tests/portal-v2-owner-operating-system.test.mjs"
+    ],
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4413",
+    "production_readback": "NOT_YET_PROVEN"
+  },
+  "outcome": {
+    "implementation": "PROTECTED_PR_CANDIDATE",
+    "external_send": "NOT_PERFORMED",
+    "financial_results": "NOT_INFERRED"
+  }
+}

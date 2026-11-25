@@ -1,0 +1,40 @@
+{
+  "fingerprint": "site|copy|klantcase-placeholders|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|copy|klantcase-placeholders|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "PUBLIC_PLACEHOLDER_PRESENTED_AS_CUSTOMER_PROOF",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "De live homepage toont onder 'Klantbewijs' vier kaarten met vijf sterren, een verzonnen quote en de tekst 'GERESERVEERD VOOR KLANTCASE'. Voor een bezoeker oogt dat als nepbewijs en ondermijnt het vertrouwen in de rest van de pagina.",
+  "correction": "Idempotente buildstap na lokalisatie verwijdert de reviewsectie alleen als elke kaart een gereserveerde placeholder is. Zodra er één echte review staat, blijft de sectie ongemoeid. NL en EN.",
+  "prevention": [
+    "Geen sterren of quotes zonder echte klant, naam en meetbaar resultaat op publieke pagina's.",
+    "Placeholders voor toekomstig bewijs horen niet in de publieke HTML."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-site-shell-klantcase-placeholders-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-site-shell-klantcase-placeholders-20261118.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-site-shell-klantcase-placeholders-20261118.test.mjs",
+      "tests/brain-quality-intelligence-v2.test.mjs"
+    ],
+    "source": [
+      "tools/site-shell/remove-klantcase-placeholders.mjs",
+      "tools/ci/netlify-build-entry.mjs"
+    ],
+    "outcome": "Lokaal: 9 van 9 tests groen. Live-readback na merge volgt."
+  }
+}

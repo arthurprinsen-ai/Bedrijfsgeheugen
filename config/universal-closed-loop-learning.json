@@ -2,12 +2,30 @@
   "version": "BRAIN-CLOSED-LOOP-v1",
   "scope": "estate-wide",
   "canonical": {
-    "error_ingress": {"scenario_id": 7037844, "name": "BG 94 - Universele fout ingress en learning"},
-    "inventory": {"scenario_id": 7132648, "name": "BG 159 - Powerhouse Cost Snapshot Collector v1"},
-    "learning_router": {"scenario_id": 7136176, "name": "BG 168 - Multi-Agent Outcome & Learning Router v1"},
-    "learning_writer": {"scenario_id": 7135971, "name": "BG 166 - Error & Learning Ledger Writer v1.2 dedupe + coalesce"},
-    "shared_context": {"scenario_id": 7136045, "name": "BG 167"},
-    "production_authority": {"scenario_id": 7137190, "name": "BG 169 - Production Promotion Controller"}
+    "error_ingress": {
+      "scenario_id": 7037844,
+      "name": "BG 94 - Universele fout ingress en learning"
+    },
+    "inventory": {
+      "scenario_id": 7132648,
+      "name": "BG 159 - Powerhouse Cost Snapshot Collector v1"
+    },
+    "learning_router": {
+      "scenario_id": 7136176,
+      "name": "BG 168 - Multi-Agent Outcome & Learning Router v1"
+    },
+    "learning_writer": {
+      "scenario_id": 7135971,
+      "name": "BG 166 - Error & Learning Ledger Writer v1.2 dedupe + coalesce"
+    },
+    "shared_context": {
+      "scenario_id": 7136045,
+      "name": "BG 167"
+    },
+    "production_authority": {
+      "scenario_id": 7137190,
+      "name": "BG 169 - Production Promotion Controller"
+    }
   },
   "required_lifecycle": [
     "detect",
@@ -27,10 +45,39 @@
     "prevention_reuse"
   ],
   "required_learning_fields": [
-    "fingerprint","event_kind","stage","component_type","component_id","owner","reason","rootCause","failedApproach","fix","preventionRule","regressionTest","evidence","status","first_seen","last_seen","last_changed","evidence_hash","retry_budget","required_intervention","next_escalation_at"
+    "fingerprint",
+    "event_kind",
+    "stage",
+    "component_type",
+    "component_id",
+    "owner",
+    "reason",
+    "rootCause",
+    "failedApproach",
+    "fix",
+    "preventionRule",
+    "regressionTest",
+    "evidence",
+    "status",
+    "first_seen",
+    "last_seen",
+    "last_changed",
+    "evidence_hash",
+    "retry_budget",
+    "required_intervention",
+    "next_escalation_at"
   ],
   "material_event_kinds": [
-    "ERROR","RECOVERY","IMPROVEMENT","OPPORTUNITY","EXPERIMENT_RESULT","MISSED_OBLIGATION","AUTO_REPAIR","PRODUCTION_PROMOTION","PRODUCTION_ROLLBACK","CONTRACT_CHANGE"
+    "ERROR",
+    "RECOVERY",
+    "IMPROVEMENT",
+    "OPPORTUNITY",
+    "EXPERIMENT_RESULT",
+    "MISSED_OBLIGATION",
+    "AUTO_REPAIR",
+    "PRODUCTION_PROMOTION",
+    "PRODUCTION_ROLLBACK",
+    "CONTRACT_CHANGE"
   ],
   "policies": {
     "read_shared_context_before_material_work": true,
@@ -43,7 +90,11 @@
     "new_components_inherit_contract": true,
     "make_inventory_auto_discovers_components": true,
     "event_driven_preferred": true,
-    "deep_inspection_only_on_changed_or_error_evidence": true
+    "deep_inspection_only_on_changed_or_error_evidence": true,
+    "agent_preflight_reuses_canonical_incident_memory": true,
+    "material_errors_incidents_and_improvements_write_back": true,
+    "daily_verified_improvement_review_required": true,
+    "portal_relevance_uses_existing_tenant_learning": true
   },
   "cost_guards": {
     "fleet_wide_per_scenario_polling_for_errors": false,
@@ -68,5 +119,39 @@
     "destructive_irreversible_data",
     "paid_resource_increase",
     "legal_financial_commitment"
-  ]
+  ],
+  "portal_relevance": {
+    "page_id": "learning-writeback",
+    "page_title": "Relevantie & verbeteringen",
+    "authenticated_tenant_projection": "portal.runtime.learning.items",
+    "projection_authority": "brain-operating-loop",
+    "verified_source_status": "PROVEN",
+    "unknown_or_unverified_label": "Nog te verifiëren",
+    "no_parallel_learning_store": true,
+    "never_claim_proven_without_runtime_evidence": true
+  },
+  "daily_improvement": {
+    "existing_owner": "Powerhouse Daily Self Evolution",
+    "schedule_reuse_required": true,
+    "optimize_for": [
+      "verified_repeat_incidents",
+      "time_to_recovery",
+      "reopened_failures",
+      "evidence_coverage",
+      "regression_coverage",
+      "lead_time",
+      "customer_value"
+    ],
+    "promotion_requires": [
+      "baseline",
+      "candidate",
+      "representative_eval",
+      "regression",
+      "security",
+      "protected_main",
+      "production_readback",
+      "canonical_learning_writeback"
+    ],
+    "no_unverified_green": true
+  }
 }

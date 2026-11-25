@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|scan-edge|production-attestation-declaration|v1",
+  "date": "2026-10-09",
+  "obligation_id": "scan-edge-prod-config-parity-20261009-v1",
+  "source": "Supabase Edge Production Authority post-merge workflow for PR #4286",
+  "root_cause": "Existing live and GitHub-managed powerhouse-scan-ingest Edge Function had no canonical declaration in supabase/config.toml. Production attestation refused a changed, undeclared Edge source.",
+  "change": "Register only existing powerhouse-scan-ingest with enabled=true, verify_jwt=false, exact index.ts entrypoint; preserve internal SHA-256 x-bg-service-token auth and privileged Netlify proxy.",
+  "prevention": {
+    "rule": "Production-attested Edge function sources must be declared in Supabase config with explicit JWT/custom authentication contract",
+    "regression_contract": "tests/brain-scan-edge-production-attestation-v1.test.mjs"
+  },
+  "evidence": {
+    "failed_provider_attestation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37977917429",
+    "observed_live_edge": "ACTIVE v12, Bedrijfslek supported, verify_jwt=false",
+    "observed_db_trigger": "Canonical scan trigger permits Frisse Blik, Workshop and Bedrijfslek",
+    "regression_test": "tests/brain-scan-edge-production-attestation-v1.test.mjs",
+    "provider_parity": "PENDING_NEW_PROTECTED_MAIN_RELEASE"
+  },
+  "compiler": {
+    "failure_class": "CONFIG_DRIFT",
+    "scope": "APPLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-scan-edge-production-attestation-v1.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_PENDING_PRODUCTION_ATTESTATION"
+}

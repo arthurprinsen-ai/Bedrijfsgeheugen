@@ -178,6 +178,70 @@
       "tests": [
         "tests/delivery-test-coverage-guard.test.mjs"
       ]
+    },
+    {
+      "id": "predictive-openai-public-market",
+      "paths": [
+        "supabase/functions/powerhouse-predictive-engine/",
+        "tests/brain-predictive-openai-20261019.test.mjs",
+        "supabase/functions/powerhouse-forecast-calibrator/",
+        "tests/brain-predictive-openai-calibration-20261019.test.mjs"
+      ],
+      "tests": [
+        "tests/brain-predictive-openai-20261019.test.mjs",
+        "tests/brain-predictive-bounded-tool-context-v1.test.mjs",
+        "tests/brain-predictive-postgrest-batching-v1.test.mjs",
+        "tests/brain-predictive-anthropic-deadline-v1.test.mjs",
+        "tests/brain-predictive-approved-fallback-v1.test.mjs",
+        "tests/brain-predictive-openai-calibration-20261019.test.mjs",
+        "tests/supabase-edge-runtime-scope-v1.test.mjs"
+      ]
+    },
+    {
+      "id": "terminalizer-adaptive-routing",
+      "paths": [
+        "brain/contracts/production-readback-v1.json",
+        "tests/brain-terminalizer-adaptive-routing-20261019.test.mjs"
+      ],
+      "tests": [
+        "tests/brain-terminalizer-adaptive-routing-20261019.test.mjs",
+        "tests/brain-terminalizer-immutable-pr-replay-v1.test.mjs"
+      ]
+    },
+    {
+      "id": "predictive-uncertainty-retention",
+      "paths": [
+        "supabase/migrations/20261019200528_predictive_uncertain_attempt_retention_v1.sql",
+        "tests/supabase/predictive-uncertainty-retention-v1.sql",
+        "tests/brain-predictive-uncertainty-retention-20261019.test.mjs"
+      ],
+      "tests": [
+        "tests/brain-predictive-uncertainty-retention-20261019.test.mjs"
+      ]
+    },
+    {
+      "id": "predictive-migration-identity-parity",
+      "paths": [
+        "supabase/migrations/20261019203052_growth_source_daily_measurement.sql",
+        "supabase/migrations/20261019223000_growth_source_daily_measurement.sql",
+        "tests/brain-predictive-migration-history-20261019.test.mjs"
+      ],
+      "tests": [
+        "tests/brain-predictive-migration-history-20261019.test.mjs"
+      ]
+    },
+    {
+      "id": "predictive-uncertainty-ack",
+      "paths": [
+        "supabase/functions/powerhouse-forecast-calibrator/index.ts",
+        "supabase/functions/powerhouse-forecast-calibrator/persist-uncertainty.mjs",
+        "supabase/migrations/20261019210359_predictive_uncertainty_persistence_ack.sql",
+        "tests/brain-predictive-uncertainty-persistence-20261019.test.mjs"
+      ],
+      "tests": [
+        "tests/brain-predictive-uncertainty-persistence-20261019.test.mjs",
+        "tests/brain-predictive-uncertainty-retention-20261019.test.mjs"
+      ]
     }
   ],
   "alwaysTests": [

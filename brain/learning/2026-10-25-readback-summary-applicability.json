@@ -1,0 +1,20 @@
+{
+  "fingerprint": "delivery|netlify|readback-summary-visibility|20261025-v1",
+  "compiler": {
+    "failure_class": "DEPLOYMENT_APPLICABILITY_VISIBILITY_GAP",
+    "scope": "CI"
+  },
+  "root_cause": "Existing readback classified skipped builds but did not expose the result in the workflow run summary.",
+  "prevention": "Report applicability in the existing GitHub Actions job summary, keeping production proof independent.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-readback-summary-deployment-applicability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": "Candidate regression added; exact-head Required/CodeQL pending",
+    "merge": "NOT_MERGED",
+    "production_readback": "NOT_PROVEN"
+  },
+  "regression_contract": "Governance-only changes may be NOT_REQUIRED, but no job summary status can imply live runtime proof."
+}

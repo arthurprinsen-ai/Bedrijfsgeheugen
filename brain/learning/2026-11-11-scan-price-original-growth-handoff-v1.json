@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "date": "2026-11-11",
+  "fingerprint": "portal|scan-pricing|growth-event-silent-non-ack-and-en-funnel-gap|20261111-v1",
+  "type": "ORIGINAL_SCAN_PRICING_GROWTH_HANDOFF_TRUTH",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Original Supabase powerhouse-scan-ingest + original SEO/CRO measurement and ONE BRAIN",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "scans": 62,
+    "powerhouse_runtime_linked_scans": 62,
+    "missing_growth_id_scans": 4,
+    "recent_14d_scans": 13,
+    "recent_14d_missing_growth": 0,
+    "provider_paid_outcome_claimed": 0
+  },
+  "root_cause": {
+    "observed": "Terminal commercial growth_events storage error ignored by canonical scan endpoint; EN CTA route/scan-start recognition incomplete in original tracking script",
+    "unknowns": [
+      "external customer provider writeback",
+      "original two genuine tenant full runs",
+      "actual Heartbeat next-cycle learned action"
+    ]
+  },
+  "fix": {
+    "scope": "Existing scan Edge consumer readback + truthful scan error, original NL/EN CRO CTA instrumentation and original agent/skill governance",
+    "no_second_store": true,
+    "no_second_worker": true,
+    "no_new_scheduler": true,
+    "no_provider_send": true,
+    "tenant_claim_requires_auth": true
+  },
+  "compiler": {
+    "failure_class": "SCAN_GROWTH_MISSING_RECEIPT_AND_EN_FUNNEL_GAP",
+    "scope": "PORTAL_WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-scan-price-portal-one-loop-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-scan-price-portal-one-loop-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-scan-price-portal-one-loop-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "REQUIRE_SCAN_AND_RUNTIME_AND_GROWTH_DB_ACK",
+    "NO_FAKE_ORGANIC_ACQUISITION",
+    "ONE_ORIGINAL_NL_EN_CRO_EMITTER",
+    "DO_NOT_CROSS_HOST_CREATE_SCAN_START",
+    "NO_SCAN_AS_AUTHORIZED_TENANT_WITHOUT_CLAIM",
+    "REQUIRE_EDGE_DEPLOYED_READBACK"
+  ],
+  "evidence": {
+    "required": "Protected Required/BRAIN/CodeQL; exact Netlify READY and original Edge ACTIVE source; independent scan and CRO provider observations",
+    "limitations": "Unit fixtures are not actual new scan provider readback; no causal uplift or next-cycle learning proven",
+    "historical_source_repair": {
+      "executed": true,
+      "source": "original public.scan_inzendingen with independently present runtime event",
+      "event_store": "public.growth_events",
+      "inserted_rows": 4,
+      "confirmed_matching_rows": 62,
+      "scans_total": 62,
+      "missing_after": 0,
+      "occurred_at": "original August 2026 scan timestamp",
+      "attribution": "unattributed",
+      "side_effects": "No provider send or new customer identity",
+      "release_scope": "Historical scoped DB repair only; future code still protected candidate"
+    }
+  }
+}

@@ -41,7 +41,23 @@ test('AI Modelwijzer keeps goal, cost and sovereignty contracts',()=>{
   }
 });
 
-test('catalog evidence is freshness bounded',()=>{
-  const ageDays=(Date.now()-new Date(catalog.verified_at+'T00:00:00Z'))/86400000;
-  assert.ok(ageDays<=14,'catalog must be refreshed within 14 days');
+test('supplier evidence is freshness bounded for automatic selection, not research-only listings',()=>{
+  // 2026-10-15 product decision: historical third-party research may remain stale
+  // only when ineligible for recommendation. Do not refresh source dates or
+  // approve customer/provider controls without independent evidence.
+  const now=Date.now();
+  for(const m of catalog.models){
+    const checked=new Date(String(m.verification_evidence?.checked_on||'')+'T00:00:00Z');
+    assert.ok(Number.isFinite(checked.getTime()),`${m.id}: verification_evidence.checked_on required`);
+    const ageDays=(now-checked.getTime())/86400000;
+    const autoEligible=m.auto_recommendation_eligible===true||
+      m.supplier_audit?.automatic_recommendation_eligible===true;
+    if(autoEligible) {
+      assert.ok(ageDays>=0&&ageDays<=14,`${m.id}: auto-recommendation needs current supplier evidence within 14 days`);
+      assert.equal(m.supplier_audit?.automatic_recommendation_eligible,true,`${m.id}: independent approval required`);
+    }
+    if(ageDays>14) {
+      assert.equal(autoEligible,false,`${m.id}: stale catalog entry must not be auto-recommended`);
+    }
+  }
 });

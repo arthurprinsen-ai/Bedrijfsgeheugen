@@ -1,0 +1,69 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "fingerprint": "seo|original-money-page-execution-handoff-not-silent|20261110-v1",
+  "parent_issue": 4198,
+  "owner": "existing powerhouse-seo-opportunity-resolver-daily + existing Powerhouse SEO Order Engine GitHub/Netlify website author",
+  "compiler": {
+    "failure_class": "SEO_MONEY_PAGE_FORECAST_WITHOUT_EXECUTABLE_OWNER_HANDOFF",
+    "scope": "SEO",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": false
+  },
+  "root_cause": "Daily SEO resolver authenticates GSC/DataForSEO/forecasts, ranks top commercial queries and persists forecasts, but writes powerhouse_content_recommendations only for CREATE_INTENT_GAP_CONTENT. On 2026-11-10 top 5 were UPDATE_MONEY_PAGE across two existing canonical pages, resulting in recommendations=0 and no durable original execution handoff.",
+  "observed": {
+    "source_health_utc": "2026-11-10T05:02:01.416Z",
+    "keywords_read": 95,
+    "gsc_queries": 29,
+    "top_actions": 5,
+    "top_forecasts_written": 5,
+    "existing_money_owner_count": 2,
+    "money_owner_handoffs_written_before": 0,
+    "blog_recommendations": 0,
+    "canonical_owners": [
+      "https://www.bedrijfsgeheugen.nl/exact-online-koppeling",
+      "https://www.bedrijfsgeheugen.nl/twinfield-koppeling"
+    ],
+    "twinfield_gsc_impressions_30d": "Observed low; positional evidence around 90+, zero observed clicks for mapped query variants",
+    "original_published_blogs_20261106_to_20261108": 3,
+    "measured_blog_receipts": 0,
+    "learned_blog_receipts": 0,
+    "total_commercial_order_revenue_proof": false,
+    "staged_website_pr_5592_exact_live_commit": "fa6c1424061ce2d106c291a081c83f48f689c5f4",
+    "staged_website_only_regression_replay": "tests/brain-seo-twinfield-canonical-source-20261110.test.mjs"
+  },
+  "correction": "In the same original SEO resolver, after approved deterministic owner-first selection, write at most three source-fresh and deduped website money-page handoffs to existing powerhouse_content_recommendations; preserve existing accepted/done receipts with insert-ignore-duplicates. Keep blog channel exclusively for distinct intent-gap content. Do not invent a website publisher: original SEO Order Engine must produce exact protected source diff, CI, Netlify public readback, subsequent GSC/GA4 outcomes and Brain receipt before terminal closure. Deploy one evidence-backed canonical Twinfield API title/description alias improvement in same protected source lineage.",
+  "prevention": [
+    "Any material UPDATE_MONEY_PAGE daily resolver decision must have a durable owner-identified website handoff; forecast-only source success is not an execution success.",
+    "Group multiple search queries by the same existing canonical money owner; never create duplicate intent pages or multiple execution demands for the same owner/day.",
+    "Never re-open an accepted/done existing recommendation on cron retry.",
+    "Never count handoff, forecast, GSC impressions, metadata deployment or blog publication as a paid order, tested uplift or completed learning.",
+    "Keep original publisher/scheduler, existing recommendation table, protected GitHub/Netlify release, exact public URL and conversion readback.",
+    "A protected website-only first-phase test must accept source/runtime alias absence as transitional, but must also accept the later exactly paired source+runtime owner alias. Never demand permanent absence after successful original backend handoff; require exact map/projection parity and unique Twinfield canonical."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-original-money-owner-handoff-20261110.test.mjs",
+      "tests/brain-seo-twinfield-canonical-source-20261110.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-seo-original-money-owner-handoff-20261110.test.mjs",
+    "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs",
+    "tests/brain-seo-twinfield-canonical-source-20261110.test.mjs"
+  ],
+  "release": {
+    "protected_required": false,
+    "codeql": false,
+    "merged": false,
+    "edge_provider_readback": false,
+    "netlify_main_readback": false,
+    "original_next_natural_resolver_consumer_ack": false,
+    "gsc_ga4_outcome_proven": false
+  },
+  "no_second_executor": true,
+  "no_false_green": true
+}

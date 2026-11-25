@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { findPortalPage, PORTAL_SECTIONS } from '../../portal-next/portal-content-map.js';
-import { CSRD_TABS, DEFAULT_IMPACT_SNAPSHOT, customerSafeSnapshot, csrdImpactMarkup, withResourceFootprint, withResourceIntelligence } from '../csrd-impact.js';
+import { CSRD_TABS, DEFAULT_IMPACT_SNAPSHOT, UNKNOWN_LIVE_IMPACT_SNAPSHOT, customerSafeSnapshot, csrdImpactMarkup, impactSnapshotFromPortalState, withResourceFootprint, withResourceIntelligence } from '../csrd-impact.js';
 
 test('CSRD impact is a first-class portal page in Inzicht', () => {
   const page = findPortalPage('csrd-impact');
@@ -102,4 +102,17 @@ test('resource intelligence keeps normalized daily rows available to the analyti
   assert.match(html,/Resource & Sustainability/);
   assert.match(html,/Tokens/);
   assert.match(html,/Credits/);
+});
+
+test('real authenticated tenant without evidence shows unknown CSRD values, never sample KPIs', () => {
+  const live = impactSnapshotFromPortalState({}, { demo: false });
+  assert.deepEqual(live, UNKNOWN_LIVE_IMPACT_SNAPSHOT);
+  assert.equal(live.demo, false);
+  assert.equal(live.liveUnknown, true);
+  const html = csrdImpactMarkup(live, { customerView: true });
+  assert.match(html, /Live tenantcontext · geen live meting/);
+  assert.match(html, /CSRD Readiness/);
+  assert.doesNotMatch(html, /Voorbeelddata · geen live claim/);
+  assert.doesNotMatch(html, /-42%|78%|83\/100|9,1/);
+  assert.deepEqual(impactSnapshotFromPortalState({}, { demo: true }), DEFAULT_IMPACT_SNAPSHOT);
 });

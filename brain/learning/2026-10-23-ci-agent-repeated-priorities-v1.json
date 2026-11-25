@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|ci-agent-repeated-job-priorities|independent-evidence-only|20261023-v1",
+  "obligation_id": "delivery|ci-agent-repeated-job-priorities|independent-evidence-only|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "CI_JOB_PRIORITY_ONE_OFF_EVIDENCE_OVERFITTING",
+  "root_cause": "A list of five slowest individual GitHub jobs lacks recurrence and independent-attempt evidence, so promoting a one-off job as an autonomous optimization priority is unwarranted.",
+  "observed_evidence": {
+    "janitor_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926363163",
+    "runtime": "completed/success at source 8a08a22107b29adc4a4fdcd92eb228e5a04790e6",
+    "job_samples": 28,
+    "distinct_runs": 13,
+    "sampled_p95_wait_ms": 3000,
+    "max_observed_executed_job_ms": 353000,
+    "interpretation": "one-off maximum is not a repeated bottleneck or a before/after speedup",
+    "reference": "https://docs.github.com/en/actions/concepts/workflows-and-actions/workflow-artifacts"
+  },
+  "failed_approaches": [
+    "Automatically prioritize one outlying slow job",
+    "Use truncated/partial provider jobs as if verified",
+    "Create another recurring metrics agent or CI workflow",
+    "Claim SLO or faster build from one Janitor measurement"
+  ],
+  "fix": "Derive bounded, read-only per-job repeated evidence from existing Janitor telemetry; require >=20 valid executed jobs from >=5 attempts overall, >=3 independent attempts of same workflow/job signature, and >=60s sample median execution time before exposing a suggested specialist lane; otherwise no priority. Retain raw IDs, SHAs, p95 and no-dispatch flags.",
+  "prevention_rule": "Only the original domain/PR owner may investigate or implement based on the advisory after checking canonical Brain skills, source/owner lineage and true before/after baselines. Never dispatch or mutate from this diagnostic, skip Required/CodeQL or change required gates; unknown lane stays unassigned. Existing hourly Janitor only, one canonical incident #4661 and skill projection.",
+  "tests": [
+    "tests/brain-ci-agent-priorities-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_JOB_PRIORITY_ONE_OFF_EVIDENCE_OVERFITTING",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "invariants": [
+      "no action from a single outlier",
+      "at least 20 complete job rows and 5 separate run attempts",
+      "at least 3 recurring job attempts and 60000ms median for candidate priority",
+      "all sample identities, status and durations independently validated",
+      "any incomplete or inconsistent telemetry suppresses all priorities",
+      "never dispatch a workflow or auto-promote",
+      "same hourly Janitor schedule and artifact evidence only"
+    ]
+  },
+  "terminal_rule": "Protected Required, CodeQL, main readback, Brain skill projection and a subsequent existing Janitor execution at merged main SHA must be observed before claiming runtime live. The advisory is not proof of speedup, autonomous repair or portal business impact."
+}

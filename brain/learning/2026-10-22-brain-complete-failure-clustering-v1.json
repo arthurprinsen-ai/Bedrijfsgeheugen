@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|brain|first-failure-only-learning-blindspot|20261022-v1",
+  "obligation_id": "delivery|brain|first-failure-only-learning-blindspot|20261022-v1",
+  "title": "Preserve all Unified BRAIN test failures as clustered root-cause candidates instead of only the first test",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Source verified: .github/workflows/unified-brain-delivery.yml read the first 'not ok' only when building one delivery-learning event, despite failed backend logs containing 355 separate TAP failures. Root causes of individual tests remain independent and unproven.",
+  "impact": "Agents must repeatedly parse multimillion-character logs and may lose shared-root failure coverage; repeated chats create duplicate analysis.",
+  "failed_approaches": [
+    "Treat a single first failed test as the entire run",
+    "Re-run 355 tests without grouping",
+    "Mark archived migration path symptoms as repaired without source verification",
+    "Create parallel scheduler/incident memory",
+    "False-red initial regression expected tests/brain-*.test.mjs to immediately follow node --test; actual canonical runner combines multiple test groups before the BRAIN glob."
+  ],
+  "fix": "Retain legacy first-failure canonical learning event, and add a deterministic redacted all-failures clustering JSON artifact in the SAME failed lane.",
+  "prevention_rule": "Every failed Unified BRAIN lane must expose all TAP not-ok records with stable fingerprints, coverage vs #fail and grouped candidate classes; no class is a proven repair until exact-head test re-run plus required gates and canonical register evidence.",
+  "regression_contract": "tests/brain-delivery-failure-clustering-v1.test.mjs",
+  "tests": [
+    "tests/brain-delivery-failure-clustering-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-failure-clustering-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-failure-clustering-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-failure-clustering-v1.test.mjs"
+    ],
+    "negative_canary": [
+      "tests/brain-delivery-failure-clustering-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "original_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071",
+    "original_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39791707071/job/119869500824",
+    "observed_failures": 355,
+    "observed_total_tests": 3526,
+    "observed_passed_tests": 3171,
+    "original_failure_capture_source": ".github/workflows/unified-brain-delivery.yml",
+    "provider_runtime_readback": "PENDING",
+    "first_failed_required": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39822122071",
+    "first_failed_job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39822122071/job/119975815671"
+  },
+  "outcome": "Candidate: complete failure triage without automatic fixes; require protected merge and actual failed run artifact readback."
+}

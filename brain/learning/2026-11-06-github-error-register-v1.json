@@ -1,0 +1,76 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "github|delivery|error-register-gap-lessons|20261106-v1",
+  "owner": "existing delivery-failure-lessons and delivery-prevention-rules preflight; no new register",
+  "compiler": {
+    "failure_class": "GITHUB_KNOWN_ERRORS_NOT_IN_PREFLIGHT",
+    "scope": "DELIVERY_PREFLIGHT_LESSON_COVERAGE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Fifteen GitHub, CI and credential errors that were already solved in earlier sessions existed only in chat history or prose, so the delivery preflight could not stop an agent from repeating them. Delivery preflight applies every active prevention rule that has a PROVEN lesson, so a lesson missing there is invisible to agents.",
+  "prevention_rule": "Each of the fifteen errors is now a PROVEN lesson in docs/brain/delivery-failure-lessons.json with an active rule in config/delivery-prevention-rules.json, and a required-check test fails when a lesson loses its rule, is duplicated, or contains a credential. Rules that rely on the agent contract are marked agent-contract and are not claimed as machine-blocked.",
+  "prevention_rules": [
+    "GITHUB_WORKFLOW_WRITE_NEEDS_CONTENTS_AND_WORKFLOWS_PERMISSION",
+    "NEVER_PASTE_OR_REPEAT_TOKENS_IN_CHAT",
+    "NEVER_SWALLOW_AUTH_ERRORS_AND_ALERT_BEFORE_TOKEN_EXPIRY",
+    "READ_VIA_RAW_VERIFY_VIA_AUTHENTICATED_CONTENTS_API",
+    "UPDATE_BRANCH_AND_WAIT_FOR_CHECK_BEFORE_MERGE_RETRY",
+    "VERIFY_AUTO_MERGE_ENABLED_BEFORE_RELYING_ON_IT",
+    "USE_GIT_DATA_API_OR_MULTI_FILE_COMMIT_ON_CONTENDED_REPO",
+    "USE_FLAT_BRANCH_NAMES_AFTER_CHECKING_EXISTING_REFS",
+    "CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES",
+    "QUERY_CHECK_RUNS_BY_FULL_HEAD_SHA",
+    "RETRIGGER_REQUIRED_CHECK_AFTER_PR_BODY_CHANGE",
+    "REGISTER_NEW_TESTS_AND_PATHS_IN_LANE_CONFIG",
+    "USE_EXACT_GIT_BRANCH_NAME_FOR_SUPABASE_PREVIEW",
+    "NO_PR_OR_CHECK_CLAIMS_WITHOUT_AUTHENTICATED_READ",
+    "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Notion: GitHub-foutenregister (410da36a-ac8a-815c-b0b0-cd8f786b84e1), compiled 6 Nov 2026 from earlier sessions",
+      "PR #988, #1588, #1592, #5442, #5444, #5448 and the 3 Aug, 3 Sep, 20 Aug and 29 Oct sessions named in the register"
+    ],
+    "current": [
+      "Local parity check on the changed files: no PROVEN lesson without an active rule, no duplicate fingerprint, 15 lessons added, 14 rules added, 1 existing rule reused"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ],
+  "fingerprints": [
+    "github|governance|shared|workflow-file-write-needs-contents-and-workflows-permission",
+    "github|governance|shared|token-pasted-in-chat",
+    "github|pipeline|shared|expired-token-error-swallowed",
+    "github|verification|shared|unauthenticated-api-rate-limit-and-raw-cache",
+    "github|merge|shared|merge-405-required-check-branch-behind-main",
+    "github|merge|shared|auto-merge-forbidden-repo-setting-off",
+    "github|writeback|shared|contents-api-409-concurrent-agent-commits",
+    "github|pr|shared|branch-ref-prefix-collision-422",
+    "github|pr|shared|duplicate-branch-from-parallel-process",
+    "github|verification|shared|check-runs-queried-by-branch-name",
+    "github|pipeline|shared|pr-body-edit-does-not-retrigger-required",
+    "github|pipeline|shared|new-test-or-path-outside-lane-config",
+    "supabase|preview|shared|incomplete-git-branch-name",
+    "github|handoff|shared|anonymous-read-only-session-claimed-pr-state",
+    "github|pipeline|shared|apt-chrome-hash-sum-mismatch-ci-red"
+  ]
+}

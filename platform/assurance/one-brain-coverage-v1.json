@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "status": "EVIDENCE_PARTIAL",
+  "gates": [
+    {
+      "id": "sources",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "impact",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "recommendations",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "execution",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "outcomes",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "content",
+      "status": "UNVERIFIED"
+    },
+    {
+      "id": "portal",
+      "status": "PARTIAL",
+      "evidence": [
+        "tests/portal-authenticated-production-proof.test.mjs"
+      ],
+      "proof": "PORTAL_AUTHENTICATED_PRODUCTION_PROOF_V1"
+    },
+    {
+      "id": "assurance",
+      "status": "PARTIAL",
+      "evidence": [
+        "tests/portal-authenticated-production-proof.test.mjs"
+      ]
+    }
+  ]
+}

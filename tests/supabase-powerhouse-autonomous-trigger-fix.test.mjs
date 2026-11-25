@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
-const migration='supabase/migrations/20260915123500_powerhouse_autonomous_growth_revenue_trigger_fix.sql';
+const migration='supabase/migration-history/repository-only/20260915123500_powerhouse_autonomous_growth_revenue_trigger_fix.sql';
 
 test('autonomous calibration refresh never directly calls a trigger function',()=>{
   const sql=readFileSync(migration,'utf8');

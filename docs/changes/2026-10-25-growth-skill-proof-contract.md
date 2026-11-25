@@ -1,0 +1,3 @@
+# Growth Intelligence agent/skill evidence handoff
+
+Adds a scoped policy to AGENTS.md and powerhouse-continuity skill. Reuse existing Heartbeat, Brain, skills and release mechanism. Release proofs #4917 and #4926 are library/advice components, not end-to-end commercial integration. Every agent must track source, tenant, action, provider proof, independent revenue and lesson projection. Required, CodeQL and production readback may not be bypassed. The GitHub personal repository has no eligible merge queue; preserve strict branch protection and synchronize existing PR via expected SHA. Regression: `tests/brain-growth-skill-proof-contract.test.mjs`.

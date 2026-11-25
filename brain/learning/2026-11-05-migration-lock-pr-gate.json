@@ -1,0 +1,43 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "supabase|migration-history|pre-merge-lock-gate|20261105-v1",
+  "owner": "existing required-test PR check and original Supabase migration source owner",
+  "compiler": {
+    "failure_class": "SUPABASE_MIGRATION_LOCK_ENFORCED_ONLY_POST_MERGE",
+    "scope": "REQUIRED_PR_CHECK_MIGRATION_LOCK_PARITY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The five migration-lock test files ran only in the post-merge original BRAIN backend lane. The rule that a migration and its lock row move in one lineage existed as prose, so four migrations merged without lock rows and 26 of 40 terminal closures failed since 2 November.",
+  "prevention_rule": "The required PR check runs every migration-lock test before merge, unconditionally, so a PR whose lock does not match its executable migrations cannot become green. No test is weakened and no second runner is added.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs",
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "PR #5442 d8767bba85: lock 801 to 805 after provider drift",
+      "docs/changes/2026-11-05-provider-805-migration-history-source-parity.md"
+    ],
+    "current": [
+      "Local run of the gate test plus all migration-lock tests, control-plane-required-wiring and delivery-test-coverage-guard: 29 of 29 pass"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

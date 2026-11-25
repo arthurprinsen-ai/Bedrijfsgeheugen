@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_PROTECTED_RELEASE_AND_NATURAL_OWNER_READBACK_DUE",
+  "fingerprint": "powerhouse|brain-portal-heartbeat|generic-assurance-owner-rewrite-blocks-specialist-repair|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original powerhouse_refresh_loop_assurance_v1 + original ONE BRAIN operations assurance + existing Portal V2 admin observability",
+  "failure_class": "CROSS_SYSTEM_ORIGINAL_OWNER_HANDOFF_MISSING",
+  "root_cause": "The original five-minute Powerhouse loop-assurance function inserted owner='Powerhouse' into EVERY existing OPERATIONS_ASSURANCE brain_obligation and its ON CONFLICT UPDATE never updated owner, ignoring actual original publisher, Heartbeat reconciliation, Revenue, Data Spine and Outreach owners. All six active non-GREEN loop obligations in live Supabase at 11:11 UTC had generic owner Powerhouse. Existing Portal original 15-loop readback exposed RED/AMBER but no canonical specialist owner or direct next action.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T11:11:21Z",
+    "original_assurance_loops": 15,
+    "green": 9,
+    "amber": 1,
+    "red": 5,
+    "non_green_open_obligations": 6,
+    "non_green_generic_owner": "Powerhouse",
+    "source_function": "public.powerhouse_refresh_loop_assurance_v1(timestamptz)",
+    "brain_table": "public.brain_obligations",
+    "registry": "public.powerhouse_loop_assurance_registry_v1",
+    "portal_readback": "brain/observability/one-loop-assurance-readback.mjs",
+    "current_specialist_dispatch_proven": false
+  },
+  "fix": "Use the existing canonical registry evidence_contract to store one verified original operational owner and typed repair action for each of 15 active loops, without a second table/job. Existing five-minute assurance function writes owner and next_action to original state and the same original Brain obligation on each refresh, including ON CONFLICT owner repair. The existing admin-only original readback, CRO read model and Portal V2 command center display one primary next action with progressive disclosure, sanitized role and action code.",
+  "prevention_rule": "Every assurance failure must be tied to its original runner/agent; no generic owner overwrite on periodic refresh. Reuse the original durable obligation identity and version, keep RED/AMBER/GREEN guard truth and provider/business proof separate from routing, never claim side effect because owner was assigned. Protect service_role-only original definer and authenticated admin-only portal, preserve lease and all natural cron schedules. Owner route is an actionable handoff, NOT evidence that the named agent has executed or repaired the incident.",
+  "tests": [
+    "tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs",
+    "tests/brain-one-loop-assurance-readback-20261030.test.mjs",
+    "tests/brain-cro-one-loop-portal-20261030.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs"
+    ],
+    "invariants": [
+      "original 15-loop registry and five-minute cron unchanged",
+      "no new queue or executor",
+      "original Brain obligation identity preserved",
+      "owner updates via canonical ON CONFLICT",
+      "single original Portal admin readback",
+      "no exposed credentials/unsafe HTML",
+      "no false green outcomes",
+      "provider-independent and RLS-safe",
+      "original owner routes to actual specialized lane"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "CROSS_SYSTEM_ORIGINAL_OWNER_HANDOFF_MISSING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Protected Required/CodeQL/preview, exact protected main merge, native Supabase migration and pg_get_functiondef readback, two natural original five-minute assurance refreshes with all 15 registry routes and six non-GREEN existing obligations no longer owned by generic Powerhouse, authenticated admin Portal Netlify READY/commit readback and negative unauthorized check. Actual specialized autonomous action, 15/15 GREEN, publication, revenue and learning must be independently observed separately."
+}

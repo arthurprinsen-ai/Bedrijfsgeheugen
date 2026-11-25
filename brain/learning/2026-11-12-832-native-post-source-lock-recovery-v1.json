@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "version": "v1",
+  "parent_issue": 4198,
+  "fingerprint": "supabase|native-post-source-migration-832-applied-vs-source-lock-831|20261112",
+  "obligation_id": "original-post-migration-832-provider-lock-20261112",
+  "owner": "original protected Supabase provider migration authority",
+  "failure_class": "DATA_INTEGRITY",
+  "root_cause": "Native source migration 20261112184500 was applied as original version 832, but the protected source migration-history lock on current main was still at already-applied 831. Following original immutable BRAIN identity repair cannot pass new migration preflight until this actual native migration is separately attested.",
+  "prevention": "Use standalone protected exact native count/version/name/SQL parity for already applied migration, then separately release new repair SQL after Required/CodeQL/Supabase preview. Never forge or predeclare a future migration. Existing schedules remain.",
+  "evidence": {
+    "native_count": 832,
+    "lock_before": 831,
+    "actual_version": "20261112184500",
+    "sql_parity_verified": true,
+    "observed_at": "2026-11-12 16:04:04.56141+00",
+    "merged_original_posts_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5663",
+    "root_cause_more": "OBLIGATION_IDENTITY_IMMUTABLE on source revision update is separate and unresolved until protected repair"
+  },
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "SUPABASE_PROVIDER_MIGRATION_LOCK",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-832-original-post-migration-lock-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-832-original-post-migration-lock-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-832-original-post-migration-lock-20261112.test.mjs"
+    ]
+  },
+  "regression": "tests/brain-native-832-original-post-migration-lock-20261112.test.mjs",
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders"
+  ],
+  "provider_readback_required": true
+}

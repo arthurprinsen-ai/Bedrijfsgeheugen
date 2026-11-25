@@ -9,13 +9,16 @@ const agents=fs.readFileSync('AGENTS.md','utf8');
 const map=fs.readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
 
 test('semantic example reuse is forbidden across social publication surfaces',()=>{
-  for (const text of [personal,linkedin,instagram,agents,map]) {
+  for (const text of [personal,linkedin,instagram,agents]) {
     assert.match(text,/powerhouse-global-semantic-example-uniqueness-v4|personal-linkedin-semantic-example-uniqueness-v1/);
   }
+  // The System Map owns the same rule under its current story-family fingerprints.
+  assert.match(map,/social-story-family-uniqueness-v6/);
+  assert.match(map,/fingerprint:'linkedin-company-historical-dedupe-v5'/);
   assert.match(personal,/printer/);
   assert.match(linkedin,/never paraphrase|never.*paraphras/i);
   assert.match(agents,/underlying subject, concrete example, incident or story family/i);
-  assert.match(map,/knownRetiredExamples:Object\.freeze\(\['printer'\]\)/);
+  assert.match(map,/knownRetiredExamples:Object\.freeze\(\['printer',/);
 });
 
 test('personal source rotation cannot authorize previously published examples',()=>{

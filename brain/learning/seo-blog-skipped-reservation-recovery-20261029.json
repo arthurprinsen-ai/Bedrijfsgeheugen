@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "seo-blog-skipped-reservation-recovery-20261029",
+  "fingerprint": "seo|daily-blog|skipped-not-reserved|v1",
+  "problem": "Legacy first-mover suggestions for known canonical Twinfield search intents stayed suggested after corrected owner-first inference; skip decisions were still counted as the daily one-blog reservation.",
+  "root_cause": "Read-only daily reservation selected all matching first-mover recommendations regardless of status. A skipped historical correction could block a later independently proven, non-overlapping candidate on the same day.",
+  "observed_evidence": {
+    "kind": "AGGREGATED_PUBLIC_SAFE_ONLY",
+    "production_canary": "2026-10-29 10:58 UTC 200 ok=true recommendations=0; owner-first for Exact Online and Twinfield",
+    "historical_corrected_count": 52,
+    "historical_other_skipped_count": 1,
+    "remaining_incorrect_suggestions": 0,
+    "canonical_owner": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
+    "p0_draft_export_incident": "5072 remains independently open"
+  },
+  "fix": "Within the original resolver, reserve the daily new-blog slot only for statuses suggested, accepted or done, never skipped. Preserve the existing published/private candidate metadata and protected publisher authority.",
+  "prevention_rule": "Rejected/skipped recommendations remain durable audit evidence and must not consume delivery capacity. Never auto-approve or export generated blog drafts.",
+  "tests": [
+    "tests/brain-seo-blog-daily-decision-20261029.test.mjs",
+    "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "SKIPPED_BLOG_RECOMMENDATION_RESERVATION",
+    "scope": "SEO_CRO",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL, merge to main, authorized Supabase production deploy, exact three-file provider source parity, post-merge internal HTTP canary and durable health readback. No new blog publication claimed."
+}

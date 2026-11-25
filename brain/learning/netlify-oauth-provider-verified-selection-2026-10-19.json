@@ -1,0 +1,42 @@
+{
+  "date": "2026-10-19",
+  "obligation": "netlify-oauth-provider-verified-account-selection-20261019",
+  "fingerprint": "netlify-backup|two-active-oauth-connections|first-active-may-be-expired-at-provider",
+  "root_cause": "After a new Netlify_mcp DCR OAuth grant, Composio project-scoped connected accounts enumerated two ACTIVE accounts, although an earlier Platform tool log conclusively recorded upstream MCP StreamableHTTP HTTP401 Unauthorized for the old read-only get-project account. The prior Edge bridge unconditionally selected the first ACTIVE record without verifying Netlify-provider authorization and might keep using the stale grant. A later OIDC-only run 39234783733 confirmed two ACTIVE accounts and an unresolved read-only session execute HTTP400. Exact selected account was not logged; this selection defect is source-confirmed, but whether it alone explains the 400 is not yet proven.",
+  "failure_class": "AUTH",
+  "intervention": "Enumerate all ACTIVE/complete/undisabled netlify_mcp connections across bounded cursor pages, refuse >4 candidates, sort by creation time as a preference only, and perform a real site-ID-scoped provider get-project read on each candidate through the existing strict OIDC bridge. Bind any subsequent backup deploy proxy only to a candidate with proven read access. Health never executes deploy-site. If all candidates reject or mismatch site, fail with explicit 424 and do not create a deployment.",
+  "prevention": "Never treat Composio ACTIVE as upstream Netlify OAuth proof. Each backup write must first pass a read-only provider check on the same exact connected account/site in that invocation; immutable OIDC, fixed tool allowlist, fixed site, no credentials or account identifiers in logs, bounded attempts, Required CI/CodeQL, protected merge, exact production readback.",
+  "state": "CANDIDATE_AWAITING_PROTECTED_CI_AND_PROVIDER_READBACK",
+  "compiler": {
+    "failure_class": "AUTH",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-provider-verified-account-selection.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-provider-verified-account-selection.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-provider-verified-account-selection.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "tests": [
+      "tests/brain-netlify-provider-verified-account-selection.test.mjs"
+    ],
+    "oidc_recheck": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39234783733",
+    "provider_readback": "pending",
+    "real_fallback_deploy": "pending"
+  },
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4447",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39234783733",
+    "https://docs.composio.dev/reference/api-reference/connected-accounts/getConnectedAccounts"
+  ]
+}

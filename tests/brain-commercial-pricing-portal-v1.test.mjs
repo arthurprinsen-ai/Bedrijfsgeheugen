@@ -19,14 +19,14 @@ test('pricing, checkout and portal use new plan codes',async()=>{
   readFile('afsluiten.html','utf8'),
   readFile('portal-v2/app.js','utf8'),
   readFile('portal-v2/plan-access.js','utf8'),
-  readFile('netlify.toml','utf8')
+  readFile('tools/ci/netlify-build-entry.mjs','utf8')
  ]);
  for(const code of ['starter','pro','groei','enterprise']) assert.match(builder,new RegExp(code));
  for(const code of ['starter','pro','groei']) assert.match(checkout,new RegExp(code));
  assert.match(portal,/fetchPortalPlan/);
  assert.match(portal,/planAllowsPage/);
  assert.match(access,/PAGE_MIN_PLAN/);
- assert.match(toml,/apply-commercial-pricing-v1\.mjs/);
+ assert.match(toml,/apply-commercial-pricing-v1\.mjs/); // part of the shared Netlify build entry chain
 });
 
 test('portal access escalates from starter to enterprise',async()=>{

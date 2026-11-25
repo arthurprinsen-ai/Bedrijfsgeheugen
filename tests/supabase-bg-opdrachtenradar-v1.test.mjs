@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const fn=fs.readFileSync('supabase/functions/bg-opdrachtenradar/index.ts','utf8');
-const sql=fs.readFileSync('supabase/migrations/20260918130000_bg_opdrachtenradar_nightly_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260918130000_bg_opdrachtenradar_nightly_v1.sql','utf8');
 
 test('Opdrachtenradar producer is authenticated and uses vault-backed keys only',()=>{
   assert.match(fn,/powerhouse_daily_scheduler_token/);

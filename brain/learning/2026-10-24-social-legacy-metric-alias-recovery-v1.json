@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "social-learning|buffer-legacy-capitalized-real-metrics-all-null-evaluation|20261024-v1",
+  "obligation_id": "social-learning:semantic-buffer-provider-normalization:v1",
+  "failure_class": "REAL_LEGACY_METRICS_RECORDED_AS_ALL_NULL_DUE_TO_FIELD_ALIASES",
+  "root_cause": "First new actual bedrijfsgeheugen evaluation after PR #4834 (2026-10-24T16:00Z) matched real Buffer social_metric_snapshots, but its full metric_vector was null and evidence=null: provider payload uses capitalized 'Reach', 'Comments', 'Reactions', 'Impressions', 'Eng. Rate', whereas metricVector only recognized lowercase semantic keys. Consequently 71 observed in-window post candidates were evaluable in time but not useful for learning. Existing list_due_posts treated the all-null evaluation as done forever.",
+  "observed_evidence": {
+    "evaluation_id": "evaluation:6ac273bd7995959786a1c776:24",
+    "snapshot_time": "2026-10-05T12:26:26.709Z",
+    "provider_payload": {
+      "Reach": 857,
+      "Comments": 0,
+      "Reactions": 5,
+      "Impressions": 1125,
+      "Eng. Rate": 0.44
+    },
+    "observed_evaluation": "ALL_METRICS_NULL",
+    "correct_semantics": {
+      "impressions": 1125,
+      "reach": 857,
+      "reactions": 5,
+      "comments": 0,
+      "likes": "UNKNOWN",
+      "revenue": "UNKNOWN"
+    }
+  },
+  "fix": "Normalize exact source count aliases only in canonical social metricVector without overriding lower-case original names. Reactions remain distinct from likes, and ambiguous precomputed Eng. Rate is not imported. Add reactions as lowest-priority comparable metric after commercial and substantive outcomes. Canonical Supabase list_due_posts reopens only all-null historical evaluation windows and overwrites same deterministic ID only from real exact matched snapshots.",
+  "prevention_rule": "Missing metrics remain null. Explicit zero is a real observed zero. Never remap reactions as likes, impressions as views, traffic as leads, or provider percent of uncertain units to fractions. All-null evaluation is not proof of learning and must be source-backed reprocessed, without a second scheduler or fabricated historical sample.",
+  "tests": [
+    "tests/brain-social-legacy-metrics-normalization-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "REAL_LEGACY_METRICS_RECORDED_AS_ALL_NULL_DUE_TO_FIELD_ALIASES",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-legacy-metrics-normalization-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-legacy-metrics-normalization-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-legacy-metrics-normalization-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Protected Required/CodeQL, exact Netlify model + Supabase store deployment, next scheduled evaluation field vector with original observed provider counts, no inferred revenue or false causal winner."
+}

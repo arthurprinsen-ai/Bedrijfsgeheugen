@@ -1,0 +1,31 @@
+{
+  "fingerprint": "linkedin-company-post-before-scheduled-for-dst-v1",
+  "compiler": {
+    "failure_class": "PUBLICATION_SCHEDULING",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Direct LinkedIn/Composio publication ignored the existing scheduled_for timestamp; future time was enforced only by Buffer/customScheduled. Orchestrator also hardcoded +02:00 for Amsterdam after October DST change.",
+  "prevention_rule": "The canonical social publisher must not perform prepublish/provider OAuth, claim, uniqueness reservation or publication before scheduled_for for either LinkedIn channel. Invalid timestamps fail closed. Amsterdam's offset is derived for each run_date; the same hourly canonical loop retries after due time.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-scheduled-dispatch-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-linkedin-scheduled-dispatch-v1.test.mjs"
+  ],
+  "evidence": {
+    "incident_date": "2026-10-19",
+    "published_at_utc": "2026-10-18T22:29:20.309728Z",
+    "scheduled_for_utc": "2026-10-19T06:00:00Z",
+    "note": "Existing company post was provider LIVE_PROVEN but its time was before recorded scheduled_for.",
+    "test_state": "PENDING_CI",
+    "production_state": "NOT_LIVE_PROVEN"
+  },
+  "outcome": {
+    "target": "Provider write at or after scheduled_for with next-day exact provider ID, no duplicate side effect, and correct wintertime offset."
+  }
+}

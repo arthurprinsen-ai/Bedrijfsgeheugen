@@ -30,6 +30,6 @@ test('open Buffer circuit never blocks either LinkedIn Composio transport',()=>{
   assert.match(source,/readLinkedInCompanyPostViaComposio/);
   assert.match(source,/COMPOSIO_LINKEDIN_EXACT_RECONCILE_MISMATCH/);
   assert.match(source,/COMPOSIO_LINKEDIN_COMPANY_EXACT_RECONCILE_MISMATCH/);
-  assert.match(source,/never route this claim through Buffer or create a replacement post/);
+  assert.match(source,/do not fall back to Buffer or issue a replacement post/);
   assert.match(source,/publishInstagramViaComposio/);
 });

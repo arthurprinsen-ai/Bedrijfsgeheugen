@@ -9,6 +9,7 @@ const html = await readFile('intern/powerhouse-kosten/index.html', 'utf8').catch
 const client = await readFile('assets/js/powerhouse-kosten.mjs', 'utf8').catch(() => '');
 const config = await readFile('netlify.toml', 'utf8');
 const authBuild = await readFile('tools/bouw-powerhouse-auth.mjs', 'utf8').catch(() => '');
+const buildEntry = await readFile('tools/ci/netlify-build-entry.mjs', 'utf8');
 
 test('internal dashboard shell contains no operational data and is noindex', () => {
   assert.match(html, /name="robots" content="noindex,nofollow,noarchive"/);
@@ -33,7 +34,8 @@ test('internal users can authenticate with the supported headless Identity clien
   assert.match(client, /\/assets\/vendor\/netlify-identity\.mjs/);
   assert.match(client, /\b(login|getUser|logout)\b/);
   assert.match(authBuild, /@netlify\/identity\/dist\/main\.js/);
-  assert.match(config, /bouw-powerhouse-auth\.mjs/);
+  assert.match(buildEntry, /bouw-powerhouse-auth\.mjs/);
+  assert.match(config, /netlify-build-entry\.mjs/);
 });
 
 test('internal dashboard has private no-store and strict route headers', () => {

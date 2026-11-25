@@ -1,0 +1,29 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|daily-blog|quality-refresh-missing-original-learning-proof|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "compiler": {
+    "failure_class": "BLOG_OPTIONAL_REVIEW_PROOF_MISSING_ABORTS_CANONICAL_PUBLISHER"
+  },
+  "root_cause": "Original hourly GitHub blog workflow invokes reviewed-blog-refresh.mjs for an existing approved PR, and the helper unconditionally opens an optional date-bound Brain review proof before checking if the reviewed quality-refresh is applicable. Missing original proof raised ENOENT and aborted the 16-Nov-2026 publisher run 44076765434, without a public blog side effect.",
+  "prevention": [
+    "Missing optional review proof produces explicit typed warning and stdout PRESERVE, not an exception or AUTHORIZE.",
+    "Never construct synthetic review proof, lower editorial gates, promote source status, duplicate writer or bypass protected merge.",
+    "Legitimate exact existing proof still authorizes only the original draft-quality repair if all exact source checks pass.",
+    "Original publisher and ONE BRAIN/Heartbeat keep original source identity, owner, correlation, and no false-green outcomes."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-optional-original-proof-20261117.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44076765434",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5918",
+    "Original 2026-11-16 blog remains APPROVED without live_proven_at",
+    "public.brain_failure_registry maturity VALIDATED, proven_fix NULL"
+  ],
+  "acceptance": "Only exact-head protected Required/CodeQL, merged main native runtime, next real original daily publisher run preserving candidate and not aborting on missing optional proof, provider article readback and original ONE BRAIN consumer prove complete recovery. Candidate not PROVEN."
+}

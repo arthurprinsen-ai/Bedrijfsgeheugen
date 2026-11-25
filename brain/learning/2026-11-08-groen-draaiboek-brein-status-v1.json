@@ -1,0 +1,45 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|brain-status|alarm-meaning-pg-cron-fout|20261108-v1",
+  "owner": "existing docs/brain/groen-draaiboek.md and brain/learning route; no new mechanism",
+  "compiler": {
+    "failure_class": "BRAIN_STATUS_ALARM_CAUSE_NOT_RECORDED",
+    "scope": "AGENT_ONBOARDING_AND_DELIVERY_GATES",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The brain-status alarm brein-status|pg_cron|FOUT (1371 occurrences) had no recorded root cause. Measured on 2026-11-08 from cron.job_run_details: it is carried by two failing cron jobs, bg-content-publication-daily-assert (daily 19:35 UTC, DAILY_PUBLICATION_INVARIANT_FAILED, driven by non-terminal publications) and powerhouse-revenue-intelligence-snapshot-15m (statement timeout while filling powerhouse_revenue_command_center_snapshot_v1). A first hypothesis that growth-datahub-ingest was the single non-working component was wrong: on that moment only pg_cron was listed. Six other brein-status patterns had stopped occurring.",
+  "prevention_rule": "Playbook section 7 states what each large brein-status alarm means and the rule to read cron.job_run_details before acting on the alarm name. A required-check test asserts the section exists. Counts are a snapshot of 2026-11-08; the snapshot-timeout fix is not on main.",
+  "prevention_rules": [
+    "READ_CRON_RUN_DETAILS_BEFORE_ACTING_ON_BRAIN_STATUS_ALARM"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-groen-draaiboek-20261108.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-planned-action-guard-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Owner instruction 2026-11-08: record all errors, work autonomously",
+      "docs/changes/2026-11-08-groen-draaiboek-brein-status-v1.md"
+    ],
+    "current": [
+      "Supabase 2026-11-08 12:41 UTC: zelfbewaking 17 checked, 1 not working (pg_cron FOUT); cron.job_run_details failures 2026-10-31 to 2026-11-08"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

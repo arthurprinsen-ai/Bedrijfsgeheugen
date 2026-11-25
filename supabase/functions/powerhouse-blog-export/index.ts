@@ -1,13 +1,22 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { assessOfficialBlogDateTruth } from '../_shared/blog-official-date-truth.mjs';
+import { normalizeBlogMarkdownBlocks } from '../_shared/blog-markdown-source-contract.mjs';
 
 const VERSION='v3-repository-native-export';
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store','access-control-allow-origin':'*'}});
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
+function evidenceObject(value:any):Record<string,any>{
+  if(typeof value==='string'){try{return evidenceObject(JSON.parse(value))}catch{return {}}}
+  return value && !Array.isArray(value) && typeof value==='object'?value:{};
+}
+const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70).replace(/-+$/g,'');
 
 Deno.serve(async(req)=>{
   if(!['GET','POST'].includes(req.method)) return json({ok:false,error:'METHOD_NOT_ALLOWED'},405);
+  // P0 2026-10-29: authenticated service-only export, never to anonymous/tenant clients.
+  const exportKey=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
+  if(!exportKey || req.headers.get('authorization')!==('Bearer '+exportKey)) return json({ok:false,error:'EXPORT_AUTH_REQUIRED'},401);
   const url=Deno.env.get('SUPABASE_URL')||'', key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
   if(!url||!key) return json({ok:false,error:'CONFIG'},500);
   const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
@@ -19,30 +28,64 @@ Deno.serve(async(req)=>{
   const [{data:a,error:ae},{data:d,error:de},{data:o,error:oe}]=await Promise.all([
     db.from('powerhouse_content_artifacts').select('title,body,cta,content_brief,generation_evidence,status').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
     db.from('powerhouse_channel_decisions').select('decision,state').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
-    db.from('content_publication_obligations').select('status,content_id,slug,canonical_url,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
+    db.from('content_publication_obligations').select('status,approved_at,published_at,content_id,slug,canonical_url,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
   ]);
   if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
+  // Separate last-mile publication permission from model/SEO/quality decisions.
+  if(!o?.approved_at || !['APPROVED','PUBLISHED','LIVE_PROVEN'].includes(clean(o.status))) return json({ok:false,error:'BLOG_PUBLIC_EXPORT_NOT_APPROVED',runDate},403);
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published','measured','learned'].includes(clean(d.state))) return json({ok:false,error:'NO_APPROVED_BLOG_ARTIFACT',runDate},404);
+  // Final independent factual gate: public approval does not override a
+  // demonstrably inverted OFFICIAL subsidy deadline. No source text leaked.
+  const fact=assessOfficialBlogDateTruth({title:a.title,body:a.body,cta:a.cta,runDate});
+  if(!fact.ok)return json({ok:false,error:fact.code,runDate,source:fact.source||null,
+    requires_corrected_source:true},422);
 
-  const slug=clean(o?.slug)||clean(a.generation_evidence?.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
-  const contentId=clean(o?.content_id)||('blog:'+slug);
-  const canonical=clean(o?.canonical_url)||('https://www.bedrijfsgeheugen.nl/blog/'+slug+'/');
-  const focus=clean(a.generation_evidence?.focus_keyword)||'bedrijfsgeheugen';
-  const meta=(clean(a.generation_evidence?.meta_description)||clean(a.content_brief)||clean(a.title)).slice(0,170);
+  const generation=evidenceObject(a.generation_evidence);
+  const slug=clean(generation.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
+  // Never export a stale obligation's URL when the artifact was regenerated.
+  // A proven provider side effect is immutable: reconcile it, do not replace it.
+  if (clean(o?.slug) && clean(o?.slug)!==slug
+      && (clean(o?.status)!=='GENERATED' || clean(o?.evidence?.provider_create_success)==='true'
+          || clean(o?.evidence?.republish_forbidden)==='true')) {
+    return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_REQUIRES_RECONCILIATION',runDate},409);
+  }
+  const contentId='blog:'+slug;
+  const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
+  const focus=clean(generation.focus_keyword)||'bedrijfsgeheugen';
+  const meta=(clean(generation.meta_description)||clean(a.content_brief)||clean(a.title)).slice(0,170);
+
+  // Source claims must inherit the exact approved recommendation's public link.
+  // Evidence may be JSON-string-wrapped in legacy production artifacts.
+  const sources:Array<{title:string,url:string}>=[];
+  const recommendationId=clean(generation.recommendation_id);
+  if(/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(recommendationId)){
+    const {data:rec,error:sourceError}=await db.from('powerhouse_content_recommendations')
+      .select('evidence').eq('recommendation_id',recommendationId)
+      .eq('run_date',runDate).eq('target_channel','blog').maybeSingle();
+    if(sourceError)return json({ok:false,error:'SOURCE_PROVENANCE_READ_FAILED'},500);
+    const proof=evidenceObject(rec?.evidence);
+    const sourceUrl=clean(proof.source_url);
+    if(/^https:\/\//i.test(sourceUrl)){
+      sources.push({title:clean(proof.source_title)||'Oorspronkelijke openbare bron',url:sourceUrl});
+    }
+  }
 
   return json({
     ok:true,
     executor_version:VERSION,
     run_date:runDate,
     title:clean(a.title),
-    body:clean(a.body),
+    body:normalizeBlogMarkdownBlocks(clean(a.body)),
     cta:clean(a.cta),
+    sources,
     slug,
     focus_keyword:focus,
     meta_description:meta,
     content_id:contentId,
     canonical_url:canonical,
     artifact_status:a.status,
+    blog_quality_repair:generation.blog_quality_repair||null,
+    reader_ready:generation.automated_blog_reader_ready===true,
     obligation_status:clean(o?.status)||null,
     obligation_idempotency_key:clean(o?.evidence?.idempotency_key)||('content-publication:'+runDate+':blog')
   });

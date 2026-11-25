@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|p0-4198|commercial-stage-isolation|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "SCHEDULER_STAGE_FAILURE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-stage-isolation.test.mjs"
+    ]
+  },
+  "root_cause": "The existing commercial cycle invoked fourteen pipeline stages sequentially without per-stage exception isolation, so one noncritical research, growth or provider error prevented subsequent sales, outreach and learning steps from being attempted.",
+  "prevention_rule": "Invoke each existing authorized stage once under bounded independent SQL exception handlers; return degraded=true with failure_count and per-stage error values without turning any provider output into success. Do not create a second scheduler, bypass consent, revoke authenticators or duplicate external messages.",
+  "evidence": {
+    "original_function": "public.powerhouse_trigger_based_mkb_acquisition_cycle_v1",
+    "stage_count": 14,
+    "production_prior_acl": "postgres=X/postgres,service_role=X/postgres",
+    "tests": [
+      "tests/brain-commercial-stage-isolation.test.mjs"
+    ]
+  },
+  "outcome": {
+    "code_review_required": true,
+    "live_provider_delivery_unproven": true
+  }
+}

@@ -14,7 +14,9 @@ import pathlib
 import re
 import subprocess
 import sys
-from urllib.parse import urlparse
+from html.parser import HTMLParser
+from urllib.parse import urlparse, urlsplit
+from xml.etree import ElementTree
 
 BASE = "https://www.bedrijfsgeheugen.nl"
 
@@ -24,11 +26,33 @@ def fail(message: str) -> None:
     raise SystemExit(1)
 
 
+class _TextContentParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self._skip_depth = 0
+        self._parts: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag.lower() in {"script", "style"}:
+            self._skip_depth += 1
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag.lower() in {"script", "style"} and self._skip_depth:
+            self._skip_depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        if not self._skip_depth:
+            self._parts.append(data)
+
+    def text(self) -> str:
+        return " ".join(self._parts)
+
+
 def text_content(value: str) -> str:
-    value = re.sub(r"<script\b.*?</script>", " ", value, flags=re.I | re.S)
-    value = re.sub(r"<style\b.*?</style>", " ", value, flags=re.I | re.S)
-    value = re.sub(r"<[^>]+>", " ", value)
-    return re.sub(r"\s+", " ", html_lib.unescape(value)).strip()
+    parser = _TextContentParser()
+    parser.feed(value or "")
+    parser.close()
+    return re.sub(r"\s+", " ", parser.text()).strip()
 
 
 def attr(tag: str, name: str) -> str:
@@ -45,6 +69,80 @@ def meta(text: str, *, name: str | None = None, prop: str | None = None) -> list
             out.append(attr(tag, "content"))
     return out
 
+
+
+
+def validate_editorial_topic_keywords(title: str, keyword: str) -> None:
+    """Fail closed on topic-free SEO placeholders; specific single-word brands stay valid.
+
+    This guards the EXACT existing blog candidate, not historical articles.
+    An unseen model/source topic must be corrected by the original producer,
+    never forged by the pre-publication validator.
+    """
+    generic = {
+        "stap", "stappen", "stappenplan", "plan", "tips", "update",
+        "gids", "praktisch", "voorbereid", "voorbereiden", "uitleg",
+    }
+    if keyword.strip().casefold() in generic:
+        fail(f"SEO_EDITORIAL_TOPIC_MISSING_GENERIC_KEYWORD:{keyword}")
+    if re.fullmatch(
+        r"(?:stap|stappenplan|plan|tips|update|gids|voorbereid op):\s*"
+        r"(?:wat verandert er voor jou\?|wat moet je weten\?|praktisch uitgelegd)",
+        title.strip(), re.I,
+    ):
+        fail(f"SEO_EDITORIAL_GENERIC_TITLE_TEMPLATE_FORBIDDEN:{title}")
+
+
+def validate_public_href_targets(main_html: str, sitemap_xml: str) -> dict[str, int]:
+    """Verify every article-body href and canonical internal destination, without network calls.
+
+    The daily existing live crawler must separately confirm HTTP status and redirects.
+    This pre-publication gate rejects broken/unpublished first-party destinations and
+    malformed/insecure links before the protected website release.
+    """
+    try:
+        root = ElementTree.fromstring(sitemap_xml)
+    except ElementTree.ParseError as exc:
+        fail(f"SEO_HREF_SITEMAP_INVALID:{exc}")
+    allowed = {
+        element.text.strip()
+        for element in root.iter()
+        if element.tag.rsplit("}", 1)[-1] == "loc" and element.text and element.text.strip()
+    }
+    if BASE + "/" not in allowed:
+        fail("SEO_HREF_SITEMAP_CANONICAL_ROOT_MISSING")
+    internal_count = 0
+    external_count = 0
+    for match in re.finditer(r"<a\b[^>]*>", main_html, re.I):
+        href = attr(match.group(0), "href")
+        if not href or href == "#" or re.search(r"\s", href):
+            fail(f"SEO_HREF_EMPTY_OR_MALFORMED:{href!r}")
+        if href.startswith("#"):
+            continue  # Section-anchor resolution belongs to the full site DOM audit.
+        if href.startswith(("mailto:", "tel:")):
+            continue
+        if href.startswith("//"):
+            fail(f"SEO_HREF_SCHEME_RELATIVE_FORBIDDEN:{href}")
+        parsed = urlsplit(href)
+        if parsed.scheme == "":
+            if not href.startswith("/"):
+                fail(f"SEO_HREF_ROOT_RELATIVE_OR_ABSOLUTE_REQUIRED:{href}")
+            target = BASE + (parsed.path or "/")
+        elif parsed.scheme == "https":
+            if not parsed.hostname or parsed.username or parsed.password:
+                fail(f"SEO_HREF_INVALID_HTTPS:{href}")
+            if parsed.hostname == "bedrijfsgeheugen.nl":
+                fail(f"SEO_HREF_NONCANONICAL_HOST:{href}")
+            if parsed.hostname != "www.bedrijfsgeheugen.nl":
+                external_count += 1
+                continue  # External response health is checked on the original daily crawl.
+            target = BASE + (parsed.path or "/")
+        else:
+            fail(f"SEO_HREF_UNSAFE_OR_NONHTTPS:{href}")
+        if target not in allowed:
+            fail(f"SEO_HREF_INTERNAL_TARGET_NOT_IN_SITEMAP:{target}")
+        internal_count += 1
+    return {"internal_checked": internal_count, "external_https_checked": external_count}
 
 def significant_tokens(value: str) -> list[str]:
     stop = {"voor", "van", "het", "een", "met", "naar", "and", "the", "bedrijf", "bedrijven"}
@@ -102,6 +200,7 @@ def main() -> None:
     if len(keyword_meta) != 1 or not keyword_meta[0].strip():
         fail("SEO_PRIMARY_KEYWORD_REQUIRED")
     keyword = keyword_meta[0].strip()
+    validate_editorial_topic_keywords(title, keyword)
     kw_tokens = significant_tokens(keyword)
     if not kw_tokens:
         fail("SEO_PRIMARY_KEYWORD_TOKENS_EMPTY")
@@ -184,6 +283,7 @@ def main() -> None:
         fail("TECH_SEO_JSONLD_CANONICAL_MISMATCH")
 
     sitemap = pathlib.Path("sitemap.xml").read_text(encoding="utf-8")
+    href_receipt = validate_public_href_targets(main_html, sitemap)
     rss = pathlib.Path("blog/rss.xml").read_text(encoding="utf-8")
     index = pathlib.Path("blog/index.html").read_text(encoding="utf-8")
     if sitemap.count(canonical_expected) != 1:
@@ -206,6 +306,8 @@ def main() -> None:
         "meta_length": len(descriptions[0]),
         "words": len(words),
         "internal_links": len(internal),
+        "href_internal_targets_checked": href_receipt["internal_checked"],
+        "href_external_https_checked": href_receipt["external_https_checked"],
         "indexable": True,
         "schema": "BlogPosting+BreadcrumbList",
     }, ensure_ascii=False))

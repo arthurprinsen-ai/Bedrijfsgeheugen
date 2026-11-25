@@ -1,0 +1,86 @@
+{
+  "id": "source-universe-impact-engine-v1",
+  "date": "2026-10-07",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|source-universe|impact-engine|canonical-action|outcome|learning|v1",
+  "root_cause": "External intelligence was useful but fragmented. Source capability, observed evidence, generic external relevance, tenant exposure, monetary impact, action execution and observed outcomes were not one explicit truth-bounded lineage.",
+  "architecture": {
+    "lineage": "source capability -> observed evidence -> canonical external signal -> tenant company impact -> recommendation -> canonical Brain obligation -> verified outcome -> existing compound learning",
+    "external_signal_authority": "bg_externe_signalen + powerhouse evidence observations",
+    "signal_projection_scope": "canonical only",
+    "tenant_impact_scope": "authenticated tenant only",
+    "action_authority": "brain_obligations",
+    "outcome_authority": "powerhouse_outcome_memory_v1",
+    "learning_authority": "powerhouse_run_daily_compound_learning_v1",
+    "scheduler_authority": "powerhouse_runtime_scheduler_mux_v3"
+  },
+  "truth_rules": {
+    "source_catalog_is_not_connection_truth": true,
+    "available_is_not_live": true,
+    "external_signal_is_not_company_impact": true,
+    "signal_score_is_not_impact_score": true,
+    "impact_score_requires_probability_magnitude_exposure": true,
+    "financial_value_requires_evidence": true,
+    "canonical_external_signals_never_receive_tenant_impact": true,
+    "fulfilled_obligation_is_not_business_outcome": true,
+    "done_requires_verified_outcome_memory": true,
+    "missing_context": "UNKNOWN",
+    "historical_green_not_reusable": true
+  },
+  "prevention": [
+    "Never create a second external signal store, crawler authority, scheduler, task system, outcome ledger or learning store for this capability.",
+    "Only public source capability is seeded. CONNECTED/OBSERVED/LIVE require current provider/evidence observations.",
+    "Company impact is written only for a real tenant and references a canonical signal.",
+    "Monetary values remain NULL unless tenant/company evidence supports them.",
+    "Only READY actions backed by SCORED company impact may create a canonical Brain obligation.",
+    "FULFILLED means an obligation completed, not that business value was realized.",
+    "A candidate becomes DONE only after verified Outcome Memory can be linked.",
+    "Portal V2 must show canonical outside-world evidence plus authenticated-tenant impact overlay and explicit unknowns."
+  ],
+  "scope": {
+    "external_domains": 35,
+    "internal_domains": 10,
+    "portal_page": "https://www.bedrijfsgeheugen.nl/portal-v2/?page=omgevingsradar"
+  },
+  "compiler": {
+    "failure_class": "SOURCE_INTELLIGENCE_FALSE_CERTAINTY",
+    "scope": "SOURCE_UNIVERSE_COMPANY_IMPACT",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-source-universe-impact-engine-v1.test.mjs"
+    ],
+    "truth_rules": [
+      "catalogued_or_available_is_not_connected_or_live",
+      "external_signal_is_not_tenant_impact",
+      "correlation_is_not_causality",
+      "missing_probability_magnitude_or_exposure_keeps_impact_unknown",
+      "fulfilled_obligation_is_not_business_outcome",
+      "done_requires_verified_outcome_memory"
+    ],
+    "protected_candidate": "#4081",
+    "production_claim": "not_live_proven_until_supabase_netlify_portal_readback"
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-source-universe-impact-engine-v1.test.mjs"
+    ],
+    "architecture": [
+      "platform/system-map/canonical-system-map.mjs",
+      "powerhouse/assurance/loop-registry.json",
+      ".agents/skills/powerhouse-source-universe-impact-engine/SKILL.md",
+      ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+      "AGENTS.md"
+    ],
+    "delivery": {
+      "pull_request": 4081,
+      "admission": "PROVEN_GREEN_ON_PRIOR_EXACT_HEAD",
+      "codeql": "PROVEN_GREEN_ON_PRIOR_EXACT_HEAD",
+      "supabase_preview": "NOT_PROVEN_PROVIDER_CONNECTION_RESET_OBSERVED",
+      "netlify_preview": "NOT_PROVEN_LATEST_PREVIEW_CANCELED",
+      "production": "NOT_YET_PROVEN"
+    }
+  }
+}

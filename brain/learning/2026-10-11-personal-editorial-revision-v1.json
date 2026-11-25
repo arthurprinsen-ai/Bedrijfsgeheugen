@@ -1,0 +1,27 @@
+{
+  "fingerprint": "p0-4198|personal-editorial-repeat-rejection|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "PERSONAL_EDITORIAL_REPEAT_REJECTION",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 7,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-editorial-bounded-revision.test.mjs"
+    ]
+  },
+  "root_cause": "Repeated AI drafts for the personal founder journey failed the published fixed editorial contract for word count, technical jargon, and a natural final question.",
+  "prevention_rule": "Allow exactly one new source-grounded draft after the initial editorial rejection. Validate the exact original word-count, style, source and identity rules again before content_ready. If still invalid, record the channel-specific failure and continue other channels through the fairness scheduler.",
+  "evidence": {
+    "source": "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "tests": [
+      "tests/brain-personal-editorial-bounded-revision.test.mjs"
+    ]
+  },
+  "outcome": {
+    "provider_publication_proven": false,
+    "editorial_gate_preserved": true
+  }
+}

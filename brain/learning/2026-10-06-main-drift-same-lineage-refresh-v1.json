@@ -1,0 +1,31 @@
+{
+  "version": "MAIN-DRIFT-SAME-LINEAGE-REFRESH-v1",
+  "date": "2026-10-06",
+  "fingerprint": "delivery|terminal-candidate|behind-main|same-lineage-refresh-v1",
+  "obligation_id": "main-drift-same-lineage-refresh-20261006-v1",
+  "root_cause": "The recovery classifier treated only merge conflicts as requiring a same-lineage main refresh. A terminal PR that remained mergeable but fell behind a rapidly moving main was classified as healthy, so protected merge could never satisfy behindBy=0 and agents created repeated successors.",
+  "prevention": "Classify a completed green Required head with behindBy>0 as MAIN_DRIFT_RECOVERY. The supervisor captures one immutable main SHA, proves a merge base and zero changed-path overlap, refreshes the existing same-repository leased branch from that exact SHA, advances lease metadata, and consumes the bounded recovery budget.",
+  "compiler": {
+    "failure_class": "MERGEABLE_TERMINAL_PR_BEHIND_MAIN_NOT_REFRESHED",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "A mergeable terminal candidate with Required green and behindBy=1 must enter MAIN_DRIFT_RECOVERY.",
+      "A behind candidate with Required still active must remain in normal progress and must not refresh."
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "controls": [
+      "exact captured main SHA",
+      "merge-base required",
+      "zero path overlap required",
+      "terminal writer lease required",
+      "one recovery PR budget per supervisor cycle"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION"
+}

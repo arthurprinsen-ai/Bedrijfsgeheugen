@@ -85,35 +85,90 @@ export function createPowerhouseRuntimeBridge({
   let sequence=0;
   let lastCorrelationId='';
   let lastRecordId='';
+  // Session-bound, in-memory handoff. It is deliberately NOT a server-durable
+  // outbox; the original #4215 durable restart contract remains EVIDENCE_DUE.
   const pending=new Map();
   const authHeadersProvider=()=>stateClient.authHeaders();
+  const principalFromSnapshot=()=>{
+    const snap=stateClient.getSnapshot?.();
+    if(stopped||snap?.mode!=='authenticated'||stateClient.isDemo?.())return '';
+    const user=snap.user;
+    const id=clean(user?.id);
+    if(!id)return '';
+    // Same identity can switch between business tenants. Only server-issued
+    // app_metadata is trusted for the tenant membership boundary.
+    const tenant=clean(user?.app_metadata?.tenantId||user?.appMetadata?.tenantId);
+    return tenant?`${id}::tenant:${tenant}`:id;
+  };
+  let queuePrincipal=principalFromSnapshot();
+  function currentPrincipal(){
+    const principal=principalFromSnapshot();
+    if(principal!==queuePrincipal){
+      // Never replay tenant A's action or reuse its correlation under tenant B.
+      for(const entry of pending.values())if(entry.timer)clearTimeout(entry.timer);
+      pending.clear();
+      lastCorrelationId='';
+      lastRecordId='';
+      sequence=0;
+      queuePrincipal=principal;
+    }
+    return principal;
+  }
 
   async function refresh(){
     if(stopped)return null;
+    const sessionId=currentPrincipal();
+    if(!sessionId)return null;
     if(activeRefresh)return activeRefresh;
-    activeRefresh=loadRuntimeEvidence({fetchImpl,domainState,authHeadersProvider})
-      .then(runtime=>{if(runtime){onRuntime(runtime);return runtime;}return null;})
-      .finally(()=>{activeRefresh=null;});
+    const stillSameSession=()=>currentPrincipal()===sessionId;
+    activeRefresh=loadRuntimeEvidence({fetchImpl,domainState,authHeadersProvider,validateSession:stillSameSession})
+      .then(runtime=>{if(runtime&&stillSameSession()){onRuntime(runtime);return runtime;}return null;})
+      .finally(()=>{
+        activeRefresh=null;
+        // Existing 45-second/focus/identity readback is also the retry clock.
+        // No extra interval, worker or second delivery authority is introduced.
+        void flushPending();
+      });
     return activeRefresh;
   }
 
-  async function sendRecord(record){
-    if(stopped)return null;
+  async function sendRecord(record,expectedPrincipal=currentPrincipal()){
+    if(!expectedPrincipal||currentPrincipal()!==expectedPrincipal)return null;
     const headers=await authHeadersProvider();
-    if(!headers?.authorization)return null;
+    if(!/^Bearer\s+\S+/i.test(String(headers?.authorization||''))||currentPrincipal()!==expectedPrincipal)return null;
     const response=await fetchImpl('/api/brain-operating-loop',{
       method:'POST',
       credentials:'same-origin',
       headers:{...headers,accept:'application/json','content-type':'application/json'},
       body:JSON.stringify(record)
     });
-    if(!response.ok)return null;
+    if(currentPrincipal()!==expectedPrincipal||!response.ok)return null;
     const body=await response.json().catch(()=>null);
-    const storedId=clean(body?.record?.id);
-    if(storedId)lastRecordId=storedId;
-    const correlation=clean(body?.record?.correlationId||record?.correlationId);
-    if(correlation)lastCorrelationId=correlation;
-    await refresh();
+    // HTTP 2xx is not an ACK. Require the exact original immutable Brain ID
+    // and correlation before removing an item from the original queue.
+    if(clean(body?.record?.id)!==record.id
+        ||clean(body?.record?.correlationId)!==record.correlationId)return null;
+    // The POST echo is a producer receipt, not proof that the tenant-scoped
+    // canonical read model can independently retrieve the SAME record.
+    // Use the original GET endpoint with the original bearer and verify exact
+    // immutable identity before deleting the pending handoff. No new worker.
+    const readback=await fetchImpl('/api/brain-operating-loop',{
+      credentials:'same-origin',cache:'no-store',
+      headers:{...headers,accept:'application/json'}
+    });
+    if(currentPrincipal()!==expectedPrincipal||!readback.ok)return null;
+    const projection=await readback.json().catch(()=>null);
+    if(!Array.isArray(projection?.records)
+      ||!projection.records.some(item=>
+        clean(item?.id)===record.id
+        &&clean(item?.correlationId)===record.correlationId
+        &&clean(item?.type)===record.type
+        &&clean(item?.observedAt)===record.observedAt
+        &&clean(item?.provenance?.source||item?.source)==='portal-v2'
+      ))return null;
+    lastRecordId=record.id;
+    lastCorrelationId=record.correlationId;
+    await refresh().catch(()=>null);
     return body;
   }
 
@@ -127,17 +182,57 @@ export function createPowerhouseRuntimeBridge({
     return sendRecord(action);
   }
 
+  async function flushPending(){
+    const principal=currentPrincipal();
+    if(!principal||stopped)return;
+    const tasks=[];
+    for(const [key,entry] of pending){
+      if(entry.principal!==principal||!entry.ready||entry.inflight)continue;
+      entry.inflight=true;
+      tasks.push((async()=>{
+        try{
+          const ack=await sendRecord(entry.record,principal);
+          if(ack&&pending.get(key)===entry)pending.delete(key);
+          // HTTP / network / incomplete ACK leaves the identical record queued
+          // for the next existing readback. Never relabel a failed POST as done.
+        }catch{
+          // Retain the same immutable idempotency key, body and observedAt.
+        }finally{entry.inflight=false;}
+      })());
+    }
+    await Promise.all(tasks);
+  }
+
   function queueEvidence(key,input,delay=350){
-    if(stopped)return;
-    const existing=pending.get(key);
-    if(existing)clearTimeout(existing.timer);
-    const timer=setTimeout(()=>{
-      pending.delete(key);
-      const sender=input?.__action?sendAction:sendEvidence;
-      const payload=input?.__action?Object.fromEntries(Object.entries(input).filter(([key])=>key!=='__action')):input;
-      sender(payload).catch(()=>null);
+    const principal=currentPrincipal();
+    if(!principal)return false;
+    const payload=input?.__action
+      ? Object.fromEntries(Object.entries(input).filter(([name])=>name!=='__action'))
+      : input;
+    const observedAt=payload?.observedAt||now();
+    const record=input?.__action
+      ?buildPortalAction({...payload,observedAt})
+      :buildPortalEvidence({...payload,observedAt});
+    // A repeat of the exact original source revision is the SAME handoff.
+    // Never create a concurrent duplicate with an identical provider idempotency key.
+    if([...pending.values()].some(entry=>entry.principal===principal
+       &&entry.record.idempotencyKey===record.idempotencyKey))return true;
+    const previous=pending.get(key);
+    // Debounce only UNSENT transient UI input. Once a message is ready or
+    // in-flight, its immutable payload stays pending through failure/retry.
+    // Later interactions get a distinct key rather than deleting the old one.
+    const pendingKey=previous&&(previous.ready||previous.inflight)
+      ?`${key}:${record.id}`:key;
+    if(pendingKey===key&&previous?.timer)clearTimeout(previous.timer);
+    const entry={record,principal,ready:false,inflight:false,timer:null};
+    pending.set(pendingKey,entry);
+    entry.timer=setTimeout(()=>{
+      entry.timer=null;
+      if(pending.get(pendingKey)!==entry)return;
+      entry.ready=true;
+      void flushPending();
     },delay);
-    pending.set(key,{timer,input});
+    return true;
   }
 
   const onBrainSynced=event=>{
@@ -218,15 +313,15 @@ export function createPowerhouseRuntimeBridge({
   for(const [name,handler] of listeners)eventTarget?.addEventListener?.(name,handler);
 
   const unsubscribe=stateClient.subscribe?.(snapshot=>{
+    currentPrincipal(); // revoke old tenant queue immediately on identity change
     if(snapshot?.mode==='authenticated')refresh().catch(()=>null);
   });
 
   if(Number(intervalMs)>0)interval=setInterval(()=>{
-    const snap=stateClient.getSnapshot?.();
-    if(snap?.mode==='authenticated')refresh().catch(()=>null);
+    if(currentPrincipal())refresh().catch(()=>null);
   },Number(intervalMs));
 
-  const onFocus=()=>{if(stateClient.getSnapshot?.()?.mode==='authenticated')refresh().catch(()=>null);};
+  const onFocus=()=>{if(currentPrincipal())refresh().catch(()=>null);};
   globalThis.addEventListener?.('focus',onFocus);
 
   refresh().catch(()=>null);
@@ -235,6 +330,7 @@ export function createPowerhouseRuntimeBridge({
     refresh,
     sendEvidence,
     sendAction,
+    pendingHandoffs:()=>Object.freeze({pending:pending.size,unverified:[...pending.values()].filter(entry=>entry.ready).length}),
     destroy(){
       stopped=true;
       unsubscribe?.();

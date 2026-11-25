@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "growth-drain|intermittent-pointer-invalid-or-missing|replay-0-failed-1|20261025",
+  "obligation_id": "netlify|growth-drain|index-integrity-skip-with-evidence|20261025-v1",
+  "parent_issue": 4446,
+  "related_issue": 4198,
+  "failure_class": "GROWTH_DRAIN_INDEX_INTEGRITY_STARVATION",
+  "root_cause": "Immediately after protected merge #4908, some production growth-drain invocations returned HTTP204 with indexedSeen=1, replayed=0, failed=1 and indexedCompleted=0, even though other invocations persisted 2-4 events. Exactly the pre-provider pointer invalid or source missing paths can emit this signature, and break the scan before checking other pending items.",
+  "fix": "Keep failed/missing indexed pointers durably pending, emit bounded aggregate failure class counts, proceed to other pending entries within the unchanged deadline, reserve stop-on-error for actual provider failures; return HTTP503 rather than false-success 204 if any failure. No deletion, no new scheduler, no exposure of event identities.",
+  "evidence": {
+    "netlify": "2026-10-25 at 15:21,15:23,15:24,15:26,15:28,15:32,15:34,15:37 UTC failed=1,replayed=0,indexedSeen=1 with HTTP204",
+    "positive": "Same production after #4908 other minute runs persisted 2-4 each",
+    "sql": "45 first-party page_view rows created after fix; cohort human attribution still unverified"
+  },
+  "prevention_rules": [
+    "A bad queue pointer cannot starve valid work",
+    "Preserve source and pointer evidence for reconciliation",
+    "Never return green HTTP204 if failed>0",
+    "Do not conflate pending queues, receipt persistence, clicks, paid orders",
+    "Use exactly existing minute scheduled drain and same provider gates"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-drain-time-budget-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GROWTH_DRAIN_INDEX_INTEGRITY_STARVATION",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Required+CodeQL+Netlify+protected merge and independent per-minute provider readback; any persistent bad pointer must remain a visible blocker until reconciled; no paid revenue inferred."
+}

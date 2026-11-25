@@ -14,7 +14,7 @@ test('cockpit autopilot reuses canonical publisher and fails closed outside supp
 
 test('cockpit autopilot is idempotent and writes provider/outcome evidence', () => {
   assert.match(source, /\.eq\('status','suggested'\)/);
-  assert.match(source, /status:'dispatching'/);
+  assert.match(source, /\.update\(\{status:'waiting'/);
   assert.match(source, /provider_ack_verified:true/);
   assert.match(source, /powerhouse_record_outcome/);
   assert.match(source, /mode === 'cockpit_autopilot'/);

@@ -1,10 +1,18 @@
 import { test, expect } from '@playwright/test';
+import { classifyPortalBrowserReadback } from './portal-v2-readback-security-challenge.mjs';
 
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
 
 async function openAnalysis(page,pageId){
  const response=await page.goto(`${BASE_URL}/portal-v2/?page=${encodeURIComponent(pageId)}&bg_algorithm_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
  expect(response,`${pageId} response`).not.toBeNull();
+ // Preserve the HTTP gate. Diagnose a provider challenge without accepting 403 as success.
+ if(response.status()===403){
+  const classification=classifyPortalBrowserReadback({status:403,html:await page.content()});
+  if(classification==='NETLIFY_SECURITY_CHALLENGE'){
+   throw new Error(`NETLIFY_SECURITY_CHALLENGE_READBACK_BLOCKED:${pageId}:HTTP403; preserve Netlify security and obtain a fresh exact-deploy authorized browser proof`);
+  }
+ }
  expect(response.status(),`${pageId} status`).toBeLessThan(400);
  const workspaceSelector=`[data-functional-workspace="${pageId}"]`;
  const workspace=page.locator(workspaceSelector);
@@ -30,8 +38,22 @@ async function openAnalysis(page,pageId){
 }
 
 test('production serves the executable legacy parity engine',async({request})=>{
- const response=await request.get(`${BASE_URL}/portal-v2/legacy-parity-engine.js?bg_engine=${Date.now()}`);
- expect(response.status()).toBeLessThan(400);
+ // A verified provider-level anti-bot 403 can be a transient security challenge
+ // even for a legitimate read-only probe. Never weaken Netlify protection,
+ // supply fake authorization, or classify a persistent 403 as a successful GET.
+ let response,classification='HTTP_ERROR';
+ for(let attempt=0;attempt<3;attempt++){
+  if(attempt)await new Promise(resolve=>setTimeout(resolve,attempt*400));
+  response=await request.get(`${BASE_URL}/portal-v2/legacy-parity-engine.js?bg_engine=${Date.now()}-${attempt}`);
+  if(response.status()===403){
+   classification=classifyPortalBrowserReadback({status:403,html:await response.text()});
+   if(classification==='NETLIFY_SECURITY_CHALLENGE'&&attempt<2)continue;
+   if(classification==='NETLIFY_SECURITY_CHALLENGE')
+    throw new Error('NETLIFY_SECURITY_CHALLENGE_READBACK_BLOCKED:legacy-parity-engine.js:HTTP403; original provider challenge must remain open');
+  }
+  break;
+ }
+ expect(response.status(),'the original public asset must be independently served, never a 403').toBe(200);
  const source=await response.text();
  expect(source).toContain('calculateLegacyEquivalent');
  expect(source).toContain('LEGACY_PARITY_ENGINE_VERSION');
@@ -42,7 +64,6 @@ test('production executes representative AI, finance, compliance and execution l
  for(const [pageId,ids] of [
   ['ai-scan',['annual-task-cost','opportunity-score']],
   ['waarde-financiering',['dcf','altman-z','dscr']],
-  ['compliance-governance',['compliance-risk']],
   ['strategie-naar-maandagochtend',['priority-filter']],
   ['due-diligence',['red-flags']],
   ['advies',['cross-model-weight']],
@@ -51,4 +72,13 @@ test('production executes representative AI, finance, compliance and execution l
   const parity=await openAnalysis(page,pageId);
   for(const id of ids)await expect(parity.getByText(id,{exact:true}),`${pageId}:${id}`).toBeVisible();
  }
+});
+
+test('anonymous production cannot open the protected compliance workspace', async ({page}) => {
+ const response=await page.goto(`${BASE_URL}/portal-v2/?page=compliance-governance&bg_auth_denial=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
+ expect(response?.status()).toBeLessThan(400);
+ await expect(page.locator('#portalView')).not.toHaveAttribute('data-page-id','compliance-governance');
+ await expect(page.locator('[data-functional-workspace="compliance-governance"]')).toHaveCount(0);
+ // Authenticated compliance algorithms are an independent customer session
+ // acceptance gate. Never inject synthetic tokens into public production.
 });

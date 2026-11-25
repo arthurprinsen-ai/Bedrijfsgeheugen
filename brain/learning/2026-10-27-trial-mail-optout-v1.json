@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse|billing|trial-mail-optout|20261027-v1",
+  "compiler": {
+    "failure_class": "OPT_OUT_PROMISED_BUT_NOT_HONORED",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-saas-trial-mails-v1.test.mjs"],
+    "canary": ["tests/brain-saas-free-trial-v1.test.mjs", "tests/brain-pricing-generator-trial-v1.test.mjs"],
+    "shadow": ["tests/brain-saas-trial-mails-v1.test.mjs"]
+  },
+  "root_cause": "The trial mail promised 'antwoord met afmelden', but the reply loop only looks at senders of its own outreach actions, so a trial customer's opt-out reply was never recorded.",
+  "prevention": "Before each live run, the sender searches the mailbox for replies from customers who received a trial mail in the last 14 days and adds an active suppression on an opt-out reply. Quoted lines and the own opt-out line do not count.",
+  "evidence": {
+    "tests": ["tests/brain-saas-trial-mails-v1.test.mjs"],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unit-tested classifier; live path verified on an empty due list only (no customer mail has been sent yet)"
+  },
+  "limitations": [
+    "Only replies within 14 days of the last mail are checked",
+    "Free-text opt-outs in other languages are not recognized"
+  ]
+}

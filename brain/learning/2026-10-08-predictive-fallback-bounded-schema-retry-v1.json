@@ -1,0 +1,11 @@
+{
+  "fingerprint":"powerhouse|predictive|strict-fallback-schema-bounded-retry|v1",
+  "obligationId":"powerhouse-predictive-fallback-schema-retry-20261008-v1",
+  "status":"CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause":"Approved LLM fallback occasionally returns malformed forecast JSON even with explicit JSON-only prompt.",
+  "failureModes":["FALLBACK_FORECAST_SCHEMA_INVALID"],
+  "prevention":["One schema-only retry maximum on same approved provider and public context","Do not send prior malformed provider output into corrective request","Maintain strict evidence-key and schema checks, fail closed after second invalid response","Record retry count in canonical forecast and run proof"],
+  "evidence":{"production_success_at":"2026-10-08T15:19:06.697Z","production_success":"six approved fallback forecasts","intermittent_failure_at":"2026-10-08T15:19:21.848Z","intermittent_failure":"FALLBACK_FORECAST_SCHEMA_INVALID","new_patch_production":"NOT_VERIFIED"},
+  "compiler":{"failure_class":"MODEL_SCHEMA","scope":"BACKEND","machine_enforceable":true,"repeat_count":1,"security_sensitive":false},
+  "evaluation":{"historical_replay":["tests/brain-predictive-approved-fallback-v1.test.mjs"]}
+}

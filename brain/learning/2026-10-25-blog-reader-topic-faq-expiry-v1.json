@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "content|blog|generic-focus-malformed-faq-expired-forecast|20261025-v1",
+  "obligation_id": "growth:blog-reader-evidence-gate:20261025-v1",
+  "parent_issue": 4198,
+  "related_pr": 4848,
+  "failure_class": "PUBLIC_CONTENT_UNREADABLE_OR_TIME_INVALID",
+  "observed_evidence": {
+    "artifact": "2026-10-25 public Powerhouse blog PR #4848",
+    "bad_output_title": "Publiceren voor: wat verandert er voor jou?",
+    "observed_input_title": "Publiceren voor de Circular Plastics NL-kans: beslis alleen als kanaalgates en commerciële waarde beide akkoord zijn",
+    "stale_claim": "forecast suggests subsidy applications likely to open 6 October 2026 although business date is 25 October 2026",
+    "faq_problem": "Schema Question.name wrongly contains heading plus paragraph, and sections are invented into questions",
+    "required_checks": "exact head 4dc017e0b709d1c7db060f97db44cda0d76f58b6 action_required with zero started jobs; not green",
+    "state": "NOT_PUBLISHED_NOT_PROVEN"
+  },
+  "root_cause": "Publisher accepted a focus keyword ending with a preposition, treated the full section block as FAQ heading and reused a future-tense opening date after that date had passed.",
+  "prevention_rules": [
+    "Choose two substantive subject words when an editorial verb+preposition is presented as a focus term.",
+    "Emit only source-authored FAQ questions, parse heading first line, reject invented or empty FAQ structured data.",
+    "Reject already-passed absolute future event-opening claims; demand upstream source review rather than silent rewriting.",
+    "Do not merge or claim provider delivery while Required and CodeQL have action_required with no jobs; exact-head controls and independent production readback remain mandatory.",
+    "Keep the existing canonical writer and publisher, ONE BRAIN ledger, and no duplicate schedules or campaign actions."
+  ],
+  "tests": [
+    "tests/brain-blog-reader-topic-faq-expiry-20261025.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-reader-topic-faq-expiry-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-reader-topic-faq-expiry-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-reader-topic-faq-expiry-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_CONTENT_UNREADABLE_OR_TIME_INVALID",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Source tests pass, exact-head Required + CodeQL pass, protected merge, following genuine blog candidate quality pass, exact Netlify canonical readback, downstream views/leads/orders observed rather than predicted."
+}

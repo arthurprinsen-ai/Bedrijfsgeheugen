@@ -1,0 +1,61 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-30",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|all-agent-innovation|roster-unchecked-during-daily-self-evolution|20261030-v1",
+  "compiler": {
+    "failure_class": "AGENT_INNOVATION_DUTY_COVERAGE_GAP",
+    "scope": "ONE_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-all-agent-innovation-duty-20261030.test.mjs"
+    ]
+  },
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "cause": "Previous global agent skills and original Growth OS tasks instructed autonomy but existing daily-self-evolution snapshot checked presence of files, not whether all source-controlled current/future original agent roles received safe, source-grounded autonomous innovation assignments. An unassigned new agent could be silently counted as READY. Assigned does not prove that any code was shipped, lesson applied or sales improved.",
+  "evidence": {
+    "baseline_date": "2026-10-30",
+    "registered_agents_in_original_team": 14,
+    "technical_layers": 32,
+    "active_required_jobs": 18,
+    "open_learning_obligations": 501,
+    "original15LoopCounts": {
+      "green": 8,
+      "amber": 3,
+      "red": 4
+    },
+    "production_revenue_flywheel_verified_eur": 0,
+    "original_consent_eligible_cta_readback": "UNVERIFIED",
+    "evidence_qualifier": "Registry inventory is not an exhaustive runtime process census, natural agent execution or controlled buyer/customer result."
+  },
+  "repair": "Reuses existing DEFAULT_AGENT_TEAM dynamic inventory, original deterministic innovation portfolio and existing admin-only CRO/ONE BRAIN/Heartbeat source. Assign each original/future registered specialist a bounded evidence-first customer/business/engineering innovation task. Include assignments in same protected Portal V2, existing daily self-evolution snapshot and one existing GitHub workflow. Fail closed on duplicate/invalid roster, incomplete source and unprotected candidate; never claim applied learning or paid orders on assignment.",
+  "prevention": [
+    "Every current and future original registered agent receives a defined bounded innovation assignment on every existing daily Self Evolution snapshot; no new executor, workflow trigger, schedules or agent identities.",
+    "Agent specialist acts only within actual capabilities, original source, single writer and independent provider/tenant authorization.",
+    "Unknown/invalid candidate or duplicate/invalid agent register blocks coverage; not a fake READY.",
+    "An innovation plan/duty remains ASSIGNED_NOT_EXECUTED until exact protected PR and production readback, then separately verify natural next-run skill application and causal customer/order outcome.",
+    "Human customer consent, OAuth, spending, legal/financial commitments, destructive changes and security controls remain hard boundaries."
+  ],
+  "original_agent_registry": "platform/agents/agent-team.mjs",
+  "read_only_adapter": "brain/self-improvement/all-agent-innovation-duties.mjs",
+  "original_portal": "portal-v2/modules/andere-data.js",
+  "original_daily_workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+  "tests": [
+    "tests/brain-all-agent-innovation-duty-20261030.test.mjs"
+  ],
+  "human_doc": "docs/changes/2026-10-30-all-agent-innovation-duty-closed-loop.md",
+  "ledger": "docs/development-ledger-events/2026-10-30-all-agent-innovation-duty-closed-loop.md",
+  "delivery": {
+    "status": "SOURCE_CANDIDATE",
+    "protected_merge_verified": false,
+    "exact_production_verified": false,
+    "authenticated_portal_verified": false,
+    "next_natural_agent_executed_verified": false,
+    "customer_or_paid_order_improved_verified": false
+  }
+}

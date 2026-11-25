@@ -7,8 +7,10 @@ test('homepage build wires Platform/Expertise as a real accessible toggle', () =
   assert.equal(existsSync(scriptPath), true, 'toggle build step is missing');
 
   const netlify = readFileSync('netlify.toml', 'utf8');
+  const buildAuthority = readFileSync('tools/ci/netlify-build-entry.mjs', 'utf8');
   const pricingPipeline = readFileSync('tools/prijzen-uit-de-homepage.mjs', 'utf8');
-  assert.match(netlify, /node tools\/prijzen-uit-de-homepage\.mjs/, 'pricing/page-policy pipeline is not in the production build');
+  assert.match(netlify, /node tools\/ci\/netlify-build-entry\.mjs/, 'Netlify must delegate to the canonical build authority');
+  assert.match(buildAuthority, /tools\/prijzen-uit-de-homepage\.mjs/, 'pricing/page-policy pipeline is not in the canonical production build');
   assert.match(pricingPipeline, /bouw-v18-homepage-platform-expertise-toggle\.mjs/, 'toggle fix is not part of the effective production build');
 
   const source = readFileSync(scriptPath, 'utf8');

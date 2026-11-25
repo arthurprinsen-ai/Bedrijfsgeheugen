@@ -9,12 +9,6 @@ on:
       - 'docs/changes/powerhouse-security-operations-hardening-v1.md'
       - 'tests/brain-security-operations-closure-v1.test.mjs'
       - '.github/workflows/powerhouse-security-operations-closure.yml'
-  pull_request:
-    paths:
-      - 'brain/production/security-operations-closure-v1.json'
-      - 'docs/changes/powerhouse-security-operations-hardening-v1.md'
-      - 'tests/brain-security-operations-closure-v1.test.mjs'
-      - '.github/workflows/powerhouse-security-operations-closure.yml'
   workflow_dispatch:
 
 permissions:

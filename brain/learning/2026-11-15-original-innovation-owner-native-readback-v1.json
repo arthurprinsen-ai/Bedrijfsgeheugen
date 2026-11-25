@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|innovation|daily-original-agent-intake-no-native-owner-provider-readback|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "INNOVATION_OWNER_INTAKE_CONSUMER_READBACK_MISSING",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-owner-readback-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-owner-readback-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-original-owner-readback-20261115.test.mjs"
+    ]
+  },
+  "root_cause": "Original daily Supabase innovation producer durably registered candidate->obligation->original engineering/CRO intake, but existing scheduled GitHub daily agent-skill workflow only tested static code and used a read-only improvement example. No native provider-counted, owner-identity-joined review packet was read in that same scheduled workflow. Owner metadata and successful scheduler could be mistaken for real receipt, while 14 actual intakes remained PLANNED with zero independently verified consumer ACK.",
+  "evidence": {
+    "original_source": "public.powerhouse_optimization_candidate_v1 + public.brain_obligations.INNOVATION_DELIVERY + public.brain_operations.INNOVATION_INTAKE",
+    "native_checked_at": "2026-11-15T09:02:45Z",
+    "original_candidate_count": 14,
+    "original_intake_planned": 14,
+    "original_delivery_open": 14,
+    "independent_original_agent_ack": 0,
+    "original_owner_split": {
+      "engineering": 13,
+      "cro": 1
+    },
+    "canonical_daily_workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "existing_immutable_agentwork_pending": 3313,
+    "existing_recoverywork_recovering": 1055,
+    "verified_implementation_effect": false
+  },
+  "change": {
+    "existing_schedule_extended": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "same_existing_artifact_upload": "artifacts/quality/",
+    "original_read_only_helper": "scripts/brain/innovation-original-owner-readback.mjs",
+    "existing_self_improvement_skill": ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    "new_scheduler": false,
+    "new_executor": false,
+    "new_queue": false,
+    "new_credential": false,
+    "new_database": false,
+    "direct_production_mutation": false,
+    "provider_send": false
+  },
+  "prevention": {
+    "canonical_source_join_exact": true,
+    "source_revision_owner_sha_and_operation_identity_required": true,
+    "provider_complete_count_and_pagination_required": true,
+    "missing_or_invalid_source_fails_closed": true,
+    "false_or_missing_consumer_ack_is_not_success": true,
+    "missing_candidates_never_green": true,
+    "audit_runs_at_end_of_existing_job_even_after_previous_step_error": true,
+    "existing_daily_execution_not_disabled": true,
+    "no_customer_data_emitted": true,
+    "original_real_execution_and_effect_measurement_still_required": true,
+    "github_artifact_redacts_source_bound_candidate_and_operation_identity": true,
+    "github_artifact_preserves_only_status_owner_counts": true
+  },
+  "remaining_evidence": "Current source work creates an owner-specific readback audit/diagnostic packet, not a real consumer agent claim, protected code execution, independent remote ref, external side effect, or measured innovation. Need exact-head Required/CodeQL, protected merge, next natural daily run provider readback and artifact, then original registered agent owner builds one source-bound change at a time and supplies real consumer receipt/production impact before closing any of the 14. GitHub public Actions artifact must be redacted; regression checks enforced.",
+  "release_state": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "human_documentation": "docs/changes/2026-11-15-original-innovation-owner-native-daily-readback.md",
+  "regressions": [
+    "tests/brain-innovation-original-owner-readback-20261115.test.mjs",
+    "tests/powerhouse-daily-self-evolution.test.mjs"
+  ]
+}

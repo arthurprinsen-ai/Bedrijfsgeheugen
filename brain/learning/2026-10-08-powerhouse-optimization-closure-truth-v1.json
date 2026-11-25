@@ -1,0 +1,35 @@
+{
+  "id": "powerhouse-optimization-closure-truth-20261008-v1",
+  "fingerprint": "self-evolving-optimization-review-execution-realized-value-proof-v1",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "unknown_is_not_green": true,
+  "problem": "Existing candidate_measured counted non-empty outcome fields without independent cross-record verification; 3 live optimization candidates remain pending.",
+  "prevention": [
+    "Require independently evidenced review and exact candidate production receipt",
+    "Require candidate-linked independent nonsynthetic realized observation",
+    "Require verified canonical learning readback",
+    "Never treat shipping acknowledgements or unit not_executed as financial gains",
+    "Keep one daily self-improvement observer and source of truth"
+  ],
+  "evidence": {
+    "source": [
+      "supabase/migrations/20261008173100_powerhouse_optimization_closure_truth_v1.sql"
+    ],
+    "test": [
+      "tests/brain-optimization-closure-truth-v1.test.mjs"
+    ],
+    "production": "PENDING_PROTECTED_MERGE_AND_SUPABASE_READBACK"
+  },
+  "compiler": {
+    "failure_class": "CANDIDATE_CLOSURE_VALUE_PROOF_GAP",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "material": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-optimization-closure-truth-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The canonical daily candidate_measured indicator trusted populated outcome JSON and allowed shipment/status counters to appear like realized improvement without approved review, exact production receipts, independent measured outcomes or linked learning."
+}

@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "mira|failed-obligation-rejected-video-diagnostic-not-reconciled|20261022-v1",
+  "obligation_id": "mira|failed-obligation-proof-canonical-brain|20261022-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "related_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4703",
+  "title": "Propagate rejected OpenArt Mira frame proof into FAILED Instagram obligation and canonical Brain",
+  "status": "CANDIDATE",
+  "failure_class": "RECOVERY",
+  "root_cause": "The existing recordMediaProofRejection updates the canonical content_publication_obligations diagnostic only for BLOCKED, but the watchdog has already transitioned the same publication obligation to FAILED. The WAITING_PROOF job was therefore fresher than the FAILED obligation. No independent explanation for the underlying sub-0.94 face-score variation is proven.",
+  "impact": "Two components of the same daily Instagram job expose inconsistent failure causes; agents may needlessly repeat media generation. Historical attempts=108 does not imply 108 unique provider videos.",
+  "evidence": {
+    "production_date": "2026-10-22",
+    "media_job_id": "56dddcc4-3202-42c9-a35f-447b39d88f5d",
+    "openart_generation_id": "Ge4MhZ3FFAoWREo0TtDJ",
+    "routed_pg_net_request_id": 10524,
+    "frame": "middle",
+    "measured_face_confidence": 0.93,
+    "required_min_face_confidence": 0.94,
+    "media_job_state": "WAITING_PROOF",
+    "obligation_state": "FAILED",
+    "instagram_external_id": null,
+    "canonical_failure_fingerprint": "powerhouse|instagram-mira|video-frame-identity-below-094|20261022-v1",
+    "unique_observations_before": 4,
+    "unique_observations_after": 5,
+    "production_data_reconciliation": "Existing FAILED obligation updated to exact 0.930 rejection while remaining FAILED with external_id=NULL at 2026-10-22T18:57:46Z",
+    "separate_active_regressions": [
+      "mira|prepublish-status-fail-contradiction|20261022-v1",
+      "powerhouse|instagram-frame-extractor-auth-oracle-fail-open|20261022-v1"
+    ]
+  },
+  "fix": "Use status-specific CAS for both FAILED/BLOCKED read-model diagnostics and append first unique OpenArt history/frame rejection to existing brain_observe_failure (no new table or scheduler). Preserve job status, failed public status, media URL, and provider ID truth.",
+  "prevention_rule": "On every exact OpenArt Mira frame rejection, dedupe by generation/frame and append canonical Brain occurrence; reconcile FAILED/BLOCKED read-model diagnostics under CAS; never erase verified rejection or mark Instagram live without >=0.94 start/middle/end identity, temporal match and independent provider readback.",
+  "regression_contract": "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-mira-preflight-verifier-rejection-retention.test.mjs"
+  ],
+  "release_gates": [
+    "Required exact-head CI + CodeQL",
+    "protected merge",
+    "Supabase Edge router exact source readback",
+    "production controlled failure revalidation"
+  ],
+  "outcome": "CANDIDATE; diagnostic data reconciled, code not production-deployed until gates succeed. Instagram publication remains FAILED.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "repeat_count": 5,
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|engineering|evidence-aware-ci-optimizer|v1",
+  "obligationId": "powerhouse-evidence-aware-ci-optimizer-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "Skipped required-test lanes were counted as orchestration waste even when their execution cost is zero. Daily tuning also could increase concurrency/speculation on thin or missing timing observations, with no cooldown to observe the result.",
+  "failureModes": [
+    "skipped lane ratio incorrectly reduces parallel work",
+    "automatic tuning on thin data",
+    "repeated optimistic adjustments before post-change observation"
+  ],
+  "prevention": [
+    "measure observed job and required-run sample counts",
+    "exclude skipped jobs from runtime-pressure heuristic",
+    "hold upward tuning until sufficient observations and cooldown",
+    "retain all safety gates and protected release checks"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ],
+    "baseline_comparison": "Previous tuner treated skipped_rate > 0.35 as orchestration waste; revised tuner does not.",
+    "success_metric": "At least 20 sampled jobs with adequate timing samples; no optimistic retune within 30 hours; shorter or equal p95 time-to-live on comparable changes",
+    "non_degradation": [
+      "Required test",
+      "CodeQL",
+      "protected merge",
+      "production readback"
+    ],
+    "rollback": "revert candidate commit through protected change if post-release CI p95 or failure rate deteriorates"
+  },
+  "evidence": {
+    "code_paths": [
+      "scripts/brain/autonomous-engineering-fabric-v3.mjs",
+      "scripts/brain/powerhouse-ci-intelligence.mjs"
+    ],
+    "test_paths": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ],
+    "verification": "PENDING_PROTECTED_CI",
+    "production_readback": "PENDING"
+  }
+}

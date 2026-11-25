@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "daily-blog|merged-website-live|supabase-obligation-unclosed|20261024",
+  "obligation_id": "content-publication:daily-blog-production-proof-reconciliation-v1",
+  "failure_class": "BLOG_MERGED_AND_LIVE_BUT_CANONICAL_PROOF_NOT_RECONCILED",
+  "root_cause": "The existing hourly Powerhouse GitHub blog publisher generates a protected PR and deploys via Netlify, but never advances canonical content_publication_obligations from GENERATED using independent production evidence. On 2026-10-24 the blog was merged and Netlify returned HTTP 200 for the exact URL while the daily obligation remained GENERATED and commercial-day state degraded.",
+  "observed_evidence": {
+    "blog_date": "2026-10-24",
+    "merged_pr": 4820,
+    "merge_sha": "dcbc8cb5e532c5c335245d23ab3ae86598df9a87",
+    "production_deploy": "6adc82cbce4be5e81dfcb273",
+    "netlify_production_sha": "f7a3fb64254562f30f0aeba28b10b79db2b8f13c",
+    "provider_url": "https://www.bedrijfsgeheugen.nl/blog/cyberdreigingen-voor-ondernemers-van-signaal-naar-besluit-in-een-geslo/",
+    "observed_netlify_http_status": 200,
+    "production_obligation_initial_state": "GENERATED",
+    "manual_reconciliation_20261024": "LIVE_PROVEN_AND_CHANNEL_PUBLISHED",
+    "revenue_outcome": "NOT_PROVEN"
+  },
+  "fix": "Add a bounded, fail-closed exact PR-merge → production BG169 SHA ancestor → canonical article HTML → existing Supabase record_content_publication_state RPC → existing powerhouse_reconcile_terminal_publication_state RPC chain to the already scheduled hourly Powerhouse daily blog workflow. Never make a second scheduler, write directly to the table, or auto-publish a new candidate.",
+  "prevention_rule": "Only existing reviewed merged same-date blog PR + production release.json with BG169 authority and GitHub verified merge ancestry + page HTML 200 with matching canonical and content-id can promote a GENERATED obligation to LIVE_PROVEN. On missing proof exit without mutation. The next scheduled run retries same lineage. No inferred traffic/revenue.",
+  "tests": [
+    "tests/brain-daily-blog-production-closure-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "BLOG_MERGED_AND_LIVE_BUT_CANONICAL_PROOF_NOT_RECONCILED",
+    "scope": "CONTENT_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-production-closure-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-production-closure-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-blog-production-closure-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact Required+CodeQL protected main merge, scheduled workflow readback and real next-date canonical publication closure. 2026-10-24 manual closure alone does not prove the new automation has executed."
+}

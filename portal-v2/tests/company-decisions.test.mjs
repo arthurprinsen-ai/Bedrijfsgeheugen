@@ -48,3 +48,35 @@ test('empty backend decision data stays empty and does not create demo numbers',
   assert.deepEqual(selectTopPriorities(runtime),[]);
   assert.equal(selectValueLeakage(runtime),0);
 });
+
+test('null never silently becomes a proven zero in the canonical financial cockpit',()=>{
+  const missing=mapRuntimeProjection({...projection,decisionEconomics:undefined,executiveCockpit:{recommendedActions:[{title:'Onderzoek'}]}});
+  assert.equal(missing.economics.expectedValue,null);
+  assert.equal(missing.economics.actualCost,null);
+  assert.equal(missing.economics.realizedValue,null);
+  assert.equal(missing.economics.realizedProfit,null);
+  assert.equal(selectValueLeakage(missing),null);
+  const cockpit=buildCompanyCockpit(missing);
+  assert.equal(cockpit.sections.find(x=>x.key==='economics').data.realizedProfit,null);
+  assert.equal(cockpit.sections.find(x=>x.key==='company-now').data.valueLeakage,null);
+  assert.equal(missing.actions.items[0].waarde,null);
+});
+
+test('authoritative measured zero is retained and partial monetary data stays unknown',()=>{
+  const partial=mapRuntimeProjection({...projection,decisionEconomics:{expectedValue:'0',realizedValue:null,actualCost:'',realizedProfit:undefined}});
+  assert.equal(partial.economics.expectedValue,0);
+  assert.equal(partial.economics.realizedValue,null);
+  assert.equal(partial.economics.actualCost,null);
+  assert.equal(selectValueLeakage(partial),null);
+  assert.equal(mapRuntimeProjection({...projection,decisionEconomics:{expectedValue:'0',realizedValue:0}}).economics.realizedValue,0);
+  assert.equal(selectValueLeakage(mapRuntimeProjection({...projection,decisionEconomics:{expectedValue:0,realizedValue:0}})),0);
+});
+
+test('missing outcome amounts cannot be transformed into audited outcome values',()=>{
+  const result=mapRuntimeProjection({...projection,verifiedValue:{verifiedValues:[
+    {subjectId:'proof-pending',status:'OPEN',value:null},
+    {subjectId:'verified-zero',status:'VERIFIED',value:0},
+    {subjectId:'verified-empty',status:'VERIFIED',value:''}
+  ]}});
+  assert.deepEqual(result.outcomes.items.map(x=>x.waarde),[null,0,null]);
+});

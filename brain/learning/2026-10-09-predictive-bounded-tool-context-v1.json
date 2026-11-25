@@ -1,0 +1,58 @@
+{
+  "fingerprint": "powerhouse|predictive|anthropic-tool-output-missing|bounded-evidence-context-v1",
+  "obligationId": "p0-4198-predictive-bounded-tool-context-20261009",
+  "parentP0": 4198,
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "After exact production v183 source-parity, authorized pg_net request 1712 timed out at the outer HTTP 120-second budget. The engine subsequently wrote AI_TOOL_OUTPUT_MISSING at 15:35:54 UTC, after the prior 45-second AbortSignal issue was resolved. Existing model request still supplied eighty full signal records, thirty prior forecasts and twenty learnings while allowing up to six complex tool-use forecasts. Provider stop_reason was not recorded, so distinguish missing tool result from truncation or refusal via metadata before assigning a specific subcause.",
+  "observed": {
+    "engine_version": 183,
+    "api_authorized_http_request_id": 1712,
+    "external_transport_timeout_ms": 120000,
+    "last_persisted_error": "AI_TOOL_OUTPUT_MISSING",
+    "last_persisted_error_utc": "2026-10-09T15:35:54.797Z",
+    "forecast_persisted_from_this_run": 0,
+    "actual_commercial_outcomes_unproven": true
+  },
+  "changes": [
+    "Preserve full database evidence store while bounding AI model inputs to at most forty distinct ranked public signals with separate news/search quotas",
+    "Limit old forecast examples and historical learnings to twelve each, preserve evidence keys, source identities and validation",
+    "Cap schema at four daily forecast tools and allow up to 6000 output tokens; keep approved Anthropic and finite 90s network deadline",
+    "Persist a nonsecret stop_reason, content block types and output token count whenever model tool output is missing"
+  ],
+  "prevention": [
+    "Avoid unnecessarily large high-latency Claude tool prompts, preserve both public news and search demand, make error reasons diagnostic",
+    "Never relax database statement timeout or remove forecast/calibration trigger",
+    "No unverified returned text may be converted into a forecast; all forecast model provider, evidence and score guards remain",
+    "No duplicate executor, CRM or external post"
+  ],
+  "failureModes": [
+    "PREDICTIVE_MODEL_TOOL_OUTPUT_MISSING",
+    "PREDICTIVE_HTTP_TRANSPORT_TIMEOUT"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-bounded-tool-context-v1.test.mjs",
+      "tests/brain-predictive-postgrest-batching-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PREDICTIVE_AI_CONTEXT_OVERLOAD",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "production_v183_source_parity": true,
+    "request_id": 1712,
+    "pg_net_error": "Timeout of 120000 ms reached",
+    "persisted_health_error": "AI_TOOL_OUTPUT_MISSING",
+    "successful_full_run": false
+  },
+  "required": [
+    "Protected Required/CodeQL/preview",
+    "Exact main and deployed Edge source parity",
+    "One real authorized Anthropic tool_use forecast with persistence/Brain calibration",
+    "Provider-verified omnichannel outcomes before P0 closure"
+  ]
+}

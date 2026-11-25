@@ -1,0 +1,43 @@
+{
+  "schema": "brain-learning-observation-v1",
+  "date": "2026-10-31",
+  "fingerprint": "powerhouse|heartbeat|amber-recovery-cross-owner-misroute|20261031-v1",
+  "compiler": {
+    "failure_class": "AMBER_RECOVERY_WRONG_ORIGINAL_OWNER",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "ONE BRAIN collectGuardCodes applied the Outreach action/readback remedy to every AMBER loop with missing or unrecorded original guard receipt, including original Content Closed Loop and Data Spine owners.",
+  "prevention": "AMBER remediation must be derived from the original loop_key plus missing_stages; generic owner-unknown only for unknown loops; never infer Outreach, provider success or green without matching source receipt.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-amber-original-owner-routing-20261031.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-amber-original-owner-routing-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-amber-original-owner-routing-20261031.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "public.powerhouse_loop_assurance_state_v1",
+    "checkedAt": "2026-10-31T08:45:03.854Z",
+    "originalCounts": {
+      "green": 8,
+      "amber": 3,
+      "red": 4
+    },
+    "misroutedKeys": [
+      "content-closed-loop",
+      "data-spine-watchdog"
+    ],
+    "independentCommercialOutcomeVerified": false,
+    "productionReleaseVerified": false
+  },
+  "humanDocs": "docs/changes/2026-10-31-heartbeat-amber-original-owner-routing.md",
+  "regression": "tests/brain-amber-original-owner-routing-20261031.test.mjs",
+  "status": "OBSERVED"
+}

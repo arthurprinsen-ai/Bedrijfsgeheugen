@@ -1,3 +1,4 @@
+import {mergePreservedBusinessInputAnswers} from '../_shared/portal-business-input-answer-merge.js';
 const obj=value=>value&&typeof value==='object'&&!Array.isArray(value)?value:{};
 const arr=value=>Array.isArray(value)?value:[];
 const time=value=>Number.isFinite(Date.parse(String(value||'')))?Date.parse(String(value)):0;
@@ -32,7 +33,10 @@ export function repairBusinessInputsFromAuthority(payload={},records=[]){
     const next=businessInputFromBrainRecord(record);
     if(!next)continue;
     const previous=byId.get(next.id);
-    if(!previous||time(next.updatedAt)>=time(previous.updatedAt||previous.submittedAt))byId.set(next.id,{...previous,...next});
+    if(!previous||time(next.updatedAt)>=time(previous.updatedAt||previous.submittedAt)){
+      const preserveMissing=next.metadata?.preserveMissing===true;
+      byId.set(next.id,{...previous,...next,answers:preserveMissing&&previous?mergePreservedBusinessInputAnswers(obj(previous.answers),obj(next.answers)):next.answers});
+    }
   }
   if(byId.size===0)return current;
   const latest=[...byId.values()].reduce((max,item)=>Math.max(max,time(item.updatedAt||item.submittedAt)),0);

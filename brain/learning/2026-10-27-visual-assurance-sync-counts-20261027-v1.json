@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|supabase|visual-assurance-sync-counts-20261027|20261027-v1",
+  "compiler": {
+    "failure_class": "EVIDENCE_COUNT_DRIFT_FROM_CONTRACT",
+    "scope": "EDGE_FUNCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-visual-assurance-sync-counts-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-visual-assurance-cross-system-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The visual-assurance sync wrote receipts claiming 3 routes x 3 viewports = 9 screenshots while the active contract (portal-product-experience-responsive-reliability-v2) and harness verify 6 routes x 4 viewports = 24.",
+  "prevention": "Counts are now constants derived as ROUTES*VIEWPORTS and a brain test compares them with the contract file, so contract changes fail CI until the function follows.",
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-visual-assurance-sync-counts-v2.test.mjs",
+      "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until the function is deployed and the next sync run writes 24"
+  },
+  "limitations": [
+    "Quality-event fingerprint stays on the v1 row: the v2 row does not exist in the database and is not seeded by any repository migration",
+    "Function deployment is separate from merge"
+  ]
+}

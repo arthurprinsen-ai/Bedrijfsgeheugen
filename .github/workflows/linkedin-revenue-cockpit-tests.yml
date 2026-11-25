@@ -1,24 +1,10 @@
 name: LinkedIn Revenue Cockpit
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'intern/linkedin-revenue/**'
-      - 'platform/linkedin-revenue-cockpit.mjs'
-      - 'netlify/functions/linkedin-revenue-cockpit.mjs'
-      - 'supabase/functions/powerhouse-runtime/**'
-      - 'supabase/functions/powerhouse-social-publisher/**'
-      - 'supabase/migrations/*linkedin*.sql'
-      - 'supabase/migrations/*revenue*.sql'
-      - 'tests/linkedin-revenue-cockpit.test.mjs'
-      - 'tests/linkedin-revenue-runtime.test.mjs'
-      - 'tests/linkedin-revenue-engagement-cockpit.test.mjs'
-      - '.github/workflows/linkedin-revenue-cockpit-tests.yml'
-      - '_redirects'
+  workflow_dispatch:
 
 concurrency:
-  group: linkedin-revenue-cockpit-${{ github.event.pull_request.number || github.ref_name }}
+  group: linkedin-revenue-cockpit-${{ github.ref_name }}
   cancel-in-progress: true
 
 permissions:

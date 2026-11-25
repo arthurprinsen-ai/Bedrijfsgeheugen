@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const fn=fs.readFileSync('supabase/functions/powerhouse-dataforseo-intelligence/index.ts','utf8');
-const sql=fs.readFileSync('supabase/migrations/20260918100000_powerhouse_dataforseo_intelligence_schedule_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260918100000_powerhouse_dataforseo_intelligence_schedule_v1.sql','utf8');
 
 test('DataForSEO producer is authenticated and uses vault-backed credentials',()=>{
   assert.match(fn,/powerhouse_daily_scheduler_token/);
@@ -29,10 +29,19 @@ test('DataForSEO runtime is scheduled daily through existing scheduler authority
   assert.match(sql,/powerhouse_daily_scheduler_token/);
 });
 
-test('successful zero-item DataForSEO runs still prove producer health without fabricating keywords',()=>{
+test('zero-item DataForSEO provider calls log a heartbeat but never assert fresh keyword data',()=>{
   assert.match(fn,/dataforseo-producer-run:/);
   assert.match(fn,/producer_run:true/);
   assert.match(fn,/no_data_returned:items\.length===0/);
   assert.match(fn,/PRODUCER_HEARTBEAT/);
   assert.doesNotMatch(fn,/zoekwoord:['"]producer-run/);
+});
+
+test('empty DataForSEO ranked-keyword response is not green keyword ingestion',()=>{
+ assert.match(fn,/status:stored>0\?'ok':'onvolledig'/);
+ assert.match(fn,/source_data_available:stored>0/);
+ assert.match(fn,/provider_response_empty:items\.length===0/);
+ assert.match(fn,/status:stored>0\?'KEYWORD_SOURCE_OBSERVED':'NO_NEW_PROVIDER_KEYWORDS'/);
+ assert.match(fn,/stored>0\?200:207/);
+ assert.match(fn,/item_evidence:evidence,no_data_returned:items\.length===0/);
 });

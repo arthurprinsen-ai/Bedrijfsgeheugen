@@ -1,0 +1,39 @@
+{
+  "learningId": "production-readback-terminalizer-contract-authority-20261005-v1",
+  "fingerprint": "production-readback-terminalizer-verifier-authority-drift-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-05T20:54:18+02:00",
+  "problem": "After PR #3808 merged, the obligation terminalizer rejected canonical verifier-only control-plane files as unwired non-Netlify runtime and could not materialize terminal production evidence.",
+  "rootCause": "The terminalizer maintained a private hardcoded governance-path classifier instead of consuming productionTruth.verifierOnlyPaths from the canonical production-readback contract.",
+  "root_cause": "The terminalizer maintained a private hardcoded governance-path classifier instead of consuming productionTruth.verifierOnlyPaths from the canonical production-readback contract.",
+  "preventionRule": "Every production readback and terminalization component must consume the canonical verifier-only path authority from brain/contracts/production-readback-v1.json; no parallel hardcoded verifier classifier is allowed.",
+  "prevention": [
+    "Read verifierOnlyPaths from the canonical production-readback contract inside the terminalizer.",
+    "Keep runtime-affecting paths fail-closed.",
+    "Regression-test that terminalizer path authority is contract-driven."
+  ],
+  "evidence": {
+    "failedMergeSha": "9f4758aa72241773abe3b5711a038c7ac5c1a8e6",
+    "failedPr": 3808,
+    "failedWorkflow": "Powerhouse Obligation Terminalizer",
+    "failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "implementation": ".github/workflows/powerhouse-obligation-terminalizer.yml",
+    "regression": "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+    ],
+    "expected": "Verifier-only control-plane descendants are terminalized as non-runtime while real runtime paths remain fail-closed."
+  }
+}

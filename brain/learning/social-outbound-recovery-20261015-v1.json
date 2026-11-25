@@ -1,0 +1,47 @@
+{
+  "id": "social-outbound-recovery-20261015-v1",
+  "date": "2026-10-15",
+  "type": "incident_prevention",
+  "source": "Supabase production readback and GitHub recovery workflow",
+  "failure_class": "SILENT_SOCIAL_PUBLICATION_RECOVERY_INOPERABLE",
+  "root_cause": "The deployed social-recovery-runner invokes undefined bearer(req). Its GitHub recovery workflow lacked a recurrent trigger and previously selected a dated manual recovery ledger on nonmanual runs.",
+  "prevention": [
+    "Define Bearer header parser and reject any unauthorized service role request.",
+    "Schedule same-day recovery on independent GitHub Actions cron, using Europe/Amsterdam date instead of historical manual ledger.",
+    "Preserve content pre-publish gates, provider-specific truth readback and duplicate prevention.",
+    "Treat provider entitlement and scopes as distinct non-code boundaries requiring legitimate authorization.",
+    "Never count a scheduled action as a delivered post, email or DM."
+  ],
+  "evidence": {
+    "pr": 4391,
+    "regression_test": "tests/supabase-social-publication-recovery.test.mjs",
+    "supabase_function": "social-recovery-runner",
+    "function_version_observed": 32,
+    "linkedIn_company_missing_scope": "r_organization_admin",
+    "instagram_blocker": "MEDIA_ASSET_REQUIRED",
+    "salesrobot_subscription": "TRIAL_EXPIRED",
+    "email_blocker": "NO_AUTHORIZED_CANONICAL_EMAIL_EXECUTOR",
+    "learning_evaluation_note": "Canary checks are no-send contract assertions; they do not constitute a live provider publication or Supabase production deployment."
+  },
+  "status": "CANDIDATE_PENDING_REQUIRED_CI_AND_PRODUCTION_READBACK",
+  "revision": 1,
+  "fingerprint": "social-recovery|undefined-bearer|stale-ledger-date|no-cron|20261015",
+  "compiler": {
+    "failure_class": "SILENT_SOCIAL_PUBLICATION_RECOVERY_INOPERABLE",
+    "scope": "CONTENT_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-recovery-canonicalization.test.mjs"
+    ]
+  }
+}

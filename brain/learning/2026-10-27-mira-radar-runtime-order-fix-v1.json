@@ -1,0 +1,36 @@
+{
+  "fingerprint": "mira-radar-runtime-order-fix-v1",
+  "date": "2026-10-27",
+  "failure_class": "EDGE_FUNCTION_TEMPORAL_DEAD_ZONE_NOT_CAUGHT_BY_BUNDLE_CHECK",
+  "scope": "CONTENT",
+  "root_cause": "The Mira radar used title and excerpt in topic() before their const declarations (PR #4997). A bundler syntax check and source-pattern tests passed, but every run would have thrown a ReferenceError.",
+  "source_of_truth": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+  "prevention": [
+    "Declaration order asserted in tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs",
+    "Edge function was executed once against mocked providers and database before deploy: 200, 1 stored, 1 eligible"
+  ],
+  "evidence": {
+    "found_before_production_deploy": true,
+    "production_radar_version_at_discovery": 439,
+    "test": "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs",
+    "code_paths": [
+      "supabase/functions/powerhouse-mira-problem-radar/index.ts"
+    ]
+  },
+  "compiler": {
+    "failure_class": "EDGE_FUNCTION_TEMPORAL_DEAD_ZONE_NOT_CAUGHT_BY_BUNDLE_CHECK",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ]
+  },
+  "outcome": {
+    "never_ran_in_production": true,
+    "provider_readback_required": true
+  }
+}

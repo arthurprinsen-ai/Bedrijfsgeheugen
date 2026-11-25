@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse|2026-10-12|omnichannel-provider-proof-release-closure-missing|v1",
+  "compiler": {
+    "failure_class": "BACKEND_RELEASE_MISSING_MACHINE_METADATA_AND_CANONICAL_CLOSURE_EVIDENCE",
+    "scope": "COMMERCIAL_AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "PR #4343 contained Edge/SQL updates but lacked machine-readable PR identity and the three mandatory integration closure artifacts; GitHub Required rejected admission.",
+  "prevention_rule": "Every backend/Edge/migration candidate needs exact PR metadata, replayable regression, Brain learning, a human-readable change note and development ledger. Validate independent external receipt, not merely account health or inferred sales value.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4198-omnichannel-assurance-closure-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4198-omnichannel-assurance-closure-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4198-omnichannel-assurance-closure-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "candidate_only": true,
+    "protected_merge_unverified": true,
+    "customer_decision_execution_result_loop_unproven": true,
+    "no_unauthorized_outreach": true
+  }
+}

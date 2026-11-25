@@ -1,0 +1,27 @@
+{
+  "fingerprint": "powerhouse|tenant-model-choice|provider-egress-guard|20261015",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The secure, attested tenant AI gateway independently validated runtime proof, but did not also require the selected tenant Brain model, exact public model API identity, chosen deployment path and customer residency preference to match that proof. A wishlist could be ignored by an independently provisioned route.",
+  "prevention_rule": "Before any external provider egress, the server loads the authenticated tenant's canonical portal preferences and joins the chosen Brain model against the 110-item catalog, recorded evidence status and server-owned signed runtime claim. PARTIAL, CONFLICT, EOL, identity mismatch or insufficient EU sovereignty settings deny. Independently signed provider proof, customer approval, source DPA and endpoint attestation remain mandatory in existing runtime.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-tenant-ai-inference-gateway-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "path": "tests/brain-tenant-ai-inference-gateway-v1.test.mjs",
+    "scope": "Deny-before-egress regression, not evidence of provider runtime activation",
+    "result": "Pending Required CI evaluation on branch"
+  },
+  "outcome": {
+    "implementation": "Signed tenant gateway now evaluates customer preference as an additional authorization gate",
+    "production_readback": "NOT_YET_CONFIRMED",
+    "external_provider_invocation": "NOT_CLAIMED"
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "obligation_id": "powerhouse|kansenradar|single-story-headline-hook-consistency|20261103-v1",
+  "fingerprint": "powerhouse|content|kansenradar-source-title-hook-mismatch|20261103-v1",
+  "status": "CANDIDATE_SOURCE_GUARD_NOT_LIVE",
+  "owner": "original-one-brain-kansenradar-source-and-editorial-owner",
+  "failure_class": "MIXED_NEWS_SOURCE_HEADLINE_HOOK_UNBOUND",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "MIXED_NEWS_SOURCE_HEADLINE_HOOK_UNBOUND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original Kansenradar v15 used a multi-topic roundup (change.inc /nieuwsupdate-) with article headline on aviation but AI chose another article snippet about Invest-NL/agritech from the roundup as the same story's editorial hook; original source selection lacked a single-story coherence gate. Existing Notion media-calendar and LinkedIn-DM drafts had conflicting title/hook despite technically GREEN output.",
+  "fix": "Original source candidate acceptance now rejects known multi-article roundup URL patterns and malformed URLs before AI evaluation, source-derived Notion content drafting or DM suggestions, logging source-quality issue via existing bg_bewijs. Affected original Notion BG-505 was quarantined (Genereren no; Publicatiecheck Geblokkeerd) and original two related outreach rows were independently observed skipped, not delivered.",
+  "prevention_rule": "No title/hook/citation combination drawn across multiple news stories. Aggregated multi-story source URLs must be rejected at the original source gate, explicitly logged; no auto-post or DM if there is no single-story source. Passing this conservative classifier is not proof of factual alignment; original editorial reviewer must still independently verify provenance before release.",
+  "tests": [
+    "tests/brain-kansenradar-source-title-hook-coherence-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-kansenradar-source-title-hook-coherence-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-kansenradar-source-title-hook-coherence-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-kansenradar-source-title-hook-coherence-20261103.test.mjs"
+    ],
+    "invariants": [
+      "invalid URLs and known multi-story roundups cannot feed original OpenAI evaluator",
+      "source rejection is logged via original bg_bewijs",
+      "no false published Notion/DM after mixed title/hook",
+      "OpenAI-only original approval and 401 guard retained",
+      "one original cron, no new sender"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-resource-sustainability"
+  ],
+  "evidence": {
+    "original_live_brain_delivery": "2026-11-03T12:16:14Z GREEN valid OpenAI output",
+    "original_inconsistent_notion": "https://app.notion.com/p/40dda36aac8a8105832dde23622e631a",
+    "original_notion_id": "40dda36a-ac8a-8105-832d-de23622e631a",
+    "notion_quarantine_verified": true,
+    "original_outreach_skipped": 2,
+    "one_brain_incident_maturity": "OBSERVED",
+    "runtime_source_guard_live": false
+  },
+  "terminal_rule": "Exact-head Required full BRAIN CodeQL protected merge; original Supabase Edge deployment and source readback, independent no-token 401, source-aggregation negative canary and original natural run/Notion readback. Keep original invalid content blocked."
+}

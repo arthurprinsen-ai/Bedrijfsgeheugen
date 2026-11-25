@@ -8,7 +8,7 @@ const seoControle=fs.readFileSync('.github/scripts/seocontrole.py','utf8');
 test('prijzen primary Frisse Blik CTA is canonical and measurable in retained main content',()=>{
   assert.match(
     html,
-    /<a\b[^>]*class=["'][^"']*\bknop\b[^"']*["'][^>]*href=["']https:\/\/www\.bedrijfsgeheugen\.nl\/frisse-blik["'][^>]*data-bg-conversion=["']frisse-blik["'][^>]*data-bg-page-role=["']money["'][^>]*data-bg-funnel-stage=["']decide["'][^>]*>Start gratis<\/a>/i
+    /<a\b[^>]*\bdata-money-primary\b[^>]*href=["']https:\/\/www\.bedrijfsgeheugen\.nl\/frisse-blik["'][^>]*data-bg-conversion=["']frisse-blik["'][^>]*>Plan een Frisse Blik[^<]*<\/a>/i
   );
 });
 

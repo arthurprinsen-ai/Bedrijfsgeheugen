@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_LOCK_PARITY_PROVIDER_READBACK_VERIFIED",
+  "fingerprint": "supabase|migration-lock|809th-provider-applied-source-lock-lag|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original Supabase migration history lock (supabase/migration-history.lock.json)",
+  "failure_class": "SOURCE_LOCK_LAGS_PROVIDER_AFTER_AUTHORIZED_APPLY",
+  "root_cause": "The PR gate forbids declaring an unapplied migration in the lock, and the lock may only follow a provider apply. After the authorized provider apply of 20261105165702 and the merge of the migration source (#5467), the lock still listed 808 while provider and source files listed 809.",
+  "prevention_rules": [
+    "Apply on the provider only after Arthur's explicit go, then merge the source PR without a lock change, then append exactly the observed provider version and name in a separate lock PR.",
+    "Compare provider, source files and lock as sets before appending; append only the observed difference."
+  ],
+  "prevention_rule": "Lock row follows the provider apply in a separate PR; append only the observed provider/source difference.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T17:04:00Z",
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_count": 809,
+    "source_file_count": 809,
+    "lock_count_before": 808,
+    "difference": [
+      "20261105165702 original_linkedin_tags_learning_v1"
+    ],
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5467",
+    "source_merge": "f62df12c0388fef7ff160e94c5f6953b4870e2ec",
+    "actual_effect": null
+  },
+  "fix": "Append {version 20261105165702, name original_linkedin_tags_learning_v1} to the lock and set captured_at to the observation time. No SQL is executed by this PR.",
+  "tests": [
+    "tests/brain-linkedin-tags-lock-close-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-tags-lock-close-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-tags-lock-close-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-tags-lock-close-20261105.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "SUPABASE_MIGRATION_LOCK",
+    "failure_class": "SOURCE_LOCK_LAGS_PROVIDER_AFTER_AUTHORIZED_APPLY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required/CodeQL success and merge; main lock count 809 equals provider 809 and source files 809; next natural original loop run returns tags_backfill state OK."
+}

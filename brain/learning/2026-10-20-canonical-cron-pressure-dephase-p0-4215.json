@@ -1,0 +1,37 @@
+{
+  "fingerprint": "portal|cron-overlap|hourly-assurance-and-revenue|v1",
+  "date": "2026-10-20",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "portal|canonical-cron-pressure-dephase|20261020",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "DATABASE_CRON_STARTUP_TIMEOUT_AND_SCHEDULE_OVERLAP",
+    "scope": "PORTAL_COMMERCIAL_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Production pg_cron inventory confirms visual assurance job #130 at minute 12 collides with commercial staged job #116. Revenue snapshot job #46 at minute 52 coincides with outreach assurance job #129. The system also has broad SQL and startup timeouts; these two overlaps are demonstrated contributors to peak concurrence, not proven sole root cause.",
+  "prevention_rule": "Preserve existing active job IDs, commands, frequencies and commercial stages. Rephase hourly assurance from minute 12 to 45 and hourly revenue snapshot from 52 to 55 behind exact-match fail-closed guards. No new cron scheduler. Never classify schedule readback as proof that SQL saturation or authenticated tenant 504 is resolved.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-canonical-cron-pressure-dephase.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-canonical-cron-pressure-dephase.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-canonical-cron-pressure-dephase.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "production_schedule_inventory": "VERIFIED_2026-10-20",
+    "production_command_anchors": "VERIFIED_2026-10-20",
+    "production_migration": "PENDING",
+    "production_impact_benchmark": "PENDING",
+    "signed_200": "PENDING",
+    "two_tenant": "PENDING"
+  },
+  "production_verified": false
+}

@@ -16,7 +16,7 @@ export function validateContract(contract) {
   for (const field of requiredFields) if (!contract?.required_learning_fields?.includes(field)) errors.push(`field.${field}`);
 
   const p = contract?.policies || {};
-  for (const key of ['read_shared_context_before_material_work','match_before_hypothesis','dedupe_before_write','dedupe_before_context_refresh','verify_external_outcome_before_green','no_second_persistent_memory','new_components_inherit_contract','make_inventory_auto_discovers_components','event_driven_preferred','deep_inspection_only_on_changed_or_error_evidence']) {
+  for (const key of ['read_shared_context_before_material_work','match_before_hypothesis','dedupe_before_write','dedupe_before_context_refresh','verify_external_outcome_before_green','no_second_persistent_memory','new_components_inherit_contract','make_inventory_auto_discovers_components','event_driven_preferred','deep_inspection_only_on_changed_or_error_evidence','agent_preflight_reuses_canonical_incident_memory','material_errors_incidents_and_improvements_write_back','daily_verified_improvement_review_required','portal_relevance_uses_existing_tenant_learning']) {
     if (p[key] !== true) errors.push(`policy.${key}`);
   }
   if (p.max_identical_retries_per_hypothesis !== 2) errors.push('policy.max_identical_retries_per_hypothesis');
@@ -30,6 +30,23 @@ export function validateContract(contract) {
   for (const rule of ['parallel_isolated_agent_memory','fleet_wide_expensive_error_polling','reintroduce_retired_runtime_error_guards','skip_bg168_for_material_learning','skip_bg166_dedupe_writer','production_green_without_bg169_and_exact_production_identity']) {
     if (!forbidden.has(rule)) errors.push(`forbidden.${rule}`);
   }
+
+  const portal = contract?.portal_relevance || {};
+  if (portal.page_id !== 'learning-writeback') errors.push('portal_relevance.page_id');
+  if (portal.authenticated_tenant_projection !== 'portal.runtime.learning.items') errors.push('portal_relevance.authenticated_tenant_projection');
+  if (portal.projection_authority !== 'brain-operating-loop') errors.push('portal_relevance.projection_authority');
+  for (const key of ['no_parallel_learning_store','never_claim_proven_without_runtime_evidence']) {
+    if (portal[key] !== true) errors.push(`portal_relevance.${key}`);
+  }
+  const improvement = contract?.daily_improvement || {};
+  if (improvement.existing_owner !== 'Powerhouse Daily Self Evolution' || improvement.schedule_reuse_required !== true) errors.push('daily_improvement.existing_owner');
+  for (const key of ['verified_repeat_incidents','time_to_recovery','regression_coverage','customer_value']) {
+    if (!improvement.optimize_for?.includes(key)) errors.push(`daily_improvement.metric.${key}`);
+  }
+  for (const key of ['representative_eval','regression','security','protected_main','production_readback','canonical_learning_writeback']) {
+    if (!improvement.promotion_requires?.includes(key)) errors.push(`daily_improvement.promotion.${key}`);
+  }
+  if (improvement.no_unverified_green !== true) errors.push('daily_improvement.no_unverified_green');
 
   return { ok: errors.length === 0, errors };
 }

@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "cro|human-only-visitor-measurement|raw-rollup-cta-parity-unverified|20261025-v1",
+  "obligation_id": "website|cro|human-denominator-source-integrity|20261025-v1",
+  "parent_issue": 4215,
+  "related_issue": 4198,
+  "related_pr": null,
+  "failure_class": "CRO_HUMAN_DENOMINATOR_UNVERIFIED",
+  "root_cause": "The daily conversion planner treated growth_page_daily.page_views as verified human traffic while the independent 28-day growth_events contained 16,850 robot-labelled and 5,434 non-robot page_view events, with the last non-robot raw view on 2026-10-06 despite daily rollups through 2026-10-23. The single CTA click was last observed 2026-10-01. A zero daily CTA count cannot establish human page abandonment.",
+  "fix": "Within existing scheduled Growth Intelligence, observe a bounded non-identifying sample of non-bot pageview timestamps. The CRO planner explicitly removes unverified CTA-rate denominators and emits measurement-evidence-gap recommendations instead of low-CTA copy conclusions; independent GSC signals remain eligible for research. No new tracker or schedule; existing PR #4819 owns CTA instrumentation.",
+  "observed_evidence": {
+    "database": "Supabase adhjwmvyoixzjtmiroln read-only aggregate, 2026-10-25",
+    "page_views_28d": 22284,
+    "robot_page_views_28d": 16850,
+    "nonrobot_page_views_28d": 5434,
+    "last_nonrobot_pageview_at": "2026-10-06T15:29:40.584Z",
+    "last_primary_cta_at": "2026-10-01T14:55:49.250Z",
+    "page_daily_latest_day": "2026-10-23",
+    "cta_instrumentation_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4819"
+  },
+  "prevention_rules": [
+    "Never treat a mixed or unproven page rollup as a human conversion denominator.",
+    "Measure page-view and primary CTA cohort parity before diagnosing specific visitor abandonment reasons.",
+    "Exclude robots from conversion observations and reject future-dated or stale raw human event probes.",
+    "Preserve existing CTA instrumentation owner PR #4819 and do not introduce a duplicate tracker or scheduler.",
+    "Keep independent GSC SEO opportunities visible even if CRO cohort measurements remain unverified.",
+    "Only protected release plus first-party, provider-observed human-only conversion funnel can authorize changing a CRO performance status from unknown to proved."
+  ],
+  "tests": [
+    "tests/brain-cro-human-denominator-proof-20261025.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-human-denominator-proof-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CRO_HUMAN_DENOMINATOR_UNVERIFIED",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Pass canonical replay, Required, CodeQL, Netlify build, protected merge and production readback. Planner release must not be claimed as proven conversion improvement or revenue."
+}

@@ -2,6 +2,8 @@
 // Dagplan parity contract: deterministic public.bg_vandaag -> exactly one Notion row per action_id for Europe/Amsterdam today.
 // Canonical identity: powerhouse_sales_actions:<action_id>. Unknown channels fail closed.
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { handleNotionContactWebhook } from './notion-contact-webhook.mjs';
+import { pullNotionContacts } from './notion-contact-pull.mjs';
 
 const BRON = 'bg-notion-sync';
 const TENANT = 'bedrijfsgeheugen';
@@ -224,11 +226,41 @@ Deno.serve(async (req: Request) => {
   let token = Deno.env.get('NOTION_TOKEN') || '';
   if (!token) { const { data } = await db.rpc('bg_geheim', { p_naam: 'Notion' }); token = (data as string) || ''; }
   if (!token) { await bewijs(false, { error: 'NOTION_TOKEN_MISSING' }, 'AUTH'); return json({ error: 'NOTION_TOKEN_MISSING' }, 500); }
+  if (new URL(req.url).searchParams.get('mode') === 'notion-contacts') {
+    try { return await handleNotionContactWebhook(req, db, token, notion); }
+    catch (e) {
+      const code = String((e as Error)?.message || e).slice(0,150);
+      await bewijs(false, { component: 'notion-contact-webhook', error: code }, 'INTEGRATION');
+      return json({ ok: false, code: 'NOTION_CONTACT_WEBHOOK_FAILED' }, 502);
+    }
+  }
   const runId = crypto.randomUUID();
   try {
     const dagplan = await syncDagplan(db, token);
     const media = await syncMedia(db, token);
-    const res = { ok: true, run_id: runId, dagplan, media };
+    // Independent bounded reconciliation; a Notion contact failure must not break
+    // the already healthy dagplan and mediakalender contract.
+    let contacts: any;
+    try {
+      const result = await pullNotionContacts(db, token, notion);
+      const { error: logError } = await db.from('bg_notion_sync').insert({
+        run_id: crypto.randomUUID(), wat: 'connecties-kern-pull',
+        records_gesyncet: result.updated, status: 'groen', fout: null,
+        uitgevoerd_op: new Date().toISOString()
+      });
+      if (logError) throw new Error('NOTION_CONTACT_AUDIT_FAILED:' + logError.message);
+      contacts = { ok: true, ...result };
+    } catch (error: any) {
+      const message = String(error?.message || error).slice(0, 350);
+      contacts = { ok: false, source: 'Connecties-kern', error: message, did_send_messages: false };
+      await db.from('bg_notion_sync').insert({
+        run_id: crypto.randomUUID(), wat: 'connecties-kern-pull',
+        records_gesyncet: 0, status: 'rood', fout: message,
+        uitgevoerd_op: new Date().toISOString()
+      });
+      await bewijs(false, { component: 'notion-contact-pull', error: message }, 'INTEGRATION');
+    }
+    const res = { ok: true, run_id: runId, dagplan, media, contacts };
     await db.from('bg_notion_sync').insert({ run_id: runId, wat: 'dagplan+mediakalender', records_gesyncet: dagplan.notion_count + media.posts_upserted, status: 'groen', fout: null, uitgevoerd_op: new Date().toISOString() });
     await bewijs(true, res);
     return json(res);

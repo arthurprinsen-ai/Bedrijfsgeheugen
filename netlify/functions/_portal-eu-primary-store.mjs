@@ -26,6 +26,7 @@ export function createEuPrimaryPortalStore({euStore,fallbackStore}={}){
     put:(tenantId,next)=>euStore.put(tenantId,next),
     putLegacy:(tenantId,next)=>euStore.putLegacy(tenantId,next),
     putCanonical:(tenantId,next)=>euStore.putCanonical(tenantId,next),
-    getLayer:(tenantId,layer)=>euStore.getLayer?.(tenantId,layer)
+    getLayer:(tenantId,layer)=>euStore.getLayer?.(tenantId,layer),
+    getCommercialFeedback:(tenantId,options)=>euStore.getCommercialFeedback(tenantId,options)
   });
 }

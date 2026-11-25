@@ -1,0 +1,5 @@
+# Exact 816th applied production migration identity — 6 November 2026
+
+Protected PR #5498 merged, and independent original Supabase production readback confirms migration version 20261106160000_mira_original_pristine_waiting_asset_claim_v1 is applied. Existing original Git source migration-history lock contains 815 rows, all 815 identical to the provider first 815 rows; the only difference is the genuinely applied 816th row. This independent lock-only PR mirrors that single provider version, updates the timestamp, and adds canonical prevention, human documentation and ledger. There is no new SQL, scheduler, runtime deployment, role grant, or claimed Instagram publication here.
+
+Protected migration PRs MUST NOT predeclare their own new version applied in source lock; synchronizing after provider-confirmed merge is a separate protected step. Required/CodeQL and main/provider readback are mandatory. Original Mira producer still has to claim day job, create and identity-check media, and Meta ID/permalink before LIVE_PROVEN; this lock record does not establish any of those.

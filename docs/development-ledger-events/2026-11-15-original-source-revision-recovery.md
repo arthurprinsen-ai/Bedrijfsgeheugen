@@ -1,0 +1,7 @@
+# 2026-11-15 — same-original-source revision recovery decision and handoff
+- **Owner:** original #175 source capture, #140 content producer/consumer, original Heartbeat; P0 #4198.
+- **Observed incident:** real #177 post-source refresh at 14:50 UTC invalidated the stale current-day 12:46 UTC #175 manifest. Original consumer correctly rejected the previous 28-row SHA. Not a provider/permission error.
+- **Actual live one-time restoration:** original #175 capture → original #140 consume → original Heartbeat same 64-char SHA e108560fd449a29c059c80079c843ea6a1c831d80c9342f87ffb7688186c89b7 at 15:02 UTC, original 28 source rows; source consumer accepted and Heartbeat verified. Original site_to_cro still false, 0 actual interventions.
+- **Candidate structural repair:** only existing authenticated and leased powerhouse-content-loop, pure bounded validation helper, original DB functions via hard RPC allowlist, no new schedule/external side effect; independent negative test and relevant existing SEO/CRO agent skill.
+- **Proof still due:** protected exact-head CI, merged Git main, authoritative Supabase Edge deployment+source parity, next natural #140 current-day source drift exercise, real downstream independent CRO action/experiment/outcome and ONE BRAIN closure.
+- **Owner handoff:** #140 remains next writer; Data Quality independently verifies no false green, unmatched source not silently dropped; all original runners active.

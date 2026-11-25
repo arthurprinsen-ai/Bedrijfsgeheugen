@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "social|personal-registry-batch-blocked-by-one-gate-refusal|20261027-v1",
+  "obligation_id": "social-personal-registry-per-row-20261027",
+  "failure_class": "ONE_GUARD_REFUSAL_BLOCKS_WHOLE_REGISTRY_BATCH",
+  "root_cause": "After #4983 deployed, the first real run reported PERSONAL_SOCIAL_REGISTRY_WRITE:LINKEDIN_PERSONAL_DISPATCH_BLOCKED. Inserting a personal social_posts row makes reconcile_social_post_publication_obligation update that day's obligation, which fires trg_linkedin_personal_obligation_identity_gate_v3. Day 2026-10-01 has no artifact with verified personal truth, so the gate refused it and, because all rows went in one statement, no day was registered.",
+  "observed_evidence": {
+    "actual_sources": [
+      "public.powerhouse_runtime_events provider-social-metrics:2026-10-27",
+      "public.powerhouse_content_artifacts",
+      "public.content_publication_obligations"
+    ],
+    "gate_check": "same predicate as the trigger evaluated per date: all dates 2026-09-22..2026-10-27 pass except 2026-10-01",
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Write one row per statement, keep the database identity gate untouched, and report refused rows as guard_rejected in the run evidence.",
+  "prevention_rule": "A registry that crosses a database gate must isolate refusals per row, report them, and never weaken or bypass the gate. A refused day is a finding about the post, not an error to suppress.",
+  "tests": [
+    "tests/brain-personal-publication-social-registry-20261027.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "ONE_GUARD_REFUSAL_BLOCKS_WHOLE_REGISTRY_BATCH",
+    "scope": "SOCIAL_LEARNING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-publication-social-registry-20261027.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-publication-social-registry-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-publication-social-registry-20261027.test.mjs"
+    ]
+  },
+  "terminal_rule": "Merged main, deployed Edge function, a real run of the existing six-hour cron job, then social_posts readback of the personal URNs (all days except 2026-10-01) and personal_post_registry.guard_rejected listing 2026-10-01."
+}

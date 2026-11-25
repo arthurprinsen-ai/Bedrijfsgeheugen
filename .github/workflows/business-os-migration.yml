@@ -1,7 +1,8 @@
 name: Business OS Migration
 
 on:
-  pull_request:
+  push:
+    branches: [main]
     paths:
       - 'platform/migrations/**'
       - 'platform/changes/**'
@@ -15,6 +16,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   migration:

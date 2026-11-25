@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|portal|navigation-delegation-after-state-hydration-v1",
+  "obligationId": "portal-nav-hydration-csrd-prod-readback-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Portal V2 router and canonical sidebar hydration lifecycle",
+  "root_causes": [
+    "Direct sidebar click listeners were lost when the portal-state subscription reconstructed all navigation button children",
+    "Public browser algorithm parity expected the protected compliance-governance page to be accessible without identity"
+  ],
+  "prevention": [
+    "Delegate navigation through the stable sidebar container and test clicking an element created after binding",
+    "Require actual native page ID and visible cockpit in production CSRD browser proof",
+    "Assert anonymous protected compliance denial; reserve executable compliance customer proof for real authenticated E2E"
+  ],
+  "tests": [
+    "portal-v2/tests/router-event-delegation.test.mjs",
+    "tests/integration/portal-v2-production-csrd.spec.js",
+    "tests/integration/portal-v2-production-legacy-algorithm-parity.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-context-trace.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_NAV_EVENT_LOSS_AFTER_ASYNC_STATE_HYDRATION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected exact-head Portal test+Required+CodeQL",
+    "merged main native Netlify exact-SHA deploy",
+    "production CSRD and anonymous compliance readback",
+    "separate authenticated customer and official source evidence on parent P0"
+  ]
+}

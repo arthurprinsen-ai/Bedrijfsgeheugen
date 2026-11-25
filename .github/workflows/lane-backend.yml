@@ -7,9 +7,13 @@ on:
         required: true
         type: string
 
+permissions:
+  contents: read
+
 jobs:
   backend:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
         with:
@@ -24,14 +28,27 @@ jobs:
           restore-keys: |
             npm-${{ runner.os }}-
       - name: Install runtime dependencies for backend contracts
-        run: npm install --prefer-offline --no-audit --no-fund --silent
+        timeout-minutes: 8
+        env:
+          npm_config_fetch_retries: '2'
+          npm_config_fetch_retry_maxtimeout: '20000'
+          npm_config_fetch_retry_mintimeout: '5000'
+        # The backend lane tests source/contract behavior, never invokes the
+        # root ffmpeg-static executable. HTTP 504 from its unrelated npm
+        # postinstall blocked all migration-guard PRs (run #42056751095).
+        # Install real JS dependencies and retain every backend test. Scripts
+        # needed for production media remain protected by their own runtime lane.
+        run: npm install --ignore-scripts --prefer-offline --no-audit --no-fund
       - name: Verify backend Brain runtime and Quality Intelligence contracts
         run: >-
           node --test
           tests/brain-adapter-conformance.test.mjs
           tests/brain-platform-adapters.test.mjs
           tests/brain-error-learning-contract.test.mjs
+          tests/brain-p0-4198-resilience-owned-watchdog-proof-20261025.test.mjs
           tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs
+          tests/brain-intent-skill-preflight-20261025.test.mjs
+          tests/brain-social-metrics-verified-binding-20261019.test.mjs
           tests/brain-control-plane-terminal-descendant-recovery-v1.test.mjs
           tests/universal-event-envelope.test.mjs
           tests/event-retention-policy.test.mjs
@@ -44,6 +61,7 @@ jobs:
           tests/growth-intelligence-engine.test.mjs
           tests/growth-intelligence-daily.test.mjs
           tests/brain-ai-usage-attribution.test.mjs
+          tests/cost-dashboard-security.test.mjs
           tests/brain-resource-business-value-contract.test.mjs
           tests/brain-resource-business-value-service-role-grants.test.mjs
           tests/powerhouse-resource-intelligence-contract.test.mjs

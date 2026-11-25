@@ -1,0 +1,28 @@
+# Blog generation and publication — OpenAI-only provider migration
+
+Date: 2026-10-19  
+Obligation-ID: blog-openai-only-supply-and-translation-20261019  
+Delivery-Lane: website
+
+## Evidence-backed failure
+
+Native approved supply GitHub run `39236467385` failed because the Anthropic Claude action required an unavailable GitHub OIDC token. Canonical Supabase-first daily blog GitHub run `39174978217` failed during pre-publication English translation because Anthropic returned HTTP 400 for insufficient credit. On 2026-10-19 the canonical publication obligation was still `GENERATED`, not `LIVE_PROVEN`.
+
+## Change
+
+- Native BRAIN-led supply uses `OPENAI_API_KEY` and a direct OpenAI Responses structured-output generator; no Claude action, OIDC or Anthropic credentials.
+- A valid output contains the existing exact schema: title, slug, keyword, meta, blogtext and brain_reason. Word-count and formatting constraints are applied before writing the artifact; the existing workflow validates again before Notion approval.
+- Canonical blog PR writer passes only OpenAI credentials to the already-implemented approved static translation transport. No fallback to Anthropic in the two publish steps.
+- No authorization checks, translation cache completeness gates, protected merge checks or live readback are weakened.
+
+## Acceptance
+
+A passing regression test and required CI demonstrate wiring, not live publishing. Final production acceptance requires an actual authorized OpenAI request, valid article and durable EN cache, the protected merge and public production page identity readback. Without OpenAI API credit or credentials, fail closed and report the actual provider error.
+
+## Legacy blog routes
+
+The separate `weekblog.yml` and `blog-bijwerken.yml` agent steps also migrated to the official `openai/codex-action@v1` using `OPENAI_API_KEY` with `permission-profile: ":workspace"`. The Weekblog Anthropic billing probe was replaced with a key-presence check; actual OpenAI authentication happens inside Codex. Existing deterministic changed-file allowlists, schema checks and protected candidate PRs remain required. This is a separate file-editing workflow from the direct JSON structured-output native supply.
+
+## Outbound data minimization (CodeQL security review)
+
+The OpenAI source generator no longer sends downloaded BRAIN learning JSON wholesale. It projects explicitly allowed aggregated numeric commercial outcomes and public `blog:<slug>` content identifiers, caps list lengths, and drops PII, email, contact/customer records, free-text instructions and URLs. An input containing no safe aggregate proof fails closed. Regression tests include injected private data and check that no forbidden values appear in the outbound request. Security review and CodeQL are reevaluated on the new head; this is not yet a provider send/readback.

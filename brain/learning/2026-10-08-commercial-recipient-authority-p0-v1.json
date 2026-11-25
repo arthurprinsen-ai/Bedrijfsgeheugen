@@ -1,0 +1,58 @@
+{
+  "version": "commercial-recipient-authority-p0-v1",
+  "fingerprint": "commercial|gmail|trusted-crm-recipient-approval|read-only-dry-run|v1",
+  "date": "2026-10-08",
+  "issue": 4198,
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "severity": "P0",
+  "root_cause": [
+    "The existing Gmail executor checked message quality and suppression but did not independently verify recipient-specific approval from its CRM authority immediately before the external send.",
+    "The dry_run branch was after mutating composer and plan refresh, so a diagnostic request could change message records before returning.",
+    "Zero current prepared emails hid the upstream authority gap: v5 NBA 610 opportunities and 102 with email, but no email channel recommendation; source CRM approval for 605 email contacts is not evidenced."
+  ],
+  "repair": [
+    "Use existing ONE BRAIN sender and trusted public.bg_connecties; require matching person key, exact action recipient, affirmative action approval and affirmative CRM approval immediately before provider send.",
+    "Preserve suppression, contact pressure, cooldown, quality and exact Gmail independent SENT readback.",
+    "Hold unresolved recipient actions with typed RECIPIENT_AUTHORITY_UNVERIFIED and owner; do not alter consent or infer it from a LinkedIn connection.",
+    "Return accurate eligible and unapproved counts on a side-effect-free dry run."
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_MISSING_RECIPIENT_AUTHORITY_AND_MUTATING_DRY_RUN",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-recipient-authority-p0-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-recipient-authority-p0-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-recipient-authority-p0-v1.test.mjs"
+    ]
+  },
+  "prevention": "Provider dispatch cannot occur for an individual without affirmative action plus matching trusted CRM recipient approval; neither scheduler credentials nor a known address count as permission. Fail closed on CRM lookup failure.",
+  "evidence": {
+    "source_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "source_test": "tests/brain-commercial-recipient-authority-p0-v1.test.mjs",
+    "production_before": {
+      "command_center_opportunities": 610,
+      "with_available_email": 102,
+      "crm_contact_emails": 605,
+      "crm_human_approved_email_contacts": 0,
+      "eligible_prepared_autonomous_email": 0,
+      "verified_external_recipient_emails": 0,
+      "provider_proven_publications": 2
+    },
+    "full_commercial_loop_proven": false
+  },
+  "terminal_proof_required": [
+    "protected Required/CodeQL exact-head success",
+    "protected merge and exact production Edge function bytes readback",
+    "eligible lawful genuine recipient delivery and independent provider proof",
+    "external downstream outcomes and measured learning or explicit still-unknown status; full P0 remains open"
+  ]
+}

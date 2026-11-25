@@ -3,23 +3,26 @@ import assert from 'node:assert/strict';
 
 const canaryPath='.github/workflows/repo-writer-cheap-canary.yml';
 const shadowPath='.github/workflows/repo-writer-candidate-shadow.yml';
+const routerPath='.github/workflows/repo-writer-operational-verification.yml';
 const gatePath='.github/workflows/repo-writer-gate-dispatch.yml';
 const unifiedPath='.github/workflows/unified-brain-delivery.yml';
-for (const path of [canaryPath, shadowPath, gatePath, unifiedPath]) assert.ok(fs.existsSync(path),`${path} must exist`);
+for (const path of [canaryPath, shadowPath, routerPath, gatePath, unifiedPath]) assert.ok(fs.existsSync(path),`${path} must exist`);
 const canary=fs.readFileSync(canaryPath,'utf8');
 const shadow=fs.readFileSync(shadowPath,'utf8');
+const router=fs.readFileSync(routerPath,'utf8');
 const gate=fs.readFileSync(gatePath,'utf8');
 const unified=fs.readFileSync(unifiedPath,'utf8');
 
 for(const writer of ['regelgeving-bijwerken','seo-controle','weekblog']){
   assert.match(canary,new RegExp(writer.replaceAll('-','\\-')),`${writer} must be supported by cheap canary`);
-  assert.match(canary,new RegExp(`verify-cheap/${writer.replaceAll('-','\\-')}-\\*`),`${writer} must have agent-executable PR trigger`);
 }
 assert.match(canary,/workflow_dispatch:/);
-assert.match(canary,/pull_request:/);
-assert.match(canary,/brain\/evidence\/writer-canary-trigger\/\*\.json/);
-assert.match(canary,/github\.event\.pull_request\.base\.sha/);
-assert.match(canary,/github\.head_ref/);
+assert.doesNotMatch(canary,/^\s{2}pull_request:/m);
+assert.doesNotMatch(router,/^\s{2}pull_request:/m);
+assert.match(router,/^\s{2}workflow_run:/m);
+assert.match(router,/workflows:\s*\['Required test'\]/);
+assert.match(router,/workflow_run\.conclusion == 'success'/);
+assert.match(router,/repo-writer-cheap-canary\.yml/);
 assert.match(canary,/createWriterCandidate/);
 assert.match(canary,/validateWriterCandidate/);
 assert.match(canary,/gh pr create/);
@@ -30,7 +33,8 @@ assert.match(canary,/repo-writer-candidate-shadow\.yml[\s\S]*-f verification_onl
 
 assert.match(shadow,/verification_only:/,'shadow workflow must declare verification-only input');
 assert.match(shadow,/repo-writer-gate-dispatch\.yml[\s\S]*-f verification_only="\$VERIFICATION_ONLY"/,'shadow must propagate verification-only state to central gates');
-assert.match(shadow,/VERIFICATION_ONLY: \$\{\{ github\.event_name == 'workflow_dispatch' && inputs\.verification_only \|\| false \}\}/,'shadow propagation must derive only from explicit dispatch input');
+assert.match(shadow,/VERIFICATION_ONLY: \$\{\{ inputs\.verification_only \|\| false \}\}/,'shadow propagation must derive only from explicit dispatch input');
+assert.doesNotMatch(shadow,/github\.event_name == 'workflow_dispatch' && inputs\.verification_only/,'dispatch-only shadow must not retain legacy event-name fallback');
 
 assert.match(gate,/verification_only:/,'central gate workflow must declare verification-only input');
 assert.match(gate,/unified-brain-delivery\.yml[\s\S]*-f verification_only="\$VERIFICATION_ONLY"/,'central gates must propagate verification-only state to Unified Brain');

@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse|experiments|calendar-closure|20261027-v1",
+  "compiler": {
+    "failure_class": "EXPERIMENT_CALENDAR_NEVER_CLOSED",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-experiment-calendar-closure-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-experiment-calendar-closure-20261027.test.mjs"
+    ]
+  },
+  "root_cause": "Daily rci-* calendar rows in social_experiments were only read by powerhouse-runtime daily() and never closed, leaving 210 PLANNED and 8 ACTIVE (no meetpunt, CONTINUE_MEASURING forever) so the learning loop stayed open at outcome.",
+  "prevention": "A daily cron closes stale rci rows (PLANNED >1 day past date, ACTIVE without meetpunt after 14 days) as INSUFFICIENT_EVIDENCE; a staleness view must read 0; AGENTS.md and a skill require a closing rule for every new experiment type.",
+  "evidence": {
+    "tests": [
+      "tests/brain-experiment-calendar-closure-20261027.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until the migration is applied and the staleness view reads 0"
+  },
+  "limitations": [
+    "Closed rows count as INSUFFICIENT_EVIDENCE, not as learnings",
+    "Human-gated A/B experiments are unchanged"
+  ]
+}

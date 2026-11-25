@@ -1,0 +1,37 @@
+{
+  "version": "supabase-terminal-yaml-integrity-repair-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "failure_class": "CI_WORKFLOW_TRIGGER_NOT_REGISTERED",
+  "root_cause": "PR #4143 malformed YAML in obligation-terminal-closure.yml by string replacement interpolation: `$'` in shell regex was interpreted as JavaScript replace suffix, duplicating 475 lines and leaving a truncated shell command. GitHub workflow_dispatch returned 422.",
+  "recovery": "Restore valid canonical workflow from protected main parent; reinsert exact migration-only provider gate via literal-safe replacement; retain latest edge/website gates and add regression for trigger and unique workflow structure.",
+  "prevention": "Use callback-based source replacements and release workflow structural assertions; do not mark PR terminal until GitHub workflow registration and dispatch readback.",
+  "evidence": {
+    "base": "0a98adc436eaa12d45cf3282bb5b5fec66acfd2b",
+    "bad_merge": "d3c28f375354adbc623003de0a06e2b6a791f3fe",
+    "invalid_lines": 1273,
+    "original_lines": 793,
+    "repair_lines": 803,
+    "original_pr": 4128,
+    "repair_pr": 4143
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-migration-production-readback-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI_WORKFLOW_TRIGGER_NOT_REGISTERED",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "fingerprint": "powerhouse|terminal-closure-yaml-corruption|workflow-dispatch-422|canonical-supabase-provider-replay-v1"
+}

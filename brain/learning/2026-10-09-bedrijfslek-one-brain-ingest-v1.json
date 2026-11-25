@@ -1,0 +1,53 @@
+{
+  "fingerprint": "powerhouse|bedrijfslek|canonical-one-brain-ingest|v1",
+  "date": "2026-10-09",
+  "obligation_id": "bedrijfslek-canonical-one-brain-ingest-v1",
+  "source": "website/zelfscan",
+  "problem": "Selfscan full results and Mini were browser-only and not represented as canonical Powerhouse scan events",
+  "root_cause": "Selfscan was never included in canonical scan ingest URL allowlist and did not POST a privacy-safe payload",
+  "change": "Extend existing Edge source-kind normalization, runtime event, aggregate growth event; send idempotent result after free page renders; preserve aggregate-only tenant boundary",
+  "canonical_store": [
+    "scan_inzendingen",
+    "powerhouse_runtime_events",
+    "growth_events"
+  ],
+  "data_policy": {
+    "pii_in_aggregate": false,
+    "identity_status": "unverified",
+    "scope": "aggregate_only",
+    "privileged_claim": "authenticated portal only"
+  },
+  "commercial_policy": "scan completion is not a qualified order; actual revenue needs verified external economic evidence",
+  "acceptance": "GitHub CI + exact Netlify deployment + Edge source parity + actual anonymous event readback + authenticated-tenant claim + Heartbeat next-decision evidence required before terminal live claims",
+  "status": "CANDIDATE_PENDING_PRODUCTION_EVIDENCE",
+  "portal_projection": {
+    "surface": "portal-v2/scan-claim-bridge.js",
+    "authority": "GET/POST /api/portal-scans",
+    "visibility": "authenticated non-demo",
+    "tenant_identity": "server resolved only",
+    "status": "CANDIDATE_PENDING_AUTHENTICATED_TENANT_READBACK"
+  },
+  "compiler": {
+    "failure_class": "MISSING_INTEGRATION",
+    "scope": "APPLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-canonical-brain-v1.test.mjs"
+    ]
+  },
+  "prevention": {
+    "rule": "Before calling a free scan Brain-connected, assert direct-value-first and a deduplicated no-PII readback to existing canonical scan and event stores; only authenticated tenant may claim a scan",
+    "regression_contract": "tests/brain-bedrijfslek-canonical-brain-v1.test.mjs"
+  },
+  "evidence": {
+    "source_premerge": "GitHub pull request #4286",
+    "regression_test": "tests/brain-bedrijfslek-canonical-brain-v1.test.mjs",
+    "live_edge_readback": "PENDING_PROTECTED_MERGE",
+    "authenticated_tenant": "NOT_YET_VERIFIED",
+    "commercial_outcome": "NOT_YET_PROVEN"
+  }
+}

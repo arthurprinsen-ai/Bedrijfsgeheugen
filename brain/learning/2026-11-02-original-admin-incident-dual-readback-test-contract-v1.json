@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING_CANDIDATE",
+  "fingerprint": "powerhouse|brain|original-admin-incident-dual-provider-readback-test-drift|20261102-v1",
+  "parent_fingerprint": "powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1",
+  "parent_issue": 4439,
+  "observed_at": "2026-11-02",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "compiler": {
+    "failure_class": "BRAIN_BACKEND_STALE_INCIDENT_READBACK_COUNT_ASSERTION",
+    "scope": "BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original admin-only failure-coverage projection has two intentional independent provider GET reads: aggregate exact-count register and one allowlisted predictive source recovery incident. Historical test 2994 asserted exactly one GET; original full BRAIN run #41409975773 failed 2 !== 1. Source change was deliberate to separate raw registry completeness from specific recovery evidence; this test did not evolve with that source contract.",
+  "evidence": {
+    "github_failed_run": 41409975773,
+    "original_job": 125160796452,
+    "test_index": 2994,
+    "original_full_suite_failed": 32,
+    "source": "brain/observability/failure-coverage-projection.mjs",
+    "legacy_test": "tests/brain-portal-failure-coverage-readback-20261029.test.mjs",
+    "privacy_boundary": "Owner-only server read; aggregate counts only leave server, raw incident fingerprint not exposed except allowlisted internal server lookup.",
+    "production_impact_observed": false,
+    "test_replay_proven": false,
+    "full_brain_recovered": false,
+    "protected_merge_proven": false,
+    "true_customer_impact_proven": false
+  },
+  "prevention": [
+    "Do not remove second provider observation, bypass independent evidence, add a new read path or widen client/tenant privileges just to pass test.",
+    "Assert two original server-only reads only after the first exact-count aggregate succeeds, and exactly one aggregate read if initial request fails.",
+    "Check the first GET has count=exact and a bounded registry projection; second GET has one allowlisted encoded predictive fingerprint and limit=1.",
+    "Second denied/missing source must remain UNVERIFIED while a valid aggregate may remain READBACK_COMPLETE.",
+    "No privileged key, private incident text, or claimed green recovery may leak into original portal data.",
+    "Verify protected Required/CodeQL and later original complete BRAIN replay before promoting; do not claim 32 failures are eliminated."
+  ],
+  "correction": "Update historical test to match and strengthen original two-read source contract, add negative tests for second-source failure and first-source denial; keep the source implementation unchanged.",
+  "tests": [
+    "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ]
+  },
+  "owner": "original ONE BRAIN backend / portal observability source-owner and SkillOps",
+  "released_to_production": false
+}

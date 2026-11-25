@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "PROTECTED_CANDIDATE_NEEDS_MERGE",
+  "fingerprint": "powerhouse|delivery|missing-prebuild-compiler-and-regression-evidence|20261104-v1",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original ONE BRAIN GitHub admission and original engineering-agent",
+  "root_cause": "Previously protected CI let syntactically invalid Edge function v601 deploy as ACTIVE and only then discovered duplicate local const and HTTP503; malformed dollar-quote migration likewise reached expensive CI. Existing delivery preflight did not reject these deterministic source defects at admission.",
+  "prevention": "Every original engineering agent reads canonical learning, verifies source/security/ownership, inputs, budget, idempotency, regression, rollback and deployment/provider verification before write. Native protected admission should parse exact candidate JS/TS and SQL source before costly CI after stage-2 safe bootstrap.",
+  "actions": [
+    "stage1 merge checker/test/learning/agent and skill via protected PR",
+    "stage2 trusted-main checker integrated into native admission in separate protected PR",
+    "verify genuine malformed candidate blocked and valid candidate admitted with independent evidence"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-first-time-right-prebuild-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-first-time-right-prebuild-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-first-time-right-prebuild-v1.test.mjs"
+    ]
+  },
+  "closure": "Only actual merged stage2 trusted-main admission and real bad/good candidate probes followed by production readback proves preventive gate live; no promise of impossible zero unknown future defects.",
+  "compiler": {
+    "scope": "CI",
+    "failure_class": "PREBUILD_COMPILER_AND_REGRESSION_PROOF_MISSING",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "evidence": {
+    "observed_runtime": "Original v601 Supabase Edge ACTIVE but HTTP503 worker boot, Duplicate const revisionInput (2026-11-03)",
+    "incident_reference": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "previous_recovery": "PR #5379 protected merged; Supabase v603 original worker returned HTTP200",
+    "historical_regression": "tests/brain-first-time-right-prebuild-v1.test.mjs",
+    "future_bootstrap_proof": "Separate protected stage2 trusted-main admission check and independent rejected/accepted original candidate readback required"
+  }
+}

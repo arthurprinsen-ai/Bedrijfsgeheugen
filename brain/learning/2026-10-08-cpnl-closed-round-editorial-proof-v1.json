@@ -1,0 +1,20 @@
+{
+  "fingerprint": "cpnl-2026-10-08-closed-round-editorial-truth",
+  "compiler": {
+    "failure_class": "expired_grant_call_to_action",
+    "scope": "CONTENT",
+    "machine_enforceable": true
+  },
+  "root_cause": "An October 6 funding deadline was presented as an active application opportunity in an October 8 blog.",
+  "executed_fix": "Rewrite the blog as a closed-round analysis, remove expired call to action and provide English translation entries.",
+  "prevention_rule": "Never publish an expired funding call as currently open.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cpnl-closed-round-editorial-proof-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4110",
+    "production_status": "Pending protected merge and production readback"
+  }
+}

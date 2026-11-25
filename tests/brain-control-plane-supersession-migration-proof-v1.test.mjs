@@ -9,7 +9,11 @@ test('terminal migration proof traverses supersession lineage', async()=>{
   assert.match(workflow,/SUPERSEDES_OBLIGATION_BOUNDARY/);
   assert.match(workflow,/SUPERSEDES_PR_NOT_TERMINAL/);
   assert.match(workflow,/UNMERGED_SUPERSEDES_SAFE_TO_SKIP/);
-  assert.match(workflow,/UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS/);
+  // Unmerged predecessors with migrations are verified by the extracted fail-closed module.
+  const identity=await readFile('tools/delivery/terminal-migration-identity.mjs','utf8');
+  assert.match(workflow,/verifyRetiredMigrationSupersession\(\{/);
+  assert.match(identity,/UNMERGED_SUPERSEDES_MIGRATION_NOT_ADOPTED/);
+  assert.match(identity,/SUPERSEDES_MIGRATION_SOURCE_DRIFT/);
   assert.match(workflow,/SUPERSEDES_LINEAGE_DEPTH_EXCEEDED/);
   assert.match(workflow,/metadata\.supersedes===null \? 0 : Number\(metadata\.supersedes\)/);
 });
@@ -40,7 +44,10 @@ test('terminal migration proof reconciles historical migration timestamp to curr
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(workflow,/execFileSync\('git',\['fetch','origin','main','--no-tags'\]/);
   assert.match(workflow,/execFileSync\(\s*'git',\s*\['ls-tree','-r','--name-only','origin\/main'/);
-  assert.match(workflow,/SUPABASE_MIGRATION_CANONICAL_IDENTITY_AMBIGUOUS/);
-  assert.match(workflow,/historical_version:item\.version/);
-  assert.match(workflow,/match\[2\]===item\.name/);
+  assert.match(workflow,/resolveTerminalMigrationIdentities\(unique,currentMigrationPaths\)/);
+  // Identity resolution lives in the shared module (unique same-name mapping, ambiguity fails closed).
+  const identity=await readFile('tools/delivery/terminal-migration-identity.mjs','utf8');
+  assert.match(identity,/SUPABASE_MIGRATION_CANONICAL_IDENTITY_AMBIGUOUS/);
+  assert.match(identity,/historical_version:version/);
+  assert.match(identity,/match\[2\]/);
 });

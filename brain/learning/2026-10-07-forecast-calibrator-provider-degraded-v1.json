@@ -1,0 +1,31 @@
+{
+  "id": "forecast-calibrator-provider-degraded-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|forecast-calibrator|anthropic-credit-exhaustion|degraded-runtime|v1",
+  "compiler": {
+    "failure_class": "EXTERNAL_PROVIDER_UNAVAILABLE",
+    "scope": "SUPABASE_EDGE_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "After the query-builder error-path fix was deployed, a production-identical pg_net invocation reached provider version 51 successfully but Anthropic returned HTTP 400 because the account credit balance was too low. The calibrator treated that external dependency condition as an Edge HTTP 500, conflating runtime failure with provider unavailability.",
+  "prevention": "Known external AI provider exhaustion and availability responses return HTTP 200 with explicit DEGRADED_AI_PROVIDER, ok=false and retryable=true. Forecast obligations remain open and no forecast outcome is fabricated. Governance, database and unknown code failures remain fail-closed HTTP 500.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-forecast-calibrator-provider-degraded-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "request_id": 142,
+    "edge_function": "powerhouse-forecast-calibrator",
+    "provider_version": 51,
+    "provider_runtime_state": "ACTIVE",
+    "observed_response_status": 500,
+    "observed_response_error": "AI_400: credit balance is too low",
+    "query_builder_type_error_recurred": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}

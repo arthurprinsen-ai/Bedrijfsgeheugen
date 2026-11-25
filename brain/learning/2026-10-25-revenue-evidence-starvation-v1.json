@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "revenue-learning|hourly-static-queue-hot-head-starvation|20261025-v1",
+  "obligation_id": "growth:revenue-evidence-hourly-no-starvation:20261025-v1",
+  "parent_issue": 4198,
+  "related_prs": [
+    4851,
+    4853
+  ],
+  "failure_class": "REVENUE_EVIDENCE_HEAD_OF_LINE_STARVATION",
+  "root_cause": "The new bounded hourly revenue-learning batch preserved channel fairness but selected the same first record in each sorted channel every hour. Provider-unverified records or undersized cohorts stay due; replay therefore consumes the capacity again while old evidence may never be sampled. An always-on scheduler alone does not guarantee queue progress.",
+  "observed_evidence": {
+    "production_source": "2026-10-25 Netlify revenue-learning-evaluate function logged attempted=8, total=105, missingVerifiedSource=3, insufficientCohort=5, evaluated=0. Canonical revenue_learning_evidence now has 110 due items (2026-10-25 08:20 UTC).",
+    "existing_owner": "Netlify revenue-learning-evaluate @hourly and canonical revenue-learning-store only",
+    "independently_realized_revenue_eur": 0,
+    "invented_paid_orders": 0
+  },
+  "fix": "Deterministic hour-bucket cursor within each source channel; bounded round-robin selection across channel and row, capped at 16 per hour (default 8). Stable retry and immutable deduplication. No second scheduler, no parallel write queue and no revenue promotion without real observed source + sufficient cohort.",
+  "prevention_rules": [
+    "A bounded supervisor must prove progress across a STATIC due set of more records than its hourly cap; repeatedly picking newest/head items is a starvation defect.",
+    "Use one canonical @hourly executor and existing stored obligation IDs for provider-proof/cohort deficiencies; do not create duplicate schedulers or incident registries.",
+    "Never relax source quality, customer consent, idempotency, Required, CodeQL, protected merge or post-deploy validation to make all statuses green.",
+    "Hourly selection must be deterministic for the same time slot and robust to input record order; bound ≤16 irrespective of upstream queue size.",
+    "Write actual failed/passed causality into canonical Brain memory; absence of customer/order proof is not success."
+  ],
+  "tests": [
+    "tests/brain-revenue-learning-no-starvation-20261025.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-no-starvation-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-revenue-learning-no-starvation-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "REVENUE_EVIDENCE_HEAD_OF_LINE_STARVATION",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Required exact HEAD executes new test and existing source-gate regression, CodeQL success, protected merge, Netlify READY commit match, next real hourly log confirms no new fake PROVEN or paid outcome. Static fairness regression is NOT a guarantee all upstream unverified rows can be processed or that real revenue is generated."
+}

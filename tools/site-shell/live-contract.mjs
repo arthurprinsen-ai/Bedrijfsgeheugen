@@ -2,45 +2,71 @@ import assert from 'node:assert/strict';
 import { GLOBAL_COMPONENTS, componentHash, verifyPageShell } from './contracts.mjs';
 import { readReleaseMarker } from './release-marker.mjs';
 
-const TRUST = ['Vaste prijs, geen uurtje-factuurtje', 'In twee weken draaiend', 'Voor het Nederlandse mkb'];
+const TRUST = ['Duidelijke afspraken vooraf', 'Klein beginnen, resultaat toetsen', 'Voor het Nederlandse mkb'];
 const MOBILE = ['Oplossingen', 'Platform', 'Prijzen', 'Kennis', 'Over ons', 'Meer'];
 const CONTACT = ['mailto:arthur@bedrijfsgeheugen.nl', 'tel:+31627483345', 'ma–vr 08:00–18:00'];
-const PRICING = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'];
 
 function esc(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-function hasClassElement(html, cls) {
-  const re = new RegExp(`<[^>]+class=(?:"[^"]*\\b${esc(cls)}\\b[^"]*"|'[^']*\\b${esc(cls)}\\b[^']*')[^>]*>`, 'i');
+function hasAttrValue(html, attr, value) {
+  const re = new RegExp(`<[^>]+\\b${esc(attr)}=(?:"${esc(value)}"|'${esc(value)}')[^>]*>`, 'i');
   return re.test(String(html));
 }
-
+function hasId(html, id) {
+  const re = new RegExp(`<[^>]+\\bid=(?:"${esc(id)}"|'${esc(id)}')[^>]*>`, 'i');
+  return re.test(String(html));
+}
 function beforeFooter(html) {
   const i = String(html).search(/<footer\b/i);
   return i < 0 ? String(html) : String(html).slice(0, i);
 }
+function encodeHtmlText(text) {
+  return String(text)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+function hasHeadingText(html, tag, text) {
+  const raw = `<${tag}>${text}</${tag}>`;
+  const encoded = `<${tag}>${encodeHtmlText(text)}</${tag}>`;
+  return String(html).includes(raw) || String(html).includes(encoded);
+}
 
-function verifyOne(html, path, expectedCommit, { pricing = false, verifyPricingSemantics = true } = {}) {
+function verifyOne(html, path, expectedCommit, pricing = false, verifyPricingSemantics = true) {
   assert.equal(readReleaseMarker(html), expectedCommit, `${path}: release marker wijkt af van productiecommit`);
   for (const text of TRUST) assert.ok(html.includes(text), `${path}: trustbalk mist “${text}”`);
   for (const text of MOBILE) assert.ok(html.includes(text), `${path}: mobiel menu mist “${text}”`);
   for (const token of CONTACT) assert.ok(!beforeFooter(html).includes(token), `${path}: contactgegeven staat buiten footer: ${token}`);
 
-  if (pricing && verifyPricingSemantics) {
-    for (const cls of PRICING) assert.ok(hasClassElement(html, cls), `${path}: pricing-tool ontbreekt: ${cls}`);
-    assert.ok(!/id="bgkopMob"/i.test(html), `${path}: legacy pricing mobile menu staat live`);
-    assert.ok(!/class="[^"]*\bbgkop\b/i.test(html), `${path}: legacy pricing header staat live`);
-    assert.ok(html.includes('<h3>Build</h3>'), `${path}: canoniek Build-pakket ontbreekt live`);
-    assert.ok(html.includes('Wat moet het opleveren om zichzelf terug te verdienen?'), `${path}: waarde/terugverdienbewijs ontbreekt live`);
-    assert.ok(!html.includes('<h3>Transform</h3>'), `${path}: legacy Transform-pakket staat live`);
-    assert.ok(!html.includes('2 maanden gratis'), `${path}: legacy jaar-korting staat live`);
-    assert.ok(!/class=["'][^"']*\bjr\b/i.test(html), `${path}: legacy verborgen jaarprijs staat live`);
-    assert.ok(html.includes('data-bg-billing="monthly"'), `${path}: maandtoggle ontbreekt live`);
-    assert.ok(html.includes('data-bg-billing="yearly"'), `${path}: jaartoggle ontbreekt live`);
-    assert.ok(html.includes('2 maanden voordeel'), `${path}: jaarvoordeel-label ontbreekt live`);
-    assert.ok(html.includes('data-yearly="€ 14.950"'), `${path}: Control jaarprijs ontbreekt live`);
-    assert.ok(html.includes('data-yearly="€ 24.950"'), `${path}: Scale jaarprijs ontbreekt live`);
-    assert.ok(html.includes('data-yearly="vanaf € 49.950"'), `${path}: Enterprise jaarprijs ontbreekt live`);
-  } else if (!pricing) {
-    for (const cls of PRICING) assert.ok(!hasClassElement(html, cls), `${path}: pricing-tool staat buiten prijzen: ${cls}`);
+  if (pricing && verifyPricingSemantics !== false) {
+    for (const [attr, value] of [
+      ['href', '#saas'],
+      ['href', '#expertise'],
+    ]) {
+      assert.ok(hasAttrValue(html, attr, value), `${path}: canonieke pricing-navigatie ontbreekt: ${attr}=${value}`);
+    }
+    for (const id of ['saas', 'expertise']) {
+      assert.ok(hasId(html, id), `${path}: canonieke pricing-sectie ontbreekt live: #${id}`);
+    }
+    for (const plan of ['Starter', 'Pro', 'Groei', 'Enterprise']) {
+      assert.ok(html.includes(`<h3>${plan}</h3>`), `${path}: canoniek SaaS-pakket ontbreekt live: ${plan}`);
+    }
+    for (const token of ['€ 99', '€ 299', '€ 749', 'Op maat']) {
+      assert.ok(html.includes(token) || html.includes(token.replace(' ',' ')), `${path}: canonieke SaaS-prijs ontbreekt live: ${token}`);
+    }
+    for (const service of ['Frisse Blik', 'Directie & AI Workshop', 'Bedrijfsgeheugen Scan', 'Build Sprint', 'Transformation / Fractional Lead']) {
+      assert.ok(hasHeadingText(html, 'h3', service), `${path}: canonieke consulting-propositie ontbreekt live: ${service}`);
+    }
+    for (const id of ['pkgSize', 'pkgGoal', 'pkgMode', 'pkgGo']) {
+      assert.ok(hasId(html, id), `${path}: canonieke pakketadvies-control ontbreekt live: #${id}`);
+    }
+    assert.ok(hasAttrValue(html, 'href', '/pakketadvies') || html.includes('bedrijfsgeheugen.nl/pakketadvies'), `${path}: pakketadvies-route ontbreekt live`);
+
+    assert.ok(!html.includes('data-bg-billing="monthly"'), `${path}: retired billing-toggle contract staat live`);
+    assert.ok(!html.includes('data-bg-billing="yearly"'), `${path}: retired billing-toggle contract staat live`);
+    assert.ok(!html.includes('<h3>Build</h3>'), `${path}: retired Build-pakket staat live`);
+    assert.ok(!html.includes('<h3>Transform</h3>'), `${path}: retired Transform-pakket staat live`);
   }
   verifyPageShell(html, path);
 }
@@ -53,7 +79,7 @@ export function verifyLiveSite({ home, pricing, content, expectedCommit, verifyP
     { path: 'over-ons.html', html: String(content), pricing: false }
   ];
 
-  for (const p of pages) verifyOne(p.html, p.path, expectedCommit, { pricing: p.pricing, verifyPricingSemantics });
+  for (const p of pages) verifyOne(p.html, p.path, expectedCommit, p.pricing, verifyPricingSemantics);
 
   const base = new Map();
   for (const p of pages) {

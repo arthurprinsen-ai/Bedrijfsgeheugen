@@ -1,11 +1,6 @@
 name: Powerhouse Supabase Security Contract
 
 on:
-  pull_request:
-    paths:
-      - 'supabase/migrations/**'
-      - 'scripts/brain/check_powerhouse_supabase_security.py'
-      - '.github/workflows/powerhouse-supabase-security-contract.yml'
   push:
     branches: [main]
     paths:

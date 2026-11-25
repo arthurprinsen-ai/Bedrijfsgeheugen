@@ -1,0 +1,33 @@
+{
+  "id": "contact-authority-review-20261013-v1",
+  "date": "2026-10-13",
+  "fingerprint": "powerhouse|commercial-contact|missing-contact-authority|review-without-send|v1",
+  "compiler": {
+    "failure_class": "MISSING_CONTACT_AUTHORITY",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "23,295 stored connections included 605 email addresses, but none carried the explicit contact-level human_approved marker required by existing autonomous email sender; action queue had no currently prepared eligible email.",
+  "prevention": [
+    "Review contact email authority for every canonical connection each business day in bounded batches through the original heartbeat.",
+    "Separate eligibility for evaluation from authorization to send; missing approval must remain blocked.",
+    "Retain independent channel owners, suppression and contact pressure checks, exact provider readback and deduplication."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-contact-authority-review-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "canonical Supabase connection store and sender code inspection",
+    "contact_count": 23295,
+    "email_present": 605,
+    "contact_level_human_approved": 0,
+    "provider_sent_this_change": false,
+    "test": "tests/brain-contact-authority-review-v1.test.mjs",
+    "release_status": "NOT_YET_LIVE"
+  },
+  "status": "ACTIVE_PREVENTION"
+}

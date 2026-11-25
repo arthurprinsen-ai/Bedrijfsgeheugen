@@ -1,0 +1,68 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_NEEDS_PROTECTED_MERGE_AND_NATURAL_SAME_TICK_READBACK",
+  "fingerprint": "powerhouse|heartbeat|original-data-spine-10m-source-vs-30m-assurance-bridge-stage-stale|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original public.powerhouse_data_spine_watchdog_v1 via original pg_cron #171",
+  "failure_class": "STALE_ASSURANCE_STAGE_PROVENANCE",
+  "root_cause": "Production original powerhouse_runtime_scheduler_mux_v1 dispatches original data-spine-watchdog at m%10=1 (six times/hour). It records genuine source health, observation and provider readback, but original powerhouse_refresh_regression_stage_evidence_v1 records action, outcome, learning and guard only at minute 23 and 53 (twice/hour). Assurance source contract expects 10-minute cadence and expires stages after 20 minutes. Therefore every interim natural run yields AMBER with up to five missing stages despite 0 unhealthy sources, destroying cross-agent live feedback accuracy.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T13:18:00Z",
+    "original_watchdog_interval_minutes": 10,
+    "original_bridge_interval_minutes": 30,
+    "original_assurance_contract_minutes": 10,
+    "original_assurance_freshness_window_minutes": 20,
+    "original_watchdog_source_state": "HEALTHY",
+    "provider_unhealthy_sources": 0,
+    "original_assurance_status": "AMBER",
+    "original_missing_stages": [
+      "action",
+      "decision",
+      "guard",
+      "learning",
+      "outcome"
+    ],
+    "original_input_age_minutes": 4.3,
+    "original_measurement_age_minutes": 7.3,
+    "original_guard_age_minutes": 25.3,
+    "customer_outcome_proven": false,
+    "causal_learning_proven": false
+  },
+  "fix": "Preserve original public.powerhouse_data_spine_watchdog_v1 and source-proven per-source event loop, append original loop assurance action/outcome/learning/guard receipt write immediately after successful real watchdog reconciliation with same p_now and exact unhealthy count. Mark metadata explicit customer_outcome_verified=false, causal_learning_verified=false; guard pass only if gaps=0; no additional scheduler, data table or service access.",
+  "prevention_rule": "Every original runtime stage must be written within that source's actual contract cadence, not from a slower secondary projection. Clock or success readback is not source truth. Preserve original business-boundary semantics and follow up natural original #171 minute m%10=1 then original 15-loop assurance; read actual stage observed_at and verify status. Never synthetically backfill or overwrite user/provider metrics.",
+  "tests": [
+    "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs",
+    "tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs"
+    ],
+    "invariants": [
+      "same pg_cron #171",
+      "same watcher original source/role",
+      "no fake growth, customer conversion or causal learning",
+      "guard true only when zero unhealthy sources",
+      "valid source time and exact 10-min expected cadence",
+      "no new publisher, scheduler, table or view",
+      "service_role-only database function",
+      "migration source lock same protected PR"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "STALE_ASSURANCE_STAGE_PROVENANCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required/CodeQL/full BRAIN/Supabase Preview, protected main merge, native Supabase migration and pg_get_functiondef readback, next natural original #171 ten-minute data spine invocation writes at least four same-tick stage receipts whose observed_at follows actual original runtime event, next natural original 15-loop state should not list those source stages stale; don't close if any source goes genuinely unhealthy, or falsely report entire system GREEN."
+}

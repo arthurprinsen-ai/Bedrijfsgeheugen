@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|engineering|known-backend-scope-instead-of-cross-product-fanout|v1",
+  "obligationId": "powerhouse-ci-heartbeat-lane-scope-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "Known internal autonomous improvement config and GitHub read-only probe were treated as generic shared executable surfaces, triggering all delivery lanes, static Netlify build and browser preview although neither path is shipped in the website or customer portal.",
+  "failureModes": [
+    "unnecessary website/portal/Netlify test fanout for backend-only changes",
+    "delayed candidate verification",
+    "excessive runner use"
+  ],
+  "prevention": [
+    "register only the two audited internal paths with backend scopedLaneForPath",
+    "keep unknown shared config fail-closed in every lane",
+    "keep the canonical Required, CodeQL, exact-head and protected promotion unchanged",
+    "prove Netlify and browser applicability from same source-delivery plan"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-change-scoped-release-lanes.test.mjs",
+      "tests/brain-delivery-system.test.mjs"
+    ],
+    "baseline_comparison": "PR #4171 executed website, portal and netlify_build_parity for changes containing autonomous improvement contract and probe; scoped classifier should route to backend only.",
+    "success_metric": "Required test success with backend true and website/portal/automation false on audited paths while unknown shared still fans out.",
+    "rollback": "Revert protected PR if actual cross-domain dependencies or product impact are found; never relax shared safety gates"
+  },
+  "evidence": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4171",
+    "preflight_all_lanes_observed": true,
+    "protected_gates": "PENDING",
+    "production_readback": "PENDING"
+  }
+}

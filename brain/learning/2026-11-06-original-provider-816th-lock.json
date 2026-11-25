@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|migration|original-provider-816th-mira-claim-history-lock|20261106-v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "compiler": {
+    "failure_class": "PROVIDER_LOCK_ONE_APPLIED_MIGRATION_BEHIND",
+    "scope": "ORIGINAL_SUPABASE_PROVIDER_MIGRATION_LOCK",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "owner": "original Supabase migration-history source lock and protected GitHub delivery",
+  "root_cause": "After protected original Mira claim migration #5498 applied version 20261106160000 in production, original source migration-history lock retained 815 identities; subsequent PRs risk false drift.",
+  "fix": "In a separate protected lock-only PR append exactly provider-applied 816th version/name after independently reconciling all prior 815 provider identities; no new executable migration.",
+  "prevention_rule": "Every genuinely applied protected migration gets separate provider-readback lock synchronization before accepting new migration candidates; never predeclare unapplied SQL.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-815-lock-parity-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original Supabase list_migrations on Nov6: 816 applied identities including migration 20261106160000_mira_original_pristine_waiting_asset_claim_v1 from merged PR #5498."
+    ],
+    "current": [
+      "Every original 815 version/name matched main Git source lock exactly; sole provider-backed extra entry is the 816th; production function and ACL readback verified."
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_CODEQL_MERGE",
+  "no_schema_change": true,
+  "source": "supabase/migration-history.lock.json"
+}

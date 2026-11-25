@@ -28,7 +28,7 @@ export const KLIK_EVENT = 'primaire_knop_klik';
    elke klik op link of knop, scrolldiepte 25/50/75/90/100, formulier gestart/verzonden en
    actieve tijd, naar Supabase bg_interacties. Geen cookies, geen IP, geen formulierwaarden.
    Met toestemming gaan dezelfde gebeurtenissen ook naar GA4. Zie assets/meting.js. */
-export const METING_SRC = 'https://www.bedrijfsgeheugen.nl/assets/meting.js?v=3';
+export const METING_SRC = 'https://www.bedrijfsgeheugen.nl/assets/meting.js?v=5';
 export const METING_MARKER = 'data-bg-meting';
 
 export function knopSelectoren(css) {
@@ -65,6 +65,16 @@ if(!document.querySelector('script[src*="/assets/stijl.js"]'))${toestemming}
 // die laag op 0 normalisaties en is de banner na die laag gelijk aan hier.
 const BANNER = TOESTEMMINGSBANNER.replace(/href="\/(?!\/)/g, 'href="https://www.bedrijfsgeheugen.nl/');
 
+const PRIVACY_EN = 'https://www.bedrijfsgeheugen.nl/en/privacy';
+// Engelse pagina's kregen de Nederlandse toestemmingsbanner (de banner wordt na de vertaalslag geplaatst).
+export function banner_en(html) {
+  return html
+    .replace(/aria-label="Cookiemelding"/, 'aria-label="Cookie notice"')
+    .replace(/<p id="bgCookieTxt">[\s\S]*?<\/p>/, `<p id="bgCookieTxt"><span class="bgLang">Bedrijfsgeheugen uses necessary cookies to ensure the site works properly. With your permission, we also use analytics cookies (Google Analytics) to measure how the site is used and improve it. Your choice will be remembered, and you can change it at any time. Want to know more? See our <a href="${PRIVACY_EN}">privacy policy</a>.</span><span class="bgKort">With your permission, we measure how the site is used with Google Analytics. Without permission, we measure nothing. <a href="${PRIVACY_EN}">Privacy</a></span></p>`)
+    .replace(/(id="bgCookieDeny">)Alleen noodzakelijk(<\/button>)/, '$1Necessary only$2')
+    .replace(/(id="bgCookieAccept">)Accepteren(<\/button>)/, '$1Accept$2');
+}
+
 export function metAnalytics(input) {
   let html = String(input);
   if (!/<\/head>/i.test(html) || !/<\/body>/i.test(html)) return html;
@@ -75,6 +85,7 @@ export function metAnalytics(input) {
   if (!html.includes(METING_MARKER)) kop.push(`<script src="${METING_SRC}" defer ${METING_MARKER}></script>`);
   if (kop.length) html = html.replace(/<\/head>/i, kop.join('\n') + '\n</head>');
   if (!html.includes('id="bgCookie"')) html = html.replace(/<\/body>(?![\s\S]*<\/body>)/i, BANNER + '\n</body>');
+  if (/<html[^>]*\blang="en"/i.test(html) && html.includes('id="bgCookieDeny">Alleen noodzakelijk')) html = banner_en(html);
   return html;
 }
 

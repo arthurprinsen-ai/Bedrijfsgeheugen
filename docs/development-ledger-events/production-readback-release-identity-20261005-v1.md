@@ -8,3 +8,6 @@
 - Herstel: release polling gebruikt de canonieke shell + exacte release marker zonder pricing-semantiek; de standaard live-contractmodus blijft pricing streng controleren.
 - Regressie: `tools/site-shell/test-live-contract.mjs` bewijst zowel fail-closed pricing als onafhankelijke release-identiteit.
 - Veiligheid: geen handmatig groen, geen SHA-bypass, geen deploy-id-bypass en geen verwijdering van dedicated pricing/browser gates.
+- Reconciliatie 2026-11-25: historische branch met protected main samengevoegd zonder reset; testpad geclassificeerd als website en expliciet geregistreerd in de bestaande website-lane.
+- Caller-scope: identity-only uitsluitend bij `browser_required=true`; canonieke shell en niet-browserpad blijven strikt; terminal website-uitkomst vereist routes én pricing.
+- Gate-status: CODE_CANDIDATE totdat exact-head Required, CodeQL, protected merge en productie-readback slagen.

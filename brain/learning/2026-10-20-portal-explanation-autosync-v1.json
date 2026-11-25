@@ -1,0 +1,47 @@
+{
+  "fingerprint": "portal-explanation-autosync-20261020-v1",
+  "obligation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "root_cause": "Hand-maintained System Map inventories and explanation-source changes were not checked by current Required/daily paths. Live unversioned portal modules also had seven-day browser cache headers.",
+  "fix": "Source-derived idempotent refresh/check integrated into existing build/release/daily owners; source counts explicitly distinguished from provider proof. Build-only source-fingerprinted entry/import/style URLs invalidate old browser modules automatically.",
+  "prevention": [
+    "Refresh source inventories in the same protected candidate.",
+    "Review semantics separately from fingerprints.",
+    "Never infer production from source registration or documentation recency.",
+    "Keep existing assurance schedule and owner; no parallel scheduler.",
+    "Validate learning compiler/evaluation schema before publishing the candidate.",
+    "Version the whole built portal module import graph, not only the HTML entry; prove idempotence and dependency-change invalidation."
+  ],
+  "regression": "tests/brain-portal-explanation-autosync-v1.test.mjs",
+  "production_status": "CANDIDATE_NOT_YET_VERIFIED",
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-explanation-autosync-v1.test.mjs",
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "tests/brain-powerhouse-system-map-governance-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_baseline": "08a6af19da00972857fd76ff96a290f059ad5617",
+    "portal_suite": {
+      "passed": 586,
+      "failed": 0
+    },
+    "targeted_suite": {
+      "passed": 17,
+      "failed": 0
+    },
+    "canonicalization": "Historical replay evaluation passed on three real test files",
+    "live_baseline": "Six public Portal V2 source modules HTTP200 with matching baseline SHA256; new release still requires protected promotion and readback",
+    "pre_existing_test_failures": [
+      "brain-powerhouse-observability-command-center-v1: 2 baseline failures",
+      "brain-powerhouse-observability-outcome-contract: 5 baseline failures",
+      "brain-netlify-production-build-parity-v1: 1 obsolete baseline workflow assertion"
+    ],
+    "observed_cache_control": "public,max-age=604800"
+  }
+}

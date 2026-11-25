@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-branch-debris|janitor-sweep-own-job|20261029-v1",
+  "fingerprint": "ci|branch-debris|sweep-step-exceeds-shared-job-timeout|20261029-v1",
+  "compiler": {
+    "failure_class": "SHARED_JOB_TIMEOUT_CUTS_WRITEBACK",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Bewezen in Janitor-run van 13:43 UTC: de sweep verwijderde 150 branches, maar de run eindigde als cancelled omdat de bestaande opruimstap (12 minuten) plus de sweep de job-timeout van 15 minuten overschreden. Daardoor kunnen latere stappen (readback, writeback) worden afgekapt.",
+  "fix": "De sweep draait nu als eigen job (branch_archive_sweep, timeout 20 minuten, needs janitor) en raakt de tijd van de bestaande Janitor-stappen niet meer.",
+  "prevention_rule": "Werk dat tijd kan opslokken krijgt een eigen job met eigen timeout, nooit een stap in een gedeelde job.",
+  "tests": [
+    "tests/brain-branch-archive-sweep.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "invariants": [
+      "branches met open PR, archive/, release/ en hotfix/ worden nooit verwijderd",
+      "uniek werk wordt eerst als archive/-tag vastgelegd en teruggelezen",
+      "alleen de eigen repository wordt aangesproken"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

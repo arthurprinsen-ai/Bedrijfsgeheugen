@@ -1,0 +1,61 @@
+{
+ "version": 1,
+ "editions": [
+  {
+   "id": "ai-kloof-mkb-2026-q4",
+   "quarter": "2026-Q4",
+   "title": "De AI-kloof in het mkb",
+   "published": "2026-11-06",
+   "sources": 27,
+   "pages": 33,
+   "pdfBytes": 1855689,
+   "summary": "Wereld, Europa en Nederland naast elkaar: waarde, kosten, risico’s, de menselijke blokkades en wat je er maandag aan doet. Met invulbaar meetblad, kennismaking met het portaal en hulp van experts.",
+   "highlights": [
+    "Nederland: voorop bij bedrijven (33,2% bij 10+ medewerkers), onderaan bij vertrouwen in AI.",
+    "Tussen EU-landen verschilt AI-gebruik door kleine bedrijven ruim 9 keer, bij grote bedrijven niet eens 4 keer.",
+    "Van 88% gebruik naar 6% topresultaat: waarde zit in herontwerp van werk en meten."
+   ],
+   "pdf": "/portal-v2/reports/ai-kloof-mkb-2026-q4.pdf",
+   "data": "/portal-v2/reports/ai-mkb-2026-q4.db"
+  },
+  {
+   "id": "de-kloof-no04-2026-q4",
+   "quarter": "2026-Q4",
+   "title": "De Kloof No. 04: het Kwartaalmagazine",
+   "published": "2026-11-18",
+   "sources": 319,
+   "pages": 27,
+   "pdfBytes": 6298433,
+   "summary": "Exclusief kwartaalmagazine met het Kwartaalritueel: eigen analyse van afhankelijkheden in Europese AI-data, acht lenzen (psychologie, strategie, wet, arbeid, politiek, energie, techniek, processen), negen bouwblokken met maandagactie en invulbare werkbladen. Met Atlas en Trendbank: 1,7 miljoen meetpunten uit Eurostat, OECD, IMF, World Bank, ECB, CBS en OWID, met definitie en bron, zodat de volgende editie trends toont. Met De besluitkaart: een kader en invulbaar werkblad voor dagelijkse ondernemersbeslissingen. Met Maak er een moment van en een reflectiepagina voor jezelf. Elk bouwblok heeft een besluitkaart-regel.",
+   "highlights": [
+    "Eigen analyse op 27 landen: leiders zijn landen waar kleine bedrijven 43% halen van het niveau van grote, achterblijvers 22%.",
+    "Geen inhaalslag: achterblijvers groeien in verhouding niet harder (rho −0,12, p 0,56).",
+    "Wet verschoven: hoog-risico AI naar 2 december 2027 (Verordening (EU) 2026/1744).",
+    "Wie meet wat: AI-gebruik in Nederland varieert van 13,8% tot 70% afhankelijk van definitie en populatie.",
+    "Op 27 EU-landen hangt AI-gebruik samen met welvaart, arbeidskosten en R&D, niet aantoonbaar met de elektriciteitsprijs voor bedrijven."
+   ],
+   "pdf": "/portal-v2/reports/de-kloof-no04-2026-q4.pdf",
+   "data": "/portal-v2/reports/ai-mkb-2026-q4.db",
+   "trendbank": "/portal-v2/reports/trendbank/trendbank-2026-q4.sqlite.xz"
+  },
+  {
+   "id": "the-gap-no04-2026-q4",
+   "quarter": "2026-Q4",
+   "title": "The Gap No. 04: the Quarterly Magazine (English edition)",
+   "published": "2026-11-18",
+   "sources": 319,
+   "pages": 27,
+   "pdfBytes": 6290211,
+   "summary": "English edition of De Kloof No. 04: the Quarterly Ritual, original analysis of dependencies in European AI data, eight lenses, nine building blocks with a Monday action and fillable worksheets, Atlas and Trend bank, and the decision card for everyday entrepreneurial decisions.",
+   "highlights": [
+    "Original analysis of 27 countries: leaders are countries where small firms reach 43% of large firms' AI use, laggards 22%.",
+    "No catch-up: laggards do not grow faster in proportion (rho -0.12, p 0.56).",
+    "Law shifted: high-risk AI moved to 2 December 2027 (Regulation (EU) 2026/1744).",
+    "Who measures what: AI use in the Netherlands ranges from 13.8% to 70% depending on definition and population."
+   ],
+   "pdf": "/portal-v2/reports/the-gap-no04-2026-q4.pdf",
+   "data": "/portal-v2/reports/ai-mkb-2026-q4.db",
+   "trendbank": "/portal-v2/reports/trendbank/trendbank-2026-q4.sqlite.xz"
+  }
+ ]
+}

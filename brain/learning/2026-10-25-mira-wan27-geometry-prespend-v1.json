@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "mira|wan27-1080p-pixel-tier-is-not-native-916|20261025-v1",
+  "obligation_id": "mira|provider-native-format-prespend-proof|20261025-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_cause": "The existing Mira producer assumed OpenArt Wan2.7 image2video resolution 1080p implied exactly 1080x1920. Official Wan docs explicitly say resolution controls approximate pixel count while output aspect follows the supplied first frame. The OpenArt Wan image2video schema has no aspectRatio or mute control. A paid original-master Wan generation returned an incompatible 1292x1604 MP4 with audio.",
+  "evidence": {
+    "provider": "OpenArt",
+    "model": "wan2-7",
+    "mode": "image2video",
+    "history_id": "4y4xrXvVDidv9gUDQZea",
+    "original_master_id": "Yjqu4D7v76HABNPmQPj1",
+    "requested_resolution": "1080p",
+    "requested_duration": 8,
+    "actual_width": 1292,
+    "actual_height": 1604,
+    "actual_duration": 8.08,
+    "actual_has_audio": true,
+    "required_width": 1080,
+    "required_height": 1920,
+    "required_silent": true,
+    "provider_form_has_output_aspect_control": false,
+    "provider_form_has_mute_control": false,
+    "official_documentation": "https://www.alibabacloud.com/help/en/model-studio/image-to-video-general-api-reference",
+    "instagram_provider_post_id": null,
+    "previous_media_status": "WAITING_PROOF"
+  },
+  "prevention_rule": "Before spending a single OpenArt credit, the original authenticated Mira producer MUST call existing router generation_preflight with exact selected model/mode/params and fixed original master. Wan 2.7 image2video 1080p with current master is blocked on real observed provider geometry/audio. Other models must have proven native frame + mute support; format-only proof is never face/temporal/publish approval. No prompt-based 9:16 assertions, no fake aspectRatio parameter and no original-master replacement without a separately reviewed protected identity contract.",
+  "fix": "Pure assessMiraProviderBeforeSpend in existing source-locked recovery module plus original authenticated router generation_preflight action; updated single canonical Instagram agent skill and enforced regression, Brain evidence.",
+  "outcome": "Candidate only until Required/CodeQL, native Supabase preview and protected merge + production source readback; no new generation charge or Instagram publication claimed.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-provider-native-prespend-20261025.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "repeat_count": 2,
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

@@ -480,6 +480,546 @@
       "fix": "resume the canonical branch or PR and newest exact head on the next executable turn and continue to the normal terminal contract",
       "preventionRule": "RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "netlify-transport-auth|production|shared|project-account-not-visible-20261019",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Production exact-source fallback was mistakenly retried as build lag although the Supabase OIDC bridge could not resolve a Netlify connection in the scoped Composio project",
+      "rootCause": "Composio project-scoped deployment key did not reveal an ACTIVE authorized netlify_mcp account. The bridge's HTTP 420 maps any unavailable account to the not_public error, without proving the exact missing binding",
+      "fix": "Classify HTTP 420 as non-retryable authorization boundary, preserve exact source evidence and incident owner, restore provider/Composio project visibility through an approved service/team connection and independently verify production readback",
+      "preventionRule": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|governance|shared|workflow-file-write-needs-contents-and-workflows-permission",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "writing a file under .github/workflows returned 403 although a Workflows permission was granted",
+      "rootCause": "a fine-grained token with only Workflows read/write cannot write workflow files; GitHub requires Contents write as well",
+      "fix": "grant Contents and Workflows read/write together; ask GitHub which permission is missing via the x-accepted-github-permissions response header instead of guessing",
+      "preventionRule": "GITHUB_WORKFLOW_WRITE_NEEDS_CONTENTS_AND_WORKFLOWS_PERMISSION",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|governance|shared|token-pasted-in-chat",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "personal access tokens were pasted into chats and then used in shell commands on three occasions in August 2026",
+      "rootCause": "credentials were handed over as chat text instead of being placed in a vault or Actions secret",
+      "fix": "never ask for, accept, repeat or store a token in chat text; use the connected GitHub account or a vault/secret, and tell the owner to revoke any token that was pasted",
+      "preventionRule": "NEVER_PASTE_OR_REPEAT_TOKENS_IN_CHAT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pipeline|shared|expired-token-error-swallowed",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the weekblog trigger returned 401 for days while the scenario dashboard showed zero errors",
+      "rootCause": "a fine-grained token had expired and an error handler ignored the failure, so only a side mail revealed it",
+      "fix": "never ignore an authentication error; every credential with an expiry date gets a reminder before it lapses and every failure path reports what failed",
+      "preventionRule": "NEVER_SWALLOW_AUTH_ERRORS_AND_ALERT_BEFORE_TOKEN_EXPIRY",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|verification|shared|unauthenticated-api-rate-limit-and-raw-cache",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "unauthenticated GitHub API calls returned 403 after about 60 requests per hour and raw.githubusercontent.com served stale content after a commit",
+      "rootCause": "the unauthenticated API has a per-IP hourly limit and the raw host is cached",
+      "fix": "read files via raw.githubusercontent.com or the authenticated connector; verify a fresh commit through the contents API with ref=main, never through the raw host",
+      "preventionRule": "READ_VIA_RAW_VERIFY_VIA_AUTHENTICATED_CONTENTS_API",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|merge|shared|merge-405-required-check-branch-behind-main",
+      "stage": "MERGE",
+      "component": "shared",
+      "reason": "merge returned 405 required status check is expected although the check on the branch was green",
+      "rootCause": "branch protection is strict and the branch was behind main, so the green check did not apply to the merge result",
+      "fix": "call update-branch on the pull request, wait for the required check to rerun on the new head, then retry the merge",
+      "preventionRule": "UPDATE_BRANCH_AND_WAIT_FOR_CHECK_BEFORE_MERGE_RETRY",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|merge|shared|auto-merge-forbidden-repo-setting-off",
+      "stage": "MERGE",
+      "component": "shared",
+      "reason": "enabling auto-merge through GraphQL returned FORBIDDEN",
+      "rootCause": "Allow auto-merge was disabled in the repository settings",
+      "fix": "check that auto-merge is enabled before planning around it; if it is off, report that the owner must enable it and continue polling instead",
+      "preventionRule": "VERIFY_AUTO_MERGE_ENABLED_BEFORE_RELYING_ON_IT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|writeback|shared|contents-api-409-concurrent-agent-commits",
+      "stage": "WRITEBACK",
+      "component": "shared",
+      "reason": "contents API writes failed repeatedly with 409 conflicts",
+      "rootCause": "brain agents commit to the repository continuously, so the file sha read earlier was already stale",
+      "fix": "write through a multi-file commit with base_branch or the Git Data API (blobs, tree with base_tree, commit, ref); never retry the contents API in a loop",
+      "preventionRule": "USE_GIT_DATA_API_OR_MULTI_FILE_COMMIT_ON_CONTENDED_REPO",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pr|shared|branch-ref-prefix-collision-422",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "creating a branch named koppelingen/api returned 422",
+      "rootCause": "a branch named koppelingen already existed and git refs cannot be both a file and a directory",
+      "fix": "list existing refs first and use flat branch names without a slash after an existing branch name",
+      "preventionRule": "USE_FLAT_BRANCH_NAMES_AFTER_CHECKING_EXISTING_REFS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pr|shared|duplicate-branch-from-parallel-process",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "a branch and pull request #988 already existed a minute before the agent committed, producing a duplicate commit",
+      "rootCause": "inventory was not refreshed immediately before creating the branch while another process worked on the same change",
+      "fix": "search open pull requests by head_branch and for the same files immediately before creating a branch; reuse the existing owner instead of creating a second candidate",
+      "preventionRule": "CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|verification|shared|check-runs-queried-by-branch-name",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "check-run lookups by branch name returned nothing or the wrong runs",
+      "rootCause": "the check-runs endpoint needs the full commit sha and returns skipped and neutral runs next to real ones",
+      "fix": "always query check-runs by the full head sha and filter on conclusion; a neutral Netlify Pages changed run is not a failure",
+      "preventionRule": "QUERY_CHECK_RUNS_BY_FULL_HEAD_SHA",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pipeline|shared|pr-body-edit-does-not-retrigger-required",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the Required workflow stayed red after the pull request body was corrected",
+      "rootCause": "a body edit does not emit a new pull_request event for the Required workflow",
+      "fix": "close the pull request, wait five seconds and reopen it, or rerun the failed jobs on the same head; never claim green from an edited body",
+      "preventionRule": "RETRIGGER_REQUIRED_CHECK_AFTER_PR_BODY_CHANGE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pipeline|shared|new-test-or-path-outside-lane-config",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "a new test file never ran in CI and a new file in an unlisted folder turned every delivery check red with unclassified delivery path",
+      "rootCause": "CI runs explicit test lists per lane and config/brain-delivery-system.json classifies every changed path",
+      "fix": "register every new test in a lane workflow and give new files a name that matches an existing lane prefix instead of editing the delivery configuration",
+      "preventionRule": "REGISTER_NEW_TESTS_AND_PATHS_IN_LANE_CONFIG",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|preview|shared|incomplete-git-branch-name",
+      "stage": "INTEGRATION",
+      "component": "shared",
+      "reason": "creating a Supabase preview branch failed with GitHub branch not found",
+      "rootCause": "the git branch name was typed incompletely in the dashboard (a date suffix was cut off)",
+      "fix": "copy the exact branch name from GitHub, and delete the preview branch after merge because it bills per hour",
+      "preventionRule": "USE_EXACT_GIT_BRANCH_NAME_FOR_SUPABASE_PREVIEW",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|handoff|shared|anonymous-read-only-session-claimed-pr-state",
+      "stage": "HANDOFF",
+      "component": "shared",
+      "reason": "a session with only anonymous read access reported on open pull requests and failing checks it could not see",
+      "rootCause": "pull requests, check-runs and protection details need authenticated access; anonymous reads show only public files",
+      "fix": "without an authenticated GitHub link make no claim about pull request or check state; report the gap and ask for the link or the list",
+      "preventionRule": "NO_PR_OR_CHECK_CLAIMS_WITHOUT_AUTHENTICATED_READ",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pipeline|shared|apt-chrome-hash-sum-mismatch-ci-red",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "checks went red with Hash Sum mismatch although no code had changed",
+      "rootCause": "CI installed Google Chrome from an apt source that regularly serves inconsistent package hashes",
+      "fix": "install Chromium only through tools/ci/install-chromium.sh, which removes that apt source and retries three times",
+      "preventionRule": "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|writeback|shared|migration-outside-git-without-readback",
+      "stage": "WRITEBACK",
+      "component": "shared",
+      "reason": "A Supabase migration applied outside Git made repository and provider diverge",
+      "rootCause": "Provider state and supabase/migration-history.lock.json were changed separately; production showed 805 migrations against 801 in the lock and BRAIN ran red 26 of 40 times between 2 and 5 November",
+      "fix": "Add the migration file and its lock entry in the same change; a migration applied outside Git always needs a provider readback by the migration owner; never edit a test expectation to turn a check green",
+      "preventionRule": "MIGRATION_AND_LOCK_IN_SAME_CHANGE_WITH_PROVIDER_READBACK",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|governance|shared|approved-at-set-directly",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "A blog stayed GENERATED without any error",
+      "rootCause": "approved_at was empty and the export refuses unapproved content; setting approved_at directly in the database would bypass the approval gate",
+      "fix": "Approve content only through record_content_publication_state; never write approved_at directly",
+      "preventionRule": "NEVER_SET_APPROVED_AT_DIRECTLY_USE_PUBLICATION_STATE_FUNCTION",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|pipeline|shared|veto-reverted-by-queue",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Withdrawing a blog did not hold",
+      "rootCause": "powerhouse-blog-queue moved FAILED back to GENERATED, so a plain status change was undone",
+      "fix": "Reject durably with evidence.veto = {active: true, reason}; verify by reading the row back after the next queue run",
+      "preventionRule": "DURABLE_REJECT_VIA_EVIDENCE_VETO",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|verification|shared|sql-stage-counted-as-agent-run",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "A SQL stage was counted as an agent action",
+      "rootCause": "Process output was read as an agent run; a SQL stage is SQL_PROCESS, not AGENT_EXECUTED",
+      "fix": "Claim an agent action only with agent_id, skill_version and a before and after; use the status ladder REGISTERED, WIRED, JOB_ACTIVE, EXECUTED, PROVIDER_VERIFIED, OUTCOME_PROVEN, LEARNING_APPLIED and never claim a higher step than the evidence shows",
+      "preventionRule": "STATUS_LADDER_NEVER_CLAIM_ABOVE_EVIDENCE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "supabase|governance|shared|bulk-data-write-without-approval",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "Row cleanup in production data cannot be undone",
+      "rootCause": "Deleting or rewriting rows has no rollback; cleanup was attempted before the owner agreed",
+      "fix": "Propose first, wait for the owner's yes, then write and read back the result; production migrations and spend stay with the owner",
+      "preventionRule": "PROPOSE_BEFORE_IRREVERSIBLE_DATA_WRITE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "netlify|configuration|shared|wrong-env-key-name-in-functions",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Control Plane saw no Supabase URL",
+      "rootCause": "Netlify Functions context has BG_PORTAL_EU_SUPABASE_URL, not SUPABASE_URL",
+      "fix": "Check which config keys Netlify Functions actually expose before reading one; never add a new secret or a second source",
+      "preventionRule": "CHECK_NETLIFY_FUNCTION_ENV_KEYS_BEFORE_ADDING_SECRETS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "netlify|verification|shared|deploy-ready-taken-as-outcome",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "A READY deploy was read as proof of the outcome",
+      "rootCause": "READY shows the published version for the exact commit, not that the change works for the customer",
+      "fix": "Treat READY on the exact commit as one link; keep browser or provider readback and the outcome as separate evidence; a 401 on an admin-only endpoint without an admin-JWT 200 is unproven, not green",
+      "preventionRule": "DEPLOY_READY_IS_ONE_LINK_NOT_OUTCOME",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "composio|integration|shared|active-connection-not-healthy",
+      "stage": "INTEGRATION",
+      "component": "shared",
+      "reason": "A LinkedIn connection was ACTIVE but the backend could not publish",
+      "rootCause": "Nine connections were ACTIVE and none healthy because tokens were revoked on 3 and 30 October; the server key saw 11 accounts that all returned REVOKED_ACCESS_TOKEN",
+      "fix": "ACTIVE is not proof: before publishing check the exact server project, the account, its scopes and a LINKEDIN_GET_MY_INFO readback; company posting also needs the organisation URN, ADMINISTRATOR role and read rights on the same connection",
+      "preventionRule": "COMPOSIO_ACTIVE_STATUS_NOT_PROOF_READBACK_BEFORE_PUBLISH",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "composio|integration|shared|wrong-project-connected-account",
+      "stage": "INTEGRATION",
+      "component": "shared",
+      "reason": "A Gmail call failed with no connection in the server project on 30 September",
+      "rootCause": "An id from the chat environment was used instead of a real connected_account_id of the server project",
+      "fix": "Every outgoing run first checks the exact server project and a real ACTIVE connected_account_id with its user_id",
+      "preventionRule": "COMPOSIO_USE_SERVER_PROJECT_CONNECTED_ACCOUNT_ID",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "composio|verification|shared|wrong-instagram-account-measured",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "The wrong Instagram account was measured",
+      "rootCause": "Eight connections point to @arthurprinsen and aliases containing the company name are misleading; the company account is id 28537384955950341",
+      "fix": "Every measurement records account id and username; LinkedIn company figures come from Windsor linkedin_organic account 18234216, not from OAuth that lacks the admin scope",
+      "preventionRule": "RECORD_ACCOUNT_ID_AND_USERNAME_WITH_EVERY_MEASUREMENT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "buffer|pipeline|shared|rate-limit-429-looped-or-fallback",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Buffer returned 429 with a retry-after of about three days on 29 October and again on 6 November",
+      "rootCause": "The client rate limit was reached; looping or adding a second route does not help and Make is abolished",
+      "fix": "Respect retry-after, do not loop, add no second publishing route, report the blocker and repair the existing line; Buffer-Instagram counts as available only after a successful call with a read-back result",
+      "preventionRule": "RESPECT_RETRY_AFTER_NO_FALLBACK_PUBLISHING_ROUTE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "windsor|verification|shared|ok-with-fallback-is-not-fresh",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "Windsor sync said ok but the data was old",
+      "rootCause": "WINDSOR_API_KEY was missing from the vault and the sync reused an earlier readback",
+      "fix": "An ok with fallback is not a fresh measurement; always record the fetch date; setting the key is the owner's task",
+      "preventionRule": "OK_WITH_FALLBACK_IS_NOT_A_FRESH_MEASUREMENT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ga4|verification|shared|ok-with-zero-rows-is-not-measured",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "The GA4 sync reported ok but wrote zero measurements (six syncs on 31 October)",
+      "rootCause": "Empty provider reports were counted as success; a 403 on property 546874601 meant the canonical service account was not authorised",
+      "fix": "Test provider observation, non-empty rows and source attribution per metric date; on 403 check the exact account binding and never mask authorisation; INSUFFICIENT_DATA is a valid outcome and never claimed as significant",
+      "preventionRule": "EMPTY_PROVIDER_REPORT_IS_NOT_SUCCESS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "searchconsole|verification|shared|weekly-job-judged-by-daily-threshold",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "bg-gsc-sync and bg-zoekwoordkansen showed VEROUDERD after 74 hours",
+      "rootCause": "A weekly job was judged with a daily freshness threshold; the root cause of the NOOIT_BEWEZEN counts is still unknown",
+      "fix": "Use a cadence-aware health check and never hide a missed or failed run; find and record the root cause before declaring these jobs healthy",
+      "preventionRule": "HEALTH_CHECK_MUST_MATCH_JOB_CADENCE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "dataforseo|verification|shared|empty-result-codes-misread",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "DataForSEO task 40101 or 40102 was read as an error",
+      "rootCause": "No search results is valid emptiness at HTTP 200 with status code 20000",
+      "fix": "Only 40101 and 40102 are EMPTY, every other status is an error; payment, subscription, auth and rate-limit errors are never retried to force green; use short Dutch search phrases and record a partial result honestly",
+      "preventionRule": "DATAFORSEO_ONLY_40101_40102_ARE_EMPTY",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "tavily|pipeline|shared|plan-limit-432-read-as-no-results",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Twelve companies were wrongly rejected as having no own website",
+      "rootCause": "HTTP 432 plan usage limit was read as no results",
+      "fix": "A provider error stops the run with an alarm and is never written as an empty result; bg-bedrijfsnieuws (version 12, read 6 November) throws TAVILY_<status> on any non-ok response and records a failed bg_bewijs, so it does not share this blind spot",
+      "preventionRule": "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "heartbeat|pipeline|shared|loop-without-owner-and-starter",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "Instagram published nothing since 3 October with MEDIA_ASSET_REQUIRED",
+      "rootCause": "An agent session that nobody starts is a stopped loop; no cron starts the producer session",
+      "fix": "Every loop has an owner and a starter; check scheduled runs per day, not only green, because the daily blog workflow ran once per about five hours instead of hourly",
+      "preventionRule": "EVERY_LOOP_NEEDS_OWNER_AND_STARTER",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "heartbeat|outcome|shared|missed-publication-blind-retry",
+      "stage": "OUTCOME",
+      "component": "shared",
+      "reason": "The personal LinkedIn post of 6 November was not published",
+      "rootCause": "The 07:00 UTC deadline was missed and EXACT_PROVIDER_PUBLICATION_PROOF_MISSING was returned",
+      "fix": "Establish the external effect first and never republish blind; never bypass the quality gate or send manually outside the existing chain",
+      "preventionRule": "CHECK_EXTERNAL_EFFECT_BEFORE_REPUBLISH",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "notion|handoff|shared|oversized-entry-page-truncated",
+      "stage": "HANDOFF",
+      "component": "shared",
+      "reason": "The START HIER page could not be read in one go",
+      "rootCause": "The page exceeds 288,000 characters and every session adds a section at the top; a fetch is cut at 100,000",
+      "fix": "Read only the top part and follow links; summarise old sections into an archive page without discarding facts; correct the old status of the same item on every update and attach evidence to each claim",
+      "preventionRule": "KEEP_ENTRY_PAGES_READABLE_AND_CORRECT_OLD_STATUS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "i18n|cache|shared|translation-patch-keys-differ-from-build-segments",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "five Dutch blog blocks were reported as missing translations by the static i18n cache check on five consecutive main merges even though a patch for the same blog existed",
+      "rootCause": "the translation patch keyed the text as separate sentences while the build looks up the final page blocks, so the keys never matched after the blog text was edited or segmented differently",
+      "fix": "add the exact missing build keys to a config/bg-static-i18n-en.d patch using the existing sentence translations; after any public text change regenerate or verify the patch against the build output (STATIC_I18N_CACHE_MISSING lists the exact keys)",
+      "preventionRule": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|build|shared|generated-html-overwritten-by-build-generators",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "an edit to a site .html file or to assets/kop.css disappeared on the next deploy, or a block that was removed from the page kept coming back",
+      "rootCause": "the HTML in the repository is generator input; netlify.toml runs the tools/ generators on every deploy and they rewrite the pages",
+      "fix": "start at netlify.toml and tools/ (for example tools/bouw-v18-views.mjs and tools/v18-modules.mjs) and change the generator; search the pages only after the generators are understood",
+      "preventionRule": "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|build|shared|homepage-index-overwritten-by-v18-production-core",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "a change in index.html did not survive a build",
+      "rootCause": "tools/bouw-v18-production-core.mjs unpacks a hash-checked payload and overwrites index.html on every build",
+      "fix": "change the homepage through an extra html.replace in that build file, not in index.html",
+      "preventionRule": "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|build|shared|page-outside-generator-or-shell-exclusion",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "a hand-made page lost its header, menu or top bar, or a generated view overwrote a hand-made page",
+      "rootCause": "the page sat outside the generator, on the uniforme-schil exclusion list or without a main element, or its view name was left in the generator view lists",
+      "fix": "before expecting the shared shell, check the generator view lists (tools/v18-views-lijst.mjs, tools/bouw-losse-paginas.mjs), the exclusion list in tools/uniforme-schil.mjs and that the page has a main element; never add a hand-made page back to the view lists",
+      "preventionRule": "NEW_OR_HANDMADE_PAGES_CHECK_GENERATOR_VIEW_LISTS_AND_SHELL_EXCLUSIONS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|css|shared|scoper-flattens-scrollbar-selector-white-pages",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "all standalone content pages rendered white on desktop while the text was in the DOM (PR #1323)",
+      "rootCause": "scoopCss() in tools/bouw-v18-chrome.mjs flattened a scrollbar selector into .inhoud-body{width:12px} inside a desktop media query, shrinking the content column to 12px",
+      "fix": "measure the ancestor geometry with getBoundingClientRect in headless Chrome before changing paint, opacity, visibility or overflow; a guard that forces visibility is not a fix until the cause is measured",
+      "preventionRule": "MEASURE_GEOMETRY_BEFORE_ADDING_VISIBILITY_GUARDS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|seo|shared|shell-jsonld-copied-to-every-page",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "nearly every page carried the Over ons WebPage schema and up to eleven duplicate data blocks (PR #1378)",
+      "rootCause": "tools/site-shell/apply-shell.mjs uses over-ons.html as the shell and copied its JSON-LD along",
+      "fix": "never copy shell JSON-LD to pages, de-duplicate each page own blocks and refuse a WebPage or BlogPosting whose URL differs from the canonical",
+      "preventionRule": "DO_NOT_COPY_SHELL_JSONLD_TO_PAGES",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|governance|shared|learning-evaluation-uses-dependency-needing-tests",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "hygiene / admission failed with LEARNING_CANONICALIZATION_BLOCKED because the evaluation tests failed on Cannot find package parse5 (PR #5494)",
+      "rootCause": "the canonical learning evaluation in admission runs without installed npm packages, so tests that import them cannot pass there",
+      "fix": "name only dependency-free tests in a learning record evaluation block (historical_replay, shadow, canary); mention dependency-needing tests as evidence instead",
+      "preventionRule": "USE_ONLY_DEPENDENCY_FREE_TESTS_IN_LEARNING_EVALUATION",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|pipeline|shared|two-contradicting-tests-after-rebuild",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "two tests demanded opposite behavior after a rebuild (buildLegacyUrl, ensureNativeRange and window.scrollTo, three times)",
+      "rootCause": "a new test contract was added without retiring the old one in the same change",
+      "fix": "when a test is red, first look for a second test that demands the opposite; retire or rewrite the old contract in the same change as the rebuild",
+      "preventionRule": "CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|pipeline|shared|tests-assert-literal-source-or-copy",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "six tests in one day failed on the first rewording although the code was correct",
+      "rootCause": "the tests asserted literal source text or marketing copy instead of behavior",
+      "fix": "a test asserts the outcome, never the promise; do not target section ids or marketing copy",
+      "preventionRule": "TESTS_ASSERT_OUTCOMES_NOT_LITERAL_COPY",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|writeback|shared|glob-skips-dot-folders",
+      "stage": "WRITEBACK",
+      "component": "shared",
+      "reason": "a bulk change updated 66 pages but left the canonical header in .github/ untouched",
+      "rootCause": "glob.glob with ** does not descend into folders that start with a dot, so .github/ was skipped",
+      "fix": "include dot folders explicitly in bulk file operations and check that .github/canoniek/kop.html moves with the pages",
+      "preventionRule": "INCLUDE_DOT_FOLDERS_IN_BULK_FILE_OPERATIONS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|seo|shared|canonical-kop-must-match-menu",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "a new menu item failed the SEO check on every page",
+      "rootCause": "the SEO check compares .github/canoniek/kop.html with the menu bar of every page, so the canonical file is leading",
+      "fix": "add every new menu item to .github/canoniek/kop.html in the same change",
+      "preventionRule": "UPDATE_CANONICAL_KOP_WITH_MENU_CHANGES",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "netlify|ci|shared|preview-check-race-or-neutral-pages-changed",
+      "stage": "VERIFICATION",
+      "component": "shared",
+      "reason": "a pull request showed unstable or a preview check went red without a code fault",
+      "rootCause": "the Netlify Pages changed run always concludes neutral, and the asset-verification step can run before the Netlify deploy is ready",
+      "fix": "only the required checks (test, hygiene / admission, CodeQL) decide; prove the diff is not the cause and rerun the failed job instead of editing the code",
+      "preventionRule": "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "github|pr|shared|duplicate-pr-opened-without-head-and-file-check",
+      "stage": "PR",
+      "component": "shared",
+      "reason": "pull requests and branches were created for work another session already had open: #988 on 3 September, and #5493, #5495 and #5502 on 6 November touching the same lessons files",
+      "rootCause": "no search for an open pull request on the same head branch or the same changed files was done immediately before creating the branch and again before opening the pull request",
+      "fix": "search open pull requests by head branch and by changed file path right before creating a branch and again before opening the pull request; extend or explicitly supersede the existing one instead of opening a second",
+      "preventionRule": "VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|governance|shared|several-sessions-one-root-cause-no-owner",
+      "stage": "GOVERNANCE",
+      "component": "shared",
+      "reason": "three sessions edited delivery-failure-lessons.json and delivery-prevention-rules.json on 6 November and one pull request was left dirty against main for hours",
+      "rootCause": "no single owner was named per root cause, so parallel sessions appended to the same files and the slowest pull request conflicted with the others",
+      "fix": "before adding lessons, rules or triggers search open pull requests and branches by topic and by these file paths; if one exists, extend it or supersede it explicitly after confirming it is stale, and name one owner per root cause",
+      "preventionRule": "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "site|blog|shared|markdown-blocks-rendered-into-headings-and-paragraphs",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "five of seven recent daily blog articles carry markdown list syntax inside paragraphs and section-sized headings live, and the same malformed text nodes later broke the static i18n cache check on main",
+      "rootCause": "the markdown-to-HTML step turned a whole block starting with a heading marker into one heading and wrote text-plus-list blocks as a single paragraph; only all-list and bold-first-line blocks were recognised, and nothing checked the rendered markup",
+      "fix": "treat a heading as its first line only, render mixed text and list lines as separate paragraph and list elements, and fail closed before writing the page when a heading or paragraph still contains markdown list lines or a heading is section-sized",
+      "preventionRule": "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ci|admission|shared|daily-blog-candidate-path-outside-runtime-closure",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the daily blog candidate was rejected by hygiene / admission with INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE and the required check test stayed red",
+      "rootCause": "the workflow stages the English cache patch config/bg-static-i18n-en.d/powerhouse-blog-<date>.json, which was not listed in runtimeClosurePathPrefixes, so it counted as a material change needing Brain learning, ledger and documentation files",
+      "fix": "add the patch prefix to runtimeClosurePathPrefixes in config/powerhouse-integration-bundle-v1.json and keep a test that reads the git add paths from the workflow and requires each to be covered",
+      "preventionRule": "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ci|i18n|shared|daily-blog-two-key-views",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the BRAIN backend lane went red after the daily blog merged with STATIC_I18N_CACHE_INCOMPLETE although the PR checks were green",
+      "rootCause": "the daily blog workflow translates the production transform chain view of the article (text fragments) but the BRAIN cache tests validate the committed HTML (whole blocks); the two views have different segment keys and only the CI log of the failing lane shows the missing keys",
+      "fix": "after the production pass, run a second prepare pass on the clean committed tree (build-localized-routes --prepare-cache) and validate fail-closed, in both candidate steps of the workflow, and keep a dependency-free test for the step order",
+      "preventionRule": "DAILY_BLOG_I18N_MUST_COVER_COMMITTED_TREE",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ci|git|shared|ls-files-default-maxbuffer|20261108-v1",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the required check test failed on every pull request (including the daily blog PR 5525) with spawnSync git ENOBUFS in tools/build/artifact-id.mjs, so no PR could merge",
+      "rootCause": "node execFileSync has a default maxBuffer of 1 MiB and git ls-files -s on this repository (about 10.7k files) is about 1.2 MB, so the build step died as soon as the file index grew past 1 MiB; nothing warned before the limit was crossed",
+      "fix": "set maxBuffer explicitly on the git ls-files calls in tools/build/artifact-id.mjs and tests/delivery-test-coverage-guard.test.mjs and pin it with a dependency-free test that also proves the 1 MiB default fails",
+      "preventionRule": "GIT_LS_FILES_MUST_SET_MAXBUFFER",
+      "status": "PROVEN"
+    },
+    {
+      "fingerprint": "ci|npm|required-test|ffmpeg-static-postinstall-504-repeat|20261108-v1",
+      "stage": "PIPELINE",
+      "component": "shared",
+      "reason": "the required check test was red on every pull request after the preflight step npm install exited 1 within seconds, hidden by --silent",
+      "rootCause": "root dependency ffmpeg-static runs node install.js as a postinstall and downloads a binary from GitHub releases; that download returned HTTP 504 (reproduced locally with npm 10.9.2). The same incident was fixed on 5 Nov only in lane-backend.yml, so the identical npm install in required-test.yml kept the failure; --silent hid the real error",
+      "fix": "preflight installs with --ignore-scripts like the backend lane; the Netlify build parity install does the same (the pin in brain-composable-release-control-plane.test.mjs now accepts the flag); a dependency-free test pins preflight, parity and the backend lane",
+      "preventionRule": "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD",
+      "status": "PROVEN"
     }
   ]
 }

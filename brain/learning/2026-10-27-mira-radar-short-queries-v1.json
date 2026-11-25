@@ -1,0 +1,36 @@
+{
+  "fingerprint": "mira-radar-short-queries-v1",
+  "date": "2026-10-27",
+  "failure_class": "PROVIDER_QUERY_TOO_NICHE_FOR_NEWS_SEARCH",
+  "scope": "CONTENT",
+  "root_cause": "Lange nichequeries gaven bij DataForSEO Google News taakstatus 40101 (Google-side, geen resultaten). Daarbij rangschikt Google News op relevantie, niet op versheid, waardoor een 14-dagenvenster bijna alles afkeurde.",
+  "source_of_truth": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+  "prevention": [
+    "Korte queries (2-3 woorden) per MKB-thema plus een brede mkb-query",
+    "Venster 45 dagen binnen de gedeelde 60-dagengate; de freshness-gate blijft de enige autoriteit",
+    "Task 40101 wordt geteld als dataforseo_no_results en niet geretried (kosten)"
+  ],
+  "evidence": {
+    "production_run": "2026-10-27 verzoek 14302: 6 van 7 queries taak 40101; directe test: korte query 'mkb personeelstekort planning' en 'mkb ondernemers' geven 7-10 items",
+    "test": "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs",
+    "code_paths": [
+      "supabase/functions/powerhouse-mira-problem-radar/index.ts"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PROVIDER_QUERY_TOO_NICHE_FOR_NEWS_SEARCH",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ]
+  },
+  "outcome": {
+    "false_green_removed": true,
+    "provider_readback_required": true
+  }
+}

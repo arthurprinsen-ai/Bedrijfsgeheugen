@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const migration = fs.readFileSync(
-  new URL('../supabase/migrations/20260925124500_powerhouse_supabase_migration_readback_name_reconcile_v2.sql', import.meta.url),
+  new URL('../supabase/migration-history/repository-only/20260925124500_powerhouse_supabase_migration_readback_name_reconcile_v2.sql', import.meta.url),
   'utf8'
 );
 

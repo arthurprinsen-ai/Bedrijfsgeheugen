@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "ai-model-26-public-supplier-audit-20261015",
+  "fingerprint": "powerhouse|ai-model-catalog|26-public-supplier-source-audit|20261015",
+  "compiler": {
+    "failure_class": "EVIDENCE_CLASSIFICATION",
+    "scope": "AI_MODEL_CATALOG",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The 26 remaining PARTIAL model records had structurally recorded source receipts, but supplier price scope, customer account entitlements and model-specific governance claims were not independently accepted; the public supplier worklist was not synchronized into the canonical GitHub catalog. The first audit PR failed protected integration admission because the material change lacked its canonical learning, activity and human documentation closure.",
+  "prevention": "Preserve source type and scope per claim, distinguish public tariffs from customer contracted prices, keep independent_verification_required and automatic_recommendation_eligible unchanged, and include all three repository closure artifacts with material catalog modifications.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-catalog-evidence-recovery.test.mjs"
+    ]
+  },
+  "evidence": {
+    "database_readback": "2026-10-15: 26/26 PARTIAL rows include public_26_model_review_20261015; 26 recommendation flags false; 5 have model-specific published rate observations; snapshot remains 83 VERIFIED, 26 PARTIAL, 1 CONFLICT.",
+    "github_source_readback": "Commit 527240f8b32662ad60c74ad692f28d5d6ad8df25, source blob b3218c4157ff40fba08d601e25698170d16f14c9; 110 total catalog records, 26 supplier-public source audits and 5 scoped tariff rechecks, no newly approved models.",
+    "supplier_sources": [
+      "https://aws.amazon.com/bedrock/pricing/",
+      "https://docs.aws.amazon.com/bedrock/latest/userguide/data-retention.html",
+      "https://docs.cohere.com/docs/model-vault/standard/pricing",
+      "https://api-docs.deepseek.com/quick_start/pricing/",
+      "https://ai.google.dev/gemini-api/docs/changelog",
+      "https://huggingface.co/tiiuae/Falcon-H1-7B-Instruct"
+    ],
+    "release_gate": "Protected Required, CodeQL, merge and independent production readback required; no customer contract, account entitlement or AWS regional lifecycle attestation.",
+    "canonical_learning_gate": "Historical replay through existing brain-ai-model-catalog-evidence-recovery.test.mjs. This candidate updates public audit metadata only; it does not change auth, RLS, execution or safety policy."
+  },
+  "outcome": {
+    "reviewed_models": 26,
+    "model_price_source_rechecks": 5,
+    "approved_new_models": 0,
+    "automatic_recommendation_promotions": 0,
+    "production_verified": false
+  }
+}

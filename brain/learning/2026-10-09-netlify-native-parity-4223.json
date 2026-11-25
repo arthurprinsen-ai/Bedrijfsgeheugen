@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|website|netlify-native-parity-recovery-4223-v1",
+  "obligationId": "portal-prod-netlify-native-parity-20261009-v1",
+  "date": "2026-10-09",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "Protected main and native Netlify Git build with immutable production readback",
+  "root_causes": [
+    "PR #4223 changes only tests and governance files, so the legitimate Netlify ignore filter left production at #4222",
+    "The forced Production Source Snapshot recovery run 37887051743 failed with HTTP 420 composio_netlify_account_not_public in its authorized JIT fallback"
+  ],
+  "prevention": [
+    "Use the existing native Git Netlify publication path with one config-only deploy-eligible heartbeat",
+    "Never weaken repository approval, bypass provider credentials or claim exact production proof without comparing published commit identities",
+    "Treat non-runtime-only source changes as deployment-not-applicable in release policy; require independent test evidence for browser parity"
+  ],
+  "tests": [
+    "tests/brain-delivery-system.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-system.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-system.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-system.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_NATIVE_GIT_DOCS_ONLY_DEPLOY_SKIPPED_AND_JIT_BRIDGE_BLOCKED",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_PROVEN",
+  "closureRequired": [
+    "protected PR merge",
+    "native Netlify provider ready deploy",
+    "exact current main commit and deploy_id confirmed publicly",
+    "production browser checks pass"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "id": "writer-control-fixed-search-path-v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "fingerprint": "supabase|security|writer-control-invoker-search-path-mutable|20261102-v1",
+  "compiler": {
+    "failure_class": "SECURITY_CONFIG_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Exclusive-writer SECURITY INVOKER lease functions did not pin search_path. Although every table reference is schema-qualified, a mutable execution search path is a security linter warning and leaves avoidable name-resolution variance.",
+  "prevention": {
+    "migration": "supabase/migrations/20261102141045_writer_control_fixed_search_path_v1.sql",
+    "pattern": "Pin search_path to pg_catalog, writer_control on SECURITY INVOKER functions and retain original qualified body, ACL, owner and lease verification.",
+    "failure_policy": "Abort migration if any required function is absent or suddenly SECURITY DEFINER; prove all three settings through pg_proc before allowing release.",
+    "regression": "tests/brain-security-trust-center-v1.test.mjs",
+    "rollout": "Protected Required/BRAIN/CodeQL plus provider database migration history and post-deploy Security Advisor independent readback; no direct DDL bypass.",
+    "incident": "Do not claim resolution until function metadata is read from the live provider and original alert disappears."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "production_readback": "NOT_YET_PROVEN"
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-security-trust-center-v1.test.mjs"
+    ],
+    "provider_observation": "Supabase Security Advisor warning category for invoker functions, 2026-11-02",
+    "outcome": "PROPOSED_PROTECTED_MIGRATION_NOT_YET_APPLIED",
+    "authorized_release": "Existing exclusive writer and native branch protection; no alternate migration path."
+  }
+}

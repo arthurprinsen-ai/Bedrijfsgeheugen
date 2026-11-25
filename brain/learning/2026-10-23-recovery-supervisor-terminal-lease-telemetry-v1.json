@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|recovery-supervisor|missing-terminal-lease-signal-unobserved|20261023-v1",
+  "obligation_id": "delivery|recovery-supervisor|typed-missing-lease-regression|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "related_prs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4793",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4792"
+  ],
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "The merged hourly supervisor telemetry projected CAS and drift messages but omitted the actual GitHub runtime annotation for a missing exact terminal PR writer lease. As observed on #4772 and #4778, green exact-head checks do not grant authority to update an ACTIVE or CANDIDATE lease.",
+  "fix": "Match strict real timestamped GitHub warning annotations, dedupe by exact provider run ID and PR, and report distinct-run missing terminal leases in the existing read-only hourly Janitor evidence.",
+  "prevention_rule": "No supervisor log observation may promote a PR, change branch metadata, retry GitHub Actions, or infer a writer lease release. Only the existing writer may release its lease, and native update-branch must enforce expected-head CAS. Missing/partial provider evidence must not become green.",
+  "evidence": {
+    "observed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39960974891",
+    "primary_merged_source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4793",
+    "observed_blocked_prs": [
+      4772,
+      4778
+    ],
+    "repeated_drift_before_after_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-recovery-supervisor-telemetry-v1.test.mjs"
+    ],
+    "invariants": [
+      "One existing Janitor",
+      "One native-CAS Recovery Supervisor",
+      "No spoofed owner-release signal",
+      "Required and CodeQL unchanged",
+      "No production/customer value claim from logs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "automation",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "runtime_verification": "NOT_YET_DEPLOYED"
+}

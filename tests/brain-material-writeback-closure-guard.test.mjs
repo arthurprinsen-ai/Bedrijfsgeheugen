@@ -3,9 +3,11 @@ import assert from 'node:assert/strict';
 import { mkdtemp, mkdir, writeFile, readFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import {
   evaluateMaterialWritebackClosure,
   evaluateLearningSemantics,
+  diffPaths,
   MATERIAL_WRITEBACK_CLOSURE_FINGERPRINT,
   SEMANTIC_LEARNING_CLOSURE_FINGERPRINT
 } from '../scripts/brain/material-writeback-closure-guard.mjs';
@@ -69,6 +71,25 @@ test('closure-only reconciliation does not recursively demand another closure bu
   assert.equal(result.ok,true);
   assert.equal(result.material,false);
   assert.equal(result.status,'NO_MATERIAL_DELTA');
+});
+
+test('diff path derivation is shallow-safe and does not require a merge base',async()=>{
+  const root=await mkdtemp(path.join(os.tmpdir(),'bg-two-tree-diff-'));
+  execFileSync('git',['init','-q'],{cwd:root});
+  execFileSync('git',['config','user.email','ci@example.invalid'],{cwd:root});
+  execFileSync('git',['config','user.name','CI'],{cwd:root});
+  await writeFile(path.join(root,'base.txt'),'base\n');
+  execFileSync('git',['add','base.txt'],{cwd:root});
+  execFileSync('git',['commit','-qm','base'],{cwd:root});
+  const base=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+  execFileSync('git',['checkout','--orphan','isolated-head'],{cwd:root,stdio:'ignore'});
+  execFileSync('git',['rm','-rf','.'],{cwd:root,stdio:'ignore'});
+  await writeFile(path.join(root,'head.txt'),'head\n');
+  execFileSync('git',['add','head.txt'],{cwd:root});
+  execFileSync('git',['commit','-qm','head'],{cwd:root});
+  const head=execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim();
+  assert.throws(()=>execFileSync('git',['merge-base',base,head],{cwd:root,stdio:'pipe'}));
+  assert.deepEqual(new Set(diffPaths(base,head,{cwd:root})),new Set(['base.txt','head.txt']));
 });
 
 test('Required gate executes material writeback closure guard before lane fan-out',async()=>{

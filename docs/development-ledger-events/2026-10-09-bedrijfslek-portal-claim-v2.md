@@ -1,0 +1,11 @@
+# Development ledger — Bedrijfslek authenticated claim v2
+- Obligation-ID: bedrijfslek-portal-authorized-claim-v2
+- Parent-P0: #4198
+- Delivery-Lane: backend
+- Base-SHA: 00f010168bc9bd03e891d10f759459becc4327b4
+- Writer-Lease-State: CANDIDATE_WRITING
+- Material changes: portal-v2/scan-claim-bridge.js, portal-v2/app.js, zelfscan.html, supabase/functions/powerhouse-scan-ingest/index.ts
+- Evidence: historical replay + security shadow + canary tests, live proof pending
+- Root cause: missing Bearer propagation / session-tab receipt / verified tenant ownership guard
+- Fix: one existing session contract, short-lived browser receipt and immutable ownership across tenants
+- Fingerprint: powerhouse|bedrijfslek|authenticated-portal-claim|v2

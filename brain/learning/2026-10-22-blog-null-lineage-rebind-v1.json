@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|blog-null-canonical-lineage-rebind|20261022-v1",
+  "observed_at": "2026-10-22",
+  "obligation": "content-publication:2026-10-22:blog",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_causes": [
+    "Supabase canonical 2026-10-22 blog obligation was GENERATED with NULL slug, content_id and canonical_url, despite protected blog PR #4603 merged and Netlify ready exact merge commit 38ddad15b819be8942ff05565b244b03cfbc4e57.",
+    "Existing Powerhouse blog queue tried .eq('slug', clean(o.slug)) where clean(null)==='', so PostgREST equality matched zero SQL NULL rows and BLOG_LINEAGE_REBIND_FAILED.",
+    "The unreconciled metadata did not prove the publicly deployed blog URL, leaving it GENERATED; independent live readback remains a separate requirement."
+  ],
+  "prevention": [
+    "For pre-provider GENERATED records, compare the actual old SQL NULL with is('slug',null); use eq only for genuine non-null values.",
+    "Hold strict canonical tenant/day/channel/status/external-id/published/live CAS and never rebind after ambiguous provider effects.",
+    "Keep canonical hourly scheduler, one blog PR and one protected Netlify release; no invented public GET or live proof."
+  ],
+  "evidence": {
+    "regression_tests": [
+      "tests/brain-powerhouse-blog-null-lineage-rebind-v1.test.mjs"
+    ],
+    "baseline": "2026-10-22 GENERATED slug=NULL content_id=NULL canonical_url=NULL",
+    "deployment": "Netlify production ready 6ad9ca0d0bcb05e8587a7908 at 2026-10-22T08:34:21Z, exact commit 38ddad15b819be8942ff05565b244b03cfbc4e57",
+    "output_proof": "Pending queue CAS and canonical independent public article readback"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-null-lineage-rebind-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-null-lineage-rebind-v1.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

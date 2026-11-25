@@ -1,0 +1,45 @@
+{
+  "id": "powerhouse-one-loop-20261008-v1",
+  "date": "2026-10-08",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|one-loop|canonical-delivery-classification-and-closure|v1",
+  "root_cause": "A new lifecycle contract was initially introduced with a redundant CI workflow, unclassified paths and no mandatory repository closure artifacts; protected Required rejected the candidate. Existing canonical Whole Brain workflow and integration compiler already provide the authority.",
+  "prevention": [
+    "Reuse existing Whole Brain canonical workflow instead of adding a parallel scheduler.",
+    "Classify new paths in the canonical delivery policy before protected admission.",
+    "Supply Brain learning, development ledger and human-readable change evidence for every material candidate.",
+    "Do not claim live outbound execution from pure lifecycle tests or repository merge."
+  ],
+  "compiler": {
+    "failure_class": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE",
+    "scope": "POWERHOUSE_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "entrypoint": ".github/workflows/whole-brain-canonical-loop-v2.yml",
+    "regression": [
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
+    ],
+    "contract": "tools/powerhouse/one-loop-contract.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-one-loop-terminal-lineage-v1.test.mjs"
+    ],
+    "success_criteria": [
+      "Protected admission and integration closure succeed",
+      "Required and CodeQL green at exact HEAD",
+      "Production authority and outbound evidence separately proven"
+    ]
+  },
+  "production_claim": "NOT_PROVEN",
+  "outcome": "CANDIDATE_PENDING_PROTECTED_DELIVERY"
+}

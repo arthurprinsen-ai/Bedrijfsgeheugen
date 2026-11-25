@@ -1,0 +1,36 @@
+{
+  "date": "2026-10-19",
+  "obligation": "openai-blog-reader-ready-generation-20261019",
+  "fingerprint": "powerhouse-content-orchestrator|blog|editorial-meta-in-public-content",
+  "root_cause": "The OpenAI blog generation channel reused a generic channel prompt and marked generated content content_ready without reader-ready validation. Draft SEO/reviewer instructions were exported into protected blog candidate #4483.",
+  "intervention": "For the existing canonical OpenAI blog generation channel only, add a strict reader-facing prompt, deterministic editorial and minimum-structure checks, a single source-grounded OpenAI revision when necessary and a terminal fail-closed result otherwise. Never set human approval from AI review.",
+  "prevention": "The generator will reject instructions meant for publishers and record automated_blog_reader_ready with the policy identifier, while preserving final_copy_approved=false for the blog. The canonical static publisher separately rejects editor-only copy after generation. No source or publication authority bypass.",
+  "compiler": {
+    "failure_class": "EDITORIAL_OUTPUT_NOT_PUBLICATION_READY",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "OPENAI_BLOG_READER_READY_GENERATION_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-openai-blog-reader-ready-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-openai-blog-reader-ready-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-openai-blog-reader-ready-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "unsafe_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4483",
+    "safe_static_guard": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4484",
+    "production_deploy_verified": false
+  },
+  "status": "SOURCE_CANDIDATE_AWAITING_EXACT_CI_PROTECTED_MERGE_AND_SUPABASE_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4483"
+  ]
+}

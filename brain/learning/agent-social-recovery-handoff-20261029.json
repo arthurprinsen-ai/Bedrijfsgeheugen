@@ -1,0 +1,26 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "powerhouse|agents|social-delivery-handoff|retired-make-routing|20261029-v1",
+  "root_cause": "The existing agent registry still exposed retired Make integration routing while daily publication failures lacked a named social recovery coordinator that could hand off evidence to existing reliability, security and connector specialists.",
+  "prevention_rule": "Route Social+Integration+Reliability via existing agent fabric to one social recovery coordinator; specialist support is read-only until one protected integration writer commits, and the original canonical publisher alone sends; no second scheduler or Make/Buffer fallback.",
+  "compiler": {
+    "failure_class": "AGENT_RECOVERY_ROUTING_CONTRACT",
+    "scope": "EXISTING_AGENT_FABRIC",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-delivery-agent-handoff-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_repair_implemented": false,
+    "production_verified": false,
+    "provider_publication_live": false,
+    "private_payload_excluded": true,
+    "legacy_registry_test_covered_by_required": true
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "fingerprint": "external-signal-dataforseo-timeout-20261019-v1",
+  "compiler": {
+    "failure_class": "UPSTREAM_TIMEOUT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "root_cause": "The newly verified DataForSEO alternate provider sometimes needs longer than the old Tavily-only 12-second AbortSignal timeout. Two real production probes showed 1–2 of 3 topics timing out despite others returning verified organic results. The pg_net scheduler has 120 seconds and handles all three provider requests in a bounded parallel batch.",
+  "prevention_rule": "Retain single scheduler owner and three-topic maximum. Apply separate 35-second DataForSEO provider deadline while preserving 12-second Tavily deadline, qualified organic-only results, exact signal provenance and fail-closed partial HTTP 207. Do not add repeated billable retries or synthesize market results.",
+  "regression_contract": "external-signal-dataforseo-timeout-20261019-v1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-dataforseo-provider-timeout-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-dataforseo-provider-timeout-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-external-dataforseo-provider-timeout-20261019.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_v12": "Supabase Edge bg-externe-signalen v12 exact protected-main readback passed. Provider probe #8104: 2/3 success, 18 organic results, 0 approved, one timeout. Probe #8107: 1/3 success, 9 organic results, one approved, two timeouts. Dataforseo health source fresh; only provider-specific timeout changes."
+  },
+  "tests": [
+    "tests/brain-external-dataforseo-provider-timeout-20261019.test.mjs"
+  ],
+  "canonical_eligible": false
+}

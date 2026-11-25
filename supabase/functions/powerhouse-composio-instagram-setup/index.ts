@@ -1,3 +1,4 @@
+import {selectVerifiedCanonicalInstagramConnection} from '../_shared/composio-instagram-canonical-selection.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const BASE='https://backend.composio.dev/api/v3.1';
@@ -79,14 +80,14 @@ Deno.serve(async(req:Request)=>{
       rejected.push({account_id:accountId,alias:clean(candidate?.alias)||null,reason:message.includes('401')?'REVOKED_OR_UNAUTHORIZED':'HEALTHCHECK_FAILED'});
     }
   }
-  const canonical=healthy.filter(x=>clean(x.account?.alias)==='bedrijfsgeheugen-mira-canonical');
-  const selectable=canonical.length===1?canonical:healthy;
+  const selection=selectVerifiedCanonicalInstagramConnection(healthy);
+  const selectable=selection.selectable;
   if(selectable.length>1){
     const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_INSTAGRAM_HEALTHY_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected};
     await writeState(db,'BLOCKED_AMBIGUOUS',result);return json({ok:true,...result},409);
   }
   if(selectable.length===1){
-    const selected=selectable[0],account=selected.account,result:any={ready:true,state:'ACTIVE',reason:null,api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,health_verified:true,canonical_alias_selected:clean(account?.alias)==='bedrijfsgeheugen-mira-canonical',connected_account_id:selected.accountId,user_id:clean(account?.user_id),alias:clean(account?.alias),username:selected.identity.username,instagram_user_id:selected.identity.id||null};
+    const selected=selectable[0],account=selected.account,result:any={ready:true,state:'ACTIVE',reason:null,api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,health_verified:true,canonical_alias_selected:selection.canonical_alias_selected,connected_account_id:selected.accountId,user_id:clean(account?.user_id),alias:clean(account?.alias),username:selected.identity.username,instagram_user_id:selected.identity.id||null};
     await writeState(db,'ACTIVE',result);
     if(action==='resume'){
       if(!serviceOk)return json({ok:false,error:'ADMIN_SERVICE_AUTH_REQUIRED'},403);

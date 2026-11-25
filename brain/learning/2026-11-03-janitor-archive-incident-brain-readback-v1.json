@@ -1,0 +1,74 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|janitor-archive-sweep|failure-not-brain-registered|20261103-v1",
+  "obligation_id": "github|janitor-archive-sweep|failure-not-brain-registered|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333",
+  "parent_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "status": "CANDIDATE_NOT_PROVEN_LIVE",
+  "failure_class": "NATIVE_ARCHIVE_JOB_ERROR_NOT_REGISTERED_WITH_ORIGINAL_BRAIN",
+  "owner": "existing-powerhouse-github-delivery-janitor",
+  "root_cause": "After the 403 false-green prevention, the original branch_archive_sweep job emitted typed per-branch artifact and nonzero exit but lacked an always-run canonical issue+Brain incident writeback observer. Thus a failed standalone job did not prove an original ONE BRAIN incident occurrence was recorded and read back.",
+  "evidence": {
+    "original_failed_runs": [
+      41528932134,
+      41546047078
+    ],
+    "original_403_branches": 3,
+    "original_403_phase": "CREATE_ARCHIVE_TAG",
+    "postmerge_observation_run": 41595648620,
+    "no_permission_bypass": true,
+    "auth_root_cause": "UNKNOWN_UNTIL_NATIVE_PROVIDER_EVIDENCE",
+    "existing_fix_prs": [
+      5334,
+      5339
+    ],
+    "natural_archive_rate_limit_run": 41595648620,
+    "api_rate_limit_at": "2026-11-03T07:29:04Z",
+    "rate_limit_cause_boundary": "Original branch sweep continued expensive per-branch GitHub calls after three native tag-create HTTP403 failures; resulting same native job emitted installation API rate limit HTTP403. This is a proven contributing sequence, not proof of total quota utilization."
+  },
+  "repair": "Reuse existing tools/delivery/janitor-incident-agent.mjs as an --observe-archive mode in the SAME original branch_archive_sweep job with if:always. Validate original report schema, run/SHA identity and counts, classify provider failure/missing artifact/step failure separately, append idempotent issue #5333 comment with direct GitHub readback, append existing brain_observe_failure with exact occurrence/hash readback, preserve existing artifact including observer result. Reporter failure fails same original job. After three consecutive denied archive writes the same original branch loop now stops further API-heavy scans with JANITOR_ARCHIVE_CIRCUIT_OPEN, records the original bounded 60-branch window, inventory and partial status and returns partial nonzero; all unique-work branches remain untouched. The original observer settles GitHub incident and Brain occurrence writes independently, so GitHub rate-limit 403 cannot prevent a canonical Brain observation, and Brain RPC 503 cannot prevent the GitHub incident comment. Both outcomes are durably reported and a partial writeback fails the same native job.",
+  "prevention_rule": "NO_NATIVE_JOB_ERROR_OR_MISSING_PROOF_WITHOUT_CANONICAL_ISSUE_AND_BRAIN_OCCURRENCE_READBACK. Successful sibling jobs, failure annotation, workflow red status or uploaded artifact never substitute for the owner incident registration. Never delete unique work without exact archive tag readback. Reuse only original existing hourly schedule and writer; do not broaden token or invent provider permission. Fail the original archive sweep before further per-branch work once its three-strike circuit is open; do not burn shared GitHub installation quota while archive permission is known denied. An outage of one incident provider must never suppress the other report; attempt and independently read back each channel before true-green.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-archive-incident-readback-20261103.test.mjs"
+    ],
+    "invariants": [
+      "status PARTIAL_FAILURE with original 3 HTTP403 is report-required",
+      "malformed/missing/stale-SHA artifact itself is incident",
+      "original clean step is not global GREEN",
+      "original observer verifies both GitHub issue comment and Brain occurrence",
+      "Brain outage is native failure, never false success",
+      "no extra workflow/cron/secrets exposure or branch deletion bypass",
+      "three consecutive archive write denials immediately stop remaining provider API calls, retain bounded inventory/window provenance and keep job red",
+      "GitHub 403 still attempts original Brain observation and Brain 503 still attempts GitHub issue readback; partial dual-writeback remains red"
+    ]
+  },
+  "tests": [
+    "tests/brain-janitor-archive-incident-readback-20261103.test.mjs",
+    "tests/brain-branch-archive-sweep.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization"
+  ],
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "NATIVE_ARCHIVE_JOB_ERROR_NOT_REGISTERED_WITH_ORIGINAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "portal_projection": {
+    "now": "NOT_PROVEN_LIVE",
+    "after": "SHOW_OPEN_PROVIDER_403_OR_EVIDENCE_MISSING_IN_EXISTING_ADMIN_VIEW_AFTER_VERIFIED_REGISTRY_READBACK",
+    "global_green_allowed": false
+  },
+  "terminal_rule": "Required+CodeQL+full BRAIN exact protected head; merge; original Janitor native postmerge archive sweep; direct issue+Brain readback of observed exception; original authorized provider tag/create and safe branch outcomes; independent portal/source truth. Any uninstrumented other agents remain coverage UNKNOWN."
+}

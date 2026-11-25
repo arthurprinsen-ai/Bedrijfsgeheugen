@@ -8,6 +8,13 @@
 
 const arr = value => (Array.isArray(value) ? value : []);
 const txt = value => (value == null ? '' : String(value));
+const evidenceHealth = value => value === true ? {status:'ok',healthy:true} : value === false ? {status:'aandacht',healthy:false} : {status:'open',healthy:false};
+const measuredNumber = value => {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+};
 const laatste = items => arr(items).map(x => x?.occurredAt || x?.recordedAt || x?.observedAt || x?.at).filter(Boolean).sort().pop() || '';
 
 export const BREIN_STAPPEN = Object.freeze([
@@ -34,10 +41,12 @@ function emptyPortfolio() {
 function economics(value) {
   const source = value && typeof value === 'object' ? value : {};
   return {
-    expectedValue: Number(source.expectedValue) || 0,
-    actualCost: Number(source.actualCost) || 0,
-    realizedValue: Number(source.realizedValue) || 0,
-    realizedProfit: Number(source.realizedProfit) || 0,
+    // A missing authoritative monetary measurement is unknown, never zero.
+    // Preserve an explicitly observed 0 (including string '0').
+    expectedValue: measuredNumber(source.expectedValue),
+    actualCost: measuredNumber(source.actualCost),
+    realizedValue: measuredNumber(source.realizedValue),
+    realizedProfit: measuredNumber(source.realizedProfit),
     currency: txt(source.currency || 'EUR')
   };
 }
@@ -72,6 +81,23 @@ function inferLayer(record={}) {
   if(/agent|chat|worker/.test(hay))return 'Agents / Chats';
   return txt(record.component||record.domain||'Powerhouse');
 }
+function sourceEvidenceUrl(record={}) {
+  const values=[
+    record.referenceUrl,record.html_url,record.url,
+    record.evidence?.html_url,record.evidence?.runUrl,record.evidence?.run_url,
+    record.evidence?.readback_url,record.evidence?.url,
+    record.provenance?.sourceUrl
+  ];
+  for(const value of values){
+    if(typeof value!=='string'||value.length>2048)continue;
+    try{
+      const url=new URL(value);
+      if(url.protocol!=='https:')continue;
+      if(['github.com','app.netlify.com','supabase.com','app.supabase.com'].includes(url.hostname))return url.href;
+    }catch{}
+  }
+  return '';
+}
 function normalizeObservabilityRecord(record={},index=0) {
   const status=txt(record.status||record.state||record.conclusion||record.outcome?.status||'UNKNOWN');
   const severity=txt(record.severity||record.level||record.errorLevel||'');
@@ -88,7 +114,11 @@ function normalizeObservabilityRecord(record={},index=0) {
     actor:txt(record.actor?.name||record.actor||record.actorId||record.worker||record.agent||'system'),
     source:txt(record.source||record.platform||record.provider||record.origin||'Powerhouse'),
     layer:inferLayer(record),
-    fingerprint:txt(record.fingerprint||record.failureFingerprint||record.errorFingerprint)
+    fingerprint:txt(record.fingerprint||record.failureFingerprint||record.errorFingerprint),
+    // Only an explicit trace field counts. correlationId is a loop identifier, not a trace,
+    // so it is never promoted here; the quality report must keep saying NIET GEMETEN without it.
+    traceId:txt(record.traceId||record.trace_id).trim(),
+    referenceUrl:sourceEvidenceUrl(record)
   };
 }
 function observabilityProjection({records,cockpit,health,lussen,geheugen,waarde,projection,bijgewerkt}) {
@@ -144,13 +174,12 @@ export function mapRuntimeProjection(projection) {
   return {
     sources: slice(arr(health.components).map(item => ({
       naam: txt(item.name || item.component || item.platform),
-      status: item.healthy === false ? 'aandacht' : 'ok',
-      healthy: item.healthy !== false,
+      ...evidenceHealth(item.healthy),
       laatst: txt(item.lastSeenAt || item.observedAt)
     })), bijgewerkt, { summary: health.summary || {} }),
 
     datahub: slice(arr(projection.businessGraph?.nodes || projection.businessGraph?.entities).map(node => ({
-      naam: txt(node.label || node.id), status: 'ok', healthy: true
+      naam: txt(node.label || node.id), status: 'open', healthy: false
     })), bijgewerkt, { edges: arr(projection.businessGraph?.edges).length }),
 
     brain: slice(perStap, bijgewerkt, {
@@ -161,8 +190,8 @@ export function mapRuntimeProjection(projection) {
 
     agents: slice(arr(cockpit.activityTimeline).map(item => ({
       naam: txt(item.title || item.subjectId || item.type),
-      status: item.status === 'BLOCKED' ? 'aandacht' : 'ok',
-      healthy: item.status !== 'BLOCKED',
+      status: item.status === 'BLOCKED' || item.status === 'FAILED' ? 'aandacht' : 'open',
+      healthy: false,
       laatst: txt(item.occurredAt)
     })), bijgewerkt),
 
@@ -170,7 +199,7 @@ export function mapRuntimeProjection(projection) {
       naam: txt(item.title || item.action),
       status: txt(item.priority || 'open'),
       healthy: false,
-      waarde: Number(item.value) || 0
+      waarde: measuredNumber(item.value)
     })), bijgewerkt),
 
     recovery: slice(arr(cockpit.openKnowledgeObligations).map(item => ({
@@ -182,14 +211,23 @@ export function mapRuntimeProjection(projection) {
       naam: txt(item.subjectId || item.title),
       status: item.status === 'VERIFIED' ? 'ok' : 'aandacht',
       healthy: item.status === 'VERIFIED',
-      waarde: Number(item.value || item.amount) || 0
+      waarde: measuredNumber(item.value ?? item.amount)
     })), bijgewerkt, { totals: waarde.totals || {} }),
 
-    learning: slice(arr(geheugen.memories || geheugen.records).map(item => ({
-      naam: txt(item.claim || item.subjectId || item.id),
-      status: item.status === 'PROVEN' ? 'ok' : 'aandacht',
-      healthy: item.status === 'PROVEN'
-    })), bijgewerkt, { summary: geheugen.memorySummary || geheugen.summary || {} }),
+    learning: slice(arr(geheugen.memories || geheugen.records).map(item => {
+      const maturity=txt(item.maturity || item.status).toUpperCase();
+      // Only preserve server-side verified evidence, never infer a receipt from success status.
+      const proofRef=sourceEvidenceUrl(item);
+      const productionVerified=item.productionVerified===true
+        ||item.evidence?.productionVerified===true||item.evidence?.production_verified===true
+        ||item.evidence?.production_proven===true;
+      return {
+        naam: txt(item.claim || item.subjectId || item.id),
+        status: maturity==='PROVEN'?'ok':'aandacht',
+        healthy: maturity==='PROVEN',
+        maturity,proofRef,productionVerified
+      };
+    }), bijgewerkt, { summary: geheugen.memorySummary || geheugen.summary || {} }),
 
     selfHeal: slice(lussen.filter(loop => !loop?.complete).map(loop => ({
       naam: txt(loop.correlationId || 'lus'),
@@ -199,13 +237,15 @@ export function mapRuntimeProjection(projection) {
 
     audit: slice(records.map(record => ({
       naam: txt(record.type || record.subjectId),
-      status: 'ok', healthy: true, laatst: txt(record.occurredAt || record.recordedAt || record.observedAt)
+      status: record.verified === true && arr(record.evidenceIds).length > 0 ? 'ok' : 'open',
+      healthy: record.verified === true && arr(record.evidenceIds).length > 0,
+      laatst: txt(record.occurredAt || record.recordedAt || record.observedAt)
     })), bijgewerkt),
 
     governance: slice(arr(projection.aiGovernance?.systems || projection.aiGovernance).map(item => ({
       naam: txt(item.systemName || item.model),
-      status: item.riskLevel === 'HIGH' ? 'aandacht' : 'ok',
-      healthy: item.riskLevel !== 'HIGH'
+      status: item.riskLevel === 'HIGH' ? 'aandacht' : 'open',
+      healthy: false
     })), bijgewerkt),
 
     decisions: slice(arr(projection.companyDecisions), bijgewerkt),
@@ -218,22 +258,53 @@ export function mapRuntimeProjection(projection) {
   };
 }
 
-export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}) } = {}) {
+// Only the original tenant-bound read model is invalidated. An invalid/expired
+// provider readback must not leave an older, apparently healthy projection live.
+function invalidateRuntime(domainState,validateSession,reason){
+  if(!validateSession())return;
+  const canRead=typeof domainState?.get==='function';
+  const prior=canRead?domainState.get('portal.runtime'):undefined;
+  if(typeof domainState?.setDerived!=='function'||(canRead&&prior==null))return;
+  // Older domain-state clients expose only setDerived: clear them as well.
+  // When get exists, suppress duplicate events for an already empty projection.
+  domainState.setDerived('portal.runtime',null);
+  if(canRead&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function')
+    globalThis.dispatchEvent(new CustomEvent('bg:runtime-evidence',{detail:{source:'brain-operating-loop',state:'UNVERIFIED',reason}}));
+}
+
+export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}), validateSession = () => true } = {}) {
   try {
     const auth = typeof authHeadersProvider === 'function' ? await authHeadersProvider() : {};
+    // Server projection is tenant-specific; without an authenticated bearer, do
+    // not even request it, and never promote anonymous/demo runtime into state.
+    if(!/^Bearer\s+\S+/i.test(String(auth?.authorization||''))){
+      // Anonymous/demo sessions cannot publish or invalidate a runtime overlay.
+      // A real initialized domain exposes get() and can discard its previous view.
+      if(typeof domainState?.get==='function')invalidateRuntime(domainState,validateSession,'AUTH_MISSING');
+      return null;
+    }
     const response = await fetchImpl('/api/brain-operating-loop', {
       headers: { accept: 'application/json', ...(auth || {}) }, credentials: 'same-origin'
     });
-    if (!response.ok) return null;
+    // If permissions were revoked, discard the previous session's transient view.
+    if(response.status===401||response.status===403){invalidateRuntime(domainState,validateSession,'AUTH_REVOKED');return null;}
+    if (!response.ok){invalidateRuntime(domainState,validateSession,'SOURCE_UNAVAILABLE');return null;}
     const projection = await response.json();
     const runtime = mapRuntimeProjection(projection);
-    if (!Object.keys(runtime).length) return null;
+    if (!Object.keys(runtime).length || !validateSession()) return null;
+    // An identical 45-second provider readback does not constitute new data;
+    // do not repeatedly repaint a customer's open page or active analysis.
+    const prior=typeof domainState?.get==='function'?domainState.get('portal.runtime'):undefined;
+    if(JSON.stringify(prior??null)===JSON.stringify(runtime))return runtime;
     if (typeof domainState?.setDerived === 'function') domainState.setDerived('portal.runtime', runtime);
     if (typeof globalThis.dispatchEvent === 'function' && typeof globalThis.CustomEvent === 'function') {
       globalThis.dispatchEvent(new CustomEvent('bg:runtime-evidence',{detail:{source:'brain-operating-loop',updatedAt:runtime?.observability?.updatedAt||null}}));
     }
     return runtime;
   } catch {
+    // A transport failure is not a new success receipt. Invalidating only the
+    // same authenticated session prevents yesterday's health appearing green.
+    try{invalidateRuntime(domainState,validateSession,'SOURCE_UNAVAILABLE');}catch{}
     return null;
   }
 }

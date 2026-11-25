@@ -51,7 +51,7 @@ Deno.serve(async(req:Request)=>{
       const productionRunId=terminal.production_readback_run_id==null?null:Number(terminal.production_readback_run_id);
       const productionObservedSha=String(terminal.production_observed_sha||mainSha).toLowerCase();
       const productionDeployId=String(terminal.production_deploy_id||'').trim()||null;
-      if(productionReadbackMode==='canonical_run'&&(!Number.isInteger(productionRunId)||productionRunId<1))throw new Error('PRODUCTION_READBACK_RUN_INVALID');
+      if(productionReadbackMode==='canonical_run'&&(!Number.isInteger(productionRunId)||(productionRunId as number)<1))throw new Error('PRODUCTION_READBACK_RUN_INVALID');
       if(productionReadbackMode==='descendant_live'){
         if(!/^[0-9a-f]{40}$/.test(productionObservedSha))throw new Error('PRODUCTION_OBSERVED_SHA_INVALID');
         if(!productionDeployId)throw new Error('PRODUCTION_DEPLOY_ID_MISSING');
@@ -66,7 +66,7 @@ Deno.serve(async(req:Request)=>{
       }
       const projectionRequired=terminal.skill_projection_required===true;
       const projectionRunId=terminal.skill_projection_run_id==null?null:Number(terminal.skill_projection_run_id);
-      if(projectionRequired&&(!Number.isInteger(projectionRunId)||projectionRunId<1))throw new Error('SKILL_PROJECTION_RUN_INVALID');
+      if(projectionRequired&&(!Number.isInteger(projectionRunId)||(projectionRunId as number)<1))throw new Error('SKILL_PROJECTION_RUN_INVALID');
       if(terminal.outcome_verified!==true)throw new Error('OUTCOME_NOT_VERIFIED');
       const learningStatus=required(terminal.learning_status,'LEARNING_STATUS');
       if(!['APPLIED','NOT_APPLICABLE'].includes(learningStatus))throw new Error('LEARNING_STATUS_INVALID');
@@ -277,7 +277,7 @@ Deno.serve(async(req:Request)=>{
         durable_readback_verified:true
       }},200);
     }catch(error){
-      return json({error:'CONTROL_PLANE_TERMINAL_FAILED',detail:String(error?.message||error).slice(0,500)},422);
+      return json({error:'CONTROL_PLANE_TERMINAL_FAILED',detail:String((error as any)?.message||error).slice(0,500)},422);
     }
   }
   if(action==='learning_export'){

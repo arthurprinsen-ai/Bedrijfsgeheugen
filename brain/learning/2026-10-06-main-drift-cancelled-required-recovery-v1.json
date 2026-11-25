@@ -1,0 +1,42 @@
+{
+  "version": "MAIN-DRIFT-CANCELLED-REQUIRED-RECOVERY-v1",
+  "date": "2026-10-06",
+  "fingerprint": "ci|main-drift|cancelled-required|checks-expected|same-lineage-refresh-v1",
+  "obligation_id": "main-drift-cancelled-required-recovery-20261006-v1",
+  "root_cause": "The recovery classifier evaluated cancelled Required as FAILED_GATE_RECOVERY before evaluating behind-main state. A PR could therefore enter main drift, have its stale Required attempt cancelled, and remain stuck with required checks expected instead of refreshing the same leased lineage.",
+  "prevention": "When the latest canonical Required attempt is cancelled, no newer Required is active, and behindBy is greater than zero, classify the PR as MAIN_DRIFT_RECOVERY. The existing terminal-writer lease and zero-overlap supervisor guard then refresh the same PR lineage from one captured current-main SHA. Genuine Required failures remain fail-closed.",
+  "safety": {
+    "terminal_writer_lease": "required by supervisor before branch refresh",
+    "same_repository_only": true,
+    "zero_path_overlap_required": true,
+    "real_failure": "FAILED_GATE_RECOVERY",
+    "duplicate_pr": "forbidden"
+  },
+  "regression": [
+    "tests/delivery-powerhouse-supervisor.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "CANCELLED_REQUIRED_MAIN_DRIFT_DEAD_END",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "A behind-main PR whose latest canonical Required attempt is cancelled and has no newer active Required must become MAIN_DRIFT_RECOVERY.",
+      "A behind-main PR whose latest canonical Required attempt concluded failure must remain FAILED_GATE_RECOVERY."
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/delivery-powerhouse-supervisor.test.mjs"
+    ],
+    "observed_failure": "main drift -> cancelled Required -> branch protection reports required checks expected",
+    "controls": [
+      "terminal writer lease required before same-lineage refresh",
+      "same-repository branch required",
+      "merge base required",
+      "zero changed-path overlap required",
+      "real Required failures remain fail-closed"
+    ]
+  }
+}

@@ -1,8 +1,8 @@
 function assertClient(client){if(!client?.rpc||!client?.from) throw new TypeError('Supabase record adapter requires rpc/from client');return client;}
 const array=v=>Array.isArray(v)?v:[];
-const rowToRecord=row=>Object.freeze({
+export const rowToRecord=row=>Object.freeze({
   schemaVersion:'brain-record.v1',tenantId:String(row.tenant_id),type:row.record_type,kind:row.record_kind,id:String(row.record_id),subjectId:String(row.subject_id),
-  correlationId:row.correlation_id||null,predecessorIds:array(row.predecessor_ids),owner:row.owner_id||'UNASSIGNED',status:row.status||'OBSERVED',observedAt:row.observed_at,
+  correlationId:row.correlation_id||null,predecessorIds:array(row.predecessor_ids),owner:row.owner_id||'UNASSIGNED',status:row.status||'OBSERVED',observedAt:row.observed_at,sourceRevision:row.source_revision||null,
   executed:row.executed===true,verified:row.verified===true,result:row.result??null,evidenceIds:array(row.evidence_ids),provenance:row.provenance||{},payload:row.payload||{}
 });
 export function createSupabaseRecordAdapter(client){

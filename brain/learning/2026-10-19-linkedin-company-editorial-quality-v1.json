@@ -1,0 +1,38 @@
+{
+  "fingerprint": "linkedin-company-editorial-repeat-news-story-v1",
+  "compiler": {
+    "failure_class": "EDITORIAL_QUALITY",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "root_cause": "Prepublication review was identity-focused; company content automatically stamped final_copy_approved without a company-specific editorial quality policy, and distinct recommendation identifiers let repackaged TKI news appear repeatedly.",
+  "prevention_rule": "Independent shared editorial contract checks readability, concrete entrepreneur pain and consequence, rejects internal memos/jargon, and compares last 21 days' actually published named story families before any company provider call. A rejected draft cannot bypass the gate.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-editorial-contract-v1.test.mjs",
+      "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-linkedin-company-editorial-contract-v1.test.mjs",
+    "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs"
+  ],
+  "evidence": {
+    "incident_dates": [
+      "2026-10-13",
+      "2026-10-15",
+      "2026-10-18",
+      "2026-10-19"
+    ],
+    "observed_same_story": "TKI Bouw en Techniek existing buildings subsidy repeated in three LIVE_PROVEN company posts",
+    "observed_oct19": "2833-character memo with cloud agents, BI refreshes and technical vocabulary",
+    "decision": "A provider acknowledgement is not editorial approval.",
+    "test_state": "Pending independent required CI verification after protected PR",
+    "production_state": "NOT_LIVE_PROVEN"
+  },
+  "outcome": {
+    "target": "Only relevant, novel, understandable MKB owner content may pass the company boundary; actual next post requires provider source/readback and post-release audit."
+  }
+}

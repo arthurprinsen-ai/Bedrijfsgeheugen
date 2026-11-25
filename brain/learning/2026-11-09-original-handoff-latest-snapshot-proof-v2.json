@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-09",
+  "status": "CANDIDATE_PROTECTED_CHECKS_AND_PRODUCTION_READBACK_DUE",
+  "fingerprint": "powerhouse|social-learning|newer-provider-snapshot-false-red|20261109-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original six-hour bg-social-metrics-sync proof auditor, original BRAIN minute39 evaluator",
+  "root_cause": "First real original experiment-handoff audit on 2026-11-09 emitted HANDOFF_OVERDUE for Nov 3 company experiment because it checked only the newest Windsor snapshot (source event 2026-11-08), even though an older independently verified 2026-11-03 source event already has a genuine BRAIN social_learning_evaluations record. It confused a new provider observation awaiting evaluation with the historical original first evaluation, creating a false-red and hiding the future refresh debt as the wrong incident class.",
+  "evidence": {
+    "observed_at_utc": "2026-11-09T14:07:03Z",
+    "deployed_bad_audit": "bg-social-metrics-sync v596",
+    "original_post_id": "urn:li:share:7523338311717965825",
+    "newest_source_event": "windsor:linkedin-company:urn:li:share:7523338311717965825:2026-11-08",
+    "older_evaluated_source_event": "windsor:linkedin-company:urn:li:share:7523338311717965825:2026-11-03",
+    "latest_impressions": 4,
+    "older_evaluations": 1,
+    "next_newer_event_evaluations": 0,
+    "causal_improvement_verified": false
+  },
+  "fix": "In the same imported shared audit function retain all independent provider-linked snapshots instead of selecting only newest; search all for exact original evaluation/application source event. Distinguish valid prior evaluation plus newer event as WAITING_BRAIN_REFRESH; only if the newer observed source event is still unevaluated 84h after its own observed_at mark BRAIN_REFRESH_HANDOFF_OVERDUE. Keep exact tenant/author/provider and original application ACK gates.",
+  "prevention": "Never invalidate exact earlier evidence when data is refreshed. Tests replay both provider events with older valid BRAIN receipt, verify future refreshed sample matures into a distinct typed overdue observation, keep newer observation pending without falsely declaring global outage or learned uplift. Same six-hour owner and original minute39 writer; no new cron/CRM/outbound.",
+  "tests": [
+    "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-windsor-native-learning-provider-repair-20261105.test.mjs"
+    ],
+    "invariants": [
+      "all exact source events checked, only verified provider",
+      "existing evaluations retained",
+      "newer unconsumed source event distinct",
+      "84h from newer observed_at for refresh",
+      "no second scheduler or writer",
+      "no presumed causal effect or customer"
+    ]
+  },
+  "compiler": {
+    "scope": "SOCIAL_LEARNING",
+    "failure_class": "LATEST_SOURCE_EVENT_HISTORICAL_EVALUATION_FALSE_RED",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected CI Required + CodeQL and merge; deploy exact existing Edge+shared helper; one real authorized source run, verify 5 applications and Nov3 historical evaluated + newer refresh pending separately; only then claim corrective live."
+}

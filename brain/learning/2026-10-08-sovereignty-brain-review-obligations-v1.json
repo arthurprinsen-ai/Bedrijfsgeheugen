@@ -1,0 +1,39 @@
+{
+  "id": "sovereignty-brain-review-obligations-20261008-v1",
+  "fingerprint": "powerhouse|sovereignty-impact|brain-obligation|tenant-authority|v1",
+  "compiler": {
+    "failure_class": "CROSS_DOMAIN_REVIEW_UNDISPATCHED",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Tenant AI and data-residency configuration changes were written to the immutable cross-domain impact ledger and displayed in the customer portal, but did not create a durable Brain obligation for follow-up review.",
+  "prevention": [
+    "One immutable tenant impact event opens exactly one idempotent canonical Brain obligation, not an isolated task scheduler.",
+    "Reject mismatched tenant, change, missing impact dimensions or unauthorized runtime approval claims.",
+    "Preserve applicability and emissions as UNDETERMINED; no automatic regulatory conclusion or runtime activation.",
+    "Backfill existing ledger rows idempotently without modifying fulfilled work or forcing an unsupported executor."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sovereignty-impact-obligation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sovereignty-impact-obligation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sovereignty-impact-obligation-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-sovereignty-impact-obligation-v1.test.mjs"
+    ],
+    "source": [
+      "supabase/migrations/20261008162500_sovereignty_brain_review_obligations_v1.sql",
+      "platform/regulatory/sovereignty-change-impact.mjs"
+    ],
+    "outcome": "New and historical tenant impact events now generate canonical OPEN Brain follow-up obligations; live policy change and authorized review closure still require independent production evidence."
+  }
+}

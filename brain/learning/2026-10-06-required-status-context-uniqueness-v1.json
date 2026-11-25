@@ -1,0 +1,23 @@
+{
+  "id": "required-status-context-uniqueness-v1",
+  "date": "2026-10-06",
+  "status": "PROVEN",
+  "fingerprint": "github-required-status-context-collision-v1",
+  "compiler": {
+    "failure_class": "FALSE_GREEN_REQUIRED_STATUS_CONTEXT_COLLISION"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-status-context-uniqueness-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Fourteen unrelated GitHub Actions workflows used the generic job id test, making the protected status context ambiguous.",
+  "prevention": "Only .github/workflows/required-test.yml may own the protected check context test; every other workflow must use a unique job id, enforced by repository-wide regression coverage.",
+  "evidence": {
+    "source_pr": 3878,
+    "false_green_source": "SEO order engine / test",
+    "authoritative_workflow": ".github/workflows/required-test.yml",
+    "regression_test": "tests/brain-required-status-context-uniqueness-v1.test.mjs",
+    "github_guidance": "Required job names must be unique across workflows."
+  }
+}

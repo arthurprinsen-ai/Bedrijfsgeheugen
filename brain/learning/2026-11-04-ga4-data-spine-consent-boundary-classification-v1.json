@@ -1,0 +1,54 @@
+{
+  "fingerprint": "powerhouse|ga4|source-health-privacy-limited-misclassified-as-recoverable-failure|20261104-v1",
+  "state": "PROTECTED_CANDIDATE_NOT_LIVE",
+  "owner": "original ONE BRAIN Data Spine / bg-analytics-sync-composio",
+  "linked_obligation": "dee955d9-9e90-43f3-9b8a-2257bce3f1a5",
+  "cause": "Original Data Spine health view hardcodes ga4-analytics producer_required=true despite optional raw registry, and treats last nonempty source observation >30h as RECOVERY_DUE even when the native original v15 collector has independently verified no consented human events plus GA4 provider aggregate0 and has recorded CONSENT_LIMITED; watchdog therefore repeats misleading technical error evidence.",
+  "truth": "GA4 rows and freshness remain genuinely missing. The absence must NEVER be presented as recent visitors, successful sync, or healthy source. Only the operational reason may be independently classified as current verified consent-limited, time-bounded.",
+  "prevention": "Same original service-only canonical view preserves ten sources, GA4 required visibility, last nonempty source observations and STALE freshness. Only recent latest native privacy_limited sync with matched typed runtime event, independent aggregate0 and absence of consent qualifies operational_state=CONSENT_LIMITED. Evidence expires after 8 hours and any newer error restores RECOVERY_DUE. No new cron, scope, provider or visitor recording.",
+  "compiler": {
+    "failure_class": "FALSE_REPAIR_CLASSIFICATION",
+    "risk": "P0",
+    "original_owner": true,
+    "machine_enforceable": true,
+    "contract": "ga4-source-privacy-boundary-spine-v1"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ga4-consent-limited-data-spine-state-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ga4-consent-limited-data-spine-state-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ga4-consent-limited-data-spine-state-20261104.test.mjs"
+    ]
+  },
+  "production_proof": [
+    "same exact head Required/BRAIN/CodeQL",
+    "original protected main merge",
+    "native Supabase production migration ledger",
+    "observed view GA4 CONSENT_LIMITED AND STALE when v15 proof valid",
+    "next natural original #42 confirms update and age expiration fallback",
+    "ONE BRAIN/skill/ledger readback; no provider data fabricated"
+  ],
+  "source": "supabase/migrations/20261104090000_ga4_consent_limited_data_spine_truth_v1.sql",
+  "evidence": {
+    "original_source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5400",
+    "original_protected_merge_sha": "3f9ab2d13c21ee3ac8dd3822e10efac1a2c70fb8",
+    "live_edge_version": 15,
+    "original_runtime_request_id": 20617,
+    "native_ga4_sync_run_id": "ada3433d-8dfd-4be9-b21a-d08a21d28eca",
+    "provider_independent_sessions": 0,
+    "provider_independent_events": 0,
+    "consented_first_party_human_event_present": false,
+    "actual_ga4_freshness": "STALE",
+    "original_operational_state": "RECOVERY_DUE",
+    "tested_proposed_operational_state": "CONSENT_LIMITED",
+    "live_migration_state": "CANDIDATE_NOT_LIVE_PROVEN",
+    "tests": [
+      "tests/brain-ga4-consent-limited-data-spine-state-20261104.test.mjs"
+    ],
+    "source_data_not_fabricated": true
+  }
+}

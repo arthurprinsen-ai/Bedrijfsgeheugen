@@ -1,31 +1,46 @@
 import { getUser } from '@netlify/identity';
+import { resolveIdentityTenant } from '../../platform/read-models/portal-server-state.mjs';
+import { createSupabasePortalProjectionStore } from './_portal-supabase-store.mjs';
 
-const PROJECT_URL='https://adhjwmvyoixzjtmiroln.supabase.co';
-const env=name=>String(Netlify.env.get(name)||'').trim();
-const serviceKey=()=>env('SUPABASE_SERVICE_ROLE_KEY')||env('SUPABASE_SERVICE_KEY')||env('SUPABASE_SECRET_KEY');
-const supabaseUrl=()=>env('SUPABASE_URL')||PROJECT_URL;
-const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, max-age=60, stale-while-revalidate=240','content-type':'application/json; charset=utf-8'}});
+const json=(body,status=200)=>Response.json(body,{status,headers:{
+  // Never cache authentication failures, upstream failures or temporary 503s.
+  'cache-control':status>=400?'no-store':'private, max-age=60, stale-while-revalidate=240',
+  'content-type':'application/json; charset=utf-8',
+  'vary':'authorization, cookie',
+  ...(status===503?{'retry-after':'20'}:{})
+}});
 
-async function table(path,key){
-  const response=await fetch(`${supabaseUrl()}/rest/v1/${path}`,{headers:{apikey:key,authorization:`Bearer ${key}`,accept:'application/json'}});
-  if(!response.ok)throw new Error(`Supabase ${response.status}: ${await response.text()}`);
-  return response.json();
-}
+export default async request=>{
+  const user=await getUser(request).catch(()=>null);
+  if(!user?.id)return json({error:'UNAUTHENTICATED'},401);
 
-export default async ()=>{
-  const user=await getUser().catch(()=>null);
-  if(!user)return json({error:'UNAUTHENTICATED'},401);
-  const key=serviceKey();
-  if(!key)return json({error:'SUPABASE_SERVICE_KEY_MISSING'},503);
+  const tenantId=resolveIdentityTenant(user);
+  if(!tenantId)return json({error:'TENANT_SCOPE_REQUIRED'},403);
+
   try{
-    const [sources,publications,signals]=await Promise.all([
-      table('bronnen?select=id,naam,uitgever,soort,controle_frequentie,laatst_gecontroleerd,laatste_controle_gelukt,actief,trefwoorden&actief=eq.true&order=uitgever.asc,naam.asc',key),
-      table('bronpublicaties?select=id,bron_id,titel,samenvatting,publicatiedatum,url,opgehaald_op,goedgekeurd,uitgever_url&order=publicatiedatum.desc.nullslast&limit=350',key),
-      table('bg_externe_signalen?select=url,onderwerp,titel,samenvatting,domein,gepubliceerd_op,vertrouwen,toegestaan,opgehaald_op,deadline&order=gepubliceerd_op.desc.nullslast&limit=150',key)
-    ]);
-    return json({sources,publications,signals,stats:{generatedAt:new Date().toISOString(),sourceCount:sources.length,publicationCount:publications.length,signalCount:signals.length}});
+    const store=createSupabasePortalProjectionStore();
+    const payload=await store.getEntrepreneurIntelligence(tenantId);
+    return json(payload,200);
   }catch(error){
-    return json({error:'EXTERNAL_DATA_READ_FAILED',message:error?.message||String(error)},502);
+    const message=String(error?.message||error||'');
+    const configMissing=/configuration missing/i.test(message);
+    const timedOut=/PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT/.test(message);
+    // Operator-only failure categories, never raw messages, tenant IDs, credentials or query payloads.
+    const upstreamMatch=/^EU portal store gateway failed \((401|403|429|500|502|503|504)\)(?: \[(SOURCES|PUBLICATIONS|EXTERNAL_SIGNALS|DOMAIN_REGISTRY|SOURCE_CATALOG|SIGNAL_PROJECTION|COMPANY_IMPACT|CANONICAL_ACTIONS|TENANT_ACTIONS|INTELLIGENCE_SNAPSHOT|PORTAL_READ_DEADLINE_EXCEEDED)\])?$/.exec(message);
+    const upstreamStatus=upstreamMatch?.[1]||null;
+    const upstreamStage=upstreamMatch?.[2]||null;
+    const failureCategory=configMissing?'CONFIG_MISSING'
+      :timedOut?'UPSTREAM_DEADLINE'
+      :upstreamStatus?'UPSTREAM_HTTP_'+upstreamStatus+(upstreamStage?'_STAGE_'+upstreamStage:'')
+      :/tenant scope mismatch/i.test(message)?'TENANT_SCOPE_MISMATCH'
+      :/response shape invalid/i.test(message)?'UPSTREAM_RESPONSE_SHAPE'
+      :error?.name==='TypeError'?'UPSTREAM_NETWORK_FETCH'
+      :'UPSTREAM_UNKNOWN_FAILURE';
+    console.error('PORTAL_ENTREPRENEUR_GATEWAY_FAILED category='+failureCategory);
+    const code=configMissing?'PORTAL_GATEWAY_CONFIG_MISSING'
+      :timedOut?'PORTAL_INTELLIGENCE_UPSTREAM_TIMEOUT':'ENTREPRENEUR_INTELLIGENCE_GATEWAY_FAILED';
+    return json({error:code},configMissing||timedOut?503:502);
   }
 };
+
 export const config={path:'/api/portal-ondernemersdata'};

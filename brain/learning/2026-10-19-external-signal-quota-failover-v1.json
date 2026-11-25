@@ -1,0 +1,32 @@
+{
+  "fingerprint": "external-signal-tavily-quota-failover-20261019-v1",
+  "compiler": {
+    "failure_class": "PROVIDER_QUOTA_EXHAUSTED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "prevention_rule": "If Tavily returns quota/auth/upstream failure, the existing external-signals owner must attempt bounded provider-verified DataForSEO organic SERP with existing authorized credentials, preserving provider identity, timestamp and rank-proxy lineage, never fabricating article dates, confidence or news outcomes. If both fail, remain blocked and report provider errors.",
+  "regression_contract": "external-signal-tavily-quota-failover-20261019-v1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tavily_provider_error": "HTTP 432 usage limit on 2026-10-19, confirmed through existing Edge request 8089 and separate connected Tavily search",
+    "dataforseo_provider_evidence": "Connected DataForSEO Google SERP live returned status_code 20000 and organic results for Dutch MKB AI Act query, confirms alternate provider is capable; unverified or paid results cannot count as authority."
+  },
+  "canonical_eligible": false,
+  "tests": [
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+  ],
+  "root_cause": "Existing bg-externe-signalen producer depended on a single Tavily API credential; after the provider returned HTTP 432 usage limit, each bounded 3-topic run failed without recording a new provider-verified source observation. DataForSEO was connected and had usable existing credentials but was not wired as a governed fallback."
+}

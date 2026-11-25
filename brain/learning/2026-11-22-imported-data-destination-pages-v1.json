@@ -1,0 +1,54 @@
+{
+  "fingerprint": "portal-v2|imported-file-missing-destination-page|20261122-v1",
+  "date": "2026-11-22",
+  "status": "CANDIDATE_EVIDENCE_DUE",
+  "owner": "Canonical Portal V2 page shell and BusinessInput",
+  "issue": "Uploaded CSV/XLSX source was saved with verified semantic business purpose but only import dialog/history showed it; relevant portal pages did not expose the actual raw rows.",
+  "root_cause": "The original semantic import implemented a persistence write and record list, not a tenant-bound read projection within existing destination pages. As a result users could not use or verify the imported data where it belongs.",
+  "prevention_rule": "Every confirmed import must project real stored table cells on its reviewed existing business page and central Data & AI source catalog; no fake KPI mapping. View must immediately drop old content on logout or invalid state and prohibit cross-tenant leakage. Use original router and read-only state, never a parallel writer.",
+  "compiler": {
+    "failure_class": "IMPORTED_DATA_PAGE_VISIBILITY_GAP",
+    "scope": "PORTAL_V2_SOURCE_DISPLAY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-imported-data-destination-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-imported-data-destination-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-imported-data-destination-v1.test.mjs"
+    ],
+    "production_browser": "PENDING",
+    "authenticated_tenant_import_and_readback": "PENDING"
+  },
+  "evidence": {
+    "negative_test": "Cross-tenant, demo, unauthenticated, bad persistence data, invalid route and unreviewed-old-data fail closed.",
+    "positive_test": "Real saved CSV rows, exact destination page, central catalog, source provenance, column headers, pagination, search and logout cleanup.",
+    "tests": [
+      "tests/brain-portal-imported-data-destination-v1.test.mjs"
+    ],
+    "production_verified": false
+  },
+  "architecture": {
+    "source": "portal.dataImports.datasets via original authenticated stateClient",
+    "writer": "No change to domainState.patch/flush and BusinessInput/ONE BRAIN",
+    "view": "existing page-shell + imported-data-pages.js",
+    "deduplication": "existing SHA-256 fingerprint",
+    "automaticKpiWrite": false,
+    "automaticAction": false
+  },
+  "gates": [
+    "Required successful exact head",
+    "hygiene/admission",
+    "CodeQL exact head",
+    "protected merge",
+    "Netlify exact commit READY",
+    "independent public browser readback",
+    "authenticated real file import and tenant state readback",
+    "named Brain consumer acknowledgment"
+  ]
+}

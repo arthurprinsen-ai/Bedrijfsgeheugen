@@ -1,0 +1,40 @@
+{
+  "id": "connector-activation-review-consistency-20261008-v1",
+  "fingerprint": "connector-activation-review-ui-backend-semantic-drift-v1",
+  "compiler": {
+    "failure_class": "CROSS_DOMAIN_STATUS_INCONSISTENCY",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The connector builder UI treated every open CSRD/ESRS impact review as a hard activation denial, while the backend deliberately separates verified technical safety and sovereignty gates from unresolved ESG materiality assessment.",
+  "prevention": [
+    "Use the same technical eligibility contract in both UI and backend while preserving server authority",
+    "Keep activation disabled without passing persisted test evidence",
+    "If technical eligibility exists, permit an activation request subject to server checks, leaving impact review pending and never claiming regulatory compliance",
+    "Display the difference between technical activation and legal sustainability review in plain language"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connector-crossdomain-review-ui-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connector-crossdomain-review-ui-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-connector-crossdomain-review-ui-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-connector-crossdomain-review-ui-v1.test.mjs",
+      "tests/brain-connector-impact-gate-v1.test.mjs"
+    ],
+    "source": [
+      "portal-next/connector-builder-view.js",
+      "platform/api/portal-connectors-handler.mjs"
+    ],
+    "outcome": "Portal presentation aligned with production backend; no external connector provisioning or compliance attestation claimed."
+  }
+}

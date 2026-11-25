@@ -1,0 +1,7 @@
+# GA4 protected production deployment and private scheduler token — 4 November 2026
+
+Original Supabase Edge Production Authority run [#41846442932](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41846442932) failed *after* protected source PR #5419 merged as `fec85265e5b7b9289933a06f8e64074d50dd98cb`: `SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-analytics-sync-composio`. Production GA4 Edge stayed v15. This is not source runtime parity, even though native GitHub branch tests passed.
+
+The original existing pg_cron #42 job `bg-analytics-sync-6h-v1` calls `public.bg_roep_functie('bg-analytics-sync-composio')`, which already includes a private `x-powerhouse-token` read from canonical Vault. Production Edge historically uses `verify_jwt=false` and the source did not check the token. Register the function with original deployed JWT setting in `supabase/config.toml` and require exact original private token comparison before Google provider access or DB writes. Never create another scheduler, change token, create a public privilege, relax existing consent controls, or infer zeros as observed.
+
+New regression in existing `tests/brain-ga4-empty-source-autonomous-owner-20261104.test.mjs`; ONE BRAIN learning and Growth skill updated. Protected Required/BRAIN/CodeQL, exact merge, native provider deploy/readback and natural original cron evidence are separate required acceptance gates. An HTTP200 with zero GA4 rows remains CONSENT_LIMITED/UNKNOWN until independent consented provider evidence is available.

@@ -1,0 +1,43 @@
+{
+  "version": "RELEASE-STATUS-TRIPLE-CONTRACT-v1",
+  "date": "2026-10-25",
+  "obligation_id": "release-dashboard-three-stage-status-20261025-v1",
+  "root_cause": {
+    "escaped_defect": "A single success/failure signal conflated merge completion, deployment applicability and live production verification.",
+    "evidence": "CI release can pass while Netlify deployment is deliberately skipped; previous dashboard interpretation reported a false failure."
+  },
+  "prevention": {
+    "classifier": "tools/netlify/release-status.mjs distinguishes passed,pending,failed,not_required,unknown across GitHub,Netlify,production.",
+    "skip": "Explicit not-required with reason is neutral; missing deployment requirement remains unknown.",
+    "readback": "Production green requires independent fresh matching version evidence."
+  },
+  "regression": [
+    "tests/netlify/release-status.test.mjs",
+    "tests/brain-release-status-three-stage.test.mjs"
+  ],
+  "status": "IMPLEMENTED_IN_DRAFT_NOT_INTEGRATED",
+  "compiler": {
+    "failure_class": "CI_RELEASE_DEPLOYMENT_READBACK_CONFLATION",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-release-status-three-stage.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-release-status-three-stage.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-release-status-three-stage.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/netlify/release-status.test.mjs"
+    ],
+    "observed_failure": "False red on intentional deployment skip.",
+    "proof_boundary": "Full dashboard adapter and production readback still require integration and provider verification."
+  },
+  "fingerprint": "powerhouse|release-dashboard|three-stage-proof-separation|20261025-v1"
+}

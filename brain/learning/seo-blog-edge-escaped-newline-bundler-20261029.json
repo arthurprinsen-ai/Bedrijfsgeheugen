@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "seo-blog-escaped-newline-bundler-recovery-20261029",
+  "fingerprint": "seo|supabase-edge|escaped-newline-bundler-rejected|v1",
+  "problem": "After PR #5097 protected merge, native Supabase deployment of powerhouse-seo-opportunity-resolver rejected index.ts with Expected comma / ExpectedUnicodeEscape near the daily-status filter.",
+  "root_cause": "A literal backslash+n character pair was inserted as source text between chained PostgREST calls; source-only contract regex tests did not parse Deno TypeScript and falsely passed.",
+  "evidence": {
+    "source_main": "f5cbbddcfee403a625f91e71e08cc4d7d94795c2",
+    "edge_production_version_remained": 100,
+    "failed_release": "Edge function bundle parser rejected literal escaped newline at index.ts line 102",
+    "private_credentials": "NONE"
+  },
+  "fix": "Replace exactly one escaped two-character backslash-n with an actual line break and add an explicit negative regression asserting the failure fingerprint is absent and the real newline is present.",
+  "prevention_rule": "Every Edge Function mutation must pass syntax/bundle verification in addition to source-regex tests before publication. A failed deploy must retain the prior working provider version; never call release green without exact-main provider source parity.",
+  "tests": [
+    "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "EDGE_TYPESCRIPT_LITERAL_ESCAPE_SYNTAX_ERROR",
+    "scope": "SEO_CRO",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-blog-daily-decision-20261029.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required/BRAIN/CodeQL green, protected merge, authorized native Supabase production version upgrade, provider three-file parity and actual authenticated 200 canary. No additional scheduler or publisher."
+}

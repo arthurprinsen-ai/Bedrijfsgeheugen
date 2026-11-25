@@ -4,6 +4,7 @@ import { getUser } from '@netlify/identity';
 import { runPortalAnswer } from './_brain-ai.mjs';
 import { createPortalProjectionStore } from './_portal-read-model-store.mjs';
 import { createPortalQuestionHandler } from '../../platform/api/portal-question-handler.mjs';
+import {runSelectedPortalAnswer} from './tenant-ai-inference.mjs';
 
 const SYSTEEM = `Je beantwoordt vragen van een klant van Bedrijfsgeheugen over zijn eigen bedrijf en project, in zijn klantportaal.
 
@@ -20,7 +21,8 @@ const handler=createPortalQuestionHandler({
   getUser,
   store:createPortalProjectionStore(),
   runAnswer:runPortalAnswer,
-  apiKey:process.env.ANTHROPIC_API_KEY,
+  runSelectedAnswer:runSelectedPortalAnswer,
+  apiKey:process.env.OPENAI_API_KEY,
   system:SYSTEEM,
 });
 

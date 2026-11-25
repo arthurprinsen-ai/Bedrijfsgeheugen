@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|held-personal-duplicate-rebootstrap|20261022-v1",
+  "observed_at": "2026-10-22",
+  "root_causes": [
+    "The canonical reconciler preserves pre-provider GLOBAL_POST_DUPLICATE_BLOCKED in obligation but normalizes decision to hold; content-loop bootstrap only accepted publish/blocked."
+  ],
+  "prevention": [
+    "Read both canonical obligation and decision state; require unconsumed authority and zero provider side effects before retry.",
+    "Use source reserve IDs and rejected IDs to stop unproductive retries and select independent facts.",
+    "Do not bypass independent quality/identity/uniqueness/OAuth and provider-proof."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-held-personal-duplicate-rebootstrap-v1.test.mjs"
+    ],
+    "production_baseline": "2026-10-22 1 candidate / held duplicate / zero LinkedIn personal external post-ID",
+    "production_readback": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-held-personal-duplicate-rebootstrap-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-held-personal-duplicate-rebootstrap-v1.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

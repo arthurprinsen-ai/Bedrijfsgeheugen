@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "growth|frisse-blik|completed-scan-no-visible-consent-booking-step|20261025-v1",
+  "obligation_id": "growth-cro:frisse-blik-postscan-booking-step:20261025",
+  "failure_class": "POST_SCAN_CONSENT_BOOKING_CTA_VISIBILITY_GAP",
+  "observed_evidence": {
+    "anonymous_scans_last_7d": 14,
+    "frisse_blik_scans": 7,
+    "zelfscan_scans": 7,
+    "commercial_leads_records": 0,
+    "qualified_leads_proven": 0,
+    "causal_lift_proven": false,
+    "source": "production growth_events + commercial_leads; source HTML"
+  },
+  "hypothesis": "Completed-scan visitors may not find the gated report booking in the dashboard toolbar; clearer post-result CTA may increase voluntary consent and booked advisory conversations. It is not proof of a causal conversion lift.",
+  "change": "Add one visible post-result booking CTA calling the existing openLead() consent modal, using existing 30-minute Calendly event after consent; no new form, provider, scheduler, lead record, cookie or forced booking.",
+  "prevention_rule": "A completed scan is anonymous until voluntary opt-in, verified provider booking and independent downstream paid-order evidence. Reuse the original consent and publishing gates. Do not create contacts from anonymous scan IDs.",
+  "tests": [
+    "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs",
+    "tests/site-shell-cta-conversie.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-frisse-blik-postscan-consent-booking-cta-20261025.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required+CodeQL and targeted Netlify preview, protected merge, production readback, then independently observed consented bookings and orders. No fabricated lift.",
+  "root_cause": "The on-dashboard report booking action was buried in a toolbar while anonymous completed-scan traffic had no independently observed consented booking handoff; the exact cause of zero opt-in leads remains unproven, so CTA visibility is a bounded conversion hypothesis.",
+  "compiler": {
+    "failure_class": "POST_SCAN_CONSENT_BOOKING_CTA_VISIBILITY_GAP",
+    "scope": "WEBSITE_CONVERSION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|commercial|native854-outreach-source-history-lag|20261114-v1",
+  "failure_class": "PROVIDER_APPLIED_MIGRATION_SOURCE_LOCK_LAG",
+  "root_cause": "The native Supabase deployment for protected PR #5763 applied version 20261114091500, but the original Git source migration-history lock remained at 853. The same original schema stage now has five internal research tasks; a stale migration lock must not block later protected source→consumer handoff safeguards or be resolved by replaying SQL.",
+  "evidence": {
+    "captured_at_utc": "2026-11-14T08:52:15.152579Z",
+    "provider_count": 854,
+    "source_lock_prior_count": 853,
+    "latest": {
+      "version": "20261114091500",
+      "name": "original_outreach_source_research_cooldown_scope_v2"
+    },
+    "original_approved_research_created": 5,
+    "external_email_sent_by_priming": false
+  },
+  "repair": "Append independently confirmed 854 version/name to the canonical immutable source lock only; no new migration, scheduler or email side effects.",
+  "prevention": [
+    "Native production provider history must be reconciled to immutable source immediately after canonical deploy and before subsequent PR admission.",
+    "A native migration success alone is not a public-source research result, a consumer ACK or a sent email."
+  ],
+  "owner": "Original Supabase migration history writer / commercial stage #116",
+  "status": "NATIVE_854_VERIFIED_SOURCE_LOCK_CANDIDATE",
+  "compiler": {
+    "failure_class": "PROVIDER_APPLIED_MIGRATION_SOURCE_LOCK_LAG",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-outreach-854-source-parity-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-outreach-854-source-parity-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-outreach-854-source-parity-20261114.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-native-outreach-854-source-parity-20261114.test.mjs"
+  ],
+  "scope": [
+    "supabase/migration-history.lock.json",
+    "tests/brain-native-outreach-854-source-parity-20261114.test.mjs",
+    "docs/changes/2026-11-14-outreach-native854-source-lock.md",
+    "docs/development-ledger-events/2026-11-14-outreach-native854-source-lock.md",
+    "brain/learning/2026-11-14-native-854-outreach-source-history-v1.json"
+  ],
+  "production_proof_to_complete": [
+    "Protected Required + CodeQL must pass and the append-only lock merge must match native provider 854.",
+    "Do not claim external mail provider delivery without a real Gmail message ID and independent readback."
+  ],
+  "no_false_green": true,
+  "no_duplicate_sends": true
+}

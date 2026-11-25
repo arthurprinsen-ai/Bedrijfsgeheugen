@@ -1,0 +1,36 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "supabase-applied-sql-source-mirror-20261029",
+  "fingerprint": "delivery|supabase-preview|remote-applied-sql-missing-in-main|20261029",
+  "status": "CANDIDATE_TESTED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-provider-applied-migration-history-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "Three migration identities recorded as applied in the production Supabase schema_migrations table were absent from main supabase/migrations; one additional local-only version remains intentionally recorded, not represented as applied.",
+  "change": "Mirror only the three already applied SQL texts exactly from Supabase schema_migrations.statements[1], retaining their recorded timestamp/version/name and MD5; never write to production migration history.",
+  "prevention": "Before claiming a migration-history recovery, compare exact remote+local version sets and SQL digests; a name match, artificial empty SQL, or unchecked history repair is forbidden.",
+  "evidence": {
+    "tests": [
+      "tests/brain-supabase-provider-applied-migration-history-20261029.test.mjs"
+    ],
+    "provider_checksums": {
+      "20261028212459": "e749a0d8bcbf168a28355b9e9c9f7770",
+      "20261029101146": "014b86182dfd2f5493f545e4ec51f741",
+      "20261029101159": "014b86182dfd2f5493f545e4ec51f741"
+    },
+    "source": "Supabase supabase_migrations.schema_migrations; live PostgreSQL read only",
+    "production_readback": "NOT_PROVEN_PENDING_PROTECTED_RELEASE_AND_SUPABASE_PREVIEW",
+    "remaining_diff": "Local-only 20261028220000 is not claimed applied"
+  },
+  "outcome": "Exact source restoration candidate only; no production SQL executed."
+}

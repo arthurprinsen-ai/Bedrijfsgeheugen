@@ -47,7 +47,8 @@
       "/blog/wet-dba-en-zelfstandigen-wat-verandert-er-en-wat-betekent-dat-voor-jou",
       "/en",
       "/en/prijzen",
-      "/en/contact"
+      "/en/contact",
+      "/kennis/"
     ]
   },
   "viewports": {
@@ -75,7 +76,9 @@
       "routes": [
         "/",
         "/prijzen",
-        "/contact"
+        "/contact",
+        "/product",
+        "/kennis/"
       ],
       "viewport": "mobile",
       "selectorCandidates": [
@@ -109,6 +112,17 @@
         "button[data-bg-language-current]"
       ],
       "assert": "english_target_visible"
+    },
+    {
+      "id": "knowledge-compare-slider",
+      "routes": [
+        "/kennis/"
+      ],
+      "viewport": "mobile",
+      "selectorCandidates": [
+        "#compareRange"
+      ],
+      "assert": "knowledge_slider_native"
     }
   ],
   "rules": [
@@ -120,7 +134,9 @@
     "no_tolerance_widening_to_hide_structural_mismatch",
     "daily_production_run_required",
     "pull_request_sweep_is_bounded",
-    "daily_production_sweep_covers_mobile_and_desktop"
+    "daily_production_sweep_covers_mobile_and_desktop",
+    "mobile_menu_close_and_sticky_header_required",
+    "knowledge_comparison_keyboard_endpoints_required"
   ],
   "pr_all_route_viewports": [
     "mobile"

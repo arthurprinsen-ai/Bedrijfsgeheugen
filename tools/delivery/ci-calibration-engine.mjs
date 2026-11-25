@@ -88,3 +88,48 @@ export function calibrateCi({ report = {}, policy } = {}) {
     mutation_authority:'PROTECTED_CANDIDATE_ONLY'
   });
 }
+
+/**
+ * Required runs have a display name such as "Required test PR #4174 <sha>".
+ * Job-to-run associations must not rely on the exact unparameterized name.
+ */
+export function isRequiredCiRun(run = {}) {
+  const name = String(run?.name ?? '');
+  return run?.event === 'pull_request' && /^Required test(?:$| PR #\d+(?:\s|$))/.test(name);
+}
+
+/**
+ * Keep a bounded Actions API budget but reserve observations of the protection-critical gate.
+ * Input is the API's newest-first ordering; no new workflows or API pages are dispatched.
+ */
+export function selectCiRunsForMeasurement(runs = [], { maxRuns = 60, reservedRequired = 12 } = {}) {
+  const limit = Math.max(0, Math.trunc(Number(maxRuns) || 0));
+  const reserved = Math.min(limit, Math.max(0, Math.trunc(Number(reservedRequired) || 0)));
+  const required = runs.filter(isRequiredCiRun).slice(0, reserved);
+  const selected = new Set(required.map(run => String(run.id)));
+  const remaining = runs.filter(run => !selected.has(String(run.id))).slice(0, limit - required.length);
+  return [...required, ...remaining].sort((a,b) => runs.indexOf(a)-runs.indexOf(b));
+}
+
+/**
+ * A bounded sample never implies that seven days were fetched. Coverage is evidence,
+ * not a success/failure value. Existing *7d field names remain for API compatibility,
+ * but consumers must treat them as lower-bound observations if complete is false.
+ */
+export function describeCiObservationCoverage({ requestedSince, observedAt, oldestFetchedAt = null,
+  complete = false, pagesFetched = 0, fetchedRuns = 0, sampledRuns = 0 } = {}) {
+  const start = Date.parse(requestedSince ?? '');
+  const end = Date.parse(observedAt ?? '');
+  const oldest = Date.parse(oldestFetchedAt ?? '');
+  const valid = [start,end,oldest].every(Number.isFinite) && end >= start && oldest <= end;
+  return Object.freeze({
+    requested_window_days: valid ? Number(((end-start)/86400000).toFixed(2)) : null,
+    actual_observed_window_hours: valid ? Number(((end-oldest)/3600000).toFixed(2)) : null,
+    seven_day_coverage_complete: valid && complete === true,
+    bounded_sample_only: !(valid && complete === true),
+    pages_fetched: pagesFetched,
+    fetched_runs: fetchedRuns,
+    sampled_runs: sampledRuns,
+    interpretation: valid && complete ? 'REQUESTED_WINDOW_COVERED' : 'BOUNDED_OBSERVATIONS_NOT_FULL_SEVEN_DAYS',
+  });
+}

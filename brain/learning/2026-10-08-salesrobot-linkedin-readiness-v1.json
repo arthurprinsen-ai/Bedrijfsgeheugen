@@ -1,0 +1,57 @@
+{
+  "version": "salesrobot-linkedin-readiness-v1",
+  "fingerprint": "commercial|salesrobot|linkedin_dm|capability-gate|campaign-readiness|v1",
+  "date": "2026-10-08",
+  "issue": 4198,
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "severity": "P0",
+  "root_cause": [
+    "Healthy LinkedIn authentication had been treated as evidence that SalesRobot could send, although the connected provider reported no execution days and no active campaign.",
+    "SalesRobot direct message claims could be marked AVAILABLE without distinguishing a prepared draft campaign from actual execution readiness.",
+    "The initial PR omitted canonical machine metadata and documented integration closure artifacts, causing required admission to fail. Those omissions are repaired in this candidate."
+  ],
+  "repair": [
+    "Reuse existing POWERHOUSE LinkedIn sales executor, Brain, account and capability registry; no alternative sender or duplicate scheduler.",
+    "Block LinkedIn provider readiness on license, remaining execution days, configured campaign and active campaign.",
+    "Persist typed CONFIG_REQUIRED proof when license/campaign is unavailable and report held actions, not synthetic sends.",
+    "Retain human approval, message-quality evidence, recipient-address resolution and provider-acknowledgment gates.",
+    "Keep campaign in CREATED state, not started; reject claims of full commercial delivery until independent receipt and downstream outcomes."
+  ],
+  "compiler": {
+    "failure_class": "SALESROBOT_CAPABILITY_FALSE_AVAILABLE",
+    "scope": "COMMERCIAL_EXECUTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-salesrobot-linkedin-readiness-v1.test.mjs"
+    ]
+  },
+  "prevention": "Neither a linked LinkedIn account nor remaining trial days shown in UI can imply usable message execution without validated provider execution entitlements and configured active campaign; never send without individual approval.",
+  "evidence": {
+    "salesrobot_campaign_uuid": "ae2812ad-c3eb-4c90-a0d4-6d4e5a94b93e",
+    "campaign_status": "CREATED",
+    "linked_account_health": "HEALTHY",
+    "provider_execution_days": 0,
+    "ui_trial_days_claim": 6,
+    "campaign_can_be_started": false,
+    "prospects_in_campaign": 0,
+    "verified_salesbot_delivery": false,
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4206",
+    "full_commercial_loop_proven": false
+  },
+  "terminal_proof_required": [
+    "Required and CodeQL checks success on immutable candidate HEAD",
+    "protected merge and exact Supabase production Edge code readback",
+    "SalesRobot active account and active configured campaign with clear provider execution entitlement",
+    "real recipient-level lawful approval, message-quality pass, provider delivery acknowledgment, reply/meeting/offer/revenue outcome"
+  ]
+}

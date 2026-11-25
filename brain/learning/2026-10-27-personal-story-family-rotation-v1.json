@@ -1,0 +1,25 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "social|personal-source-rotation-by-event-id-not-story-family|20261027-v1",
+  "obligation_id": "social-personal-story-family-rotation-20261027",
+  "failure_class": "SOURCE_ROTATION_BY_EVENT_ID_REPEATS_STORY_FAMILY",
+  "root_cause": "Daily personal sources were new event ids of the same event types (loop_assurance_refresh, source_health_evaluated) with the same underlying figures. Rotation after a STORY_FAMILY_DUPLICATE denial moved to alternatives of the same kind and produced the same story again; 2026-10-16/17/18/21/26 were blocked or failed.",
+  "observed_evidence": {
+    "actual_sources": ["public.content_publication_obligations", "public.powerhouse_content_recommendations", "public.powerhouse_content_artifacts"],
+    "varied_days": "2026-10-22 and 2026-10-25 used an external business problem or public theme and were published",
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Treat event types used by a published personal post in the last 7 days as stale: the orchestrator prefers a fresh source, the founder reserve drops stale event types and lists the external business problem first. Fallback keeps the previous choice.",
+  "prevention_rule": "Story uniqueness is judged by story family. Rotation must change the story family, never loosen the duplicate guard or the identity gate.",
+  "tests": ["tests/brain-personal-story-family-rotation-20261027.test.mjs"],
+  "compiler": {"failure_class": "SOURCE_ROTATION_BY_EVENT_ID_REPEATS_STORY_FAMILY", "scope": "SOCIAL_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-personal-story-family-rotation-20261027.test.mjs"],
+    "shadow": ["tests/brain-personal-story-family-rotation-20261027.test.mjs"],
+    "canary": ["tests/brain-personal-story-family-rotation-20261027.test.mjs"]
+  },
+  "terminal_rule": "Merged main, deployed powerhouse-content-orchestrator, then the next personal run shows a source whose event types are not in the previous 7 days' published posts, or an external business problem."
+}

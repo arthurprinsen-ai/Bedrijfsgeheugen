@@ -1,0 +1,44 @@
+{
+  "id": "portal-original-one-loop-receipts-20261112",
+  "fingerprint": "portal|all-fields-external-scans-pricing|original-source-consumer-heartbeat-receipts|20261112-v1",
+  "issues": [
+    4215,
+    4198
+  ],
+  "original_authority": "Portal V2 BusinessInput and original ONE BRAIN obligations / Powerhouse / Heartbeat",
+  "surfaces": [
+    "authenticated_portal_fields",
+    "authorized_external_source_data",
+    "public_scans",
+    "pricing_and_package_advice",
+    "powerhouse_provider_action",
+    "heartbeat_effect_and_learning"
+  ],
+  "evidence_stages": [
+    "SOURCE_STORED",
+    "ORIGINAL_BRAIN_CONSUMER_ACK",
+    "AUTHORIZED_PROVIDER_ACTION_READBACK",
+    "OUTCOME_MEASURED",
+    "MATURE_TREATMENT_AND_HOLDOUT",
+    "NEXT_NATURAL_RUN_LEARNING_APPLIED"
+  ],
+  "full_green_gate": "ALL_STAGES_PROVEN_FOR_REAL_AUTHORIZED_TENANT_AND_SAME_LINEAGE",
+  "unproved_status": "EVIDENCE_DUE",
+  "tenant_and_source_revision_required": true,
+  "independent_consumer_ack_required": true,
+  "provider_id_and_independent_readback_required": true,
+  "source_claim_and_consent_required": true,
+  "synthetic_scan_is_customer_conversion": false,
+  "anonymous_scan_is_tenant_business_input": false,
+  "connector_metadata_is_live_tenant_data": false,
+  "pricing_cta_is_paid_order": false,
+  "keep_existing_execution_active": true,
+  "new_cron_or_parallel_writer": false,
+  "production_release_requires": [
+    "PROTECTED_REQUIRED_AND_CODEQL",
+    "CURRENT_MAIN_SHA_NETLIFY_READY",
+    "RELEVANT_PROVIDER_AND_PORTAL_DOM_READBACK",
+    "SUPABASE_EDGE_SOURCE_PARITY_WHEN_TOUCHED"
+  ],
+  "scope": "Governance assurance and regression only; does not fabricate integration credentials or prove customer outcomes"
+}

@@ -7,7 +7,14 @@
   },
   "writer_lease": {
     "max_active_writers_per_obligation": 1,
-    "head_bound": true
+    "head_bound": true,
+    "main_epoch_bound": true,
+    "terminal_candidate_immutable_after_lease": true,
+    "mutation_compare_and_swap": {
+      "expected_head_required": true,
+      "current_main_epoch_required": true,
+      "stale_action": "CREATE_SUCCESSOR_FROM_CURRENT_MAIN"
+    }
   },
   "queue": {
     "soft_active": 8,

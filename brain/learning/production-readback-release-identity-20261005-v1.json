@@ -21,13 +21,17 @@
     ],
     "regression": [
       "tools/site-shell/test-live-contract.mjs",
-      "tests/production-readback-release-identity-v1.test.mjs"
+      "tests/site-shell-production-readback-release-identity-v1.test.mjs"
     ],
     "liveObservation": {
       "merge_sha": "6a9452fa905073290c9274c2364d2aaaa52ad492",
       "netlify_deploy_id": "6ac3d4bbc857e90008998389",
       "production_context": "production"
-    }
+    },
+    "classification_and_lane_registration": [
+      "tests/site-shell-production-readback-release-identity-v1.test.mjs",
+      ".github/workflows/lane-website.yml"
+    ]
   },
   "invariants": {
     "exactShaRequired": true,
@@ -38,7 +42,7 @@
     "noManualGreen": true
   },
   "compiler": {
-    "failure_class": "CROSS_CONCERN_PRODUCTION_READBACK_COUPLING",
+    "failure_class": "CROSS_CONCERN_PRODUCTION_READBACK_COUPLING_AND_UNCLASSIFIED_TEST_PATH",
     "scope": "DELIVERY",
     "machine_enforceable": true,
     "repeat_count": 1,
@@ -46,7 +50,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/production-readback-release-identity-v1.test.mjs"
+      "tests/site-shell-production-readback-release-identity-v1.test.mjs"
     ],
     "expected": "A valid exact production release can clear identity polling independently of pricing semantics, while the default pricing contract still fails closed when its required semantics are absent."
   }

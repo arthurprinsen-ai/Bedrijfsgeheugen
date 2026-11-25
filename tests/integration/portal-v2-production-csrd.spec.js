@@ -13,11 +13,26 @@ test('production Portal V2 renders the canonical CSRD & Impact module', async ({
   expect(response, 'Portal V2 must return an HTTP response').not.toBeNull();
   expect(response.status(), 'Portal V2 must be reachable in production').toBeLessThan(400);
 
-  const csrdNav = page.getByRole('button', { name: /CSRD & Impact/ }).first();
+  // Select the canonical route ID. A first text match may select a menu label
+  // or legacy button and incorrectly count as CSRD production evidence.
+  const csrdNav = page.locator('.portal-single-navigation [data-nav-target="csrd-impact"]');
+  await expect(csrdNav).toHaveCount(1);
+  // Native desktop navigation is intentionally progressive: reveal the group
+  // before verifying the real canonical target, not a hidden legacy shortcut.
+  // The descendant selector must be evaluated relative to each details
+  // candidate, not from the external navigation ancestor in the old filter.
+  const csrdGroup=page.locator('.portal-single-navigation details.portal-single-nav-group:has([data-nav-target="csrd-impact"])');
+  await expect(csrdGroup).toHaveCount(1);
+  await csrdGroup.locator('summary').click();
+  await expect(csrdGroup).toHaveAttribute('open','');
   await expect(csrdNav).toBeVisible({ timeout: 15_000 });
   await csrdNav.click();
-
-  await expect(page.getByText('CSRD Readiness', { exact: true })).toBeVisible();
+  const view = page.locator('#portalView');
+  await expect(view, 'native CSRD page must be selected').toHaveAttribute('data-page-id', 'csrd-impact');
+  await expect(view, 'native CSRD page must be visible').toHaveAttribute('aria-hidden', 'false');
+  const cockpit = view.locator('.csrd-cockpit');
+  await expect(cockpit, 'CSRD cockpit must render under the selected V2 page').toBeVisible();
+  await expect(cockpit.getByText('CSRD Readiness', { exact: true })).toBeVisible();
   await expect(page.getByText('Voorbeelddata · geen live claim', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Sluit CSRD dashboard' })).toBeVisible();
 

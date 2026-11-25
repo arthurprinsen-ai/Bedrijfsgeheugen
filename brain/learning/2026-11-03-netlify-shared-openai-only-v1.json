@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|netlify-shared-brain|anthropic-inference-not-owner-openai-only|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PROTECTED_SOURCE_CANDIDATE_NOT_YET_LIVE",
+  "failure_class": "PROVIDER_ONLY_OPENAI_POLICY_BROKEN_BY_LEGACY_NETLIFY_BRAIN",
+  "ownership": {
+    "agent": "original-website-portal-translation-brain-owner",
+    "exclusive_writer_required": true
+  },
+  "owner_directive": "OWNER_DIRECTIVE_20261103_ALL_AI_INFERENCE_VIA_OPENAI",
+  "root_cause": "Original Netlify shared Brain adapter still registered Anthropic Sonnet/Haiku and called Anthropic API for website QA, tenant-scoped portal QA and runtime translation; wrappers passed ANTHROPIC_API_KEY despite owner OpenAI-only directive.",
+  "fix": "Use original runGovernedProductionAI and exact same tenant/source policies, now OpenAI gpt-5-mini Chat Completions with prompt/completion token usage; wrappers request OPENAI_API_KEY from original Netlify env. Validate provider refusal and empty responses, preserve ordered JSON array translation and original no-storage source policy.",
+  "prevention_rule": "Original user-facing AI routes must not import, reference, or invoke non-OpenAI model providers. Preserve tenant/data sovereignty, source-scope and original usage writer; use exact production provider readback before customer-visible GREEN.",
+  "tests": [
+    "tests/brain-netlify-shared-openai-only-20261103.test.mjs",
+    "tests/brain-ai-token-metering.test.mjs",
+    "tests/brain-ai-usage-attribution.test.mjs",
+    "tests/site-shell-global-i18n.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-shared-openai-only-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-shared-openai-only-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-shared-openai-only-20261103.test.mjs"
+    ],
+    "invariants": [
+      "site index only",
+      "tenant scoped confidential data",
+      "AI source-only",
+      "no provider fallback",
+      "no key logging",
+      "verified API token metering",
+      "valid translation array",
+      "no extra scheduler/writer",
+      "protected exact-head Netlify build parity"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "PROVIDER_ONLY_OPENAI_POLICY_BROKEN_BY_LEGACY_NETLIFY_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected exact-head Required/BRAIN/CodeQL plus Netlify build parity, protected main merge, Netlify READY to exact merge commit, live website/portal/translation provider readback, original next natural run. No false green if missing Netlify OPENAI_API_KEY or provider runtime proof."
+}

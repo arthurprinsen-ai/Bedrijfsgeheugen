@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "powerhouse|all-agents|continuous-lean-evidence-gap|20261029-v1",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "powerhouse-lean-agent-loop-20261029",
+  "failure_class": "AGENT_POLICY_TO_RUNTIME_COVERAGE_GAP",
+  "root_cause": "Current incident preflight checks skill markers and policy flags, but does not enforce a complete Lean/PDCA action-to-outcome event contract for every agent, runtime edge function and portal metric. Live coverage is not proven.",
+  "observed_evidence": {
+    "kind": "SUPABASE_AGGREGATE_READ_ONLY",
+    "decision_cycles": 10266,
+    "decision_cycles_complete": 1349,
+    "decision_cycles_outcome_pending": 5935,
+    "decision_cycles_blocked": 1741,
+    "optimization_candidates": 9,
+    "optimization_candidates_with_outcome_evidence": 0,
+    "growth_page_daily_14d": {
+      "page_views": 3634,
+      "cta_clicks": 0,
+      "leads": 0,
+      "won_orders": 0
+    },
+    "privacy": "AGGREGATES_ONLY_NO_CUSTOMER_DETAILS"
+  },
+  "fix": "Extend existing incident policy and its mandatory preflight to require an eight-stage Lean loop, canonical evidence ownership, action audit fields and a missing-data rule. No duplicate store or scheduler.",
+  "prevention_rule": "Agent cannot pass policy preflight if it disables continuous learning, source ownership, evidence fields, one-writer authority, independent outcome proof or missing-data UNKNOWN guard.",
+  "tests": [
+    "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CANONICAL_AGENT_LEAN_POLICY_DRIFT",
+    "scope": "AGENT_PREFLIGHT",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ]
+  },
+  "open_gaps": [
+    "RUNTIME_EDGE_FUNCTION_AUDIT_COVERAGE",
+    "PORTAL_INSTRUMENTATION_PROOF",
+    "CTA_TO_GROWTH_FUNNEL_ATTRIBUTION",
+    "PROVIDER_OUTCOME_READBACK",
+    "SKILL_LEARNING_APPLICATION",
+    "REAL_ORDER_AND_REVENUE_IMPACT"
+  ],
+  "terminal_rule": "Require exact-head Required/BRAIN/CodeQL, protected single-writer merge, independent production preflight and runtime/portal source readback before calling this rule live. Zero reported CTA clicks does not prove zero real clicks; no business lift claim."
+}

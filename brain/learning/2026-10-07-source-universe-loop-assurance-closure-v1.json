@@ -1,0 +1,58 @@
+{
+  "id": "source-universe-loop-assurance-closure-v1",
+  "date": "2026-10-07",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|source-universe|loop-assurance|truthful-noop|guard|v1",
+  "root_cause": "The Source Universe runtime and production data path were live, but Loop Assurance only inferred four of eight required stages from cron/runtime evidence. Action, outcome, learning and guard therefore stayed missing even when their truthful result was an explicit no-op or a passed security boundary.",
+  "architecture": {
+    "runtime_authority": "powerhouse_refresh_external_intelligence_universe_v1",
+    "runtime_event_source": "powerhouse-external-intelligence-universe-v1",
+    "assurance_authority": "powerhouse_refresh_loop_assurance_v1",
+    "receipt_table": "powerhouse_loop_assurance_receipts_v1",
+    "closure": "runtime-event trigger -> truthful action/outcome/learning readback + fail-closed guard receipt"
+  },
+  "truth_rules": {
+    "no_action_can_be_valid_stage_evidence": true,
+    "no_verified_outcome_can_be_valid_stage_evidence": true,
+    "no_learning_input_can_be_valid_stage_evidence": true,
+    "stage_evidence_does_not_equal_positive_business_result": true,
+    "guard_receipt_exists_only_when_security_and_truth_checks_pass": true,
+    "business_action_fabricated": false,
+    "outcome_synthesized": false,
+    "learning_synthesized": false
+  },
+  "prevention": [
+    "Do not force action or outcome creation merely to satisfy assurance completeness.",
+    "Record explicit no-op evidence when the canonical truth gate correctly blocks action, outcome or learning.",
+    "Delete the fresh guard receipt immediately when RLS, browser revokes, privileged execute boundaries or truth flags fail.",
+    "Reuse the existing runtime event and Loop Assurance tables; do not create another scheduler or assurance authority."
+  ],
+  "compiler": {
+    "failure_class": "LOOP_ASSURANCE_MISSING_TRUTHFUL_NOOP_EVIDENCE",
+    "scope": "SOURCE_UNIVERSE_LOOP_ASSURANCE",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-source-universe-loop-assurance-closure-v1.test.mjs"
+    ],
+    "production_before_fix": {
+      "status": "AMBER",
+      "fresh_stage_count": 4,
+      "required_stage_count": 8,
+      "missing_stages": [
+        "action",
+        "guard",
+        "learning",
+        "outcome"
+      ]
+    },
+    "production_claim": "not_green_until_exact-head_gates_merge_and_production_8_of_8_readback"
+  },
+  "evidence": {
+    "migration": "supabase/migrations/20261007221130_source_universe_loop_assurance_closure_v1.sql",
+    "test": "tests/brain-source-universe-loop-assurance-closure-v1.test.mjs",
+    "source_universe_production_refresh": "CURRENT_50_SIGNALS_31_ACTION_CANDIDATES_NO_FABRICATED_IMPACT"
+  }
+}

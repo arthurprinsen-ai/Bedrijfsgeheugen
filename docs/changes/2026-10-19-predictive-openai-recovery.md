@@ -1,0 +1,23 @@
+# Predictive engine OpenAI recovery
+Obligation-ID: predictive-openai-recovery-20261019
+Parent incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+The real predictive engine failed with Anthropic credit exhaustion while the user had already requested OpenAI instead. The existing canonical market-forecast engine now uses OpenAI Responses with the same bounded four-forecast schema, single forced strict function, finite 90-second deadline and store=false. The scoped migration changes only the existing approved ACTIVE canonical use case to gpt-5-mini, already used successfully by the existing OpenAI proof route; approval and customer governance stay unchanged. Model selection is a bounded operational choice, not a claim that this is the newest model.
+
+An explicit public-market projection removes internal forecasts, revenue-learning free text, arbitrary nested fields and non-market sources. Embedded e-mail and phone details are redacted. Source references must be in the actual sent context. Existing two/three independent-source counts, probability/confidence floors, five-row ingestion batches and first-mover scoring remain mandatory. Provider errors are status-only in shared health receipts. There is no fallback to Anthropic/Groq and no new scheduler or customer financial activation.
+
+Regression-first tests observed missing implementation and embedded-contact leakage, then 38 predictive checks passed. Historical inactive Groq helper tests are retained as archival contract checks; active transport assertions now name OpenAI. The adaptive classifier includes the new executable regression. Protected Required, CodeQL, native Supabase Preview, production Integration deployment and actual forecast/runtime readback remain required before live success. Real customer acceptance and Instagram quality/moderation are separate unresolved evidence boundaries.
+
+Rollback restores engine and existing use-case provider together through protected main; do not directly deploy an Edge Function or lower evidence thresholds. A provider/model access failure remains explicit and never invents forecasts.
+
+Independent code review caught contact redaction changing digit-heavy SHA evidence keys. A red/green regression now preserves validated opaque IDs exactly; 104 combined predictive, delivery and runtime-scope checks pass. No other important findings.
+
+The calibrator shares the exact governance use case and therefore migrates atomically in this same candidate. Its provider context contains only projected public forecast/evidence fields and opaque news/search references restored locally on acceptance; no raw URL/contact/keyword identifier or commercial outcome leaves the server. Confidence, two actual source refs and strict real ISO dates within the original forecast horizon are required. Missed/uncertain outcomes remain unresolved; no global revenue is attributed. Total inference time is bounded at90s. Independent review found and regression-fixed raw reference leakage and JavaScript Feb30 normalization. Engine transport edits explicitly propagate production authority to both consumers. Adaptive routing remains backend-only, preserving R4/full shared/security gates.
+
+Broader legacy calibrator tests have the same five failures on baseline and candidate: stale catch formatting assertions, outdated provider-degradation regex, an impossible whole-file negative assertion, and an absent retired hourly migration filename. Their exact names are retained in Brain learning; no full legacy-suite green claim. An optional local backend run lacks @netlify/blobs in this isolated worktree; the protected native CI installs its own dependencies and remains required.
+
+Production-only aggregate readback found303 overdue calibration obligations:276 person,26 market,1 regulation. The provider migration is explicitly public-market scoped: a service-role-only bounded projection of the existing queue filters scopes before LIMIT12, preventing private/person transfer and starvation. The276 person obligations stay open with their separate governance/evidence boundary; they are not auto-closed or claimed repaired. No new queue or scheduler is created.
+
+The public calibration queue projection is a separate newly allocated migration20261019194349. Original governance migration20261019192838 remains byte-for-byte unchanged from its already-applied native preview revision. Never append SQL to an applied preview migration; preserve version/source identity and apply the missing delta under a new version.
+
+A failed public due-queue RPC returns an explicit error receipt instead of a false NO_DUE_CALIBRATIONS success. Regression is part of the same final calibration contract.

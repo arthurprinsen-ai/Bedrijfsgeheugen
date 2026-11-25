@@ -1,4 +1,6 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { createHash } from 'node:crypto';
+import { PUBLIC_PORTAL_BROWSER_SOURCES } from '../ci/build-portal-public-runtime.mjs';
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -33,6 +35,15 @@ export function isHardAssetFailure({ type = '', errorText = '' } = {}) {
   return ['document','stylesheet','script'].includes(resourceType);
 }
 
+export function shouldRetryTransientAssetObservation(observation = {}) {
+  return Boolean(
+    observation.httpOk
+    && observation.identity?.ok
+    && (observation.observedPageErrors || []).length === 0
+    && (observation.failedAssets || []).length > 0
+  );
+}
+
 export function summarizeRouteResult({ visibleText = '', html = '', pageErrors = [], failedAssets = [], httpOk = true, identityOk = true } = {}) {
   const hasVisibleContent = String(visibleText).trim().length > 0 && String(html).trim().length > 0;
   const ok = Boolean(httpOk && identityOk && hasVisibleContent && pageErrors.length === 0 && failedAssets.length === 0);
@@ -45,18 +56,89 @@ function parseArgs(argv) {
   return out;
 }
 
-async function navigateWithRetry(page, url, { attempts = 2, timeout = 20_000 } = {}) {
+export async function navigateWithRetry(page, url, { attempts = 2, timeout = 20_000 } = {}) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
       return await page.goto(url, { waitUntil:'domcontentloaded', timeout });
     } catch (error) {
       lastError = error;
-      if (attempt >= attempts || error?.name !== 'TimeoutError') throw error;
+      if (attempt >= attempts || (error?.name !== 'TimeoutError'
+        && !/\bnet::ERR_CONNECTION_RESET\b/.test(String(error?.message || '')))) throw error;
       await page.waitForTimeout(1_500 * attempt);
     }
   }
   throw lastError;
+}
+
+// Playwright waitForFunction signature is (predicate, arg, options). Passing
+// {timeout} as the SECOND argument silently uses its default 30-second budget.
+// Keep the original fail-closed visible-text + layout check, but recognize
+// nested content when a top-level app wrapper uses display:contents/zero box.
+export async function waitForRenderedBody(page,{timeout=10_000}={}){
+  if(!Number.isSafeInteger(timeout)||timeout<1_000||timeout>30_000)
+    throw new RangeError('TARGETED_ROUTE_VISIBLE_TIMEOUT_INVALID');
+  return page.waitForFunction(() => {
+    const body=document.body;
+    if(!body || !String(body.innerText||'').trim()) return false;
+    const hasBox=el=>{
+      const style=getComputedStyle(el);
+      const rect=el.getBoundingClientRect();
+      return style.display!=='none'
+        && style.visibility!=='hidden'
+        && Number.parseFloat(style.opacity||'1')>0
+        && rect.width>0&&rect.height>0;
+    };
+    if([...body.children].some(hasBox)) return true;
+    // A zero-box app wrapper must not hide genuinely rendered descendants.
+    // This is a fallback only; no positive outcome from source/HTML alone.
+    return [...body.querySelectorAll('main,article,section,h1,h2,h3,p,a,button,[role="main"]')]
+      .some(el=>hasBox(el)&&String(el.innerText||'').trim());
+  },undefined,{timeout});
+}
+
+/** Verify an actual mounted Portal V2 shell, not its HTML, loading text, or the watchdog's error panel. */
+export async function waitForPortalAppBoot(page,{timeout=25_000}={}){
+  if(!Number.isSafeInteger(timeout)||timeout<5_000||timeout>30_000)
+    throw new RangeError('PORTAL_BOOT_READBACK_TIMEOUT_INVALID');
+  return page.waitForFunction(() => {
+    const html=document.documentElement;
+    return html?.dataset?.bgPortalAppBoot==='ready'
+      && html?.dataset?.bgPortalBootState!=='failed'
+      && !html.classList.contains('v2-hydrating')
+      && !document.getElementById('portalStartupFailure');
+  },undefined,{timeout});
+}
+
+/** Prove the precise read-only public dependency set, never loosen /brain or /platform. */
+export async function verifyPortalPublicRuntime(page,{baseUrl,sourceRoot=process.cwd()}={}){
+  if(!baseUrl)throw new Error('PORTAL_PUBLIC_RUNTIME_BASE_URL_REQUIRED');
+  const manifestUrl=new URL('/portal-v2/browser-runtime/manifest.json',baseUrl).toString();
+  const response=await page.request.get(manifestUrl,{timeout:12_000});
+  if(!response.ok())throw new Error('PORTAL_PUBLIC_RUNTIME_MANIFEST_NOT_LIVE:'+response.status());
+  const manifest=await response.json();
+  if(manifest?.contract!=='PUBLIC_PORTAL_READ_ONLY_MODULE_V1'
+    || !Array.isArray(manifest.sources)
+    || manifest.sources.length!==PUBLIC_PORTAL_BROWSER_SOURCES.length
+    || manifest.imports_rewritten<1)
+    throw new Error('PORTAL_PUBLIC_RUNTIME_MANIFEST_CONTRACT_INVALID');
+  for(const source of PUBLIC_PORTAL_BROWSER_SOURCES){
+    const item=manifest.sources.find(row=>row.source===source);
+    const expected='/portal-v2/browser-runtime/'+source;
+    if(!item||item.url!==expected||!/^[0-9a-f]{64}$/.test(String(item.sha256||'')))
+      throw new Error('PORTAL_PUBLIC_RUNTIME_ENTRY_INVALID:'+source);
+    const sourceBytes=await readFile(sourceRoot+'/'+source);
+    const nativeHash=createHash('sha256').update(sourceBytes).digest('hex');
+    if(item.sha256!==nativeHash)
+      throw new Error('PORTAL_PUBLIC_RUNTIME_SOURCE_IDENTITY_MISMATCH:'+source);
+    const moduleResponse=await page.request.get(new URL(expected,baseUrl).toString(),{timeout:12_000});
+    if(!moduleResponse.ok())
+      throw new Error('PORTAL_PUBLIC_RUNTIME_MODULE_NOT_LIVE:'+source+':'+moduleResponse.status());
+    const deployedHash=createHash('sha256').update(await moduleResponse.body()).digest('hex');
+    if(deployedHash!==nativeHash)
+      throw new Error('PORTAL_PUBLIC_RUNTIME_MODULE_BYTES_MISMATCH:'+source);
+  }
+  return {contract:'PORTAL_PUBLIC_RUNTIME_PROVEN',count:PUBLIC_PORTAL_BROWSER_SOURCES.length};
 }
 
 async function observeRouteAttempt(browser, baseUrl, route, viewport) {
@@ -77,19 +159,32 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
     const target = `${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`;
     const response = await navigateWithRetry(page, target);
     await page.locator('body').waitFor({ state:'attached', timeout:10_000 });
-    await page.waitForFunction(() => {
-      const body=document.body;
-      if(!body || !String(body.innerText||'').trim()) return false;
-      return [...body.children].some(el => {
-        const style=getComputedStyle(el);
-        const rect=el.getBoundingClientRect();
-        return style.display!=='none'
-          && style.visibility!=='hidden'
-          && Number.parseFloat(style.opacity||'1')>0
-          && rect.width>0
-          && rect.height>0;
-      });
-    }, { timeout:10_000 });
+    try {
+      if((route==='/portal-v2/'||route==='/portal-v2')){
+        await verifyPortalPublicRuntime(page,{baseUrl});
+        await waitForPortalAppBoot(page,{timeout:25_000});
+      }
+      await waitForRenderedBody(page,{timeout:10_000});
+    } catch(error) {
+      if((route==='/portal-v2/'||route==='/portal-v2')){
+        const boot=await page.evaluate(()=>({
+          hydrating:document.documentElement.classList.contains('v2-hydrating'),
+          appMounted:document.documentElement.dataset.bgPortalAppBoot==='ready',
+          recoveryShown:document.documentElement.dataset.bgPortalBootState==='failed',
+          recoveryVisible:Boolean(document.getElementById('portalStartupFailure')),
+          bodyTextLength:String(document.body?.innerText||'').length
+        })).catch(()=>({unavailable:true}));
+        // Only public shell-state booleans and counts. No tenant fields,
+        // provider tokens, HTML, private DOM or pageerror messages.
+        console.error('PORTAL_BOOT_READBACK_DIAGNOSTIC',JSON.stringify({
+          route,viewport_width:viewport.width,boot,
+          page_error_count:observedPageErrors.length,
+          failed_asset_count:failedAssets.length,
+          failure_class:error?.name==='TimeoutError'?'PORTAL_STARTUP_TIMEOUT':'PORTAL_STARTUP_ERROR'
+        }));
+      }
+      throw error;
+    }
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
@@ -118,15 +213,26 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
 
 async function observeRoute(browser, baseUrl, route, viewport, { attempts = 3 } = {}) {
   let lastError;
+  let lastObservation;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      return await observeRouteAttempt(browser, baseUrl, route, viewport);
+      const observation = await observeRouteAttempt(browser, baseUrl, route, viewport);
+      lastObservation = observation;
+      if (!shouldRetryTransientAssetObservation(observation) || attempt >= attempts) return observation;
+      await new Promise(resolve => setTimeout(resolve, 750 * attempt));
     } catch (error) {
       lastError = error;
+      // Preserve exact public route and viewport in the original job logs;
+      // never misclassify an exhausted visibility budget as an HTTP 5xx.
+      console.error('TARGETED_ROUTE_READINESS_ATTEMPT',JSON.stringify({
+        route,viewport_width:viewport.width,attempt,attempts,
+        failure_class:error?.name==='TimeoutError'?'VISIBLE_READINESS_TIMEOUT':'ROUTE_OBSERVATION_FAILURE'
+      }));
       if (attempt >= attempts || error?.name !== 'TimeoutError') throw error;
       await new Promise(resolve => setTimeout(resolve, 1_000 * attempt));
     }
   }
+  if (lastObservation) return lastObservation;
   throw lastError;
 }
 

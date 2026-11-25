@@ -7,7 +7,7 @@ const config=fs.readFileSync('netlify/functions/powerhouse-meta-instagram-config
 const callback=fs.readFileSync('netlify/functions/powerhouse-meta-instagram-oauth-callback.mjs','utf8');
 const refresh=fs.readFileSync('netlify/functions/meta-instagram-token-refresh.mjs','utf8');
 const page=fs.readFileSync('portal-v2/powerhouse-instagram-connect.html','utf8');
-const migration=fs.readFileSync('supabase/migrations/20260921152000_instagram_meta_oauth_onboarding_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260921152000_instagram_meta_oauth_onboarding_v1.sql','utf8');
 
 test('Instagram OAuth onboarding is admin initiated and CSRF state is signed',()=>{
   assert.match(config,/getUser/);

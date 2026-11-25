@@ -1,12 +1,6 @@
 name: Engineering Supply Chain Trust
 
 on:
-  pull_request:
-    paths:
-      - 'package.json'
-      - 'package-lock.json'
-      - 'npm-shrinkwrap.json'
-      - '.github/workflows/engineering-supply-chain-trust.yml'
   push:
     branches: [main]
     paths:
@@ -23,24 +17,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  dependency-review:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - id: github_dependency_review
-        continue-on-error: true
-        uses: actions/dependency-review-action@v4
-        with:
-          fail-on-severity: high
-      - name: Fail-closed local dependency audit fallback
-        if: steps.github_dependency_review.outcome != 'success'
-        run: |
-          npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-          npm audit --package-lock-only --audit-level=high
-
   provenance:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest

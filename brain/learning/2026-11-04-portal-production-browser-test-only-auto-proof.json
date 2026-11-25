@@ -1,0 +1,49 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-04",
+  "status": "CODE_CANDIDATE_NOT_LIVE",
+  "fingerprint": "portal|browser-readback|test-only-main-not-triggered|20261104-v1",
+  "owner": "original Portal V2 Production DOM Readback workflow and exclusive portal release owner",
+  "compiler": {
+    "failure_class": "PORTAL_BROWSER_VERIFICATION_MISSING",
+    "scope": "GITHUB_PROTECTED_BROWSER_CI",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Original production browser workflow only listened to portal-v2/** and ignored its own original Playwright contract changes; a merged test-only correction failed to produce independent provider browser success proof. Exact main vs live published commit also legitimately diverges for evidence-only merges.",
+  "prevention_rule": "Run existing browser workflow on original specs and self workflow path; select deployed source SHA on protected-main push only with independently read original Netlify release manifest, ancestor comparison, exact CI-only diff allowlist twice, immutable deploy readback and unchanged Playwright/role gates. Actual runtime changes can never reuse historical SHA.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-portal-browser-readback-test-only-trigger-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-portal-browser-readback-test-only-trigger-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-portal-browser-readback-test-only-trigger-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41832239828",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5412",
+      "Protected source-only PR #5412 did not trigger the original browser workflow on main, even though its predecessor had one failing UI assertion"
+    ],
+    "current": [
+      "Original existing .github workflow extended to tests/integration/portal-v2-production-*.spec.js and own YAML",
+      "Evidence-only source parent Sha selected only via exact provider manifest + protected-main ancestor + fully allowlisted diff; runtime SHA never spoofed",
+      "SOURCE_CANDIDATE; original browser proof pending",
+      "Original production DOM run #41839564792: 1 remaining mobile-shell browser failure on deprecated hidden #portalFullMenuToggle; 390px native Meer assertion and trigger added; full independent browser pass still pending."
+    ]
+  },
+  "independent_verification": "PENDING_ORIGINAL_PROTECTED_MERGE_NETLIFY_IMMUTABLE_BROWSER",
+  "skill_targets": [
+    "portal-living-interface",
+    "powerhouse-continuity"
+  ],
+  "customer_outcome": "NOT_PROVEN",
+  "actions": [
+    "Original mobile shell readback checks 44px More and Escape, not intentionally hidden old hamburger"
+  ]
+}

@@ -1,10 +1,12 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { tagDuePostsWithObservedWindows } from '../_shared/social-learning-due-evidence.mjs';
+import { verifiedSocialWindowAck, selectQualifiedSocialCohortSnapshot } from '../_shared/social-learning-window-ack.mjs';
 
 const TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function sha256(value:string){const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const tenantOf=(b:any)=>String(b?.tenantId||b?.post?.tenantId||b?.snapshot?.tenantId||b?.evaluation?.tenantId||b?.experiment?.tenantId||b?.learning?.tenantId||b?.application?.tenantId||b?.decision?.tenantId||b?.projection?.tenantId||b?.obligation?.tenantId||b?.data?.tenantId||'canonical');
-const camelPost=(p:any)=>({postId:p.post_id,tenantId:p.tenant_id,platform:p.platform,channelId:p.channel_id,channelName:p.channel_name,channelKind:p.channel_kind,publishedAt:p.published_at,format:p.format,funnelStage:p.funnel_stage,contentPillar:p.content_pillar,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type,learningStatus:p.learning_status,learningId:p.learning_id});
+const camelPost=(p:any)=>({postId:p.post_id,tenantId:p.tenant_id,externalPostId:p.external_post_id,platform:p.platform,channelId:p.channel_id,channelName:p.channel_name,channelKind:p.channel_kind,publishedAt:p.published_at,format:p.format,funnelStage:p.funnel_stage,contentPillar:p.content_pillar,hookType:p.hook_type,narrativeType:p.narrative_type,emotion:p.emotion,ctaType:p.cta_type,learningStatus:p.learning_status,learningId:p.learning_id});
 
 Deno.serve(async(req:Request)=>{
   if(req.method!=='POST')return json({error:'METHOD_NOT_ALLOWED'},405);
@@ -32,9 +34,30 @@ Deno.serve(async(req:Request)=>{
     if(action==='get_snapshots'){const {data,error}=await db.from('social_metric_snapshots').select('*').eq('tenant_id',tenantId).eq('post_id',body.postId).order('observed_at',{ascending:true});if(error)throw error;return json({snapshots:(data||[]).map((r:any)=>({snapshotId:r.snapshot_id,postId:r.post_id,tenantId:r.tenant_id,observedAt:r.observed_at,ageHours:r.age_hours,source:r.source,sourceEventId:r.source_event_id,dataQuality:r.data_quality,metrics:r.metrics}))});}
     if(action==='list_due_posts'){
       const now=new Date(body.now||Date.now());const {data:posts,error}=await db.from('social_posts').select('*').eq('tenant_id',tenantId).not('published_at','is',null).lte('published_at',new Date(now.getTime()-24*36e5).toISOString());if(error)throw error;
-      const {data:evals,error:e2}=await db.from('social_learning_evaluations').select('post_id,window_hours').eq('tenant_id',tenantId);if(e2)throw e2;const done=new Set((evals||[]).map((e:any)=>`${e.post_id}:${e.window_hours}`)),out:any[]=[];
+      const {data:evals,error:e2}=await db.from('social_learning_evaluations').select('post_id,window_hours,metric_vector').eq('tenant_id',tenantId);
+      if(e2)throw e2;
+      // Historical evaluations made before provider field normalization can
+      // contain an all-null vector. Such a record is NOT a measured result.
+      // Re-open only those windows, then upsert the SAME deterministic ID
+      // when the exact original source snapshot can be re-normalized.
+      const observedKeys=['impressions','reach','likes','reactions','comments','shares','saves','clicks','views','qualified_leads','orders','revenue'];
+      const measured=(evals||[]).filter((e:any)=>observedKeys.some(k=>
+        typeof e.metric_vector?.[k]==='number'&&Number.isFinite(e.metric_vector[k])&&e.metric_vector[k]>=0));
+      const done=new Set(measured.map((e:any)=>`${e.post_id}:${e.window_hours}`)),out:any[]=[];
       for(const p of posts||[])for(const w of [24,48,72])if(now.getTime()>=new Date(p.published_at).getTime()+w*36e5&&!done.has(`${p.post_id}:${w}`))out.push({...camelPost(p),dueWindow:w});
-      return json({posts:out});
+      // One bounded extra read in the EXISTING store, not a second
+      // metric-ingestion engine. No provider credentials, visitor data, or
+      // synthetic timestamps are introduced.
+      const since=new Date(now.getTime()-100*86400000).toISOString();
+      const {data:observations,error:snapshotError}=await db.from('social_metric_snapshots')
+        .select('tenant_id,post_id,observed_at,data_quality,source,source_event_id,metrics').eq('tenant_id',tenantId)
+        .gte('observed_at',since).order('observed_at',{ascending:false}).limit(900);
+      if(snapshotError)throw snapshotError;
+      // Fail closed on read truncation. The evaluator falls back to existing
+      // rotating debt handling rather than misclassifying unseen observations.
+      const complete=(observations||[]).length<900;
+      const annotated=complete?tagDuePostsWithObservedWindows(out,observations||[],{toleranceHours:6}):out;
+      return json({posts:annotated,source_window_evidence:complete?'OBSERVED_WINDOW_INDEX':'COVERAGE_TRUNCATED_FALLBACK',provider_rows_scanned:(observations||[]).length});
     }
     if(action==='get_cohort'){
       const input=body.query||{},target=input.post||{},windowHours=Number(input.windowHours||24),tolerance=Number(input.toleranceHours||6);
@@ -42,7 +65,15 @@ Deno.serve(async(req:Request)=>{
       if(target.platform)pq=pq.eq('platform',target.platform);if(target.channelKind)pq=pq.eq('channel_kind',target.channelKind);if(target.format)pq=pq.eq('format',target.format);if(target.funnelStage)pq=pq.eq('funnel_stage',target.funnelStage);if(target.contentPillar)pq=pq.eq('content_pillar',target.contentPillar);
       const {data:posts,error}=await pq.order('published_at',{ascending:false}).limit(30);if(error)throw error;const ids=(posts||[]).map((p:any)=>p.post_id);if(!ids.length)return json({posts:[]});
       const {data:snaps,error:sErr}=await db.from('social_metric_snapshots').select('*').eq('tenant_id',tenantId).in('post_id',ids);if(sErr)throw sErr;const byPost=new Map<string,any[]>();for(const s of snaps||[]){const a=byPost.get(s.post_id)||[];a.push(s);byPost.set(s.post_id,a);}
-      const out:any[]=[];for(const p of posts||[]){let best:any=null,delta=Infinity;for(const s of byPost.get(p.post_id)||[]){const age=Number.isFinite(s.age_hours)?Number(s.age_hours):(new Date(s.observed_at).getTime()-new Date(p.published_at).getTime())/36e5;const d=Math.abs(age-windowHours);if(d<=tolerance&&d<delta){best=s;delta=d;}}if(best)out.push({...camelPost(p),observedAt:best.observed_at,ageHours:best.age_hours,metrics:best.metrics});}
+      const out:any[]=[];
+      for(const p of posts||[]){
+        const best=selectQualifiedSocialCohortSnapshot({
+          post:p,snapshots:byPost.get(p.post_id)||[],windowHours,toleranceHours:tolerance
+        });
+        if(best)out.push({...camelPost(p),observedAt:best.observed_at,
+          ageHours:(Date.parse(best.observed_at)-Date.parse(p.published_at))/36e5,
+          metrics:best.metrics});
+      }
       return json({posts:out});
     }
     if(action==='put_evaluation'){const e=body.evaluation||{};const row={tenant_id:tenantId,evaluation_id:e.evaluationId,post_id:e.postId,window_hours:e.windowHours,observed_at:e.observedAt,metric_vector:e.metricVector||{},cohort_size:e.cohortSize||0,evidence:e.evidence||null};const {error}=await db.from('social_learning_evaluations').upsert(row,{onConflict:'tenant_id,evaluation_id'});if(error)throw error;return json({stored:true});}
@@ -53,7 +84,149 @@ Deno.serve(async(req:Request)=>{
     if(action==='record_decision'){const d=body.decision||{};const {error}=await db.from('social_learning_decisions').upsert({tenant_id:tenantId,decision_id:d.decisionId,post_id:d.postId,decision:d,recorded_at:d.recordedAt||new Date().toISOString()},{onConflict:'tenant_id,decision_id'});if(error)throw error;return json({tenantId,decisionId:d.decisionId,postId:d.postId});}
     if(action==='reconcile_application'){const a=body.application||{};const {error}=await db.from('social_learning_applications').update({actual_effect:a.actualEffect??null,verification_status:a.verificationStatus||'VERIFIED',updated_at:new Date().toISOString()}).eq('tenant_id',tenantId).eq('application_id',a.applicationId);if(error)throw error;return json({stored:true});}
     if(action==='reconcile_applications'){const d=body.data||{};const {error}=await db.from('social_learning_applications').update({actual_effect:d.effect??null,verification_status:d.verificationStatus||'VERIFIED',updated_at:new Date().toISOString()}).eq('tenant_id',tenantId).eq('post_id',d.postId);if(error)throw error;return json({stored:true});}
-    if(action==='record_obligation'){const o=body.obligation||{};const {error}=await db.from('social_learning_obligations').upsert({tenant_id:tenantId,obligation_id:o.id,type:o.type||'MISSED_OBLIGATION',owner:o.owner||'POWERHOUSE_SOCIAL_LEARNING',post_id:o.postId||null,window_hours:o.windowHours||null,due_at:o.dueAt||null,status:o.status||'OPEN',payload:o,updated_at:new Date().toISOString()},{onConflict:'tenant_id,obligation_id'});if(error)throw error;return json({stored:true});}
+    if(action==='record_obligation'){
+      const o=body.obligation||{};
+      if(!o.id)return json({error:'INVALID_OBLIGATION_ID'},400);
+      const isWindow=['MISSED_OBLIGATION','UNVERIFIED_OR_PARTIAL_WINDOW'].includes(o.type);
+      if(isWindow&&(!o.postId||![24,48,72].includes(Number(o.windowHours))))
+        return json({error:'INVALID_WINDOW_OBLIGATION'},400);
+      // Never reopen a source-verified ACK during a retry of an old missing-window run.
+      const {data,error}=await db.from('social_learning_obligations').upsert({
+        tenant_id:tenantId,obligation_id:o.id,
+        type:o.type||'MISSED_OBLIGATION',owner:o.owner||'POWERHOUSE_SOCIAL_LEARNING',
+        post_id:o.postId,window_hours:Number(o.windowHours),due_at:o.dueAt||null,
+        status:o.status||'OPEN',payload:o,updated_at:new Date().toISOString()
+      },{onConflict:'tenant_id,obligation_id',ignoreDuplicates:true}).select('obligation_id');
+      if(error)throw error;
+      return json({stored:(data||[]).length>0,duplicate:(data||[]).length===0});
+    }
+    if(action==='reconcile_verified_obligations'){
+      if(!['canonical','bedrijfsgeheugen'].includes(tenantId))return json({error:'UNAUTHORIZED_TENANT'},403);
+      // This only consumes original tables and creates an ACK for a REAL 
+      // independent 24/48/72-hour post observation + original evaluator.
+      // Missing and partial-only provider windows remain OPEN, not zero or GREEN.
+      // Always check the newest 30 original evaluations; rotate a bounded 20
+      // historical receipts per hour so old debt cannot starve after 250+ rows.
+      // No new scheduler and no false success on a truncated source read.
+      const {count:total,error:countError}=await db.from('social_learning_evaluations')
+        .select('evaluation_id',{count:'exact',head:true})
+        .eq('tenant_id',tenantId).like('evaluation_id','evaluation:%');
+      if(countError)throw countError;
+      const olderCount=Math.max(0,(total||0)-30);
+      const oldPages=Math.max(1,Math.ceil(olderCount/20));
+      const oldPage=Math.floor(Date.now()/3600000)%oldPages;
+      const query=()=>db.from('social_learning_evaluations')
+        .select('tenant_id,evaluation_id,post_id,window_hours,observed_at,metric_vector')
+        .eq('tenant_id',tenantId).like('evaluation_id','evaluation:%')
+        .order('created_at',{ascending:false});
+      const [recent,older]=await Promise.all([
+        query().range(0,29),
+        olderCount>0?query().range(30+oldPage*20,49+oldPage*20)
+          :Promise.resolve({data:[],error:null})
+      ]);
+      if(recent.error||older.error)throw (recent.error||older.error);
+      const evals=[...(recent.data||[]),...(older.data||[])];
+      const ids=[...new Set((evals||[]).map((e:any)=>e.post_id).filter(Boolean))];
+      if(!ids.length)return json({checked:0,resolved:0,unverified_preserved:true});
+      const [os,ps,ss]=await Promise.all([
+        db.from('social_learning_obligations').select('tenant_id,obligation_id,type,status,post_id,window_hours,payload')
+          .eq('tenant_id',tenantId).eq('status','OPEN')
+          .in('type',['MISSED_OBLIGATION','UNVERIFIED_OR_PARTIAL_WINDOW'])
+          .in('post_id',ids).limit(250),
+        db.from('social_posts').select('tenant_id,post_id,published_at,external_post_id')
+          .eq('tenant_id',tenantId).in('post_id',ids).limit(250),
+        db.from('social_metric_snapshots').select('tenant_id,post_id,source,source_event_id,observed_at,data_quality,metrics')
+          .eq('tenant_id',tenantId).in('post_id',ids).order('observed_at',{ascending:false}).limit(750)
+      ]);
+      if(os.error||ps.error||ss.error)throw (os.error||ps.error||ss.error);
+      if((os.data||[]).length>=250||(ss.data||[]).length>=750)
+        return json({error:'EVIDENCE_COVERAGE_TRUNCATED',checked:0,resolved:0},503);
+      const posts=new Map((ps.data||[]).map((p:any)=>[p.post_id,p]));
+      const byPost=new Map<string,any[]>();
+      for(const snap of ss.data||[])byPost.set(snap.post_id,[...(byPost.get(snap.post_id)||[]),snap]);
+      const byKey=new Map((evals||[]).map((e:any)=>[e.post_id+':'+e.window_hours,e]));
+      let resolved=0;
+      for(const o of os.data||[]){
+        const e=byKey.get(o.post_id+':'+o.window_hours);
+        const proof=verifiedSocialWindowAck({obligation:o,post:posts.get(o.post_id),
+          evaluation:e,snapshots:byPost.get(o.post_id)||[]});
+        if(!proof)continue;
+        const {data:ack,error:we}=await db.from('social_learning_obligations')
+          .update({status:'MEASUREMENT_VERIFIED',
+            payload:{...(o.payload||{}),resolution:proof},
+            updated_at:new Date().toISOString()})
+          .eq('tenant_id',tenantId).eq('obligation_id',o.obligation_id)
+          .eq('status','OPEN').select('obligation_id');
+        if(we)throw we;
+        resolved+=(ack||[]).length;
+      }
+      // Consume the next ORIGINAL BRAIN mirror receipt in the same hourly owner.
+      // Source measurement ACK and BRAIN receipt are distinct; both are
+      // independently checked before calling this measurement window fulfilled.
+      // Historical debt replay is bounded by the original evaluation page.
+      const {data:acknowledged,error:ackReadError}=await db.from('social_learning_obligations')
+        .select('tenant_id,obligation_id,type,status,post_id,window_hours,payload')
+        .eq('tenant_id',tenantId).eq('status','MEASUREMENT_VERIFIED')
+        .in('type',['MISSED_OBLIGATION','UNVERIFIED_OR_PARTIAL_WINDOW'])
+        .in('post_id',ids).limit(250);
+      if(ackReadError)throw ackReadError;
+      if((acknowledged||[]).length>=250)
+        return json({error:'BRAIN_ACK_SOURCE_COVERAGE_TRUNCATED',resolved},503);
+      let brainAcked=0,brainMirrorMissing=0;
+      for(const o of acknowledged||[]){
+        const originalProof=verifiedSocialWindowAck({
+          obligation:{...o,status:'OPEN'},post:posts.get(o.post_id),
+          evaluation:byKey.get(o.post_id+':'+o.window_hours),
+          snapshots:byPost.get(o.post_id)||[]
+        });
+        const persisted=o.payload?.resolution;
+        if(!originalProof||!persisted||
+          persisted.contract!=='ORIGINAL_SOCIAL_WINDOW_EVIDENCE_ACK_V1'||
+          persisted.status!=='MEASUREMENT_VERIFIED'||
+          persisted.source_event_id!==originalProof.source_event_id||
+          persisted.evaluation_id!==originalProof.evaluation_id||
+          persisted.post_id!==originalProof.post_id||
+          Number(persisted.window_hours)!==originalProof.window_hours)continue;
+        const {data:mirrors,error:mirrorReadError}=await db.from('brain_obligations')
+          .select('id,capability_id,owner,state,version,evidence')
+          .eq('obligation_type','CONTENT_HANDOFF')
+          .eq('business_entity','original-provider-to-learning-chain')
+          .eq('business_period','continuous')
+          .eq('business_timezone','Europe/Amsterdam')
+          .eq('state','OPEN')
+          .contains('evidence',{original_obligation_id:o.obligation_id,
+            original_tenant_id:tenantId,original_post_id:o.post_id})
+          .limit(2);
+        if(mirrorReadError)throw mirrorReadError;
+        if((mirrors||[]).length>1)throw Error('DUPLICATE_ORIGINAL_BRAIN_MIRROR');
+        const mirror=mirrors?.[0];
+        if(!mirror){brainMirrorMissing++;continue;}
+        if(!String(mirror.capability_id||'').startsWith('social-learning:')||
+          mirror.owner!=='POWERHOUSE_SOCIAL_LEARNING'||
+          !Number.isSafeInteger(Number(mirror.version)))throw Error('BRAIN_MIRROR_AUTHORITY_MISMATCH');
+        const {data:written,error:mirrorWriteError}=await db.from('brain_obligations')
+          .update({state:'FULFILLED',version:Number(mirror.version)+1,
+            evidence:{...(mirror.evidence||{}),
+              stage:'MEASUREMENT_WINDOW_ACK_VERIFIED',
+              original_source_status:'MEASUREMENT_VERIFIED',
+              exact_source_receipt:originalProof,
+              next_action:'MEASUREMENT_ACK_FINISHED_NEXT_POST_CAUSAL_EFFECT_REQUIRES_SEPARATE_PROOF',
+              measurement_only:true,causal_lift_proven:false,
+              forbid_unsupported_repost:true},
+            updated_at:new Date().toISOString()})
+          .eq('id',mirror.id).eq('state','OPEN').eq('version',mirror.version)
+          .select('id,state,evidence');
+        if(mirrorWriteError)throw mirrorWriteError;
+        if((written||[]).length>1)throw Error('ORIGINAL_BRAIN_ACK_AMBIGUOUS');
+        brainAcked+=(written||[]).length;
+      }
+      return json({contract:'ORIGINAL_SOCIAL_WINDOW_EVIDENCE_ACK_V1',
+        checked:(os.data||[]).length,resolved,
+        brain_receipts_acknowledged:brainAcked,brain_mirror_missing:brainMirrorMissing,
+        unverified_preserved:true,
+        total_evaluations:total,history_page:oldPage,history_pages:oldPages,
+        learned_or_causal_effect_proven:false,parallel_executor_created:false});
+    }
     if(action==='get_projection'){const {data,error}=await db.from('social_learning_projections').select('projection').eq('tenant_id',tenantId).maybeSingle();if(error)throw error;return json({projection:data?.projection||null});}
     if(action==='put_projection'){const p=body.projection||{};const {error}=await db.from('social_learning_projections').upsert({tenant_id:tenantId,version:p.version,projection:p,updated_at:new Date().toISOString()},{onConflict:'tenant_id'});if(error)throw error;return json({stored:true});}
     return json({error:'INVALID_ACTION'},400);

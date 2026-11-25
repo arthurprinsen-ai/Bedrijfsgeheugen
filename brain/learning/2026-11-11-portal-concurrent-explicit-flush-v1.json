@@ -1,0 +1,61 @@
+{
+  "version": 1,
+  "fingerprint": "portal|domain-state|explicit-concurrent-flush-joined-old-promise|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_PORTAL_DOMAIN_STATE_CONCURRENT_HANDOFF_REPAIR",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Portal V2 original DomainState / BusinessInput / ONE BRAIN",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "gap": "Second explicit save can join old activePortalFlush and never trigger follow-up for newer source revision",
+    "business_outcomes_claimed": 0
+  },
+  "root_cause": {
+    "observed": "One in-flight promise reused for second explicit request even after newer dirty customer state",
+    "unknowns": [
+      "full authorized two-tenant production acceptance",
+      "provider execution",
+      "Heartbeat effects",
+      "learning applied in next run"
+    ]
+  },
+  "fix": {
+    "scope": "Coalesce explicit concurrent requests and drain newer dirty/pending original source after previous successful flush",
+    "no_parallel_writer": true,
+    "no_new_cron": true,
+    "no_unrequested_typing_autosave": true,
+    "no_retry_after_prior_failure": true
+  },
+  "compiler": {
+    "failure_class": "PORTAL_CONCURRENT_EXPLICIT_FLUSH_LOSS",
+    "scope": "PORTAL_V2",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-concurrent-explicit-flush-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-concurrent-explicit-flush-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-concurrent-explicit-flush-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "EXPLICIT_FLUSH_NOT_OLD_ACK",
+    "COALESCE_REQUESTED_FOLLOWUP_ONCE",
+    "NO_AUTO_SAVE_UNSUBMITTED_TYPING",
+    "SAME_TENANT_SAME_WRITER",
+    "NO_PROVIDER_RETRY_ON_UNKNOWN_OUTCOME"
+  ],
+  "evidence": {
+    "required": "protected Required+BRAIN+CodeQL; exact-main Netlify READY and authenticated original tenant readback",
+    "limitation": "Not proof of full independent stage completion or provider/Heartbeat learning"
+  }
+}

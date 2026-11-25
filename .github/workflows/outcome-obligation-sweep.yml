@@ -47,6 +47,10 @@ permissions:
 env:
   NODE_VERSION: '22'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   evaluate:
     runs-on: ubuntu-24.04
@@ -148,7 +152,7 @@ jobs:
           if [ -n "${COMPLETION_PRODUCTION_IDENTITY:-}" ]; then args+=(--production "$COMPLETION_PRODUCTION_IDENTITY"); fi
           if [ -f .artifacts/source/bg169-production-evidence.json ]; then args+=(--bg169 .artifacts/source/bg169-production-evidence.json); fi
           if [ -f .artifacts/source/production-release-readback.json ]; then
-            args+=(--readback .artifacts/source/production-release-readback.json --capability-handoff --learning-writeback)
+            args+=(--readback .artifacts/source/production-release-readback.json)
           fi
           node tools/completion-supervisor-evidence.mjs "${args[@]}"
 

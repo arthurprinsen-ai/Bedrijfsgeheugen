@@ -1,0 +1,44 @@
+{
+  "learningId": "terminalizer-netlify-runtime-authority-20261006-v1",
+  "fingerprint": "production-readback-terminalizer-unwired-netlify-build-writer-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-06T10:26:00+02:00",
+  "problem": "The obligation terminalizer rejected a merged production pricing recovery with UNWIRED_NON_NETLIFY_RUNTIME_READBACK even though tools/site-shell/apply-commercial-pricing-v1.mjs is executed by the canonical Netlify build.",
+  "rootCause": "Netlify runtime applicability had split authority: verifier-only paths were contract-driven, while the terminalizer kept a separate hardcoded runtime case list that omitted build-writer scripts.",
+  "root_cause": "Netlify runtime applicability had split authority: verifier-only paths were contract-driven, while the terminalizer kept a separate hardcoded runtime case list that omitted build-writer scripts.",
+  "preventionRule": "Production readback runtime applicability must be owned by brain/contracts/production-readback-v1.json and consumed through the shared production-supersession classifier; terminal workflows must not maintain parallel runtime path lists.",
+  "prevention": [
+    "Keep verifier-only and Netlify-runtime applicability in the canonical production-readback contract.",
+    "Classify tools/site-shell build writers as Netlify runtime unless explicitly verifier-only.",
+    "Have the obligation terminalizer call the shared runtime classifier instead of a local path case statement.",
+    "Regression-test the real pricing final-writer path and a verifier-only path."
+  ],
+  "evidence": {
+    "originatingPr": 3815,
+    "originatingMergeSha": "4dbd4bd39c207e3e34ece39cb16e56e1dda64f02",
+    "terminalizerFailure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "observedProductionSha": "2fa5fa60f248a5f14d86426cb835c447ab291cd3",
+    "implementation": [
+      "brain/contracts/production-readback-v1.json",
+      "tools/site-shell/production-supersession.mjs",
+      ".github/workflows/powerhouse-obligation-terminalizer.yml",
+      "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+    ],
+    "expected": "The pricing final-writer is classified as Netlify runtime, canonical verifier-only paths remain non-runtime, and the terminalizer contains no parallel hardcoded runtime path authority."
+  }
+}

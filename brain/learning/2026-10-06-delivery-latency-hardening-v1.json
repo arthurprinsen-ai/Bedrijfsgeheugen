@@ -1,0 +1,36 @@
+{
+  "version": "DELIVERY-LATENCY-HARDENING-v1",
+  "date": "2026-10-06",
+  "fingerprint": "github|delivery-latency|shallow-hygiene-bounded-writer-poll|v1",
+  "obligation_id": "delivery-latency-hardening-20261006-v1",
+  "root_cause": {
+    "hygiene_full_fetch": "Powerhouse Delivery Hygiene used fetch-depth 0, then fetched origin/main and computed a merge-base locally. In a repository with many stale remote branches this expanded admission latency before useful CI work started.",
+    "writer_poll": "Repository Writer Operational Verification synchronously polled for a generated writer PR up to 72 times with five-second sleeps, occupying a runner for up to six minutes while waiting on external materialization."
+  },
+  "prevention": {
+    "hygiene": "Use shallow candidate checkout and GitHub API authority for current main SHA, merge-base, exact PR files and PR patch; never fetch the complete repository history for admission.",
+    "writer": "Cap synchronous writer materialization polling at six five-second attempts. If no candidate exists, emit WAITING_EXTERNAL bound to the exact verify SHA and yield for later recovery."
+  },
+  "compiler": {
+    "failure_class": "DELIVERY_LATENCY_UNBOUNDED_FETCH_AND_EXTERNAL_POLL",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-latency-hardening-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "test": "tests/delivery-latency-hardening-v1.test.mjs",
+    "previous_hygiene": [
+      "fetch-depth: 0",
+      "git fetch origin main --no-tags",
+      "git merge-base origin/main HEAD"
+    ],
+    "previous_writer_poll": "seq 1 72 with sleep 5",
+    "invariant": "Admission and external wait paths must remain bounded without weakening exact-head, branch hygiene, static security or writer lease checks."
+  },
+  "status": "ACTIVE_PREVENTION"
+}

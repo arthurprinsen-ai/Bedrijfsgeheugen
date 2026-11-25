@@ -1,0 +1,64 @@
+{
+  "id": "brain-social-funnel-three-channel-20261030-v1",
+  "fingerprint": "content-growth|three-channel-social-funnel-personal-omitted-age-bias|20261030-v1",
+  "status": "CANDIDATE",
+  "owner": "EXISTING_POWERHOUSE_CONTENT_GROWTH_LEARNING",
+  "failure_class": "SOCIAL_FUNNEL_PERSONAL_CHANNEL_OMITTED_AND_UNCOMPARABLE_POST_AGE",
+  "root_cause": "Daily collector only read brand tenant, missing canonical personal LinkedIn. Latest cumulative post snapshots have non-equivalent publication ages.",
+  "observed_evidence": {
+    "instagram_snapshots": 144,
+    "linkedin_personal_partial_snapshots": 51,
+    "linkedin_company_linked_snapshots": 25,
+    "brand_social_learning_latest": "2026-10-24",
+    "aligned_48h": {
+      "instagram": 7,
+      "linkedin_company": 0,
+      "linkedin_personal": 4
+    },
+    "legacy_linkedin_unclassified_48h": 15,
+    "cro_pageviews_7d": 4347,
+    "cro_cta_events_7d": 0,
+    "commercial_leads_30d": 0,
+    "verified_paid_orders_30d": 0
+  },
+  "fix": "Reuse daily collector for 3 tenant-scoped channels with publish timing/content traits and provider-observed 48h cohort trend. Require >=5 samples in both cohorts for each metric.",
+  "prevention": "Do not infer views, identities, visitors, leads, revenue, causal effects or improvements without corresponding provider and attribution proof. Keep one scheduler and established learning/application owners.",
+  "regression": [
+    "tests/brain-three-channel-social-funnel-trend-v1.test.mjs",
+    "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+  ],
+  "rollout": {
+    "source": "PR_CANDIDATE",
+    "production": "UNVERIFIED",
+    "natural_run": "PENDING",
+    "outcome": "UNPROVEN"
+  },
+  "compiler": {
+    "failure_class": "SOCIAL_FUNNEL_PERSONAL_CHANNEL_OMITTED_AND_UNCOMPARABLE_POST_AGE",
+    "scope": "CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-three-channel-social-funnel-trend-v1.test.mjs",
+      "tests/brain-social-cro-portal-evidence-v1.test.mjs"
+    ]
+  },
+  "integration": {
+    "portal_admin_api": "netlify/functions/powerhouse-cro-other-data.mjs",
+    "portal_native_page": "portal-v2/modules/andere-data.js",
+    "social_metric_trend": "tools/content-growth/social-funnel-trend.mjs",
+    "social_portal_projection": "netlify/functions/_social-cro-funnel-projection.mjs",
+    "agent_rules": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "skill": ".agents/skills/powerhouse-social-cro-funnel/SKILL.md",
+    "continuity": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "single_scheduler": true,
+    "provider_maturity_evidence": "48H_PLUS_MINUS_6H",
+    "privacy": "NO_ACTOR_PII",
+    "production_status": "CANDIDATE_NOT_LIVE_PROVEN",
+    "agent_root_update": "UNMODIFIED_SAFETY_REJECTED",
+    "agent_enforcement": "NEW_SOCIAL_CRO_SKILL_PLUS_EXISTING_CONTINUITY"
+  }
+}

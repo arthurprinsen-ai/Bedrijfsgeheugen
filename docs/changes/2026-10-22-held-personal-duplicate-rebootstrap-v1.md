@@ -1,0 +1,9 @@
+# 2026-10-22 — herstel van een `hold`-beslissing na een veilige duplicaatweigering
+
+**Vastgesteld in productie:** de canonieke `content_publication_obligations` bevat een persoonlijke LinkedIn-duplicaatweigering (`GLOBAL_POST_DUPLICATE_BLOCKED`, 15 oktober), met ongebruikte autorisatie en `provider_create_success=false`. De gekoppelde `powerhouse_channel_decisions` is inmiddels genormaliseerd naar `hold/blocked`. De bestaande `powerhouse-content-loop` herstartte alleen `publish/blocked`; daardoor werd de op 22 oktober gemergede en in productie uitgerolde alternatieve bronreserve nooit gematerialiseerd. Dit is een missing-transition, geen schedulerstoring.
+
+**Wijziging:** voeg binnen de canonieke content-loop een strikt read-only detectie toe van die onbetwiste, vóór-provider duplicaatweigering. Gebruik uitsluitend de bestaande bronmaterialisatie en orchestrator, met een klein aantal mogelijke herstelpogingen. Controleer de bestaande recommendationtabel en de afgewezen bron-ID's. Nieuwe reservebronnen leiden alleen tot nieuwe besluitvorming en kwaliteitskeuring, nooit tot een gedwongen LinkedIn-call.
+
+**Beveiliging:** indien een extern ID, verbruikte publicatiecapaciteit, mogelijke side effect, ambigu ontvangstbewijs, `republish_forbidden` of bewezen verzending bestaat: fail closed. Alle onafhankelijke identiteit-, content-, duplicaat-, OAuth- en provider-readback-controles blijven verplicht. Geen tweede scheduler, geen nieuwe sender, geen fictieve klantfeiten. Alternatieven moeten echte, afzonderlijke bronnen zijn.
+
+**Acceptatie:** Node replay/shadowtest, volledige protected Required/CodeQL/CI, exact head merge, Edge source-parity, aantoonbare reservekandidaten en uiteindelijk provider post-ID. Geen auto-green zonder de externe provider. Bestaande GitHub P0 #4439 blijft open tot de 7-daagse controle.

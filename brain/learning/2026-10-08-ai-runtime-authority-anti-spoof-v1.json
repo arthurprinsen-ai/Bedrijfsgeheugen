@@ -1,0 +1,38 @@
+{
+  "fingerprint": "ai-runtime-authoritative-receipt-cross-domain-clearance-v1",
+  "compiler": {
+    "failure_class": "FORGED_RUNTIME_VERIFICATION",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The pure verified AI runtime selector checked receipt fields, but the invocation helper accepted a caller-supplied VERIFIED object and therefore did not establish that tenant policy, provider readback, customer consent and CSRD/security approval came from a trusted production authority.",
+  "prevention": [
+    "Reject caller-supplied runtime receipts at the invocation boundary",
+    "Require server-owned verified-receipt and cross-domain approval loaders, exact tenant/change/policy versions, active consent, expiry and evidence references",
+    "Require the CSRD/ESRS review scope to be cleared with evidence before any non-default runtime adapter executes",
+    "Use server-owned pinned endpoint registry; never derive network URLs from a user-configured endpointId",
+    "Do not bypass legacy Anthropic sovereignty controls or claim hosted/on-prem adapters are deployed"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-verified-ai-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-verified-ai-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-verified-ai-runtime.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-verified-ai-runtime.test.mjs"
+    ],
+    "source": [
+      "platform/brain/verified-ai-runtime.mjs"
+    ],
+    "outcome": "Pure gateway hardening and regression tests only. No production provider adapter or authenticated customer inference activated."
+  }
+}

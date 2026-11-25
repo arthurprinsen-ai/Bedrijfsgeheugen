@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-11-04",
+  "version": "v1",
+  "status": "SOURCE_REPAIR_AFTER_ORIGINAL_PRODUCTION_FAILURE",
+  "fingerprint": "portal|mobile-ux|dialog-loses-route-and-focus|20261104-v1",
+  "owner": "original Portal V2 UX/Engineering and canonical release owner",
+  "compiler": {
+    "failure_class": "PORTAL_MOBILE_ACCESSIBILITY",
+    "scope": "PORTAL_V2_SINGLE_ROUTER",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "root_cause": "The existing role=dialog full mobile menu always dismissed to overview and lacked accessible Tab trapping, focus restoration and inert background despite aria-modal. Original 390px production return-route test then imported unpinned /portal-v2/router.js, creating an independent module instance without the app's handlers; source route via the genuine app would also leave a specialist #portalView overlay unless closePortalPage is called before showing full menu.",
+  "prevention_rule": "Reuse one canonical router, preserve previous non-hub route for dismissal, trap Tab inside dialog, inert only the existing background while open, focus the real close control, restore the visible invoker on exit and verify exact published production; never claim WCAG or real entrepreneur usability from source tests alone. Browser tests must exercise the already bound DOM navigation and never use a second query-unpinned router; opening the full menu closes any separate specialist page via the original closePortalPage, then dismissal restores the original guarded route.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-mobile-dialog-focus-route-20261104.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original mobile four-tab menu source portal-v2/app.js and original browser success https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41844746771",
+      "Original 2026-11-04 merged #5422 commit 176315de3738a1f59479fb137eae932531d27ae6, Netlify READY 6aeb53a0a8ed72ff08c447fd"
+    ],
+    "current": [
+      "Focused source repair proposal; awaiting exact protected CI and actual production browser readback.",
+      "Original admission #41860199927 discovered invalid Playwright path in canonical learning evaluation; changed to a real node:test brain- contract while preserving the independent hydrated Playwright runtime test.",
+      "Original production browser https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41861441439 failed new return-route test: #allPages hidden after invoking a second unpinned module instance. Separate authenticated human validation still not done."
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "REQUIRES_NEW_ORIGINAL_PRODUCTION_BROWSER_AFTER_SOURCE_FIX"
+}

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260928203000_powerhouse_self_improvement_orchestrator_nonblocking_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260928203000_powerhouse_self_improvement_orchestrator_nonblocking_v1.sql','utf8');
 
 test('self improvement orchestrator is non-blocking and does not duplicate Company Intelligence execution',()=>{
   assert.match(sql,/create or replace function public\.powerhouse_run_self_improvement_layer_v1/i);

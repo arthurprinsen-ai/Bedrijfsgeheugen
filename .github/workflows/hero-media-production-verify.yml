@@ -11,19 +11,14 @@ on:
       - .github/workflows/hero-media-production-verify.yml
       - docs/openart-hero-production-foundation.md
       - docs/openart-hero-production-foundation-acceptance.md
-  pull_request:
-    branches:
-      - main
-    paths:
-      - assets/openart-hero-iphone-safe-v1.mp4
-      - assets/openart-hero-production.json
-      - .github/workflows/hero-media-production-verify.yml
-      - docs/openart-hero-production-foundation.md
-      - docs/openart-hero-production-foundation-acceptance.md
   workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   verify:

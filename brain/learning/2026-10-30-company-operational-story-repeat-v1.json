@@ -1,0 +1,39 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "date": "2026-10-30",
+  "version": "v1",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|linkedin-company|lost-offer-operational-family-repeat|20261030-v1",
+  "compiler": {
+    "failure_class": "COMPANY_OPERATIONAL_STORY_FAMILY_REPEAT",
+    "scope": "SOCIAL_PREPUBLICATION_EDITORIAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "The original company editorial gate detects named news and high lexical similarity but did not recognize repeated lost/unfollowed-offer operational stories phrased differently. The canonical global uniqueness provider gate correctly blocked the 2026-10-30 company post as STORY_FAMILY_DUPLICATE of 2026-10-29, without provider side effect.",
+  "prevention": "In the existing shared company editor, recognize a narrowly defined operational story family (lost/unfollowed offers) in the last 21 days, fail before provider reservation, permit at most the existing one source-grounded revision and require a distinct eligible source/problem. Do not reject broad industries, remove the global reservation gate, bypass consent, create another publisher, or mark a post live without provider ID/readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-editorial-contract-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-editorial-contract-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "canonical Supabase 2026-10-29/30 company obligations and Powerhouse channel decisions",
+    "prior_day": "2026-10-29",
+    "current_day": "2026-10-30",
+    "current_status": "BLOCKED",
+    "duplicate_origin": "claim:2026-10-29:linkedin_company",
+    "provider_id_recorded": false,
+    "original_publisher": "powerhouse-social-publisher",
+    "model_quota_gate": "insufficient_quota separate",
+    "previous_original_oauth_state": "ACTIVE_RESUMED",
+    "original_scheduler_active": true,
+    "ready_for_protected_merge": false,
+    "runtime_deployment_verified": false,
+    "next_natural_application_verified": false
+  }
+}

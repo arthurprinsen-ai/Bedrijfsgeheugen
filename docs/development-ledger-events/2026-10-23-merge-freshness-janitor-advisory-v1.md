@@ -1,0 +1,5 @@
+# 2026-10-23 — fixed-epoch GitHub merge freshness, canonical #4661
+
+Fingerprint: `delivery|predictive-lane-capacity|fixed-epoch-merge-drift-advisory|20261023-v1`. Evidence: some exact-head CI green PRs remain `mergeable_state=behind` after concurrent main updates; canonical GitHub readback [issue #4661](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-6362889086). Failure class is stale protected main epoch, **not** bad test or permission to bypass Required checks.
+
+Implement read-only `tools/delivery/ci-merge-freshness.mjs` using the existing hourly Repository Janitor's open PRs and GitHub compare responses. Pin compare ref to `GITHUB_SHA`, check full PR identity, consistent ahead/behind status, writer duplication, and immutable epoch; do not assume check-runs green. Bounded top 12 proposals, no provider GET/CI/queue/write. Test replay rejects invalid snapshots and gives no recommendations. Existing source and Powerhouse learning only, never a second owner. Protected merge + postmerge Janitor artifact/readback still required before production evidence claim. #4655 provider-ghost incident is separate and unresolved.

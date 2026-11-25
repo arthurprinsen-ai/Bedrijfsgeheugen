@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|linkedin-personal|creative-commercial-contamination|20261116-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5913",
+  "compiler": {
+    "failure_class": "PERSONAL_CREATIVE_BUSINESS_RECIPE_ESCAPE"
+  },
+  "root_cause": "The retired marketing-oriented personal rules still existed in the original revenue content recipe and social learning config: observational_business_standup, commercial_conversation, business discovery and offer CTAs. This can contaminate personal briefs even after the source-level migration. Additionally, the actual original personal pre-publication reviewer forced 130-200 words and an ending question, independently causing repetitive synthetic prose even after the creative recipe improved.",
+  "prevention": [
+    "Creative recipes for linkedin_personal never derive a supposed user event from commercial opportunity or public sources.",
+    "Personal creative policy requires verified unused user-authored fact and independent original publication guards; company creative remains commercial.",
+    "Personal format promotion requires independent comparable personal engagement evidence; limited reaction-only data is NOT_MEASURED, not success.",
+    "Any unapproved private chat facts and consumed stories are forbidden as personal content.",
+    "The same original pre-publication reviewer MUST allow variable length and no mandatory ending question, and read up to 20 real published personal posts to veto repeated distinctive patterns before final PASS.",
+    "Do not auto-comment, scrape, fabricate or reuse unconsumed family photos. Images are optional, subject to exact media rights and user privacy approval.",
+    "2026 published benchmark claims are hypotheses for user-specific 24/48/72-hour source-backed measurement, not automatic winner settings."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-creative-learning-20261116.test.mjs",
+      "tests/brain-personal-life-only-editorial-producer-20261116.test.mjs",
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ]
+  },
+  "evidence": [
+    "brain/creative/revenue-content-intelligence.mjs",
+    "config/social-learning-engine.json",
+    "2026-11-16 production: source rules migrated, but creative config and JavaScript recipe remained commercial",
+    "2026-11-16 provider LinkedIn personal metrics for 12-14 November were reactions-only; no independent pattern winning proof",
+    "tests/brain-personal-creative-learning-20261116.test.mjs",
+    "https://news.linkedin.com/2026/ImprovingTheFeed",
+    "https://www.flypost.io/press/linkedin-study-2026/flypost-linkedin-study-release-D.pdf",
+    "https://metricool.com/linkedin-trends-study/",
+    "supabase/functions/_shared/personal-linkedin-editorial-contract.mjs",
+    "supabase/functions/bg-pre-publish-review/index.ts"
+  ],
+  "skill_targets": [
+    "personal-linkedin-life-only"
+  ],
+  "publication_claim": "NONE",
+  "acceptance": "Protected exact-head tests, merge, real downstream recipe use or natural owner readback, actual user-fact source review, provider readback and measurable learning required before live/closed-loop claims. New original independent reviewer must reject an almost-identical pattern and permit shorter natural story without final question; provider preview association still needed."
+}

@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|required-watchdog|transient-api-abort-all-prs|20261022-v1",
+  "obligation_id": "delivery|required-watchdog|transient-api-abort-all-prs|20261022-v1",
+  "title": "Bound bounded transient GitHub reads and isolate per-PR watchdog failures",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Source inspection: the current five-minute Required Gate Watchdog uses unbounded fetch and uncaught per-PR GitHub API errors; one slow/transient response can abort the remaining PR loop. Provider production recurrence has not been independently measured.",
+  "impact": "A single provider failure can block other existing PR gate observations and same-owner repair signals.",
+  "failed_approaches": [
+    "Blindly retry all writes",
+    "Duplicate scheduler or recovery agent",
+    "Treat missing provider response as a completed outcome"
+  ],
+  "fix": "Bound GitHub GET requests to 8 seconds and two transient-only attempts, isolate three PR failures per tick while returning nonzero on partial failures; never retry ambiguous POST.",
+  "prevention_rule": "Use bounded GET-only retries, per-PR isolation, strict 403/404 denial, next-tick idempotent marker readback for ambiguous writes, and preserve exact-head Required/CodeQL plus protected merge.",
+  "regression_contract": "tests/brain-required-gate-watchdog-resilience-v1.test.mjs",
+  "tests": [
+    "tests/brain-required-gate-watchdog-resilience-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-gate-watchdog-resilience-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-gate-watchdog-resilience-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-required-gate-watchdog-resilience-v1.test.mjs"
+    ],
+    "negative_canary": [
+      "tests/brain-required-gate-watchdog-resilience-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "observed_source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/main/.github/scripts/required-gate-watchdog.mjs",
+    "validated_production_run": null,
+    "source_fix_proven": false,
+    "production_readback": "PENDING"
+  },
+  "outcome": "CANDIDATE_UNVERIFIED; requires exact-head CI, protected merge and next watchdog runtime readback."
+}

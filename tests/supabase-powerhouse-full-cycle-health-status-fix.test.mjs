@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const fixUrl = new URL('../supabase/migrations/20260915124000_powerhouse_full_cycle_health_status_fix_v1.sql', import.meta.url);
+const fixUrl = new URL('../supabase/migration-history/repository-only/20260915124000_powerhouse_full_cycle_health_status_fix_v1.sql', import.meta.url);
 const sql = fs.existsSync(fixUrl) ? fs.readFileSync(fixUrl, 'utf8') : '';
 
 test('full-cycle health status production regression is fixed by a follow-up migration', () => {

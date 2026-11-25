@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const playbook=JSON.parse(fs.readFileSync('config/powerhouse-growth-swarm-playbook-v1.json','utf8'));
-const migration=fs.readFileSync('supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql','utf8');
-const activation=fs.readFileSync('supabase/migrations/20260928124000_powerhouse_growth_swarm_activation_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260928123500_powerhouse_growth_swarm_v1.sql','utf8');
+const activation=fs.readFileSync('supabase/migration-history/repository-only/20260928124000_powerhouse_growth_swarm_activation_v1.sql','utf8');
 const worker=fs.readFileSync('supabase/functions/powerhouse-growth-tools/index.ts','utf8');
 const skill=fs.readFileSync('.agents/skills/powerhouse-growth-swarm/SKILL.md','utf8');
 

@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "growth|daily-intelligence|bounded-durable-writeback|20261023-v1",
+  "fingerprint": "growth|daily-intelligence|serial-brain-postgrest-writes-exceed-scheduled-budget|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "SCHEDULED_GROWTH_WORKLOAD_EXCEEDS_30S_WRITEBACK_BUDGET",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Daily Growth Intelligence performed independent awaited PostgREST POST calls for every company, relationship, market-whitespace relation, prediction, obligation and scorecard. Such sequential writes can exceed the existing 30-second Netlify scheduled-function limit even after the real missing-credential blocker was fixed. The 2026-10-23 06:00 UTC 502 provider log proves the prior credential blocker, not a measured timeout from the new live release.",
+  "observed_evidence": {
+    "previous_sched_error": "growth intelligence store configuration missing",
+    "previous_provider_event_at": "2026-10-23T06:00:53Z",
+    "new_published_sha": "591dcc4f893f3d2dcfb5b30a0014f82c9e3e62a7",
+    "new_runtime_24h_verified": false,
+    "latest_brain_daily_scorecard": "2026-09-13",
+    "netlify_scheduled_seconds_limit": 30
+  },
+  "fix": "Use one bounded in-invocation deduplicated writeback buffer targeting existing canonical tables, flush after decision+scorecard construction, propagate any database failures, no terminal success without flush. Keep original 06:00 UTC schedule and current scoring/attribution logic unchanged.",
+  "prevention_rule": "Large daily Brain/revenue loops must not make unbounded sequential network writes; use bounded upserts with exact natural-key deduplication, mark execution complete only after durable write acknowledgment, never fabricate a daily result or install a second scheduler.",
+  "tests": [
+    "tests/brain-seo-cro-execute-or-explain-v1.test.mjs",
+    "tests/growth-intelligence-daily.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-cro-execute-or-explain-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-cro-execute-or-explain-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-cro-execute-or-explain-v1.test.mjs"
+    ],
+    "invariants": [
+      "existing original schedule only",
+      "one canonical Brain",
+      "at-most-40 rows per write",
+      "dedupe by canonical table conflict key",
+      "cannot report completed before flush",
+      "readback required for green",
+      "no duplicate CRM, false outcome or revenue"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "runtime_schedule_readback": null,
+    "real_sales_proven": false
+  }
+}

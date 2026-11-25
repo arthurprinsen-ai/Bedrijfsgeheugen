@@ -1,0 +1,3 @@
+# Repair legacy native daily blog exporter readback authorization
+
+The pre-existing `daily-blog-publisher.yml` schedules run a fallback duplicate-prevention query against the canonical `powerhouse-blog-export` function. The P0 exporter now correctly rejects anonymous callers. This patch provides the already-configured GitHub `SUPABASE_SERVICE_ROLE_KEY` only to that check and fails closed if the credential is absent. The service exporter still requires an approved obligation. All existing schedules, duplicate-protection checks and content-writer behavior remain unchanged; no alternative publisher is introduced. No credentials or blog contents are committed.

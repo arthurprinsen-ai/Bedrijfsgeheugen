@@ -1,0 +1,14 @@
+# P0 #4198: independent commercial outbound lanes
+
+The **existing** 5-minute commercial Heartbeat remains the only central outbound ownership trigger. Each invocation independently evaluates four bounded lanes: `email`, `linkedin_dm`, `linkedin_comment`, and `linkedin_like`. Brain/POWERHOUSE candidate selection and safety gates remain authoritative. A lane cannot starve its siblings on error because per-lane PostgreSQL transactions are wrapped in Promise.allSettled and run before the central Brain's expensive heartbeat transaction. No new scheduler, contact database, publisher or campaign.
+
+### Lane routing and proof
+- E-mail -> **existing** `powerhouse_dispatch_autonomous_outreach_v1`, only if a human-approved prepared recipient is due or a waiting uncertain send needs reconciliation. Existing Gmail sender handles provider SEND then independent GET readback and fail-closed consent/contact-pressure checks.
+- LinkedIn DM -> **existing** `powerhouse_dispatch_linkedin_sales_machine_v1`, only an approved and addressable candidate can ultimately send. Provider trial execution days are currently zero; never fake billing capacity or send by a shadow account. The active existing SalesRobot campaign remains authoritative.
+- LinkedIn comments -> **existing** `powerhouse_dispatch_linkedin_comment_autopilot_v1`. Direct publisher was corrected from an invalid free-text Composio request to the documented structured LinkedIn comment tool. Requires verified canonical personal identity, verified share/UGC URN and post GET, quality-ready text and existing CAS claim. A mere activity URL cannot be guessed into a valid target. Provider ACK is not an independent readback.
+- Likes -> an independently evaluated **held** lane. The actual connected LinkedIn toolkit advertises `LINKEDIN_LIST_REACTIONS` but no authenticated create-reaction capability. Do not use a read endpoint as a writer or invent a successful like. A future verified write connector and Brain-approved `like_post` candidate are required.
+
+Each hourly lane creates a single deterministic `powerhouse_runtime_events` receipt. **Queued net HTTP request != provider side effect**. Existing provider action/outcome reconciliation must prove sent/commented separately. Hour-bucket receipts and original CAS/unique delivery checks prevent duplicate fanout. The existing SQL comment heartbeat dispatch may overlap, but original action claim prevents duplicate side effects.
+
+### Acceptance
+Protected GitHub checks and exact production source parity for both touched Edge functions. Then verify periodic dispatch receipts, `net._http_response`, exact Gmail IDs + independent readback, LinkedIn DM receipt and audience eligibility, comment target URN/ID and provider readback, and real measured commercial outcomes flowing back into Brain. P0 remains OPEN until genuine outcomes, not plan/status alone. No fabricated likes or forced bulk contact.

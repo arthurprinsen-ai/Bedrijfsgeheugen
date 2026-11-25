@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-14",
+  "obligation_id": "ai-model-catalog-evidence-recovery-20261014",
+  "lesson": "Catalog freshness requires verified claims and source-backed evidence; HTTP response does not prove model claims.",
+  "changes": [
+    "Official OpenAI pricing correction for Astra and Luna",
+    "Legacy Sol routing warning",
+    "Audit of source reachability and stale model claims",
+    "Blob-SHA GitHub readback for large catalog files, explicit Cohere alias-to-official provider_api_id mapping, and preserved non-approval gates",
+    "Complete all seven Cohere provider_api_id mappings, correct Command A Reasoning 256K input/32K output and image input from official model page; do not grant supplier or tenant approval.",
+    "Verified October 6 Google image deprecation announcement date and repaired two inaccurate October 8 source citations",
+    "AWS Nova Premier API identity and lifecycle evidence are separate controls"
+  ],
+  "limitations": [
+    "Other model claims not yet vendor-verified",
+    "Do not restamp dates in bulk",
+    "No production proof before protected merge"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-catalog-evidence-recovery.test.mjs"
+    ]
+  },
+  "fingerprint": "powerhouse|ai-model-catalog|stale-claims|provider-evidence|20261014",
+  "root_cause": "Catalog verification timestamps exceeded the 14-day gate; claims and lifecycle data had not been revalidated; missing evidence is not equivalent to a valid attestation.",
+  "prevention": "Keep verified_at unchanged for unverified claims; require provider evidence per field; reject unclassified or expired records.",
+  "evidence": {
+    "regression_test": "tests/brain-ai-model-catalog-evidence-recovery.test.mjs",
+    "ci_status": "Requires protected GitHub gates; no successful production readback claimed."
+  },
+  "cohere_api_identity_recovery_20261014": {
+    "verified_sources": [
+      "https://docs.cohere.com/docs/command-a",
+      "https://docs.cohere.com/docs/command-a-plus"
+    ],
+    "catalog_count_unchanged": 110,
+    "canonical_api_ids": {
+      "command-a": "command-a-03-2025",
+      "command-a-plus": "command-a-plus-05-2026",
+      "command-a-plus-05-2026": "command-a-plus-05-2026"
+    },
+    "command_a_input_usd_per_m": 2.5,
+    "command_a_output_usd_per_m": 10,
+    "customer_governance_proven": false,
+    "unverified_claims_auto_approved": false,
+    "github_readback": "Use fetch_blob on exact tree blob SHA when fetch_file returns metadata without content."
+  },
+  "cohere_identity_completion_20261014": {
+    "checked_on": "2026-10-14",
+    "source_urls": [
+      "https://docs.cohere.com/docs/cohere-embed",
+      "https://docs.cohere.com/docs/command-a-reasoning"
+    ],
+    "official_model_id_fields": 7,
+    "model_count": 110,
+    "customer_contracts_or_provider_account_verified": false,
+    "independent_supplier_approval": false
+  },
+  "google_image_lifecycle_date_repair": {
+    "model_id": "gemini-3.1-flash-image",
+    "date": "2026-10-06",
+    "url": "https://ai.google.dev/gemini-api/docs/changelog",
+    "tenant_verification": false,
+    "existing_scope_retained": "full"
+  },
+  "nova_premier_api_identity_readback": {
+    "canonical_api_id": "amazon.nova-premier-v1:0",
+    "official_source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-card-amazon-nova-premier.html",
+    "customer_entitlement_proven": false,
+    "lifecycle_conflict_cleared": false,
+    "automatic_recommendation_eligible": false,
+    "github_commit": "90688ea2bd10699655fd487ee5f40c452c6a3607",
+    "database_readback": true
+  }
+}

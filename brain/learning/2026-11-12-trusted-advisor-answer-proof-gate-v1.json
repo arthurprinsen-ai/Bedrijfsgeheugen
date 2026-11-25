@@ -1,0 +1,71 @@
+{
+  "fingerprint": "portal|trusted-advisor-answer-verification-claim-gate|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "bedrijfsgeheugen",
+  "owner": "existing Portal V2 Trusted Advisor assurance / original ONE BRAIN evidence owner",
+  "status": "CODE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN",
+  "root_cause": "Portal response presentation trusted a declared verified status even when claimVerification was unverified or the evidence reference / source identity was missing.",
+  "observed_evidence": [
+    {
+      "path": "portal-v2/trusted-advisor-assurance.js",
+      "verification": "SOURCE",
+      "observed": "normalizeAnswerAssurance accepted assurance.status=verified without requiring claimVerification or evidenceRef"
+    }
+  ],
+  "correction": "Existing answer assurance presenter fails closed for missing or contradictory independent verification declaration, concrete reference, or identifiable source; preserve existing server tenant routing.",
+  "prevention_rule": "No status-only Verified claim in customer chat or portal, and no brand fallback posing as cited provenance.",
+  "regressions": [
+    "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs",
+    "portal-v2/tests/trusted-advisor-assurance.test.mjs"
+  ],
+  "original_handoff": "Portal V2 -> existing tenant BusinessInput -> original ONE BRAIN -> Powerhouse / Heartbeat -> authorized action -> independent readback -> learning",
+  "no_parallel_executor": true,
+  "evidence_due": [
+    "exact-head tests and Required/BRAIN/CodeQL",
+    "protected merge",
+    "exact canonical Netlify production SHA and browser result",
+    "backend receipt authority validation and original consumer_processed_ack",
+    "consent-qualified measured 7/14/28 day effects"
+  ],
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-answer-proof-gate-v1.md",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs"
+    ],
+    "expected": "unproven or contradictory answer source/claim verification/reference never displays Verified"
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/c9d31fb2d2bea5b1e9f4964894ad2825556be08b/portal-v2/trusted-advisor-assurance.js",
+    "original_defect": "normalizeAnswerAssurance directly converted assurance.status into Geverifieerd with no provenance/verification proof gate",
+    "regression_tests": [
+      "tests/brain-trusted-advisor-answer-proof-gate-20261112.test.mjs",
+      "portal-v2/tests/trusted-advisor-assurance.test.mjs"
+    ],
+    "negative_protected_admission_runs": [
+      {
+        "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43312481773",
+        "reason": "LEARNING_FAILURE_CLASS_REQUIRED",
+        "remedy": "Added compiler and actual executable replay/canary"
+      },
+      {
+        "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43312820711",
+        "reason": "semantic_learning missing explicit top-level evidence key",
+        "remedy": "Added canonical evidence field with actual source and CI links"
+      }
+    ],
+    "current_release": "CODE_CANDIDATE; no protected merge or independent production outcome yet",
+    "consumer_processed_ack": "NOT_PROVEN"
+  }
+}

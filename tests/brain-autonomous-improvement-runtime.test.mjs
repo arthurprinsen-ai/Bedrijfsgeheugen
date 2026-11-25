@@ -23,6 +23,11 @@ test('runtime contract remains integrated with continuous improvement authority'
   assert.equal(contract.extends, 'powerhouse-continuous-improvement-engine-v1');
   assert.equal(contract.authority_model.new_persistent_authority, false);
   assert.equal(contract.scheduler.production_authority, 'Supabase pg_cron');
+  assert.equal(contract.scheduler.production_function, 'public.powerhouse_autonomous_improvement_cron_v1()');
+  assert.equal(contract.scheduler.cadence, 'hourly at minute 34');
+  const staggerMigration=await readFile(new URL('../supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql', import.meta.url), 'utf8');
+  assert.match(staggerMigration, /'powerhouse-autonomous-improvement-cycle-v1', '34 \* \* \* \*'/);
+  assert.equal(contract.scheduler.schedule_source, 'supabase/migrations/20261006085416_stagger_cron_database_pressure_v1.sql');
   assert.equal(contract.scheduler.probe_workflow, '.github/workflows/business-os-intelligence.yml');
   assert.equal(contract.scheduler.probe_read_only, true);
   assert.equal(contract.writeback.route, 'public.brain_append_record -> existing public.brain_records');
@@ -115,10 +120,30 @@ test('read-only probe is executable while production scheduling stays in Supabas
   assert.equal(output.production.scheduler_authority, 'Supabase pg_cron');
   assert.equal(output.production.job, 'powerhouse-autonomous-improvement-cycle-v1');
   assert.equal(output.writeback, 'not attempted by GitHub read-only probe');
+  assert.equal(output.packet.probe_evidence.measured_performance, false);
+  assert.equal(output.packet.probe_evidence.evaluated_champion, false);
+  assert.equal(output.packet.probe_evidence.synthetic_performance_samples, false);
+  assert.equal(output.packet.probe_evidence.automatic_promotion_allowed, false);
+  assert.equal(output.packet.portfolio_decision.decision, 'HOLD');
+  assert.equal(output.packet.portfolio_decision.winner, null);
+  for (const metric of ['reliability', 'latency_ms', 'cost_per_outcome']) {
+    assert.equal(output.packet.fitness.dimensions[metric].baseline, null);
+    assert.equal(output.packet.fitness.dimensions[metric].current, null);
+    assert.equal(output.packet.fitness.dimensions[metric].trend, 'unknown');
+  }
+  assert.deepEqual(output.packet.fitness.material_regressions, []);
+});
+
+test('daily contract probe never passes synthetic fixture metrics as real improvement evidence', async () => {
+  const source = await readFile(new URL('../scripts/brain/continuous-improvement/run-autonomous-improvement.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /baseline:\s*\{\s*reliability:\s*99\.9/);
+  assert.doesNotMatch(source, /champion:\s*\{\s*id:\s*'current',\s*observations:\s*30/);
+  assert.match(source, /synthetic_performance_samples:\s*false/);
+  assert.match(source, /automatic_promotion_allowed:\s*false/);
 });
 
 test('production adapter uses only canonical Brain record taxonomy', async () => {
-  const migration = await readFile(new URL('../supabase/migrations/20260916152000_autonomous_improvement_brain_taxonomy_fix_v1.sql', import.meta.url), 'utf8');
+  const migration = await readFile(new URL('../supabase/migration-history/repository-only/20260916152000_autonomous_improvement_brain_taxonomy_fix_v1.sql', import.meta.url), 'utf8');
   assert.match(migration, /'CurrentState','current_state'/);
   assert.match(migration, /record_type='CurrentState'/);
   assert.match(migration, /record_kind='current_state'/);

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260929212500_powerhouse_loop_assurance_v3.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260929212500_powerhouse_loop_assurance_v3.sql','utf8');
 
 test('loop assurance v3 syncs only from canonical cron/runtime evidence',()=>{
   assert.match(sql,/powerhouse_sync_loop_assurance_receipts_v1/);

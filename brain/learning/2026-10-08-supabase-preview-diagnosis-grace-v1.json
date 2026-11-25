@@ -1,0 +1,43 @@
+{
+  "version": "powerhouse-supabase-preview-diagnosis-grace-v1",
+  "observed_at": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "root_cause": "The exact-HEAD Required gate failed on a transient provider-owned 'skipped' check before the later Supabase migration failure published its SQLSTATE 42P01 root cause. Provider errors remained generic; agents repeated status inspection.",
+  "evidence": {
+    "observed_check": "Supabase Preview on PR #4114 old HEAD b237becf",
+    "provider_transient": "skipped",
+    "provider_terminal": "failure: relation public.powerhouse_identity_graph_v1 does not exist",
+    "followup": "PR #4114 replay baseline merged after Supabase Preview success"
+  },
+  "intervention": "Keep the single Required gate and provider preview; add a bounded two-retry grace for stable skipped checks and emit a typed exact-head provider root cause with corrective guidance. No additional workflow, scheduler, credential or production mutation.",
+  "guardrails": [
+    "Never treat provider skipped/neutral as GREEN",
+    "Never bypass Required or CodeQL",
+    "Stop after bounded provider checks; no infinite polling",
+    "Use exact-head and Supabase-owned provider evidence only"
+  ],
+  "closure_required": [
+    "protected Required and CodeQL",
+    "merge into main",
+    "new diagnostic test on every Required run",
+    "production code readback"
+  ],
+  "next_action": "Validate protected CI, protected merge and readback; do not label LIVE_PROVEN beforehand.",
+  "fingerprint": "supabase-preview-check-failfast-diagnosis-v1",
+  "compiler": {
+    "failure_class": "ROOT_CAUSE_OBSCURED",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ]
+  },
+  "prevention": "A provider skipped check receives at most two grace polls and then fails with a typed diagnosis; terminal SQLSTATE 42P01 reports the missing schema object instead of a generic non-success message."
+}

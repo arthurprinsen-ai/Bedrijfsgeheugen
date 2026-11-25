@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "parent_issue": 4547,
+  "obligation_id": "original-portal-admin-ux-proof-postmerge-contract-recovery-20261102-v1",
+  "fingerprint": "portal|brain|postmerge-old-incident-aggregate-api-shape-oracle|20261102-v1",
+  "compiler": {
+    "failure_class": "STALE_EXACT_API_SOURCE_PATTERN_AFTER_ADDITIVE_PORTAL_UX_PROOF",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original full BRAIN postmerge run 41463765668 backend test #3029 required the exact old systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage} source string. Protected PR #5308 correctly appended a new admin-only allowlisted portalUxReleaseProof property while retaining original incident aggregate and authentication. Old test oracle was exact closed-list syntax, not missing privacy enforcement.",
+  "fix": "Update only the original regression to assert the new additive source contract while explicitly verifying original admin and tenant gates and both incident-aggregate and UX evidence surfaces. Keep runtime, security, Supabase, workflow and portal unchanged.",
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41463765668",
+    "failed_backend_job": 125339867747,
+    "original_test": "tests/brain-portal-failure-coverage-readback-20261029.test.mjs",
+    "original_api": "netlify/functions/powerhouse-observability.mjs",
+    "original_portal_pr": 5308,
+    "production_sha": "e9afb69de49732ebd6398b6f96d03a2876bde015",
+    "fail_count": 1,
+    "other_unrelated_content_failures": 3,
+    "content_owner_recovery_pr": 5311,
+    "status": "POSTMERGE_FAILURE_OBSERVED",
+    "independent_postmerge_brain_run": 41465927780,
+    "independent_postmerge_backend_job": 125347160483,
+    "verified_postmerge_tests": 5442,
+    "verified_postmerge_pass": 5440,
+    "verified_postmerge_fail": 0,
+    "verified_postmerge_skip": 2,
+    "skill_prevention_candidate": ".agents/skills/portal-living-interface/SKILL.md",
+    "skill_activation_status": "CANDIDATE_NEXT_NATURAL_OWNER_RUN_PENDING"
+  },
+  "tests": [
+    "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-failure-coverage-readback-20261029.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "An additive, allowlisted admin observation must preserve the incident aggregate, admin+tenant authorization and private/no-store server boundary.",
+    "Original source-contract regressions must check the expanded semantics, not silently accept the old exact closed-list source shape or delete privacy assertions.",
+    "Do not modify a working runtime or weaken all-BRAIN failure gates merely to clear an old text-pattern oracle.",
+    "Store source, root cause, repair, test, owner and independent postmerge readback in original Brain and human ledger.",
+    "Three unrelated protected content-orchestrator tests remain owned by original content-recovery PR #5311; no parallel publisher or hidden green.",
+    "When Portal admin observation projection expands, scan all older exact source-contract tests and require the expanded allowlist with unchanged original isPowerhouseAdmin, resolveIdentityTenant, cache-control private/no-store, incident aggregate and failure-gating.",
+    "Any recurring admin-UX skill fix must be part of the same exact protected candidate as updated original ONE BRAIN learning, human change note and append-only development ledger; never suppress INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE."
+  ],
+  "owner": "original Portal V2/ONE BRAIN admin observability regression owner",
+  "terminal_rule": "This fixes only test #3029, not the three separate content source-contract failures, and is not PROVEN before full exact-head Required/BRAIN, CodeQL, protected merge, and independent follow-up verification."
+}

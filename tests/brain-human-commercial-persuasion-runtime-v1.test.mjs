@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const composer=fs.readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
 const compat=fs.readFileSync('supabase/functions/powerhouse-human-sales-composer/index.ts','utf8');
-const migration=fs.readFileSync('supabase/migrations/20261005123000_powerhouse_human_commercial_persuasion_runtime_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20261005123000_powerhouse_human_commercial_persuasion_runtime_v1.sql','utf8');
 
 test('canonical composer uses existing persuasion authority and quality gate',()=>{
   assert.match(composer,/powerhouse_persuasion_revenue_optimizer_v1/);

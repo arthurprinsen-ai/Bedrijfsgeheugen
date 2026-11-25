@@ -1,0 +1,35 @@
+{
+  "fingerprint": "mira-radar-task-status-v1",
+  "date": "2026-10-27",
+  "failure_class": "PROVIDER_TASK_FAILURE_REPORTED_AS_ZERO_RESULTS",
+  "scope": "CONTENT",
+  "root_cause": "The radar checked only the HTTP and top-level status of DataForSEO. A task-level error (40101 Internal SE Server Error) returned empty items and the run reported ok:true with 0 results, hiding that no search had happened.",
+  "source_of_truth": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+  "prevention": [
+    "Task-level status_code is checked and failures raise an error listed in the run response, with one retry",
+    "Run response exposes tavily_raw next to the fresh counts so empty results can be diagnosed"
+  ],
+  "evidence": {
+    "production_run": "2026-10-27 request 14295: stored 0, providers dataforseo_news 0, errors empty while DataForSEO returned 40101",
+    "test": "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs",
+    "code_paths": [
+      "supabase/functions/powerhouse-mira-problem-radar/index.ts"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PROVIDER_TASK_FAILURE_REPORTED_AS_ZERO_RESULTS",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-entrepreneur-radar-materializer-20261027.test.mjs"
+    ]
+  },
+  "outcome": {
+    "false_green_removed": true,
+    "provider_readback_required": true
+  }
+}

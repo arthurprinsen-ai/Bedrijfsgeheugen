@@ -1,0 +1,43 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "powerhouse|daily-blog|seo-focus-pronoun-truncated-title|20261108-v1",
+  "owner": "daily blog publisher tools/site-shell/publish_powerhouse_blog_artifact.py",
+  "compiler": {
+    "failure_class": "GENERATED_TITLE_FROM_PRONOUN_FOCUS",
+    "scope": "DAILY_BLOG_SEO",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "seo_focus skipped question openers but not pronouns, so for a title starting with Hoe je Twinfield-koppeling the focus keyword became je Twinfield. seo_title then fell back to the focus keyword plus the generic suffix wat verandert er voor jou? and every templated heading, keyword and figure caption carried the pronoun. Two published articles (7 and 8 Nov) had the defect; a scan of all 48 blog directories found no other.",
+  "prevention_rule": "Pronouns are in the starter list of seo_focus. A dependency-free test runs seo_focus on both real titles and scans every committed article for a lowercase title or a pronoun zoekwoord, so the next defective article fails in CI before merge.",
+  "prevention_rules": [],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "blog/hoe-je-twinfield-koppeling-voorbereidt-voor-mobiele-betalingen-praktis: title je Twinfield: wat verandert er voor jou?",
+      "blog/hoe-jouw-mkb-zich-praktisch-voorbereidt-op-de-verwachte-twinfield-open: title jouw MKB: wat verandert er voor jou?"
+    ],
+    "current": [
+      "the two articles, the blog index, the feed and the English caches are corrected in the same change; slugs and canonical URLs are unchanged; not proven live until the deploy readback"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_LIVE_READBACK",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-19",
+  "obligation": "blog-translation-approval-provider-failover-20261019",
+  "fingerprint": "daily-blog|static-i18n|anthropic-credit-exhaustion|approved-openai-backup",
+  "root_cause": "The current protected blog-publisher's translated-site preparation calls Anthropic exclusively. Its 2026-10-19 workflow run 39208299296 stopped with Anthropic HTTP400 credit balance too low while the daily blog artifact existed in Supabase. The locale build is correctly fail-closed but lacks an authorized second-provider path, so a provider billing dependency interrupts publication.",
+  "intervention": "Provide the existing GitHub secret OPENAI_API_KEY to the two scoped daily blog translation-preparation steps; when Anthropic fails with explicit billing/auth errors or has no key, call OpenAI Responses with strict JSON-schema batch translation. Independently validate response completeness and immutable URLs/template tokens before persisting translation cache.",
+  "prevention": "Never disable English cache coverage, skip production source or provider readback, publish incomplete translations, expose API secrets, activate an unapproved model or treat a successful CI candidate as a live blog. Only use this failover during translation preparation; production build remains offline and cache-complete.",
+  "compiler": {
+    "failure_class": "EXTERNAL_PROVIDER_BILLING",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "prevention_rule": "STATIC_I18N_APPROVED_PROVIDER_FAILOVER_FAI_CLOSED_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-approved-translation-provider-failover-20261019.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "github_blog_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39208299296",
+    "error_class": "STATIC_I18N_PROVIDER_BILLING_BLOCKED",
+    "affected_channel": "blog",
+    "blog_artifact_state": "GENERATED",
+    "runtime_deployed": false,
+    "provider_fallback_observed": false,
+    "live_blog_verified": false
+  },
+  "status": "SOURCE_CANDIDATE_AWAITING_REQUIRED_TESTS_PROTECTED_MERGE_AND_LIVE_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39208299296"
+  ]
+}

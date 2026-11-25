@@ -1,0 +1,34 @@
+{
+  "fingerprint": "social-recovery|provider-truth|false-green|2026-10-16",
+  "date": "2026-10-16",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-recovery-provider-proof-gate-20261016",
+  "compiler": {
+    "failure_class": "SCHEDULED_MISCLASSIFIED_AS_PUBLISHED",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The recovery workflow accepted scheduled as resolved and did not explicitly require the runner's providerTruthHealthy contract.",
+  "prevention_rule": "A social recovery run must fail unless all required publish decisions are published and the runner verifies provider side-effect truth.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  },
+  "production_verified": false,
+  "test_evidence": {
+    "historical_replay": "PASS in Required CI job 116939601385, 2026-10-16T10:59:40Z",
+    "test_file": "tests/brain-central-social-publication-authority-v1.test.mjs",
+    "run_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/38890794063",
+    "production_readback": "NOT_VERIFIED"
+  }
+}

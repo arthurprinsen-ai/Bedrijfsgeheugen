@@ -1,0 +1,73 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "portal|entrepreneur-autopilot|verified-learning-chain|20261023-v1",
+  "obligation_id": "portal|entrepreneur-autopilot|verified-learning-chain|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4585",
+  "related_incidents": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4358"
+  ],
+  "status": "CANDIDATE",
+  "failure_class": "PORTAL_AUTOPILOT_PROOF_AND_LEARNING_VISIBILITY_GAP",
+  "root_cause": "Canonical Powerhouse differentiates actions, verified outcomes and learning but the owner journey did not project their distinct confidence and causal states together; repeated outcome identities could inflate a naive aggregate.",
+  "observed_evidence": {
+    "source": "portal-v2/entrepreneur-journey-view.js and portal-v2/owner-operating-model.js",
+    "data_kind": "Tenant-scoped owner projection, current Brain operating-loop observability, verified outcome/learning evidence",
+    "independent_real_tenant_outcome_proven": false,
+    "autonomous_execution_proven": false
+  },
+  "failed_approaches": [
+    "Treat proposals as completed actions",
+    "Treat a delivered action as a verified customer business outcome",
+    "Count learning without independent learning evidence and next decision",
+    "Count duplicated outcome IDs multiple times",
+    "Treat old Brain runtime as proof of current autonomous execution"
+  ],
+  "fix": "Read-only autopilot evidence from original tenant-scoped owner model; require outcome ID, healthy source proof and independent verified outcome status, deduplicate exact IDs, then require learning_verified, learning_evidence_refs and next_decision_id for a demonstrated learning chain.",
+  "prevention_rule": "An agent or portal must never report realized customer value or completed autonomous execution from a proposal, approval, deployment, provider ack, stale runtime, demo tenant, duplicate outcome or forecast. A learned decision requires verified outcome, learning proof and a linked next decision; suppress numeric assertions when scope is unproven. Reuse original Brain/Powerhouse/Heartbeat, consent policy and incident register; no extra scheduler, duplicate learning authority or relaxed CI/CodeQL gates.",
+  "tests": [
+    "tests/brain-portal-autopilot-proof-v1.test.mjs",
+    "tests/brain-portal-entrepreneur-goal-home-v1.test.mjs",
+    "tests/brain-trusted-advisor-assurance-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "PORTAL_AUTOPILOT_PROOF_AND_LEARNING_VISIBILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-autopilot-proof-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-autopilot-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-autopilot-proof-v1.test.mjs"
+    ],
+    "invariants": [
+      "Tenant-scoped authenticated state only",
+      "No double counted outcome identity",
+      "No claimed autonomous execution from proposals",
+      "No learning without outcome and learning and next decision"
+    ]
+  },
+  "release": {
+    "status": "NOT_LIVE",
+    "required": [
+      "exact-head hygiene",
+      "Required test",
+      "CodeQL",
+      "Netlify readback",
+      "two real authenticated tenant A/B verifications"
+    ],
+    "verified_production_readback": false
+  }
+}

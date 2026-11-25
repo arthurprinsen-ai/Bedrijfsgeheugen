@@ -12,7 +12,7 @@ test('LinkedIn cockpit autopilot executes only supported evidence-backed post re
 });
 
 test('LinkedIn cockpit autopilot is single-writer and writes provider/outcome evidence',()=>{
-  assert.match(source,/status:['"]dispatching['"]/);
+  assert.match(source,/\.update\(\{status:['"]waiting['"]/);
   assert.match(source,/\.eq\(['"]status['"],['"]suggested['"]\)/);
   assert.match(source,/provider_ack_verified:true/);
   assert.match(source,/powerhouse_record_outcome/);

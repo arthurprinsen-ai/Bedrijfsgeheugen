@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "github|terminal-writer-lease-closure-guard|malformed-shell-duplicate-block|20261022-v1",
+  "obligation_id": "github|terminal-writer-lease-guard-shell-recovery|20261022-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4687",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "GITHUB_ACTIONS_DISABLED_WORKFLOW_MALFORMED_BASH",
+  "observed_evidence": {
+    "workflow": ".github/workflows/powerhouse-terminal-writer-lease-closure-guard.yml",
+    "workflow_id": 361221143,
+    "provider_state": "disabled_manually",
+    "prior_broken_blob_sha": "47070252f8e26766bf68ca863508058871d562cf",
+    "observed_bad_lines": "unclosed grep -Eq active-lease regex at line 26, duplicated shell block beginning at line 65"
+  },
+  "causality_boundary": "Malformed source script is directly observed; exact historical motive for disabling this workflow has not been established.",
+  "root_cause": "A duplicated Bash body left the initial grep expression unterminated and a stray here-string/then later in the script, preventing reliable shell execution.",
+  "fix": "Preserve the existing one-path writer lease/successor/PR-reopen checks, restore one terminated grep guard and eliminate duplicate body. Workflow remains disabled until authenticated protected merge and safe runtime verification.",
+  "prevention_rule": "Every future workflow run-block edit must pass bash -n and branch-safe behavioral regression for unrelated PR no-op plus fail-closed incomplete TERMINAL_DELIVERY and MAIN_SYNC metadata. Never auto-enable a disabled write-capable workflow solely because syntax passes.",
+  "tests": [
+    "tests/brain-terminal-writer-lease-guard-shell-v1.test.mjs"
+  ],
+  "dependencies": [
+    "Protected Required CI and CodeQL exact-head",
+    "Protected merge to main",
+    "Authorized workflow enable only after trigger safety review and real non-destructive readback"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_ACTIONS_DISABLED_WORKFLOW_MALFORMED_BASH",
+    "scope": "GITHUB_WORKFLOW",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Until exact-head Required, CodeQL, protected merge, explicit safe enable, actual permitted event and no-spurious-reopen readback all pass, status remains CANDIDATE_NOT_LIVE.",
+  "evaluation": {
+    "invariants": [
+      "Bash syntax parses",
+      "unrelated closed PR is no-op",
+      "TERMINAL_DELIVERY requires exact lease metadata",
+      "MAIN_SYNC requires exact lease metadata",
+      "reopen mutation path stays single"
+    ],
+    "historical_replay": [
+      "tests/brain-terminal-writer-lease-guard-shell-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-writer-lease-guard-shell-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-writer-lease-guard-shell-v1.test.mjs"
+    ]
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "parent_issue": 4547,
+  "obligation_id": "portal-v2-security-challenge-readback-learning-20261102-v1",
+  "fingerprint": "powerhouse|portal-v2|first-browser-readback-403-then-pass|20261030-v1",
+  "failure_class": "NETLIFY_SECURITY_CHALLENGE_READBACK",
+  "observed_evidence": {
+    "original_release_pr": 5297,
+    "original_prod_sha": "75c4500a4e90afa1f001f748d7081a75e09aa803",
+    "original_netlify_deploy": "6ae89037cf6564e024183391",
+    "original_failed_job": 125303998860,
+    "original_failed_run": 41453415237,
+    "screenshot": "Netlify We are verifying your connection, HTTP 403 on waarde-financiering, challenge ID 01M6E7APG9ASVFSR91TC96BV33",
+    "recheck_success_job": 125306153752,
+    "recheck": "15 passed, 1 skipped on identical immutable published SHA",
+    "provider_heuristic": "UNKNOWN; do not infer precise Netlify risk trigger from HTML challenge",
+    "original_brain_registry": "OBSERVED recurrence count 2 after append-only observation on 2026-11-02"
+  },
+  "root_cause": "The original automated browser received a Netlify security challenge (HTTP403); specific provider threat heuristic is unproven. A generic <400 assertion correctly failed but did not identify the external challenge distinctly for agents.",
+  "fix": "Retain fail-closed HTTP assertion and Netlify security. Add a pure read-only browser-response classifier that emits an explicit provider challenge error while preserving the original failure, allow only authorized original-run independent verification, and update existing original skills and human incident ledger.",
+  "prevention_rules": [
+    "HTTP403 remains a failed assertion, including when it displays a Netlify challenge; never bypass WAF/Identity/SSO or configure stealth/solver cookies.",
+    "Classify only when both HTTP403 and the canonical Netlify challenge text are present; normal errors and spoofed success bodies cannot pass.",
+    "No second scheduler or alternate browser owner; any retry is bounded, exact-source, original protected workflow only.",
+    "Persist original failure and independent recheck as separate evidence; no rewriting historical failure or promoting incident maturity without criteria.",
+    "Do not claim any portal security/UX metric, award or two-tenant success without independent evidence."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-netlify-security-challenge-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-netlify-security-challenge-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-netlify-security-challenge-20261102.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_SECURITY_CHALLENGE_READBACK",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "owner": "original Portal V2 browser release assurance and existing Netlify Security Agent",
+  "regression": "tests/brain-portal-netlify-security-challenge-20261102.test.mjs",
+  "terminal_rule": "Provider readback must remain exact-deploy+SHA; this classification is diagnostics, not a bypass or actual end-user experience proof.",
+  "tests": [
+    "tests/brain-portal-netlify-security-challenge-20261102.test.mjs"
+  ],
+  "evidence": {
+    "original_failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41453415237",
+    "original_failure_artifact": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41453415237/artifacts/13146451551",
+    "subsequent_success_job": 125306153752,
+    "production_deploy": "6ae89037cf6564e024183391",
+    "human_ledger": "docs/development-ledger-events/2026-11-02-portal-netlify-security-challenge-readback-v1.md"
+  }
+}

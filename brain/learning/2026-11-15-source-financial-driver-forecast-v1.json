@@ -1,0 +1,64 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|financial-intelligence|source-driver-forecast-no-invented-net-savings|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "FINANCIAL_SCENARIO_SOURCE_NOT_AUTOMATICALLY_MODELED",
+    "scope": "PORTAL_VALUE_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original authenticated action briefing could render supplied modelled financial forecasts, but did not calculate source-bound four-way scenarios from original financial_model_inputs. Forecast rows, realized values, tenant action proof remain absent in live source. Capability improvement must not be reported as observed customer benefit.",
+  "change": {
+    "original_source": "portal-v2/operating-system/customer-value-briefing.js",
+    "source_model": "portal-v2/operating-system/financial-driver-forecast.js",
+    "existing_skill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+    "new_scheduler": false,
+    "new_database": false,
+    "new_agent": false,
+    "side_effects": false
+  },
+  "prevention": {
+    "no_source_no_eur": true,
+    "source_bound_per_driver": true,
+    "explicit_four_hypotheses": true,
+    "no_action_incremental_zero": true,
+    "capacity_not_cash": true,
+    "costs_and_ramp_must_be_sourced": true,
+    "incremental_margin_not_net_savings": true,
+    "no_realization_claim": true,
+    "original_action_closure_only": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-source-bound-financial-scenario-decision-loop-20261115.test.mjs",
+      "tests/brain-financial-decision-proof-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-source-bound-financial-scenario-decision-loop-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-source-bound-financial-scenario-decision-loop-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_reviewed": true,
+    "model_tested_in_ci": false,
+    "protected_merge": false,
+    "production_live": false,
+    "real_customer_saving_proven": false,
+    "tenant_financial_forecasts_in_production": 0,
+    "tenant_actual_savings_in_production": 0
+  },
+  "semantic_learning": {
+    "cause": "Input drivers were not automatically translated into differentiated case forecasts. A staff-capacity valuation could be mistaken for saved cash.",
+    "prevention_rule": "Require source-backed action/tenant/baseline/period and every financial driver plus human-defined source-backed downside/base/upside before producing modeled net EUR; never close without independently observed actual/cost/counterfactual.",
+    "regression_guard": "tests/brain-source-bound-financial-scenario-decision-loop-20261115.test.mjs",
+    "next_owner": "Original tenant data ingress + Company Intelligence OS / ONE BRAIN / Heartbeat",
+    "effect_proof": "PROTECTED_TEST_AND_INDEPENDENT_PRODUCTION_READBACK_DUE"
+  }
+}

@@ -31,8 +31,11 @@ test('portal loads the parity stylesheet',()=>{
 });
 
 test('final coherence pass runs in production and deploy preview builds',()=>{
-  const uses=netlify.match(/finalize-website-coherence-v1\.mjs/g)||[];
+  // Production and deploy-preview share the build entry; it owns the final coherence phase.
+  const uses=netlify.match(/node tools\/ci\/netlify-build-entry\.mjs/g)||[];
   assert.ok(uses.length>=2);
+  const entry=readFileSync('tools/ci/netlify-build-entry.mjs','utf8');
+  assert.match(entry,/\['website-coherence','tools\/site-shell\/finalize-website-coherence-v1\.mjs'\]/);
 });
 
 test('pricing composer preserves canonical visual-regression hero hooks',()=>{
@@ -41,7 +44,6 @@ test('pricing composer preserves canonical visual-regression hero hooks',()=>{
   assert.match(pricing,/class="bgkruim"/);
   assert.match(pricing,/class="choice pil"/);
 });
-
 
 test('product proposition is contextual rather than internal implementation copy',()=>{
   assert.doesNotMatch(finalizer,/Website en portaal vertellen voortaan exact hetzelfde verhaal/);
@@ -81,8 +83,6 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
   assert.match(portalCss,/overflow:hidden/);
 });
 
-
-
 test('product page keeps one primary hero and embeds Powerhouse model in context',()=>{
   const productTruth=finalizer.match(/const productTruth=`([\s\S]*?)`;/);
   assert.ok(productTruth,'canonical Dutch product truth block must exist');
@@ -93,7 +93,6 @@ test('product page keeps one primary hero and embeds Powerhouse model in context
   assert.match(finalizer,/legacySection/);
   assert.match(finalizer,/firstSection/);
 });
-
 
 test('final pixel polish locks pricing, header and responsive portal geometry',()=>{
   const portalCss=readFileSync('portal-v2/site-parity-v1.css','utf8');
@@ -107,20 +106,19 @@ test('final pixel polish locks pricing, header and responsive portal geometry',(
   assert.match(portalCss,/\.kpis\{grid-template-columns:1fr!important\}/);
 });
 
-test('terminal product hero visibility is enforced independently of compositor classes',()=>{
-  assert.match(finalizer,/ensureProductHeroVisibility/);
-  assert.match(finalizer,/bg-product-hero-visibility-invariant/);
-  assert.match(finalizer,/visibility:visible!important/);
-  assert.match(finalizer,/opacity:1!important/);
-});
-
-test('key route metadata survives terminal build',()=>{
-  assert.match(finalizer,/\/pakketadvies/);
-  assert.match(finalizer,/Welk Powerhouse-pakket past bij mij\?/);
-  assert.match(finalizer,/Interactieve Powerhouse portaal-demo/);
-  assert.match(finalizer,/Kosten digitalisering mkb \| Powerhouse prijzen/);
-  assert.match(finalizer,/ensureRouteMetadata/);
-  assert.match(finalizer,/og:title/);
-  assert.match(finalizer,/twitter:title/);
+test('key route metadata is source-owned and the finalizer no longer rewrites it',()=>{
+  // cb18f875 retired the finalizer's metadata/hero rewriting; the route sources own title, description and canonical.
+  const routes={
+    'prijzen.html':['Kosten digitalisering mkb | Powerhouse prijzen','/prijzen'],
+    'pakketadvies.html':['Welk Powerhouse-pakket past bij mij? | Bedrijfsgeheugen','/pakketadvies'],
+    'portaal-demo.html':['Interactieve Powerhouse portaal-demo | Bedrijfsgeheugen','/portaal-demo']
+  };
+  for(const [file,[title,route]] of Object.entries(routes)){
+    const html=readFileSync(file,'utf8');
+    assert.ok(html.includes('<title>'+title+'</title>'),file+' title');
+    assert.match(html,/<meta name="description" content="[^"]{40,}"/,file+' description');
+    assert.ok(html.includes('<link rel="canonical" href="https://www.bedrijfsgeheugen.nl'+route+'">'),file+' canonical');
+  }
+  assert.doesNotMatch(finalizer,/ensureRouteMetadata|ensureProductHeroVisibility/);
 });
 

@@ -17,9 +17,12 @@ export function selectBlocked(runtime = {}) {
 }
 
 export function selectValueLeakage(runtime = {}) {
-  const expected = Number(runtime?.economics?.expectedValue) || 0;
-  const realized = Number(runtime?.economics?.realizedValue) || 0;
-  return Math.max(0, expected - realized);
+  const measured = value => (typeof value === 'number' && Number.isFinite(value)) || (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value)));
+  const expected = runtime?.economics?.expectedValue;
+  const realized = runtime?.economics?.realizedValue;
+  // Missing or unverified measurements must not become a fabricated €0 gap.
+  if (!measured(expected) || !measured(realized)) return null;
+  return Math.max(0, Number(expected) - Number(realized));
 }
 
 export function decisionById(runtime = {}, decisionId) {

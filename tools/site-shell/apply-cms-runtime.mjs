@@ -6,10 +6,20 @@ const targets=[
   ...fs.readdirSync(root,{withFileTypes:true}).filter(e=>e.isFile()&&e.name.endsWith('.html')).map(e=>path.join(root,e.name))
 ];
 
-for(const dirName of ['blog','en','pages','portal','portal-next']){
+for(const dirName of ['blog','en','pages','portal','portal-next','kennis','behoeftecheck','openai-ai-modellen','claude-ai-modellen','gemini-ai-modellen','mistral-ai-modellen','amazon-ai-modellen','chatgpt-vs-claude','chatgpt-vs-gemini','claude-vs-gemini']){
   const dir=path.join(root,dirName);
   if(fs.existsSync(dir))walk(dir,targets);
 }
+
+const mobileUiStyle='<style id="bg-sitewide-mobile-ui-20261111">\n'+fs.readFileSync(path.join(root,'assets/sitewide-mobile-ui-20261111.css'),'utf8')+'\n</style>';
+const mobileUiScript='<script src="/assets/sitewide-mobile-ui-20261111.js?v=20261111b" defer data-bg-sitewide-mobile-ui="1"></script>';
+
+const appManifest='<link rel="manifest" href="https://www.bedrijfsgeheugen.nl/portal-v2/app.webmanifest" data-bg-app-manifest="1">';
+const appStyle='<style id="bg-app-experience-20261112">@import url("/assets/bg-app-experience.css?v=20261118-wa-dock");</style>';
+const appScript='<script src="/assets/bg-app-experience.js?v=20261112" defer data-bg-app-experience="1"></script>';
+const appIphone='<meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Bedrijfsgeheugen">';
+const appIcon='<link rel="apple-touch-icon" href="https://www.bedrijfsgeheugen.nl/apple-touch-icon.png">';
+
 
 let changed=0,covered=0;
 for(const file of [...new Set(targets)]){
@@ -17,10 +27,33 @@ for(const file of [...new Set(targets)]){
   let html=fs.readFileSync(file,'utf8');
   if(!/<\/head>/i.test(html))continue;
   covered++;
-  if(html.includes('/assets/cms-runtime.js'))continue;
-  html=html.replace(/<\/head>/i,'<script src="/assets/cms-runtime.js" defer data-bg-cms-runtime="1"></script>\n</head>');
-  fs.writeFileSync(file,html);
-  changed++;
+  const before=html;
+  if(!html.includes('/assets/cms-runtime.js')){
+    html=html.replace(/<\/head>/i,'<script src="/assets/cms-runtime.js" defer data-bg-cms-runtime="1"></script>\n</head>');
+  }
+  if(!html.includes('/assets/mobile-viewport-cleanup.js')){
+    html=html.replace(/<\/head>/i,'<script src="/assets/mobile-viewport-cleanup.js?v=20261015" defer data-bg-mobile-fix="1"></script>\n</head>');
+  }
+  // Public pages share one header/menu/CTA/slider repair, including nested /kennis.
+  // Keep portal/authenticated applications isolated from marketing-site CSS.
+  const rel=path.relative(root,file).replaceAll(path.sep,'/');
+  const publicPage=!/^(?:portal|portal-next|portal-v2|intern)\//.test(rel);
+  if(publicPage){
+    if(!html.includes('id="bg-sitewide-mobile-ui-20261111"')){
+      html=html.replace(/<\/head>/i,mobileUiStyle+'\n</head>');
+    }
+    if(!html.includes('data-bg-sitewide-mobile-ui=')){
+      html=html.replace(/<\/head>/i,mobileUiScript+'\n</head>');
+    }
+    // One installable app identity for every public page, without duplicating
+    // the original public header or the authenticated portal nav.
+    if(!html.includes('data-bg-app-manifest='))html=html.replace(/<\/head>/i,appManifest+'\n</head>');
+    if(!html.includes('id="bg-app-experience-20261112"'))html=html.replace(/<\/head>/i,appStyle+'\n</head>');
+    if(!html.includes('data-bg-app-experience='))html=html.replace(/<\/head>/i,appScript+'\n</head>');
+    if(!html.includes('name="apple-mobile-web-app-capable"'))html=html.replace(/<\/head>/i,appIphone+'\n</head>');
+    if(!html.includes('rel="apple-touch-icon"'))html=html.replace(/<\/head>/i,appIcon+'\n</head>');
+  }
+  if(html!==before){fs.writeFileSync(file,html);changed++;}
 }
 
 const inventory={

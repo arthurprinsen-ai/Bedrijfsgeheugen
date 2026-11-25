@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_PROTECTED_RELEASE_RUNTIME_READBACK_DUE",
+  "fingerprint": "powerhouse|heartbeat|data-spine-10m-watchdog-missing-native-decision-stage|20261105-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing powerhouse_data_spine_watchdog_v1 / original powerhouse-runtime-scheduler-mux-v1",
+  "failure_class": "CROSS_CADENCE_STAGE_EVIDENCE_STALE",
+  "root_cause": "Original active data-spine watchdog executes source health and writes its action/outcome/learning/guard stage receipts each ten-minute natural mux run after prior migration 20261105132000, but it omitted the decision stage. Decision was only sourced from the historical regression-stage-evidence bridge at 30-minute cadence. The original strict 15-loop assurance has required stages input,decision,action,readback,outcome,measurement,learning,guard and a ten-minute source freshness contract; thus a correctly healthy live data spine persisted AMBER because stale decision did not meet cadence. Source evidence 13:44 UTC: watchdog action,guard,outcome,learning 13:41; measurement/readback 13:41; input 13:44; decision last 12:51.",
+  "evidence": {
+    "source_observed_at_utc": "2026-11-05T13:44:13Z",
+    "data_spine_loop_status": "AMBER",
+    "missing_stages": [
+      "decision"
+    ],
+    "last_decision_utc": "2026-11-05T12:51:06Z",
+    "last_original_guard_utc": "2026-11-05T13:41:00Z",
+    "guard_pass": true,
+    "guard_unhealthy_sources": 0,
+    "original_runtime_health": {
+      "total_loops": 15,
+      "green": 8,
+      "amber": 3,
+      "red": 4
+    },
+    "independent_business_impact_proven": false
+  },
+  "fix": "Edit ONLY existing original powerhouse_data_spine_watchdog_v1 original SQL function on protected Supabase migration: write the typed decision on the SAME 10-minute natural source-health execution with exact original v_gaps, and original observer time. Existing original source, original stage table, Guard, RLS/ACL, five-minute mux and original publication unchanged. Reason: VERIFIED_NO_SOURCE_REPAIR_REQUIRED when v_gaps=0; ORIGINAL_SOURCE_REPAIR_REQUIRED when >0; never promote business/user outcome, customer outcome flag remains false and source guard remains v_gaps=0.",
+  "prevention_rule": "When a loop has an independent source cadence, its decision must come from that SAME original source execution, not a slower auxiliary scheduler; keep all eight real required stages, independently verify health and task receipt. Retain existing bridge as historic crosscheck. A valid no-op is not an applied customer improvement; source-state GREEN is not autonomous revenue or publication GREEN.",
+  "tests": [
+    "tests/brain-original-data-spine-decision-same-tick-20261105.test.mjs",
+    "tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-data-spine-decision-same-tick-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-data-spine-decision-same-tick-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-data-spine-decision-same-tick-20261105.test.mjs"
+    ],
+    "invariants": [
+      "one existing source owner",
+      "no new cron or table or publisher",
+      "source checked at original p_now",
+      "same timestamp in decision",
+      "unhealthy source never false green",
+      "no invented customer conversion or causal lift",
+      "service_role-only SQL function",
+      "protected release and natural runtime readback"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN",
+    "failure_class": "CROSS_CADENCE_STAGE_EVIDENCE_STALE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected Required/CodeQL/backend/native preview and merge, applied original production migration, pg_get_functiondef source readback, next natural old mux data-spine watchdog with decision observedAt equal source action/guard at exact same tick and actual original 15-loop GREEN for data-spine. Other revenue/publishing/customer loops remain EVIDENCE_DUE."
+}

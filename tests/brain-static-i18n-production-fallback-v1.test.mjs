@@ -7,8 +7,8 @@ test('offline static i18n preserves cached English and falls back only for missi
   assert.match(source,/STATIC_I18N_PARTIAL_CACHE_FALLBACK/);
   assert.match(source,/return result;/);
   assert.match(source,/allowMissing:!productionTranslationRequired/);
-  assert.match(source,/missingForRoute\.length === 0/);
-  assert.match(source,/runtimeFallback:untranslatedRefs > 0/);
+  assert.match(source,/missingForRoute\.length\s*===?\s*0/);
+  assert.match(source,/runtimeFallback:!translations \|\| aggregate\.untranslatedRefs > 0/);
   assert.doesNotMatch(source,/STATIC_I18N_OFFLINE_RELEASE English generation skipped/);
 });
 

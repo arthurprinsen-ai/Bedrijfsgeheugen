@@ -1,0 +1,8 @@
+# 2026-11-14 original terminal BRAIN complete-flight gate — append-only event
+
+- **Observed:** original PR #5816 exact head `a078ccb25704b0f06807b0f711713fd09aa11ffa`; merged main `9d392cec435718a222b6db059a23f6bcc19fa9f0`; Netlify current READY deployment `6af8d0f34804e03e57347f67`. Original terminal run `43642425605` cancelled during the final BRAIN evidence gate. No terminal success claim and no consumer innovation ACK.
+- **Failure mode:** terminal first guard already used complete, bounded native main-indexed BRAIN flight lookup, but final gate fell back to nonpaginated first 100 matching workflow_dispatch runs. Its inference cannot safely distinguish no flight from a flight older than the first page.
+- **Owner and change:** modify only the existing `obligation-terminal-closure.yml` final native readback, reuse existing `originalBrainFlightSince` + `brain-verification-flight-index.mjs`; no second schedule, agent, queue, consumer or separate state store.
+- **Prevention:** test the real final gate (not merely the earlier dispatch step) against 205 main-indexed runs with the exact candidate flight in the second page. Reject partial/native provider failure and enforce exact-source, completed-success and protected main.
+- **Skill / BRAIN:** original `powerhouse-post-merge-codeql` skill and new OBSERVED `brain/learning/2026-11-14-original-terminal-brain-full-flight-consumer-v1.json`; original incident #4198 remains the common owner.
+- **Evidence due:** protected exact-head Required, full BRAIN, CodeQL, merge and original terminal replay; producer release/code deployment does not prove source-bound innovation consumption. Native original 14 planned intakes, 14 open delivery obligations, 0 genuine ACK stay pending.

@@ -43,3 +43,33 @@ test('profile analysis preserves the legacy benchmark radar and next-level value
   const source=fs.readFileSync(new URL('../modules/company-input.js',import.meta.url),'utf8');
   for(const marker of ['Profiel tegenover de bovenste 25%','Alles in één beeld','Wat een niveau erbij oplevert','profileRadarSvg','nextLevelBenefits']) assert.ok(source.includes(marker),marker);
 });
+
+
+test('missing customer inputs are unknown, never the legacy 24 people, €52 rate or level 2',()=>{
+ const noData=profileOverviewMetrics({});
+ for(const field of ['averageMaturity','weeklyManualHours','annualManualHours','annualManualCost','fteLost'])assert.equal(noData[field],null,field);
+ assert.equal(noData.evidenceStatus,'INCOMPLETE_CUSTOMER_INPUTS');
+ const partial=profileOverviewMetrics({portal:{profile:{employees:30,hourlyCost:80,maturity:{finance:4}}}});
+ assert.equal(partial.averageMaturity,null);
+ assert.equal(partial.annualManualCost,null);
+});
+test('explicit zero hourly input is not silently replaced by a model default',()=>{
+ const known={portal:{profile:{employees:24,hourlyCost:0,maturity:Object.fromEntries(PROFILE_DIMENSIONS.map(item=>[item.id,4]))}}};
+ const missing=profileOverviewMetrics(known);
+ assert.equal(missing.evidenceStatus,'INCOMPLETE_CUSTOMER_INPUTS');
+ assert.equal(missing.annualManualCost,null);
+});
+test('complete explicitly entered profile is model-derived, not measured cash saving',()=>{
+ const state={portal:{profile:{employees:15,hourlyCost:61,maturity:Object.fromEntries(PROFILE_DIMENSIONS.map(item=>[item.id,4]))}}};
+ const m=profileOverviewMetrics(state);
+ assert.equal(m.evidenceStatus,'MODEL_ESTIMATE_FROM_ENTERED_INPUTS');
+ assert.ok(m.annualManualHours>=0);
+ assert.ok(m.annualManualCost>=0);
+ assert.equal(m.capacityNotCash,true);
+});
+test('overview refuses fake maturity stages for partial input',async()=>{
+ const {legacyOverviewInsights,overviewViewModel}=await import('../modules/overview.js');
+ const incomplete={portal:{profile:{employees:10,hourlyCost:66,maturity:{finance:3}}}};
+ assert.equal(legacyOverviewInsights(incomplete),null);
+ assert.equal(overviewViewModel(incomplete),null);
+});

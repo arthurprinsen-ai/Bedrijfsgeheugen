@@ -2,6 +2,12 @@
   "version": "BRAIN-CHAT-LEARNING-v1",
   "preflightRequired": true,
   "newAgentsMustReadBeforeExecution": true,
+  "preflightBudget": {
+    "maxSources": 128,
+    "maxBytes": 256000,
+    "primaryBound": "maxBytes",
+    "sourceCountPurpose": "bounded filesystem fanout safety"
+  },
   "purpose": "Indexeer chat-afgeleide engineeringkennis en blokkeer herhaling van bekende fouten voordat een agent materieel werk uitvoert.",
   "canonicalSources": [
     "docs/learning/chat-learning-checkpoint-2026-08-30.md",

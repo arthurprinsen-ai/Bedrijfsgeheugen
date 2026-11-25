@@ -1,0 +1,10 @@
+# 2026-11-03 — originele social content-loop HTTP500 na preventieve preflight
+
+- **Doel en autorisatie:** oorspronkelijke ONE BRAIN/Powerhouse/Heartbeat social- en blogloop volledig autonoom waar veilig, zonder tweede scheduler/writer, provider consent bypass, vervalste post, approval of groen.
+- **Productiebewijs:** originele `powerhouse-content-loop` Edge v567; verzoeken 2026-11-03 16:14:35Z en 16:19:39Z retourneerden HTTP500; console `CONTENT_LOOP_ERROR DB_TABLE_REJECTED:powerhouse_instagram_media_jobs_v1`; originele ONE BRAIN `content-closed-loop:2026-11-03` werd BLOCKED/CONTENT_LOOP_INTERNAL_ERROR. Cron #140 scheduler had eerdere geslaagde **enqueue**, geen bewezen Edge-resultaat.
+- **Bronoorzaak:** reeds gemergede PR #5375 vroeg in dezelfde loop de originele mediajob op zonder uitbreiding van het beperkte `DIRECT_TABLES`-register.
+- **Bronherstel:** PR #5376 voegt uitsluitend de mediajob toe als leesbare tabel in DirectQuery, waarbij SELECT de enige toegestane operatie is. De originele Mira-mediajob en producerclaim behouden exclusief schrijfrecht; geen productie-autorisatie gewijzigd.
+- **Borging:** targeted dependency-free test, historische replay/shadow/canary machine learning, bestaande social recovery skill, documentatie. Alle oorspronkelijke controles (vereist CI, CodeQL, beschermde merge en Edge source parity) verplicht.
+- **Afsluitcriteria:** originele Edge-variant nieuw gedeployed, exacte bronversie en eerstvolgende natuurlijke #140 Edge HTTP200/409 zonder `CONTENT_LOOP_INTERNAL_ERROR`, typed `result.preventive` readback in ONE BRAIN, 4 externe kanaalposten pas live na onafhankelijk providerbewijs. Kanalen blijven 1/4, blokkaderegistraties 24 totdat brononderzoek anders bewijst.
+- **Open claims:** geen live-herstel, geen automatisch goedgekeurde Mira 0.900<0.940, geen onterecht blog-`approved_at`, geen duplicate LinkedIn-post.
+- **Issue/PR:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198 / https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5376

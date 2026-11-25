@@ -1,0 +1,44 @@
+{
+  "id": "terminal-current-main-control-plane-v1",
+  "date": "2026-10-08",
+  "status": "PENDING_PROTECTED_DELIVERY",
+  "fingerprint": "powerhouse|terminal-closure|current-main-control-plane-historical-merge|v1",
+  "root_cause": "After PR #4123 protected-merged the exact Supabase migration resolver, a new canonical workflow_dispatch terminal closure for historic merged PR #4118 failed at the identity step: actions/checkout used #4118's 99013007 merge SHA, which did not yet contain tools/delivery/terminal-migration-identity.mjs imported by the newer terminal workflow.",
+  "intervention": "Checkout the immutable GitHub workflow invocation SHA on protected main for terminal control-plane execution. Continue verifying the historic PR's original candidate HEAD, merge SHA, required/CodeQL checks, migration versions, provider readback and production evidence; add explicit ancestor containment of the historical merge within the checked-out control-plane revision.",
+  "prevention": "Do not execute evolving terminal control-plane code from historical PR merge commits. The control plane is the immutable current-main invocation revision; the earlier candidate head and merge SHA are read-only evidence identifiers, verified for containment.",
+  "compiler": {
+    "failure_class": "TERMINAL_STALE_HISTORICAL_CHECKOUT",
+    "scope": "GITHUB_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/37757904129",
+    "failing_step": "Verify machine-readable obligation and main containment",
+    "error": "ERR_MODULE_NOT_FOUND tools/delivery/terminal-migration-identity.mjs",
+    "original_pr": 4118,
+    "original_merge_sha": "99013007ea1b8fe062e5c96ec3c710d760ddcfe6",
+    "fixed_helper_merged_by_pr": 4123,
+    "production_migrated_and_natural_heartbeat": true,
+    "no_production_mutation": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ],
+    "success_criteria": [
+      "Protected Required+CodeQL and protected merge of control-plane fix",
+      "Single current-main terminal rerun for original PR #4118 succeeds with no missing imports",
+      "All original provider and production readback gates stay mandatory"
+    ]
+  },
+  "production_claim": "NOT_PROVEN",
+  "outcome": "PROTECTED_DELIVERY_PENDING"
+}

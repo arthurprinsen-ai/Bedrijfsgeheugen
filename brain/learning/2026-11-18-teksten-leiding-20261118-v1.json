@@ -1,0 +1,40 @@
+{
+  "fingerprint": "site|rituals|teksten-leiding|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|teksten-leiding|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 7,
+    "security_sensitive": false
+  },
+  "root_cause": "Een opdracht om teksten te laten werken met FOMO en leiderschap botst met het vastgelegde besluit (geen nep-schaarste) en het SEO-beleid (geen marktleider-claims). Zonder die besluiten eerst te lezen was de verkeerde vertaling ontstaan: schaarste in plaats van eerlijk verlies.",
+  "correction": "Leiderschap vertaald naar de lezer die de leiding houdt, FOMO naar eerlijk verlies; vastgelegd in een test die schaarste, marktleider en uitroeptekens blokkeert.",
+  "prevention": [
+    "Lees bij tekstopdrachten eerst Merkrichting en config/seo-optimization-allowlist.json; benoem de vertaling van FOMO en leiderschap voordat je schrijft.",
+    "Wijzig tekst, tests en EN-variant in dezelfde PR; titel en meta alleen met meting."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "tools/site-shell/apply-daily-steering-positioning.mjs",
+      "assets/rituals-beleving.js"
+    ],
+    "outcome": "Lokaal: steering-tests groen. Live-readback open."
+  }
+}

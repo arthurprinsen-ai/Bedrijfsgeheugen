@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "measurement|linkedin-personal|company-auth-required-blocks-personal|20261029-v1",
+  "fingerprint": "measurement|linkedin-personal|company-auth-required-blocks-personal|20261029-v1",
+  "compiler": {
+    "failure_class": "PROVIDER_PROOF_STATUS_TOO_STRICT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "root_cause": "powerhouse-composio-linkedin-setup schrijft COMPANY_AUTH_REQUIRED wanneer alleen het persoonlijke profiel geverifieerd is. bg-social-metrics-sync eiste status ACTIVE voor beide toolkits, waardoor de persoonlijke reactie-uitlezing sinds 27 oktober faalde met LINKEDIN_VERIFIED_PROVIDER_PROOF_REQUIRED terwijl het profiel gezond was.",
+  "fix": "Persoonlijke LinkedIn-uitlezing is toegestaan bij COMPANY_AUTH_REQUIRED mits personal_ready, ready en health_verified waar zijn. Instagram ongewijzigd. De bedrijfsstatus komt uit de Windsor-rijen linkedin_company_account_provider.",
+  "prevention_rule": "Een meetpoort mag zijn toelatingsstatus niet strenger maken dan de status die de bijbehorende setup voor die capability schrijft; elk kanaal en elke capability (persoonlijk, bedrijf) heeft een eigen bewijs.",
+  "tests": [
+    "tests/brain-social-metrics-linkedin-personal-binding-20261029.test.mjs",
+    "tests/brain-social-metrics-verified-binding-20261019.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-metrics-linkedin-personal-binding-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-metrics-verified-binding-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-metrics-linkedin-personal-binding-20261029.test.mjs"
+    ],
+    "invariants": [
+      "COMPANY_AUTH_REQUIRED geldt nooit voor Instagram",
+      "ready en health_verified blijven verplicht voor beide kanalen"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

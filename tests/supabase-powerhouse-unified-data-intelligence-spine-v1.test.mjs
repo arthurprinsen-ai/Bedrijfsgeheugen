@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918095000_powerhouse_unified_data_intelligence_spine_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260918095000_powerhouse_unified_data_intelligence_spine_v1.sql','utf8');
 
 test('one canonical source-observation intake is idempotent and service-only',()=>{
   assert.match(sql,/powerhouse_record_source_observation_v1/);
@@ -66,7 +66,7 @@ test('portal evidence keeps tenant payload and source timestamps',()=>{
 });
 
 test('portal runtime freshness may use an explicit no-change heartbeat without changing source timestamps',()=>{
-  const heartbeat=fs.readFileSync('supabase/migrations/20260918102000_powerhouse_data_spine_heartbeat_truth_v1.sql','utf8');
+  const heartbeat=fs.readFileSync('supabase/migration-history/repository-only/20260918102000_powerhouse_data_spine_heartbeat_truth_v1.sql','utf8');
   assert.match(heartbeat,/portal-state-runtime-heartbeat/);
   assert.match(heartbeat,/'heartbeat_only',true/);
   assert.match(heartbeat,/'customer_state_changed',false/);

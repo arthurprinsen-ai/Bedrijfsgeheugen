@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const read=path=>fs.readFileSync(new URL('../'+path,import.meta.url),'utf8');
 
 test('CMS database authority is private-by-default and versioned',()=>{
-  const sql=read('supabase/migrations/20261002180500_canonical_cms_website_portal_v1.sql');
+  const sql=read('supabase/migration-history/repository-only/20261002180500_canonical_cms_website_portal_v1.sql');
   assert.match(sql,/create table if not exists public\.cms_content_items/i);
   assert.match(sql,/create table if not exists public\.cms_content_revisions/i);
   assert.match(sql,/alter table public\.cms_content_items enable row level security/i);
@@ -44,11 +44,14 @@ test('CMS runtime and admin surface are wired into the build',()=>{
   const runtime=read('assets/cms-runtime.js');
   const admin=read('assets/cms-admin.js');
   const toml=read('netlify.toml');
+  const runner=read('tools/ci/netlify-build-entry.mjs');
   assert.match(runtime,/\/api\/cms-public/);
   assert.match(runtime,/sanitizeHtml/);
   assert.match(admin,/\/api\/cms-admin/);
   assert.match(admin,/startPick/);
-  assert.match(toml,/apply-cms-runtime\.mjs/);
+  assert.match(runner,/apply-cms-runtime\.mjs/);
+  assert.match(toml,/\[build\][\s\S]*command = "node tools\/ci\/netlify-build-entry\.mjs"/);
+  assert.match(toml,/\[context\.deploy-preview\][\s\S]*command = "node tools\/ci\/netlify-build-entry\.mjs"/);
 });
 
 test('CMS admin route is excluded from public shell projection',()=>{

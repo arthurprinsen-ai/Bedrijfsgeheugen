@@ -1,0 +1,27 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "supabase|migration-registry-remote-version-missing-locally|20261027-v1",
+  "obligation_id": "registry-alignment-link-owner-20261027",
+  "failure_class": "SUPABASE_MIGRATION_REGISTRY_DRIFT",
+  "root_cause": "An earlier direct apply registered migration version 20261027170326 in production without a matching repo file, so the Supabase GitHub integration refused to deploy edge functions. The company link also reused a previous test user id from the stored state record.",
+  "observed_evidence": {
+    "actual_sources": [
+      "supabase/migrations/20261027170326_news_approved_contacts_first_v1.sql",
+      "supabase/functions/powerhouse-composio-linkedin-setup/index.ts"
+    ],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Repo file with the same idempotent definition for the registered version; company link always bound to bedrijfsgeheugen-owner.",
+  "prevention_rule": "Every migration applied directly to production must have a repo file with the same version before the next deploy is attempted.",
+  "tests": ["tests/brain-registry-alignment-and-link-owner-20261027.test.mjs"],
+  "compiler": {"failure_class": "SUPABASE_MIGRATION_REGISTRY_DRIFT", "scope": "DEPLOY_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": true},
+  "evaluation": {
+    "historical_replay": ["tests/brain-registry-alignment-and-link-owner-20261027.test.mjs"],
+    "shadow": ["tests/brain-registry-alignment-and-link-owner-20261027.test.mjs"],
+    "canary": ["tests/brain-registry-alignment-and-link-owner-20261027.test.mjs"]
+  },
+  "terminal_rule": "After merge, the edge deploy succeeds and create_personal_link returns a redirect_url."
+}

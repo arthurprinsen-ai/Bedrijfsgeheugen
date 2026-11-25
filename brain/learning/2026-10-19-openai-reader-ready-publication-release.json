@@ -1,0 +1,39 @@
+{
+  "date": "2026-10-19",
+  "obligation": "content-publication:2026-10-19:blog",
+  "fingerprint": "openai_blog_daily_reader_ready_source|protected_candidate|2026-10-19",
+  "root_cause": "The original 19 October blog was a draft with internal publication instructions, despite having status content_ready. PR #4483 was closed before merge.",
+  "intervention": "Replace the non-public source in canonical Supabase with verified reader-ready, source-linked entrepreneur copy; render only through the existing dated protected Powerhouse publisher and OpenAI-only NL-to-EN cache; prevent recurrence with merged reader-ready gate PR #4484.",
+  "prevention": "Block instructions or draft markers from public copy; require complete approved English cache, exact-source Required CI/CodeQL, protected merge and Netlify public readback before LIVE_PROVEN.",
+  "compiler": {
+    "failure_class": "UNAPPROVED_EDITORIAL_COPY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "BLOG_READER_READY_NO_EDITORIAL_INSTRUCTIONS_V1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-blog-i18n-prepublish.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "source": "supabase:canonical:powerhouse_content_artifacts:2026-10-19:blog",
+    "live_blog_verified": false,
+    "protected_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4485",
+    "reader_ready_gate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4484",
+    "ai_provider": "OpenAI Responses"
+  },
+  "status": "CANDIDATE_AWAITING_REQUIRED_CI_AND_LIVE_READBACK",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4485",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39293718130"
+  ]
+}

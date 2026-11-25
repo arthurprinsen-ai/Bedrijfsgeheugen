@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-14",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|terminal|post-dispatch-brain-final-gate-first-page-truncation|20261114-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "TERMINAL_EVIDENCE_HANDOFF_GAP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs"
+    ]
+  },
+  "root_cause": "The existing original terminalizer first dispatches/checks exact native PR-era BRAIN verification using complete pagination and source time, but later require_workflow('unified-brain-delivery.yml') used only the first 100 most recent main-indexed dispatch runs, a different readback oracle. A valid exact original BRAIN flight can therefore become unfindable in the last acceptance gate. PR #5816 terminal job spent its last step in this final gate before cancellation; the cancellation's external trigger is not independently determined.",
+  "production_observation": {
+    "original_pr": 5816,
+    "original_candidate_sha": "a078ccb25704b0f06807b0f711713fd09aa11ffa",
+    "original_merge_sha": "9d392cec435718a222b6db059a23f6bcc19fa9f0",
+    "github_terminal_run": 43642425605,
+    "terminal_state": "CANCELLED",
+    "cancelled_step": "Verify exact-candidate BRAIN before terminal claim",
+    "netlify_deploy": "6af8d0f34804e03e57347f67",
+    "netlify_state": "READY",
+    "native_original_innovation_intakes": 14,
+    "independent_innovation_consumer_acks": 0,
+    "original_innovation_obligations_open": 14
+  },
+  "change": {
+    "same_existing_terminal_workflow": ".github/workflows/obligation-terminal-closure.yml",
+    "same_flight_index": "tools/delivery/brain-verification-flight-index.mjs",
+    "same_post_merge_skill": ".agents/skills/powerhouse-post-merge-codeql/SKILL.md",
+    "new_scheduler": false,
+    "new_worker": false,
+    "new_queue": false,
+    "new_store": false,
+    "authorized_native_dispatch_only": true
+  },
+  "prevention": {
+    "terminal_acceptance_reuses_exact_pr_era_since": true,
+    "all_provider_pages_required": true,
+    "provider_cap1000_fails_closed": true,
+    "exact_pr_and_head_title": true,
+    "original_run_id_required": true,
+    "original_success_required": true,
+    "protected_main_source_required": true,
+    "does_not_fabricate_external_agent_ack": true,
+    "does_not_create_duplicate_verification_flight": true
+  },
+  "remaining_evidence": "Protected Required/CodeQL/BRAIN and merge required, then independently verify true exact-head BRAIN terminal run and original production readback. Existing innovation owner intakes still need actual claim/effect/learning; not fixed by terminal evidence pagination.",
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evidence": {
+    "observed_source": "native GitHub Actions run 43642425605 job 132592694559 logs; repository default main original .github/workflows/obligation-terminal-closure.yml and tools/delivery/brain-verification-flight-index.mjs",
+    "run_cancelled": "2026-11-14T21:34:12Z",
+    "step_with_first_page_only_query": "require_workflow unified-brain-delivery.yml used runs?branch=main&event=workflow_dispatch&per_page=100 and nonpaginated gh api",
+    "canonical_prior_dispatch_query": "created PR-era + gh api --paginate --slurp + brain-verification-flight-index.mjs",
+    "regression": "tests/brain-terminal-canonical-verify-only-dispatch-20261102.test.mjs",
+    "independent_production_terminal_readback": "NOT_YET_PROVEN"
+  }
+}

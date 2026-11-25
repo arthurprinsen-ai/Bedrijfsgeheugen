@@ -16,7 +16,7 @@ const clone=x=>structuredClone(x);
 test('maturity change propagates to all causally dependent portal surfaces',()=>{
   const after=clone(base);after.portal.profile.maturity.sturing=4;
   const impact=impactForMutation({path:'portal.profile.maturity.sturing',before:base,after});
-  assert.equal(PORTAL_IMACT_ENGINE_VERSION_SAFE(), '2026-09-18-v3-whole-portal-causal');
+  assert.equal(PORTAL_IMACT_ENGINE_VERSION_SAFE(), '2026-10-08-v4-one-brain-all-pages');
   for(const page of ['profiel','overzicht','businesscase','data-ai','onderzoek','advies','roadmap']) assert.ok(impact.affectedPages.includes(page),page);
   for(const calc of ['manual-work-annual','dimension-cost-total','dimension-potential-total','fte-lost','benefit-at-target-maturity']) assert.ok(impact.changes.some(x=>x.id===calc),calc);
   assert.ok(impact.effectRules.some(x=>x.kind==='maturity'));

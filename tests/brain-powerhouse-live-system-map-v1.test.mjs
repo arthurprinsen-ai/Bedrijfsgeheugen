@@ -49,18 +49,22 @@ test('all future agents are contractually required to register in the live Syste
   assert.match(continuitySkill,/SYSTEM_MAP_WRITEBACK_INCOMPLETE/);
 });
 
-test('admin observability endpoint projects System Map and portal renders it first',async()=>{
+test('admin observability endpoint projects System Map and portal keeps it accessible',async()=>{
   const [api,ui]=await Promise.all([
     readFile('netlify/functions/powerhouse-observability.mjs','utf8'),
     readFile('portal-v2/modules/powerhouse-observability.js','utf8')
   ]);
   assert.match(api,/POWERHOUSE_SYSTEM_MAP/);
-  assert.match(api,/systemMap:\{\.\.\.POWERHOUSE_SYSTEM_MAP,supabaseInventory\}/);
+  assert.match(api,/systemMap:\{\.\.\.POWERHOUSE_SYSTEM_MAP,supabaseInventory,failureCoverage,portalUxReleaseProof\}/);
+  assert.match(api,/loadPortalUxReleaseProof/);
+  assert.match(ui,/data-portal-ux-proof/);
+  assert.match(ui,/PRODUCTION_SOURCE_RECHECK_DUE/);
   assert.match(api,/loadSupabaseSystemMapInventory/);
   assert.match(api,/status:'UNAVAILABLE'/);
   assert.match(ui,/Systeemkaart/);
   assert.match(ui,/systemMapView/);
-  assert.match(ui,/tab:'system-map'/);
+  assert.match(ui,/state\.tab==='system-map'\?systemMapView/);
+  assert.match(ui,/bronregistratie; geen uitvoeringsbewijs/);
   assert.match(ui,/Iedere huidige en toekomstige agent/);
   assert.match(ui,/providerreadback ontbreekt/);
 });

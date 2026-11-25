@@ -1,0 +1,33 @@
+{
+  "fingerprint": "powerhouse|instagram|no-eligible-mkb-source-generic-debtor-lookup|20261117-v1",
+  "obligation_id": "powerhouse|instagram|debtor-real-processing-friction-discovery|20261117-v1",
+  "owner": "existing original powerhouse-mira-problem-radar-v1",
+  "compiler": {
+    "failure_class": "SOURCE_RECALL_MISS",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ]
+  },
+  "root_cause": "Previous generic Dutch debtor alternate 'ondernemers onbetaalde facturen' can miss independently dated, real invoicing-process defects with downstream payment friction; company Mira source selection had 0 eligible results on 15 and 16 Nov. Existing source quality, 45-day date, 90-day source and 3-day topic rules must not be relaxed.",
+  "prevention": "Within exactly the existing six business news slots only, replace the debtor-family alternate with 'bedrijven factuurfouten betalingsachterstanden' on alternate days; source query is not permission to publish and must still pass original provider date >= freshness, HTTPS, total score >= 0.72, explicit vendor press veto, PH-P010 mapping, dedupe and immutable same-day winner.",
+  "tests": [
+    "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+  ],
+  "evidence": {
+    "same_day_source_quota": 8,
+    "no_extra_search": true,
+    "upcoming_pub_date": "2026-11-18",
+    "verified_contemporary_publisher_url": "https://www.ictmagazine.nl/nieuws/bedrijven-zetten-klanten-onder-druk-door-eigen-factuurfouten/",
+    "verified_article_publication_date": "2026-11-16",
+    "article_used_as_query_precision_guide_not_provider_evidence": true,
+    "original_instagram_2026_11_17_external_id": null
+  },
+  "outcome": "CODE_CANDIDATE_NOT_META_PROVIDER_PROOF",
+  "next_action": "Protected CI CodeQL merge native source parity and natural source intake, then independent original PH-P source eligibility -> one frozen winner -> exclusive original OpenArt generation -> Mira video verifier -> Meta ID and Brain PROCESSED."
+}

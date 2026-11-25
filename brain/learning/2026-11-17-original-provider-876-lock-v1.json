@@ -1,0 +1,28 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse|gitops|native-provider-876-applied-with-missing-source-lock|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "APPLIED_SUPABASE_MIGRATION_MISSING_FROM_CANONICAL_LOCK"
+  },
+  "root_cause": "Protected PR #5939 merged the original executable migration 20261117094500_original_result_guardian_existing_watchdog_v1.sql and it was independently applied in native Supabase production; canonical supabase/migration-history.lock.json was left at 875. Six existing Required backend tests then failed on other innocent PRs, including incident all-agent PR #5940. The original 875 names and versions exactly match production, and provider has exactly one additional, applied 876th version.",
+  "prevention": [
+    "One original GitOps authority must update the canonical source lock for each exact native applied provider version/name before treating protected migration release as fully reconciled.",
+    "Original provider readback is mandatory; never invent migrations, rerun an already applied SQL script, rewrite previous identities, widen RLS or bypass Required/CodeQL.",
+    "An original protected Required failure after other protected merge remains an explicit source-lock integrity incident, with owner and idempotent next action; don't disable the dependency or pretend affected PRs were themselves defective.",
+    "Recheck complete exact provider/lock version-name list and original six backend lock tests; same original ONE BRAIN failure occurrence and prevention rule, no parallel job."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs"
+    ]
+  },
+  "evidence": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5939",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44053428979",
+    "2026-11-17T09:16:03.759162+00:00 native supabase_migrations.schema_migrations count=876; exact 875 lock prefix match and single unpinned version 20261117094500 original_result_guardian_existing_watchdog_v1"
+  ],
+  "acceptance": "Only protected Required+CodeQL merge on exact head, independent current main source lock readback, original provider 876/876 parity and next original release/migration gate passing count. This is GitOps lock repair, no new customer outcome proof."
+}

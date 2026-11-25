@@ -8,7 +8,7 @@ test('portal-v2 shell uses path-portable local assets',async()=>{
   const html=await readFile(new URL('index.html',here),'utf8');
   const js=await readFile(new URL('app.js',here),'utf8');
   assert.match(html,/href="\.\/app\.css"/);
-  assert.match(html,/src="\.\/app\.js"/);
+  assert.match(html,/src="\.\/app\.js(?:\?bg_explain=[a-f0-9]{64})?"/);
   assert.doesNotMatch(html,/\/portal-v2\/app\.(css|js)/);
   assert.match(js,/setAttribute\('src','\.\/brain\.svg'\)/);
   assert.doesNotMatch(js,/setAttribute\('src','\/portal-v2\/brain\.svg'\)/);

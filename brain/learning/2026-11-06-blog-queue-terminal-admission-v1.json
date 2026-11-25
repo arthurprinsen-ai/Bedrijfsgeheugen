@@ -1,0 +1,43 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "powerhouse|daily-blog|queue-false-ack-after-no-publish|20261106-v1",
+  "owner": "existing authenticated powerhouse-blog-queue; original hourly publisher downstream",
+  "compiler": {
+    "failure_class": "BLOG_QUEUE_FALSE_ACK_AFTER_NO_PUBLISH",
+    "scope": "ORIGINAL_BLOG_QUEUE_PREWRITE_GATE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Original queue ignored the authoritative obligation's SKIPPED / NO_PUBLISH state and allowed requests for historical run dates; a generated-state downgrade no-op could be followed by a false queued:true acknowledgement and decision evidence mutation.",
+  "prevention_rule": "Read the original canonical obligation and enforce a deterministic, read-only terminal/side-effect/day admission before any lineage CAS, obligation write, or decision write. Preserve all existing provider, authorization and same-day constraints; never republish a vetoed, skipped or already published blog.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-queue-no-publish-20261106.test.mjs"
+    ],
+    "shadow": [
+      "public.content_publication_obligations 2026-11-04/2026-11-05 SKIPPED readback"
+    ],
+    "canary": [
+      "next natural same-day original queue invocation and provider readback"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original 2026-11-04/05 public URLs independently returned HTTP 404, and original obligation records lacked live proof.",
+      "Original public.record_content_publication_skip moved both to SKIPPED/NO_PUBLISH without inventing publications.",
+      "Existing original queue only checked date regex and decision publish before mutating delivery metadata."
+    ],
+    "current": [
+      "New admission tested prewrite; release via protected PR, original Supabase deploy and provider readback pending."
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_SUPABASE_SOURCE_AND_NATURAL_QUEUE",
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE_EXACT_NATIVE_PROVIDER_820_LOCK_PARITY_PENDING_PROTECTED_PREVIEW",
+  "fingerprint": "powerhouse|supabase|native820-provider-lock-followup-after-original-email-handoff|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "existing GitHub Required + native Supabase GitOps owner",
+  "root_cause": "Protected original PR #5543 independently applied migration 20261110120000_powerhouse_outreach_research_wait_handoff_v1 via native provider GitOps on production main c0cbed7ba0b7bba9fe3edef9de31e7fe422a0a60. Production schema_migrations has 820 unique official identities, original SQL source has 820 files, but original migration-history.lock.json still has 819. This prevents the next original source-only PR #5556 from reaching its protected preview after rebase. Unlike a never-applied new SQL, this exact identity is provider-verified already applied. Do not reapply DDL.",
+  "production_evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "github_main_at_readback": "c0cbed7ba0b7bba9fe3edef9de31e7fe422a0a60",
+    "provider_applied": 820,
+    "prior_lock": 819,
+    "all_first_819_identical": true,
+    "actual_820": {
+      "version": "20261110120000",
+      "name": "powerhouse_outreach_research_wait_handoff_v1"
+    },
+    "canonical_source_sha": "0ffd88fd27f7943633f75efd226e7cc0429f9f37",
+    "new_migration_applied_by_this_PR": false
+  },
+  "fix": "Lock-only protected candidate appends exactly the official immutable #820 provider identity while preserving previous 819 identities and original SQL source. No new schema, API, cron, scheduler, sender, publication, email, AI model, privilege, provider connection or data mutation. Only original GitOps source registration is repaired. Rebase original #5556 to this immutable provider-verified baseline, then independently test its new source SQL before merging.",
+  "prevention": "Original protected native GitOps writer MUST reconcile actual applied provider history to source lock by separately protected lock-only PR before admitting the next new source-only migration; no merged SQL source implies applied provider until independently checked. Do not create duplicate lock PRs when another protected main has already fulfilled the same exact identities.",
+  "tests": [
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ],
+    "invariants": [
+      "exact provider 820 prior identities",
+      "no new SQL",
+      "no bypass required preview",
+      "protected merge",
+      "no parallel scheduler"
+    ]
+  },
+  "compiler": {
+    "scope": "DATABASE_MIGRATIONS",
+    "failure_class": "NATIVE_DEPLOY_APPLIED_MIGRATION_BUT_MAIN_LOCK_LAGS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Protected GitHub Required + CodeQL + hosted Supabase Preview on exact source head, merge only after official success, independently confirm all 820 names and versions equal original provider and source, then safely update original PR #5556 and evaluate its SQL migration with provider preview; do not fake unfulfilled learning or email evidence."
+}

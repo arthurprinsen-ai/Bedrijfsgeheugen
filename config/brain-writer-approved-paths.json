@@ -1,0 +1,5 @@
+{
+  "contract": "brain-writer-approved-paths-v1",
+  "paths": [],
+  "note": "No writable paths until reviewed and approved in a separate protected PR."
+}

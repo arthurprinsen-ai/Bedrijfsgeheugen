@@ -1,0 +1,34 @@
+{
+  "type": "PUBLIC_SAFE_ENGINEERING_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "fingerprint": "powerhouse|security|last-egress-private-audit-and-historic-copy-closure|20261029-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "root_cause": "Existing skills described general incident capture but lacked an explicit uniform public-egress last-writer audit receipt and truthful historical GitHub/preview retention closure contract. Existing integration admission requires generic engineering learning and activity documentation alongside a material skill change.",
+  "prevention_rule": "Before any external egress use original policy-approved owner, tenant and recipient/destination checks; keep private incident details in canonical Brain. Log idempotent sanitized receipts, retain independent provider readback, distinguish technical containment from historical-copy deletion and review pending risks. Never bypass protected release or launch another writer/publisher.",
+  "compiler": {
+    "failure_class": "PUBLIC_EGRESS_INCIDENT_SKILL_AUDIT_GAP",
+    "scope": "EXISTING_SKILL_GOVERNANCE",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-delivery-agent-handoff-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-delivery-agent-handoff-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-social-delivery-agent-handoff-20261029.test.mjs"
+    ],
+    "public_safe_only": true,
+    "raw_customer_or_tenant_payloads": false,
+    "private_incident_evidence_exported": false,
+    "protected_merge_verified": false,
+    "runtime_skill_projection_verified": false,
+    "publication_performed": false
+  },
+  "terminal_rule": "Only protected Required/BRAIN/CodeQL success, authorized single-writer merge and independent canonical skill/runtime readback may promote this candidate."
+}

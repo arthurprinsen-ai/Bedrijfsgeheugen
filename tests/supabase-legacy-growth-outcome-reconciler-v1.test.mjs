@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918110000_legacy_growth_outcome_reconciler_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260918110000_legacy_growth_outcome_reconciler_v1.sql','utf8');
 
 test('24h evaluation can close only from observed impressions evidence',()=>{
   assert.match(sql,/24h_impressions_gte/);

@@ -1,0 +1,32 @@
+{
+  "fingerprint": "social-publication|recovery|degraded-preparation-bounded-publishers|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-publication-recovery-degraded-preparation-20261006",
+  "root_cause": "The manual recovery workflow treated a full content-loop transport timeout as a fatal step failure. GitHub Actions therefore skipped the already-bounded canonical per-channel publishers even when LinkedIn decisions were already content_ready. Recovery evidence was also written under a hidden .artifacts directory that actions/upload-artifact did not upload by default.",
+  "prevention_rule": "Preparation may degrade, but provider side effects remain owned exclusively by the canonical publisher. Recovery must always attempt the bounded publish_only channel calls after preparation failure, then fail closed on canonical state readback. Recovery evidence must use a visible artifact directory.",
+  "compiler": {
+    "failure_class": "SOCIAL_RECOVERY_PREPARATION_COUPLING",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "runtime": [
+      ".github/workflows/social-publication-recovery.yml"
+    ],
+    "regression": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  }
+}

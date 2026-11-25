@@ -9,7 +9,8 @@ test('AI ecosystem projection survives canonical V18 rebuild and is idempotent',
   const twice=applyAiEcosystemPropositionHtml(once);
   assert.match(once,/data-section="ai-ecosysteem"/);
   assert.match(once,/href="\/ai-ecosysteem"/);
-  assert.match(once,/POWERHOUSE — het bedrijfsbrein/);
+  assert.match(once,/POWERHOUSE — intelligence- en uitvoeringsmotor/);
+  assert.match(once,/Een Company Brain geeft AI context/);
   assert.equal((twice.match(/data-section="ai-ecosysteem"/g)||[]).length,1);
   assert.equal((twice.match(/id="bg-ai-ecosysteem-style"/g)||[]).length,1);
 });

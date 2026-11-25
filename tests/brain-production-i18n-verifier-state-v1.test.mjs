@@ -4,14 +4,14 @@ import { readFile } from 'node:fs/promises';
 
 const verifierPath='tools/site-shell/verify-pricing-i18n-production.mjs';
 
-test('production locale verifier proves route state without navigation-event coupling', async () => {
+test('production locale verifier proves route and html lang state after a committed client navigation', async () => {
+  // Navigation lifecycle is owned by brain-i18n-production-navigation-readback-v2 (waitUntil:'commit',
+  // not the load event); this test only pins that route AND rendered locale are both asserted.
   const src=await readFile(verifierPath,'utf8');
-  assert.doesNotMatch(src,/page\.waitForURL\(/);
-  assert.match(src,/page\.waitForFunction\(/);
-  assert.match(src,/location\.pathname/);
-  assert.match(src,/document\.documentElement\.lang/);
-  assert.match(src,/expectedPathname/);
-  assert.match(src,/expectedLocale/);
+  assert.match(src,/waitUntil:'commit'/);
+  assert.match(src,/new URL\(url\)\.pathname/);
+  assert.match(src,/getAttribute\('lang'\)\) !== locale/);
+  assert.match(src,/expectedPath/);
 });
 
 test('production locale verifier retains translated-content and round-trip assertions', async () => {

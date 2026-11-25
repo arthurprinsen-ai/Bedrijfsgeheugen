@@ -1,10 +1,26 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
+import { canRebindUnsentBlog, originalBlogSlugGuard } from '../_shared/blog-null-lineage-recovery.mjs';
+import { assessOfficialBlogDateTruth } from '../_shared/blog-official-date-truth.mjs';
+import { assessBlogQueueAdmission } from '../_shared/blog-queue-admission-contract.mjs';
 
-const VERSION='v7-repository-native-prewrite';
+const VERSION='v8-null-safe-blog-lineage-cas';
 const clean=(v:unknown)=>String(v??'').trim();
+function jsonObject(value:any){
+  if(value===null||value===undefined)return {};
+  if(typeof value==='string'){
+    try{return jsonObject(JSON.parse(value));}catch{return {};}
+  }
+  if(Array.isArray(value))return value.reduce((acc:any,item:any)=>Object.assign(acc,jsonObject(item)),{});
+  if(typeof value==='object'){
+    const keys=Object.keys(value);
+    if(keys.length>0&&keys.every((key)=>/^\d+$/.test(key)))return {};
+    return value;
+  }
+  return {};
+}
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
+const slugify=(s:string)=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70).replace(/-+$/g,'');
 
 Deno.serve(async(req)=>{
   if(req.method!=='POST') return json({ok:false,error:'POST_ONLY'},405);
@@ -17,17 +33,60 @@ Deno.serve(async(req)=>{
   const runDate=clean(input.runDate)||localDate();
   if(!/^\d{4}-\d{2}-\d{2}$/.test(runDate)) return json({ok:false,error:'INVALID_DATE'},400);
 
-  const [{data:a,error:ae},{data:d,error:de}]=await Promise.all([
+  const [{data:a,error:ae},{data:d,error:de},{data:o,error:oe}]=await Promise.all([
     db.from('powerhouse_content_artifacts').select('title,body,cta,content_brief,generation_evidence,status').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
-    db.from('powerhouse_channel_decisions').select('decision,state,delivery_evidence').eq('run_date',runDate).eq('channel','blog').maybeSingle()
+    db.from('powerhouse_channel_decisions').select('decision,state,delivery_evidence').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
+    db.from('content_publication_obligations').select('status,slug,approved_at,external_id,published_at,live_proven_at,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
   ]);
-  if(ae||de) return json({ok:false,error:'READ_FAILED'},500);
-  if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
+  if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
+  // The canonical obligation is authoritative. A historical date, explicit
+  // NO_PUBLISH, active veto or possible provider side effect is never queued.
+  const admission=assessBlogQueueAdmission({
+    runDate,today:localDate(),obligation:o?{...o,evidence:jsonObject(o.evidence)}:null
+  });
+  if(!admission.allowed) return json({ok:true,queued:false,reason:admission.code,runDate});
+  // A previously approved but now GENERATED row is a state-regression incident.
+  // Never silently reuse an approval for possibly regenerated content.
+  if(clean(o?.status)==='GENERATED'&&o?.approved_at&&
+     jsonObject(o?.evidence)?.auto_approval?.approved_at){
+    return json({ok:false,queued:false,error:'BLOG_APPROVAL_STATE_REGRESSION',
+      runDate,recovery_required:true,
+      next_owner:'original blog approval and protected publisher'},409);
+  }
 
-  const slug=clean(a.generation_evidence?.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
+  if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
+  const fact=assessOfficialBlogDateTruth({title:a.title,body:a.body,cta:a.cta,runDate});
+  if(!fact.ok)return json({ok:false,queued:false,error:fact.code,runDate,
+    source:fact.source||null,requires_corrected_source:true},422);
+
+  const generationEvidence=jsonObject(a.generation_evidence);
+  const deliveryEvidence=jsonObject(d.delivery_evidence);
+  const slug=clean(generationEvidence.seo_slug)||slugify(clean(a.title))||('powerhouse-'+runDate);
   const canonical='https://www.bedrijfsgeheugen.nl/blog/'+slug+'/';
+
+  // Safe same-date recovery: update only GENERATED/unpublished metadata.
+  // A live, dispatched or ambiguous provider side effect must NEVER be rebound.
+  if(o && clean(o.slug)!==slug){
+    const provenance=jsonObject(o.evidence);
+    if(!canRebindUnsentBlog(o,provenance)){
+      return json({ok:false,error:'BLOG_LINEAGE_MISMATCH_EXTERNAL_STATE',recovery_required:true,runDate},409);
+    }
+    // CAS by the ACTUAL old value. PostgREST equality with '' does not match
+    // SQL NULL; that mismatch stranded the 22 Oct daily blog metadata.
+    // Every external side-effect bound stays in force before this selection.
+    const recoveryQuery=db.from('content_publication_obligations')
+      .update({slug,content_id:'blog:'+slug,canonical_url:canonical,updated_at:new Date().toISOString()})
+      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog')
+      .eq('status','GENERATED')
+      .is('external_id',null).is('published_at',null).is('live_proven_at',null);
+    const {data:rebound,error:reboundError}=await originalBlogSlugGuard(recoveryQuery,o.slug)
+      .select('slug,content_id,canonical_url').maybeSingle();
+    if(reboundError || !rebound || clean(rebound.slug)!==slug){
+      return json({ok:false,error:'BLOG_LINEAGE_REBIND_FAILED',recovery_required:true,runDate},409);
+    }
+  }
   const evidence={
-    ...(d.delivery_evidence||{}),
+    ...deliveryEvidence,
     provider:'github-protected-daily-blog',
     executor:'powerhouse-blog-queue',
     executor_version:VERSION,
@@ -44,11 +103,15 @@ Deno.serve(async(req)=>{
   // Durable obligation is the first material state mutation. A later GitHub runner,
   // provider or execution-surface failure can therefore only leave RECOVERY_REQUIRED work,
   // never an orphaned outcome.
-  const {error:obligationError}=await db.rpc('record_content_publication_state',{
+  // Preserve previously recorded approval. GENERATE must not be used to
+  // 'requeue' an APPROVED obligation; the existing ranked state RPC would
+  // discard all new handoff evidence on a regressive write.
+  const queueStatus=clean(o?.status)==='APPROVED'?'APPROVED':'GENERATED';
+  const {data:originalWrite,error:obligationError}=await db.rpc('record_content_publication_state',{
     p_tenant_id:'canonical',
     p_publication_date:runDate,
     p_channel:'blog',
-    p_status:'GENERATED',
+    p_status:queueStatus,
     p_content_id:'blog:'+slug,
     p_slug:slug,
     p_external_id:null,
@@ -59,6 +122,18 @@ Deno.serve(async(req)=>{
     p_error:null
   });
   if(obligationError) return json({ok:false,error:'OBLIGATION_WRITE:'+obligationError.message},500);
+  // An RPC/HTTP success alone does not establish a handoff. Verify the
+  // original obligation's state and original date/channel idempotency receipt
+  // before forwarding to the protected GitHub publisher.
+  const received=jsonObject(originalWrite);
+  const receipt=jsonObject(received.evidence);
+  if(clean(received.status)!==queueStatus||
+     clean(receipt.idempotency_key)!==evidence.idempotency_key||
+     clean(receipt.next_executor)!==evidence.next_executor){
+    return json({ok:false,error:'BLOG_ORIGINAL_QUEUE_RECEIPT_MISSING',
+      recovery_required:true,runDate,queueStatus},409);
+  }
+
 
   const {error:decisionError}=await db.from('powerhouse_channel_decisions')
     .update({delivery_evidence:evidence,updated_at:new Date().toISOString()})

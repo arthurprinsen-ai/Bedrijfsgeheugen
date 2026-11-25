@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": 5141,
+  "obligation_id": "SITE-CRO-EVENT-TYPES-CHECK-23514-20261029",
+  "fingerprint": "site|bg-interactie|event-type-db-check-mismatch|23514|20261029",
+  "failure_class": "CRO_TELEMETRY_SILENT_LOSS",
+  "scope": "existing_one_brain_powerhouse_heartbeat",
+  "observed_evidence": {
+    "source": [
+      "production public.bg_interacties pg_constraint",
+      "production bg-interactie v11",
+      "Supabase edge_logs",
+      "synthetic browser event UID e14f90ab-e5fc-476b-bf78-e97d7e12e4f3"
+    ],
+    "root_cause": "The live Edge v11 GEBEURTENISSEN allowlist has 17 values but existing bg_interacties_gebeurtenis_check has only 7, causing PostgREST HTTP 400 SQLSTATE 23514 and safe Edge HTTP 503 for newly consented events.",
+    "impact": "Cannot infer complete CRO event ingestion, zero human clicks or any paid orders."
+  },
+  "remediation": {
+    "candidate_sql": "supabase/migrations/20261029182000_bg_cro_allowlisted_event_types_v1.sql",
+    "implementation": "Exactly 17 allowed values, short-lock NOT VALID then separate authorized validation; preserve consent and RLS.",
+    "validation_migration_status": "NOT_WRITTEN_TOOL_SAFETY_BLOCKED",
+    "tests": [
+      "tests/cro-measurement-contract.test.mjs",
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "owner": "Existing Powerhouse backend/Supabase Recovery Writer",
+    "privacy": "Only synthetic portaal-only verification event; no personal values or URLs.",
+    "canonicalization_repair": "Brain learning evaluation runner requires brain-prefixed tests for historical_replay/shadow/canary. The existing CRO-specific contract regression tests/cro-measurement-contract.test.mjs remains unchanged and included in REQUIRED; accepted test tests/brain-cro-other-data.test.mjs is used only for learning evaluation slots. No gate bypass."
+  },
+  "prevention_rules": [
+    "Edge GEBEURTENISSEN and SQL CHECK must be exact equal sets in regression tests.",
+    "Use short-lock additive CHECK migration and separately validate on existing large table.",
+    "No successful ACK if PostgREST returns any 4xx/5xx, especially 23514.",
+    "Consent denied must return 422, consent granted must persist event_uid exactly once, duplicate ACK must not create a second row.",
+    "Respect all protected GitHub, Supabase RLS/ACL, owner and tenant gates; no second scheduler or synthetic revenue."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-cro-other-data.test.mjs"
+    ],
+    "production_readback": [
+      "NOT_VERIFIED; pending legal approved migration, validated CHECK and exact UID idempotent event readback"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CRO_TELEMETRY_SILENT_LOSS",
+    "scope": "SITE_PORTAL_BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "NOT LIVE until actual protected migration(s), validated CHECK, Edge & Netlify readback and a successful consented browser->DB event_uid and duplicate ACK."
+}

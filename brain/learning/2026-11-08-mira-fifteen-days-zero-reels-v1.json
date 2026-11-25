@@ -1,0 +1,43 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "fingerprint": "powerhouse|mira|fifteen-days-zero-published-reels-producer-unclaimed|20261108-v1",
+  "date": "2026-11-08",
+  "status": "OBSERVED",
+  "symptom": "Geen enkele Instagram-Reel gepubliceerd tussen 2026-10-25 en 2026-11-08 (15 dagen). Op 2026-11-08 ontbreekt bovendien de dagwinnaar (NO_FRESH_PUBLIC_PROBLEM_SIGNAL, radar-run 2026-11-07 20:02 UTC).",
+  "evidence": {
+    "obligations": "content_publication_obligations instagram 2026-10-25..2026-11-08: 0 external_id; 7x MEDIA_ASSET_REQUIRED, 4x VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH (face 0.90-0.92), 3x SILENT_PUBLICATION_FAILURE, 1x PLANNED",
+    "winners": "powerhouse_instagram_daily_winners_v1 had winners 2026-11-01..2026-11-07; geen winnaar voor 2026-11-08",
+    "radar_cron": "jobid 120 draait dagelijks 20:02 UTC en slaagt technisch; HTTP/cron-succes is geen bronsucces",
+    "source_quality": "winnaar 2026-11-04 kwam van een Texas-schoolartikel (coppellisd.com), winnaar 2026-11-06 van een google.com-redirect"
+  },
+  "root_cause": "Hoofdoorzaak is niet bronschaarste maar dat de originele Mira-producer de mediajob niet claimt en geen nieuwe generatie start (MEDIA_ASSET_REQUIRED / MIRA_PRODUCER_CLAIM_REQUIRED), aangevuld met gezichtsscore onder 0.940 bij eerdere generaties. Bronschaarste op 2026-11-08 is een tweede, los symptoom; de bronfilter laat daarnaast irrelevante bronnen toe.",
+  "prevention": [
+    "De originele producer claimt dagelijks de mediajob van de bevroren winnaar en voert precies een gepreflighte generatie uit binnen budget.",
+    "Bronkwaliteitsfilter op domein, taal en MKB-relevantie vóór winnaarselectie; geen google.com-redirects als bron.",
+    "Geen verlaging van de gezichtsdrempel 0.940 of temporele drempel 0.900.",
+    "Een geslaagde cron of HTTP 200 van de radar telt niet als bron- of publicatiebewijs."
+  ],
+  "owner": "powerhouse-instagram-media-router / original Mira producer; bron: powerhouse-mira-problem-radar-v1",
+  "issue": 5232,
+  "skill_targets": [
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
+  "independent_publication_proven": false,
+  "brain_registered": "public.brain_observe_failure occurrence powerhouse|mira|fifteen-days-zero-published-reels-producer-unclaimed|20261108-v1:2026-11-08",
+  "compiler": {
+    "failure_class": "PUBLICATION_PRODUCER_GAP",
+    "scope": "INSTAGRAM_MIRA_DAILY_REEL",
+    "machine_enforceable": false,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-publication-no-silent-gap-20261031.test.mjs",
+      "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
+    ],
+    "note": "Bestaande verwante guards (geen stille publicatiekloof, geen vals groen bij bronschaarste). Een nieuwe regressietest voor de dagelijkse producer-claim hoort bij de codefix en bestaat nog niet."
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PRODUCER_FIX"
+}

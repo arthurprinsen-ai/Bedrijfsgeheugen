@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-27",
+  "status": "CANDIDATE",
+  "fingerprint": "enrichment|company-news-not-prioritised-for-mailable-contacts|20261027-v1",
+  "obligation_id": "news-approved-first-20261027",
+  "failure_class": "ENRICHMENT_NOT_AIMED_AT_MAILABLE_CONTACTS",
+  "root_cause": "bg_bedrijven_voor_nieuws picked 15 companies a day by segment score; none of the 123 approved e-mail contacts had company news, so the composer had no specific fact and held every mail.",
+  "observed_evidence": {
+    "actual_sources": ["public.bg_bedrijven_voor_nieuws", "public.bg_bedrijfsnieuws", "supabase/functions/bg-bedrijfsnieuws"],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Companies of approved e-mail contacts are looked up first; the quality gate and news relevance checks are unchanged.",
+  "prevention_rule": "Enrichment budget goes first to contacts that can actually be contacted.",
+  "tests": ["tests/brain-news-approved-first-20261027.test.mjs"],
+  "compiler": {"failure_class": "ENRICHMENT_NOT_AIMED_AT_MAILABLE_CONTACTS", "scope": "EMAIL_LEARNING", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-news-approved-first-20261027.test.mjs"],
+    "shadow": ["tests/brain-news-approved-first-20261027.test.mjs"],
+    "canary": ["tests/brain-news-approved-first-20261027.test.mjs"]
+  },
+  "terminal_rule": "Migration applied in prod, then the next bg-bedrijfsnieuws run checks approved-contact companies and bg_bedrijfsnieuws gains rows for them."
+}

@@ -1,0 +1,55 @@
+{
+  "id": "supabase-supported-migration-repair-3742-v1",
+  "date": "2026-10-05",
+  "obligation_id": "supabase-supported-migration-repair-3742-v1",
+  "issue": 3742,
+  "finding": "Replay-compatible migrations with production-proven effects must be reconciled through supported provider migration-history repair, never by direct writes to supabase_migrations or by re-executing replay-only SQL in production.",
+  "root_cause": "Production schema state contained four replay-compatible effects whose migration identities were absent from the provider ledger; pull-request workflows cannot safely receive production credentials.",
+  "structural_fix": [
+    "trusted-main-only repair workflow",
+    "production environment credentials isolated from pull_request code",
+    "exact four-version allowlist",
+    "pre-repair drift must equal only the allowlist",
+    "official supabase migration repair --status applied",
+    "post-repair provider migration-list zero-drift readback",
+    "force-with-lease advancement of canonical recovery PR"
+  ],
+  "prevention": [
+    "never directly mutate supabase_migrations",
+    "never execute replay-only baseline DDL in production",
+    "never accept absent/skipped provider readback as repair proof",
+    "bind repair to exact canonical writer head"
+  ],
+  "terminal_green_requires": [
+    "repair workflow merged through protected main",
+    "trusted-main repair succeeds with provider readback",
+    "canonical recovery exact-head checks and fresh replay green",
+    "protected recovery merge",
+    "post-merge production migration/runtime readback"
+  ],
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-supported-migration-repair-3742-v1.test.mjs"
+    ]
+  },
+  "fingerprint": "powerhouse|supabase-supported-migration-repair|trusted-main|3742|v1",
+  "evidence": {
+    "repair_versions": [
+      "20260920101150",
+      "20260920102450",
+      "20260925080500",
+      "20261005133951"
+    ],
+    "workflow": ".github/workflows/supabase-supported-migration-repair-3742.yml",
+    "contract_test": "tests/supabase-supported-migration-repair-3742.test.mjs",
+    "historical_replay_test": "tests/brain-supabase-supported-migration-repair-3742-v1.test.mjs",
+    "production_mutation_contract": "provider migration-history tracking only via supabase migration repair --status applied",
+    "direct_supabase_migrations_writes_forbidden": true,
+    "replay_sql_execution_in_production_forbidden": true
+  }
+}

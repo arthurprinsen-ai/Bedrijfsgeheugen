@@ -54,7 +54,7 @@
       "route": "/ai-capability-model"
     },
     {
-      "keyword": "ai governance mkb",
+      "keyword": "ai governance",
       "route": "/ai-governance"
     },
     {
@@ -212,6 +212,14 @@
     {
       "keyword": "werkinstructie voorbeeld",
       "route": "/blog/werkinstructie-voorbeeld/"
+    },
+    {
+      "keyword": "ai modellen vergelijken",
+      "route": "/ai-modelwijzer"
+    },
+    {
+      "keyword": "company brain",
+      "route": "/company-brain"
     }
   ],
   "schema": {

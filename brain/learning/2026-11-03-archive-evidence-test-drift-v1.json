@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|brain-janitor|archive-artifact-warning-fixture-stale-after-failclosed|20261103-v1",
+  "obligation_id": "github|brain-janitor|archive-artifact-warning-fixture-stale-after-failclosed|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333",
+  "status": "CANDIDATE_UNDER_PROTECTED_VERIFICATION",
+  "failure_class": "BRAIN_TEST_FIXTURE_CONTRADICTS_FAIL_CLOSED_INCIDENT_EVIDENCE",
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "BRAIN_TEST_FIXTURE_CONTRADICTS_FAIL_CLOSED_INCIDENT_EVIDENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "ownership": {
+    "agent": "existing-one-brain-github-backend-delivery",
+    "accountable": "arthurprinsen-ai",
+    "exclusive_writer_required": true
+  },
+  "evidence": {
+    "original_run": 41599748028,
+    "original_job": 125795703107,
+    "original_pr": 5342,
+    "failed_test_index": 465,
+    "failed_test": "original archive job fails on partial error and always preserves independent provider evidence",
+    "actual_workflow_artifact_policy": "if-no-files-found: error",
+    "old_test_expected": "if-no-files-found: warn",
+    "postmerge_terminal_run": 41599675594
+  },
+  "root_cause": "Legacy archive regression fixture continued to expect warning-only artifact upload after the original Janitor incident observer correctly made absent evidence a hard error, causing one full BRAIN backend test to fail on an intentionally stricter protection.",
+  "fix": "Update only original regression to require if-no-files-found:error and independently assert the existing always-run original ONE BRAIN archive incident observer, rather than weakening the production workflow or suppressing failing CI.",
+  "prevention_rule": "Whenever original incident-evidence enforcement strengthens from warn to error, update safety assertion to match stricter control and replay complete BRAIN before claiming terminal green; never relax workflow evidence gates to satisfy stale tests.",
+  "tests": [
+    "tests/brain-branch-archive-sweep.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "invariants": [
+      "no upload warning-only downgrade",
+      "observer always runs",
+      "failures stay visible in original issue and Brain",
+      "protected CI must pass"
+    ]
+  },
+  "portal_projection": {
+    "status": "NOT_PROVEN_FIXED",
+    "full_green_allowed": false
+  },
+  "terminal_rule": "Exact-head Required/CodeQL/full BRAIN success, protected merge, new native BRAIN verification and original terminal readback before close."
+}

@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "parent_issue": 4198,
+  "fingerprint": "external-intelligence|fixed-time-topic-selection-starvation|20261025-v1",
+  "failure_class": "EXTERNAL_SIGNAL_TOPIC_CLOCK_ALIASING",
+  "root_cause": "The bounded 3-topic external internet scanner indexed topics by floor(epoch/20min)*3 modulo active topic count. For 44 active topics, a daily trigger at a fixed time advances by 216 mod 44=40, visiting only 33 topics even after arbitrarily many days.",
+  "observed_evidence": {
+    "active_topics": 44,
+    "topics_without_stored_result": 3,
+    "topics_last_seen_older_than_7_days": 6,
+    "allowed_signals_published_last_7_days": 1
+  },
+  "fix": "Reuse the canonical bg-externe-signalen scheduler and provider auth. Advance the 3-topic cursor by UTC epoch day plus intra-day 20-minute slot, covering a static 44-topic registry within 15 daily runs, no extra searches per run. Store selection contract and horizon in existing source-observation lineage.",
+  "prevention_rule": "Any bounded external market/topic sampler must prove fair eventual coverage for a constant scheduled daily hour and stable same-slot retries; never promote undiscovered or undated SERP data into customer or paid-order proof.",
+  "tests": [
+    "tests/brain-external-topic-rotation-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-topic-rotation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-topic-rotation-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "EXTERNAL_SIGNAL_TOPIC_CLOCK_ALIASING",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "terminal_rule": "Exact-head Required/CodeQL, protected merge, Supabase edge function deployment readback, and next actual source run evidence. No live claim from GitHub merge alone; no fabricated date, customer interest or paid revenue."
+}

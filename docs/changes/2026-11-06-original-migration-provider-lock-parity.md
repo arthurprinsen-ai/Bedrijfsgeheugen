@@ -1,0 +1,5 @@
+# Restore original 815th provider migration source-lock parity — 6 November 2026
+
+Original protected PR #5497 was merged and applied migration 20261106144500_weekly_cron_health_cadence_original_function_v1 in production. Independent provider list_migrations returned exactly 815 applied version/name pairs. The source lock still had 814, all of which matched provider identities exactly; there was exactly one new provider-applied version. This existing lock-only PR appends the provider-proven 815th entry and changes no migration file, schema, job or data.
+
+Correct order: protected migration merge → Supabase original production migration + ACL readback → source lock update separately → protected Required + CodeQL → merge → ready for a new proposed migration. A candidate proposing a new migration must never also assert that new candidate has already been applied in production. The earlier PR #5498 intake correctly blocked on stale provider lock; do not weaken or bypass it. Regression: tests/supabase-migration-history-integrity.test.mjs and tests/brain-migration-lock-pr-gate-20261105.test.mjs. No green claim until protected checks and provider readback.

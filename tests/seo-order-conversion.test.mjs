@@ -54,3 +54,17 @@ test('conversion tracker is idempotent en verstuurt alleen intentmetadata', () =
   assert.match(once, /target_url/);
   assert.doesNotMatch(once, /email|phone|naam|name:/i);
 });
+
+
+test('every in-content primary CTA is marked, with no mutation outside main or repeated attributes',()=>{
+  const html='<html><body>'+
+    '<header><a href="/frisse-blik">Header</a></header>'+
+    '<main><a href="/frisse-blik">Hero</a><a href="https://www.bedrijfsgeheugen.nl/frisse-blik">Mid</a><a href="/frisse-blik">Bottom</a></main>'+
+    '<footer><a href="/frisse-blik">Footer</a></footer></body></html>';
+  const marked=markPrimaryConversions(html,entry);
+  const main=marked.match(/<main>[\s\S]*?<\/main>/)?.[0]||'';
+  assert.equal((main.match(/data-bg-conversion="frisse-blik"/g)||[]).length,3);
+  assert.doesNotMatch(marked.match(/<header>[\s\S]*?<\/header>/)?.[0]||'',/data-bg-conversion/);
+  assert.doesNotMatch(marked.match(/<footer>[\s\S]*?<\/footer>/)?.[0]||'',/data-bg-conversion/);
+  assert.equal(markPrimaryConversions(marked,entry),marked);
+});

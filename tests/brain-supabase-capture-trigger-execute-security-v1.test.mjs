@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const path='supabase/migrations/20260919123730_restrict_capture_trigger_execute_v1.sql';
+const path='supabase/migration-history/repository-only/20260919123730_restrict_capture_trigger_execute_v1.sql';
 const functions=[
   'powerhouse_capture_external_signal_v1',
   'powerhouse_capture_ga4_batch_v1',

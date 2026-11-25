@@ -1,0 +1,78 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "portal|control-plane|fulfilled-without-outcome-proof|20261023-v1",
+  "obligation_id": "portal|control-plane|verified-outcome-display|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE",
+  "failure_class": "FALSE_SUCCESS_RISK_PORTAL",
+  "root_cause": "Internal cockpit rendered current_state FULFILLED green without testing outcome_verified. Status-only success may be mistaken for customer value.",
+  "observed_evidence": {
+    "source": "portal-v2/control-plane-cockpit.js",
+    "observed_code": "if(v==='FULFILLED') return ok",
+    "verified_prod_false_success_cases": null,
+    "independent_portal_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4689",
+    "learning_admission_failure": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:portal-v2/tests/control-plane-cockpit.test.mjs",
+    "canonicalization_guard_preserved": true
+  },
+  "failed_approaches": [
+    "Treat terminal state as outcome proof",
+    "Write competing changes to portal-v2/runtime-evidence.js owned by PR #4689",
+    "Introduce a separate scheduler or memory"
+  ],
+  "fix": "Fail closed on FULFILLED unless server outcome_verified is literal boolean true; visibly flag unverified claims. Preserve existing API, state, and tenant projection.",
+  "prevention_rule": "A green outcome requires an affirmative provider-owned verified outcome, not workflow completion, migration status, or truthy string. Run both positive/negative tests before protected promotion.",
+  "regression_tests": [
+    "portal-v2/tests/control-plane-cockpit.test.mjs",
+    "tests/brain-control-plane-outcome-proof-v1.test.mjs"
+  ],
+  "existing_daily_owner": ".github/workflows/universal-closed-loop-learning.yml",
+  "canonical_skill": ".agents/skills/powerhouse-green-assurance/SKILL.md",
+  "system_map": "platform/system-map/canonical-system-map.mjs",
+  "compiler": {
+    "failure_class": "FALSE_SUCCESS_RISK_PORTAL",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-control-plane-outcome-proof-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-control-plane-outcome-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-control-plane-outcome-proof-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head protected Required+CodeQL, portal production deployment, independent provider readback and final Brain learning writeback. No LIVE claim for this change from source-only checks.",
+  "test_evidence": {
+    "evidence_kind": "exact-head-automated-positive-negative-replay",
+    "source": "tests/brain-control-plane-outcome-proof-v1.test.mjs",
+    "companion_portal_test": "portal-v2/tests/control-plane-cockpit.test.mjs",
+    "historical_replay": "PASS_CI_39947798852",
+    "shadow": "PASS_CI_39947798852",
+    "canary": "PASS_CI_39947798852",
+    "canonical_learning_gate": "GREEN_CI_39947798852",
+    "test_facts": [
+      "FULFILLED with missing/null/false/string-truthy evidence is red",
+      "literal boolean true permits green",
+      "untrusted obligation markup escaped"
+    ],
+    "provider_production_readback": null,
+    "terminal_release": "PENDING_PROTECTED_MERGE_AND_DEPLOY",
+    "customer_value_improvement_proven": false,
+    "code_scanning_triage": {
+      "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4776#discussion_r4359079355",
+      "finding": "CodeQL / Bad HTML filtering regexp",
+      "severity": "high",
+      "root_cause": "Security-negative test used a case-sensitive lowercase-only HTML tag detector, missing mixed-case SCRIPT variants; production HTML escaping remained unchanged.",
+      "fix": "Exercise mixed-case script and img payloads; assert raw tags absent using word-boundary case-insensitive filters; retain exact escaped output assertions.",
+      "regression_status": "CANDIDATE_UNTIL_NEW_EXACT_HEAD_CODEQL",
+      "no_code_scanning_waiver": true
+    }
+  }
+}

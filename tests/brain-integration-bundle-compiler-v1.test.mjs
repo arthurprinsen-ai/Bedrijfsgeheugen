@@ -68,6 +68,21 @@ test('canonical content publication obligation closes through runtime authority 
   assert.deepEqual(bundle.closure.missing, []);
 });
 
+test('runtime closure authority cannot cover unrelated material paths', () => {
+  const bundle = compileIntegrationBundle({
+    changedPaths:['blog/example/index.html','sitemap.xml','tools/delivery/example.mjs'],
+    metadata:{ obligationId:'content-publication:2026-10-05:blog', deliveryLane:'website', candidateType:'implementation', baseSha:base, supersedes:null },
+    baseSha:base,
+    headSha:head,
+    adaptivePolicy,
+    integrationPolicy
+  });
+  assert.equal(bundle.closure.material, true);
+  assert.equal(bundle.closure.ready, false);
+  assert.equal(bundle.closure.authority, 'repository-artifacts');
+  assert.deepEqual(bundle.closure.missing, ['activity_ledger','brain_learning','human_documentation']);
+});
+
 test('closure-only learning and docs remain non-material', () => {
   const closure = compileClosurePlan({
     changedPaths:['brain/learning/a.json','docs/changes/a.md','docs/development-ledger-events/a.md'],
@@ -115,6 +130,7 @@ test('Required test uses the Integration Bundle as the single preflight compiler
   assert.match(workflow, /Fail fast on incomplete integration closure/);
   assert.doesNotMatch(workflow, /id: impact\s/);
   assert.match(workflow, /steps\.integration\.outputs\.full_shared_suite/);
+  assert.match(workflow, /steps\.integration\.outputs\.closure_authority != 'canonical-runtime-obligation'/);
 });
 
 
@@ -145,4 +161,12 @@ test('bundle merges bounded historical pattern-memory regressions into adaptive 
   assert.ok(bundle.patternMemory.tests.includes('tests/brain-delivery-pattern-memory-v1.test.mjs'));
   assert.ok(bundle.adaptive.tests.includes('tests/brain-delivery-pattern-memory-v1.test.mjs'));
   assert.equal(bundle.patternMemory.matches[0].fingerprint,'delivery|historical-regression|v1');
+});
+
+
+test('integration bundle CLI is shallow-safe and uses exact two-tree diff', async () => {
+  const source = await readFile('tools/delivery/integration-bundle-compiler.mjs', 'utf8');
+  assert.match(source, /TARGETED_\$\{label\}_FETCH/);
+  assert.match(source, /\['diff', '--name-only', baseSha, headSha\]/);
+  assert.doesNotMatch(source, /baseSha\}\.{3}\$\{headSha/);
 });

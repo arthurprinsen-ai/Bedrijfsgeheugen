@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-22",
+  "fingerprint": "delivery|main-write|unverifiable-pr-association-v1",
+  "obligation_id": "delivery|main-write|unverifiable-pr-association-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4657",
+  "status": "CANDIDATE",
+  "root_cause": "Main Write Integrity attempted one commit-to-PR GitHub API read, which returned unexpected end of JSON input; the workflow then labeled an already-governed squash merge UNKNOWN_MAIN_WRITE. Independent GitHub PR #4658 readback proved merged=true and merge_commit_sha equal to current main 4ce0846.",
+  "fix": "Bounded association readback plus independent exact GitHub PR API verification on a commit-subject hint, preserving fail-closed classification and original incident lineage.",
+  "prevention_rule": "Agents must never accept commit text or API outage as governance proof, must only clear Main Write Integrity when GitHub provider confirms merged PR, main base and immutable merge SHA. Preserve genuine direct main bypass and unknown statuses red. Reuse existing incident #4657; no new scheduler.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-main-write-integrity.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-main-write-integrity.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-main-write-integrity.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "baseline": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39807485724",
+    "governed_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4658",
+    "exact_regression": "PENDING_PROTECTED_CI",
+    "postmerge": "PENDING_PRODUCTION_READBACK"
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4657",
+    "original_bad_sha": "4ce0846ca51227169389241d3a122b274795a0b2",
+    "workflow": ".github/workflows/main-write-integrity.yml",
+    "regression": "tests/brain-main-write-integrity.test.mjs",
+    "provider_truth_pr_number": 4658
+  }
+}

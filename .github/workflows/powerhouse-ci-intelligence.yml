@@ -21,13 +21,13 @@ concurrency:
 jobs:
   measure:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Measure queue, execution, fan-out and wasted work
+      - name: Measure Required SLO, queue, fan-out, duplicate authority and wasted work
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/brain/powerhouse-ci-intelligence.mjs

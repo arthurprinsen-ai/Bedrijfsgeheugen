@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20261005122000_powerhouse_human_commercial_message_os_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20261005122000_powerhouse_human_commercial_message_os_v1.sql','utf8');
 const composer=fs.readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
 const email=fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
 const linkedin=fs.readFileSync('supabase/functions/powerhouse-linkedin-sales-machine/index.ts','utf8');

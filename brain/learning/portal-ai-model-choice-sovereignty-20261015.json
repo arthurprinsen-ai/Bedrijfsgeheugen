@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse|portal-ai-model-selection|provenance-and-tenant-preference|20261015",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Portal V2 had a third-party AI Modelwijzer catalogue but no authenticated customer model preference page. Supplier VERIFY/PARTIAL/CONFLICT evidence was not visible to customers selecting a route; treating listing as activation would conflate documentation with real tenant entitlement.",
+  "prevention_rule": "Every model is visible for research and shortlist only. Explicit per-model evidence status, EEA storage/inference and customer authorization must remain separate. A tenant preference is never an instruction to execute inference; no model is auto-approved by catalogue status. Regression tests verify this boundary.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-choice-sovereignty.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "paths": [
+      "tests/ai-model-choice-sovereignty.test.mjs",
+      "tests/brain-ai-model-choice-sovereignty.test.mjs"
+    ],
+    "expected": "110 unique catalogue IDs; 83 registered, 26 partial, 1 conflict; model selection tenant-scoped; no runtime activation; source-labeled sovereignty fields",
+    "result": "Pending protected CI replay at time of authoring."
+  },
+  "outcome": {
+    "implementation": "Draft PR #4380. Productieacceptatie nog niet uitgevoerd.",
+    "operational_claim": "NONE"
+  },
+  "notes": {
+    "basis": "Supabase supplier status query on 2026-10-15 plus GitHub review; legal guidance EC and EDPB public sources; no customer DPA or authenticated runtime approval."
+  }
+}

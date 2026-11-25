@@ -20,11 +20,6 @@ on:
       - 'tools/config-wacht.py'
       - '.github/workflows/*.yml'
       - '.github/workflows/config-wacht.yml'
-  pull_request:
-    paths:
-      - 'netlify.toml'
-      - '_redirects'
-      - 'sitemap.xml'
   workflow_dispatch:
   schedule:
     # elke werkdag 07:10 Nederlandse tijd, ook als er niets gepusht is

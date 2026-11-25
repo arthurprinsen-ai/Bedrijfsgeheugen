@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|portal|legacy-compliance-cross-tenant-fallback-v1",
+  "obligationId": "p0-4215-legacy-compliance-exact-user-20261009-v1",
+  "date": "2026-10-09",
+  "status": "PENDING_PROTECTED_RELEASE",
+  "compiler": {
+    "failure_class": "PORTAL_LEGACY_CROSS_TENANT_FALLBACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_causes": [
+    "Legacy compliance adapter scanned all bg_portaal_* localStorage keys and reused a sole cached customer record despite missing or mismatched current-user identity.",
+    "Partial customerSlug matching was used instead of canonical exact normalized user key."
+  ],
+  "prevention": [
+    "Reuse existing readLegacyPortalStateForUser for legacy compliance hydration; require explicit current user.",
+    "Retain UNKNOWN instead of projecting unscoped legacy evidence into compliance score.",
+    "Negative identity and malformed legacy cache regression on protected CI."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-legacy-compliance-tenant-isolation-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-legacy-compliance-tenant-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-legacy-compliance-tenant-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-legacy-compliance-tenant-isolation-v1.test.mjs"
+    ]
+  },
+  "closureRequired": [
+    "Protected Required + CodeQL success",
+    "Netlify exact-main production publication and readback",
+    "Separate real signed-in tenant write/reload evidence",
+    "Official customer-specific CSRD legal scope proof"
+  ]
+}

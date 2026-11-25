@@ -1,0 +1,5 @@
+# BRAIN exact-head migration-history regression after valid migration #808
+
+The original BRAIN run [42063349533](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42063349533) failed one historical test after protected [#5468](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5468): `tests/brain-data-spine-original-ten-minute-stage-proof-20261105.test.mjs` incorrectly required migration `20261105132000` to remain the **latest** migration forever. Native Supabase production and the protected lock both contain 808 version/name pairs; `20261105132000` remains exactly the 807th, followed by provider-applied `20261105134200`. The minimal source repair asserts its immutable 807th position and exact identity, while allowing later real migrations. Existing SQL grants, `SECURITY DEFINER`, source timing and no-fake-green guards remain unchanged.
+
+Acceptance: original exact-head Required + CodeQL + BRAIN full backend replay, protected merge, independent provider readback. Never rewrite production SQL or pretend unapproved migrations are applied. Parent: #4198 and #3742.

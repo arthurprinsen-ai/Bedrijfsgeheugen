@@ -1,0 +1,59 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|ci-agent-repeated-job-priorities|matrix-independent-vote|20261023-v1",
+  "obligation_id": "delivery|ci-agent-repeated-job-priorities|matrix-independent-vote|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "CI_AGENT_MATRIX_REPLICA_MEDIAN_BIAS",
+  "root_cause": "The existing hourly Janitor's separate read-only repeated CI-job priority evaluator required >=3 distinct workflow attempts, but computed median/p95 and exemplar ranks from ALL matrix job replicas. One slow or fast workflow attempt with many matrix replicas could outweigh independent attempts and falsely choose or hide an agent optimization priority.",
+  "observed_evidence": {
+    "source_path": "tools/delivery/ci-agent-priorities.mjs",
+    "concrete_unfixed_code": "group.jobs.map(j=>j.execution_ms) weighted each matrix replica after only checking group.attempts.size >= 3",
+    "runtime_reference": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39971461584",
+    "runtime_status": "Source successfully exercised in existing hourly Janitor; no claimed observed matrix-induced incident or performance gain",
+    "provider_contract": "https://docs.github.com/en/rest/actions/workflow-jobs",
+    "measured_speedup_proven": false
+  },
+  "failed_approaches": [
+    "Count all matrix replicas as independent observations after satisfying a distinct-run floor",
+    "Prioritize a one-off peak as a repeated optimization cause",
+    "Decrease >=3 attempts or 60 second repeated median thresholds to manufacture actionable work"
+  ],
+  "fix": "Within the SAME existing tools/delivery/ci-agent-priorities.mjs advisory, use exactly one conservatively slowest executed matrix job per immutable run ID+attempt and stable job signature for repeated median, p95, wait median and exemplar evidence; preserve original raw sample size and separately expose independent_attempt_samples/matrix_replica_samples_excluded. This fixes both false-positive and false-negative weighting. No extra GET, scheduler, agent, issue registry or provider mutation.",
+  "prevention_rule": "Each GitHub workflow attempt receives exactly one vote in any repeated-job evidence distribution. More parallel matrix jobs on one attempt cannot alter the cohort median/p95. Keep original minimum 20 complete jobs/5 distinct overall, >=3 independently observed attempts, >=60000ms median, read-only advice with source SHA, verified owner and security gates. No autonomous promotion or extra dispatch from advisory evidence.",
+  "tests": [
+    "tests/brain-ci-agent-priorities-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CI_AGENT_MATRIX_REPLICA_MEDIAN_BIAS",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-agent-priorities-v1.test.mjs"
+    ],
+    "invariants": [
+      "slow replicas from only one attempt cannot force repeated 60 second median",
+      "fast replicas from one attempt cannot hide truly recurrent slow attempts",
+      "each run ID+attempt has one conservative max-runtime vote",
+      "same <=5 advisory output; no API increase",
+      "existing hourly Janitor only",
+      "Required and CodeQL, source provenance and one canonical writer remain protected"
+    ]
+  },
+  "terminal_rule": "Protected exact-head Required and CodeQL success, merge commit/main readback, Brain skill projection and a subsequent actual Janitor execution prove release. Comparative throughput improvement requires independently comparable before/after baseline; issue #4661 stays OPEN."
+}

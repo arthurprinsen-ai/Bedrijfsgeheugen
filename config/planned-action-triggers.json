@@ -1,0 +1,1699 @@
+{
+  "version": "PLANNED-ACTION-TRIGGERS-v1",
+  "note": "A rule fires when the planned action text contains at least one system word AND one action word. Substring match, case-insensitive. Rules are defined in config/delivery-prevention-rules.json; lessons in docs/brain/delivery-failure-lessons.json.",
+  "rules": [
+    {
+      "ruleId": "MIGRATION_AND_LOCK_IN_SAME_CHANGE_WITH_PROVIDER_READBACK",
+      "systems": [
+        "supabase"
+      ],
+      "actions": [
+        "migrat",
+        "apply",
+        "schema"
+      ]
+    },
+    {
+      "ruleId": "NEVER_SET_APPROVED_AT_DIRECTLY_USE_PUBLICATION_STATE_FUNCTION",
+      "systems": [
+        "supabase",
+        "database",
+        "content_publication"
+      ],
+      "actions": [
+        "approved_at",
+        "direct approval",
+        "directly approve",
+        "set approval",
+        "goedkeuring rechtstreeks"
+      ]
+    },
+    {
+      "ruleId": "DURABLE_REJECT_VIA_EVIDENCE_VETO",
+      "systems": [
+        "supabase",
+        "blog"
+      ],
+      "actions": [
+        "afkeur",
+        "afschrijv",
+        "reject",
+        "withdraw",
+        "veto"
+      ]
+    },
+    {
+      "ruleId": "STATUS_LADDER_NEVER_CLAIM_ABOVE_EVIDENCE",
+      "systems": [
+        "supabase",
+        "agent",
+        "heartbeat",
+        "powerhouse"
+      ],
+      "actions": [
+        "agent_executed",
+        "claim",
+        "status",
+        "bewezen",
+        "proven"
+      ]
+    },
+    {
+      "ruleId": "PROPOSE_BEFORE_IRREVERSIBLE_DATA_WRITE",
+      "systems": [
+        "supabase"
+      ],
+      "actions": [
+        "delete",
+        "opruim",
+        "cleanup",
+        "truncate",
+        "drop ",
+        "bulk"
+      ]
+    },
+    {
+      "ruleId": "CHECK_NETLIFY_FUNCTION_ENV_KEYS_BEFORE_ADDING_SECRETS",
+      "systems": [
+        "netlify"
+      ],
+      "actions": [
+        "secret",
+        "env",
+        "supabase_url",
+        "config"
+      ]
+    },
+    {
+      "ruleId": "DEPLOY_READY_IS_ONE_LINK_NOT_OUTCOME",
+      "systems": [
+        "netlify",
+        "deploy"
+      ],
+      "actions": [
+        "ready",
+        "uitgerold",
+        "live",
+        "verified",
+        "bewezen"
+      ]
+    },
+    {
+      "ruleId": "COMPOSIO_ACTIVE_STATUS_NOT_PROOF_READBACK_BEFORE_PUBLISH",
+      "systems": [
+        "composio",
+        "linkedin connection",
+        "linkedin account",
+        "linkedin token"
+      ],
+      "actions": [
+        "publish",
+        "publiceer",
+        "post",
+        "plaats"
+      ]
+    },
+    {
+      "ruleId": "COMPOSIO_USE_SERVER_PROJECT_CONNECTED_ACCOUNT_ID",
+      "systems": [
+        "composio",
+        "gmail"
+      ],
+      "actions": [
+        "send",
+        "mail",
+        "verstuur",
+        "connected_account"
+      ]
+    },
+    {
+      "ruleId": "RECORD_ACCOUNT_ID_AND_USERNAME_WITH_EVERY_MEASUREMENT",
+      "systems": [
+        "composio",
+        "instagram",
+        "linkedin",
+        "windsor"
+      ],
+      "actions": [
+        "meet",
+        "measure",
+        "analytics",
+        "statistiek",
+        "cijfers"
+      ]
+    },
+    {
+      "ruleId": "RESPECT_RETRY_AFTER_NO_FALLBACK_PUBLISHING_ROUTE",
+      "systems": [
+        "buffer"
+      ],
+      "actions": [
+        "post",
+        "publish",
+        "schedule",
+        "retry",
+        "publiceer",
+        "plan"
+      ]
+    },
+    {
+      "ruleId": "OK_WITH_FALLBACK_IS_NOT_A_FRESH_MEASUREMENT",
+      "systems": [
+        "windsor"
+      ],
+      "actions": [
+        "sync",
+        "fetch",
+        "ophalen",
+        "meting",
+        "measure",
+        "data"
+      ]
+    },
+    {
+      "ruleId": "EMPTY_PROVIDER_REPORT_IS_NOT_SUCCESS",
+      "systems": [
+        "ga4",
+        "google analytics",
+        "search console",
+        "searchconsole"
+      ],
+      "actions": [
+        "sync",
+        "meting",
+        "measure",
+        "rapport",
+        "report"
+      ]
+    },
+    {
+      "ruleId": "HEALTH_CHECK_MUST_MATCH_JOB_CADENCE",
+      "systems": [
+        "search console",
+        "searchconsole",
+        "gsc",
+        "zoekwoordkansen"
+      ],
+      "actions": [
+        "verouderd",
+        "health",
+        "stale",
+        "check",
+        "sync"
+      ]
+    },
+    {
+      "ruleId": "DATAFORSEO_ONLY_40101_40102_ARE_EMPTY",
+      "systems": [
+        "dataforseo"
+      ],
+      "actions": [
+        "40101",
+        "40102",
+        "error",
+        "fout",
+        "retry",
+        "empty",
+        "leeg",
+        "task"
+      ]
+    },
+    {
+      "ruleId": "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT",
+      "systems": [
+        "tavily"
+      ],
+      "actions": [
+        "search",
+        "zoek",
+        "run",
+        "afwijz",
+        "reject",
+        "432",
+        "empty",
+        "leeg"
+      ]
+    },
+    {
+      "ruleId": "EVERY_LOOP_NEEDS_OWNER_AND_STARTER",
+      "systems": [
+        "heartbeat",
+        "agent",
+        "lus",
+        "loop",
+        "cron",
+        "schedule"
+      ],
+      "actions": [
+        "new",
+        "nieuw",
+        "build",
+        "bouw",
+        "start",
+        "schedule"
+      ]
+    },
+    {
+      "ruleId": "CHECK_EXTERNAL_EFFECT_BEFORE_REPUBLISH",
+      "systems": [
+        "linkedin",
+        "instagram",
+        "buffer",
+        "publicat",
+        "post"
+      ],
+      "actions": [
+        "republish",
+        "opnieuw",
+        "retry",
+        "gemist",
+        "missed"
+      ]
+    },
+    {
+      "ruleId": "KEEP_ENTRY_PAGES_READABLE_AND_CORRECT_OLD_STATUS",
+      "systems": [
+        "notion",
+        "start hier"
+      ],
+      "actions": [
+        "update",
+        "bijwerk",
+        "fetch",
+        "read",
+        "lees",
+        "add",
+        "toevoeg"
+      ]
+    },
+    {
+      "ruleId": "GITHUB_WORKFLOW_WRITE_NEEDS_CONTENTS_AND_WORKFLOWS_PERMISSION",
+      "systems": [
+        "github workflow",
+        ".github/workflows",
+        "workflow file",
+        "github actions"
+      ],
+      "actions": [
+        "write",
+        "edit",
+        "create",
+        "403",
+        "permission",
+        "grant"
+      ]
+    },
+    {
+      "ruleId": "NEVER_PASTE_OR_REPEAT_TOKENS_IN_CHAT",
+      "systems": [
+        "chat",
+        "conversation",
+        "message"
+      ],
+      "actions": [
+        "paste token",
+        "send token",
+        "share token",
+        "repeat token",
+        "token into",
+        "secret into",
+        "paste secret"
+      ]
+    },
+    {
+      "ruleId": "NEVER_SWALLOW_AUTH_ERRORS_AND_ALERT_BEFORE_TOKEN_EXPIRY",
+      "systems": [
+        "github",
+        "token"
+      ],
+      "actions": [
+        "expired",
+        "expire",
+        "401",
+        "403"
+      ]
+    },
+    {
+      "ruleId": "READ_VIA_RAW_VERIFY_VIA_AUTHENTICATED_CONTENTS_API",
+      "systems": [
+        "github",
+        "raw",
+        "api"
+      ],
+      "actions": [
+        "fetch",
+        "read",
+        "cache",
+        "verify"
+      ]
+    },
+    {
+      "ruleId": "UPDATE_BRANCH_AND_WAIT_FOR_CHECK_BEFORE_MERGE_RETRY",
+      "systems": [
+        "github",
+        "pr",
+        "pull request"
+      ],
+      "actions": [
+        "merge",
+        "405",
+        "behind",
+        "conflict"
+      ]
+    },
+    {
+      "ruleId": "VERIFY_AUTO_MERGE_ENABLED_BEFORE_RELYING_ON_IT",
+      "systems": [
+        "github",
+        "pr"
+      ],
+      "actions": [
+        "auto-merge",
+        "merge"
+      ]
+    },
+    {
+      "ruleId": "USE_GIT_DATA_API_OR_MULTI_FILE_COMMIT_ON_CONTENDED_REPO",
+      "systems": [
+        "github",
+        "contents api"
+      ],
+      "actions": [
+        "409",
+        "write",
+        "commit",
+        "conflict"
+      ]
+    },
+    {
+      "ruleId": "USE_FLAT_BRANCH_NAMES_AFTER_CHECKING_EXISTING_REFS",
+      "systems": [
+        "branch",
+        "git refs",
+        "git branch",
+        "github branch"
+      ],
+      "actions": [
+        "create",
+        "rename",
+        "422",
+        "collision",
+        "nested",
+        "slash",
+        "branch name"
+      ]
+    },
+    {
+      "ruleId": "CONSOLIDATE_PARALLEL_IDENTICAL_CANDIDATES",
+      "systems": [
+        "github",
+        "branch",
+        "pr"
+      ],
+      "actions": [
+        "parallel",
+        "duplicate",
+        "concurrent"
+      ]
+    },
+    {
+      "ruleId": "QUERY_CHECK_RUNS_BY_FULL_HEAD_SHA",
+      "systems": [
+        "github",
+        "ci",
+        "checks"
+      ],
+      "actions": [
+        "check",
+        "status",
+        "workflow",
+        "readback"
+      ]
+    },
+    {
+      "ruleId": "RETRIGGER_REQUIRED_CHECK_AFTER_PR_BODY_CHANGE",
+      "systems": [
+        "github",
+        "pr"
+      ],
+      "actions": [
+        "body",
+        "description",
+        "required"
+      ]
+    },
+    {
+      "ruleId": "REGISTER_NEW_TESTS_AND_PATHS_IN_LANE_CONFIG",
+      "systems": [
+        "github",
+        "ci",
+        "test"
+      ],
+      "actions": [
+        "new test",
+        "path",
+        "lane",
+        "file"
+      ]
+    },
+    {
+      "ruleId": "USE_EXACT_GIT_BRANCH_NAME_FOR_SUPABASE_PREVIEW",
+      "systems": [
+        "supabase",
+        "preview"
+      ],
+      "actions": [
+        "preview",
+        "branch",
+        "test"
+      ]
+    },
+    {
+      "ruleId": "NO_PR_OR_CHECK_CLAIMS_WITHOUT_AUTHENTICATED_READ",
+      "systems": [
+        "github",
+        "pull request",
+        "pr status",
+        "checks"
+      ],
+      "actions": [
+        "anonymous",
+        "unauthenticated",
+        "without authenticated",
+        "without an authenticated",
+        "claim without",
+        "status without",
+        "cannot read",
+        "can't read"
+      ]
+    },
+    {
+      "ruleId": "INSTALL_CHROMIUM_ONLY_VIA_SHARED_CI_SCRIPT",
+      "systems": [
+        "github",
+        "ci",
+        "chromium"
+      ],
+      "actions": [
+        "chrome",
+        "chromium",
+        "install",
+        "apt"
+      ]
+    },
+    {
+      "ruleId": "RECOVER_DUE_SOCIAL_ZERO_CANDIDATES_FROM_RELEASE_STATE",
+      "systems": [
+        "social",
+        "linkedin",
+        "instagram"
+      ],
+      "actions": [
+        "zero candidate",
+        "zero eligible",
+        "expected today"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN",
+      "systems": [
+        "netlify",
+        "production deploy"
+      ],
+      "actions": [
+        "readback",
+        "commit sha",
+        "deploy identity",
+        "mark green"
+      ]
+    },
+    {
+      "ruleId": "RECONCILE_MAIN_TO_EXACT_PRODUCTION_SHA",
+      "systems": [
+        "production",
+        "netlify"
+      ],
+      "actions": [
+        "production sha",
+        "sha lag",
+        "promote",
+        "reconcile main"
+      ]
+    },
+    {
+      "ruleId": "CLASSIFY_PRIVATE_AUTH_BEFORE_PUBLIC_SEO_SCANS",
+      "systems": [
+        "seo scan",
+        "seo check",
+        "seo audit"
+      ],
+      "actions": [
+        "noindex",
+        "private page",
+        "auth",
+        "portal",
+        "login"
+      ]
+    },
+    {
+      "ruleId": "RECONCILE_CLOSED_FORCE_PUSHED_PR_AGAINST_CURRENT_MAIN",
+      "systems": [
+        "pull request",
+        "pr #"
+      ],
+      "actions": [
+        "force push",
+        "force-push",
+        "closed pr",
+        "reopen"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_PERSISTENT_EVIDENCE_BEFORE_GREEN",
+      "systems": [
+        "evidence"
+      ],
+      "actions": [
+        "mark green",
+        "report green",
+        "claim green",
+        "declare done"
+      ]
+    },
+    {
+      "ruleId": "REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION",
+      "systems": [
+        "pull request",
+        "pr #"
+      ],
+      "actions": [
+        "recreate",
+        "same head",
+        "ready for review"
+      ]
+    },
+    {
+      "ruleId": "CLASSIFY_AND_EXECUTE_CHANGED_TEST_PATHS",
+      "systems": [
+        "test path",
+        "test selection",
+        "changed test"
+      ],
+      "actions": [
+        "classif",
+        "lane",
+        "select",
+        "execute"
+      ]
+    },
+    {
+      "ruleId": "NETLIFY_DEPLOY_AUTHORITY_MUST_BE_VISIBLE",
+      "systems": [
+        "netlify"
+      ],
+      "actions": [
+        "deploy authority",
+        "project access",
+        "account visible",
+        "not visible"
+      ]
+    },
+    {
+      "ruleId": "REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE",
+      "systems": [
+        "production"
+      ],
+      "actions": [
+        "persist",
+        "write to main",
+        "current main"
+      ]
+    },
+    {
+      "ruleId": "REPREPARE_I18N_PATCH_FROM_FINAL_PUBLIC_TEXT_AFTER_ANY_TEXT_CHANGE",
+      "systems": [
+        "i18n",
+        "translation cache",
+        "english cache"
+      ],
+      "actions": [
+        "patch",
+        "blog",
+        "public text",
+        "segment"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_EXECUTION_PROOF_AFTER_HTTP_ACK",
+      "systems": [
+        "http",
+        "webhook"
+      ],
+      "actions": [
+        "http 202",
+        "202 accepted",
+        "acknowledged",
+        "execution proof"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN",
+      "systems": [
+        "outcome",
+        "obligation"
+      ],
+      "actions": [
+        "mark green",
+        "close obligation",
+        "report green",
+        "declare proven"
+      ]
+    },
+    {
+      "ruleId": "TESTS_ASSERT_OUTCOMES_NOT_LITERAL_COPY",
+      "systems": [
+        "test"
+      ],
+      "actions": [
+        "literal text",
+        "marketing text",
+        "source text",
+        "assert the copy"
+      ]
+    },
+    {
+      "ruleId": "TREAT_NETLIFY_NEUTRAL_AND_PREVIEW_RACE_AS_NON_BLOCKING_AFTER_PROOF",
+      "systems": [
+        "netlify"
+      ],
+      "actions": [
+        "neutral",
+        "pages changed",
+        "preview race",
+        "preview check"
+      ]
+    },
+    {
+      "ruleId": "VERIFY_GITHUB_PR_HEAD_EXISTS_BEFORE_CREATE",
+      "systems": [
+        "github",
+        "pull request"
+      ],
+      "actions": [
+        "create pr",
+        "open pr",
+        "create a pull request",
+        "open a pull request",
+        "create the pr",
+        "new branch"
+      ]
+    },
+    {
+      "ruleId": "SINGLE_CANONICAL_REMEDIATION_OWNER_PER_ROOT_CAUSE",
+      "systems": [
+        "delivery-failure-lessons",
+        "delivery-prevention-rules",
+        "planned-action-triggers",
+        "prevention rule",
+        "lessons file"
+      ],
+      "actions": [
+        "add",
+        "append",
+        "write",
+        "new",
+        "edit"
+      ]
+    },
+    {
+      "ruleId": "RECREATE_READY_PR_ON_CONNECTOR_GRAPHQL_FAILURE",
+      "systems": [
+        "draft pr",
+        "draft pull",
+        "graphql"
+      ],
+      "actions": [
+        "ready for review",
+        "mark ready",
+        "mark as ready",
+        "recreate"
+      ]
+    },
+    {
+      "ruleId": "GITHUB_PUBLIC_PROOF_MAKE_STATE_WRITEBACK",
+      "systems": [
+        "github action",
+        "github workflow"
+      ],
+      "actions": [
+        "to notion",
+        "notion write",
+        "notion state",
+        "notion update"
+      ]
+    },
+    {
+      "ruleId": "BOUNDED_GITHUB_PUBLIC_PROOF",
+      "systems": [
+        "public proof",
+        "public http",
+        "title and canonical"
+      ],
+      "actions": [
+        "verif",
+        "bounded",
+        "proof"
+      ]
+    },
+    {
+      "ruleId": "CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST",
+      "systems": [
+        "contract test",
+        "literal assertion"
+      ],
+      "actions": [
+        "update",
+        "change",
+        "retire",
+        "rewrite",
+        "stale"
+      ]
+    },
+    {
+      "ruleId": "REFRESH_BASE_BEFORE_FINAL_GATE",
+      "systems": [
+        "merge base",
+        "stale base",
+        "base sha",
+        "final gate"
+      ],
+      "actions": [
+        "refresh",
+        "rebase",
+        "overlap",
+        "recreate",
+        "drift"
+      ]
+    },
+    {
+      "ruleId": "BLOCK_WRITER_CANARY_WHEN_ACTIONS_PR_CREATION_DISABLED",
+      "systems": [
+        "writer canary",
+        "github_token",
+        "actions policy"
+      ],
+      "actions": [
+        "pull request",
+        "pr creation",
+        "candidate pr",
+        "create pr",
+        "enable"
+      ]
+    },
+    {
+      "ruleId": "EXPLICIT_WRITER_SHADOW_DISPATCH",
+      "systems": [
+        "writer shadow",
+        "shadow workflow",
+        "shadow verification"
+      ],
+      "actions": [
+        "dispatch",
+        "workflow_dispatch",
+        "recursive"
+      ]
+    },
+    {
+      "ruleId": "BIND_SHADOW_TO_ACTUAL_PR_IDENTITY",
+      "systems": [
+        "writer shadow",
+        "shadow verification",
+        "shadow workflow"
+      ],
+      "actions": [
+        "base_sha",
+        "base sha",
+        "head sha",
+        "head.sha",
+        "pr identity"
+      ]
+    },
+    {
+      "ruleId": "SCOPE_PARITY_TO_VERIFIED_WRITER_PATHS",
+      "systems": [
+        "parity"
+      ],
+      "actions": [
+        "writer path",
+        "changedfiles",
+        "writer-owned",
+        "git patch"
+      ]
+    },
+    {
+      "ruleId": "FRESH_TRIGGER_FROM_CURRENT_MAIN_AFTER_RUNTIME_FIX",
+      "systems": [
+        "trigger pr",
+        "verification workflow",
+        "verification trigger"
+      ],
+      "actions": [
+        "runtime fix",
+        "close stale",
+        "fresh trigger",
+        "exercised"
+      ]
+    },
+    {
+      "ruleId": "CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE",
+      "systems": [
+        "writeback"
+      ],
+      "actions": [
+        "git diff",
+        "untracked",
+        "porcelain",
+        "allowlist"
+      ]
+    },
+    {
+      "ruleId": "FULLY_QUALIFY_DETACHED_HEAD_PUSH_REFSPEC",
+      "systems": [
+        "detached head",
+        "refspec"
+      ],
+      "actions": [
+        "push"
+      ]
+    },
+    {
+      "ruleId": "VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE",
+      "systems": [
+        "runscenariowithinputs",
+        "subscenario",
+        "sub-scenario"
+      ],
+      "actions": [
+        "input",
+        "envelope",
+        "map"
+      ]
+    },
+    {
+      "ruleId": "FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS",
+      "systems": [
+        "branch protection",
+        "main protection",
+        "platform control",
+        "platform enforcement"
+      ],
+      "actions": [
+        "certif",
+        "verif",
+        "infer",
+        "readiness",
+        "enforce"
+      ]
+    },
+    {
+      "ruleId": "ISOLATE_NEGATIVE_TEST_FIXTURES",
+      "systems": [
+        "negative test",
+        "negative fixture",
+        "negative scenario"
+      ],
+      "actions": [
+        "add",
+        "write",
+        "build",
+        "create",
+        "hardcode"
+      ]
+    },
+    {
+      "ruleId": "SINGLE_CANONICAL_WRITER_HANDOFF",
+      "systems": [
+        "central gates",
+        "writer handoff",
+        "shadow handoff"
+      ],
+      "actions": [
+        "handoff",
+        "hand off",
+        "route"
+      ]
+    },
+    {
+      "ruleId": "VALIDATE_BG184_BG156_EVENT_ENVELOPE",
+      "systems": [
+        "bg184",
+        "bg156"
+      ],
+      "actions": [
+        "event",
+        "envelope",
+        "dispatch"
+      ]
+    },
+    {
+      "ruleId": "TREAT_MAKE_ACCOUNT_CONNECT_400_AS_HARD_BOUNDARY",
+      "systems": [
+        "make.com",
+        "make scenario",
+        "make connection",
+        "make account"
+      ],
+      "actions": [
+        "400",
+        "oauth",
+        "reconnect",
+        "credential",
+        "authoriz"
+      ]
+    },
+    {
+      "ruleId": "RESTORE_GENERATED_REPORT_BEFORE_REBASE",
+      "systems": [
+        "seo-rapport",
+        "seo-status"
+      ],
+      "actions": [
+        "rebase",
+        "pull",
+        "commit",
+        "writeback"
+      ]
+    },
+    {
+      "ruleId": "DEDUPE_LEDGER_BY_EVENT_FINGERPRINT_NOT_HARDCODED_PR",
+      "systems": [
+        "ledger"
+      ],
+      "actions": [
+        "dedupe",
+        "dedup",
+        "duplicate"
+      ]
+    },
+    {
+      "ruleId": "NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN",
+      "systems": [
+        "directly on main",
+        "directly to main",
+        "straight on main",
+        "commit to main",
+        "push to main"
+      ],
+      "actions": [
+        "tdd",
+        "develop",
+        "implement",
+        "fix",
+        "change",
+        "push",
+        "commit"
+      ]
+    },
+    {
+      "ruleId": "AUTO_REGISTER_FUTURE_COMPONENTS",
+      "systems": [
+        "new component",
+        "component registry",
+        "component registration"
+      ],
+      "actions": [
+        "register",
+        "registry",
+        "cost",
+        "dashboard",
+        "launch"
+      ]
+    },
+    {
+      "ruleId": "MARK_UNMETERED_USAGE_NOT_ZERO",
+      "systems": [
+        "usage ledger",
+        "metering",
+        "unmetered",
+        "usage counter",
+        "provider usage"
+      ],
+      "actions": [
+        "zero",
+        "missing",
+        "counter",
+        "adapter",
+        "report"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_AUTHORIZED_CONNECTOR_FOR_REMOTE_WRITES",
+      "systems": [
+        "remote write",
+        "remote config",
+        "git remote",
+        "remote url"
+      ],
+      "actions": [
+        "push",
+        "write",
+        "connector",
+        "authoriz"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_ACTIVE_RULE_FOR_REQUIRED_CHAT_LESSON",
+      "systems": [
+        "required lesson",
+        "chat lesson",
+        "chat-learning",
+        "chat learning"
+      ],
+      "actions": [
+        "without a prevention",
+        "without prevention",
+        "missing prevention",
+        "unmapped",
+        "add required",
+        "new required"
+      ]
+    },
+    {
+      "ruleId": "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE",
+      "systems": [
+        "platform capacity",
+        "capacity gate",
+        "capacity state",
+        "build minutes"
+      ],
+      "actions": [
+        "promot",
+        "deploy",
+        "production",
+        "publish"
+      ]
+    },
+    {
+      "ruleId": "OPTIMIZE_SOURCE_CALLS_NOT_ONLY_CLIENT_CACHE",
+      "systems": [
+        "source call",
+        "source-call",
+        "polling cadence",
+        "polling interval"
+      ],
+      "actions": [
+        "cache",
+        "optimi",
+        "reduce",
+        "operation"
+      ]
+    },
+    {
+      "ruleId": "NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE",
+      "systems": [
+        "branch discovery",
+        "discover branch",
+        "branch state",
+        "branch exists",
+        "capability discovery"
+      ],
+      "actions": [
+        "create",
+        "write",
+        "mutate",
+        "push",
+        "probe",
+        "try"
+      ]
+    },
+    {
+      "ruleId": "CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST",
+      "systems": [
+        "checkpoint"
+      ],
+      "actions": [
+        "contract test",
+        "learning artifact",
+        "co-change"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_FULL_READ_TRANSFORM_WRITE_FOR_CONTENTS_API",
+      "systems": [
+        "contents api",
+        "create_or_update_file",
+        "file contents"
+      ],
+      "actions": [
+        "write",
+        "update",
+        "patch",
+        "fragment",
+        "replace",
+        "commit"
+      ]
+    },
+    {
+      "ruleId": "SINGLE_FLIGHT_POST_MERGE_CODEQL_PER_REF",
+      "systems": [
+        "codeql"
+      ],
+      "actions": [
+        "concurrency",
+        "cancel-in-progress",
+        "run_id",
+        "post-merge",
+        "single-flight",
+        "single flight"
+      ]
+    },
+    {
+      "ruleId": "NO_FINAL_HANDOFF_WHILE_AUTHORITATIVE_SECURITY_RUN_ACTIVE",
+      "systems": [
+        "codeql",
+        "security run"
+      ],
+      "actions": [
+        "handoff",
+        "hand off",
+        "final report",
+        "terminal"
+      ]
+    },
+    {
+      "ruleId": "RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION",
+      "systems": [
+        "interrupted",
+        "transport",
+        "connection lost",
+        "session dropped"
+      ],
+      "actions": [
+        "resume",
+        "restart",
+        "continue",
+        "start over"
+      ]
+    },
+    {
+      "ruleId": "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+      "systems": [
+        "index.html",
+        "homepage",
+        "netlify.toml",
+        "generator"
+      ],
+      "actions": [
+        "edit",
+        "change",
+        "fix",
+        "update",
+        "adjust"
+      ]
+    },
+    {
+      "ruleId": "NEW_OR_HANDMADE_PAGES_CHECK_GENERATOR_VIEW_LISTS_AND_SHELL_EXCLUSIONS",
+      "systems": [
+        "new page",
+        "handmade page",
+        "losse pagina",
+        "new html page",
+        "site-shell",
+        "site shell"
+      ],
+      "actions": [
+        "add",
+        "create",
+        "build",
+        "shell",
+        "view list"
+      ]
+    },
+    {
+      "ruleId": "MEASURE_GEOMETRY_BEFORE_ADDING_VISIBILITY_GUARDS",
+      "systems": [
+        "visibility",
+        "opacity",
+        "overflow",
+        "invisible",
+        "content column"
+      ],
+      "actions": [
+        "guard",
+        "force",
+        "!important"
+      ]
+    },
+    {
+      "ruleId": "DO_NOT_COPY_SHELL_JSONLD_TO_PAGES",
+      "systems": [
+        "json-ld",
+        "jsonld",
+        "structured data"
+      ],
+      "actions": [
+        "shell",
+        "copy",
+        "apply-shell",
+        "canonical"
+      ]
+    },
+    {
+      "ruleId": "USE_ONLY_DEPENDENCY_FREE_TESTS_IN_LEARNING_EVALUATION",
+      "systems": [
+        "learning record",
+        "learning evaluation",
+        "historical_replay",
+        "evaluation block"
+      ],
+      "actions": [
+        "test",
+        "npm",
+        "dependenc",
+        "import"
+      ]
+    },
+    {
+      "ruleId": "INCLUDE_DOT_FOLDERS_IN_BULK_FILE_OPERATIONS",
+      "systems": [
+        "glob",
+        "bulk move",
+        "bulk rename",
+        "bulk file",
+        "move pages",
+        "rename pages"
+      ],
+      "actions": [
+        "move",
+        "rename",
+        "replace",
+        "rewrite",
+        "operation"
+      ]
+    },
+    {
+      "ruleId": "UPDATE_CANONICAL_KOP_WITH_MENU_CHANGES",
+      "systems": [
+        "menu",
+        "navigation",
+        "kop.html",
+        "nav bar",
+        "menubalk"
+      ],
+      "actions": [
+        "add",
+        "new item",
+        "change",
+        "rename",
+        "item"
+      ]
+    },
+    {
+      "ruleId": "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK",
+      "systems": [
+        "markdown"
+      ],
+      "actions": [
+        "render",
+        "convert",
+        "heading"
+      ]
+    },
+    {
+      "ruleId": "POST_PUSH_CI_IS_DETECTION_NOT_PREVENTION",
+      "systems": [
+        "push to main",
+        "commit to main",
+        "write to main",
+        "direct main write",
+        "directly to main",
+        "directly on main"
+      ],
+      "actions": [
+        "push",
+        "commit",
+        "write",
+        "land",
+        "merge"
+      ]
+    },
+    {
+      "ruleId": "STRIP_SQL_COMMENTS_BEFORE_SEMANTIC_ASSERTIONS",
+      "systems": [
+        "sql test",
+        "sql regression",
+        "migration test",
+        "semantic assert"
+      ],
+      "actions": [
+        "regex",
+        "assert",
+        "comment",
+        "auth.uid",
+        "pattern"
+      ]
+    },
+    {
+      "ruleId": "DO_NOT_AUTO_FIX_PERFORMANCE_INFO",
+      "systems": [
+        "supabase advisor",
+        "performance advisor",
+        "get_advisors",
+        "unindexed foreign key",
+        "unused index"
+      ],
+      "actions": [
+        "fix",
+        "optimi",
+        "drop",
+        "create index",
+        "add an index",
+        "adding an index",
+        "add index",
+        "remediat",
+        "resolve"
+      ]
+    },
+    {
+      "ruleId": "REVOKE_ALL_BEFORE_LEAST_PRIVILEGE_GRANT",
+      "systems": [
+        "service_role",
+        "append-only",
+        "privilege"
+      ],
+      "actions": [
+        "revoke",
+        "grant",
+        "truncate",
+        "least privilege",
+        "least-privilege"
+      ]
+    },
+    {
+      "ruleId": "READ_LIVE_SCHEMA_BEFORE_EVIDENCE_WRITE",
+      "systems": [
+        "evidence insert",
+        "evidence write",
+        "write evidence",
+        "insert evidence",
+        "evidence table"
+      ],
+      "actions": [
+        "insert",
+        "write",
+        "column",
+        "target"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_OBSERVED_SCHEDULER_RUN_BEFORE_AUTONOMY_CLAIM",
+      "systems": [
+        "autonomy",
+        "autonomous",
+        "scheduled run",
+        "scheduler",
+        "cron job"
+      ],
+      "actions": [
+        "claim",
+        "mark live",
+        "mark green",
+        "certif",
+        "declare operational"
+      ]
+    },
+    {
+      "ruleId": "NO_NOOP_MIGRATION_FOR_TRIGGER_PROOF",
+      "systems": [
+        "noop migration",
+        "no-op migration",
+        "dummy migration",
+        "empty migration",
+        "trigger proof"
+      ],
+      "actions": [
+        "migration",
+        "prove",
+        "proof",
+        "create"
+      ]
+    },
+    {
+      "ruleId": "USE_EXACT_SHA_EVENT_FINGERPRINTS",
+      "systems": [
+        "event fingerprint",
+        "agentwork",
+        "push event",
+        "webhook",
+        "redeliver"
+      ],
+      "actions": [
+        "dedupe",
+        "replay",
+        "redeliver",
+        "fingerprint",
+        "duplicate"
+      ]
+    },
+    {
+      "ruleId": "CLASSIFY_NEW_RUNTIME_TOOL_PATHS",
+      "systems": [
+        "tools/",
+        "delivery lane",
+        "unified brain"
+      ],
+      "actions": [
+        "classif",
+        "new tool",
+        "new runtime",
+        "lane assignment",
+        "unassigned"
+      ]
+    },
+    {
+      "ruleId": "NETLIFY_DEPLOY_INSTRUCTION_IS_NOT_EXECUTION",
+      "systems": [
+        "netlify"
+      ],
+      "actions": [
+        "deploy instruction",
+        "cli command",
+        "trigger a deploy",
+        "trigger deploy",
+        "deploy to production",
+        "run the deploy"
+      ]
+    },
+    {
+      "ruleId": "RUNTIME_DNS_FAILURE_IS_INFRA_BOUNDARY",
+      "systems": [
+        "dns",
+        "could not resolve",
+        "getaddrinfo",
+        "enotfound"
+      ],
+      "actions": [
+        "fail",
+        "retry",
+        "error",
+        "cannot",
+        "can't"
+      ]
+    },
+    {
+      "ruleId": "PRODUCTION_PARITY_MISMATCH_REQUIRES_RECOVERY",
+      "systems": [
+        "netlify production",
+        "production deploy",
+        "commit_ref"
+      ],
+      "actions": [
+        "parity",
+        "behind main",
+        "older commit",
+        "stale deploy",
+        "mismatch"
+      ]
+    },
+    {
+      "ruleId": "DISCOVER_CONNECTOR_CAPABILITY_BEFORE_UNAVAILABLE_CLAIM",
+      "systems": [
+        "openart",
+        "connector",
+        "plugin"
+      ],
+      "actions": [
+        "not available",
+        "unavailable",
+        "no access",
+        "niet beschikbaar",
+        "cannot use"
+      ]
+    },
+    {
+      "ruleId": "REQUIRE_CANDIDATE_BRANCH_FOR_MANUAL_REPO_WRITES",
+      "systems": [
+        "connector write",
+        "manual write",
+        "create_or_update_file",
+        "repository write",
+        "repo write"
+      ],
+      "actions": [
+        "write",
+        "create",
+        "update",
+        "commit",
+        "push"
+      ]
+    },
+    {
+      "ruleId": "USE_GITHUB_SEARCH_ACTION_FOR_CODE_SEARCH",
+      "systems": [
+        "code search",
+        "search/code",
+        "search code"
+      ],
+      "actions": [
+        "fetch",
+        "rest",
+        "url",
+        "api",
+        "endpoint"
+      ]
+    },
+    {
+      "ruleId": "USE_GITHUB_READY_FOR_REVIEW_ACTION",
+      "systems": [
+        "update_pull_request",
+        "draft=false",
+        "draft pull request",
+        "draft pr"
+      ],
+      "actions": [
+        "ready",
+        "draft=false",
+        "convert",
+        "mark"
+      ]
+    },
+    {
+      "ruleId": "SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS",
+      "systems": [
+        "workflow",
+        "github actions",
+        ".github/workflows"
+      ],
+      "actions": [
+        "paths:",
+        "path filter",
+        "trigger scope",
+        "scope the trigger",
+        "broaden the trigger"
+      ]
+    },
+    {
+      "ruleId": "PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT",
+      "systems": [
+        "shared context",
+        "compact context",
+        "context pointer",
+        "shared team context"
+      ],
+      "actions": [
+        "compact",
+        "shorten",
+        "pointer",
+        "truncate",
+        "summariz"
+      ]
+    },
+    {
+      "ruleId": "LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK",
+      "systems": [
+        "learning writeback",
+        "learning write-back",
+        "brain writeback",
+        "learning_deferred"
+      ],
+      "actions": [
+        "fail",
+        "error",
+        "rate limit",
+        "rate-limit",
+        "retry",
+        "unavailable"
+      ]
+    },
+    {
+      "ruleId": "DAILY_BLOG_WORKFLOW_PATHS_MUST_BE_RUNTIME_CLOSURE_PATHS",
+      "systems": [
+        "daily blog workflow",
+        "runtimeclosurepathprefixes",
+        "integration bundle",
+        "closure policy"
+      ],
+      "actions": [
+        "git add",
+        "stage",
+        "new path",
+        "add a file",
+        "add a path",
+        "closure",
+        "exempt"
+      ]
+    },
+    {
+      "ruleId": "DAILY_BLOG_I18N_MUST_COVER_COMMITTED_TREE",
+      "systems": [
+        "daily blog i18n",
+        "committed-tree",
+        "prepare-cache",
+        "prepare-i18n-cache"
+      ],
+      "actions": [
+        "remove",
+        "skip",
+        "drop",
+        "reorder",
+        "second pass",
+        "committed tree",
+        "validate-cache"
+      ]
+    },
+    {
+      "ruleId": "GIT_LS_FILES_MUST_SET_MAXBUFFER",
+      "systems": [
+        "artifact-id",
+        "git ls-files",
+        "source manifest",
+        "maxbuffer"
+      ],
+      "actions": [
+        "remove",
+        "drop",
+        "lower",
+        "revert",
+        "default buffer",
+        "unbounded"
+      ]
+    },
+    {
+      "ruleId": "REQUIRED_TEST_NPM_INSTALL_MUST_SURVIVE_FFMPEG_DOWNLOAD",
+      "systems": [
+        "required-test",
+        "npm install",
+        "ffmpeg-static",
+        "postinstall",
+        "preflight install"
+      ],
+      "actions": [
+        "remove",
+        "drop",
+        "revert",
+        "ignore-scripts",
+        "retry"
+      ]
+    }
+  ]
+}

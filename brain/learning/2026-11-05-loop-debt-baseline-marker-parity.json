@@ -1,0 +1,41 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "brain|incident-self-fix|loop-debt-baseline-marker-parity|20261105-v1",
+  "owner": "existing incident register and self-fix policy owner",
+  "compiler": {
+    "failure_class": "LOOP_DEBT_BASELINE_STALE_AFTER_MARKER_ADDED",
+    "scope": "INCIDENT_SELF_FIX_LOOP_DEBT_BASELINE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "PR #5446 consolidated Heartbeat owner rules and added the incident-loop marker to powerhouse-company-intelligence-os and powerhouse-delivery-concurrency, but both skills stayed in loop_debt_baseline. The guard 'baseline contains no skill that already carries the marker' then failed on main (debt must shrink, never hide), and the backend lane went red on the exact PR head.",
+  "prevention_rule": "A skill that gains the marker leaves loop_debt_baseline in the same change. The existing guard test enforces it; no test is weakened.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-outcome-measurement-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-lock-pr-gate-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Original BRAIN run 42033224354, backend lane: 1 failing test, baseline contains no skill that already carries the marker"
+    ],
+    "current": [
+      "2 of 31 baseline skills carried the marker; removed. 160 of 160 incident, preflight and skill tests pass locally"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_BRAIN_AND_TERMINAL",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

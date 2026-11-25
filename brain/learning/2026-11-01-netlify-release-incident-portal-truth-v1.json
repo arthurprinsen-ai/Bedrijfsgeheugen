@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|portal|netlify-live-versus-unresolved-build-incident|20261101-v1",
+  "obligation_id": "p0-5241-original-release-incident-portal-20261101-v1",
+  "compiler": {
+    "failure_class": "INCIDENT_SOURCE_PORTAL_PROJECTION_MISSING",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "CANDIDATE_PENDING_PROTECTED_RELEASE",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5241",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "The original Netlify release incident #5241 remained open after an independently proven exact-SHA production rollout. The authenticated Powerhouse delivery portal only displayed a synthesized release-status card, not the existing original incident state or its unresolved full-build phase diagnostic. Without the provider issue readback, a live website could be mistaken for closed root-cause learning.",
+  "evidence": {
+    "protected_main": "10195dae004485ec728211aeef7151714455988e",
+    "production_deploy": "6ae7a0e27f3f5dd85bf78b72",
+    "prod_provider_state": "ready",
+    "production_release_browser_proof": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41347008644",
+    "historical_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41344419120",
+    "original_issue_status": "OPEN",
+    "original_root_phase_proven": false,
+    "source": "GitHub issue #5241 and canonical authenticated Powerhouse observability API; portal continues reading no separate error registry"
+  },
+  "prevention_rule": "For every original production release incident, the existing admin portal must show source-backed issue state separately from exact-SHA LIVE status. Missing GitHub issue / unverified manifest must fail closed. A green deployment cannot erase historical unresolved root cause, regressions or measured commercial outcomes.",
+  "regression_contract": "tests/brain-original-netlify-incident-portal-20261101.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-netlify-incident-portal-20261101.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-netlify-incident-portal-20261101.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-original-netlify-incident-portal-20261101.test.mjs"
+  ],
+  "outcome": {
+    "source_change": "CANDIDATE",
+    "protected_merge": false,
+    "portal_production": false,
+    "commercial_paid_customer": false
+  },
+  "owner": "original-one-brain-powerhouse-observability-release-agent",
+  "no_parallel_executor": true
+}

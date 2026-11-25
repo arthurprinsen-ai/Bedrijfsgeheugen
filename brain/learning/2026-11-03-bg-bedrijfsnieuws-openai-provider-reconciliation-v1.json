@@ -1,0 +1,56 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|bg-bedrijfsnieuws|anthropic-runtime-openai-governance-drift|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PROTECTED_PATCH_PENDING_PROVIDER_READBACK",
+  "failure_class": "ORIGINAL_EDGE_AI_PROVIDER_DRIFT",
+  "owner": "original-bg-bedrijfsnieuws-agent",
+  "evidence": {
+    "source": "Supabase native Edge runtime bg-bedrijfsnieuws v11 + canonical brain_ai_governance_registry 2026-11-03",
+    "original_runtime_provider": "Anthropic",
+    "original_source_version": 11,
+    "original_sha256": "f97da1520e55a955ae6d486e795704c20338feedce5c49c8740ee7ee40",
+    "canonical_active_provider": "OpenAI",
+    "canonical_model": "gpt-5-mini",
+    "governance_use_case": "supabase-bg-kansenradar-v1",
+    "risk": "Original 403 AI_USE_CASE_NOT_APPROVED on next invocation; inferred from exact source predicate and approved provider, not claimed independently executed."
+  },
+  "root_cause": "Original business-news function continued to enforce Anthropic on the shared Kansenradar use-case after owner's OpenAI-only decision and versioned production governance handover.",
+  "fix": "Migrate only the original business-news inference to the approved OpenAI gpt-5-mini model; parse required function arguments with exact original oordeel schema, retain source verification, score threshold, red proof and suggested-only LinkedIn DM drafts.",
+  "prevention_rule": "Every AI-consuming original function must read specific ACTIVE approved canonical provider/model and share the source-aware OpenAI adapter contract; reject mismatches. Never carry legacy Anthropic direct endpoint/secret on a changed original use-case; keep original cron/owner and prove provider outcomes.",
+  "tests": [
+    "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfsnieuws-20261029.test.mjs"
+    ],
+    "invariants": [
+      "owner approved OpenAI only",
+      "original source-linked strict target company matching",
+      "refuse generated facts",
+      "original draft-only suggested action",
+      "no new scheduler/agent",
+      "exact protected merge and Supabase source readback"
+    ]
+  },
+  "compiler": {
+    "scope": "ONE_BRAIN_SUPABASE_EDGE",
+    "failure_class": "ORIGINAL_EDGE_AI_PROVIDER_DRIFT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "terminal_rule": "Protected Required/CodeQL/BRAIN; original provider exact source deploy and independently verified next natural news run before GREEN."
+}

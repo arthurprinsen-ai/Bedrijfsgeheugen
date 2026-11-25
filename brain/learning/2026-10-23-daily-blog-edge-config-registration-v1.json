@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "date": "2026-10-23",
+  "fingerprint": "supabase|edge-provider-authority|daily-blog-config-omission|20261023-v1",
+  "obligation": "powerhouse|blog-edge-config-provider-authority|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_cause": "After protected #4725 queue source merge, Supabase Edge Production Authority run 39904069313 failed SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:powerhouse-blog-queue. The deployed queue and exporter existed with verify_jwt=false but lacked registration in canonical supabase/config.toml; the authority correctly failed closed.",
+  "prevention": "Register both original canonical blog Edge functions with exact current JWT behavior/entrypoints and existing queue header-secret gate. Preserve source parity, provider readback and protected source release. Test edge-runtime-scope and config contract.",
+  "evidence": {
+    "failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39904069313",
+    "deployed": {
+      "queue_version": 17,
+      "export_version": 10
+    },
+    "protected_sources": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4723",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4725"
+    ],
+    "regression_tests": [
+      "tests/brain-daily-blog-edge-config-registration-v1.test.mjs"
+    ],
+    "production_readback": "PENDING_PROTECTED_MERGE_AND_PROVIDER_ATTESTATION"
+  },
+  "compiler": {
+    "failure_class": "CONFIG_DRIFT",
+    "scope": "SUPABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-edge-config-registration-v1.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

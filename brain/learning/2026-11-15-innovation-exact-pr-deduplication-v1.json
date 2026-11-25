@@ -1,0 +1,68 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "PROTECTED_IMPLEMENTATION_CANDIDATE_NOT_YET_PROVEN_LIVE",
+  "fingerprint": "powerhouse|innovation|recovery-pr-uuid-falsely-treated-as-implemented-source|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "After protected original no-change fix #5904, original_code_recovery run 43753665119 incorrectly selected zero candidates because selector searched all GitHub PR bodies for candidate UUID; the #5904 recovery/learning PR happened to mention original candidate 7ae7..., so a documentation mention was treated as an actual source-bound engineering implementation PR.",
+  "compiler": {
+    "failure_class": "ORIGINAL_INNOVATION_GITHUB_PR_BODY_SUBSTRING_FALSE_DUPLICATE",
+    "severity": "P0_ORIGINAL_OWNER_EXECUTION_STARVATION",
+    "machine_enforceable": true,
+    "forbidden_false_success": true
+  },
+  "change": {
+    "source_selector": "scripts/brain/innovation-original-code-delivery.mjs",
+    "exact_match": {
+      "head_branch": "writer/innovation-<candidate-id-prefix>-<run-id>",
+      "candidate_type": "implementation",
+      "original_candidate": "candidate_uuid",
+      "source_sha": "payload_sha256",
+      "source_revision": "evidence.source_revision",
+      "original_operation": "operation_id",
+      "original_owner": "agent:agent-integration-engineer"
+    },
+    "native_one_brain_operation_status": "PLANNED",
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_agent": false,
+    "new_native_table": false
+  },
+  "evidence": {
+    "failed_original_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43753665119",
+    "original_candidate": "7ae7a817-5900-41df-bf7c-d127e8336b13",
+    "pr_that_caused_false_duplicate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5904",
+    "result": "NO_NEW_SOURCE_BOUND_SAFE_CODE_CANDIDATE",
+    "original_nochange_receipt_written": false,
+    "measured_business_result": false
+  },
+  "prevention": {
+    "never_compare_plain_uuid_substring": true,
+    "require_verified_writer_branch_identity": true,
+    "require_source_sha_and_revision": true,
+    "require_exact_original_operation_owner": true,
+    "do_not_count_recovery_pr_as_feature": true,
+    "do_not_reissue_real_existing_implementation_pr": true,
+    "original_planned_status_kept": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "real_scoped_original_replay_due": true
+  },
+  "semantic_learning": {
+    "cause": "Source identity in prose is not executable provenance. Canonical GitHub dedupe must verify same original source, original writer and PR kind, not presence of a UUID in arbitrary recovery text.",
+    "prevention_rule": "Only exact original writer branch, implementation PR kind, original candidate id, source SHA/revision, operation and original owner count as an existing executable PR; all other PRs are ordinary references.",
+    "regression_guard": "tests/brain-innovation-original-code-delivery-20261115.test.mjs",
+    "next_owner": "Original Powerhouse Self Evolution engineering owner",
+    "effect_proof": "EXACT_GITHUB_SOURCE_PR_ORIGINAL_BRAIN_RECEIPT_AND_HEARTBEAT_EFFECT_DUE"
+  }
+}

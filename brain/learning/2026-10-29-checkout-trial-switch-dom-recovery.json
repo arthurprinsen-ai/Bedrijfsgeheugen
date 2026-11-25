@@ -1,0 +1,32 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "checkout-trial-switch-dom-recovery-20261029",
+  "fingerprint": "powerhouse|website|checkout-trial-switch-dom|20261029",
+  "status": "CANDIDATE_UNVERIFIED_NOT_LIVE",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "QUALITY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-afsluiten-english-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Source checkout CTA requires #trialSwitch, but the built /afsluiten page browser test observed null; setTrialLink() raised TypeError on replaceChildren. The actual built-DOM normalization stage may remove this optional placeholder.",
+  "change": "Recover the missing trial CTA placeholder inside the existing checkout form at runtime while preserving paid-versus-trial navigation and refusing to invent a payment state.",
+  "prevention": "Keep regression testing both pre-existing placeholder and missing placeholder on the real built checkout page; preserve paid/trial choice across NL and EN routes.",
+  "evidence": {
+    "source": "GitHub incident and CI logs, 2026-10-29",
+    "linked_issues": "#4577",
+    "tests": [
+      "tests/brain-afsluiten-english-v1.test.mjs"
+    ],
+    "production_verified": false,
+    "provider_auth_proof": false,
+    "live": false
+  }
+}

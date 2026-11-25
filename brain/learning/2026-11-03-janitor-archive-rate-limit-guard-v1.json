@@ -1,0 +1,71 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "github|janitor-archive-sweep|installation-rate-limit-uncaught-after-tag403|20261103-v1",
+  "obligation_id": "github|janitor-archive-sweep|installation-rate-limit-uncaught-after-tag403|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5341",
+  "parent_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5320",
+  "related_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5333",
+  "status": "PATCH_CANDIDATE_AWAITING_PROTECTED_CI",
+  "failure_class": "GITHUB_INSTALLATION_API_RATE_LIMIT_AFTER_ARCHIVE_DENIAL",
+  "ownership": {
+    "agent": "existing-powerhouse-repository-janitor",
+    "accountable": "arthurprinsen-ai",
+    "exclusive_writer_required": true
+  },
+  "evidence": {
+    "run_id": 41595648620,
+    "job_id": 125784745984,
+    "source_sha": "019016ddc50bcbfe354001a704ad1e9159c1e4c6",
+    "provider_http_status": 403,
+    "provider_message": "API rate limit exceeded for installation",
+    "request_id": "081B:53DBA:9F779:208D21:6AE98D40",
+    "provider_timestamp_utc": "2026-11-03T07:29:04Z",
+    "earlier_tag_create_denials": 3,
+    "unique_branches_deleted_after_denial": 0
+  },
+  "root_cause": "The original archive sweep continued per-branch GitHub commit/compare API probes even after three tag-create permission denials. When the installation quota was exhausted, the commit lookup exception happened before the per-branch try/catch and therefore had no typed per-failure evidence. Exhausted rate capacity is distinct from archive tag create authorization.",
+  "fix": "Rotate at most 60 branch candidates per original Janitor run; stop all provider reads immediately at three archive denials; wrap all per-branch GitHub commit, comparison, tag and delete calls in typed failure capture; distinguish installation API quota from tag permission 403; emit machine-readable action/readback even for initial inventory pagination failure; retain nonzero job result, branch preservation and if-always artifact.",
+  "prevention_rule": "No unbounded per-run GitHub branch API probe, no provider calls after three denied archive tags, no failed inventory without typed evidence, no 403 quota mislabelled as permission, no branch deletion without exact tag SHA readback; first failure remains observable even if no provider request budget is left. Preserve existing Janitor writer and schedule.",
+  "compiler": {
+    "scope": "GITHUB",
+    "failure_class": "GITHUB_INSTALLATION_API_RATE_LIMIT_AFTER_ARCHIVE_DENIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-branch-archive-sweep.test.mjs"
+    ],
+    "invariants": [
+      "rotating<=60 branch window with explicit partial-scope status",
+      "three tag denial circuit stop before further commit APIs",
+      "all provider lookups caught with typed native evidence",
+      "HTTP403 rate limit distinct from permission denied",
+      "native original Janitor unaffected outside archive job",
+      "no unique work deletion without tag readback",
+      "no new scheduler, writer, repo override or token scope"
+    ]
+  },
+  "tests": [
+    "tests/brain-branch-archive-sweep.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization"
+  ],
+  "portal_projection": {
+    "status": "RATE_LIMIT_AND_ARCHIVE_TAG_PERMISSION_OPEN",
+    "confidence": "NATIVE_JOB_LOG",
+    "global_green_allowed": false,
+    "owner": "original-Janitor"
+  },
+  "terminal_rule": "Exact-head Required, CodeQL and full BRAIN; protected merge; later original Janitor natural run must show quota preserved and correct typed-denial evidence; provider tag authorization and #4655 ghosts are separately open."
+}

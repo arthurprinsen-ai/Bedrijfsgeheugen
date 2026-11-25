@@ -1,0 +1,41 @@
+name: Historical Terminal Reconciliation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/historical-terminal-reconciliation.yml'
+      - 'tools/delivery/historical-terminal-reconcile.mjs'
+      - 'config/historical-terminal-reconciliation.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: historical-terminal-reconciliation
+  cancel-in-progress: false
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Reconcile historical terminal obligations with current authority
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node tools/delivery/historical-terminal-reconcile.mjs
+      - name: Upload superseding terminal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-terminal-reconciliation-${{ github.sha }}
+          path: .artifacts/historical-terminal-reconciliation.json
+          if-no-files-found: error
+          retention-days: 90

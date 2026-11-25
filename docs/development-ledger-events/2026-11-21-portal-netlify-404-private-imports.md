@@ -1,0 +1,10 @@
+# 2026-11-21 — Original Engineering incident: browserimport versus private Netlify redirect
+
+- **Original parent:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+- **Native live:** main `7688234b36e41a476988cf6d30024a76cb351c3f`, Netlify READY `6b00dd064a3808ba8466f1a2`; signed two-tenant Portal HTTP200, connector readiness intact.
+- **Actual original browser red:** https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44839827784, `/portal-v2/` desktop + mobile `appMounted:false`, `hydrating:true`, `recoveryShown:true`, script/asset failures.
+- **Independent provider source:** Netlify edge HTTP404 topk 23:53–23:56 UTC proves `/brain/context/business-context-engine.mjs` (12), `/platform/organism/organism-graph.mjs` (12), six unique browser-broken internal roots; GitHub source remains present, public paths forced to 404 by `_redirects`.
+- **Cause:** implicit browser ESM graph pulls private Brain/Platform files whose intentional public access policy blocks exposure; not an auth sign-in/tenant issue.
+- **Original safe fix:** source-only, explicit 7-file allowlist in original `tools/ci/build-portal-public-runtime.mjs` Netlify build phase and generated `portal-v2/browser-runtime` copies; original import path rewrite; original production verifier checks literal public module byte hashes against protected Git source. Never weaken forced 404s or copy runtime secrets.
+- **Prevention:** only approved read-only calculations, transitive import/sensitive API/symlink guards, all unexpected private browser imports hard-red. Same lineage, regression test `tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs`, original agent skills, machine-readable historical/shadow/canary learning.
+- **Evidence due:** protected Required/CodeQL, exact main Netlify READY, actual portal module HTTP200 byte proofs and true mounted app + original sitewide visual CLS. Distinct due-diligence mobile CLS remains red and cannot be waived. 14 original innovation obligations remain OPEN; no independently measured business outcomes.

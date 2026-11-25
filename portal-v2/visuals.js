@@ -12,6 +12,23 @@ const num=(value,digits=0)=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits
 const n=value=>Number.isFinite(Number(value))?Number(value):0;
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,n(value)));
 
+
+/** Disclosure and exact-value table share the *same* chart input: no second metric model. */
+const exactValue=value=>value===null||value===undefined||value===''?'Niet beschikbaar':Number.isFinite(Number(value))
+ ?new Intl.NumberFormat('nl-NL',{maximumFractionDigits:12}).format(Number(value)):String(value);
+function withAccessibleTable(chart,title,headings,rows){
+  if(!chart||!rows.length)return chart;
+  const headers=headings.map(heading=>'<th scope="col">'+esc(heading)+'</th>').join('');
+  const body=rows.map(row=>'<tr>'+row.map((cell,index)=>index===0
+    ?'<th scope="row">'+esc(exactValue(cell))+'</th>'
+    :'<td>'+esc(exactValue(cell))+'</td>').join('')+'</tr>').join('');
+  const details='<details class="bg-li-dataset"><summary>Bekijk de waarden als tabel</summary>'
+    +'<div class="bg-li-table-scroll" tabindex="0" role="region" aria-label="'+esc(title)+' in tabelvorm">'
+    +'<table><caption>'+esc(title)+' — dezelfde waarden als de grafiek, geen aanvullende bronvalidatie</caption>'
+    +'<thead><tr>'+headers+'</tr></thead><tbody>'+body+'</tbody></table></div></details>';
+  return chart.replace(/<\/figure>$/,details+'</figure>');
+}
+
 const ACCENT='var(--saas-accent,#4f46e5)';
 const SOFT='var(--saas-accent-2,#0ea5e9)';
 const MINT='var(--saas-mint,#10b981)';
@@ -23,37 +40,52 @@ function frame(viewBox,title,body){
 }
 
 
-/** Oude-portaal adoptiecurve: vijf segmenten, eigen positie, benchmark en bovenste kwartiel. */
-export function adoptionBell({current=1,benchmark=3,upperQuartile=4,labels=[]}={}, {title='Waar je staat op de adoptiecurve'}={}){
-  const stages=(labels.length?labels:['Achterblijvers','Late majority','Early majority','Early adopters','Innovators']).slice(0,5);
-  const width=780,height=300,left=54,right=34,base=220;
-  const cx=(left+width-right)/2, span=width-left-right;
-  const y=x=>base-155*Math.exp(-Math.pow((x-cx)/(span*.27),2));
-  const path=[]; for(let i=0;i<=80;i++){const x=left+span*i/80;path.push(`${i?'L':'M'}${x.toFixed(1)} ${y(x).toFixed(1)}`);}
-  const stageX=level=>left+span*(clamp(level,1,5)-1)/4;
-  const marker=(level,label,kind)=>{const x=stageX(level), yy=y(x); return `<g class="v2-hit v2-marker ${kind}" tabindex="0" role="button" aria-label="${esc(label)}: niveau ${num(level,1)}">
-    <line x1="${x}" y1="${base}" x2="${x}" y2="${yy}" class="v2-marker-line"/>
-    <circle cx="${x}" cy="${yy}" r="${kind==='current'?10:7}" class="v2-marker-dot"><title>${esc(label)} · niveau ${num(level,1)}</title></circle>
-    <text x="${x}" y="${Math.max(22,yy-16)}" text-anchor="middle" class="v2-marker-label">${esc(label)}</text>
-  </g>`;};
-  const stageLabels=stages.map((label,index)=>`<g class="v2-hit v2-stage" tabindex="0" role="button" aria-label="${esc(label)}, niveau ${index+1}"><text x="${stageX(index+1)}" y="${base+26}" text-anchor="middle">${esc(label)}</text><text x="${stageX(index+1)}" y="${base+42}" text-anchor="middle" opacity=".58">Niveau ${index+1}</text><title>${esc(label)} · niveau ${index+1}</title></g>`).join('');
-  return frame(`0 0 ${width} ${height}`,title,
-    `<path d="${path.join(' ')} L${width-right} ${base} L${left} ${base} Z" class="v2-adoption-area"/>
-     <path d="${path.join(' ')}" class="v2-adoption-line"/>
-     <line x1="${left}" y1="${base}" x2="${width-right}" y2="${base}" class="v2-axis"/>
-     ${marker(upperQuartile,'Bovenste 25%','upper')}${marker(benchmark,'Branche','benchmark')}${marker(current,'Jij','current')}
-     ${stageLabels}`);
+/** Mobile-accessible stage explorer; native summary supports mouse, touch and keyboard. */
+function stageExplorer(kind,title,stages,note=''){
+  if(!stages.length)return '';
+  const active=stages.findIndex(stage=>stage.current);
+  const cards=stages.slice(0,5).map((stage,index)=>{
+    const level=index+1, current=!!stage.current, explanation=stage.detail||'Nog niet gevalideerd.';
+    return '<details class="v2-stage-step'+(current?' is-current':'')+'"'+(current?' open':'')+'>'
+      +'<summary aria-label="Niveau '+level+', '+esc(stage.label)+'. '+esc(explanation)+'" title="'+esc(explanation)+'">'
+      +'<span class="v2-stage-number" aria-hidden="true">'+level+'</span><span class="v2-stage-name">'+esc(stage.label)+'</span>'
+      +(current?'<span class="v2-stage-you">Jij</span>':'')
+      +'<span class="v2-stage-hovertext" aria-hidden="true">'+esc(explanation)+'</span></summary>'
+      +'<div class="v2-stage-content"><p>'+esc(explanation)+'</p><p><b>Volgende stap:</b> '+esc(stage.next||'Bepaal een meetbare verbetering.')+'</p></div>'
+      +'</details>';
+  }).join('');
+  return '<figure class="v2visual v2-stage-chart" data-v2-stage-chart="'+esc(kind)+'"><figcaption>'+esc(title)+'</figcaption>'
+    +'<p class="v2-stage-now">'+(active>=0?'Jouw positie: niveau '+(active+1)+' van '+stages.length:'Huidig niveau nog niet onderbouwd')+'</p>'
+    +'<div class="v2-stage-grid" role="group" aria-label="'+esc(title)+'">'+cards+'</div>'
+    +'<p class="v2-stage-note">'+esc(note||'Tik op een fase voor uitleg. Gebruik hover, Tab of Enter op desktop.')+'</p></figure>';
 }
 
-/** Oude-portaal vijf-stadia overzicht: bedrijf, branche en bovenste kwartiel op één rail. */
-export function companyStateRail({current=1,benchmark=3,upperQuartile=4,labels=[]}={}, {title='De staat van je bedrijf'}={}){
-  const stages=(labels.length?labels:['Ad-hoc','Reactief','Gestuurd','Voorspellend','Zelfsturend']).slice(0,5);
-  const width=900,height=220,pad=36,gap=10,cell=(width-pad*2-gap*4)/5;
-  const x=i=>pad+i*(cell+gap);
-  const blocks=stages.map((label,i)=>`<g class="v2-hit v2-state-stage" tabindex="0" role="button" aria-label="${esc(label)}, niveau ${i+1}">
-    <rect x="${x(i)}" y="70" width="${cell}" height="74" rx="16"/><text x="${x(i)+cell/2}" y="101" text-anchor="middle">${esc(label)}</text><text x="${x(i)+cell/2}" y="122" text-anchor="middle" opacity=".58">Niveau ${i+1}</text><title>${esc(label)} · niveau ${i+1}</title></g>`).join('');
-  const pin=(level,label,cls,y)=>{const xx=x(clamp(Math.round(level),1,5)-1)+cell/2;return `<g class="v2-hit ${cls}" tabindex="0"><line x1="${xx}" y1="${y+8}" x2="${xx}" y2="68"/><circle cx="${xx}" cy="${y}" r="7"/><text x="${xx}" y="${y-12}" text-anchor="middle">${esc(label)}</text><title>${esc(label)} · niveau ${num(level,1)}</title></g>`;};
-  return frame(`0 0 ${width} ${height}`,title,`${blocks}${pin(current,'Jij','v2-state-current',50)}${pin(benchmark,'Branche','v2-state-benchmark',174)}${pin(upperQuartile,'Bovenste 25%','v2-state-upper',198)}`);
+/** Adoptiefasen zonder verzonnen marktpercentielen of overlopende labels. */
+export function adoptionBell({current=null,benchmark=null,upperQuartile=null,labels=[]}={}, {title='Waar je staat op de adoptiecurve'}={}){
+  const names=(labels.length?labels:['Achterblijvers','Late majority','Early majority','Early adopters','Innovators']).slice(0,5);
+  const data=[
+    ['Ad-hoc processen en verspreide data.','Leg processen en databronnen vast.'],
+    ['Reactief sturen met periodieke rapportages.','Maak definities eenduidig en verwijder dubbele registraties.'],
+    ['BI ondersteunt bedrijfsbesluiten.','Koppel KPI’s aan signalen en acties.'],
+    ['Proactieve sturing met gevalideerde voorspellingen.','Meet de nauwkeurigheid van voorspellingen.'],
+    ['Continu verbeteren op gerealiseerde resultaten.','Leg effecten vast en stuur bij.']];
+  const pos=Number(current)>0&&Number(current)<=5?Math.round(Number(current)):null;
+  return stageExplorer('adoption',title,names.map((label,i)=>({label,current:pos===i+1,detail:data[i][0],next:data[i][1]})),
+    'Illustratief model, geen gemeten marktpercentielen of geverifieerde brancheverdeling. Tik of klik op een fase.');
+}
+
+/** Five responsive company-maturity stages with explicit provenance. */
+export function companyStateRail({current=null,benchmark=null,upperQuartile=null,labels=[]}={}, {title='De staat van je bedrijf'}={}){
+  const names=(labels.length?labels:['Handwerk','Geordend','Ingericht','Verbonden','Sturend']).slice(0,5);
+  const data=[
+    ['Afhankelijk van losse bestanden en individuele kennis.','Leg één kritiek proces en proceseigenaar vast.'],
+    ['Afspraken bestaan, maar gegevens lopen uiteen.','Wijs één bron van waarheid aan.'],
+    ['Systemen helpen; overdrachten kosten handwerk.','Pak de grootste dubbele invoer aan.'],
+    ['Processen en gegevens zijn verbonden.','Monitor overdrachten en uitzonderingen.'],
+    ['Signalen leiden tot aantoonbare bijsturing.','Meet de effecten en leer van afwijkingen.']];
+  const pos=Number(current)>0&&Number(current)<=5?Math.round(Number(current)):null;
+  return stageExplorer('company-state',title,names.map((label,i)=>({label,current:pos===i+1,detail:data[i][0],next:data[i][1]})),
+    (Number(current)>0?'Huidige profielscore: '+num(current,1)+'/5. ':'')+'Gebaseerd op de beschikbare profielwaarden; geen geverifieerd branchepercentiel.');
 }
 
 /** Radarprofiel over de bedrijfsonderdelen, schaal 1–5. */
@@ -68,7 +100,8 @@ export function radar(items=[],{title='Profiel per onderdeel',max=5}={}){
   const path=points.map((item,index)=>{const [x,y]=coord(index,item.value);return `${index?'L':'M'}${x.toFixed(1)} ${y.toFixed(1)}`;}).join(' ')+' Z';
   const dots=points.map((item,index)=>{const [x,y]=coord(index,item.value);return `<circle class="v2-data-point" tabindex="0" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${ACCENT}"><title>${esc(item.label)}: ${num(item.value,1)}/${max}</title></circle>`;}).join('');
   const labels=points.map((item,index)=>{const [x,y]=coord(index,max*1.16);return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="8" text-anchor="middle" dominant-baseline="middle" fill="currentColor" opacity=".72">${esc(String(item.label).slice(0,14))}</text>`;}).join('');
-  return frame('0 0 300 300',title,`${rings}${spokes}<path d="${path}" fill="${ACCENT}" fill-opacity=".16" stroke="${ACCENT}" stroke-width="2" stroke-linejoin="round"/>${dots}${labels}`);
+  const chart=frame('0 0 300 300',title,`${rings}${spokes}<path d="${path}" fill="${ACCENT}" fill-opacity=".16" stroke="${ACCENT}" stroke-width="2" stroke-linejoin="round"/>${dots}${labels}`);
+  return withAccessibleTable(chart,title,['Onderdeel','Score'],points.map(point=>[point.label,point.value]));
 }
 
 /** Twaalfmaands gantt voor de roadmap. */
@@ -96,7 +129,8 @@ export function gantt(items=[],{title='Roadmap over twaalf maanden',months=12}={
       +`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barWidth.toFixed(1)}" height="14" rx="7" fill="${fill}" fill-opacity=".22"/>`
       +`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${(barWidth*(done?100:progress)/100).toFixed(1)}" height="14" rx="7" fill="${fill}"><title>${esc(item.title||'Item')}: ${done?'afgerond':`${num(progress)}%`}</title></rect>`;
   }).join('');
-  return frame(`0 0 ${width} ${height}`,title,`${grid}${bars}`);
+  const chart=frame(`0 0 ${width} ${height}`,title,`${grid}${bars}`);
+  return withAccessibleTable(chart,title,['Onderdeel','Startmaand','Duur (maanden)','Voortgang (%)'],rows.map(row=>[row.title||'Item',row.start||1,row.duration,row.progress??(row.done===true?100:null)]));
 }
 
 /** Lijn met gevulde vlak: adoptiecurve, cumulatief resultaat, meting over tijd. */
@@ -113,10 +147,11 @@ export function curve(points=[],{title='Verloop',valueLabel=''}={}){
   const zero=min<0?`<line x1="${left}" y1="${y(0).toFixed(1)}" x2="${width-right}" y2="${y(0).toFixed(1)}" stroke="${LINE}" stroke-width="1" stroke-dasharray="3 3"/>`:'';
   const dots=series.map((point,index)=>`<circle class="v2-data-point" tabindex="0" cx="${x(index).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="3" fill="${ACCENT}"><title>${esc(point.label??index+1)}: ${num(point.value)} ${esc(valueLabel)}</title></circle>`).join('');
   const ticks=series.map((point,index)=>index%Math.ceil(series.length/6)?'':`<text x="${x(index).toFixed(1)}" y="${height-10}" font-size="8" text-anchor="middle" fill="currentColor" opacity=".6">${esc(point.label??index+1)}</text>`).join('');
-  return frame(`0 0 ${width} ${height}`,title,
+  const chart=frame(`0 0 ${width} ${height}`,title,
     `<line x1="${left}" y1="${top}" x2="${left}" y2="${height-bottom}" stroke="${LINE}"/><line x1="${left}" y1="${height-bottom}" x2="${width-right}" y2="${height-bottom}" stroke="${LINE}"/>${zero}`
     +`<path d="${area}" fill="${ACCENT}" fill-opacity=".12"/><path d="${line}" fill="none" stroke="${ACCENT}" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>${dots}${ticks}`
     +`<text x="2" y="${(top+6)}" font-size="8" fill="currentColor" opacity=".6">${esc(num(max))}</text><text x="2" y="${(height-bottom).toFixed(1)}" font-size="8" fill="currentColor" opacity=".6">${esc(num(min))}</text>`);
+  return withAccessibleTable(chart,title,['Periode','Waarde'+(valueLabel?' ('+valueLabel+')':'')],series.map(point=>[point.label??'Punt '+(series.indexOf(point)+1),point.value]));
 }
 
 /** Vierkwadrantenmatrix: waarde tegen doorlooptijd, volwassenheid tegen kosten. */
@@ -156,7 +191,8 @@ export function benchmarkBars(rows=[],{title='Vergelijking met de benchmark'}={}
       +`<rect x="${left}" y="${y+15}" width="${scale(item.benchmark).toFixed(1)}" height="6" rx="3" fill="${LINE}"><title>Benchmark: ${num(item.benchmark,1)}</title></rect>`
       +`<text x="${(left+Math.max(scale(item.value),scale(item.benchmark))+6).toFixed(1)}" y="${y+13}" font-size="8" fill="currentColor" opacity=".65">${num(item.value,1)} · benchmark ${num(item.benchmark,1)}</text>`;
   }).join('');
-  return frame(`0 0 ${width} ${height}`,title,bars);
+  const chart=frame(`0 0 ${width} ${height}`,title,bars);
+  return withAccessibleTable(chart,title,['Onderdeel','Eigen waarde','Benchmark'],items.map(item=>[item.label,item.value,item.benchmark]));
 }
 
 /** Ring voor een percentage, met het getal in het midden. */
@@ -185,29 +221,20 @@ export function leakage(segments=[],{title='Waar tijd en geld weglekken'}={}){
   }).join('');
   const legend=items.map((item,index)=>`<g transform="translate(${(index%3)*186} ${74+Math.floor(index/3)*18})"><rect width="9" height="9" rx="2" fill="${palette[index%palette.length]}"/><text x="14" y="8" font-size="9" fill="currentColor" opacity=".76">${esc(String(item.label).slice(0,24))}</text></g>`).join('');
   const height=74+Math.ceil(items.length/3)*18+8;
-  return frame(`0 0 ${width} ${height}`,title,`<text x="0" y="18" font-size="9" fill="currentColor" opacity=".6">totaal ${num(total)}</text>${bars}${legend}`);
+  const chart=frame(`0 0 ${width} ${height}`,title,`<text x="0" y="18" font-size="9" fill="currentColor" opacity=".6">totaal ${num(total)}</text>${bars}${legend}`);
+  return withAccessibleTable(chart,title,['Onderdeel','Waarde'],items.map(item=>[item.label,item.value]));
 }
 
 /** Trapvorm voor een laddermodel: CMMI, Greiner-fasen, trusted advisor. */
+/** Native touch/click/focus process maturity, no faux formal CMMI certification. */
 export function ladder(steps=[],{title='Waar je staat'}={}){
-  const items=steps.filter(item=>item&&item.naam!=null||item&&item.fase!=null);
+  const items=steps.filter(item=>item&&(item.naam!=null||item.fase!=null));
   if(!items.length)return '';
-  const width=560,left=8,gap=10;
-  const bw=(width-left*2-gap*(items.length-1))/items.length;
-  const baseline=176,maxH=118;
-  const bars=items.map((item,index)=>{
-    const h=42+index*(maxH-42)/Math.max(1,items.length-1);
-    const x=left+index*(bw+gap), y=baseline-h;
-    const naam=item.naam||item.fase;
-    const kleur=item.huidig?ACCENT:(item.bereikt?'var(--saas-line,#e7e9f6)':SOFT);
-    const dek=item.huidig?'.95':(item.bereikt?'.9':'.22');
-    return `<g class="v2-data-step" tabindex="0"><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="8" fill="${kleur}" fill-opacity="${dek}"><title>${esc(naam)}: ${esc(item.uitleg||'')}</title></rect>`
-      +`<text x="${(x+bw/2).toFixed(1)}" y="${(baseline+14).toFixed(1)}" font-size="8" text-anchor="middle" fill="currentColor" opacity="${item.huidig?'.95':'.6'}">${esc(String(naam).slice(0,16))}</text>`
-      +(item.huidig?`<text x="${(x+bw/2).toFixed(1)}" y="${(y-6).toFixed(1)}" font-size="9" text-anchor="middle" fill="${ACCENT}" font-weight="700">hier</text>`:'')+`</g>`;
-  }).join('');
-  const huidig=items.find(item=>item.huidig);
-  const onderschrift=huidig?.crisis?`<text x="${left}" y="${baseline+34}" font-size="9" fill="currentColor" opacity=".7">Volgende drempel: ${esc(huidig.crisis)}</text>`:'';
-  return frame(`0 0 ${width} ${baseline+(onderschrift?44:24)}`,title,`${bars}${onderschrift}`);
+  return stageExplorer('process-maturity',title,items.slice(0,5).map(item=>({
+    label:String(item.naam||item.fase),current:item.huidig===true,
+    detail:String(item.uitleg||'Nog niet gevalideerd met procesbewijs.'),
+    next:String(item.crisis||'Plan een toetsbare procesverbetering.')
+  })),'Indicatieve procesvolwassenheid; geen formele CMMI-audit. Tik op een niveau voor uitleg.');
 }
 
 /** DuPont: waar het rendement vandaan komt, als drie factoren en hun product. */

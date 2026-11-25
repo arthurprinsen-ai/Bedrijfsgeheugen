@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "github|ci-admission|installation-wide-rate-limit-403-misclassified|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "obligation_id": "github|ci-admission|installation-rate-limit-diagnostics|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "GitHub installation API exhaustion returned HTTP 403 but protected admission classified it as generic CONTROL_PLANE_ADMISSION_ERROR instead of transient provider read capacity, producing misleading incident evidence and unnecessary manual diagnosis.",
+  "evidence": {
+    "observed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39940982668",
+    "rate_limit_class": "API rate limit exceeded for installation (HTTP 403)",
+    "github_rate_reset_observed": false,
+    "production_effect_proven": false
+  },
+  "fix": "Canonical, pure error classification emits CONTROL_PLANE_RATE_LIMITED and stable fingerprint; no immediate retries on rate exhaustion. Existing 502/503/504 transport retries remain bounded. Ordinary authorization 403 remains permanent control-plane failure.",
+  "prevention_rule": "Do not retry rate-exhausted GitHub installation requests within tight CI loops; preserve one provider-capacity fingerprint; only the pre-existing watchdog may decide later bounded recovery with fresh provider evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-installation-rate-limit-classifier-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-installation-rate-limit-classifier-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ci-installation-rate-limit-classifier-v1.test.mjs"
+    ],
+    "invariants": [
+      "Protected admission never bypasses Required/CodeQL",
+      "A generic unauthorized 403 never becomes recoverable rate exhaustion",
+      "Rate exhaustion never adds an API burst",
+      "No new workflow, scheduler or error registry"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "runtime_verification": "NOT_YET_DEPLOYED"
+}

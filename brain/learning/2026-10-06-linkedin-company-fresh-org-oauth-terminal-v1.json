@@ -1,0 +1,49 @@
+{
+  "fingerprint": "linkedin-company|fresh-org-oauth|durable-proof-binding|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "linkedin-company-fresh-org-oauth-terminal-20261006",
+  "root_cause": "Two independent false negatives blocked the canonical LinkedIn company claim: the setup runtime could prefer stale OAuth candidate state over the durable verified organization-OAuth proof, and the publisher required byte-for-byte commentary equality even though LinkedIn legitimately rewrites the measurable URL to lnkd.in and escapes parentheses on readback. Both could keep a valid provider-created post non-terminal despite correct organization identity and content.",
+  "prevention_rule": "The canonical company setup must bind the exact verified fresh organization-OAuth account and live ADMINISTRATOR ACL before dispatch. Provider create remains the only write proof. Provider readback must verify exact post URN, organization author and PUBLISHED lifecycle, while commentary equivalence is checked through powerhouse_normalize_publication_text_v1 so only LinkedIn provider normalization (including measurable URL shortening and punctuation escaping) is tolerated. The same claim is never republished after provider-create acknowledgement.",
+  "compiler": {
+    "failure_class": "LINKEDIN_COMPANY_OAUTH_AND_PROVIDER_NORMALIZATION_FALSE_NEGATIVE",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": [
+      "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+      "supabase/functions/powerhouse-social-publisher/index.ts",
+      "supabase/functions/powerhouse-content-loop/index.ts"
+    ],
+    "regression": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "production_contract": [
+      "docs/production-sql-history/20261006-linkedin-company-oauth-terminal-state.json"
+    ],
+    "production_terminal": [
+      "content_publication_obligations linkedin_company = LIVE_PROVEN",
+      "provider_post_id urn:li:share:7513196691630575616",
+      "provider_truth_verified=true",
+      "company_oauth_fresh_verified=true",
+      "linkedin_company_admin_oauth_proven=true",
+      "organization_write_scope_verified=true",
+      "readback_normalization_rule=MEASURABLE_URL_TO_LNKD_IN_PLUS_LINKEDIN_PAREN_ESCAPE"
+    ]
+  }
+}

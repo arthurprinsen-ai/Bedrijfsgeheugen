@@ -1,0 +1,39 @@
+{
+  "fingerprint": "site|rituals|geel-kalm|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|geel-kalm|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": false,
+    "repeat_count": 6,
+    "security_sensitive": false
+  },
+  "root_cause": "De regel 'goud is één detail per scherm' was vastgelegd, maar paginaspecifieke inline CSS (geel vlak) en de speelse laag (dikke stift) bleven volledig geel. Een merkregel werd niet tegen alle bestaande gele elementen nagelopen.",
+  "correction": "Stift en vlak teruggebracht tot één subtiele gouden vorm via de gedeelde Rituals-CSS.",
+  "prevention": [
+    "Na een merkregel over één kleur: tel de elementen met die kleur live per pagina, niet alleen in de bron.",
+    "Kijk naar de berekende stijl; inline paginastijl wint van gelinkte CSS tenzij !important met html body-prefix."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-belevenis.css"
+    ],
+    "outcome": "Lokaal: tests groen, visuele proef. Live-readback open."
+  }
+}

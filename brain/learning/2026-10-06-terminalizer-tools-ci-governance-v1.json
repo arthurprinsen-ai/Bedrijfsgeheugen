@@ -1,0 +1,34 @@
+{
+  "id": "terminalizer-tools-ci-governance-20261006-v1",
+  "date": "2026-10-06",
+  "type": "incident_prevention",
+  "source": "pr-3952-post-merge-terminalizer",
+  "fingerprint": "powerhouse|terminalizer|tools-ci-governance|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The post-merge terminalizer did not classify tools/ci/* as control-plane governance. PR #3952 therefore merged successfully and installed a canonical Netlify applicability authority, but terminalization failed closed on tools/ci/netlify-ignore-build.mjs as an unwired runtime path.",
+  "prevention": [
+    "Treat tools/ci/* as governance-only in terminal readback classification.",
+    "Keep unknown non-governance runtime paths fail-closed under UNWIRED_NON_NETLIFY_RUNTIME_READBACK.",
+    "Replay the exact merged PR #3952 after this classifier fix lands to prove terminal closure without changing the merged Netlify behavior."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ],
+    "expected": "tools/ci control-plane changes are accepted as non-runtime governance while unknown runtime paths remain fail-closed."
+  },
+  "evidence": {
+    "source_pr": 3952,
+    "merge_sha": "e902e07fef8b3411451280072b40f0d0aac24bb8",
+    "failed_terminalizer_run": 37478237670,
+    "failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK:tools/ci/netlify-ignore-build.mjs"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}

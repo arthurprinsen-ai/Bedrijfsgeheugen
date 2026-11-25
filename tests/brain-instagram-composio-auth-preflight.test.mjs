@@ -10,6 +10,6 @@ test('instagram transport auth is checked before dispatch claim and fallback sta
   assert.match(s,/instagram-meta-primary-composio-buffer-fallback-v1/);
   assert.match(s,/deferred_transport/);
   assert.match(s,/BUFFER_RATE_LIMITED/);
-  assert.match(s,/instagramInput\(art,due,future\)/);
+  assert.match(s,/publishInstagramViaComposio\(db,art,runDate,instagramContext\)/);
   assert.match(s,/MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
 });

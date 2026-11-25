@@ -1,0 +1,51 @@
+{
+  "fingerprint": "powerhouse|mira|eight-slot-fresh-source-query-recall|20261112-v1",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "date": "2026-11-12",
+  "original_owner": "powerhouse-mira-problem-radar-v1 / cron 120",
+  "original_sources": {
+    "total": 373,
+    "eligible": 125,
+    "recent_eligible": 34,
+    "compliant": 7,
+    "unique_after_dedupe": 0,
+    "last_observed": "2026-11-08T20:02:38Z",
+    "original_nightly_result": "NO_FRESH_PUBLIC_PROBLEM_SIGNAL"
+  },
+  "change": "Alternate original fixed 6 Mira queries on odd UTC dates within 12 approved original portal problem families; preserve the existing 2 personal slots and fixed eight provider calls, original source/date/score/dedupe and media/proof gates.",
+  "not_proven": [
+    "new external provider candidate",
+    "frozen daywinner",
+    "Mira video face gate",
+    "Instagram publication ID",
+    "causal learning outcome"
+  ],
+  "regressions": [
+    "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+    "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
+  ],
+  "acceptance": "Protected Required/BRAIN/CodeQL; original merge; active exact Edge dependency and next natural original cron; newly dated independent source then immutable winner->video gate >=0.940->Meta provider ID/GET->metrics/learning; no false green.",
+  "proven_fix": null,
+  "compiler": {
+    "failure_class": "SOURCE_SUPPLY",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs",
+      "tests/brain-mira-radar-source-shortage-readback-20261031.test.mjs"
+    ]
+  },
+  "root_cause": "Original cron #120 and Supabase Edge returned HTTP 200 at 2026-11-11T20:02Z, but the original Mira source materializer reported NO_FRESH_PUBLIC_PROBLEM_SIGNAL for 2026-11-12. The seven independently dated PH-P entrepreneur scene-qualified sources are all prior URL/hash duplicates within the original ninety-day gate, leaving no new immutable winner. Rotating the same short source terms has not yet demonstrated a new source or post.",
+  "prevention_rule": "Preserve the original one radar cron and fixed eight provider queries (six business and two personal), the approved PH-P family/scenes, provider publication date, minimum 0.72 score, ninety-day URL/hash and three-day topic dedupe, immutable winner and Meta face >=0.940 gates. Every source shortage stays recovery-due until independently dated unique provider source and original consumer handoff are verified; never represent CI success or HTTP 200 as new publication.",
+  "evidence": [
+    "Original pg_cron job 120 active 2 20 * * * UTC; original 2026-11-11T20:02Z POST to powerhouse-mira-problem-radar returned HTTP 200, but production BRAIN occurrence powerhouse|mira|no-new-unique-source-backed-daily-winner|20261112-v1 recorded NO_FRESH_PUBLIC_PROBLEM_SIGNAL and was validated v2.",
+    "Read-only source audit: 373 historical source records, 125 eligible; 34 eligible observed within ten days and seven source-contract/PH-P/approved-scene qualified; all seven are duplicates under immutable source URL/hash 90-day rule for 2026-11-12. Last source observed 2026-11-08T20:02:38Z, no frozen Mira winner 2026-11-10 through 2026-11-12.",
+    "Source change confined to supabase/functions/_shared/mira-source-query-rotation.mjs and the existing original eight-slot upstream; canonical test tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs verifies 48 dates and unchanged source materializer gates.",
+    "Expected: protected Required/BRAIN/CodeQL, original Supabase Edge active bundle dependency parity and next natural original cron 120 with new independent unique provider origin. A lexical query variation is code candidate only, not proven post or business effect."
+  ]
+}

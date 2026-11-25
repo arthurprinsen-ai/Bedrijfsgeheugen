@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 test('autonomous improvement stops proposing below the proven safe floor', async () => {
-  const sql = await readFile('supabase/migrations/20260920095700_autonomous_improvement_floor_terminal_v1.sql','utf8');
+  const sql = await readFile('supabase/migration-history/repository-only/20260920095700_autonomous_improvement_floor_terminal_v1.sql','utf8');
   assert.match(sql, /promoted_window.*<= 12/s);
   assert.match(sql, /NO_OP_ALREADY_AT_SAFE_FLOOR/);
   assert.match(sql, /brain_transition_obligation/);

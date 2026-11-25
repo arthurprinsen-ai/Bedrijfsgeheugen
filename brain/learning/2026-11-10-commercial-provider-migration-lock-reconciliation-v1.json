@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "fingerprint": "commercial|migration-history|provider-applied-source-lock-stale-after-protected-merge|20261110-v1",
+  "failure_class": "ORIGINAL_PROVIDER_MIGRATION_LOCK_DRIFT",
+  "owner": "Original Growth & Revenue OS / ONE BRAIN issue #4198",
+  "root_cause": "Original commercial protected source migration 20261110131500 was applied in actual Supabase provider (822 migrations, native assurance function exists), but repo migration-history.lock.json remained 821 observed identities. Protected historical migration suite blocked every downstream PR, including unrelated Portal #4215.",
+  "fix": "Read actual original Supabase migration history, compare all 821 existing lock rows with all 822 provider records, confirm exactly one missing version and function body contains nested provider-message outcome match, then append exact 20261110131500 registered name and provider observed timestamp to the ORIGINAL immutable history snapshot. Never falsely declare candidate/unapplied migrations as applied, never modify SQL, provider, scheduler or migration validator.",
+  "tests": [
+    "tests/brain-commercial-applied-provider-lock-20261110.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs",
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-applied-provider-lock-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-applied-provider-lock-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-commercial-applied-provider-lock-20261110.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Only refresh original migration lock from independent current Supabase provider migration records, verify exact version+name and no missing/mismatched previous rows.",
+    "Never add a source-only migration to production-applied lock; protected SQL candidates remain exclusively preview until actual provider readback.",
+    "Keep strict canonical migration tests enabled and rerun all downstream blocked PRs after provider-backed reconciliation."
+  ],
+  "observed_evidence": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 822,
+    "locked_previous_count": 821,
+    "only_missing_version": "20261110131500",
+    "only_missing_name": "original_commercial_nested_gmail_provider_outcome_assurance_v1",
+    "provider_observed_at": "2026-11-10T12:29:55.152814Z",
+    "native_function_nested_provider_and_sent_outcome_verified": true,
+    "source_candidate_not_live_proven": true
+  },
+  "compiler": {
+    "failure_class": "ORIGINAL_PROVIDER_MIGRATION_LOCK_DRIFT",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

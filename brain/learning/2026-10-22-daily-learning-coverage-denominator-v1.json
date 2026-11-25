@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|daily-compound-learning|outcome-coverage-denominator-mismatch|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "component": "powerhouse_daily_compound_learning_control_v1",
+  "status": "CANDIDATE_PENDING_CI_PREVIEW_RELEASE",
+  "problem": "Daily Brain learning success measured >100% by mixing all-status linked actions with done-only action denominator.",
+  "root_cause": "The view counts any non-null outcome_id over all powerhouse_sales_actions for the numerator but only status=done for denominator. Empty done population is incorrectly declared 100% covered.",
+  "evidence": {
+    "production_readback": "2026-10-22 read-only Supabase queries and existing issue #4198; no tenant PII copied",
+    "all_actions": 7632,
+    "completed_actions": 317,
+    "any_status_linked_outcomes": 4947,
+    "completed_actions_with_linked_outcome": 276,
+    "noncompleted_with_linked_outcome": 4671,
+    "completed_actions_without_linked_outcome": 41,
+    "original_reported_coverage": 15.6057,
+    "correct_completed_action_coverage": 0.8707,
+    "source_test": "tests/brain-daily-learning-outcome-coverage-v1.test.mjs",
+    "sql_migration": "supabase/migrations/20261022165000_daily_learning_outcome_coverage_population_v1.sql",
+    "production_migration_applied": false
+  },
+  "remediation": "Replace the same invoker-security view in a bounded migration using same-population counts, null for zero completed actions, [0,1] invariant and retained service-only ACL.",
+  "prevention": [
+    "All autonomous agents must validate denominator/numerator cohort parity before declaring coverage green.",
+    "Treat null/no observed done actions as UNPROVEN, never as automatic 100% success.",
+    "Regression-test cross-status linked outcomes and zero done actions; fail closed when a ratio is >1.",
+    "Reuse the existing Brain fingerprint, learner, scheduler and ONE authority; do not invent another metric/queue.",
+    "Promote only after exact-head Required CI, CodeQL, approved provider preview, protected merge and read-only production readback."
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-learning-outcome-coverage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-learning-outcome-coverage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-learning-outcome-coverage-v1.test.mjs"
+    ]
+  }
+}

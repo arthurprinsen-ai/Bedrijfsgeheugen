@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-29",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "ci-branch-debris|janitor-squash-sweep|20261029-v1",
+  "fingerprint": "ci|branch-debris|janitor-one-page-per-run|20261029-v1",
+  "compiler": {
+    "failure_class": "BRANCH_DEBRIS_SLOW_CLEANUP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "De branch-gestuurde Janitor-wandeling bekijkt een pagina van 50 branches per uur. Na PR #5066 bleef de eerste run op writer/-branches steken zonder een enkele kandidaat; 883 squash-gemergde branches zouden zo dagen blijven staan.",
+  "fix": "PR-gestuurde sweep in dezelfde Janitor: 5 pagina's van 100 gesloten PR's per run (stabiele created-asc volgorde, cyclus van 12 runs), verwijdert alleen branches waarvan een gemergde PR naar main in dezelfde repo exact deze head-sha had. Maximaal 150 per run, nooit main, archive/, release/, hotfix/, open-PR-branches of beschermde refs.",
+  "prevention_rule": "Een opruimlus moet kandidaten selecteren op bewijs (gemergde PR met exacte head-sha naar main) en niet op een vaste pagina; elke verwijdering wordt als DELETE_BRANCH vastgelegd en teruggelezen.",
+  "tests": [
+    "tests/brain-janitor-bounded-cleanup.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ],
+    "invariants": [
+      "branches met open PR, archive/, release/ en hotfix/ worden nooit verwijderd",
+      "verwijderen alleen bij exacte head-sha van een gemergde PR naar main"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

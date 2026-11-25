@@ -1,16 +1,6 @@
 name: Revenue content intelligence
 
 on:
-  pull_request:
-    paths:
-      - 'brain/creative/**'
-      - 'brain/contracts/revenue-content-experiment.schema.json'
-      - 'config/social-learning-engine.json'
-      - 'tests/revenue-content-intelligence.test.mjs'
-      - 'tools/content-growth/seed-revenue-content-experiments.mjs'
-      - 'data/revenue-content-experiment-policy.json'
-      - 'supabase/migrations/20260911113000_revenue_content_intelligence.sql'
-      - '.github/workflows/revenue-content-intelligence.yml'
   workflow_dispatch:
   schedule:
     - cron: '17 5 * * *'

@@ -17,6 +17,9 @@ assert.match(builder, /prototype-v18-stable\.html/, 'builder core must retain a 
 assert.doesNotMatch(builder, /bgMobileNav|v18-mobile-drilldown|__BG_PRODUCTION_VERSION__|V18\.8/, 'legacy V18 restore must not inject later V18.8 navigation or markers');
 
 const netlify = readFileSync('netlify.toml','utf8');
-assert.match(netlify, /node tools\/bouw-v18-production\.mjs/, 'Netlify build must run the V18 production wrapper');
+assert.match(netlify, /command\s*=\s*"node tools\/ci\/netlify-build-entry\.mjs"/, 'Netlify must use the canonical production build entry');
+const entry = readFileSync('tools/ci/netlify-build-entry.mjs','utf8');
+assert.match(entry, /\['v18-production','tools\/bouw-v18-production\.mjs'\]/, 'canonical build must retain the pinned V18 production phase');
+assert.ok(entry.indexOf("['v18-production',") < entry.indexOf("['product-led-home',"), 'V18 base must be built before the product-led projection');
 
 console.log('Legacy V18 production restore contract passed');

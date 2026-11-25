@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|benchmark|anoniem-intake|20261027-v1",
+  "compiler": {
+    "failure_class": "BENCHMARK_INTAKE_OUTSIDE_SUPABASE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-benchmark-anoniem-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-saas-trial-mails-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-benchmark-anoniem-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The anonymous AI-scan benchmark form sent its entries to an external Make webhook. Nothing landed in the portal database, and the benchmark projection could not count them, while the page promised a report.",
+  "prevention": "Anonymous benchmark entries go to their own table benchmark_anoniem_inzendingen (RLS on, no grants for anon or authenticated) through the edge function bg-benchmark-intake, which accepts only the site origin and only the fixed branche and omvang lists. A grouped view shows a branche only from five entries. The existing frisse_blik projection is unchanged.",
+  "evidence": {
+    "tests": [
+      "tests/brain-benchmark-anoniem-v1.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "migration applied, edge function bg-benchmark-intake deployed, valid entry from site origin returned 200 and wrote a row, foreign origin returned 403; the test row is still in the table because its deletion was cancelled"
+  },
+  "limitations": [
+    "No public page shows the aggregate yet; the view is for service role only",
+    "The origin check only admits www.bedrijfsgeheugen.nl, so preview deploys cannot submit",
+    "Test row (Zorg, 777 hours) still in production table"
+  ]
+}

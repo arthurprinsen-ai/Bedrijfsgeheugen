@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "status": "CANDIDATE",
+  "fingerprint": "growth|daily-signal-truth|linked-social-future-proof-source-freshness|20261024-v1",
+  "obligation_id": "growth:content-evidence-freshness:20261024",
+  "failure_class": "DAILY_CONTENT_DIAGNOSTIC_SOURCE_FRESHNESS_DRIFT",
+  "root_cause": "Existing daily diagnostic omitted independently observed LinkedIn PROVIDER_OBSERVED_LINKED reactions while future timestamps could be interpreted as fresh, and page CTA recommendations needed no independent current website source receipt. Source-quality gaps hid OBSERVED_LEGACY aggregates.",
+  "observed_evidence": {
+    "provider_sources": "social_metric_snapshots + powerhouse_growth_source_daily_v1 + consented bg_interacties",
+    "checked_at": "2026-10-24",
+    "linked_company": "5 freshest latest company snapshots provider-linked, without view denominators",
+    "data_gaps": [
+      "today GA4 MISSING",
+      "GSC AWAITING_PROVIDER",
+      "Instagram and LinkedIn daily aggregates OBSERVED_LEGACY"
+    ],
+    "realized_revenue": "UNVERIFIED"
+  },
+  "fix": "Within the existing daily learning workflow, accept provider-linked reactions, keep absent denominator unknown, reject stale/future receipts, show legacy and partial source gaps, require verified fresh consented human website source before site CTA hypotheses.",
+  "prevention_rule": "Never infer funnel abandonment, causal impact, customer interest, orders or content winners from transport success, stale data, legacy aggregates or unknown exposure. No new scheduler or dataset.",
+  "tests": [
+    "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_CONTENT_DIAGNOSTIC_SOURCE_FRESHNESS_DRIFT",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-content-performance-diagnostics-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact commit Required & CodeQL success, protected merge and next scheduled real daily learning artifact; results, publishing and customer revenue verified independently."
+}

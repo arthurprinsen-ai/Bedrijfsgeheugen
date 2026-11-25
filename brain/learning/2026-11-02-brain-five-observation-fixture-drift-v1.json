@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse|brain|five-readback-fixture-drift|20261102-v1",
+  "compiler": {
+    "failure_class": "SOURCE_CONTRACT_TEST_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original BRAIN run 41421421023 failed five additional assertions [2126,2220,2486,2793,3680] because test fixtures used superseded single-channel selector calls, treated object-shaped fake database calls as tuple arrays, had an impossible left-side word boundary before '/', expected adjacent fields despite an inserted independently verified authority, or ignored the explicit incidentLearning field in the canonical content-loop result.",
+  "prevention_rule": "Require inspected original-source API shape and real canonical provider/authority invariants before pinning serialization, text boundaries or mock instrumentation. Keep actual 8-call rotation, exact Brain occurrence and face mismatch, authenticated CRO route with independent negative customer proof, admin-only personal source supply, CAS-only idempotent handoff and original incident learning. No false successful publication, credential leak, bypass, second scheduler or weakened test. PASS requires exact-commit Required/BRAIN and CodeQL; closure additionally requires protected merge and independent later execution.",
+  "owner": "Original ONE BRAIN backend verifier and existing respective source owners",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-dataforseo-no-results-20261029.test.mjs",
+      "tests/brain-mira-rejected-generating-handoff-20261029.test.mjs",
+      "tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs",
+      "tests/brain-personal-source-supply-portal-20261029.test.mjs",
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-dataforseo-no-results-20261029.test.mjs",
+      "tests/brain-mira-rejected-generating-handoff-20261029.test.mjs",
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-rejected-generating-handoff-20261029.test.mjs",
+      "tests/brain-one-loop-terminal-live-receipt-20261030.test.mjs",
+      "tests/brain-personal-source-supply-portal-20261029.test.mjs"
+    ]
+  },
+  "evidence": {
+    "github_original_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41421421023",
+    "failed_indices": [
+      2126,
+      2220,
+      2486,
+      2793,
+      3680
+    ],
+    "test_status": "CANDIDATE_UNVERIFIED",
+    "protected_production_merge_proven": false,
+    "provider_publication_proven": false,
+    "remaining_failures_unresolved": true
+  }
+}

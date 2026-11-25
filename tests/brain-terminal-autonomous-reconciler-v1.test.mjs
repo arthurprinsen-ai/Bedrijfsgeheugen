@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 test('terminal autonomous reconciler is fail-closed and scheduled', async () => {
-  const sql = await readFile('supabase/migrations/20260920095500_terminal_autonomous_reconciler_v1.sql', 'utf8');
+  const sql = await readFile('supabase/migration-history/repository-only/20260920095500_terminal_autonomous_reconciler_v1.sql', 'utf8');
   assert.match(sql, /powerhouse_terminal_control_plane_health_v1/);
   assert.match(sql, /powerhouse_terminal_autonomous_reconcile_v1/);
   assert.match(sql, /GREEN_STALE/);

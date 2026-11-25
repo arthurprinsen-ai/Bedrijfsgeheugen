@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath='supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql';
+const migrationPath='supabase/migration-history/repository-only/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql';
 const edgePath='supabase/functions/powerhouse-revenue-intelligence/index.ts';
 const learningPath='brain/learning/2026-10-05-rocket-revenue-event-spine-v1.json';
 

@@ -1,0 +1,86 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|preflight|planned-action-triggers-wave3|20261106-v1",
+  "owner": "existing planned-action guard, planned-action-triggers config and delivery preflight; no new mechanism",
+  "compiler": {
+    "failure_class": "PREVENTION_RULES_WITHOUT_PLANNED_ACTION_TRIGGER",
+    "scope": "PLANNED_ACTION_GUARD_COVERAGE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "After wave2, 60 of 111 active rules still had no trigger. 41 of them already have a PROVEN lesson, so the guard could block them but nothing matched the planned action. The other 19 have no PROVEN lesson and the guard skips them, so a trigger there would do nothing.",
+  "prevention_rule": "41 rules with a PROVEN lesson get phrase triggers (system words and action words are multi-word where a single word matches ordinary text). A required-check test fails when any active rule with a PROVEN lesson has no trigger, fires every new trigger through the real guard, and fails on a false positive. Rules without a PROVEN lesson are not given a trigger and no lesson is invented. Recall beyond the examples is not measured.",
+  "prevention_rules": [
+    "RECREATE_READY_PR_ON_CONNECTOR_GRAPHQL_FAILURE",
+    "GITHUB_PUBLIC_PROOF_MAKE_STATE_WRITEBACK",
+    "BOUNDED_GITHUB_PUBLIC_PROOF",
+    "CO_CHANGE_BEHAVIOR_AND_CONTRACT_TEST",
+    "REFRESH_BASE_BEFORE_FINAL_GATE",
+    "BLOCK_WRITER_CANARY_WHEN_ACTIONS_PR_CREATION_DISABLED",
+    "EXPLICIT_WRITER_SHADOW_DISPATCH",
+    "BIND_SHADOW_TO_ACTUAL_PR_IDENTITY",
+    "SCOPE_PARITY_TO_VERIFIED_WRITER_PATHS",
+    "FRESH_TRIGGER_FROM_CURRENT_MAIN_AFTER_RUNTIME_FIX",
+    "CAPTURE_TRACKED_AND_UNTRACKED_EVIDENCE",
+    "FULLY_QUALIFY_DETACHED_HEAD_PUSH_REFSPEC",
+    "VALIDATE_MAKE_SUBSCENARIO_INPUT_ENVELOPE",
+    "FAIL_CLOSED_ON_UNVERIFIED_PLATFORM_CONTROLS",
+    "ISOLATE_NEGATIVE_TEST_FIXTURES",
+    "SINGLE_CANONICAL_WRITER_HANDOFF",
+    "VALIDATE_BG184_BG156_EVENT_ENVELOPE",
+    "TREAT_MAKE_ACCOUNT_CONNECT_400_AS_HARD_BOUNDARY",
+    "RESTORE_GENERATED_REPORT_BEFORE_REBASE",
+    "DEDUPE_LEDGER_BY_EVENT_FINGERPRINT_NOT_HARDCODED_PR",
+    "NEVER_DEVELOP_OR_TDD_DIRECTLY_ON_MAIN",
+    "AUTO_REGISTER_FUTURE_COMPONENTS",
+    "MARK_UNMETERED_USAGE_NOT_ZERO",
+    "REQUIRE_AUTHORIZED_CONNECTOR_FOR_REMOTE_WRITES",
+    "REQUIRE_ACTIVE_RULE_FOR_REQUIRED_CHAT_LESSON",
+    "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE",
+    "OPTIMIZE_SOURCE_CALLS_NOT_ONLY_CLIENT_CACHE",
+    "NEVER_MUTATE_TO_DISCOVER_BRANCH_STATE",
+    "CO_CHANGE_CHAT_CHECKPOINT_AND_CONTRACT_TEST",
+    "REQUIRE_FULL_READ_TRANSFORM_WRITE_FOR_CONTENTS_API",
+    "SINGLE_FLIGHT_POST_MERGE_CODEQL_PER_REF",
+    "NO_FINAL_HANDOFF_WHILE_AUTHORITATIVE_SECURITY_RUN_ACTIVE",
+    "RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION",
+    "START_SITE_CHANGES_AT_NETLIFY_TOML_AND_TOOLS_GENERATORS",
+    "NEW_OR_HANDMADE_PAGES_CHECK_GENERATOR_VIEW_LISTS_AND_SHELL_EXCLUSIONS",
+    "MEASURE_GEOMETRY_BEFORE_ADDING_VISIBILITY_GUARDS",
+    "DO_NOT_COPY_SHELL_JSONLD_TO_PAGES",
+    "USE_ONLY_DEPENDENCY_FREE_TESTS_IN_LEARNING_EVALUATION",
+    "INCLUDE_DOT_FOLDERS_IN_BULK_FILE_OPERATIONS",
+    "UPDATE_CANONICAL_KOP_WITH_MENU_CHANGES",
+    "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-planned-action-triggers-wave3-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Owner decision 2026-11-06 19:12 (Europe/Amsterdam): all rules get a planned-action-trigger; scope reduced to rules with a PROVEN lesson because the guard skips the rest",
+      "docs/changes/2026-11-06-planned-action-triggers-wave2-v1.md"
+    ],
+    "current": [
+      "Local run: wave2 and wave3 tests 7 of 7 green",
+      "41 of 41 positive examples fire, 0 of 16 neutral actions fire, at most 3 hits in 400 recent commit titles per trigger"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-12",
+  "fingerprint": "portal|trusted-advisor|code-release-not-customer-processed-ack|20261112-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "owner": "original Portal V2 / governance-agent / ONE BRAIN / Powerhouse / Heartbeat handoff",
+  "status": "SOURCE_CANDIDATE_NOT_RELEASED",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN_FOR_AN_AUTHENTICATED_CURRENT_CUSTOMER_REVISION",
+  "root_cause": "The original release terminalizer can correctly classify a protected software release as VERIFIED, while independent tenant BusinessInput source freshness, exact consumer processed ACK and measured commercial handoff remain unproven. The customer experience must not conflate these separate evidence types.",
+  "observed_evidence": {
+    "release": {
+      "url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5693",
+      "netlify_deploy_id": "6af63e1c9ed9ad102dbe179c",
+      "exact_prod_sha": "839086756f2559b9abeb8decc8d945e2f0a3d919",
+      "readback": "READY and public contact/frisse-blik/en/contact/zelfscan strings individually checked"
+    },
+    "runtime": {
+      "source": "read-only public.portal_state_layers",
+      "count": 1,
+      "source_freshness_note": "one saved layer updated Nov 12 but its source_updated_at dated Sep 15; this alone does not prove an authenticated current customer revision"
+    },
+    "commercial": {
+      "source": "public.powerhouse_commercial_handoff_scorecard_v1",
+      "state": "DEGRADED",
+      "broken_or_unproven_handoffs_7d": 7,
+      "provider_readback_proven_7d": 1,
+      "provider_linked_replies_7d": 0,
+      "linked_experiment_treatments_7d": 0,
+      "realized_revenue_eur_7d": 0
+    },
+    "operations": {
+      "source": "public.brain_obligations",
+      "open_operations_assurance_count": 7,
+      "open_content_handoff_count": 439
+    }
+  },
+  "correction": "Original 14-agent governance specialist now explicitly distinguishes static release from tenant source, processed consumer ACK, execution, independently measured effect, and learning; existing Trusted Advisor policy and CMS skill require exact-stage receipts. No new executor or database.",
+  "prevention_rule": "Never present code-only production VERIFIED as completed BusinessInput → ONE BRAIN → Powerhouse/Heartbeat → authorized action → effect → learning. Missing tenant/revision ACK or stale source stays EVIDENCE_DUE under original owner.",
+  "regression": [
+    "tests/brain-trusted-advisor-runtime-handoff-proof-20261112.test.mjs"
+  ],
+  "tests": [
+    "tests/brain-trusted-advisor-runtime-handoff-proof-20261112.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-advisor-runtime-handoff-proof-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-trusted-advisor-runtime-handoff-proof-20261112.test.mjs"
+    ]
+  },
+  "evidence": {
+    "release_sha": "839086756f2559b9abeb8decc8d945e2f0a3d919",
+    "customer_outcome": "NOT_PROVEN",
+    "release_only_handoffs": "NOT_A_COMPLETED_TENANT_CHAIN",
+    "source_readback": "read-only Supabase telemetry and exact public website readback"
+  },
+  "no_parallel_executor": true,
+  "evidence_due": [
+    "exact-head Required/BRAIN/CodeQL",
+    "protected merge",
+    "Netlify exact SHA",
+    "original authenticated tenant source-revision/processed consumer ACK",
+    "genuine authorized provider and customer-effect readback",
+    "next natural applied learning proof"
+  ],
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-trusted-advisor-runtime-stage-receipts-v1.md"
+}

@@ -1,0 +1,39 @@
+{
+  "fingerprint": "supabase-edge|config-change|declared-function-scope|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-edge-declared-scope-20261006-v1",
+  "root_cause": "The production authority correctly required byte-for-byte provider parity, but a supabase/config.toml change expanded the parity set to every function directory. Supabase GitHub Integration deploys only functions declared in config.toml, so comparing every directory is broader than the provider's deployment scope and can create false terminal failures after the read-only token is provisioned.",
+  "prevention_rule": "For config.toml or _shared changes, derive the production parity set from [functions.<slug>] declarations in supabase/config.toml. For direct function changes, fail closed if the changed function is not declared. Never expand provider parity to unrelated undeclared function directories.",
+  "compiler": {
+    "failure_class": "SUPABASE_EDGE_PARITY_SCOPE_OVERBROAD",
+    "scope": "SUPABASE_EDGE_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evidence": {
+    "incident": [
+      "authority run 37471619101 resolved all function directories after config.toml changed"
+    ],
+    "source": [
+      ".github/workflows/supabase-edge-production-authority.yml",
+      "supabase/config.toml"
+    ],
+    "regression": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ]
+  }
+}

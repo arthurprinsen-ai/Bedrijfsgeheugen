@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-25",
+  "status": "CANDIDATE",
+  "fingerprint": "brain|main-regression|missing-base-sha|20261025-v1",
+  "obligation_id": "ci-brain-independent-main-verification-20261025",
+  "failure_class": "BRAIN_MAIN_VERIFICATION_MISSING_BASE_SHA",
+  "observed_evidence": {
+    "failed_main_verification_run": "40218283550",
+    "failure": "git rev-parse with empty base SHA",
+    "failed_stale_candidate_run": "40218550793",
+    "candidate_failure": "SUPERSEDES_INVALID,WRITER_LEASE_HEAD_DRIFT"
+  },
+  "root_cause": "PR-delivery planner assumes base SHA even for verification-only dispatch on main.",
+  "fix": "Extend existing brain-foundation-verify.yml with workflow_dispatch, exact SHA assertion and full BRAIN test artifact, no additional workflow, no deployment.",
+  "prevention_rule": "Manual full BRAIN verification must reuse existing workflow (123 workflow cap) rather than create new workflow or use stale PR leases.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-migration-source-preflight-20261025.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-migration-source-preflight-20261025.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "BRAIN_MAIN_VERIFICATION_MISSING_BASE_SHA",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

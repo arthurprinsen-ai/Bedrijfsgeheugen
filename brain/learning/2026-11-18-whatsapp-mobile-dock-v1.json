@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "site|ux|whatsapp-mobile-dock|20261118-v1",
+  "obligation_id": "site|ux|whatsapp-mobile-dock|20261118-v1",
+  "title": "Public mobile scan WhatsApp obscures fourth navigation action and loses brand green",
+  "status": "FIX_CANDIDATE",
+  "root_cause": "The public mobile four-action dock was introduced after the fixed-position WhatsApp components; the original widget retained a 14–18px bottom offset and sat above the dock at high z-index. Green appearance was not explicitly defended against later theme overrides.",
+  "impact": "On 390px iPhone screen the floating WhatsApp circle blocks Mijn bedrijf in bottom navigation and appears dark rather than WhatsApp green.",
+  "fix": "The existing public app CSS makes the canonical and legacy buttons #25D366 with a white icon, moves them above the dock with safe-area clearance, hides duplicates, and respects menus, consent and keyboard. Bump existing public stylesheet asset version; no extra router or widget.",
+  "prevention_rule": "Whenever a public mobile fixed dock exists, assert real bounding-box separation (>=8px), official computed WhatsApp green, and clickable fourth navigation target at 320/390/820px, in the original website release path.",
+  "regression_contract": "tests/brain-whatsapp-mobile-dock-20261118.test.mjs; tests/integration/portal-v2-website-one-app-phone-tablet.spec.js",
+  "tests": [
+    "tests/brain-whatsapp-mobile-dock-20261118.test.mjs",
+    "tests/integration/portal-v2-website-one-app-phone-tablet.spec.js"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-whatsapp-mobile-dock-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-whatsapp-mobile-dock-20261118.test.mjs"
+    ]
+  },
+  "evidence": [
+    "User screenshot /frisse-blik on iPhone dated 2026-11-18",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6012",
+    "Original PR #6012 run 44268322760 rejected missing machine metadata; not a deployed release"
+  ],
+  "outcome": "Source fix pending protected CI, exact Netlify main READY and independent mobile DOM readback. No unverified LIVE claim.",
+  "compiler": {
+    "failure_class": "MOBILE_FIXED_CONTROL_OCCLUSION",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "website-portal-coherence"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|saas-checkout|preflight-provider-availability|20261023-v1",
+  "fingerprint": "saas|customer-ux|collect-contact-input-before-known-provider-outage|20261023-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "BILLING_UNAVAILABLE_INPUT_FORM_MISLEADS_CUSTOMER",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Server correctly refuses checkout without Stripe secrets, but the public website still displays an immediately enabled payment form and asks for business/email information before giving the known billing_not_configured message. The first protected admission correctly rejected a Playwright helper outside tests/ as the sole historical replay/shadow/canary path; a proper Node test oracle is required.",
+  "observed_evidence": {
+    "production_registered_stripe_secret": false,
+    "production_registered_webhook_secret": false,
+    "subscription_rows": 0,
+    "checkout_intent_rows": 0,
+    "verified_live_release": "82609b2175ce60e3991f998976471c62bb6b335a",
+    "real_payment_verification": false,
+    "admission_failure_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39990013060"
+  },
+  "fix": "Use the existing public GET /api/checkout/readiness to gate form input and submit readiness. Fail closed on non-200/missing status/network error; display the already-shipped Dutch billing unavailable copy. When ready, preserve the existing Stripe checkout; never block the separately verified success/activation return. Add fixture-only browser tests desktop/mobile NL/EN for disabled state and no checkout-create call. Add a dedicated tests/*.test.mjs source-and-fixture regression, while keeping the existing Playwright browser scenario for desktop/mobile and both languages.",
+  "prevention_rule": "Do not collect personal company/email form inputs or create payment attempts when the canonical server payment readiness is blocked or unreachable. In a provider outage show an explicit accessible status; never infer payment from a URL, and never create a second billing authority or scheduler.",
+  "tests": [
+    "tests/brain-saas-checkout-preflight-availability-v1.test.mjs",
+    "tools/site-shell/checkout-browser-check.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-saas-checkout-preflight-availability-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-saas-checkout-preflight-availability-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-saas-checkout-preflight-availability-v1.test.mjs"
+    ],
+    "invariants": [
+      "no form input or checkout-create calls before verified readiness",
+      "show existing billing-unavailable text",
+      "success-readback not gated by public payment availability",
+      "configured checkout remains keyboard accessible",
+      "desktop/mobile NL/EN parity"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_sales_proven": false
+  }
+}

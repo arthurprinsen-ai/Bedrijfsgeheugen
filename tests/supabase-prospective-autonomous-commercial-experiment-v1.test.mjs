@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918113000_prospective_autonomous_commercial_experiment_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260918113000_prospective_autonomous_commercial_experiment_v1.sql','utf8');
 
 test('experiment activation is prospective and only for positive-value autonomous commercial actions',()=>{
   assert.match(sql,/new\.dedupe_key not like 'autonomy:%'/);

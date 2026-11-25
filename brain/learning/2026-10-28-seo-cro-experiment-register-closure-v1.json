@@ -1,0 +1,27 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "fingerprint": "seo|cro-experiment-register-closure|20261028-v1",
+  "obligation_id": "seo-cro-experiment-register-closure-20261028",
+  "failure_class": "CRO_CHANGE_WITHOUT_MEASUREMENT_RECORD",
+  "root_cause": "The daily SEO/CRO loop executes changes but does not register them in public.social_experiments, so no change has a baseline, a before/after result or a learning record.",
+  "observed_evidence": {
+    "actual_sources": [
+      "public.social_experiments: 0 of 222 rows have pagina or basislijn (read-only query, 2026-10-28)",
+      ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md"
+    ],
+    "no_revenue_or_impression_claim": true
+  },
+  "fix": "Skill section that requires registration in the existing register after production readback, one running experiment per page and metric, a control group, and bounded autonomous decision rules.",
+  "prevention_rule": "Every EXECUTED CRO/SEO change must carry an experiment with a baseline captured at production readback; an uplift is only claimed when the control group moves consistently.",
+  "tests": ["tests/brain-seo-conversion-orders-v1.test.mjs"],
+  "compiler": {"failure_class": "CRO_CHANGE_WITHOUT_MEASUREMENT_RECORD", "scope": "SEO_CRO_LEARNING", "machine_enforceable": false, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-seo-conversion-orders-v1.test.mjs"],
+    "shadow": ["tests/brain-seo-conversion-orders-v1.test.mjs"],
+    "canary": ["tests/brain-seo-conversion-orders-v1.test.mjs"]
+  },
+  "terminal_rule": "Policy only. Not terminal until the enforcing migration is live and a first executed change shows a registered experiment with a baseline."
+}

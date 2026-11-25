@@ -2,25 +2,40 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 import { zoekPaginas, heeftTitel, zetPictogrammen, zetTabtitel, tabtitelScript } from '../tools/apply-tabbladen.mjs';
 
 const config = JSON.parse(await readFile('site/tabtitels.json', 'utf8'));
 
-test('de tabbladlaag draait in de Netlify-build, na de v18-productiebouw', async () => {
+// index.html en prototype-v18-stable.html worden bij elke build overschreven door
+// tools/bouw-v18-production-core.mjs uit de v18-full chunks; de panelen staan dus in
+// de gebouwde pagina, niet in het bronbestand in de repo. Lees voor die bestanden de
+// gebouwde HTML (zelfde payload, zelfde integriteit als de generator).
+const V18_PRODUCTION_OUTPUTS = new Set(['index.html', 'prototype-v18-stable.html']);
+const v18ProductionHtml = (() => {
+  const core = readFileSync('tools/bouw-v18-production-core.mjs', 'utf8');
+  const files = [...core.matchAll(/'(v18-full\/[^']+\.txt)'/g)].map(m => m[1]);
+  const base64 = files.map(f => readFileSync(f, 'utf8')).join('').replace(/\s+/g, '');
+  return gunzipSync(Buffer.from(base64, 'base64')).toString('utf8');
+})();
+const paneelHtml = bestand => V18_PRODUCTION_OUTPUTS.has(bestand) ? v18ProductionHtml : readFileSync(bestand, 'utf8');
+
+test('de tabbladlaag draait via één canonieke Netlify-buildauthority, na de v18-productiebouw', async () => {
   assert.ok(existsSync('tools/apply-tabbladen.mjs'), 'tabbladlaag moet bestaan');
   assert.ok(existsSync('site/tabtitels.json'), 'tabtitels moeten in config staan');
-  const netlify = await readFile('netlify.toml', 'utf8');
+  const [netlify,entry] = await Promise.all([
+    readFile('netlify.toml', 'utf8'),
+    readFile('tools/ci/netlify-build-entry.mjs','utf8'),
+  ]);
   const productie = netlify.match(/\[build\]\n([\s\S]*?)(?=\n\[)/)?.[1] ?? '';
   const preview = netlify.match(/\[context\.deploy-preview\]\n([\s\S]*?)(?=\n\[)/)?.[1] ?? '';
-  for (const blok of [productie, preview]) {
-    assert.match(blok, /node tools\/apply-tabbladen\.mjs/);
-    assert.ok(
-      blok.indexOf('bouw-v18-production.mjs') < blok.indexOf('apply-tabbladen.mjs'),
-      'de tabbladlaag moet ná de v18-productiebouw draaien, die index.html opnieuw schrijft',
-    );
-  }
+  for (const blok of [productie, preview]) assert.match(blok,/node tools\/ci\/netlify-build-entry\.mjs/);
+  assert.match(entry,/tools\/apply-tabbladen\.mjs/);
+  assert.ok(
+    entry.indexOf('tools/bouw-v18-production.mjs') < entry.indexOf('tools/apply-tabbladen.mjs'),
+    'de tabbladlaag moet ná de v18-productiebouw draaien, die index.html opnieuw schrijft',
+  );
 });
-
 test('elke gepubliceerde pagina met een titel heeft een favicon', async () => {
   const overslaan = new Set(config.overslaan || []);
   const zonder = [];
@@ -55,7 +70,7 @@ test('elke paneelregel wijst naar bestaande panelen en heeft een basistitel', ()
     assert.ok(regel.actief.includes(regel.voorvoegsel.replace('-', '')) || regel.actief.length > 0);
     for (const bestand of regel.bestanden) {
       assert.ok(existsSync(bestand), `paneelpagina ontbreekt: ${bestand}`);
-      const html = readFileSync(bestand, 'utf8');
+      const html = paneelHtml(bestand);
       assert.match(html, new RegExp(`id="${regel.voorvoegsel}`), `geen panelen met voorvoegsel ${regel.voorvoegsel} in ${bestand}`);
     }
     assert.doesNotMatch(tabtitelScript(regel), /<title>/, 'het script mag geen tweede titel-element introduceren');

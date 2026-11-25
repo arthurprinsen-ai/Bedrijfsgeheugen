@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "fingerprint": "powerhouse|growth|trusted-lean-source-gated-hypotheses|20261024-v1",
+  "obligation_id": "powerhouse:trusted-lean-daily-growth:20261024-v1",
+  "status": "CANDIDATE",
+  "failure_class": "GROWTH_LEARNING_MISSING_EXPLICIT_TESTABLE_CUSTOMER_VALUE_DECISIONS",
+  "root_cause": "The existing content growth learning materializer previously generated candidate scores and diagnoses but not a bounded hypothesis/holdout/readback contract, clear client-versus-market scope, counterfactual alternatives and Trusted Advisor decision rights. Incomplete GA4 and Search Console observations must not be mistaken for evidence of causal performance or client-level predictions.",
+  "observed_evidence": {
+    "existing_workflow": ".github/workflows/content-growth-learning.yml",
+    "existing_policy": "config/content-growth-policy.json",
+    "existing_source_integrity": "tools/content-growth/source-integrity.mjs",
+    "canonical_runtime_experiments": "public.powerhouse_experiment_decision_queue_v1",
+    "canonical_runtime_predictions": "public.powerhouse_prediction_intelligence_control_v2",
+    "local_regression": "node --test tests/brain-trusted-lean-loop-v1.test.mjs",
+    "production_readback": "NOT_YET_PROVEN"
+  },
+  "fix": "Within the existing daily content growth learning artifact add an explainable Lean Startup + Trusted Advisor decision projection: observed aggregate evidence, alternative explanations, hypotheses, pre-registered metrics, guardrails, source freshness, blocked expired research, customer control and use of existing Supabase experiment/forecast owners.",
+  "prevention_rule": "No individual profile or tenant-specific claim from global marketing data; market signals are research not conversion outcomes. No numeric probability without canonical calibration. Only independently verified source and adequate sample may enter canonical bounded experiment review; winner promotion requires holdout, observed mature commercial outcomes, quality/security/consent gates and live readback. No second scheduler or learning store.",
+  "tests": [
+    "tests/brain-trusted-lean-loop-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "GROWTH_LEARNING_MISSING_EXPLICIT_TESTABLE_CUSTOMER_VALUE_DECISIONS",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-trusted-lean-loop-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-trusted-lean-loop-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-trusted-lean-loop-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact HEAD Required + CodeQL, protected merge and real daily learning artifact readback; this projection does not independently activate per-tenant advisors or experiments."
+}

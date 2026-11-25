@@ -1,0 +1,47 @@
+{
+  "date": "2026-11-09",
+  "fingerprint": "cro|shared-registry-owner-scope-and-id-shape|20261109-v1",
+  "status": "PROTECTED_SOURCE_CANDIDATE_NOT_LIVE",
+  "owner": "original-growth-cro-agent",
+  "parent_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5542",
+  "root_cause": "Original CRO owner treated unrelated blog distribution PLANNED work as own experiment because shared `social_experiments` query included any non-null onderdeel. Response mapped e.experiment_id though original SQL projection exposes e.id. Runtime proof error_class only preserves supported canonical VALIDATION value.",
+  "evidence": {
+    "original_real_http_request_id": 25771,
+    "status_code": 200,
+    "original_edge_version": 10,
+    "cycle_status": "PROPOSED_NOT_DEPLOYED",
+    "pending_count": 2,
+    "pending_experiment_ids": [
+      "",
+      ""
+    ],
+    "sql_projection": "intern.bg_salescyclus_cijfers(30).experimenten -> id, voorgesteld_door, onderdeel",
+    "stale_blog": "blog-distributie-20261105",
+    "owned_site": "bgx-20261103-d3a13c",
+    "no_commercial_effect_claim": true
+  },
+  "correction": "Scope to site/seo/content owned by bg-experimentcyclus or bgx; use projected id not nonexistent experiment_id for reporting; valid error_class VALIDATION and typed detail reason_code",
+  "prevention": "Shared tables require strict owner-and-domain filters; projected identifiers must be tested against live SQL before runtime status claims; error class must match existing canonical transport enum",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+  ],
+  "test_evidence": {
+    "expected": "Original real HTTP request with only own site proposal ID, pending_count 1, controlled RED evidence",
+    "verified_production_after_deploy": false
+  }
+}

@@ -8,7 +8,9 @@ test('production readback can be explicitly re-run on exact current main',()=>{
   assert.match(source,/workflow_dispatch:/);
   assert.match(source,/EVENT_NAME: \$\{\{ github\.event_name \}\}/);
   assert.match(source,/manualReadback=process\.env\.EVENT_NAME === 'workflow_dispatch'/);
-  assert.match(source,/browserRequired=websiteRequired \|\| portalRequired \|\| readbackWorkflowChanged \|\| manualReadback/);
-  assert.match(source,/\(readbackWorkflowChanged \|\| manualReadback\).*routes\.includes\('\/prijzen'\)/);
+  // A manual dispatch forces browser proof through the shared applicability module.
+  assert.match(source,/forceBrowser:manualReadback/);
+  assert.match(source,/const \{[^}]*browserRequired[^}]*\}=applicability;/);
+  assert.match(source,/\(readbackWorkflowChanged \|\| manualReadback\) && !routes\.includes\('\/prijzen'\)\) routes\.push\('\/prijzen'\)/);
   assert.match(source,/Verify pricing interactions and English route in production/);
 });

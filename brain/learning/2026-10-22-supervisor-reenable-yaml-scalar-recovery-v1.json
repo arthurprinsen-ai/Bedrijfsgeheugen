@@ -1,0 +1,84 @@
+{
+  "fingerprint": "github-actions|supervisor-reenable|unexpected-push-zero-jobs|20261022",
+  "status": "CANDIDATE",
+  "incident_state": "RECOVERING",
+  "observed_at": "2026-10-22",
+  "scope": "BACKEND",
+  "failure_class": "WORKFLOW_YAML_LITERAL_BLOCK_TRUNCATION",
+  "owner": "existing Powerhouse Delivery Recovery Supervisor lineage",
+  "root_cause": "The supervisor AWK program and Node heredoc were stored at column zero outside the YAML run literal scalar. The exact failed-run source and current-main source both fail a real YAML parser before jobs can start. An independent GitHub provider-trigger defect has not been established.",
+  "fix": "Indent both existing embedded programs and their delimiters by the scalar's ten-space indentation. YAML removes those ten spaces before bash reads the script, preserving shell quoting and heredoc terminators.",
+  "prevention_rule": "Before attributing an immediate zero-job workflow failure to provider triggers, parse the exact run-revision YAML and validate extracted shell. Keep the supervisor's owned regression executable with Node and bash, without an undeclared YAML-parser dependency. Keep the controller disabled until protected source promotion and separately authorized bounded runtime verification. Canonical learning evaluates only existing brain-prefixed test paths; run evaluateLearningFile locally for every required mode and prove narrow classifier ownership before publication.",
+  "compiler": {
+    "failure_class": "WORKFLOW_YAML_LITERAL_BLOCK_TRUNCATION",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-supervisor-yaml-scalar-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-supervisor-yaml-scalar-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-supervisor-yaml-scalar-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "baseline_main_sha": "6258ec1be551afebfb4d475c91394824047a2fdc",
+    "workflow_blob_sha": "746c19281b5042950c26ad5081b2a40dd36411ae",
+    "failed_run": 39813685306,
+    "failed_run_head": "15ee0244d735b995a18dc170d127c25f29063686",
+    "failed_run_jobs": 0,
+    "yaml_red": "PyYAML 6.0.3 ScannerError at line 311 column 1; independent Node block also escapes scalar at line 344",
+    "node_red": {
+      "pass": 20,
+      "fail": 1,
+      "failure": "bash unexpected EOF while looking for matching quote in truncated run scalar"
+    },
+    "node_green": {
+      "pass": 21,
+      "fail": 0
+    },
+    "yaml_green": "PyYAML 6.0.3 safe_load succeeds locally",
+    "actual_parser_extracted_shell_green": "bash -n: 3/3",
+    "external_writes": false,
+    "admission_attempt": {
+      "pr": 4707,
+      "head": "5f2e2acaf9e203f8fd89033270d55bdabf6b4a88",
+      "required_run": 39833774635,
+      "conclusion": "failure",
+      "first_error": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:tests/delivery-powerhouse-supervisor.test.mjs"
+    },
+    "admission_repair": "Move the scalar regression to a canonical brain-prefixed automation-owned test; restore the legacy 20-test file; add one exact classifier mapping. The canonical learning guard is unchanged.",
+    "successor_base_sha": "d41950ed3eed1758134fd82281c1023c1b6a22f5",
+    "canonical_admission_repair_green": {
+      "new_and_legacy_tests": {
+        "pass": 22,
+        "fail": 0
+      },
+      "evaluateLearningFile_modes": [
+        "HISTORICAL_REPLAY",
+        "SHADOW",
+        "CANARY"
+      ],
+      "canonical_eligible": true,
+      "guard_modified": false,
+      "classifier_rule": "one exact automation mapping"
+    }
+  },
+  "related_existing_candidates": {
+    "same_lineage_recovery": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4008",
+    "ghost_capacity": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4663"
+  },
+  "remaining_obligations": [
+    "Reconcile publication ownership with existing recovery lineage; no duplicate writer",
+    "Protected exact-head Required and security checks",
+    "Independent protected-main source readback",
+    "Separately authorized bounded enable/runtime verification within queue governor",
+    "Canonical incident-registry update and skill projection by existing owner"
+  ],
+  "release_status": "LOCAL_ONLY_NOT_LIVE_PROVEN"
+}

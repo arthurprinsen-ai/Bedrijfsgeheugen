@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|personal-editorial-truncation-bounded-retry|20261022-v1",
+  "observed_at": "2026-10-22",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "root_causes": [
+    "The 22 Oct personal LinkedIn source reserve successfully selected a new independently verified founder angle, but decision remained decided because artifact generation rejected a technically framed draft and the editorial rewrite then failed AI_ARTIFACT_INCOMPLETE_OUTPUT:gpt-5-mini:MAX_OUTPUT_TOKENS:budget=2400.",
+    "The original first-stage structured artifact had one bounded truncation retry but the personal editorial revision called callAI(...,2400) without that recovery."
+  ],
+  "prevention": [
+    "Reuse existing largerArtifactTokenBudget and exact AIProviderIncompleteOutputError for one and only one retry of an unsubmitted editorial draft.",
+    "Never retry on editorial contract violation, provider denial, invalid identity, missing source, semantic duplicate or ambiguous actual posting side effects.",
+    "Run all independent personalEditorialViolations, personalFinalCopyValid, publisher OAuth, global uniqueness and provider external receipt gates after retry."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-personal-editorial-truncation-retry-20261022.test.mjs"
+    ],
+    "baseline": "2026-10-22T08:44:56Z: artifact-ai incomplete GPT-5 mini output at 2400 token cap; selected alternative 4f6bb3f1...; no personal provider receipt",
+    "production_readback": "PENDING"
+  },
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-editorial-truncation-retry-20261022.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-editorial-truncation-retry-20261022.test.mjs"
+    ]
+  },
+  "current_state": "CANDIDATE_NOT_LIVE"
+}

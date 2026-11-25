@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "fingerprint": "powerhouse|social-learning|original-hourly-evaluation-to-obligation-ack|20261110-v1",
+  "parent_issue": 4198,
+  "owner": "existing netlify social-learning-evaluate hourly + existing supabase social-learning-store; ONE BRAIN original owner",
+  "compiler": {
+    "failure_class": "SOCIAL_MEASUREMENT_OBLIGATION_ACK_MISSING",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Original Netlify social-learning-evaluate records missed/partial 24/48/72h provider windows in social_learning_obligations, but when an original exact-window social_learning_evaluations receipt exists or is later created there is no original acknowledgement/closure writeback. record_obligation upsert may resurrect a previously processed obligation. Cron HTTP success and even a real evaluation do not imply the original obligation consumer ACK.",
+  "observed": {
+    "checked_at_utc": "2026-11-10T09:53:00Z",
+    "open_social_learning_obligations": 189,
+    "missing_or_partial_windows": 182,
+    "missing_or_partial_windows_with_numeric_evaluation": 13,
+    "missing_or_partial_windows_with_exact_6h_observed_window_snapshot": 12,
+    "post_identity_missing_for_182": false,
+    "causal_experiment_winner_proven": false
+  },
+  "correction": "Use existing authenticated tenant-scoped social-learning-store to reconcile original source snapshot+evaluation IDs via strict same-post/tenant/window ±6h checks, compare numeric provider/evaluation vector, atomically CAS-mark only that exact OPEN measurement obligation MEASUREMENT_VERIFIED with immutable source/event proof; refuse partial-only provider scope, missing source, wrong date, mismatched account or wrong vector. The original hourly agent automatically invokes reconciliation on every run. Duplicate missing-window records must never reopen the acknowledged original identity.",
+  "prevention": [
+    "Every original 24/48/72h window must carry one provider source_event_id and deterministic evaluation:<postId>:<windowHours>, or remain an explicitly unresolved evidence gap; never assume a missing metric is zero.",
+    "After putting the original evaluation, the SAME original hourly owner must reconcile prior OPEN window obligations; status MEASUREMENT_VERIFIED means metric consumer ACK, not learned/causal effect.",
+    "Retrying an old missing-window record cannot recreate an already acknowledged obligation. Use original primary key, insert-ignore-duplicates and exact tenant and status CAS.",
+    "Reject OBSERVED_PARTIAL_SCOPE and Windsor daily post-date aggregate as exact 24/48/72h controlled outcome; no Buffer/Make publication fallback, second scheduler, unauthorized provider API or synthetic engagement.",
+    "Protected PR and active Supabase Edge and Netlify runtime readback before claiming deployment; natural subsequent provider sample and applied next-post learning require separate proof."
+  ],
+  "tests": [
+    "tests/brain-social-obligation-evidence-ack-20261110.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-obligation-evidence-ack-20261110.test.mjs"
+    ]
+  },
+  "release": {
+    "required_passed": false,
+    "codeql_passed": false,
+    "merged": false,
+    "supabase_edge_bundle_verified": false,
+    "netlify_hourly_code_verified": false,
+    "next_natural_hourly_verified": false
+  },
+  "no_false_green": true,
+  "no_second_executor": true
+}

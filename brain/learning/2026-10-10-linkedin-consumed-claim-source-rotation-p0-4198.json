@@ -1,0 +1,48 @@
+{
+  "id": "p0-4198-linkedin-consumed-authority-and-duplicate-story-rotation-20261010-v1",
+  "date": "2026-10-10",
+  "fingerprint": "powerhouse|linkedin|global-story-duplicate-rotation-and-consumed-claim-fence|v1",
+  "status": "PROTECTED_CANDIDATE",
+  "root_cause": "Company story duplicates were repeatedly selected from the same top-ranked recommendation. A previously consumed personal publication capability without a provider post ID allowed orchestration to keep regenerating content, falsely appearing recoverable even though provider mutation uncertainty remained.",
+  "prevention": [
+    "On unique-story rejection before provider mutation, store exactly which source recommendation was rejected and rotate to an alternative source-backed recommendation on the same daily channel without disabling global semantic uniqueness.",
+    "Persist excluded recommendation IDs across recovery attempts, preventing a rejected story from reentering rotation within the same calendar day.",
+    "If no unique source-backed alternative exists, hold the channel rather than invent a post.",
+    "Always read consumed unrevoked day-scoped capability records and preserve the existing no-provider-ID claim for exact provider reconciliation. Never create a second sender or silently reset/consume a second day authority.",
+    "Retain LinkedIn commentary length limit, preflight OAuth, person/company identity, readback and safety gates."
+  ],
+  "compiler": {
+    "failure_class": "LINKEDIN_DUPLICATE_RETRY_AND_CONSUMED_CAPABILITY_LOOP",
+    "scope": "SOCIAL_PUBLICATION",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-source-rotation-and-consumed-capability-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-source-rotation-and-consumed-capability-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-source-rotation-and-consumed-capability-p0-4198.test.mjs"
+    ],
+    "canonical_eligible": false
+  },
+  "evidence": {
+    "regression": "tests/brain-linkedin-source-rotation-and-consumed-capability-p0-4198.test.mjs",
+    "parent_p0": 4198,
+    "affected_channels": [
+      "linkedin_personal",
+      "linkedin_company"
+    ],
+    "provider_ids_confirmed": false,
+    "unconsumed_company_duplicate": "GLOBAL_POST_DUPLICATE_BLOCKED:STORY_FAMILY_DUPLICATE",
+    "consumed_personal_claim": true,
+    "historical_personal_provider_id": null,
+    "last_trusted_publication": "blog LIVE_PROVEN only",
+    "production_readback_required": true
+  },
+  "production_claim": "Requires protected CI, exact deployed Edge parity, genuine organization-admin OAuth, verified individual provider receipts and result ingestion."
+}

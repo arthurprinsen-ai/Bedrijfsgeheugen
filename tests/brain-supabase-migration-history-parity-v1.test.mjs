@@ -8,6 +8,14 @@ test('recovered Supabase production migrations remain represented in the canonic
     '20260913133014',
     '20261005142034',
     '20261005142118',
+    '20261006102646',
+    '20261006102754',
+    '20261006103336',
+    '20261006103408',
+    '20261006103432',
+    '20261006103445',
+    '20261006103617',
+    '20261006103856',
   ]) {
     assert.ok(files.some(name => name.startsWith(version + '_') && name.endsWith('.sql')), 'missing recovered migration ' + version);
   }
@@ -47,4 +55,26 @@ test('historical autonomous trigger repair is replay-idempotent but still fail-c
   assert.match(sql, /if v_after <> v_before then\s+execute v_after;/);
   assert.match(sql, /elsif v_before ~\* 'powerhouse_sync_forecast_calibration_obligation/);
   assert.match(sql, /raise exception 'autonomy calibration trigger-call patch did not match current function body'/);
+});
+
+
+test('preview applicability is fail-closed but skips exact immutable production mirrors', async () => {
+  // The source-side Supabase contract (supabase-pr-preview.yml) runs the security gate,
+  // which owns the exact immutable production mirror allowlist.
+  const workflow = await readFile('.github/workflows/supabase-pr-preview.yml', 'utf8');
+  const gate = await readFile('scripts/brain/check_powerhouse_supabase_security.py', 'utf8');
+  assert.match(workflow, /check_powerhouse_supabase_security\.py "\$\{\{ inputs\.base_sha \}\}" "\$\{\{ inputs\.head_sha \}\}"/);
+  assert.match(gate, /HISTORICAL_PRODUCTION_MIRROR_BLOBS/);
+  assert.match(gate, /"git", "hash-object", str\(path\)/);
+  assert.match(gate, /return actual == expected/);
+  assert.match(gate, /Verified immutable historical production mirrors/);
+});
+
+
+test('historical production ledger prefix remains complete through LinkedIn OAuth terminal migrations', async () => {
+  const lock = JSON.parse(await readFile('supabase/migration-history.lock.json', 'utf8'));
+  const historical=lock.applied.filter(row=>row.version<='20261006103856');
+  assert.equal(historical.length,591);
+  assert.equal(historical.at(-1)?.version,'20261006103856');
+  assert.equal(historical.at(-1)?.name,'linkedin_company_live_proof_state_canonical_v3');
 });

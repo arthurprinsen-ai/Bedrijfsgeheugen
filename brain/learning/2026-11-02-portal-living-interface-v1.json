@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "parent_issue": 4547,
+  "obligation_id": "original-portal-living-interface-v1-20261102",
+  "fingerprint": "portal|living-interface|inaccessible-chart-values-and-invalid-form-propagation|20261102-v1",
+  "failure_class": "PORTAL_UX_ACCESSIBILITY_DATA_EXPLORATION_GAP",
+  "observed_evidence": {
+    "source_paths": [
+      "portal-v2/visuals.js",
+      "portal-v2/form-primitives.js",
+      "portal-v2/index.html",
+      "portal-v2/experience.css",
+      "portal-v2/insight-lens.js"
+    ],
+    "observation": "Canonical SVG charts exposed accessible titles on individual marks, but had no complete keyboard-usable source-value table disclosure; common generated fields did not link help/error text and propagated invalid native values to callbacks.",
+    "release": "Candidate PR #5297; production effectiveness and customer usability EVIDENCE_DUE.",
+    "gate_incidents": [
+      "PR_MACHINE_METADATA_INVALID:CANDIDATE_TYPE_INVALID corrected in PR metadata",
+      "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:brain_learning corrected by original learning record and executable replay"
+    ]
+  },
+  "root_cause": "Visual and input primitives were designed separately from the non-visual, error-recovery path. The new UX work initially omitted required PR candidate metadata and ONE BRAIN learning closure; both existing protected checks correctly rejected incomplete evidence.",
+  "fix": "Enhance canonical Portal V2 without replacement: five existing chart families disclose exact source-derived rows as native details/tables, keyboard users can traverse existing marks, field controls link descriptions/errors and stop native-invalid callback propagation. Add single original brain-learning record, regression, skill incident protocol, human change documentation and ledger.",
+  "prevention_rules": [
+    "Every new graph must offer a source-derived accessible data alternative; never turn absent values into verified zero in a new disclosure.",
+    "Every new field has a visible label, associated help/error and native validation; invalid values never trigger a save callback or a false server-success state.",
+    "No second Portal UX authority, InsightLens, brain, tenant read model, scheduler, writer, arbitrary cross-tenant cache or fake performance report.",
+    "Use only supported Candidate-Type: implementation for portal feature PRs; fail closed if metadata deviates.",
+    "Every material original portal change includes ONE BRAIN learning, human documentation, activity ledger and incident protocol, with executable brain-* regression.",
+    "Verify actual WCAG, 320/390/768/1024/1440 interaction matrix, protected Required/CodeQL/BRAIN, exact Netlify SHA and independent authenticated real-user results before claiming production proof."
+  ],
+  "tests": [
+    "tests/brain-portal-living-interface-20261102.test.mjs",
+    "portal-v2/tests/living-interface.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-living-interface-20261102.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_UX_ACCESSIBILITY_DATA_EXPLORATION_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "owner": "original Portal V2 protected UX and release authority",
+  "terminal_rule": "Only independent protected checks plus exact-source Netlify and authenticated entrepreneur user readback can promote this beyond CANDIDATE; absent source/tenant evidence remains EVIDENCE_DUE."
+}

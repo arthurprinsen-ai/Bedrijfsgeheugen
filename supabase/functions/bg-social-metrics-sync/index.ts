@@ -1,0 +1,664 @@
+import { verifiedEditorialRegistrySelection } from '../_shared/linkedin-editorial-registry-proof.mjs';
+import { createClient } from 'npm:@supabase/supabase-js@2';
+import { verifiedCompanyPostBatch } from '../_shared/verified-company-publication-registry.mjs';
+import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs } from '../_shared/linked-company-analytics.mjs';
+import { stageOriginalWindsorCompanySources, originalCompanySourceProviderHealth, readOriginalWindsorCompanySourcePair } from '../_shared/original-windsor-company-stage.mjs';
+import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
+import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
+import {selectOriginalInstagramPost,observedProviderMetricNumber,originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity,originalCompanySourceBrainFailureInput} from '../_shared/original-provider-poll-receipt.mjs';
+
+// Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
+// Never sends a post, never infers impressions from likes, never stores actor PII.
+const BASE='https://backend.composio.dev/api/v3.1';
+const clean=(v:unknown)=>String(v??'').trim();
+const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
+const localDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const delayMs=90*1000;
+const numeric=observedProviderMetricNumber;
+async function secret(db:any,name:string){
+  const {data,error}=await db.rpc('bg_geheim',{p_naam:name});
+  if(error)throw new Error('SECRET_READ_FAILED:'+name);
+  return clean(data);
+}
+async function request(apiKey:string,path:string,init:RequestInit={}){
+  const response=await fetch(BASE+path,{...init,headers:{'x-api-key':apiKey,'content-type':'application/json',...(init.headers||{})},signal:AbortSignal.timeout(12000)});
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error('COMPOSIO_HTTP_'+response.status);
+  return body;
+}
+async function execute(apiKey:string,account:any,slug:string,args:any){
+  if(!account?.id||!account?.user_id)throw new Error('BOUND_PROVIDER_ACCOUNT_MISSING');
+  const body=await request(apiKey,'/tools/execute/'+slug,{method:'POST',body:JSON.stringify({
+    connected_account_id:account.id,user_id:account.user_id,version:'latest',arguments:args
+  })});
+  if(body?.successful!==true)throw new Error(slug+':'+clean(body?.error||body?.data?.message||'PROVIDER_REJECTED').slice(0,160));
+  return body.data||{};
+}
+async function accounts(apiKey:string,toolkit:string){
+  const body=await request(apiKey,'/connected_accounts?toolkit_slugs='+encodeURIComponent(toolkit)+'&statuses=ACTIVE&account_type=ALL&limit=50');
+  return (Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:[]).filter((x:any)=>clean(x?.status).toUpperCase()==='ACTIVE');
+}
+// Reuse the live-verified ONE BRAIN identity, not optional account-list metadata.
+async function verifiedBoundAccount(db:any,apiKey:string,toolkit:'instagram'|'linkedin'){
+  const recordId=toolkit==='instagram'?'instagram-composio-setup-current-state-v1':'linkedin-composio-setup-current-state-v1';
+  const {data:stored,error}=await db.from('brain_records')
+    .select('status,result,observed_at').eq('tenant_id','canonical').eq('record_id',recordId).maybeSingle();
+  if(error)throw new Error('PROVIDER_BINDING_PROOF_READ:'+error.message);
+  const proof=stored?.result||{};
+  // linkedin-composio-setup writes COMPANY_AUTH_REQUIRED when the personal profile is verified but the
+  // organization role is missing. The personal reaction readback must keep running in that state.
+  const statusOk=stored?.status==='ACTIVE'
+    ||(toolkit==='linkedin'&&stored?.status==='COMPANY_AUTH_REQUIRED'&&proof.personal_ready===true);
+  if(!statusOk||proof.ready!==true||proof.health_verified!==true){
+    throw new Error(toolkit.toUpperCase()+'_VERIFIED_PROVIDER_PROOF_REQUIRED');
+  }
+  if(toolkit==='instagram'&&clean(proof.username).toLowerCase()!=='bedrijfsgeheugen.nl'){
+    throw new Error('IG_CANONICAL_IDENTITY_MISMATCH');
+  }
+  if(toolkit==='linkedin'&&proof.personal_ready!==true){
+    throw new Error('LINKEDIN_PERSONAL_PROOF_UNAVAILABLE');
+  }
+  const id=clean(proof.connected_account_id),userId=clean(proof.user_id);
+  if(!id||!userId)throw new Error('PROVIDER_BINDING_ID_MISSING');
+  // The active account list is a liveness readback; never select by alias,
+  // account order, a personal identity, or an unverified fallback.
+  const active=await accounts(apiKey,toolkit);
+  const matched=active.filter((a:any)=>clean(a?.id||a?.connected_account_id)===id
+    &&clean(a?.user_id)===userId&&!a?.is_disabled);
+  if(matched.length!==1)throw new Error(toolkit.toUpperCase()+'_VERIFIED_ACCOUNT_NOT_ACTIVE');
+  return matched[0];
+}
+async function snapshot(db:any,tenantId:string,postId:string,platform:string,providerId:string,slotStart:string,metrics:any,quality:string){
+  const now=new Date().toISOString();
+  if(!Object.keys(metrics).length)throw new Error('EMPTY_PROVIDER_METRICS');
+  // Store exact scheduled source-time observations, not one mutable daily row.
+  const snapshotId=originalProviderMetricSnapshotIdentity({platform,providerId,slotStart});
+  const {error}=await db.from('social_metric_snapshots').upsert({
+    tenant_id:tenantId,post_id:postId,snapshot_id:snapshotId,
+    source_event_id:snapshotId,source:'composio-'+platform,observed_at:now,
+    data_quality:quality,metrics
+  },{onConflict:'tenant_id,source_event_id',ignoreDuplicates:true});
+  // A duplicate retry of the SAME original six-hour poll never overwrites
+  // its first source observation or re-stamps its factual observed_at.
+  if(error)throw new Error('SOCIAL_METRIC_STORE:'+error.message);
+}
+async function resolveInstagram(db:any,media:any){
+  const mediaId=clean(media.id),timestamp=clean(media.timestamp);
+  if(!/^\d{10,25}$/.test(mediaId)||!Number.isFinite(Date.parse(timestamp)))throw new Error('IG_MEDIA_ID_OR_DATE_INVALID');
+  const {data:exact,error:exactErr}=await db.from('social_posts').select('tenant_id,post_id,platform,external_post_id')
+    .eq('tenant_id','bedrijfsgeheugen').eq('platform','instagram').eq('external_post_id',mediaId).limit(2);
+  if(exactErr)throw new Error('IG_EXACT_LOOKUP:'+exactErr.message);
+  const exactPost=selectOriginalInstagramPost({mediaId,exactRows:exact});
+  if(exactPost)return exactPost;
+  const ms=Date.parse(timestamp);
+  const {data:near,error:nearErr}=await db.from('social_posts').select('tenant_id,post_id,external_post_id')
+    .eq('tenant_id','bedrijfsgeheugen').eq('platform','instagram')
+    .gte('published_at',new Date(ms-60000).toISOString()).lte('published_at',new Date(ms+60000).toISOString()).limit(5);
+  if(nearErr)throw new Error('IG_TIMESTAMP_LOOKUP:'+nearErr.message);
+  // Timestamp proximity is a collision signal, never proof of a legacy alias.
+  selectOriginalInstagramPost({mediaId,exactRows:[],nearRows:near});
+  // Verified provider media missing in the older Buffer register: register the exact owned post.
+  const postId='instagram:'+mediaId;
+  const {error}=await db.from('social_posts').upsert({
+    tenant_id:'bedrijfsgeheugen',post_id:postId,platform:'instagram',
+    external_post_id:mediaId,published_at:new Date(ms).toISOString(),
+    channel_name:'Bedrijfsgeheugen Instagram',channel_kind:'instagram_business',
+    learning_status:'pending_measurement'
+  },{onConflict:'tenant_id,post_id',ignoreDuplicates:true});
+  if(error)throw new Error('IG_PROVIDER_POST_REGISTER:'+error.message);
+  const {data:registered,error:registerReadError}=await db.from('social_posts')
+    .select('tenant_id,post_id,platform,external_post_id')
+    .eq('tenant_id','bedrijfsgeheugen').eq('platform','instagram').eq('external_post_id',mediaId).limit(2);
+  if(registerReadError)throw new Error('IG_PROVIDER_POST_REGISTER_READBACK_FAILED');
+  const registeredPost=selectOriginalInstagramPost({mediaId,exactRows:registered});
+  if(!registeredPost||registeredPost.post_id!==postId)throw new Error('IG_PROVIDER_POST_REGISTER_READBACK_UNPROVEN');
+  return registeredPost;
+}
+// Shares only already LIVE_PROVEN organization publications into the existing
+// owned-brand social_posts index. No external publish, no metrics and no consent bypass.
+
+// The original #177 registry is the only writer for this measurement handoff.
+// Missing/ambiguous evidence stays unknown; existing non-null metadata is never overwritten.
+async function registerOriginalEditorialSelections(db:any,proofs:any[],batch:any[]){
+  let registered=0,unknown=0,conflicts=0;
+  for(const post of batch){
+    const matches=proofs.filter(p=>p.external_id===post.external_post_id&&p.status==='LIVE_PROVEN');
+    if(matches.length!==1){unknown++;continue;}
+    const proof=matches[0];
+    const {data:artifacts,error:artifactError}=await db.from('powerhouse_content_artifacts')
+      .select('channel,run_date,status,body,generation_evidence').eq('run_date',proof.publication_date)
+      .eq('channel',proof.channel).eq('status','published').limit(2);
+    if(artifactError||artifacts?.length!==1){unknown++;continue;}
+    const selection=await verifiedEditorialRegistrySelection({proof,artifact:artifacts[0],post});
+    if(!selection){unknown++;continue;}
+    const {data:existing,error:readError}=await db.from('social_posts').select('post_id,content_pillar,content_hash,format')
+      .eq('tenant_id',post.tenant_id).eq('platform','linkedin').eq('channel_kind',post.channel_kind)
+      .eq('external_post_id',post.external_post_id).maybeSingle();
+    if(readError||!existing){unknown++;continue;}
+    if(existing.content_pillar===selection.content_pillar){continue;}
+    if(existing.content_pillar!==null||(existing.content_hash&&existing.content_hash!==selection.content_hash)
+      ||(existing.format&&!['text','text_story'].includes(existing.format))){conflicts++;continue;}
+    let write=db.from('social_posts').update({content_pillar:selection.content_pillar})
+      .eq('tenant_id',post.tenant_id).eq('platform','linkedin').eq('channel_kind',post.channel_kind)
+      .eq('external_post_id',post.external_post_id).is('content_pillar',null);
+    write=existing.content_hash?write.eq('content_hash',existing.content_hash):write.is('content_hash',null);
+    write=existing.format?write.eq('format',existing.format):write.is('format',null);
+    const {data:updated,error:writeError}=await write.select('post_id');
+    if(writeError||updated?.length!==1){conflicts++;continue;}
+    registered++;
+  }
+  return {state:'SELECTED_PILLAR_LINEAGE_ONLY',registered,unknown,conflicts,learningApplied:false};
+}
+
+async function registerCompanyProofs(db:any){
+  const since=new Date(Date.now()-35*86400000).toISOString().slice(0,10);
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,publication_date,external_id,published_at,live_proven_at,evidence')
+    .eq('tenant_id','canonical').eq('channel','linkedin_company').eq('status','LIVE_PROVEN')
+    .gte('publication_date',since).not('live_proven_at','is',null)
+    .order('publication_date',{ascending:false}).limit(35);
+  if(proofError)throw new Error('COMPANY_PUBLICATION_PROOF_READ:'+proofError.message);
+  const batch=verifiedCompanyPostBatch(proofs||[],new Date(),30);
+  if(!batch.length)return {status:'NO_ELIGIBLE_VERIFIED_COMPANY_POST',eligible:0,registered:0};
+  const {data:inserted,error:writeError}=await db.from('social_posts')
+    .upsert(batch,{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:true})
+    .select('post_id');
+  if(writeError)throw new Error('COMPANY_SOCIAL_REGISTRY_WRITE:'+writeError.message);
+  const editorialSelections=await registerOriginalEditorialSelections(db,proofs||[],batch);
+  return {status:'VERIFIED_POSTS_INDEXED_ONLY',eligible:batch.length,registered:(inserted||[]).length,
+    editorial_selections:editorialSelections,
+    metrics_scope:'UNKNOWN_NO_ORGANIZATION_ANALYTICS_PERMISSION',
+    authority:'canonical_content_publication_obligations'};
+}
+
+// Same bridge for the founder's personal profile: provider-acknowledged publications from the
+// canonical obligations become measurable social_posts rows (tenant canonical, which is where
+// linkedin() below and the learning stores read). Idempotent; never overwrites existing rows.
+async function registerPersonalProofs(db:any){
+  const since=new Date(Date.now()-35*86400000).toISOString().slice(0,10);
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,publication_date,external_id,published_at,live_proven_at,evidence')
+    .eq('tenant_id','canonical').eq('channel','linkedin_personal').in('status',['PUBLISHED','LIVE_PROVEN'])
+    .gte('publication_date',since).order('publication_date',{ascending:false}).limit(40);
+  if(proofError)throw new Error('PERSONAL_PUBLICATION_PROOF_READ:'+proofError.message);
+  const batch=verifiedPersonalPostBatch(proofs||[],new Date(),30);
+  if(!batch.length)return {status:'NO_ELIGIBLE_PERSONAL_POST',eligible:0,registered:0};
+  // One row per statement: the database identity gate (LINKEDIN_PERSONAL_DISPATCH_BLOCKED) may refuse a
+  // day without verified personal truth. That refusal must stay in force and must not block other days.
+  let registered=0;const guardRejected:{post_id:string,reason:string}[]=[];
+  for(const post of batch){
+    const {data:inserted,error:writeError}=await db.from('social_posts')
+      .upsert([post],{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:true})
+      .select('post_id');
+    if(writeError){guardRejected.push({post_id:post.post_id,reason:clean(writeError.message).slice(0,70)});continue;}
+    registered+=(inserted||[]).length;
+  }
+  const editorialSelections=await registerOriginalEditorialSelections(db,proofs||[],batch);
+  return {status:guardRejected.length?'PARTIAL_GUARD_REJECTED':'PROVIDER_ACKNOWLEDGED_POSTS_INDEXED_ONLY',
+    editorial_selections:editorialSelections,
+    eligible:batch.length,registered,guard_rejected:guardRejected.slice(0,10),
+    authority:'canonical_content_publication_obligations',decision:'linkedin-personal-provider-ack-truth-v1',
+    metrics_scope:'REACTIONS_ONLY_VIA_PROVIDER_READBACK'};
+}
+
+// Reuse the same six-hour provider sync. Link read-only third-party post metrics
+// only when canonical LIVE_PROVEN + independent organization author exactly match.
+async function reconcileCompanyMetricEvidence(db:any){
+  const since=new Date(Date.now()-14*86400000).toISOString().slice(0,10);
+  const {data:observations,error:sourceError}=await db.from('powerhouse_growth_source_daily_v1')
+    .select('tenant_id,metric_date,source_key,quality,source_observed_at,metrics,evidence')
+    .eq('tenant_id','bedrijfsgeheugen').in('quality',['PROVIDER_OBSERVED_UNLINKED','PROVIDER_OBSERVED'])
+    .like('source_key','linkedin_company_post:%')
+    .gte('metric_date',since).order('source_observed_at',{ascending:false}).limit(60);
+  if(sourceError)throw new Error('COMPANY_ANALYTICS_SOURCE_READ:'+sourceError.message);
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,external_id,published_at,live_proven_at,evidence')
+    .eq('tenant_id','canonical').eq('channel','linkedin_company').eq('status','LIVE_PROVEN')
+    .gte('publication_date',since).not('live_proven_at','is',null)
+    .order('publication_date',{ascending:false}).limit(35);
+  if(proofError)throw new Error('COMPANY_ANALYTICS_INDEPENDENT_PROOF_READ:'+proofError.message);
+  const {data:posts,error:postError}=await db.from('social_posts')
+    .select('tenant_id,post_id,platform,channel_kind,external_post_id,published_at')
+    .eq('tenant_id','bedrijfsgeheugen').eq('platform','linkedin')
+    .eq('channel_kind','linkedin_company').order('published_at',{ascending:false}).limit(40);
+  if(postError)throw new Error('COMPANY_ANALYTICS_CANONICAL_INDEX_READ:'+postError.message);
+  const matched=buildVerifiedCompanyMetricSnapshots({
+    observations:observations||[],publicationProofs:proofs||[],ownedPosts:posts||[],now:new Date(),max:30
+  });
+  if(!matched.length)return {state:'NO_EXACT_INDEPENDENTLY_LINKABLE_ANALYTICS',
+    source_rows:(observations||[]).length,linked:0,unlinked_cannot_be_inferred:true};
+  const {error:writeError}=await db.from('social_metric_snapshots')
+    .upsert(matched,{onConflict:'tenant_id,source_event_id'});
+  if(writeError)throw new Error('COMPANY_ANALYTICS_CANONICAL_SNAPSHOT_WRITE:'+writeError.message);
+  return {state:'VERIFIED_OWNED_COMPANY_PROVIDER_METRICS_LINKED',
+    source_rows:(observations||[]).length,linked:matched.length,
+    source:'windsor.ai',verified_by:'canonical LIVE_PROVEN organization author and exact post URN',
+    inference_limits:'impressions are not customers and video views are not reach'};
+}
+
+// Stage-by-stage original experiment audit. Use the same original six-hour observer
+// and minute-39 learning writer: do not create another job, store, or publisher.
+async function auditCompanyExperimentHandoffs(db:any){
+  const since=new Date(Date.now()-14*86400000).toISOString();
+  const {data:applications,error:appError}=await db.from('social_learning_applications')
+    .select('tenant_id,application_id,application_role,post_id,learning_id,verification_status,applied_at')
+    .eq('tenant_id','bedrijfsgeheugen')
+    .eq('application_role','ORIGINAL_EXPERIMENT_VARIANT_PROVIDER_PROVEN')
+    .gte('applied_at',since).order('applied_at',{ascending:false}).limit(40);
+  if(appError)throw new Error('COMPANY_EXPERIMENT_APPLICATION_READ:'+appError.message);
+  const ids=[...new Set((applications||[]).map((a:any)=>a.post_id).filter(Boolean))];
+  if(!ids.length)return evaluateCompanyExperimentHandoffs({now:new Date()});
+  const [postResult,snapshotResult,evaluationResult]=await Promise.all([
+    db.from('social_posts').select('tenant_id,post_id,platform,channel_kind,external_post_id,published_at')
+      .eq('tenant_id','bedrijfsgeheugen').in('post_id',ids).limit(40),
+    db.from('social_metric_snapshots').select('tenant_id,post_id,source,data_quality,observed_at,source_event_id,metrics')
+      .eq('tenant_id','bedrijfsgeheugen').eq('source','windsor-linkedin-company')
+      .in('post_id',ids).order('observed_at',{ascending:false}).limit(200),
+    db.from('social_learning_evaluations').select('tenant_id,post_id,metric_vector,evidence')
+      .eq('tenant_id','bedrijfsgeheugen').in('post_id',ids).limit(100)
+  ]);
+  if(postResult.error||snapshotResult.error||evaluationResult.error)
+    throw new Error('COMPANY_EXPERIMENT_STAGE_READ:'+
+      (postResult.error||snapshotResult.error||evaluationResult.error).message);
+  return evaluateCompanyExperimentHandoffs({
+    applications:applications||[],ownedPosts:postResult.data||[],
+    snapshots:snapshotResult.data||[],evaluations:evaluationResult.data||[],
+    now:new Date()
+  });
+}
+
+// Same six-hour provider observer. CAS-update ORIGINAL date/channel obligation
+// only from independently observed, exact-provider-ID, >=24h metrics.
+async function reconcileOriginalPublicationMetricHandoffs(db:any){
+ const now=new Date(),since=new Date(now.getTime()-10*86400000).toISOString().slice(0,10);
+ const {data:obs,error}=await db.from('content_publication_obligations')
+  .select('tenant_id,publication_date,channel,status,external_id,published_at,live_proven_at,measured_at,learned_at,metrics,updated_at')
+  .eq('tenant_id','canonical').eq('status','LIVE_PROVEN')
+  .in('channel',['linkedin_personal','linkedin_company','instagram'])
+  .gte('publication_date',since).lte('publication_date',localDay())
+  .not('live_proven_at','is',null).order('publication_date',{ascending:false}).limit(22);
+ if(error)throw new Error('ORIGINAL_METRIC_OBLIGATION_READ:'+error.message);
+ let savedCount=0,overdue=0,errors=0;const stages:any[]=[];
+ for(const ob of obs||[]){
+  const kind=ob.channel==='linkedin_personal'?'canonical':'bedrijfsgeheugen';
+  // The SAME original #177 owns all social media metric receipts. For IG,
+  // the identity is numeric Meta media ID plus owned-brand channel kind.
+  // An account aggregate or historical Buffer row never proves a post.
+  let postQuery=db.from('social_posts')
+   .select('tenant_id,post_id,external_post_id,channel_kind,published_at')
+   .eq('tenant_id',kind)
+   .eq('platform',ob.channel==='instagram'?'instagram':'linkedin')
+   .eq('external_post_id',ob.external_id);
+  postQuery=ob.channel==='instagram'
+   ?postQuery.in('channel_kind',['instagram_business','instagram_company'])
+   :postQuery.eq('channel_kind',ob.channel);
+  const {data:posts,error:pe}=await postQuery.limit(2);
+  if(pe){errors++;stages.push({day:ob.publication_date,channel:ob.channel,stage:'POST_READ_ERROR'});continue;}
+  const post=posts?.[0];
+  if(posts?.length!==1){stages.push({day:ob.publication_date,channel:ob.channel,stage:'POST_IDENTITY_NOT_UNIQUE'});continue;}
+  const {data:snapshots,error:se}=await db.from('social_metric_snapshots')
+   .select('tenant_id,post_id,source,data_quality,observed_at,source_event_id,metrics')
+   .eq('tenant_id',kind).eq('post_id',post.post_id)
+   .order('observed_at',{ascending:false}).limit(5);
+  if(se){errors++;stages.push({day:ob.publication_date,channel:ob.channel,stage:'METRIC_READ_ERROR'});continue;}
+  const result=identifyOriginalPublicationHandoff(ob,[post],snapshots||[],now.toISOString());
+  if(!result.patch){
+   const age=(now.getTime()-Date.parse(ob.published_at))/3600000;
+   const isOverdue=Number.isFinite(age)&&age>78&&result.reason!=='ALREADY_RECONCILED';
+   if(isOverdue)overdue++;
+   stages.push({day:ob.publication_date,channel:ob.channel,
+     stage:isOverdue?'PROVIDER_MEASUREMENT_HANDOFF_OVERDUE':result.reason});continue;
+  }
+  const proof=result.patch.metrics.original_provider_metric_handoff;
+  const {data:updated,error:we}=await db.from('content_publication_obligations')
+   .update({metrics:result.patch.metrics,measured_at:result.patch.measured_at,updated_at:now.toISOString()})
+   .eq('tenant_id','canonical').eq('publication_date',ob.publication_date)
+   .eq('channel',ob.channel).eq('external_id',ob.external_id)
+   .eq('status','LIVE_PROVEN').eq('updated_at',ob.updated_at)
+   .select('measured_at,metrics').maybeSingle();
+  if(we||!updated||updated.metrics?.original_provider_metric_handoff?.source_event_id!==proof.source_event_id){
+   errors++;stages.push({day:ob.publication_date,channel:ob.channel,stage:'ORIGINAL_CAS_OR_READBACK_FAILED'});continue;
+  }
+  savedCount++;stages.push({day:ob.publication_date,channel:ob.channel,
+    stage:'PROVIDER_MEASURED_PARTIAL_NO_LEARNING_CLAIM',source_event_id:proof.source_event_id,
+    metric_scope:proof.measurement_scope});
+ }
+ return {contract:'POWERHOUSE_ORIGINAL_PUBLICATION_METRIC_HANDOFF_V1',
+   eligible:(obs||[]).length,recorded:savedCount,overdue_count:overdue,failed_count:errors,
+   results:stages,learning_proven:false,provider_metric_scope_preserved:true};
+}
+
+
+// The ORIGINAL six-hour #177 provider observer owns this source refresh too.
+// Windsor's authorized LinkedIn organization scope is read-only; account and
+// post IDs remain independently checked against canonical LIVE_PROVEN sources.
+// No new cron, external post, alternate source database or secondary learning
+// writer. Provider API key stays exclusively in Vault and never in logs.
+async function originalWindsorCompanyRows(apiKey:string,fields:string[],since:string,to:string,maxRows:number){
+  const endpoint=new URL('https://connectors.windsor.ai/linkedin_organic');
+  endpoint.searchParams.set('api_key',apiKey);
+  endpoint.searchParams.set('select_accounts','18234216');
+  endpoint.searchParams.set('date_from',since);
+  endpoint.searchParams.set('date_to',to);
+  endpoint.searchParams.set('fields',fields.join(','));
+  endpoint.searchParams.set('_max_rows',String(maxRows));
+  endpoint.searchParams.set('_renderer','json');
+  // Do not force hourly paid-tier public refresh on the existing Windsor Basic
+  // connection. The ORIGINAL #177 cron may poll every six hours, but its API
+  // reads must respect provider-managed cache/plan limits; never pretend a
+  // cached daily value is a new exact 24/48/72h post-observation receipt.
+  let response:Response;
+  try{
+    response=await fetch(endpoint.toString(),{
+      method:'GET',signal:AbortSignal.timeout(12000),
+      headers:{accept:'application/json'}
+    });
+  }catch(_){throw new Error('WINDSOR_PROVIDER_TRANSPORT_FAILED');}
+  // NEVER log endpoint, response content or native thrown URL: api_key is a
+  // required query parameter for the Windsor connectors API.
+  if(!response.ok)throw new Error('WINDSOR_PROVIDER_HTTP_'+response.status);
+  const payload:any=await response.json().catch(()=>null);
+  if(!Array.isArray(payload?.data))throw new Error('WINDSOR_PROVIDER_DATA_ARRAY_MISSING');
+  if(payload.data.length>=maxRows)throw new Error('WINDSOR_SOURCE_TRUNCATED_RETRY_BOUNDED_QUERY');
+  return payload.data;
+}
+async function refreshOriginalCompanyWindsorSources(db:any){
+  const apiKey=await secret(db,'WINDSOR_API_KEY');
+  if(!apiKey)throw new Error('WINDSOR_VAULT_TOKEN_MISSING');
+  const day=localDay();
+  const since=new Date(Date.now()-14*86400000).toISOString().slice(0,10);
+  const accountSince=new Date(Date.now()-3*86400000).toISOString().slice(0,10);
+  // SAME original #177 / SAME Vault token: a failed account aggregate must
+  // not discard independently authorized and source-verified post rows.
+  // Missing account proof remains a RED original ONE BRAIN receipt.
+  const {postRows,accountRows,accountFailure}=await readOriginalWindsorCompanySourcePair({
+    fetchPosts:()=>originalWindsorCompanyRows(apiKey,[
+      'date','post_id','share_id','share_owner','share_published_time',
+      'share_url','share_impression_count','share_clicks_count',
+      'share_like_count','share_comment_count','share_count','share_video_views'
+    ],since,day,40),
+    fetchAccount:()=>originalWindsorCompanyRows(apiKey,[
+      'date','organization_id','account_analytics_impression_count',
+      'account_analytics_click_count','account_analytics_comment_count',
+      'account_analytics_share_count'
+    ],accountSince,day,7)
+  });
+  const {data:proofs,error:proofError}=await db.from('content_publication_obligations')
+    .select('tenant_id,channel,status,publication_date,external_id,live_proven_at,evidence')
+    .eq('tenant_id','canonical').eq('channel','linkedin_company')
+    .eq('status','LIVE_PROVEN').gte('publication_date',since).lte('publication_date',day)
+    .not('live_proven_at','is',null).limit(35);
+  if(proofError)throw new Error('WINDSOR_ORIGINAL_PUBLICATION_READ_FAILED');
+  const observedAt=new Date().toISOString();
+  const staged=stageOriginalWindsorCompanySources({
+    postRows,accountRows,publicationProofs:proofs||[],slotDay:day,
+    observedAt,organizationId:'18234216',maxRows:40
+  });
+  if((proofs||[]).length>0 && staged.source_rows_accepted===0)
+    throw new Error('WINDSOR_NO_INDEPENDENTLY_VERIFIED_COMPANY_POST_ROWS');
+  const records=[...staged.source_rows,...(staged.account_row?[staged.account_row]:[])];
+  if(!records.length)throw new Error('WINDSOR_NO_PROVIDER_SOURCE_ROWS');
+  // One immutable daily observation per account/post in the EXISTING source
+  // spine; rerunning original #177 never fabricates a newer factual timestamp.
+  const {error:writeError}=await db.from('powerhouse_growth_source_daily_v1')
+    .upsert(records,{onConflict:'tenant_id,metric_date,source_key',ignoreDuplicates:true});
+  if(writeError)throw new Error('WINDSOR_ORIGINAL_SOURCE_STAGE_WRITE_FAILED');
+  const keys=records.map((x:any)=>x.source_key);
+  const {data:readback,error:readbackError}=await db.from('powerhouse_growth_source_daily_v1')
+    .select('source_key,quality,source_observed_at,evidence')
+    .eq('tenant_id','bedrijfsgeheugen').eq('metric_date',day).in('source_key',keys).limit(41);
+  if(readbackError)throw new Error('WINDSOR_ORIGINAL_SOURCE_READBACK_FAILED');
+  const observedKeys=new Set((readback||[]).filter((x:any)=>
+      x.evidence?.origin==='original-bg-social-metrics-sync-cron-177'
+      &&Number.isFinite(Date.parse(x.source_observed_at||'')))
+    .map((x:any)=>x.source_key));
+  if(keys.some(k=>!observedKeys.has(k)))
+    throw new Error('WINDSOR_ORIGINAL_SOURCE_MISMATCH_OR_OTHER_WRITER');
+  const missingAccount=Boolean(accountFailure)||!staged.account_row;
+  return {state:missingAccount?'ORIGINAL_COMPANY_SOURCE_REFRESH_UNAVAILABLE'
+       :'PROVIDER_ACCOUNT_SOURCE_REFRESHED_AND_STAGED',
+    ...(missingAccount?{
+      failure_class:accountFailure||'WINDSOR_ACCOUNT_SOURCE_NOT_OBSERVED',
+      failure_component:'linkedin_company_account_analytics',
+      provider_post_source_preserved:true
+    }:{}),
+    source_receipt:'original_company_provider_source_refresh',
+    original_cron:177,provider:'windsor.ai',authorized_account:'18234216',
+    provider_rows_examined:staged.provider_rows_examined,
+    posts_staged:staged.source_rows.length,
+    account_source_staged:!!staged.account_row,
+    verified_daily_readback:observedKeys.size,
+    rejected_unverified:staged.rejected,
+    provider_delivery_proven:false,
+    independent_learning_proven:false};
+}
+
+// Company analytics come from the Windsor ingest (powerhouse_growth_source_daily_v1), not from Composio (403).
+async function companyAnalyticsState(db:any){
+  const {data,error}=await db.from('powerhouse_growth_source_daily_v1')
+    .select('metric_date,quality,source_observed_at').eq('tenant_id','bedrijfsgeheugen')
+    .eq('source_key','linkedin_company_account_provider').order('metric_date',{ascending:false})
+    .order('source_observed_at',{ascending:false}).limit(1);
+  if(error)return {state:'WINDSOR_READBACK_ERROR',error:clean(error.message).slice(0,100)};
+  const row=(data||[])[0];
+  if(!row)return {state:'WINDSOR_NO_ROWS'};
+  const age=Date.now()-Date.parse(row.source_observed_at||'');
+  return {state:age<=48*3600000?'WINDSOR_FRESH':'WINDSOR_STALE',metric_date:row.metric_date,
+    source_observed_at:row.source_observed_at,source:'windsor.ai',composio_org_scope:'403_EXPECTED_WITHOUT_ADMIN_ROLE'};
+}
+async function instagram(db:any,apiKey:string,slotStart:string){
+  const chosen=await verifiedBoundAccount(db,apiKey,'instagram');
+  const response=await execute(apiKey,chosen,'INSTAGRAM_GET_IG_USER_MEDIA',{
+    ig_user_id:'me',limit:12,fields:'id,timestamp,permalink,media_type,media_product_type,like_count,comments_count,view_count'
+  });
+  const posts=Array.isArray(response?.data)?response.data:[];
+  let observed=0;const failures:string[]=[];
+  for(const media of posts){
+    try{
+      const id=clean(media.id);
+      const result=await execute(apiKey,chosen,'INSTAGRAM_GET_IG_MEDIA_INSIGHTS',{
+        ig_media_id:id,metric:['views','reach','likes','comments','saved','shares']
+      });
+      const items=Array.isArray(result?.data)?result.data:[];
+      const metrics:Record<string,number>={};
+      for(const item of items){
+        const k=clean(item.name).toLowerCase();
+        if(!['views','reach','likes','comments','saved','shares'].includes(k))continue;
+        const val=numeric(item?.values?.[0]?.value??item?.total_value?.value);
+        if(val!==null)metrics[k]=val;
+      }
+      if(metrics.likes===undefined&&numeric(media.like_count)!==null)metrics.likes=numeric(media.like_count)!;
+      if(metrics.comments===undefined&&numeric(media.comments_count)!==null)metrics.comments=numeric(media.comments_count)!;
+      if(!Object.keys(metrics).length)throw new Error('IG_INSIGHTS_UNAVAILABLE');
+      const post=await resolveInstagram(db,media);
+      await snapshot(db,post.tenant_id,post.post_id,'instagram',id,slotStart,metrics,'OBSERVED');
+      observed++;
+    }catch(e){failures.push(clean((e as Error).message).slice(0,120));}
+  }
+  return {status:observed>0?'OBSERVED':'UNAVAILABLE',media_examined:posts.length,snapshots:observed,failures:failures.slice(0,12)};
+}
+async function linkedin(db:any,apiKey:string,slotStart:string){
+  const chosen=await verifiedBoundAccount(db,apiKey,'linkedin');
+  const {data:posts,error}=await db.from('social_posts')
+    .select('tenant_id,post_id,external_post_id,published_at')
+    .eq('tenant_id','canonical').eq('platform','linkedin').ilike('post_id','linkedin-personal%')
+    .not('published_at','is',null).order('published_at',{ascending:false}).limit(8);
+  if(error)throw new Error('LINKEDIN_CANONICAL_POST_READ:'+error.message);
+  let observed=0;const failures:string[]=[];
+  for(const post of posts||[]){
+    const urn=clean(post.external_post_id);
+    if(!/^urn:li:(share|ugcPost):\d+$/.test(urn))continue;
+    try{
+      const result=await execute(apiKey,chosen,'LINKEDIN_LIST_REACTIONS',{entity:urn,count:100,start:0});
+      const total=numeric(result?.paging?.total);
+      if(total===null)throw new Error('LINKEDIN_REACTION_TOTAL_UNAVAILABLE');
+      await snapshot(db,post.tenant_id,post.post_id,'linkedin',urn,slotStart,
+        {reactions:total,metric_scope:'reactions_only',views_unavailable:true},'OBSERVED_PARTIAL_SCOPE');
+      observed++;
+    }catch(e){failures.push(clean((e as Error).message).slice(0,130));}
+  }
+  return {status:observed>0?'PARTIAL_SCOPE_OBSERVED':'UNAVAILABLE',posts_examined:(posts||[]).length,snapshots:observed,unsupported:'post_impressions_and_company_analytics',failures:failures.slice(0,8)};
+}
+Deno.serve(async(req:Request)=>{
+  if(req.method!=='POST')return json({ok:false,error:'METHOD_NOT_ALLOWED'},405);
+  const url=Deno.env.get('SUPABASE_URL')||'';
+  const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
+  if(!url||!key)return json({ok:false,error:'RUNTIME_CONFIG_MISSING'},500);
+  const db=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+  try{
+    const scheduler=await secret(db,'powerhouse_daily_scheduler_token');
+    if(!scheduler||clean(req.headers.get('x-powerhouse-token'))!==scheduler)return json({ok:false,error:'UNAUTHORIZED'},401);
+    const apiKey=await secret(db,'COMPOSIO_API_KEY');
+    if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
+    // One exact run identity for this ORIGINAL #177 invocation only. A retry
+    // is a new factual attempt, never a new post or new scheduler.
+    const pollStartedAt=new Date().toISOString();
+    const pollRunId=crypto.randomUUID();
+    const pollIdentity=originalProviderPollReceiptIdentity({
+      startedAt:pollStartedAt,runId:pollRunId
+    });
+    const day=localDay();
+    let ig:any,li:any,companyRegistry:any,companyMetricLink:any,personalRegistry:any,companyExperimentHandoff:any;
+    let companySourceRefresh:any;
+     let originalMetricHandoff:any;
+    try{personalRegistry=await registerPersonalProofs(db);}catch(e){
+      personalRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
+    }
+    try{companyRegistry=await registerCompanyProofs(db);}catch(e){
+      companyRegistry={status:'REGISTRY_SOURCE_UNAVAILABLE',error:clean((e as Error).message).slice(0,120)};
+    }
+    try{companySourceRefresh=await refreshOriginalCompanyWindsorSources(db);}catch(e){
+      const error=clean((e as Error)?.message);
+      companySourceRefresh={state:'ORIGINAL_COMPANY_SOURCE_REFRESH_UNAVAILABLE',
+        failure_class:/^WINDSOR_[A-Z0-9_]+$/.test(error)?error:'WINDSOR_SOURCE_UNKNOWN_ERROR',
+        recovery_owner:'existing bg-social-metrics-source-6h-v1/#177',
+        recovery_action:'RETRY_ORIGINAL_AUTHORIZED_WINDSOR_SOURCE_ON_NEXT_EXISTING_177_SLOT',
+        provider_delivery_proven:false,learning_proven:false};
+    }
+    try{companyMetricLink=await reconcileCompanyMetricEvidence(db);}catch(e){
+      companyMetricLink={state:'COMPANY_METRIC_LINK_SOURCE_ERROR',error:clean((e as Error).message).slice(0,120)};
+    }
+    try{companyExperimentHandoff=await auditCompanyExperimentHandoffs(db);}catch(e){
+      companyExperimentHandoff={state:'EXPERIMENT_HANDOFF_READ_ERROR',overdue_count:null,
+        error:clean((e as Error).message).slice(0,140),
+        recovery_owner:'existing bg-social-metrics-sync',
+        recovery_action:'RECONCILE_ORIGINAL_EXPERIMENT_STAGE_READ'};
+    }
+    try{ig=await instagram(db,apiKey,pollIdentity.slotStart);}catch(e){ig={status:'UNAVAILABLE',error:clean((e as Error).message)};}
+    try{li=await linkedin(db,apiKey,pollIdentity.slotStart);}catch(e){li={status:'UNAVAILABLE',error:clean((e as Error).message)};}
+    try{originalMetricHandoff=await reconcileOriginalPublicationMetricHandoffs(db);}catch(e){
+      originalMetricHandoff={state:'ORIGINAL_PUBLICATION_HANDOFF_ERROR',
+        error:clean((e as Error).message).slice(0,125),learning_proven:false};
+    }
+    let companyState:any;
+    try{companyState=await companyAnalyticsState(db);}catch(e){companyState={state:'WINDSOR_READBACK_ERROR',error:clean((e as Error).message).slice(0,100)};}
+    const total=(ig?.snapshots||0)+(li?.snapshots||0);
+    // Social learning is not healthy when verified company posts have no
+    // independently linked provider metrics. A successful HTTP cron or fresh
+    // account aggregate is not proof that an experimental post was measured.
+    // A connected-Windsor one-off source recovery can create *real* metrics
+    // while the ORIGINAL #177 Vault-key is denied. Never turn that into
+    // autonomous source provider health or next-run learning proof.
+    const companyHandoffOk=originalCompanySourceProviderHealth({
+      sourceRefresh:companySourceRefresh,companyState,
+      companyMetricLink,companyRegistry
+    });
+    const healthy=(ig?.snapshots||0)>0&&(li?.snapshots||0)>0
+      &&!(ig?.failures||[]).length&&!(li?.failures||[]).length&&companyHandoffOk
+       &&originalMetricHandoff?.state!=='ORIGINAL_PUBLICATION_HANDOFF_ERROR'
+       &&!(originalMetricHandoff?.failed_count>0)&&!(originalMetricHandoff?.overdue_count>0)
+      &&!['HANDOFF_OVERDUE','EXPERIMENT_HANDOFF_READ_ERROR'].includes(companyExperimentHandoff?.state);
+    const outcome={contract:'bg-social-metrics-composio-v1',day,healthy,provider_snapshots:total,
+      instagram:ig,linkedin_personal:li,
+      linkedin_company:companyState,company_source_refresh:companySourceRefresh,company_post_registry:companyRegistry,company_metric_link:companyMetricLink,
+      company_learning_handoff_ok:companyHandoffOk,company_experiment_handoff:companyExperimentHandoff,
+      personal_post_registry:personalRegistry,
+      original_publication_metric_handoff:originalMetricHandoff,
+      social_sentiment_or_revenue_not_inferred:true};
+    // This ORIGINAL provider process runs four times per UTC day. The daily
+    // summary below is a projection and MUST NOT erase the previous poll
+    // results or intermediate errors. Record every actual source attempt in
+    // the SAME existing runtime table, under a distinct event type.
+    const audit=originalProviderPollAuditEvent({identity:pollIdentity,outcome});
+    const {data:acceptedReceipt,error:receiptError}=await db.from('powerhouse_runtime_events')
+      .insert(audit).select('dedupe_key,event_type,state,evidence').single();
+    if(receiptError)throw new Error('ORIGINAL_PROVIDER_POLL_AUDIT_WRITE:'+receiptError.message);
+    assertOriginalProviderPollReceipt(acceptedReceipt,audit);
+    // INSERT RETURNING is still a write acknowledgment, not an independent
+    // source readback. Perform a SECOND SELECT on the stored unique key.
+    const {data:independentReceipt,error:pollReadbackError}=await db.from('powerhouse_runtime_events')
+      .select('dedupe_key,event_type,state,evidence')
+      .eq('dedupe_key',pollIdentity.dedupeKey).maybeSingle();
+    if(pollReadbackError)throw new Error('ORIGINAL_PROVIDER_POLL_AUDIT_READBACK:'+pollReadbackError.message);
+    assertOriginalProviderPollReceipt(independentReceipt,audit);
+    // ORIGINAL #177 -> ONE BRAIN: the independent source audit is not a Brain
+    // acknowledgement. Record one exact occurrence per factual source poll
+    // inside the EXISTING failure registry and independently SELECT its ACK.
+    // Never put API tokens, URLs including keys or provider bodies in evidence.
+    let originalBrainFailureAck:any={state:'NOT_REQUIRED_NO_ORIGINAL_SOURCE_FAILURE'};
+    const failureInput=originalCompanySourceBrainFailureInput({
+      identity:pollIdentity,sourceRefresh:companySourceRefresh
+    });
+    if(failureInput){
+      const encoded=new TextEncoder().encode(JSON.stringify(failureInput.p_evidence));
+      const shaBytes=new Uint8Array(await crypto.subtle.digest('SHA-256',encoded));
+      const payloadSha256=Array.from(shaBytes,v=>v.toString(16).padStart(2,'0')).join('');
+      const {error:brainWriteError}=await db.rpc('brain_observe_failure',{
+        ...failureInput,p_payload_sha256:payloadSha256
+      });
+      if(brainWriteError){
+        originalBrainFailureAck={
+          state:'ORIGINAL_BRAIN_FAILURE_WRITE_NOT_ACKED',
+          source_poll_receipt_key:pollIdentity.dedupeKey,
+          failure_class:companySourceRefresh.failure_class,
+          no_provider_success_claim:true
+        };
+      }else{
+        const {data:brainReadback,error:brainReadError}=await db
+          .from('brain_failure_occurrences')
+          .select('occurrence_id,fingerprint,payload_sha256')
+          .eq('occurrence_id',failureInput.p_occurrence_id).maybeSingle();
+        const exact=!brainReadError&&brainReadback
+          &&brainReadback.occurrence_id===failureInput.p_occurrence_id
+          &&brainReadback.fingerprint===failureInput.p_fingerprint
+          &&brainReadback.payload_sha256===payloadSha256;
+        originalBrainFailureAck=exact?{
+          state:'ONE_BRAIN_ORIGINAL_FAILURE_OCCURRENCE_READBACK_VERIFIED',
+          original_occurrence_id:failureInput.p_occurrence_id,
+          fingerprint:failureInput.p_fingerprint,
+          original_source_receipt_key:pollIdentity.dedupeKey,
+          original_failure_class:companySourceRefresh.failure_class,
+          independent_readback:true,
+          provider_delivery_proven:false,
+          learning_proven:false
+        }:{
+          state:'ORIGINAL_BRAIN_FAILURE_READBACK_NOT_PROVEN',
+          source_poll_receipt_key:pollIdentity.dedupeKey,
+          failure_class:companySourceRefresh.failure_class,
+          no_provider_success_claim:true
+        };
+      }
+    }
+    const trackedOutcome={...outcome,original_company_source_brain_failure_ack:originalBrainFailureAck};
+    // Preserve the ORIGINAL daily key and type for existing consumers.
+    // Only this projection may be replaced by later source attempts.
+    const {error:saveError}=await db.from('powerhouse_runtime_events').upsert({
+      dedupe_key:'provider-social-metrics:'+day,event_type:'provider_social_metric_ingest',
+      source:'bg-social-metrics-sync',subject_key:'social-learning',channel:'system',
+      occurred_at:new Date().toISOString(),evidence:trackedOutcome,
+      context:{provider:'composio',learning_authority:'social_metric_snapshots',
+        original_poll_receipt_key:pollIdentity.dedupeKey,
+        original_poll_slot_utc:pollIdentity.slotStart},
+      state:healthy?'observed':'error',data_quality:healthy?'OBSERVED':'PARTIAL',
+      confidence:1,updated_at:new Date().toISOString()
+    },{onConflict:'dedupe_key'});
+    if(saveError)throw new Error('PROVIDER_METRIC_READBACK:'+saveError.message);
+    return json({ok:total>0,...trackedOutcome,
+      original_poll_receipt_key:pollIdentity.dedupeKey,
+      original_poll_receipt_verified:true,
+      original_source_only_not_learning_ack:true
+    },(total>0&&
+      !['ORIGINAL_BRAIN_FAILURE_WRITE_NOT_ACKED','ORIGINAL_BRAIN_FAILURE_READBACK_NOT_PROVEN']
+        .includes(originalBrainFailureAck.state))?200:503);
+  }catch(e){return json({ok:false,error:clean((e as Error).message).slice(0,190)},503);}
+});

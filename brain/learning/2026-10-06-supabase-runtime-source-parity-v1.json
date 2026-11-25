@@ -1,0 +1,42 @@
+{
+  "fingerprint": "supabase-runtime-source-parity|live-function-drift|preview-check-race|v1",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "supabase-runtime-source-parity-20261006",
+  "compiler": {
+    "failure_class": "RUNTIME_SOURCE_PARITY_AND_PROVIDER_PROOF_RACE",
+    "scope": "SUPABASE_RUNTIME_AND_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The Supabase production deployment stopped during migration processing after the emergency database recovery had already moved production migration history ahead of Git main. This left Edge Functions at mixed source versions. Independently, Supabase Preview Applicability ordered provider checks by completed_at before started_at, so an older completed success could outrank a newer in-progress provider check on the same commit.",
+  "contributing_causes": [
+    "Production contained newer bounded-generation and LinkedIn hardening hotfixes that were not yet canonical in Git.",
+    "The merged recovery contained JSONB normalization and a dedicated cockpit lane that were not yet present in all live functions because function deployment was downstream of the failed migration step.",
+    "Provider check selection used completion timestamps instead of monotonically increasing check-run identity."
+  ],
+  "prevention_rule": "Treat live source drift as a parity obligation: preserve proven live hotfixes, merge missing repository fixes, deploy only the reconciled source, and write the same source back to Git. Provider preview proof must always select the newest check-run identity and require stable success on that same identity before verification.",
+  "evidence": {
+    "runtime": [
+      "production powerhouse-content-loop v30 preserves bounded generation and typed lease SQL while adding JSONB normalization and the dedicated cockpit_autopilot lane",
+      "production powerhouse-content-orchestrator v40 is exact source parity with merge SHA 47e36a513757c230ca6305a06a3724338fea047d",
+      "production powerhouse-social-publisher v107 remains the authority for the newer LinkedIn identity and evidence-normalization hotfixes"
+    ],
+    "control_plane": [
+      "Supabase Preview Applicability now orders provider check runs by check-run id",
+      "provider success requires two observations of the same newest check id before verification"
+    ],
+    "tests": [
+      "tests/brain-supabase-preview-applicability-v1.test.mjs",
+      "tests/linkedin-revenue-cockpit.test.mjs",
+      "tests/social-learning-instagram-media-provider-routing-v1.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-applicability-v1.test.mjs"
+    ]
+  }
+}

@@ -8,6 +8,10 @@ import {syncCompanyDecisionsToNotion} from '../../brain/adapters/company-decisio
 import {createNotionCompanySyncHandler} from '../../platform/api/notion-company-sync-handler.mjs';
 
 const env=name=>String(Netlify.env.get(name)||'').trim();
+const boundedInt=(name,fallback,min,max)=>{
+  const value=Number(env(name));
+  return Math.max(min,Math.min(max,Number.isFinite(value)?Math.floor(value):fallback));
+};
 const authorityUrl=()=>env('BRAIN_OPERATING_AUTHORITY_URL');
 
 export default async request=>{
@@ -23,9 +27,12 @@ export default async request=>{
     const writer=createNotionCompanyWriter({
       token:env('NOTION_TOKEN'),
       databaseId:env('NOTION_COMPANY_DECISIONS_DATABASE_ID')||env('NOTION_DATABASE_ID'),
-      notionVersion:env('NOTION_API_VERSION')||'2022-06-28'
+      notionVersion:env('NOTION_API_VERSION')||'2022-06-28',
+      maxRetries:boundedInt('NOTION_RETRY_ATTEMPTS',2,0,4),
+      prefetchBatchSize:boundedInt('NOTION_PREFETCH_BATCH_SIZE',25,1,50),
+      prefetchConcurrency:boundedInt('NOTION_PREFETCH_CONCURRENCY',2,1,3)
     });
-    return syncCompanyDecisionsToNotion(projection,{writer});
+    return syncCompanyDecisionsToNotion(projection,{writer,concurrency:boundedInt('NOTION_SYNC_CONCURRENCY',3,1,6)});
   };
   const handler=createNotionCompanySyncHandler({getUser:()=>getUser(),resolveTenant:resolveIdentityTenant,store,sync});
   return handler(request);

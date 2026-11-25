@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|engineering|daily-optimizer-stale-candidate-closure|v1",
+  "obligationId": "powerhouse-daily-engineering-tuning-terminal-unblock-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "A September 29 bot-owned tuning PR without required Base-SHA/Change-Scope/Scope-Budget and learning closure stayed open; scheduled October 8 optimizer run returned success while skipping any change because the stale PR title was treated as authoritative.",
+  "failureModes": [
+    "one invalid orphan PR blocks all future automatic tuning",
+    "optimization candidate missing required Brain learning, development ledger and human change evidence",
+    "runner reports success despite no protected candidate creation",
+    "new proposal may be based on stale main"
+  ],
+  "prevention": [
+    "Only exact-title bot-owned tuning branches are examined for bounded retirement",
+    "Retire only after 48 hours and explicit proof that required contract metadata is missing; preserve the branch and add an audit comment",
+    "Preserve valid candidate single-flight; unknown/recent candidates fail closed",
+    "Generate four-file protected candidate with learning+ledger+change+config and exact Base SHA",
+    "Abort on main epoch drift; never bypass Required/CodeQL or claim outcome without readback"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-engineering-tuning-candidate.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical_blocking_pr": 3296,
+    "historical_successful_but_noop_optimizer_run": 37774962097,
+    "retirement_comment_id": 6062541383,
+    "retired_pr_state": "closed_unmerged",
+    "current_test": "PENDING_PROTECTED_CI",
+    "production_readback": "PENDING",
+    "observable_speedup": "NOT_YET_MEASURED"
+  },
+  "rollback": "Revert this protected PR if workflow security/CI regresses; preserve existing canonical tuning state and historical PR evidence."
+}

@@ -15,13 +15,17 @@ test('Meta direct is the primary Instagram transport and keeps existing hard gat
   assert.match(source,/powerhouse_consume_social_publish_capability_v1/);
   assert.match(source,/bg_geheim/);
   assert.match(source,/record_content_publication_state/);
-  const meta=source.indexOf("if(instagramMetaConfig)");
-  const composio=source.indexOf("if(instagramComposioApiKey)");
-  assert.ok(meta>=0&&composio>meta);
+  // Current contract: the dispatch path is Composio-only (canonical Graph id); the Meta
+  // publisher keeps its gates but is no longer called from the dispatch branch.
+  assert.match(source,/instagram-composio-only-canonical-graph-id-v2/);
+  assert.match(source,/meta_direct_dependency:false/);
+  assert.equal(source.split('publishInstagramViaMeta(').length-1,0+source.split('async function publishInstagramViaMeta(').length-1);
 });
 
 test('Meta readback failure cannot cause a blind republish',()=>{
   assert.match(source,/verification_pending:true/);
-  assert.match(source,/state:verified\?'published':'dispatching'/);
-  assert.match(source,/never issue another publish/i);
+  assert.match(source,/republish_forbidden:true/);
+  assert.match(source,/COMPOSIO_INSTAGRAM_READBACK_ID_MISMATCH/);
+  // a failed claim never returns to content_ready after the provider call started
+  assert.match(source,/\.eq\('state','dispatching'\)/);
 });

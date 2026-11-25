@@ -1,0 +1,7 @@
+# P0 #4198 — Mira identity reference-to-video compatibility
+
+Date: 2026-10-09. The canonical media router was rejecting the proper OpenArt `element2video` mode for a new real-world Dutch SME situation with the canonical fictional Mira face. It accepted only `image2video`, which copies a literal master image into frame one and does not satisfy a fresh scene. The provider's actual first request `n7ynDEY78rcusspUWLwU` returned FAILED due Google upstream 1002: it has no generated video, no frame verification, and no external publication.
+
+The existing shared identity module now accepts only `image2video` or `element2video` with the exact canonical master reference ID/URL and nonempty OpenArt generation ID. The existing Supabase Instagram media router exposes the two permitted modes in preflight and the negative-response contract. The existing mandatory source-matched PH-P016 scene, 1080×1920 MP4 evidence, independent Anthropic master-vs-frame facial comparison (minimum confidence 0.94 at start/middle/end), temporal verification, media SHA-256, same-day obligation, canonical Instagram provider selection, and no-duplicate side-effect guard remain unchanged. Unsupported text2video or look-alikes stay blocked.
+
+The actual production merge, deployment and external content outcome are separately verified; merely supplying a PR does not prove the reel live. P0 #4198 cannot close before provider-backed publication and observed commercial outcomes persist in Brain.

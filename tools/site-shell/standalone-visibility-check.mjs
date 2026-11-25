@@ -1,6 +1,11 @@
 import { chromium } from 'playwright';
 import { routesFromSitemap } from './public-route-inventory.mjs';
+import { auditRenderedHrefs } from './sitewide-href-integrity.mjs';
+import { auditSeoPage, summarizeSeoAudit } from './seo-health-score.mjs';
+import { mkdirSync, writeFileSync } from 'node:fs';
+import { inspectRenderedSeoPage, summarizeRenderedSeoAudit } from './seo-site-audit-intelligence.mjs';
 import { visibilityRetryPolicy } from './visibility-retry-policy.mjs';
+import { formatClsFailure } from './layout-shift-evidence.mjs';
 
 const baseUrl = process.env.UI_VR_BASE_URL || process.argv[2];
 if (!baseUrl) throw new Error('UI_VR_BASE_URL/base URL is required');
@@ -9,7 +14,9 @@ const canonicalOrigin = 'https://www.bedrijfsgeheugen.nl';
 const navigationTimeoutMs = Number(process.env.UI_VR_NAVIGATION_TIMEOUT_MS || 8000);
 const fontReadyTimeoutMs = Number(process.env.UI_VR_FONT_READY_TIMEOUT_MS || 1500);
 const totalBudgetMs = Number(process.env.UI_VR_TOTAL_BUDGET_MS || 8 * 60 * 1000);
-const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 2 : 4)));
+const isCanonicalProduction = String(baseUrl).replace(/\/$/, '') === canonicalOrigin;
+const requestedRouteConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 2 : 4)));
+const routeConcurrency = isCanonicalProduction ? Math.min(4, requestedRouteConcurrency) : requestedRouteConcurrency;
 const cleanupTimeoutMs = Number(process.env.UI_VR_CLEANUP_TIMEOUT_MS || 5000);
 const startedAt = Date.now();
 let cleanupTimedOut = false;
@@ -18,7 +25,8 @@ const viewports = [
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 },
 ];
-const viewportConcurrency = Math.max(1, Math.min(viewports.length, Number(process.env.UI_VR_VIEWPORT_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 1 : viewports.length))));
+const requestedViewportConcurrency = Math.max(1, Math.min(viewports.length, Number(process.env.UI_VR_VIEWPORT_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 1 : viewports.length))));
+const viewportConcurrency = isCanonicalProduction ? Math.min(2, requestedViewportConcurrency) : requestedViewportConcurrency;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function closeBounded(label, closeFn) {
@@ -57,8 +65,28 @@ async function openReachable(page, url) {
       const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: navigationTimeoutMs });
       const status = response?.status() ?? null;
       if (response?.ok()) return response;
-      last = new Error(`HTTP ${status ?? 'no-response'} ${url}`);
-      if (status && !transientStatuses.has(status)) break;
+      if (!response) {
+        // Same-document redirects may yield no navigation response. Verify both the
+        // exact canonical path in the browser and an independent successful HTTP
+        // response; never turn a 403, 404, or missing page into a green check.
+        const actual = new URL(page.url());
+        const expected = new URL(url);
+        const normalizePath = value => value.pathname.replace(/\/+$/, '') || '/';
+        if (actual.origin === expected.origin && normalizePath(actual) === normalizePath(expected)) {
+          const probeResponse = await page.request.get(url, { timeout: navigationTimeoutMs, failOnStatusCode: false });
+          if (probeResponse.ok()) {
+            await page.waitForLoadState('domcontentloaded', { timeout: navigationTimeoutMs });
+            return probeResponse;
+          }
+          last = new Error(`HTTP ${probeResponse.status()} on independent response after browser no-response ${url}`);
+          if (!transientStatuses.has(probeResponse.status())) break;
+        } else {
+          last = new Error(`HTTP no-response and route mismatch ${url} (browser at ${actual.href})`);
+        }
+      } else {
+        last = new Error(`HTTP ${status ?? 'no-response'} ${url}`);
+        if (status && !transientStatuses.has(status)) break;
+      }
     } catch (error) { last = error; }
     if (attempt < retryPolicy.maxAttempts) await sleep(retryPolicy.retryDelayMs(attempt));
   }
@@ -75,48 +103,14 @@ async function waitForFontsBounded(page) {
   }, fontReadyTimeoutMs);
 }
 
-async function loadPublicRoutes() {
-  const sitemapUrl = new URL('/sitemap.xml', baseUrl).href;
-  const response = await fetch(sitemapUrl, { redirect: 'follow', signal: AbortSignal.timeout(navigationTimeoutMs) });
-  if (!response.ok) throw new Error(`Public route inventory unavailable: HTTP ${response.status} ${sitemapUrl}`);
-  const routes = routesFromSitemap(await response.text(), canonicalOrigin);
-  if (routes.length < 20) throw new Error(`Public route inventory suspiciously small: ${routes.length} routes`);
-  for (const required of ['/', '/ai-act', '/benchmark']) {
-    if (!routes.includes(required)) throw new Error(`Public route inventory missing required route ${required}`);
-  }
-  return routes;
-}
-
-const routes = await loadPublicRoutes();
-const browser = await chromium.launch({ headless: true });
-const failures = [];
-try {
-  const runViewport = async viewport => {
-    const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
-    const workerCount = Math.min(routeConcurrency, routes.length);
+async function readVisibleState(page, url) {
+  // Client-side canonical locale navigation can replace the document after DOMContentLoaded.
+  // Retry the full route load once; never accept a missing/partial visibility state.
+  for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      await Promise.all(Array.from({ length: workerCount }, async (_, workerIndex) => {
-        const page = await context.newPage();
-        await page.addInitScript(() => {
-          window.__bgCls = 0;
-          try {
-            new PerformanceObserver(list => {
-              for (const entry of list.getEntries()) {
-                if (!entry.hadRecentInput) window.__bgCls += entry.value;
-              }
-            }).observe({ type: 'layout-shift', buffered: true });
-          } catch {}
-        });
-        try {
-          for (let routeIndex = workerIndex; routeIndex < routes.length; routeIndex += workerCount) {
-            const route = routes[routeIndex];
-            assertBudget(route, viewport.name);
-            const url = new URL(route, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).href;
-            try {
-              await openReachable(page, url);
-              await waitForFontsBounded(page);
-              await sleep(150);
-              const state = await page.evaluate(() => {
+      await waitForFontsBounded(page);
+      await sleep(150);
+      return await page.evaluate(() => {
                 const inspect = selector => {
                   const el = document.querySelector(selector);
                   if (!el) return { present: false };
@@ -144,9 +138,162 @@ try {
                   h1: inspect('main h1'),
                   main: inspect('main'),
                   textLength: (document.querySelector('main')?.innerText || '').trim().length,
+                  hrefs: Array.from(document.querySelectorAll('a[href]')).slice(0, 500).map(node => node.getAttribute('href')),
+                  hrefCount: document.querySelectorAll('a[href]').length,
+                  seo: {
+                    title:document.title||'',
+                    description:document.querySelector('meta[name="description"]')?.content||'',
+                    canonical:document.querySelector('link[rel="canonical"]')?.href||'',
+                    robots:document.querySelector('meta[name="robots"]')?.content||'',
+                    metaRobots:document.querySelector('meta[name="robots"]')?.content||'',
+                    lang:document.documentElement.lang||'',
+                    htmlLang:document.documentElement.lang||'',
+                    hasViewport:!!document.querySelector('meta[name="viewport"]'),
+                    h1Count:document.querySelectorAll('main h1').length,
+                    imageCount:document.images.length,
+                    images:document.images.length,
+                    imagesMissingAlt:Array.from(document.images).filter(i=>!i.hasAttribute('alt')).length,
+                    imagesMissingDimensions:Array.from(document.images).filter(i=>!i.getAttribute('width')||!i.getAttribute('height')).length,
+                    uncompressedImageCount:Array.from(document.images).filter(i=>i.naturalWidth>3200||i.naturalHeight>3200).length,
+                    stylesheetCount:document.querySelectorAll('link[rel="stylesheet"]').length,
+                    jsonLdCount:document.querySelectorAll('script[type="application/ld+json"]').length,
+                    invalidJsonLd:Array.from(document.querySelectorAll('script[type="application/ld+json"]')).filter(n=>{try{JSON.parse(n.textContent||'');return false;}catch{return true;}}).length,
+                    hreflangCount:document.querySelectorAll('link[rel="alternate"][hreflang]').length,
+                    hreflang:Array.from(document.querySelectorAll('link[rel="alternate"][hreflang]')).slice(0,80).map(n=>({lang:n.hreflang,href:n.href})),
+                    ogTitle:document.querySelector('meta[property="og:title"]')?.content||'',
+                    ogDescription:document.querySelector('meta[property="og:description"]')?.content||''
+                  },
                   cls: Number(window.__bgCls || 0),
+                  clsSources: Array.isArray(window.__bgClsSources) ? window.__bgClsSources.slice(-8) : [],
+                  layoutShifts: Array.isArray(window.__bgLayoutShifts) ? window.__bgLayoutShifts.slice(0, 12) : [],
                 };
-              });
+      });
+    } catch (error) {
+      const navigationRace = /Execution context was destroyed|Cannot find context with specified id/i.test(String(error?.message || error));
+      if (!navigationRace || attempt === 2) throw error;
+      await openReachable(page, url);
+    }
+  }
+}
+
+async function loadPublicRoutes() {
+  const sitemapUrl = new URL('/sitemap.xml', baseUrl).href;
+  const response = await fetch(sitemapUrl, { redirect: 'follow', signal: AbortSignal.timeout(navigationTimeoutMs) });
+  if (!response.ok) throw new Error(`Public route inventory unavailable: HTTP ${response.status} ${sitemapUrl}`);
+  const routes = routesFromSitemap(await response.text(), canonicalOrigin);
+  if (routes.length < 20) throw new Error(`Public route inventory suspiciously small: ${routes.length} routes`);
+  for (const required of ['/', '/ai-act', '/benchmark']) {
+    if (!routes.includes(required)) throw new Error(`Public route inventory missing required route ${required}`);
+  }
+  return routes;
+}
+
+const routes = await loadPublicRoutes();
+const browser = await chromium.launch({ headless: true });
+const failures = [];
+let hrefsChecked = 0;
+let hrefRoutesChecked = 0;
+const seoPages = [];
+const seoIntelligencePages = [];
+try {
+  const runViewport = async viewport => {
+    const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
+    const workerCount = Math.min(routeConcurrency, routes.length);
+    try {
+      await Promise.all(Array.from({ length: workerCount }, async (_, workerIndex) => {
+        const page = await context.newPage();
+        await page.addInitScript(() => {
+          window.__bgCls = 0;
+          window.__bgClsSources = [];
+          window.__bgLayoutShifts = [];
+          // Capture DOM ancestry while nodes are connected: layout-shift source
+          // nodes can be detached by the time PerformanceObserver delivers them.
+          const sourceAncestry = new WeakMap();
+          let capturedNodes = 0;
+          const boundedToken = value => String(value || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0,28);
+          const identify = node => {
+            if (!(node instanceof Element)) return [];
+            const names = [];
+            for (let current = node; current && names.length < 5; current = current.parentElement) {
+              names.push([current.tagName.toLowerCase(), boundedToken(current.id),
+                ...Array.from(current.classList || []).slice(0, 2).map(boundedToken)].filter(Boolean).join('.'));
+            }
+            return names;
+          };
+          const remember = node => {
+            if (!(node instanceof Element) || capturedNodes >= 96) return;
+            const candidates = node.matches('div.wrap') ? [node] : [];
+            if (node.matches('main,section,.page,header,footer,body')) {
+              candidates.push(...Array.from(node.querySelectorAll('div.wrap')).slice(0, 12));
+            }
+            for (const candidate of candidates) {
+              if (capturedNodes >= 96) break;
+              if (!sourceAncestry.has(candidate)) {
+                sourceAncestry.set(candidate, identify(candidate));
+                capturedNodes++;
+              }
+            }
+          };
+          try {
+            new MutationObserver(mutations => {
+              for (const change of mutations) {
+                if (change.type !== 'childList') continue;
+                for (const node of change.addedNodes) remember(node);
+                // Preserve the parent chain while removal is still observable,
+                // without retaining DOM references or logging page content.
+                for (const node of change.removedNodes) remember(node);
+              }
+            }).observe(document, { childList: true, subtree: true });
+            document.addEventListener('DOMContentLoaded', () => {
+              document.querySelectorAll('div.wrap').forEach(remember);
+            }, { once: true });
+          } catch {}
+          try {
+            new PerformanceObserver(list => {
+              for (const entry of list.getEntries()) {
+                if (!entry.hadRecentInput) {
+                  window.__bgCls += entry.value;
+                  // Diagnostic only: preserve the exact 0.100 fail gate and every route.
+                  // CLS attribution never replaces a failed visibility assertion.
+                  const rect = r => r ? [r.x, r.y, r.width, r.height].map(n => Number(Number(n || 0).toFixed(1))) : null;
+                  const sources = Array.from(entry.sources || []).slice(0, 3).map(source => {
+                    const node = source.node;
+                    const tag = node?.tagName?.toLowerCase() || 'detached';
+                    const id = node?.id ? '#' + String(node.id).slice(0, 70) : '';
+                    const className = typeof node?.className === 'string' ? node.className.trim().split(/\s+/).slice(0, 3).join('.') : '';
+                    return { node: tag + id + (className ? '.' + className : ''), previous: rect(source.previousRect), current: rect(source.currentRect) };
+                  });
+                  window.__bgClsSources.push({ value: Number(entry.value.toFixed(5)), timeMs: Math.round(entry.startTime), sources });
+                  if (window.__bgClsSources.length > 12) window.__bgClsSources.shift();
+                  if (window.__bgLayoutShifts.length < 12) {
+                    const preciseRect = r => r ? { x:r.x, y:r.y, width:r.width, height:r.height } : null;
+                    window.__bgLayoutShifts.push({
+                      score: entry.value,
+                      timeMs: Math.round(entry.startTime),
+                      fontStatus: document.fonts?.status || 'unknown',
+                      sources: Array.from(entry.sources || []).slice(0, 3).map(source => ({
+                        tag: source.node?.tagName || 'unknown',
+                        id: source.node?.id || '',
+                        previous: preciseRect(source.previousRect),
+                        current: preciseRect(source.currentRect),
+                        connected: source.node?.isConnected === true,
+                        ancestry: sourceAncestry.get(source.node) || identify(source.node)
+                      }))
+                    });
+                  }
+                }
+              }
+            }).observe({ type: 'layout-shift', buffered: true });
+          } catch {}
+        });
+        try {
+          for (let routeIndex = workerIndex; routeIndex < routes.length; routeIndex += workerCount) {
+            const route = routes[routeIndex];
+            assertBudget(route, viewport.name);
+            const url = new URL(route, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).href;
+            try {
+              await openReachable(page, url);
+              const state = await readVisibleState(page, url);
               for (const [name, item] of Object.entries({ header: state.header, main: state.main, h1: state.h1 })) {
                 if (!item.present || item.width < 1 || item.height < 1 || item.display === 'none' || item.visibility === 'hidden' || item.opacity <= 0) {
                   failures.push(`${route} ${viewport.name}: ${name} is not visibly rendered`);
@@ -158,7 +305,17 @@ try {
                 }
               }
               if (state.textLength < 120) failures.push(`${route} ${viewport.name}: main content is effectively empty (${state.textLength} chars)`);
-              if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100`);
+              if (viewport.name==='desktop') {
+                const hrefAudit=auditRenderedHrefs({
+                  route, hrefs:state.hrefs, sitemapRoutes:routes, expectedCount:state.hrefCount
+                });
+                hrefRoutesChecked += 1;
+                hrefsChecked += hrefAudit.hrefsChecked;
+                seoPages.push(auditSeoPage({route,snapshot:state.seo,sitemapRoutes:routes}));
+                seoIntelligencePages.push(inspectRenderedSeoPage({route,meta:state.seo}));
+                for (const finding of hrefAudit.failures) failures.push(`${route} desktop href: ${finding}`);
+              }
+              if (state.cls > 0.1) failures.push(`${route} ${viewport.name}: CLS ${state.cls.toFixed(3)} exceeds 0.100; layout-shift sources=${JSON.stringify(state.clsSources || []).slice(0, 1800)}; attribution=${formatClsFailure(route, viewport.name, state.cls, state.layoutShifts) || 'UNAVAILABLE'}`);
             } catch (error) {
               failures.push(`${route} ${viewport.name}: ${error.message || error}`);
             }
@@ -180,6 +337,27 @@ try {
   await closeBounded('browser', () => browser.close());
 }
 
+const seoSiteReadout=summarizeRenderedSeoAudit({
+  reports:seoIntelligencePages,expectedRoutes:routes.length,hrefsChecked,
+  sourceSha:process.env.GITHUB_SHA||process.env.COMMIT_REF||'UNVERIFIED'
+});
+console.log('SEO_SITE_AUDIT_V1 '+JSON.stringify(seoSiteReadout));
+if (!seoSiteReadout.coverageComplete) failures.push('SEO_SITE_AUDIT_COVERAGE_INCOMPLETE');
+const seoReport=summarizeSeoAudit({
+  pages:seoPages,sitemapRoutes:routes,releaseSha:process.env.GITHUB_SHA||'UNKNOWN',
+  source:baseUrl
+});
+seoReport.supporting_intelligence=seoSiteReadout;
+mkdirSync('.artifacts',{recursive:true});
+writeFileSync('.artifacts/sitewide-seo-health-report.json',JSON.stringify(seoReport,null,2)+'\n');
+console.log('SITEWIDE_SEO_HEALTH_REPORT '+JSON.stringify({
+  status:seoReport.status,health_score_percent:seoReport.health_score_percent,
+  expected:seoReport.pages.expected,scanned:seoReport.pages.scanned,
+  issues:seoReport.issue_counts,rule_count:seoReport.rule_count,
+  top_issues:seoReport.issue_types.slice(0,8)
+}));
+if(!seoReport.coverage_complete) failures.push('SEO_HEALTH_COVERAGE_INCOMPLETE: '+seoReport.pages.scanned+'/'+seoReport.pages.expected);
+if (hrefRoutesChecked !== routes.length) failures.push(`HREF_AUDIT_ROUTE_COVERAGE_INCOMPLETE: ${hrefRoutesChecked}/${routes.length}`);
 if (failures.length) {
   const message = `Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`;
   if (cleanupTimedOut) {
@@ -189,4 +367,5 @@ if (failures.length) {
   throw new Error(message);
 }
 console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks with route concurrency ${routeConcurrency} and viewport concurrency ${viewportConcurrency} within bounded budget ${totalBudgetMs}ms`);
+console.log(`Sitewide canonical href audit: hrefsChecked=${hrefsChecked} routeCoverage=${hrefRoutesChecked}/${routes.length}, including generated NL/EN DOM; independent live external HTTP/redirect and consumer ACK remain separate`);
 if (cleanupTimedOut) process.exit(0);

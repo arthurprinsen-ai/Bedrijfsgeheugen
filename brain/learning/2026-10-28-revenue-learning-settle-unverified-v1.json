@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|revenue-learning|evaluate-settle-unverified|20261028-v1",
+  "compiler": {
+    "failure_class": "REVENUE_LEARNING_UNVERIFIED_ROWS_STAY_DUE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-revenue-learning-unverified-settle-20261028.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-revenue-learning-unverified-settle-20261028.test.mjs"
+    ]
+  },
+  "root_cause": "Evidence rows without a verified source were only recorded as VERIFIED_SOURCE_REQUIRED obligations and never received evaluated_at, so they stayed due forever. Netlify logs of revenue-learning-evaluate on 2026-10-27 18:00 to 2026-10-28 05:00 UTC show evaluated 0 on every hourly run with attempted 8 and unprocessedDue 103 constant (missingVerifiedSource plus insufficientCohort equal to 8 each run).",
+  "prevention": "After the typed obligation is recorded, a row without a verified source is settled with markEvidenceEvaluated (it reopens only when its data changes, updated_at > evaluated_at). Cohort and metric gaps depend on other rows and are deliberately not settled. The run summary reports settledUnverified separately from evaluated.",
+  "evidence": {
+    "tests": [
+      "tests/brain-revenue-learning-unverified-settle-20261028.test.mjs",
+      "tests/revenue-learning-evaluate.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "unverified until protected merge, Netlify deploy and Netlify logs showing unprocessedDue falling; only effective together with the evidence timestamp guard (PR 5019) because a refreshed updated_at reopens settled rows"
+  },
+  "limitations": [
+    "Depends on PR 5019 being applied first: without it the hourly projection refresh advances updated_at and reopens settled rows",
+    "Rows settled as unverified are not re-read when a source is added without changing the row",
+    "Insufficient-cohort rows still recirculate through the hourly rotation",
+    "No production readback yet"
+  ]
+}

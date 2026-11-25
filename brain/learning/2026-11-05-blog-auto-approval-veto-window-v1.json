@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|seo-growth|blog-auto-approval-veto-window|20261105-v1",
+  "fingerprint": "content|blog-generated-never-approved|20261105-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "BLOG_GENERATED_NEVER_APPROVED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 21,
+    "security_sensitive": false
+  },
+  "root_cause": "powerhouse-blog-queue writes the daily blog obligation as GENERATED, and powerhouse-blog-export refuses any blog whose obligation has no approved_at or a status other than APPROVED, PUBLISHED or LIVE_PROVEN. Nothing in the repository moved a blog from GENERATED to APPROVED. The hourly powerhouse-daily-blog workflow therefore succeeded while publish_powerhouse_blog_artifact.py printed NO_APPROVED_BLOG_ARTIFACT, the candidate-PR step was skipped, and 21 blogs stayed GENERATED without an error.",
+  "observed_evidence": {
+    "source": "content_publication_obligations (21 GENERATED with approved_at empty, 18 MEASURED all with approved_at), GitHub run 42025233353 on 2026-11-05 (candidate step skipped, NO_APPROVED_BLOG_ARTIFACT:2026-11-05), powerhouse-blog-export source line 34",
+    "affected_blogs": 21,
+    "daily_publication_invariant_failed": true,
+    "real_customers_or_revenue_claimed": false
+  },
+  "fix": "tools/content-growth/blog-auto-approval.mjs runs as a step in the existing hourly powerhouse-daily-blog workflow. supabase/functions/_shared/blog-auto-approval.mjs decides: only a GENERATED row of the current Amsterdam business date with lineage, a publish decision, a passing official-date gate, no veto and an elapsed veto window of 6 hours is approved, through the existing record_content_publication_state function. Stale rows are never approved. Reader-ready, official-date and protected PR gates stay downstream.",
+  "prevention_rule": "A generated blog needs an owner for the step from GENERATED to APPROVED. A workflow that finds nothing approved must not look successful: the approval step fails loudly on missing credentials or a failed write and logs a coded decision line.",
+  "tests": [
+    "tests/brain-blog-auto-approval-veto-window-20261105.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-auto-approval-veto-window-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-auto-approval-veto-window-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-auto-approval-veto-window-20261105.test.mjs"
+    ],
+    "invariants": [
+      "veto always wins",
+      "stale backlog is never auto-approved",
+      "official factual gate still blocks approval",
+      "no second scheduler"
+    ]
+  },
+  "open_obligation": "Protected merge by Arthur, then the next hourly run must log BLOG_AUTO_APPROVAL:APPROVED_AFTER_VETO_WINDOW and the blog must reach LIVE_PROVEN. No notification to Arthur exists yet; a veto is set in obligation evidence.",
+  "reuse_guidance": "Do not set approved_at directly in the database. Change the window or gates only in the shared module and its test."
+}

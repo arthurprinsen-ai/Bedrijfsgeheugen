@@ -3,8 +3,8 @@ const edge=fs.readFileSync('supabase/functions/powerhouse-composio-instagram-set
 const admin=fs.readFileSync('netlify/functions/powerhouse-composio-config.mjs','utf8');
 const portal=fs.readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
 
-test('OAuth completion resume is service-auth only and requires exactly one active account',()=>{
-  assert.match(edge,/accounts\.length===1/);
+test('OAuth completion resume is service-auth only and requires exactly one provider-verified selectable account',()=>{
+  assert.match(edge,/selectable\.length===1/);
   assert.match(edge,/action==='resume'/);
   assert.match(edge,/if\(!serviceOk\)return json\(\{ok:false,error:'ADMIN_SERVICE_AUTH_REQUIRED'\}/);
   assert.match(edge,/powerhouse-social-publisher/);

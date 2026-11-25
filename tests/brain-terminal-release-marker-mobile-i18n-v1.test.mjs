@@ -22,8 +22,8 @@ test('mobile language injector supports v18 and compact bgkop mobile drawers', a
   assert.match(source,/bgkopMob/);
   assert.match(source,/bgkop-mob/);
   assert.match(source,/bgkop-mcta/);
-  assert.match(source,/data-bg-language-select/);
-  assert.match(source,/MOBILE_LANGUAGE \+ '\$&'/);
+  assert.match(source,/data-bg-language-option/);
+  assert.match(source,/mobileLanguage \+ '\$&'/);
 });
 
 test('mobile language injector is executable and injects the compact drawer safely', async () => {
@@ -35,7 +35,7 @@ test('mobile language injector is executable and injects the compact drawer safe
     execFileSync(process.execPath,[applyI18n],{cwd:dir,stdio:'pipe'});
     const html = await readFile(file,'utf8');
     assert.match(html,/data-bg-language-switcher="mobile"/);
-    assert.match(html,/data-bg-language-select/);
+    assert.match(html,/data-bg-language-option/);
     assert.ok(html.indexOf('data-bg-language-switcher="mobile"') < html.indexOf('bgkop-mcta'));
     assert.equal((html.match(/data-bg-language-switcher="mobile"/g)||[]).length,1);
     assert.equal((html.match(/\/assets\/js\/i18n\.js/g)||[]).length,1);

@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|delivery-publisher-parity|evidence-normalization|v1",
+  "compiler": {
+    "failure_class": "publication_delivery_resource_amplification_and_provider_auth_boundary"
+  },
+  "root_cause": {
+    "summary": "Normal delivery invoked unrelated cockpit/provider reconciliation work and legacy JSONB evidence could be reprocessed as strings, amplifying payload size and worker memory. The LinkedIn company lane then correctly stopped at a missing organization-scoped canonical OAuth connection.",
+    "technical": [
+      "Social audit/cockpit work shared the publication critical path instead of an explicit mode.",
+      "Legacy delivery_evidence/generation_evidence values were not normalized to JSON objects before object spread/merge.",
+      "Repository source drifted from the production hotfix after the previous recovery PR closed without merge."
+    ]
+  },
+  "prevention_rule": [
+    "Normal social delivery must call powerhouse-social-publisher in publish_only mode; cockpit_autopilot remains explicit and isolated.",
+    "All publication evidence reads must normalize legacy JSONB strings/arrays to bounded objects before merge or spread.",
+    "Applied production SQL must be mirrored under its exact production migration version in the canonical migration lane; never mutate the production ledger merely to fit Git.",
+    "LinkedIn company publication remains fail-closed until a canonical organization-scoped connection is objectively verified."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs",
+      "tests/linkedin-revenue-cockpit.test.mjs",
+      "tests/social-learning-instagram-media-provider-routing-v1.test.mjs"
+    ],
+    "production_readback": {
+      "publisher_version": 106,
+      "blog_queue_version": 11,
+      "linkedin_company_state": "APPROVED",
+      "linkedin_company_provider_side_effect": false,
+      "linkedin_company_blocker": "organization-scoped LinkedIn OAuth not available on any existing active connection"
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs"
+    ]
+  }
+}

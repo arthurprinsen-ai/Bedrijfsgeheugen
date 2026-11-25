@@ -1,4 +1,5 @@
 import { COMPLIANCE_CONTROL_TEMPLATES } from './compliance-registry.js';
+import { readLegacyPortalStateForUser } from '../portal-v2/legacy-state-migration.js';
 
 function hasOwn(data, key) { return Object.prototype.hasOwnProperty.call(data || {}, key); }
 function evidenceFor(data, id) { return Array.isArray(data?.complianceEvidence?.[id]) ? data.complianceEvidence[id] : []; }
@@ -135,23 +136,12 @@ export function buildBedrijfsgeheugenControls(evidenceData = {}) {
 }
 
 function readLegacyPortalState(storage, context = {}) {
-  if (!storage || typeof storage.length !== 'number') return null;
-  const candidates = [];
-  for (let index = 0; index < storage.length; index += 1) {
-    const key = storage.key(index);
-    if (!key || !key.startsWith('bg_portaal_') || ['bg_portaal_open','bg_portaal_lead'].includes(key)) continue;
-    try {
-      const value = JSON.parse(storage.getItem(key) || 'null');
-      if (value && typeof value === 'object' && (value.beleid || value.niveaus || value.cijfers)) candidates.push({ key, value });
-    } catch (_) {}
-  }
-  if (!candidates.length) return null;
-  const slug = context?.customerSlug;
-  if (slug) {
-    const direct = candidates.find(item => item.key.includes(slug));
-    if (direct) return direct.value;
-  }
-  return candidates.length === 1 ? candidates[0].value : null;
+  // Reuse the canonical legacy migration reader: it resolves one exact
+  // bg_portaal_<email> key rather than scanning other customers' browser data.
+  // No explicit current-user context means UNKNOWN, never "the only record".
+  const user = context?.authenticatedUser;
+  if (!user || typeof user.email !== 'string' || !user.email.trim()) return null;
+  return readLegacyPortalStateForUser(storage, user);
 }
 
 export function readPortalComplianceInput(root = globalThis) {

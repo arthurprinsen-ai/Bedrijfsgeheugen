@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "github|watchdog|owner-comment-403-recovery|20261022-v1",
+  "obligation_id": "github|watchdog|owner-comment-403-recovery|20261022-v1",
+  "title": "Contain authenticated PR-comment 403 in canonical Required Gate Watchdog without losing later PR dispatch",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_DELIVERY",
+  "root_cause": "Post-merge live workflow #39811993147 job #119940435969 failed at GitHub POST /issues/4656/comments with 403 Resource not accessible by integration although issues:write was present. Uncaught exception aborted processing later PRs.",
+  "impact": "One unauthorized failed-gate handoff aborts remaining watchdog work and leaves source recovery unrouted.",
+  "fix": "Existing main already includes PR write authority (#4670) and bounded GET-only retries/PR exception isolation (#4679). This candidate adds max two handoff ATTEMPTS, catches denied comment within same-PR owner loop so missing Required dispatch continues, and preserves nonzero exit on any failed handoff; no duplicate schedule.",
+  "prevention_rule": "Do not equate issue comment success with source repair; never let one 403 stop other safe dispatches; never mark refused comment green; preserve one scheduler, immutable head, original writer lease, security/CLS protections.",
+  "regression_contract": "tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs",
+  "tests": [
+    "tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs",
+    "tests/brain-required-gate-watchdog-resilience-v1.test.mjs",
+    "tests/brain-required-failed-gate-owner-routing-v1.test.mjs"
+  ],
+  "evidence": {
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147",
+    "job": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39811993147/job/119940435969",
+    "status": "OBSERVED",
+    "production_verified": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-required-gate-watchdog-403-resilience-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "NO_PARALLEL_SCHEDULER",
+    "BOUNDED_FAILED_HANDOFF",
+    "PRESERVE_ALL_GATES",
+    "NO_FALSE_GREEN"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

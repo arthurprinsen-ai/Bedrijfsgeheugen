@@ -1,10 +1,89 @@
-import { createClient } from 'npm:@supabase/supabase-js@2';
+import postgres from 'npm:postgres@3.4.7';
+import {hasVerifiedPersonalBuilderEvidence} from '../_shared/daily-social-recovery-invariants.mjs';
+import {shouldRebootstrapHeldPersonalDuplicate,planVerifiedLatePersonalSourceRebootstrap} from '../_shared/held-personal-duplicate-rebootstrap.mjs';
+import {assessDailyPublicationRecovery,assessPreventivePublicationReadiness} from '../_shared/daily-publication-recovery.mjs';
+import {planOriginalPublicationHandoffs} from '../_shared/publication-recovery-obligation-writeback.mjs';
+import {planOriginalIncidentLearning} from '../_shared/publication-incident-learning.mjs';
+import {planOwnerActionEscalations} from '../_shared/owner-action-escalation.mjs';
+import {planRejectedCompanyRegeneration} from '../_shared/company-rejected-candidate-regeneration.mjs';
+import {planPersonalObservationalReviewRecovery} from '../_shared/personal-observational-review-recovery.mjs';
+import {shouldRepairOriginalGrowthSource,verifyOriginalGrowthSourceRecovery} from '../_shared/original-growth-source-revision-recovery.mjs';
+
+
+const DB_REF='adhjwmvyoixzjtmiroln';
+const DB_POOLER_HOST='aws-0-eu-central-1.pooler.supabase.com';
+const DIRECT_TABLES=new Set(["content_publication_obligations","powerhouse_channel_decisions","brain_records","powerhouse_content_recommendations","powerhouse_instagram_media_jobs_v1","powerhouse_social_publish_capabilities_v1"]);
+const DIRECT_RPCS=new Set(["bg_geheim","powerhouse_reconcile_content_outcomes_v1","powerhouse_select_instagram_daily_winner_v1","powerhouse_ensure_instagram_media_job_v1","brain_observe_failure","powerhouse_capture_growth_source_daily_v1","powerhouse_daily_source_consume_v1","powerhouse_commercial_intelligence_heartbeat_v1"]);
+const DB_JSON_COLUMNS=new Set(['bg_gezondheid.gegevens','brain_records.result','brain_records.provenance','brain_records.payload','content_publication_obligations.evidence','content_publication_obligations.metrics','powerhouse_channel_decisions.delivery_evidence','powerhouse_channel_decisions.learning_evidence','powerhouse_content_artifacts.generation_evidence','powerhouse_content_recommendations.evidence','powerhouse_daily_runs.evidence','powerhouse_instagram_daily_winners_v1.selector_evidence','powerhouse_instagram_daily_winners_v1.outcome_evidence','powerhouse_instagram_media_jobs_v1.asset_manifest','powerhouse_instagram_media_jobs_v1.proof_manifest','powerhouse_media_proof_evidence_v1.proof_lineage','powerhouse_sales_actions.evidence']);
+const DB_ARRAY_CASTS=new Map([['powerhouse_channel_decisions.source_recommendation_ids','uuid[]'],['powerhouse_instagram_media_jobs_v1.allowed_providers','text[]'],['brain_records.predecessor_ids','text[]'],['brain_records.evidence_ids','text[]'],['brain_ai_governance_registry.data_categories','text[]'],['brain_ai_governance_registry.prohibited_data_categories','text[]'],['brain_ai_governance_registry.approval_evidence_ids','text[]'],['brain_ai_governance_registry.evidence_ids','text[]'],['brain_ai_governance_registry.subprocessors','text[]'],['brain_ai_governance_registry.provider_evidence_urls','text[]']]);
+const DB_DEFAULT_CONFLICT=new Map([['powerhouse_channel_decisions','run_date,channel'],['brain_records','tenant_id,record_id'],['content_publication_obligations','tenant_id,publication_date,channel'],['powerhouse_content_artifacts','run_date,channel'],['powerhouse_daily_runs','run_date'],['powerhouse_instagram_daily_winners_v1','run_date'],['bg_campaign_links','key'],['powerhouse_instagram_media_jobs_v1','tenant_id,publication_date,channel'],['powerhouse_media_proof_evidence_v1','fingerprint']]);
+function dbIdent(value:string){const m=value.match(/^[A-Za-z_][A-Za-z0-9_]*/)?.[0]||'';if(m!==value)throw new Error('DB_IDENTIFIER_REJECTED');return '"'+value.replaceAll('"','""')+'"';}
+function dbPoolerUrl(){const raw=Deno.env.get('SUPABASE_DB_URL')||'';if(!raw)throw new Error('SUPABASE_DB_URL_MISSING');const u=new URL(raw);u.hostname=DB_POOLER_HOST;u.port='6543';u.username='postgres.'+DB_REF;return u.toString();}
+const directSql=postgres(dbPoolerUrl(),{max:2,prepare:false,connect_timeout:6,idle_timeout:10,max_lifetime:45});
+function scalarParam(value:any,values:any[],cast=''){values.push(value);return String.fromCharCode(36)+values.length+(cast?'::'+cast:'');}
+function normalizeJsonValue(value:any){
+ let current=value;
+ for(let i=0;i<3&&typeof current==='string';i++){
+   const raw=current.trim();
+   if(!raw)return current;
+   try{current=JSON.parse(raw);}catch{return current;}
+ }
+ return current;
+}
+function normalizeRowJson(table:string,row:any){
+ if(!row||typeof row!=='object'||Array.isArray(row))return row;
+ const prefix=table+'.';
+ for(const key of DB_JSON_COLUMNS){
+   if(!key.startsWith(prefix))continue;
+   const column=key.slice(prefix.length);
+   if(Object.prototype.hasOwnProperty.call(row,column))row[column]=normalizeJsonValue(row[column]);
+ }
+ return row;
+}
+
+function valueExpr(table:string,column:string,value:any,values:any[]){const key=table+'.'+column;if(DB_JSON_COLUMNS.has(key)) return scalarParam(JSON.stringify(normalizeJsonValue(value)??null),values,'jsonb');const arrCast=DB_ARRAY_CASTS.get(key);if(arrCast&&Array.isArray(value)){if(!value.length)return 'ARRAY[]::'+arrCast;return 'ARRAY['+value.map(v=>scalarParam(v,values)).join(',')+']::'+arrCast;}return scalarParam(value,values);}
+function rpcExpr(value:any,values:any[]){return value!==null&&typeof value==='object'?scalarParam(JSON.stringify(value),values,'jsonb'):scalarParam(value,values);}
+class DirectQuery{
+ table:string;op='select';columns='*';payload:any=null;returning='';filters:any[]=[];orders:any[]=[];limitValue:number|null=null;singleMode='';conflict='';ignoreDuplicates=false;
+ constructor(table:string){if(!DIRECT_TABLES.has(table))throw new Error('DB_TABLE_REJECTED:'+table);this.table=table;}
+ select(columns='*'){if(['update','upsert','insert'].includes(this.op))this.returning=columns;else{this.op='select';this.columns=columns;}return this;}
+ insert(payload:any){this.op='insert';this.payload=payload;return this;} update(payload:any){this.op='update';this.payload=payload||{};return this;}
+ upsert(payload:any,options:any={}){this.op='upsert';this.payload=payload||{};this.conflict=String(options?.onConflict||DB_DEFAULT_CONFLICT.get(this.table)||'');this.ignoreDuplicates=options?.ignoreDuplicates===true;return this;}
+ eq(column:string,value:any){this.filters.push({kind:'eq',column,value});return this;} is(column:string,value:any){if(value!==null)throw new Error('DB_IS_FILTER_ONLY_NULL');this.filters.push({kind:'is',column,value});return this;} in(column:string,values:any[]){this.filters.push({kind:'in',column,values:Array.isArray(values)?values:[]});return this;}
+ not(column:string,operator:string,value:any){this.filters.push({kind:'not',column,operator,value});return this;} order(column:string,options:any={}){this.orders.push({column,ascending:options?.ascending!==false});return this;}
+ limit(value:number){this.limitValue=Number(value);return this;} maybeSingle(){this.singleMode='maybe';return this.execute();} single(){this.singleMode='single';return this.execute();} then(resolve:any,reject:any){return this.execute().then(resolve,reject);}
+ where(values:any[]){const parts:string[]=[];for(const f of this.filters){const col=dbIdent(f.column);if(f.kind==='eq')parts.push(f.value===null?col+' is null':col+' = '+scalarParam(f.value,values));else if(f.kind==='is'&&f.value===null)parts.push(col+' is null');else if(f.kind==='in'){if(!f.values.length){parts.push('false');continue;}parts.push(col+' in ('+f.values.map((v:any)=>scalarParam(v,values)).join(',')+')');}else if(f.kind==='not'&&f.operator==='is'&&f.value===null)parts.push(col+' is not null');else throw new Error('DB_FILTER_REJECTED');}return parts.length?' where '+parts.join(' and '):'';}
+ selectList(raw:string){if(raw.trim()==='*')return '*';return raw.split(',').map(x=>dbIdent(x.trim())).join(',');}
+ async execute(){try{if(this.table==='powerhouse_instagram_media_jobs_v1'&&this.op!=='select')throw new Error('DB_READ_ONLY_TABLE_REJECTED:'+this.table);
+      // Source of truth for consumed social writer-lease. The original loop may
+      // check it, but must never issue/revoke/alter social publishing authority.
+      if(this.table==='powerhouse_social_publish_capabilities_v1'&&this.op!=='select')throw new Error('DB_READ_ONLY_TABLE_REJECTED:'+this.table);const values:any[]=[];let q='';if(this.op==='select'){q='select '+this.selectList(this.columns)+' from public.'+dbIdent(this.table)+this.where(values);if(this.orders.length)q+=' order by '+this.orders.map(o=>dbIdent(o.column)+(o.ascending?' asc':' desc')).join(',');if(Number.isFinite(this.limitValue as number))q+=' limit '+Math.max(0,Math.trunc(this.limitValue as number));}
+ else if(this.op==='insert'){const items=Array.isArray(this.payload)?this.payload:[this.payload];if(!items.length||!items[0])throw new Error('DB_EMPTY_INSERT');const cols=Object.keys(items[0]);q='insert into public.'+dbIdent(this.table)+' ('+cols.map(dbIdent).join(',')+') values '+items.map((item:any)=>'('+cols.map(c=>valueExpr(this.table,c,item[c],values)).join(',')+')').join(',');if(this.returning)q+=' returning '+this.selectList(this.returning);}
+ else if(this.op==='update'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPDATE');q='update public.'+dbIdent(this.table)+' set '+entries.map(([k,v])=>dbIdent(k)+' = '+valueExpr(this.table,k,v,values)).join(',')+this.where(values);if(this.returning)q+=' returning '+this.selectList(this.returning);}
+ else if(this.op==='upsert'){const entries=Object.entries(this.payload||{});if(!entries.length)throw new Error('DB_EMPTY_UPSERT');const cols=entries.map(([k])=>dbIdent(k));const vals=entries.map(([k,v])=>valueExpr(this.table,k,v,values));q='insert into public.'+dbIdent(this.table)+' ('+cols.join(',')+') values ('+vals.join(',')+')';const conflict=this.conflict.split(',').map(x=>x.trim()).filter(Boolean);if(!conflict.length)throw new Error('DB_UPSERT_CONFLICT_REQUIRED');q+=' on conflict ('+conflict.map(dbIdent).join(',')+') ';if(this.ignoreDuplicates)q+='do nothing';else{const set=new Set(conflict);const ups=entries.map(([k])=>k).filter(k=>!set.has(k));q+=ups.length?'do update set '+ups.map(k=>dbIdent(k)+' = excluded.'+dbIdent(k)).join(','):'do nothing';}if(this.returning)q+=' returning '+this.selectList(this.returning);}
+ else throw new Error('DB_OPERATION_REJECTED');const rows:any[]=await directSql.unsafe(q,values);const normalized=rows.map((row:any)=>normalizeRowJson(this.table,row));let data:any;if(['insert','update','upsert'].includes(this.op)&&!this.returning)data=null;else if(this.singleMode)data=normalized[0]||null;else data=normalized;return {data,error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
+}
+async function directRpc(name:string,args:Record<string,any>={}){try{if(!DIRECT_RPCS.has(name))throw new Error('DB_RPC_REJECTED:'+name);const values:any[]=[];const call=Object.entries(args||{}).map(([k,v])=>dbIdent(k)+' := '+rpcExpr(v,values)).join(',');const q='select to_jsonb(public.'+dbIdent(name)+'('+call+')) as result';const rows:any[]=await directSql.unsafe(q,values);return {data:normalizeJsonValue(rows?.[0]?.result??null),error:null};}catch(error){return {data:null,error:{message:error instanceof Error?error.message:String(error)}};}}
+function createDirectDb(){return {from:(table:string)=>new DirectQuery(table),rpc:(name:string,args:any={})=>directRpc(name,args)};}
 
 const clean = (v: unknown) => String(v ?? '').trim();
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const localDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const OPERATIONAL_CHANNELS = ['linkedin_personal','linkedin_company','instagram','blog'];
-const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED','SKIPPED']);
+// SKIPPED is not proof that the daily promised publication was delivered.
+const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED']);
+const LOOP_LEASE_MS = 240_000;
+const CHILD_TIMEOUTS: Record<string, number> = {
+  'powerhouse-instagram-media-router': 10_000,
+  // Original provider preflight completed HTTP 200 in 21,182 ms (31 Oct
+  // 2026); the previous 8 s abort invented CHILD_CALL_FAILED. This is an
+  // observation-only authorization check, not a publisher or OAuth bypass.
+  'powerhouse-composio-linkedin-setup': 30_000,
+  'powerhouse-social-publisher:audit': 12_000,
+  'powerhouse-content-orchestrator': 110_000,
+  'powerhouse-social-publisher': 25_000,
+  'powerhouse-blog-queue': 25_000,
+};
 function providerSideEffectTerminal(o:any){
   const channel=clean(o?.channel);
   if(!['linkedin_personal','linkedin_company','instagram'].includes(channel))return false;
@@ -16,18 +95,137 @@ function providerSideEffectTerminal(o:any){
     || (evidence?.provider_truth_verified===true && ['published','sent','live'].includes(clean(evidence?.provider_status).toLowerCase()));
 }
 function obligationTerminal(o:any){
-  return TERMINAL_GREEN.has(clean(o?.status))
-    || (clean(o?.status)==='PUBLISHED' && providerSideEffectTerminal(o));
+  const status=clean(o?.status);
+  const channel=clean(o?.channel);
+  if(TERMINAL_GREEN.has(status))return true;
+  if(channel==='linkedin_company'&&status==='PUBLISHED')return false;
+  return status==='PUBLISHED'&&providerSideEffectTerminal(o);
 }
 
-async function invoke(base: string, token: string, name: string, payload: unknown) {
-  const response = await fetch(`${base}/functions/v1/${name}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', 'x-powerhouse-token': token },
-    body: JSON.stringify(payload),
-  });
-  const body = await response.json().catch(() => ({}));
-  return { name, http: response.status, ok: response.ok && body?.ok !== false, body };
+async function readBoundedJson(response: Response, maxBytes = 32768) {
+  const reader = response.body?.getReader();
+  if (!reader) return { body: {}, truncated: false, bytes: 0 };
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  let truncated = false;
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value?.length) continue;
+      const remaining = maxBytes - total;
+      if (remaining <= 0) { truncated = true; break; }
+      const take = value.length > remaining ? value.subarray(0, remaining) : value;
+      chunks.push(take);
+      total += take.length;
+      if (value.length > remaining || total >= maxBytes) { truncated = true; break; }
+    }
+  } finally {
+    if (truncated) {
+      try { await reader.cancel(); } catch {}
+    }
+  }
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) { merged.set(chunk, offset); offset += chunk.length; }
+  const text = new TextDecoder().decode(merged);
+  let body:any = {};
+  try { body = text ? JSON.parse(text) : {}; } catch { body = { parse_error:true, preview:text.slice(0,512) }; }
+  return { body, truncated, bytes: total };
+}
+
+async function invoke(base: string, token: string, name: string, payload: any) {
+  const audit = payload?.mode === 'audit_only';
+  const timeoutKey = audit && name === 'powerhouse-social-publisher' ? 'powerhouse-social-publisher:audit' : name;
+  const timeoutMs = CHILD_TIMEOUTS[timeoutKey] || 20_000;
+  try {
+    const response = await fetch(`${base}/functions/v1/${name}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-powerhouse-token': token },
+      body: JSON.stringify(payload),
+      signal: AbortSignal.timeout(timeoutMs),
+    });
+    const bounded = await readBoundedJson(response);
+    return {
+      name,
+      http: response.status,
+      ok: response.ok && bounded.body?.ok !== false,
+      body: bounded.body,
+      body_bytes: bounded.bytes,
+      body_truncated: bounded.truncated,
+      timeout_ms: timeoutMs
+    };
+  } catch (error) {
+    const detail = clean((error as Error)?.name || (error as Error)?.message || error).slice(0,80);
+    return { name, http: 0, ok: false, timed_out: detail.toLowerCase().includes('timeout'), error: 'CHILD_CALL_FAILED', detail, timeout_ms: timeoutMs };
+  }
+}
+
+async function claimLoopLease(runDate:string, holder:string) {
+  const recordId = `runtime-lease:content-closed-loop:${runDate}`;
+  const now = new Date().toISOString();
+  const expiresAt = new Date(Date.now() + LOOP_LEASE_MS).toISOString();
+  const rows:any[] = await directSql.unsafe(
+    `insert into public.brain_records(
+       tenant_id,record_id,record_type,record_kind,subject_id,status,observed_at,executed,verified,
+       result,payload,idempotency_key,source_revision,stored_at,updated_at
+     ) values (
+       $1,$2,'Verification','verification',$3::text,'IN_PROGRESS',$4::timestamptz,true,false,
+       '{}'::jsonb,
+       jsonb_build_object(
+         'holder',$5::text,
+          'run_date',$3::text,
+          'expires_at',$6::timestamptz,
+         'lease','content-closed-loop-v1'
+       ),
+       $2,'content-closed-loop-lease-v1',$4,$4
+     )
+     on conflict (tenant_id,record_id) do update set
+       status='IN_PROGRESS',
+       observed_at=excluded.observed_at,
+       executed=true,
+       verified=false,
+       payload=excluded.payload,
+       source_revision=excluded.source_revision,
+       updated_at=excluded.updated_at
+     where coalesce(
+             case when jsonb_typeof(public.brain_records.payload)='object'
+                  then (public.brain_records.payload->>'expires_at')::timestamptz
+                  else null end,
+             'epoch'::timestamptz
+           ) <= now()
+        or (
+             jsonb_typeof(public.brain_records.payload)='object'
+             and public.brain_records.payload->>'holder' = $5::text
+           )
+     returning record_id`,
+    ['canonical',recordId,runDate,now,holder,expiresAt]
+  );
+  return rows.length === 1;
+}
+
+async function releaseLoopLease(runDate:string, holder:string) {
+  const recordId = `runtime-lease:content-closed-loop:${runDate}`;
+  const now = new Date().toISOString();
+  await directSql.unsafe(
+    `update public.brain_records
+       set status='VERIFIED',
+           verified=true,
+           observed_at=$1::timestamptz,
+           payload=jsonb_build_object(
+             'holder',$2::text,
+             'run_date',$3::text,
+             'expires_at',$1::timestamptz,
+             'released_at',$1::timestamptz,
+             'lease','content-closed-loop-v1'
+           ),
+           updated_at=$1
+     where tenant_id='canonical'
+       and record_id=$4::text
+       and jsonb_typeof(payload)='object'
+       and payload->>'holder'=$2::text`,
+    [now,holder,runDate,recordId]
+  );
 }
 
 Deno.serve(async (req) => {
@@ -35,76 +233,622 @@ Deno.serve(async (req) => {
   const url = Deno.env.get('SUPABASE_URL') || '';
   const service = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
   if (!url || !service) return json({ ok: false, error: 'CONFIG' }, 500);
-  const db = createClient(url, service, { auth: { persistSession: false, autoRefreshToken: false } });
-  const expected = clean((await db.rpc('bg_geheim', { p_naam: 'powerhouse_daily_scheduler_token' })).data);
-  if (!expected || req.headers.get('x-powerhouse-token') !== expected) return json({ ok: false, error: 'UNAUTHORIZED' }, 401);
+  const db:any=createDirectDb();
+  const authSecret = await db.rpc('bg_geheim', { p_naam: 'powerhouse_daily_scheduler_token' });
+  if (authSecret.error) {
+    console.error('CONTENT_LOOP_AUTH_LOOKUP_FAILED');
+    return json({ ok: false, error: 'AUTH_SECRET_LOOKUP_FAILED' }, 503);
+  }
+  const expected = clean(authSecret.data);
+  if (!expected) {
+    console.error('CONTENT_LOOP_AUTH_SECRET_EMPTY');
+    return json({ ok: false, error: 'AUTH_SECRET_EMPTY' }, 503);
+  }
+  const provided = clean(req.headers.get('x-powerhouse-token'));
+  if (!provided) return json({ ok: false, error: 'TOKEN_REQUIRED', expected_len: expected.length, provided_len: 0 }, 401);
+  if (provided !== expected) {
+    const authShape = { expected_len: expected.length, provided_len: provided.length, same_length: provided.length === expected.length };
+    console.error('CONTENT_LOOP_TOKEN_MISMATCH_SHAPE', JSON.stringify(authShape));
+    return json({ ok: false, error: 'TOKEN_MISMATCH', ...authShape }, 401);
+  }
   let input: any = {};
   try { input = await req.json(); } catch { /* default */ }
   const runDate = clean(input.runDate) || localDate();
+  const leaseHolder = crypto.randomUUID();
+  let leaseAcquired = false;
+  try {
+    leaseAcquired = await claimLoopLease(runDate, leaseHolder);
+  } catch (error) {
+    console.error('CONTENT_LOOP_LEASE_CLAIM_FAILED', clean((error as Error)?.message || error).slice(0,160));
+    return json({ ok:false, runDate, error:'LEASE_CLAIM_FAILED' }, 503);
+  }
+  if (!leaseAcquired) return json({ ok:true, runDate, skipped:true, reason:'ALREADY_RUNNING' }, 202);
+
   const stepResults: any[] = [];
+  const loopStartedAt = Date.now();
 
   try {
+    // Original #140 hourly lease, NOT a new producer/scheduler/owner. The
+    // original #175 producer is retriggered only on exact revision mismatch.
+    // No provider side effect or fabricated CRO experiment is possible here.
+    if (runDate === localDate()) {
+      const initial = await db.rpc('powerhouse_daily_source_consume_v1', {p_day:runDate});
+      if (initial.error) {
+        stepResults.push({name:'original_growth_source_revision_handoff',ok:false,degraded:true,error:'ORIGINAL_CONSUMER_RPC_FAILED'});
+      } else if (initial.data?.contract === 'original-daily-growth-source-one-loop-v1'
+          && initial.data?.source_day === runDate && initial.data?.consumer_accepted === true) {
+        stepResults.push({name:'original_growth_source_revision_handoff',ok:true,repaired:false,consumer_ack:true,
+          effect_proven:false});
+      } else if (shouldRepairOriginalGrowthSource(initial.data,runDate,localDate())) {
+        const capture = await db.rpc('powerhouse_capture_growth_source_daily_v1',{p_day:runDate});
+        if (capture.error || capture.data?.status === 'SKIPPED_OVERLAP') {
+          stepResults.push({name:'original_growth_source_revision_handoff',ok:false,degraded:true,error:'ORIGINAL_175_CAPTURE_FAILED_OR_BUSY'});
+        } else {
+          const consumer = await db.rpc('powerhouse_daily_source_consume_v1',{p_day:runDate});
+          const heartbeat = consumer.error || consumer.data?.consumer_accepted !== true
+            ? {data:null,error:{message:'NO_EXACT_CONSUMER_ACK'}}
+            : await db.rpc('powerhouse_commercial_intelligence_heartbeat_v1',{p_run_date:runDate});
+          const receipt = verifyOriginalGrowthSourceRecovery({
+            capture:capture.data,consume:consumer.data,heartbeat:heartbeat.data,runDate
+          });
+          stepResults.push({name:'original_growth_source_revision_handoff',ok:receipt.ok,
+            repaired:receipt.ok,consumer_ack:receipt.ok,effect_proven:false,
+            degraded:!receipt.ok,error:receipt.ok?null:receipt.reason,
+            source_revision:receipt.ok?receipt.sourceRevision:null});
+        }
+      } else {
+        stepResults.push({name:'original_growth_source_revision_handoff',ok:false,
+          degraded:true,error:'ORIGINAL_140_SOURCE_NOT_ACCEPTED_NO_SAFE_REPLAY'});
+      }
+    }
     const first = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
-    if (first.error) throw new Error('RECONCILE_PRE_FAILED');
-    stepResults.push({ name: 'reconcile_pre', ok: true, body: first.data });
+    // Readback is observational: a readback fault cannot cancel other safe
+    // publication lanes or grant any of them additional publishing rights.
+    if (first.error) {
+      stepResults.push({ name:'reconcile_pre', ok:false, degraded:true, error:'RECONCILE_PRE_FAILED' });
+    } else {
+      stepResults.push({ name:'reconcile_pre', ok:true });
+    }
 
     // Freeze one ex-ante Mira winner before any media generation or publication work.
     const winner = await db.rpc('powerhouse_select_instagram_daily_winner_v1', { p_date: runDate });
-    if (winner.error) throw new Error('INSTAGRAM_DAILY_WINNER_SELECTION_FAILED');
-    stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, body: winner.data });
+    if (winner.error) {
+      stepResults.push({ name:'instagram_daily_winner', ok:false, degraded:true,
+        error:'INSTAGRAM_DAILY_WINNER_SELECTION_FAILED' });
+    } else {
+      stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, selected: winner.data?.selected === true, recommendation_id: clean(winner.data?.recommendation_id), format: clean(winner.data?.format), reason: clean(winner.data?.reason) });
+    }
     // Channel isolation: Instagram readiness may degrade Instagram, but must never block
     // blog/LinkedIn generation and delivery. Blog has its own no-gap obligation.
     if (winner.data?.selected !== true) {
       stepResults.push({ name: 'instagram_daily_winner_gate', ok: false, degraded: true, error: 'INSTAGRAM_DAILY_WINNER_REQUIRED' });
     }
-    const mediaJob = await db.rpc('powerhouse_ensure_instagram_media_job_v1', { p_date: runDate });
-    if (mediaJob.error || mediaJob.data?.ok !== true) {
-      stepResults.push({ name: 'instagram_winner_media_job', ok: false, degraded: true, error: 'INSTAGRAM_WINNER_MEDIA_JOB_FAILED', body: mediaJob.data || null });
+    const mediaJob: any = winner.error || winner.data?.selected !== true
+      ? { data:null, error:null, skipped:true }
+      : await db.rpc('powerhouse_ensure_instagram_media_job_v1', { p_date: runDate });
+    if (mediaJob.skipped === true) {
+      stepResults.push({ name:'instagram_winner_media_job', ok:true, skipped:true,
+        degraded:true, reason:'INSTAGRAM_WINNER_NOT_READY' });
+    } else if (mediaJob.error || mediaJob.data?.ok !== true) {
+      stepResults.push({ name: 'instagram_winner_media_job', ok: false, degraded: true, error: 'INSTAGRAM_WINNER_MEDIA_JOB_FAILED', status: clean(mediaJob.data?.status), next_action: clean(mediaJob.data?.next_action) });
     } else {
-      stepResults.push({ name: 'instagram_winner_media_job', ok: true, body: mediaJob.data });
+      stepResults.push({ name: 'instagram_winner_media_job', ok: true, status: clean(mediaJob.data?.status), job_id: clean(mediaJob.data?.job_id) });
     }
 
-    // Instagram media must be provider-routed and proven before orchestration or dispatch.
-    stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));
+    // Media routing is isolated: a missing/blocked Instagram asset never blocks LinkedIn or blog.
+    if (winner.data?.selected === true && mediaJob.data?.ok === true) {
+      stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));
+    } else {
+      stepResults.push({ name:'powerhouse-instagram-media-router', ok:true, skipped:true, degraded:true, reason:'INSTAGRAM_NOT_READY' });
+    }
 
-    // Read provider capability before any social dispatch. This is read-only and fail-closed.
+    // Read-only provider truth before any content decision mutation.
     stepResults.push(await invoke(url, expected, 'powerhouse-composio-linkedin-setup', { action: 'status', runDate }));
-
-    // Provider truth must be established before orchestration can preserve or replan delivery state.
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 
-    for (let i = 0; i < 5; i++) {
-      const step = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
-      stepResults.push(step);
-      if (!step.ok || step.body?.generated !== true) break;
+    // Drain all currently decided channel artifacts before dispatch. The orchestrator
+    // creates at most one per invocation; a single invocation stranded today's
+    // lower-priority LinkedIn personal post even when the canonical cron succeeded.
+    // Keep this bounded within the existing single supervisor/lease. Do not bypass
+    // prepublish, unique-publication, identity or media proof gates.
+    // Bootstrap the canonical daily decision set exactly once when the scheduled
+    // revenue runtime has not materialized it. Without this step the supervisor
+    // sees zero pending decisions and silently skips every publishing lane.
+    // Use the EXISTING orchestrator under the EXISTING content-loop lease.
+    const requiredDecisionChannels = ['linkedin_personal', 'linkedin_company', 'instagram_company', 'blog'];
+    const { data: initialDecisions, error: initialDecisionsError } = await db
+      .from('powerhouse_channel_decisions')
+      .select('channel,state,decision,delivery_ref,delivery_evidence')
+      .eq('run_date', runDate)
+      .in('channel', requiredDecisionChannels)
+      .limit(4);
+    if (initialDecisionsError) throw new Error('INITIAL_DECISION_READ_FAILED');
+    const existingDecisionChannels = new Set((initialDecisions || []).map((decision: any) => clean(decision.channel)));
+    // A unique-content failure with no provider side effect can be safely
+    // reconsidered after fresher source materialization. Never retry a
+    // published/ambiguous side effect or bypass the uniqueness gate.
+    const retryableContentBlock = (initialDecisions || []).some((decision: any) => {
+      const evidence = decision.delivery_evidence || {};
+      const reason = clean(evidence.error);
+      return decision.decision === 'publish'
+        && decision.state === 'blocked'
+        && !clean(decision.delivery_ref)
+        && evidence.possible_provider_side_effect !== true
+        // Historical uniqueness refusals wrongly persisted republish_forbidden=true
+        // before any transport call. Reopen ONLY proven unconsumed capabilities.
+        && (evidence.republish_forbidden !== true || (
+          reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:')
+          && evidence.global_uniqueness_gate === 'blocked'
+          && evidence.publication_authority?.issued === true
+          && evidence.publication_authority?.consumed === false
+        ))
+        && evidence.provider_create_success !== true
+        && evidence.provider_publication_ack_verified !== true
+        && evidence.provider_truth_verified !== true
+        && (reason.startsWith('GLOBAL_POST_DUPLICATE_BLOCKED:') || reason === 'SOURCE_DEADLINE_EXPIRED'
+          || (decision.channel === 'linkedin_personal'
+            && reason === 'PERSONAL_SOURCE_UNVERIFIED'
+            && hasVerifiedPersonalBuilderEvidence(evidence.identity_gate_evidence)));
+    });
+    // A semantic 422 blocks the ORIGINAL company writer before any LinkedIn
+    // create call. Rotate ONLY when an actual fresh source-backed alternative
+    // exists and the original company authority is provably unconsumed.
+    // A missing alternative stays blocked; an ambiguous provider side effect
+    // is reconciliation-only and MUST NOT be regenerated.
+    let retryableCompanyEditorialBlock=false;
+    const rejectedCompany=(initialDecisions||[]).find((d:any)=>
+      clean(d.channel)==='linkedin_company'&&clean(d.state)==='blocked'&&
+      Number(d.delivery_evidence?.review_status)===422&&
+      d.delivery_evidence?.violations?.some((v:any)=>v?.code==='COMPANY_RECENT_OPERATIONAL_FRICTION_REPEAT'));
+    if(rejectedCompany){
+      const [obligationSource,recommendationSource,capabilitySource]=await Promise.all([
+        db.from('content_publication_obligations')
+          .select('channel,status,external_id,evidence,published_at,live_proven_at')
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel','linkedin_company').maybeSingle(),
+        db.from('powerhouse_content_recommendations')
+          .select('recommendation_id,priority,status,target_channel,evidence')
+          .eq('run_date',runDate)
+          .in('target_channel',['linkedin_company','cross-channel']).limit(50),
+        db.from('powerhouse_social_publish_capabilities_v1')
+          .select('channel,consumed_at,revoked_at')
+          .eq('run_date',runDate).eq('channel','linkedin_company').maybeSingle()
+      ]);
+      if(obligationSource.error||recommendationSource.error||capabilitySource.error){
+        stepResults.push({name:'company-editorial-recovery-source',ok:false,degraded:true,
+          error:'COMPANY_REGENERATION_SOURCE_READ_FAILED'});
+      }else{
+        const consumed=Boolean(capabilitySource.data?.consumed_at&&!capabilitySource.data?.revoked_at);
+        const regeneration=planRejectedCompanyRegeneration({
+          decision:rejectedCompany,obligation:obligationSource.data,
+          recommendations:recommendationSource.data||[],consumedCapability:consumed,
+          now:new Date().toISOString()
+        });
+        retryableCompanyEditorialBlock=regeneration.eligible;
+        stepResults.push({name:'company-editorial-recovery-source',ok:true,
+          skipped:!regeneration.eligible,degraded:!regeneration.eligible,
+          reason:regeneration.reason,
+          replacement_id:regeneration.selectedAlternativeRecommendationId});
+      }
+    }
+    // Exact original personal final-review 422, not a provider failure:
+    // bounded same-owner rebootstrap after the shared observation lexicon
+    // OR verified first-person household context was fixed. Do not bypass
+    // the independent reviewer or publish a previously rejected artifact.
+    // Both same-day original records and unconsumed authority must agree.
+    let retryablePersonalObservationReview=false;
+    const rejectedPersonalObservation=(initialDecisions||[]).find((d:any)=>
+      clean(d.channel)==='linkedin_personal'&&clean(d.state)==='blocked'&&
+      Number(d.delivery_evidence?.review_status)===422&&
+      d.delivery_evidence?.violations?.some((v:any)=>[
+        'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED',
+        'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED'
+      ].includes(clean(v?.code))));
+    if(rejectedPersonalObservation){
+      const [obligationSource,capabilitySource]=await Promise.all([
+        db.from('content_publication_obligations')
+          .select('channel,status,external_id,evidence,published_at,live_proven_at,recovery_attempts')
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel','linkedin_personal').maybeSingle(),
+        db.from('powerhouse_social_publish_capabilities_v1')
+          .select('channel,consumed_at,revoked_at')
+          .eq('run_date',runDate).eq('channel','linkedin_personal').maybeSingle()
+      ]);
+      if(obligationSource.error||capabilitySource.error){
+        stepResults.push({name:'personal-observation-review-recovery-source',ok:false,degraded:true,
+          error:'PERSONAL_REVIEW_RECOVERY_SOURCE_READ_FAILED'});
+      }else{
+        const consumed=Boolean(capabilitySource.data?.consumed_at&&!capabilitySource.data?.revoked_at);
+        const recovery=planPersonalObservationalReviewRecovery({
+          decision:rejectedPersonalObservation,obligation:obligationSource.data,
+          consumedCapability:consumed,maxAttempts:3
+        });
+        retryablePersonalObservationReview=recovery.eligible;
+        stepResults.push({name:'personal-observation-review-recovery-source',ok:true,
+          skipped:!recovery.eligible,degraded:!recovery.eligible,reason:recovery.reason,
+          source_recommendation_id:recovery.source_recommendation_id,
+          recovery_attempts:recovery.recovery_attempts,max_attempts:recovery.max_attempts});
+      }
+    }
+    // The normal duplicate classifier only sees "decision=publish"; however the
+    // canonical reconciler can turn a pre-provider duplicate into "hold/blocked"
+    // while the ORIGINAL obligation correctly retains the duplicate refusal.
+    // Reopen only when the provider authority is provably unused, then reuse the
+    // existing source materializer and alternate-content decision path.
+    let retryableHeldPersonalDuplicate = false;
+    let retryableVerifiedLatePersonalSource = false;
+    const personalHeld = (initialDecisions || []).find((decision:any) =>
+      clean(decision.channel)==='linkedin_personal' &&
+      clean(decision.state)==='blocked' &&
+      clean(decision.decision)==='hold');
+    if (personalHeld) {
+      const [obligationResult,recommendationResult,capabilityResult] = await Promise.all([
+        db.from('content_publication_obligations')
+          .select('channel,status,last_error,external_id,evidence,recovery_attempts,published_at,live_proven_at')
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel','linkedin_personal').maybeSingle(),
+        db.from('powerhouse_content_recommendations')
+          .select('recommendation_id,dedupe_key,status,target_channel,run_date,updated_at,evidence')
+          .eq('run_date',runDate).eq('target_channel','linkedin_personal')
+          .order('updated_at',{ascending:false}).limit(50),
+        db.from('powerhouse_social_publish_capabilities_v1')
+          .select('channel,consumed_at,revoked_at')
+          .eq('run_date',runDate).eq('channel','linkedin_personal').maybeSingle()
+      ]);
+      if (obligationResult.error || recommendationResult.error || capabilityResult.error) {
+        stepResults.push({name:'held-personal-source-read',ok:false,degraded:true,
+          error:'PERSONAL_ORIGINAL_AUTHORITY_OR_SOURCE_READ_FAILED'});
+      } else {
+        retryableHeldPersonalDuplicate=shouldRebootstrapHeldPersonalDuplicate(
+          personalHeld,obligationResult.data,recommendationResult.data||[],runDate);
+        // The old source-missing hold predates a newly verified first-person
+        // user-fact. Wake ONLY the same original orchestrator, inside the
+        // existing loop lease, and only for an unused original capability.
+        const arrival=planVerifiedLatePersonalSourceRebootstrap({
+          decision:personalHeld,obligation:obligationResult.data,
+          recommendations:recommendationResult.data||[],runDate,
+          capabilityConsumed:Boolean(capabilityResult.data?.consumed_at&&!capabilityResult.data?.revoked_at)
+        });
+        retryableVerifiedLatePersonalSource=arrival.eligible;
+        stepResults.push({name:'held-personal-late-source-recovery',ok:true,
+          skipped:!arrival.eligible,reason:arrival.reason,
+          source_recommendation_id:arrival.source_recommendation_id,
+          original_writer:'powerhouse-content-orchestrator'});
+      }
+    }
+    let bootstrapStillInFlight = false;
+    // A completed bootstrap is one of the normal bounded generation rounds.
+    if (requiredDecisionChannels.some(channel => !existingDecisionChannels.has(channel)) || retryableContentBlock || retryableHeldPersonalDuplicate || retryableVerifiedLatePersonalSource || retryableCompanyEditorialBlock || retryablePersonalObservationReview) {
+      const seeded = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
+      stepResults.push({ ...seeded, name: 'powerhouse-content-orchestrator:bootstrap', bootstrap: true });
+      // When the child may still be running, do not invoke it a second time in
+      // this tick. Existing lease, next-hour retry and provider-id dedupe apply.
+      // An explicit failed bootstrap is terminal for that invocation, not
+      // an in-flight lease. Existing ready/decided lanes must keep progressing.
+      bootstrapStillInFlight = seeded.timed_out === true || seeded.http === 0;
+      if (!seeded.ok) {
+        stepResults.push({
+          name: 'content-decision-bootstrap',
+          ok: false,
+          degraded: true,
+          error: 'INITIAL_DECISION_MATERIALIZATION_FAILED'
+        });
+      }
     }
 
-    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate }));
-    stepResults.push(await invoke(url, expected, 'powerhouse-blog-queue', { runDate }));
-
-    // Legacy Buffer sync is telemetry/compatibility only. LinkedIn transport authority is Composio.
-    // A Buffer outage/rate-limit must never fail or delay the canonical LinkedIn content loop.
-    try {
-    const sync = await fetch(`${url}/functions/v1/bg-buffer-sync`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
-    const syncBody = await sync.json().catch(() => ({}));
-      const syncOk = sync.ok && syncBody?.ok !== false;
-      stepResults.push({ name: 'bg-buffer-sync', http: sync.status, ok: true, degraded: !syncOk, non_blocking: true, linkedin_authority: 'composio', body: syncBody });
-    } catch (error) {
-      stepResults.push({ name: 'bg-buffer-sync', http: 0, ok: true, degraded: true, non_blocking: true, linkedin_authority: 'composio', error: 'LEGACY_BUFFER_SYNC_UNAVAILABLE' });
+    // Fan out bounded generation by channel. Each worker reads shared Brain
+    // decisions but can only generate its own artifact. One failure does not
+    // consume other channels' generation budget or prevent ready publication.
+    const {data:pendingGeneration,error:pendingGenerationError}=await db
+      .from('powerhouse_channel_decisions')
+      .select('channel')
+      .eq('run_date',runDate)
+      .eq('decision','publish')
+      .eq('state','decided')
+      .in('channel',requiredDecisionChannels)
+      .limit(4);
+    if(pendingGenerationError){
+      stepResults.push({name:'pending-generation-read',ok:false,degraded:true,error:'PENDING_GENERATION_READ_FAILED'});
+    }else if(!bootstrapStillInFlight){
+      const pendingChannels=[...new Set((pendingGeneration||[]).map((item:any)=>clean(item.channel)))]
+        .filter((channel:any)=>requiredDecisionChannels.includes(channel));
+      if(!pendingChannels.length){
+        stepResults.push({name:'powerhouse-content-orchestrator',ok:true,skipped:true,reason:'NO_PENDING_ARTIFACT'});
+      }else{
+        const generated=await Promise.all(pendingChannels.map(async channel=>{
+          const result=await invoke(url,expected,'powerhouse-content-orchestrator',{runDate,channel});
+          return {...result,name:'powerhouse-content-orchestrator:'+channel,channel};
+        }));
+        stepResults.push(...generated);
+      }
+    }else{
+      stepResults.push({name:'targeted-generation',ok:false,degraded:true,reason:'BOOTSTRAP_MAY_STILL_BE_RUNNING'});
     }
 
-    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
+    // First Time Right: prepare within the ORIGINAL publisher, BEFORE its
+    // external-create mode; independent editorial and provider-auth preflight
+    // can run up to 12h early. Source generation/router always ran above,
+    // so a fixable condition never disables the original daily executor.
+    const prepublishChannels=['linkedin_personal','linkedin_company','instagram_company'];
+    // A published/ACKed channel is a READBACK obligation, not another
+    // candidate for preparation or create. Do not report a successful,
+    // genuinely live-proven post as an early editorial risk on every hourly run.
+    const {data: existingBeforePublish,error: existingBeforePublishError}=
+      await db.from('content_publication_obligations')
+        .select('channel,status,external_id,live_proven_at,evidence')
+        .eq('tenant_id','canonical').eq('publication_date',runDate)
+        .in('channel',['linkedin_personal','linkedin_company','instagram']);
+    if(existingBeforePublishError) throw new Error('ORIGINAL_PREPUBLISH_SIDE_EFFECT_READ_FAILED');
+    const sideEffectByChannel=new Map((existingBeforePublish||[]).map((o:any)=>[clean(o.channel),o]));
+    const prepublishResults=await Promise.all(prepublishChannels.map(async channel=>{
+      const mapped=channel==='instagram_company'?'instagram':channel;
+      const existing:any=sideEffectByChannel.get(mapped)||null;
+      const evidence=existing?.evidence||{};
+      const possibleSideEffect=!!existing&&(!!clean(existing.external_id)
+        ||['PUBLISHED','DISPATCHED','LIVE_PROVEN'].includes(clean(existing.status))
+        ||evidence.provider_create_success===true
+        ||evidence.possible_provider_side_effect===true);
+      if(possibleSideEffect){
+        const live=clean(existing.status)==='LIVE_PROVEN'
+          &&!!existing.live_proven_at
+          &&evidence.provider_truth_verified===true;
+        return {channel,prepared:false,alreadyDispatched:true,
+          status:live?'ALREADY_LIVE_PROVEN':'PROVIDER_READBACK_PENDING',
+          error:live?null:'ORIGINAL_PROVIDER_RECONCILE_ONLY',
+          http:null};
+      }
+      const response=await invoke(url,expected,'powerhouse-social-publisher',
+        {runDate,mode:'prepare_only',channels:[channel]});
+      const match=Array.isArray(response?.body?.results)
+        ?response.body.results.find((item:any)=>item?.channel===channel):null;
+      const prepared=response.ok===true
+        &&match?.status==='ready_for_final_recheck'
+        &&match?.contract==='original-social-first-time-right-prepare-v1'
+        &&match?.provider_create===false;
+      return {channel,prepared,alreadyDispatched:false,
+        status:clean(match?.status)||'NO_CONTENT_READY',
+        error:prepared?null:clean(match?.reason)||clean(response?.error)||'PREPUBLISH_PREPARATION_NOT_COMPLETE',
+        http:response.http};
+    }));
+    const readiness=new Map(prepublishResults.map(x=>[x.channel,x]));
+    stepResults.push(...prepublishResults.map(item=>({
+      name:'original-first-time-right-prepublish:'+item.channel,
+      ok:item.prepared||item.alreadyDispatched===true,
+      degraded:!item.prepared&&item.status!=='ALREADY_LIVE_PROVEN',
+      skipped:!item.prepared,
+      error:item.error,http:item.http,
+      reason:item.status
+    })));
+
+    // Existing provider publisher is called only for a channel that was
+    // pre-reviewed in THIS same original tick. It performs another independent
+    // review before any create; an ACK/reconciliation-only channel is not sent.
+    const deliveryLanes=[
+      ['linkedin_personal','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_personal']}],
+      ['linkedin_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['linkedin_company']}],
+      ['instagram_company','powerhouse-social-publisher',{runDate,mode:'publish_only',channels:['instagram_company']}],
+      ['blog','powerhouse-blog-queue',{runDate}],
+      ['linkedin_engagement','powerhouse-social-publisher',{runDate,mode:'cockpit_autopilot'}]
+    ] as const;
+    const dispatchResults=await Promise.all(deliveryLanes.map(async ([channel,name,payload])=>{
+      if(prepublishChannels.includes(channel)){
+        const readinessForChannel=readiness.get(channel);
+        if(readinessForChannel?.prepared!==true){
+          // Never resend a provider-ACKed post, even if independent GET is
+          // forbidden. The earlier original audit_only reconciles exactly.
+          // Independently LIVE_PROVEN is a successful no-send terminal lane.
+          const alreadyLive=readinessForChannel?.status==='ALREADY_LIVE_PROVEN';
+          const alreadyPublished=readinessForChannel?.alreadyDispatched===true;
+          return {name:name+':'+channel,channel,ok:true,skipped:true,
+            degraded:!alreadyLive,
+            error:alreadyLive?null:alreadyPublished
+              ?'ORIGINAL_PROVIDER_READBACK_PENDING':'PREFLIGHT_NOT_READY_NO_SEND',
+            reason:readinessForChannel?.status||'PREPARATION_NOT_PROVEN'};
+        }
+      }
+      const result=await invoke(url,expected,name,payload);
+      return {...result,name:name+':'+channel,channel};
+    }));
+    stepResults.push(...dispatchResults);
+
+    // Buffer is legacy telemetry only and is deliberately absent from the critical path.
+    stepResults.push({ name:'bg-buffer-sync', ok:true, skipped:true, non_blocking:true, linkedin_authority:'composio', reason:'LEGACY_TELEMETRY_OUTSIDE_CRITICAL_PATH' });
 
     const final = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
-    if (final.error) throw new Error('RECONCILE_POST_FAILED');
-    stepResults.push({ name: 'reconcile_post', ok: true, body: final.data });
+    if (final.error) {
+      stepResults.push({ name:'reconcile_post', ok:false, degraded:true, error:'RECONCILE_POST_FAILED' });
+    } else {
+      stepResults.push({ name:'reconcile_post', ok:true });
+    }
 
-    const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
-      db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
-      db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at').eq('run_date', runDate),
+    const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }, { data: mediaJobs, error: mediaJobsError }] = await Promise.all([
+      db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,approved_at,live_proven_at,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
+      db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence,updated_at,scheduled_for').eq('run_date', runDate),
+      db.from('powerhouse_instagram_media_jobs_v1').select('channel,status,attempts,last_error,asset_manifest,proof_manifest').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram'),
     ]);
     if (obligationsError) throw new Error('OBLIGATIONS_READ_FAILED');
     if (decisionsError) throw new Error('DECISIONS_READ_FAILED');
+    // The existing content-loop reads original Mira producer ownership and media
+    // evidence before a deadline without granting a new dispatch capability.
+    const preventive = mediaJobsError
+      ? {contract:'one-brain-social-preflight-before-deadline-v1',status:'UNVERIFIED',atRisk:[],ready:[],reason:'ORIGINAL_MEDIA_JOB_READ_FAILED'}
+      : assessPreventivePublicationReadiness({runDate,now:new Date().toISOString(),
+          obligations:obligations||[],decisions:decisions||[],mediaJobs:mediaJobs||[],isTerminal:obligationTerminal});
+    stepResults.push({name:'original-social-preventive-readiness',
+      ok:preventive.status==='NO_PREVENTIVE_RISK_DETECTED',
+      degraded:preventive.status!=='NO_PREVENTIVE_RISK_DETECTED',
+      error:preventive.status==='UNVERIFIED'?'ORIGINAL_PREVENTIVE_SOURCE_UNVERIFIED':null,
+      risk_count:preventive.atRisk.length});
+
+    // Existing same-date writer observes the missing handoff instead of reporting
+    // a technically successful HTTP run as a successful external publication.
+    // This read-only classification never grants a second publish capability.
+    const recovery = assessDailyPublicationRecovery({
+      runDate, now:new Date().toISOString(), obligations:obligations || [],
+      decisions:decisions || [], mediaJobs:mediaJobsError?[]:mediaJobs||[], isTerminal:obligationTerminal
+    });
+    // Same canonical exclusive writer: keep the original obligation's
+    // operator-facing next_action consistent with the ONE BRAIN recovery.
+    // CAS prevents clobbering provider ACKs, newer editorial decisions or a
+    // concurrent publisher. This never retries or dispatches a publication.
+    const handoffPlan=planOriginalPublicationHandoffs(recovery,obligations||[]);
+    const handoffWriteback={contract:'original-publication-obligation-recovery-v1',
+      planned:handoffPlan.updates.length,applied:0,already_received:handoffPlan.alreadyIdentical?.length||0,
+      unresolved:handoffPlan.unresolved||[],
+      original_owner_routes:handoffPlan.routedToOriginalOwner||[],
+      conflicts:0,conflict_readbacks:0,errors:0,
+      original_executor_continues:true,provider_send_authorized:false};
+    if(!handoffPlan.ok) {
+      handoffWriteback.errors++;
+      stepResults.push({name:'publication-handoff-writeback',ok:false,degraded:true,
+        error:'RECOVERY_SOURCE_UNVERIFIED'});
+    } else {
+      for(const handoff of handoffPlan.updates){
+        // This owner uses a custom direct-SQL adapter (NOT PostgREST).
+        // Its existing eq(column,null) already compiled to SQL IS NULL.
+        // Expose the same safe SQL predicate explicitly as is(column,null)
+        // and retain the original tenant/date/channel/status CAS guards.
+        // Missing receiver rows, invalid handoffs and zero-row CAS still
+        // require typed independent reconciliation.
+        let updateQuery=db.from('content_publication_obligations')
+          .update({next_action:handoff.nextAction,updated_at:new Date().toISOString()})
+          .eq('tenant_id','canonical').eq('publication_date',runDate)
+          .eq('channel',handoff.channel)
+          .in('status',['PLANNED','BLOCKED','FAILED']).is('external_id',null);
+        updateQuery=handoff.previous===null
+          ?updateQuery.is('next_action',null)
+          :updateQuery.eq('next_action',handoff.previous);
+        const update=await updateQuery.select('channel,next_action,status,external_id');
+        if(update.error){
+          handoffWriteback.errors++;
+          console.error('PUBLICATION_HANDOFF_WRITEBACK_FAILED',handoff.channel);
+        }else if(update.data?.length===1&&update.data[0].next_action===handoff.nextAction){
+          handoffWriteback.applied++;
+          const local=(obligations||[]).find((o:any)=>o.channel===handoff.channel);
+          if(local)local.next_action=handoff.nextAction;
+        }else{
+          // Do not drop a 0-row CAS or assume a successful provider side effect.
+          // Perform READ-ONLY reconciliation against the same original row.
+          handoffWriteback.conflict_readbacks++;
+          const observed=await db.from('content_publication_obligations')
+            .select('channel,next_action,status,external_id,live_proven_at')
+            .eq('tenant_id','canonical').eq('publication_date',runDate)
+            .eq('channel',handoff.channel).maybeSingle();
+          if(observed.error)handoffWriteback.errors++;
+          if(observed.data?.next_action===handoff.nextAction
+            &&!observed.data?.external_id
+            &&['PLANNED','BLOCKED','FAILED'].includes(observed.data?.status)){
+            // Another original run has already delivered this SAME next action.
+            handoffWriteback.already_received++;
+          }else{
+            handoffWriteback.conflicts++;
+            handoffWriteback.unresolved.push({
+              channel:handoff.channel,
+              owner:handoff.owner,
+              reason:observed.error?'ORIGINAL_CAS_CONFLICT_READBACK_FAILED':
+                observed.data?.external_id?'POSSIBLE_EXTERNAL_SIDE_EFFECT_READBACK_REQUIRED':
+                'ORIGINAL_CAS_CONFLICT_OWNER_RECONCILIATION_REQUIRED'
+            });
+          }
+        }
+      }
+      const requiresRecovery=handoffWriteback.errors>0 || handoffWriteback.conflicts>0
+        || handoffWriteback.unresolved.length>0
+        || handoffWriteback.original_owner_routes.some((x:any)=>x.reason!=='ORIGINAL_EMAIL_OWNER_ONLY');
+      stepResults.push({name:'publication-handoff-writeback',
+        ok:!requiresRecovery,degraded:requiresRecovery,
+        error:requiresRecovery?'ORIGINAL_HANDOFF_OWNER_OR_RECEIVER_RECHECK_REQUIRED':null});
+    }
+    // Existing ONE BRAIN incident writer, not a new queue. Persist the exact
+    // original owner and safe next action for handoffs the original receiver
+    // could not yet accept. A process may continue while its receipt is RED.
+    const handoffGaps=[
+      ...handoffWriteback.unresolved,
+      ...handoffWriteback.original_owner_routes.filter((route:any)=>
+        route.reason!=='ORIGINAL_EMAIL_OWNER_ONLY')
+    ].slice(0,8);
+    if(handoffWriteback.errors>0 && handoffGaps.length===0){
+      handoffGaps.push({channel:'canonical',owner:'original-powerhouse-content-orchestrator',
+        reason:'ORIGINAL_HANDOFF_WRITE_OR_READBACK_FAILED'});
+    }
+    for(const gap of handoffGaps){
+      try {
+        const occurrenceId='original-content-handoff:'+runDate+':'+gap.channel+':'+gap.reason;
+        const payloadSha=[...new Uint8Array(await crypto.subtle.digest('SHA-256',
+          new TextEncoder().encode(occurrenceId)))].map(b=>b.toString(16).padStart(2,'0')).join('');
+        const recorded=await db.rpc('brain_observe_failure',{
+          p_occurrence_id:occurrenceId,
+          p_fingerprint:'powerhouse|content|original-handoff-receiver-unacknowledged|'+
+            runDate.replaceAll('-','')+'-v1',
+          p_payload_sha256:payloadSha,
+          p_evidence:{
+            run_date:runDate,original_owner:gap.owner,channel:gap.channel,
+            failure_reason:gap.reason,
+            next_action:'Read original obligation and independent provider side effect, restore the SAME original receiver acknowledgement; never duplicate send or bypass permission.',
+            original_executor_continues:true,
+            provider_side_effect_proven:false,
+            no_second_scheduler:true,
+            contract:'ORIGINAL_CONTENT_HANDOFF_NO_SILENT_DROP_V1'
+          }
+        });
+        if(recorded.error||!recorded.data)handoffWriteback.errors++;
+      }catch{
+        handoffWriteback.errors++;
+      }
+    }
+    stepResults.push({name:'publication-handoff-brain-receipt',
+      ok:handoffWriteback.errors===0 && handoffGaps.length===0,
+      degraded:handoffWriteback.errors>0 || handoffGaps.length>0,
+      error:handoffGaps.length?'ORIGINAL_UNACKNOWLEDGED_HANDOFF_OPEN':
+        handoffWriteback.errors?'BRAIN_HANDOFF_OBSERVATION_FAILED':null});
+
+    stepResults.push({name:'publication-proof-deadline',
+      ok:recovery.status==='PROVIDER_PROOF_COMPLETE',
+      degraded:recovery.status!=='PROVIDER_PROOF_COMPLETE',
+      error:recovery.overdue.length?'PUBLICATION_PROOF_OVERDUE':null});
+    // Same ORIGINAL exclusive content-loop writer: register typed recurring
+    // incidents inside existing ONE BRAIN. Never generate/publish from here.
+    // A logged failure remains NOT_PROVEN until regression and provider proof.
+    const learningPlan=planOriginalIncidentLearning(recovery,runDate);
+    const incidentLearning={
+      contract:'original-publication-incident-learning-v1',
+      planned:learningPlan.observations.length,observed:0,errors:0,
+      proof_status:'NOT_PROVEN',new_executor:false
+    };
+    if(!learningPlan.ok){incidentLearning.errors++;}
+    else for(const incident of learningPlan.observations){
+      try{
+        const encoded=new TextEncoder().encode(JSON.stringify(incident.evidence));
+        const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',encoded)))
+          .map(b=>b.toString(16).padStart(2,'0')).join('');
+        const observation=await db.rpc('brain_observe_failure',{
+          p_occurrence_id:incident.occurrenceId,
+          p_fingerprint:incident.fingerprint,
+          p_payload_sha256:hash,
+          p_evidence:incident.evidence
+        });
+        if(observation.error||!observation.data)incidentLearning.errors++;
+        else incidentLearning.observed++;
+      }catch{
+        incidentLearning.errors++;
+      }
+    }
+    stepResults.push({name:'incident-learning-one-brain',
+      ok:incidentLearning.errors===0,degraded:incidentLearning.errors>0,
+      error:incidentLearning.errors?'ORIGINAL_BRAIN_INCIDENT_OBSERVATION_FAILED':null});
+    // Human authorization is reserved for the owner. The existing ONE BRAIN
+    // publisher persists an explicit action plan for the ORIGINAL scheduled
+    // monitoring agents; it does not send or claim delivery of an alert.
+    const linkedinSetup=stepResults.find((step:any)=>
+      step.name==='powerhouse-composio-linkedin-setup'&&step.body);
+    const ownerActionEscalation=planOwnerActionEscalations({
+      runDate,now:new Date().toISOString(),recovery,
+      obligations:obligations||[],decisions:decisions||[],
+      linkedinPreflight:linkedinSetup?.body||null
+    });
+    stepResults.push({name:'owner-action-escalation-source',ok:ownerActionEscalation.status!=='UNVERIFIED',
+      degraded:ownerActionEscalation.status==='UNVERIFIED',
+      error:ownerActionEscalation.status==='UNVERIFIED'?'OWNER_ACTION_CLASSIFIER_SOURCE_UNVERIFIED':null});
 
     const outcomeVerified = (obligations || []).filter((o: any) => obligationTerminal(o)).length;
     const providerTruthVerified = (obligations || []).filter((o: any) => o.evidence?.provider_truth_verified === true).length;
@@ -116,26 +860,68 @@ Deno.serve(async (req) => {
       && !(d.delivery_evidence?.provider_truth_verified===true && !!clean(d.delivery_ref))
     ).map((d: any) => ({ channel: d.channel, reason: d.delivery_evidence?.capability_reason || d.rationale }));
     const allOperationalGreen = (obligations || []).length === OPERATIONAL_CHANNELS.length && (obligations || []).every((o: any) => obligationTerminal(o));
-    const loopState = blocked > 0 ? 'RED' : allOperationalGreen ? 'GREEN' : 'AMBER';
+    const reconciliationDegraded = stepResults.some((step:any) =>
+      (step.name === 'reconcile_pre' || step.name === 'reconcile_post') && step.ok !== true);
+    // Keep dispatch alive; never misrepresent incomplete readback as GREEN.
+    const loopState = blocked > 0 || recovery.overdue.length > 0 || recovery.status==='UNVERIFIED'
+      || incidentLearning.errors > 0
+      ? 'RED' : allOperationalGreen && !reconciliationDegraded ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
-      if (['DISPATCHED','PUBLISHED'].includes(clean(o.status)) && ['linkedin_personal','linkedin_company','instagram'].includes(clean(o.channel))) {
-        return o.evidence?.provider_truth_verified === true || providerSideEffectTerminal(o);
+      const status=clean(o.status),channel=clean(o.channel),evidence=o.evidence||{};
+      if(channel==='linkedin_company'&&['DISPATCHED','PUBLISHED'].includes(status)){
+        return evidence?.provider_truth_verified===true
+          && evidence?.linkedin_company_admin_oauth_proven===true
+          && evidence?.organization_write_scope_verified===true
+          && evidence?.company_oauth_fresh_verified===true;
+      }
+      if(['DISPATCHED','PUBLISHED'].includes(status)&&['linkedin_personal','instagram'].includes(channel)){
+        return evidence?.provider_truth_verified===true||providerSideEffectTerminal(o);
       }
       return true;
     });
 
+    const obligationSummary = (obligations || []).map((o:any) => ({
+      channel: clean(o.channel),
+      status: clean(o.status),
+      external_id: clean(o.external_id) || null,
+      last_error: clean(o.last_error) || null,
+      next_action: clean(o.next_action) || null,
+      provider_truth_verified: o.evidence?.provider_truth_verified === true,
+      provider_status: clean(o.evidence?.provider_status) || null,
+      updated_at: o.updated_at,
+    }));
+    const decisionSummary = (decisions || []).map((d:any) => ({
+      channel: clean(d.channel),
+      decision: clean(d.decision),
+      state: clean(d.state),
+      delivery_ref: clean(d.delivery_ref) || null,
+      capability_state: clean(d.delivery_evidence?.capability_state) || null,
+      capability_reason: clean(d.delivery_evidence?.capability_reason) || null,
+      updated_at: d.updated_at,
+    }));
     const result = {
-      ok: loopState !== 'RED' && providerTruthHealthy,
+      ok: loopState !== 'RED' && providerTruthHealthy && !reconciliationDegraded,
       loop_state: loopState,
       runDate,
       truth_contract: 'GREEN MEANS PROVIDER SIDE-EFFECT OR OUTCOME VERIFIED',
       outcomeVerified,
       providerTruthVerified,
       providerTruthHealthy,
+      reconciliationDegraded,
       blocked,
       hardBoundaries,
-      obligations: obligations || [],
-      decisions: decisions || [],
+      recovery,
+      preventive,
+      handoffWriteback,
+      incidentLearning,
+      ownerActionEscalation,
+      obligations: obligationSummary,
+      decisions: decisionSummary,
+      steps: stepResults.map((s:any)=>({
+        name:s.name, ok:s.ok, http:s.http ?? null, timed_out:s.timed_out===true,
+        degraded:s.degraded===true, skipped:s.skipped===true, body_bytes:s.body_bytes ?? null,
+        body_truncated:s.body_truncated===true, error:s.error ?? null
+      })),
     };
 
     await db.from('brain_records').upsert({
@@ -158,5 +944,14 @@ Deno.serve(async (req) => {
       }, { onConflict: 'tenant_id,record_id' });
     } catch { /* preserve original failure */ }
     return json({ ok: false, loop_state: 'RED', runDate, error: 'CONTENT_LOOP_INTERNAL_ERROR' }, 500);
+  } finally {
+    const childMayStillRun = stepResults.some((s:any) => s?.timed_out === true || s?.http === 0);
+    if (childMayStillRun) {
+      console.error('CONTENT_LOOP_LEASE_RETAINED_UNTIL_EXPIRY');
+    } else {
+      try { await releaseLoopLease(runDate, leaseHolder); } catch (error) {
+        console.error('CONTENT_LOOP_LEASE_RELEASE_FAILED', clean((error as Error)?.message || error).slice(0,160));
+      }
+    }
   }
 });

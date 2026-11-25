@@ -1,0 +1,44 @@
+{
+  "id": "portal-v2-current-netlify-sha-preflight-20261105-v1",
+  "owner": "original-portal-v2",
+  "status": "SOURCE_FIX_COMMITTED_CI_PENDING",
+  "fingerprint": "portal|production-readback|fresh-published-sha-skill-trigger|20261105-v1",
+  "root_cause": "The canonical Portal owner skill did not mandate fetching the currently published Netlify commit before every production browser check, and the original Portal browser workflow had no exact-path trigger for skill-only changes. First protected PR #5432 Required admission also failed due to missing same-lineage activity ledger, Brain learning and human documentation.",
+  "remediation": "Keep the original exclusive Portal owner and single browser workflow. Require current Netlify READY deployment plus uncached canonical and immutable release identity before each check, then original Chromium verification and independent readback. Add only the exact skill path to the original workflow push trigger. Complete the same-PR learning, activity ledger and human documentation; keep Required, CodeQL, BRAIN and provider security gates.",
+  "prevention": "New regression tests/brain-portal-current-netlify-sha-preflight-20261105.test.mjs asserts exact trigger and original immutable release/ancestry gates. Keep source-only exception allowlists narrow. Record every original run, tested SHA, cause, code change, source tests, provider readback and remediation in ONE BRAIN.",
+  "evidence": {
+    "original_issue": 4547,
+    "protected_pr": 5432,
+    "pr_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5432",
+    "original_base_sha": "4bf8fac019906c11cd03628dbce644dde18faeea",
+    "first_required_run": 41992467024,
+    "first_hygiene_failed_job": 127127685482,
+    "actual_first_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:activity_ledger,brain_learning,human_documentation",
+    "last_observed_published_netlify_deploy": "6aeb82327b0f598f2a87721a",
+    "last_observed_published_sha": "4d5823446c3b830e9b33b0314893cdd56dc5b5ee",
+    "previous_browser_run_historical_only": 41895447111
+  },
+  "open_obligations": [
+    "new protected PR HEAD Required, CodeQL and full BRAIN must pass",
+    "protected merge of PR #5432 must be independently confirmed",
+    "original Netlify release path must publish and prove exact new protected main commit, not stale prior deployment",
+    "original Portal V2 production browser, mobile and visual run must pass on the actual published SHA and be independently read back",
+    "original Portal owner must apply preflight on natural execution and register provider evidence in ONE BRAIN",
+    "unassisted entrepreneur usability, physical VoiceOver/TalkBack, independent WCAG 2.2 AA and authenticated two-tenant acceptance remain separate open evidence"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-current-netlify-sha-preflight-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-current-netlify-sha-preflight-20261105.test.mjs"
+    ]
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "obligation_id": "powerhouse|supabase|bg-kansenradar-auth-manifest-20261103-v1",
+  "fingerprint": "powerhouse|supabase|bg-kansenradar-manifest-and-anonymous-privilege|20261103-v1",
+  "status": "CRON_GUARDED_SOURCE_CANDIDATE_NOT_EDGE_LIVE",
+  "owner": "original-one-brain-supabase-edge-production-authority",
+  "failure_class": "EDGE_RELEASE_MANIFEST_DRIFT_AND_UNAUTHENTICATED_SERVICE_ROLE_CALL",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "EDGE_RELEASE_MANIFEST_DRIFT_AND_UNAUTHENTICATED_SERVICE_ROLE_CALL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The protected Supabase Edge Production Authority failed SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-kansenradar on main 5e9ef539. Independently inspected existing production Edge v12 shows provider verify_jwt=false and original Kansenradar source accepted POST without verifying an owner token before service-role and Anthropic/Notion side effects. The original daily cron #18 also sent no authorization header.",
+  "fix": "Declare existing function in canonical config with exact deployed verify_jwt=false and native index.ts. Add x-powerhouse-token check using existing bg_geheim before any privileged operations. Change ONLY original pg_cron job by guarded exact command; secret is resolved at runtime, not persisted as a plaintext key. Original cron #18 updated 2026-11-03, readback job remains active schedule 0 6 * * * and token expression present.",
+  "prevention_rule": "Every active privileged Supabase Edge source must be declared in config and gated by original sender authentication BEFORE service-role or paid external work; native Edge production workflow rejects missing declarations. One cron job and no anonymous invoke. Any drift between original cron source, live runtime and canonical config is an incident, not a reason to bypass checks.",
+  "tests": [
+    "tests/brain-bg-kansenradar-authenticated-release-20261103.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bg-kansenradar-authenticated-release-20261103.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bg-kansenradar-authenticated-release-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bg-kansenradar-authenticated-release-20261103.test.mjs"
+    ],
+    "invariants": [
+      "original protected source manifest",
+      "original job count remains one",
+      "source rejects unauthenticated caller before privileged side effects",
+      "runtime token secret never embedded in cron.command",
+      "no publisher or unauthorized model switch"
+    ]
+  },
+  "evidence": {
+    "github_failed_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41628384628",
+    "original_edge_slug": "bg-kansenradar",
+    "original_edge_version": 12,
+    "original_edge_verify_jwt": false,
+    "cron_job_id": 18,
+    "cron_readback": "job_count=1; active=true; schedule=0 6 * * *; token_header=true; token_runtime_reference=true",
+    "live_edge_auth_readback": "PENDING_PROTECTED_MERGE",
+    "original_billing_incident": "brein-status|bg-kansenradar|VEROUDERD"
+  },
+  "terminal_rule": "Exact-head Required + all BRAIN + CodeQL, protected merge, native original Supabase Edge production deploy/readback, negative unauthorized 401 test, original cron 2xx transport and actual authenticated processor outcome. Anthropic credits remain separately RED until original provider source proves renewed credits."
+}

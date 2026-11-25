@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918090000_powerhouse_structural_gap_closure_v2.sql','utf8');
+const sql=fs.readFileSync('supabase/migration-history/repository-only/20260918090000_powerhouse_structural_gap_closure_v2.sql','utf8');
 const signalBootstrap=sql.slice(sql.indexOf('create or replace function public.powerhouse_open_cycle_from_runtime_signal_v1'),sql.indexOf('create or replace view public.powerhouse_completion_readiness_v1'));
 
 test('tenant identity review is derived live, not copied to a parallel queue',()=>{

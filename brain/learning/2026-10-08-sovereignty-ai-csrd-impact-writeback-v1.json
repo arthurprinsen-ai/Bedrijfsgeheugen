@@ -1,0 +1,41 @@
+{
+  "id": "sovereignty-ai-csrd-impact-writeback-20261008-v1",
+  "fingerprint": "tenant-sovereignty-ai-policy-to-cross-domain-impact-atomic-ledger-v1",
+  "compiler": {
+    "failure_class": "UNVERIFIED_AI_ROUTING",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Tenant AI model, provider or data-location policy edits previously bypassed the canonical cross-domain impact evaluator; CSRD/ESRS review was therefore not recorded with the changed tenancy policy.",
+  "prevention": [
+    "Derive model, location and deployment changes using the existing One Brain impact graph before the policy write.",
+    "Verify tenant, prior policy version, exact before and after configuration and unresolved ESRS materiality in the EU authority.",
+    "Write the current review and append immutable audit evidence atomically using a restricted SQL trigger.",
+    "Never interpret policy configuration, ESG review flags, or provider labels as a verified active runtime or a legally applicable CSRD obligation."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sovereignty-cross-domain-persistence.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-sovereignty-cross-domain-persistence.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-sovereignty-cross-domain-persistence.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-sovereignty-cross-domain-persistence.test.mjs"
+    ],
+    "source": [
+      "platform/regulatory/sovereignty-change-impact.mjs",
+      "netlify/functions/data-sovereignty.mjs",
+      "supabase/functions/portal-state-eu/index.ts",
+      "supabase/migrations/20261008130500_sovereignty_cross_domain_impact_ledger_v1.sql"
+    ],
+    "outcome": "Tenant-bound assessed policy writeback added, production provider/CSRD audit readback pending"
+  }
+}

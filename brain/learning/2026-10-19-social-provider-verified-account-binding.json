@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse-social-provider-verified-account-binding-20261019",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-metrics-verified-binding-20261019.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-metrics-verified-binding-20261019.test.mjs"
+    ]
+  },
+  "root_cause": "The first approved provider adapter selected Composio accounts by optional user_info.username and historical aliases, but the production Composio connected-accounts catalog has valid accounts without these fields. The canonical existing Powerhouse setup recorded live-verified provider IDs, but the new adapter did not use them.",
+  "evidence": {
+    "source_release": "PR #4513 merged ed797856f566c97ffd3d62a25ee24dbcbe925c5b",
+    "production_request_id": 8095,
+    "response_http": 503,
+    "status": "IG_CANONICAL_IDENTITY_UNAVAILABLE_OR_AMBIGUOUS; LINKEDIN_BOUND_CONNECTION_AMBIGUOUS_OR_UNAVAILABLE",
+    "instagram_verified_setup": "READY and ACTIVE; one healthy canonical bedrijfsgheugen.nl identity",
+    "linkedin_verified_setup": "READY and ACTIVE; one valid bound account, company_readback_ready=true, personal_readback_ready=false",
+    "post_snapshots_after_initial_release": 0
+  },
+  "prevention": [
+    "Canonical account IDs are resolved from live-verified Powerhouse brain_records setup results, not optional Composio account list aliases or user_info",
+    "Require ACTIVE/ready/health_verified and exact expected Instagram Business identity",
+    "Confirm connected account ID and Composio user ID are still ACTIVE and unique on each metric run",
+    "No implicit fallback to Mira or a different social account",
+    "A blocked personal readback is not presented as business-wide analytics",
+    "Source exact ID, CI and actual production provider readback remain mandatory"
+  ],
+  "status": "PROPOSED_REPAIR_NOT_PRODUCTION_VERIFIED"
+}

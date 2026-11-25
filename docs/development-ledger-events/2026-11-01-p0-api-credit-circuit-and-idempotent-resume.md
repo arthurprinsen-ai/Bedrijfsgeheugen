@@ -1,0 +1,9 @@
+# Development ledger — 2026-11-01 P0 API quota circuit (incident #5232)
+
+- **Observed:** six original 2026-11-01 generation failures per LinkedIn personal/company and blog at ~09:39 UTC, provider OpenAI gpt-5-mini HTTP429 insufficient_quota. All four original content obligations still PLANNED without external IDs. API account credit is a human-authorized boundary.
+- **Old behavior:** original source `contentGenerationCooldown` fixed 2h for any provider billing, causing repeated retries even after persistent insufficient_quota. Daily executor must stay active while failing channels cool down.
+- **Fix candidate:** original `content-generation-fairness.mjs` bounded 2h→4h→8h→12h cooldown keyed on original `attempts`; explicit authorization and recovery action; other channels retain fairness, editorial failures 20min, no new sender, scheduler, table, grant or unsafe retry.
+- **Proof:** `tests/brain-content-generation-fairness.test.mjs` verifies 0,1,2,3,4,6,10000 attempts; no fake provider side effects; retries resume only after expiry; other channel remains eligible. No amount of passing tests is publication proof.
+- **ONE BRAIN:** existing recurring quota fingerprint `powerhouse|content-generation|approved-openai-quota-and-governed-fallback-suspended|20261031-v1`; P0 parent `powerhouse|publication|multi-channel-missed-output-after-preflight|v1` with CRITICAL active blocker; incident #5232. No invented successful repair.
+- **Human:** docs/changes/2026-11-01-p0-api-credit-circuit-and-idempotent-resume.md. Update original AGENTS.md, self-improvement skill, machine Brain learning, keep unrelated newsletter and Mira hard gates intact.
+- **Release:** protected CI, provenance, original Edge service deployment and exact readback remain required. At the time of authoring the source-code patch is CANDIDATE only, not live. External provider credit restoration and permitted publication are still OPEN.

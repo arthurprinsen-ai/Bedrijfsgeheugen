@@ -7,11 +7,11 @@ test('i18n runtime mounts the mobile language control into the active v18 drawer
   assert.match(source,/document\.getElementById\('v18MobileDrawer'\)/);
   assert.match(source,/document\.getElementById\('bgkopMob'\)/);
   assert.match(source,/languageControl\('mobile'\)/);
-  assert.match(source,/mobileHost\.insertBefore\(control, auth \|\| cta \|\| null\)/);
+  assert.match(source,/mobileHost\.insertBefore\(control, anchor\)/);
 });
 
 test('production verifier targets the same active v18 drawer', () => {
   const verifier = fs.readFileSync('tools/site-shell/verify-pricing-i18n-production.mjs','utf8');
   assert.match(verifier,/page\.locator\('#v18MobileDrawer'\)/);
-  assert.match(verifier,/v18Drawer\.locator\('\[data-bg-language-select\]'\)/);
+  assert.match(verifier,/#v18MobileDrawer \[data-bg-language-option=/);
 });

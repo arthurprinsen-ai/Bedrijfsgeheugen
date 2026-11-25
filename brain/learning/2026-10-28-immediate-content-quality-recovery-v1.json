@@ -1,0 +1,34 @@
+{
+  "fingerprint": "content|quality-rejection-no-executable-repair|20261028-v1",
+  "obligation_id": "content-publication-quality-recovery-20261028",
+  "compiler": {
+    "failure_class": "RECOVERY_GAP",
+    "scope": "GENERAL"
+  },
+  "root_cause": "Reader gate misses internal SEO instructions, existing content_ready artifacts never reopen, and the daily writer refuses a changed canonical artifact for an existing draft. Zero-click metrics also selected comment-only hypotheses.",
+  "prevention_rule": "The same canonical writer must correct a quality-rejected unsent artifact via exact-date/channel/state/timestamp CAS, preserve same URL and protected draft identity, regenerate through existing approved source/AI/quality gates, and refresh that same PR plus index/RSS. Require true BRAIN before draft readiness. Recognize zero clicks only from explicitly observed comparable denominators and test one useful next step, never fabricate a winner or resend an existing provider ID.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-quality-recovery-20261028.test.mjs",
+      "tests/brain-openai-blog-reader-ready-20261019.test.mjs",
+      "tests/brain-zero-click-feedback-recovery-20261028.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": {
+    "rejected_blog_pr": 5042,
+    "existing_head": "8caf4aeae5f463a8f27f8b0be1fb69776c1767d4",
+    "linkedin_company_readback_at": "2026-10-28T14:29:14.465Z",
+    "personal_new_readback": "403 insufficient permission; provider ID preserved",
+    "mira_preflight_request": 15156,
+    "mira_status": "WAITING_ASSET",
+    "zero_click_sample_note": "Recent LinkedIn observed examples have1-6 impressions; missing clicks cannot become zero and sparse exposure cannot prove failure.",
+    "red_green": "Observed internal instruction fixture, missing repair/refresh and zero-click next-step policy reproduced then corrected."
+  },
+  "outcome": {
+    "source": "LOCAL_CANDIDATE_NOT_LIVE_VERIFIED",
+    "business_lift": "NOT_PROVEN"
+  }
+}

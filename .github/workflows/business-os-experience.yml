@@ -1,11 +1,6 @@
 name: Business OS Experience
 
 on:
-  pull_request:
-    paths:
-      - 'portal-next/**'
-      - 'tests/portal-next-shell.test.mjs'
-      - '.github/workflows/business-os-experience.yml'
   workflow_dispatch:
 
 permissions:

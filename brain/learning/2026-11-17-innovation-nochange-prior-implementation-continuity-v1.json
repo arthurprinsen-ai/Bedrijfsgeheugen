@@ -1,0 +1,44 @@
+{
+  "contract": "ORIGINAL_INNOVATION_NOCHANGE_CANNOT_MASK_EARLIER_PROTECTED_SOURCE_V1",
+  "fingerprint": "powerhouse|innovation|nochange-receipt-shadowed-historic-native-source-audit|20261117-v1",
+  "observed_at": "2026-11-17T20:41:00Z",
+  "root_cause": "The original Codex Engineering candidate 55bb0754 was selected via a historically verified older parent #5109; a zero-code diff legitimately wrote original_code_nochange_review at 20:30 UTC. The original daily delivery watcher incorrectly required !noop to read a separately existing historical protected release #5857 and its current original source. Hence a valid nonterminal nochange receipt hid a real prior implementation, left stage NO_CHANGE_INDEPENDENT_OWNER_REVIEW_DUE, and blocked native effect readback even after PR #5983 merged.",
+  "correction": "Original continuity watcher retains the validated immutable nochange evidence but allows previous original protected_implementation_source_evidence to trigger exact native GitHub PR #5857 MERGED readback and fresh original PostgREST seven-day source audit. Preceding nochange identity conflict still fails closed; no duplicate PR/code nor source deletion. Original Brain expected-version CAS + independent GET remains the only write path.",
+  "prevention_rule": "A valid no-code-change receipt is NOT a terminal implementation or an erasure of earlier original source-bound protected code. For the same owner/source revision, independently verify native historical PR and current bounded source proof even when original_code_nochange_review exists. Never infer external dispatch, causal value, customer revenue or Heartbeat effect from an internal sales-action event.",
+  "evidence": {
+    "original_candidate_id": "55bb0754-355b-4940-aaea-aed7123e7e57",
+    "original_operation_id": "edebcb32-335b-49f0-b527-eb4289f95c5c",
+    "original_owner": "agent:agent-integration-engineer",
+    "source_revision": "2026-10-29T12:43:19.144537+00:00",
+    "original_nochange_observed_at": "2026-11-17T20:30:48.717Z",
+    "original_nochange_provenance": "original_code_nochange_review; original Brain readback version 14",
+    "after_protected_PR_5983_native_recovery": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44171758002",
+    "original_prior_implementation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5857",
+    "protected_continuity": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5983",
+    "production_before_stage": "NO_CHANGE_INDEPENDENT_OWNER_REVIEW_DUE",
+    "production_before_source_metric": null,
+    "proof_contract": "One source-bound native GitHub PR, one current exact provider source census, no claim of business value.",
+    "release_status": "SOURCE_CANDIDATE_NOT_LIVE",
+    "impact": "NOT_MEASURED"
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-existing-protected-source-reconcile-20261117.test.mjs"
+    ]
+  },
+  "terminal_success": false,
+  "impact_verified": false,
+  "no_parallel_agent": true,
+  "no_new_scheduler": true,
+  "rollback": "Protected revert only, preserve immutable original Brain history, no direct production SQL writes."
+}

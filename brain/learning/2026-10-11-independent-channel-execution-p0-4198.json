@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse|p0-4198|independent-channel-generation-and-dispatch|2026-10-11|v1",
+  "compiler": {
+    "failure_class": "CROSS_CHANNEL_HEAD_OF_LINE_BLOCKING",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-stage-resilience.test.mjs",
+      "tests/brain-commercial-independent-channel-lanes-p0-4198.test.mjs"
+    ]
+  },
+  "root_cause": "One shared social publish_only invocation processed three providers sequentially; one orchestrator selected a single next candidate. Slow or blocked channels could starve unrelated eligible social posts and blog content.",
+  "prevention_rule": "Bootstrap shared Brain decisions exactly once, then generate for only the selected channel in bounded parallel calls. Dispatch LinkedIn personal, LinkedIn company, Instagram, blog and comments in separate Promise.all lanes through existing canonical executors; preserve original per-channel publish claim, consent, media, uniqueness, provider receipts, and truthful degraded states.",
+  "evidence": {
+    "sources": [
+      "supabase/functions/powerhouse-content-loop/index.ts",
+      "supabase/functions/powerhouse-content-orchestrator/index.ts"
+    ],
+    "tests": [
+      "tests/brain-commercial-independent-channel-lanes-p0-4198.test.mjs"
+    ],
+    "provider_source_parity_required": true
+  },
+  "outcome": {
+    "protected_main_pending": true,
+    "production_deployment_pending": true,
+    "provider_publication_proven": false,
+    "scope": "content execution only; email DM and likes retain their existing independent owners until proven"
+  }
+}

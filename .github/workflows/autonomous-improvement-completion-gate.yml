@@ -10,13 +10,6 @@ on:
       - 'tests/brain-autonomous-improvement-recovery-proof.test.mjs'
       - 'supabase/migrations/*autonomous_improvement*'
       - '.github/workflows/autonomous-improvement-completion-gate.yml'
-  pull_request:
-    paths:
-      - 'scripts/brain/continuous-improvement/**'
-      - 'tests/brain-autonomous-improvement-runtime-completion.test.mjs'
-      - 'tests/brain-autonomous-improvement-recovery-proof.test.mjs'
-      - 'supabase/migrations/*autonomous_improvement*'
-      - '.github/workflows/autonomous-improvement-completion-gate.yml'
   workflow_dispatch:
 
 permissions:

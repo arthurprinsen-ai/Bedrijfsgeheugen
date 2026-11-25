@@ -1,0 +1,23 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "fingerprint": "supabase|bundle-no-build-time-jsr|20261028-v1",
+  "obligation_id": "supabase-bundle-no-jsr-20261028",
+  "failure_class": "BUILD_DEPENDS_ON_EXTERNAL_REGISTRY_AT_GRAPH_TIME",
+  "root_cause": "Edge functions imported jsr: types at build time; a jsr.io timeout failed the whole function bundle for all previews.",
+  "observed_evidence": {
+    "actual_sources": ["workflow_run_logs supabase preview novbvfxewlesfgoniski, 2026-10-28 06:22 and 06:47 UTC: JSR package manifest for '@supabase/functions-js' timed out after 10s; failed to create the graph"]
+  },
+  "fix": "Removed the jsr: side-effect import from five functions; regression test forbids build-time jsr: imports.",
+  "prevention_rule": "Edge functions must not depend on a non-npm registry being reachable during bundling; diagnose bundler failures from workflow logs before changing code.",
+  "tests": ["tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"],
+  "compiler": {"failure_class": "BUILD_DEPENDS_ON_EXTERNAL_REGISTRY_AT_GRAPH_TIME", "scope": "SUPABASE_FUNCTIONS_BUILD", "machine_enforceable": true, "repeat_count": 1, "security_sensitive": false},
+  "evaluation": {
+    "historical_replay": ["tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"],
+    "shadow": ["tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"],
+    "canary": ["tests/brain-supabase-bundle-no-jsr-20261028.test.mjs"]
+  },
+  "terminal_rule": "Not terminal until the Supabase Preview bundle for this PR succeeds."
+}

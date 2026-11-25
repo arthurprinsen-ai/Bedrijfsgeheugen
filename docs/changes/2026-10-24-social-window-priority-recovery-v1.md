@@ -1,0 +1,9 @@
+# Make daily social learning process REAL existing observations
+
+The social evaluator already runs hourly and safely logs absent snapshots. Its new bounded queue had a starvation bug: it chose due posts without considering which had actual metric snapshots during the required original 24/48/72h window. Independent production SQL on October 24, 2026 found **71 genuinely observed and unevaluated brand post windows** versus 319 missing windows, explaining why the uhr succeeded with no new learning evaluations.
+
+This change does not construct new social data, introduce Buffer publishing, alter provider identities, add schedulers or bypass existing tenant boundaries. The existing Supabase `social-learning-store` action returns small Boolean verified-observation hints from stored exact post-time snapshots (tenant constrained, capped at 900 metadata rows); only real `OBSERVED` or `PROVIDER_OBSERVED` sources qualify. The existing Netlify hourly evaluator prioritizes these while regularly retaining missing-data evidence obligations. The evaluation still rereads actual snapshots and never treats source-reach correlation as measured conversion or causality.
+
+A source-index truncation falls back to the old safe behavior. Each tenant stays bounded to at most 2 evaluated/due windows per hour. Next-day social engagement gains and realized paid orders still require independent provider readback, mature comparison and authorized publication.
+
+Acceptance: new evaluation records with exact original snapshots for `bedrijfsgeheugen`; zero synthetic historical snapshots; no new scheduler; exact release controls and Netlify+Supabase deployment proof.

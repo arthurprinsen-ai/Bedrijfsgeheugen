@@ -1,0 +1,13 @@
+# Development ledger — 2026-11-05 Agent Fabric / ONE BRAIN / Heartbeat / Portal
+
+- Parent: [#4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198); original implementation [PR #5441](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5441).
+- Fingerprint: `powerhouse|skillops|specialist-assurance-owner-live-but-agent-duties-not-bundled|20261105-v1`.
+- Detection: original 15/15 specialist routes proven in Supabase production, but agent roster and four existing skills did not all require the same canonical specialist readback and original incident closure standard.
+- Original ONE BRAIN incident genuinely written via existing `public.brain_observe_failure` and enriched using version-fenced `public.brain_promote_failure`: fingerprint `powerhouse|skillops|specialist-assurance-owner-live-but-agent-duties-not-bundled|20261105-v1`, one append-only occurrence, `maturity=VALIDATED`, registry version 2, source evidence and prevention rule plus regression ref present, `proven_fix=NULL`. Neither source code nor PR was falsely promoted to PROVEN. No duplicate logging or parallel store.
+- Original production source identity: Supabase `adhjwmvyoixzjtmiroln`, migration `20261105111500`; original ONE BRAIN `OPERATIONS_ASSURANCE`, registry/status/receipts; Netlify READY exact commit `ba2578ddac8bca0f69207f618a24c04e3e1bf7a0`, deploy `6aec6b0dbfc001ca1f6fa0ef`.
+- Verified at 12:15:43 UTC: 15/15 registered owners, 15/15 matching actions, 8 GREEN, 3 AMBER, 4 RED, 23 active blockerrecords.
+- Correction: same 14 Agent Fabric roles get explicit source-routing duties; update only original `AGENTS.md` and original Self-Improvement, Company Intelligence, Portal Living Interface, Delivery Concurrency skills; incident protocol carried, status not promoted.
+- Prevention: before acting, verify exact original source registry+obligation+guard identity and freshness; `HANDOFF_SOURCE_CONFLICT` fail closed, canonical ONE BRAIN occurrence, original owner recovery, independent provider/browser/outcome, next natural run, regression and no duplicate worker.
+- Security: no change to auth, security-definer grants, social sender, production cron, procurement/consent, tenant/cross-tenant access. No full autonomic success claim.
+- Regression: `tests/brain-one-loop-agent-skill-binding-20261105.test.mjs`; native predecessor `tests/brain-original-fifteen-loop-owner-coordination-20261105.test.mjs` remains present.
+- Release evidence due: protected exact HEAD Required, CodeQL, native provider/Netlify applicability and merged SHA; independent browser and specialist action results remain open.

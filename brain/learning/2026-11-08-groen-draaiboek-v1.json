@@ -1,0 +1,45 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "delivery|preflight|green-playbook-and-autonomous-mode|20261108-v1",
+  "owner": "existing preflight, AGENTS.md and brain/learning route; no new mechanism, scheduler or register",
+  "compiler": {
+    "failure_class": "AGENT_KNOWLEDGE_NOT_ORDERED_BY_GATE",
+    "scope": "AGENT_ONBOARDING_AND_DELIVERY_GATES",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Known red checks, blockers and fixes were spread over two Notion error registers, an unbounded START HIER page (over 288000 characters), brain_failure_registry (627 patterns, 318 OBSERVED of which 158 without root cause) and chat history. A new agent had no single path from a red check to its fixed remedy, and the same gates (hygiene/admission learning record, lane registration, migration lock, i18n cache) failed repeatedly.",
+  "prevention_rule": "docs/brain/groen-draaiboek.md orders the known red checks and publication blockers by gate with meaning and fixed remedy, and AGENTS.md points to it as the first read. A required-check test asserts the playbook, its gate table and the AGENTS.md pointer exist. The autonomous-execution decision of 2026-11-08 is recorded in both places. It does not prove that every agent reads it.",
+  "prevention_rules": [
+    "READ_GREEN_PLAYBOOK_BEFORE_DELIVERY_ACTION"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-groen-draaiboek-20261108.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-planned-action-guard-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-planned-action-real-pr-hard-negatives-20261106.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Owner instruction 2026-11-08: record all red checks, blockers, queues and errors so new agents can reach green and live without problems",
+      "docs/changes/2026-11-08-groen-draaiboek-v1.md"
+    ],
+    "current": [
+      "brain_failure_registry on 2026-11-08: 627 patterns, 318 OBSERVED with 158 without root cause, 168 without prevention rule, 207 without regression reference"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

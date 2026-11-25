@@ -1,41 +1,62 @@
-name: CodeQL
+name: Powerhouse CodeQL
 
 on:
   pull_request:
-    paths:
-      - '**/*.py'
-      - '.github/workflows/codeql.yml'
+    branches: [main]
+  merge_group:
+    types: [checks_requested]
   push:
     branches: [main]
     paths:
+      - '**/*.js'
+      - '**/*.mjs'
+      - '**/*.cjs'
+      - '**/*.ts'
+      - '**/*.tsx'
       - '**/*.py'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/workflows/codeql.yml'
   schedule:
-    - cron: '17 4 * * 1'
+    - cron: '41 4 * * 2,5'
+  workflow_dispatch:
 
 permissions:
   contents: read
+  security-events: write
+  packages: read
+  pull-requests: read
 
-# Stable single-flight identity: a newer run for the same PR/ref supersedes stale work.
-# Never key concurrency by github.run_id; that makes every run unique and defeats cancellation.
 concurrency:
-  group: codeql-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: powerhouse-codeql-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   analyze:
+    name: CodeQL ${{ matrix.language }}
     runs-on: ubuntu-latest
-    permissions:
-      security-events: write
-      packages: read
-      contents: read
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        language: [python]
+        language: [javascript-typescript, python]
     steps:
-      - uses: actions/checkout@v4
-      - uses: github/codeql-action/init@v4
+      - uses: actions/checkout@v5
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
         with:
           languages: ${{ matrix.language }}
-      - uses: github/codeql-action/analyze@v4
+          queries: security-extended
+      - id: analyze
+        name: Analyze
+        uses: github/codeql-action/analyze@v4
+        with:
+          output: sarif
+      - name: Upload CodeQL SARIF evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: codeql-sarif-${{ matrix.language }}-${{ github.sha }}
+          path: sarif
+          if-no-files-found: error
+          retention-days: 3

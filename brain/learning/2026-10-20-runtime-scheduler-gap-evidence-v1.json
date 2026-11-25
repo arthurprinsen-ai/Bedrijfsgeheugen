@@ -1,0 +1,60 @@
+{
+  "date": "2026-10-20",
+  "obligation": "powerhouse|scheduler-missing-result-ledger|20261020",
+  "fingerprint": "scheduler|historical-slot|unknown-result|non-replay|v1",
+  "root_cause": "Supabase pg_cron startup timeouts and a database restart left historical due slots without persisted mux result evidence, even though the current cadence has recovered.",
+  "verified_at": "2026-10-20",
+  "production_evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "canonical_jobid": 171,
+    "active": true,
+    "scheduled_slots_per_hour": 36,
+    "healthy_slots_in_latest_completed_hour": 37,
+    "historical_missing_slots_rolling_24h_approx": 233,
+    "missing_evidence_cron_failed": 133,
+    "missing_evidence_no_cron_record": 99,
+    "inner_failure_slots": 17,
+    "cron_failure_reviews_triaged": 307,
+    "reviews_pending_after_triage": 0,
+    "commercial_stage_review_pending": 1,
+    "daily_run_state": "degraded",
+    "live_proven_channels": [
+      "linkedin_company",
+      "blog"
+    ],
+    "unproven_channels": [
+      "linkedin_personal",
+      "instagram"
+    ],
+    "overdue_forecast_calibration_obligations": 356,
+    "new_verified_forecast_resolution_candidates": 0
+  },
+  "learning": "Successful later cron execution does not prove a failed historical run committed its intended output. Job-run status is not provider readback. Do not replay outbound actions based on a 504, timeout, restart, or missing run record alone.",
+  "change": {
+    "proposed_table": "powerhouse_ops.runtime_scheduler_gap_ledger_v1",
+    "proposed_function": "powerhouse_ops.capture_runtime_scheduler_gaps_v1",
+    "private_schema": true,
+    "unique_key": "jobid+run_slot",
+    "replay_allowed": false,
+    "migration": "supabase/migrations/20261020174500_runtime_scheduler_gap_evidence_ledger.sql",
+    "state": "PENDING_PROTECTED_CI_PREVIEW_MERGE_AND_PRODUCTION_READBACK"
+  },
+  "prevention_rule": "Classify each due slot into source-evidenced failure or unknown; require separate immutable downstream proof or typed NO_SAFE_BACKFILL; preserve existing scheduler, locks, per-tenant permissions, and fail-closed publication status.",
+  "tests": [
+    "tests/brain-runtime-scheduler-gap-evidence-20261020.test.mjs"
+  ],
+  "issue_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4478",
+  "pr_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4565",
+  "compiler": {
+    "failure_class": "SCHEDULER_SLOT_GAP",
+    "scope": "SCHEDULER",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-scheduler-gap-evidence-20261020.test.mjs"
+    ]
+  }
+}

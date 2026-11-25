@@ -1,17 +1,26 @@
-import { deriveFlowState, statusLabel } from './flow-state.js';
-import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell } from './page-shell.js';
-import { mountLegacyParity } from './legacy-parity.js';
-import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
-import { bindPortalNavigation, navigatePortal } from './router.js';
-import { groupedHubPages, hubDefinition } from './hubs.js';
-import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
-import { createPortalDomainState } from './domain-state.js';
-import { mountGlobalActions } from './global-actions-ui.js';
-import { applyCustomerBranding } from './customer-branding.js';
-import { applyOverviewDashboard } from './modules/overview.js';
-import { renderProjectOverview } from './project-overview.js';
-import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage } from './plan-access.js';
-import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js';
+import { deriveFlowState, statusLabel } from './flow-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell, isProtectedTrustPage, hasProtectedTrustAccess } from './page-shell.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountLegacyParity } from './legacy-parity.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { DESKTOP_NAV_GROUPS } from './navigation-model.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { bindPortalNavigation, navigatePortal, subscribePortalRoute } from './router.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { groupedHubPages, hubDefinition } from './hubs.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { createScanClaimBridge } from './scan-claim-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { createPortalDomainState } from './domain-state.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountGlobalActions } from './global-actions-ui.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { applyCustomerBranding } from './customer-branding.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { applyOverviewDashboard } from './modules/overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { renderProjectOverview } from './project-overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage, trialBannerText } from './plan-access.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountEntrepreneurHome } from './entrepreneur-home.js';
+import { mountPortalQuickSwitcher } from './quick-switcher.js';
+import { mountWinstnavigator } from './winstnavigator.js';
+import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
+import { mountControlPlaneCockpit } from './control-plane-cockpit.js';
+import { mountVoiceSignalCenter } from './voice-signals.js';
+import { mountDataImport } from './data-import.js';
+import { renderImportedDataOnPage } from './imported-data-pages.js';
+import { attachExistingControlPlaneCockpit } from './control-plane-boot.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -95,7 +104,17 @@ function drawFlow(flow){
 }
 function render(){const flow=deriveFlowState({source:selection.source,module:selection.module,runtime,preview:previewMode});renderFocus();renderCopy(flow);requestAnimationFrame(()=>drawFlow(flow))}
 
+async function promptProtectedTrustLogin(){
+ const identity=await ensureIdentityWidget();
+ identity?.open?.('login');
+}
 function gatedOpenPage(pageId){
+ if(isProtectedTrustPage(pageId)&&!hasProtectedTrustAccess()){
+   closePortalPage();closeHub();
+   navigatePortal('overzicht',{replace:true});
+   promptProtectedTrustLogin().catch(()=>null);
+   return false;
+ }
  if(portalSubscription?.plan && !planAllowsPage(portalSubscription.plan,pageId)){
    location.href=`https://www.bedrijfsgeheugen.nl/prijzen#saas?upgrade=${encodeURIComponent(minPlanForPage(pageId))}`;
    return;
@@ -150,6 +169,7 @@ function renderHubGroups(hubId='portal'){
   const section=document.createElement('section');section.className='group';section.innerHTML=`<h4>${group.label}</h4>`;
   for(const page of group.pages){
    const target=page.target||page.id;
+   if(isProtectedTrustPage(target)&&!hasProtectedTrustAccess())continue;
    const b=document.createElement('button');b.type='button';b.textContent=page.label;b.dataset.page=target;
    b.addEventListener('click',()=>{closeHub();navigatePortal(target)});
    section.appendChild(b);
@@ -160,20 +180,131 @@ function renderHubGroups(hubId='portal'){
 function mountCanonicalDesktopNavigation(){
  const nav=document.querySelector('.sidebar .nav');if(!nav)return;
  nav.innerHTML='';nav.classList.add('portal-single-navigation');nav.setAttribute('aria-label','Portaalnavigatie');
+ const current=new URLSearchParams(location.search).get('page')||'overzicht';
  for(const group of DESKTOP_NAV_GROUPS){
-   const section=document.createElement('section');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
-   const heading=document.createElement('h2');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
+   const section=document.createElement('details');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
+   section.open=group.pages.some(page=>page.target===current);
+   const heading=document.createElement('summary');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
    for(const page of group.pages){
+     if(isProtectedTrustPage(page.target)&&!hasProtectedTrustAccess())continue;
      const button=document.createElement('button');button.type='button';
      button.dataset.navTarget=page.target;button.dataset.navGroup=group.id;button.dataset.navPage=page.id;
+     if(page.target===current){button.classList.add('active');button.setAttribute('aria-current','page');}
      button.innerHTML=`<span class="ico">${group.icon}</span><span>${page.label}</span>`;
      section.appendChild(button);
    }
    nav.appendChild(section);
  }
 }
+/* Four task-oriented shortcuts into the existing authorized V2 router. */
+function mountMobilePrimaryNavigation(){
+ if(document.querySelector('[data-portal-mobile-primary]'))return;
+ const nav=document.createElement('nav');
+ nav.className='portal-mobile-primary';
+ nav.dataset.portalMobilePrimary='v1';
+ nav.setAttribute('aria-label','Snelle mobiele navigatie');
+ for(const [target,icon,label] of [
+  ['overzicht','⌂','Vandaag'],
+  ['actieve-acties','✓','Acties'],
+  ['outcomes-evidence','◈','Resultaat'],
+  ['hub:portal','☰','Meer']
+ ]){
+  const button=document.createElement('button');
+  button.type='button';button.dataset.mobilePrimaryTarget=target;
+  if(target==='hub:portal'){
+   button.setAttribute('aria-haspopup','dialog');
+   button.setAttribute('aria-controls','allPages');
+   button.setAttribute('aria-expanded','false');
+  }
+  const symbol=document.createElement('span');
+  symbol.className='portal-mobile-primary-icon';symbol.setAttribute('aria-hidden','true');symbol.textContent=icon;
+  const caption=document.createElement('span');caption.textContent=label;
+  button.append(symbol,caption);
+  button.addEventListener('click',()=>navigatePortal(target));
+  nav.appendChild(button);
+ }
+ document.body.appendChild(nav);
+ const sync=({target})=>{
+  nav.querySelectorAll('button').forEach(button=>{
+   const selected=button.dataset.mobilePrimaryTarget===target
+    ||(button.dataset.mobilePrimaryTarget==='hub:portal'&&!['overzicht','actieve-acties','outcomes-evidence'].includes(target));
+   button.classList.toggle('is-current',selected);
+   if(selected)button.setAttribute('aria-current','page');
+   else button.removeAttribute('aria-current');
+  });
+ };
+ subscribePortalRoute(sync);
+ const params=new URLSearchParams(location.search);
+ sync({target:params.get('hub')?'hub:portal':params.get('page')||'overzicht'});
+}
+/* Preserve the entire existing overview but make the real entrepreneur action
+   primary. Move, don't clone, old content; routing, data and controls remain original. */
+function mountOverviewDepthDisclosure(){
+ const main=document.querySelector('main.main');
+ if(!main||main.querySelector('[data-portal-overview-depth]'))return;
+ // Original render subscription can execute before this disclosure mounts.
+ // Include already-rendered canonical model/management panels, in their true
+ // document order, otherwise they remain invisible outside the disclosed body.
+ // Do NOT move the single entrepreneur-facing next action or identity shell.
+ const sections=['.daily-steering','.kpis','.dashboard','.lower','.activities',
+  '[data-legacy-overview-insights]','.legacy-complete','[data-bedrijfslek-intelligence]',
+  '[data-business-journey-overview]','.dv-houder',
+  '.v2overviewcustomizer','.v2overviewcanvas',
+  // Late-mounted analytics are for optional evidence, not a second hero.
+  '[data-management-accounting-intelligence]','[data-foresight-context]',
+  '[data-pfs-host]','[data-contextual-impact-cards]'];
+ const existing=[...main.children].filter(node=>sections.some(selector=>node.matches(selector)));
+ if(!existing.length)return;
+ const details=document.createElement('details');
+ details.className='portal-overview-depth';
+ details.dataset.portalOverviewDepth='v1';
+ const summary=document.createElement('summary');
+ summary.className='portal-overview-depth-trigger';
+ const label=document.createElement('span');
+ label.textContent='Meer over mijn bedrijf';
+ const hint=document.createElement('small');
+ hint.textContent='Analyses, gegevens en hoe het werkt';
+ summary.append(label,hint);
+ const body=document.createElement('div');
+ body.className='portal-overview-depth-content';
+ details.append(summary,body);
+ existing[0].before(details);
+ for(const section of existing)body.appendChild(section);
+ details.addEventListener('toggle',()=>{
+  if(details.open)requestAnimationFrame(render);
+ });
+ const sync=({target})=>{
+  details.hidden=target!=='overzicht';
+  if(target!=='overzicht')details.open=false;
+ };
+ subscribePortalRoute(sync);
+ const params=new URLSearchParams(location.search);
+ sync({target:params.get('hub')?'hub:'+params.get('hub'):params.get('page')||'overzicht'});
+}
+// One route authority: dismissing the complete menu must never discard the
+// entrepreneur's current page. Keep only an in-memory focus/return pointer.
+let hubReturnTarget='overzicht';
+let hubOpener=null;
+let backgroundWasInert=false;
+subscribePortalRoute(({target})=>{
+ if(target&&!target.startsWith('hub:'))hubReturnTarget=target;
+});
+function syncHubTriggerState(open){
+ document.querySelectorAll('[data-mobile-primary-target="hub:portal"],#portalFullMenuToggle,#showPages').forEach(button=>
+  button.setAttribute('aria-expanded',String(open))
+ );
+}
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
+ // The specialist page lives outside .app and can remain a separate overlay.
+ // One modal at a time: dismiss its view without losing the canonical route.
+ closePortalPage();
+ if(!sheet.classList.contains('open')){
+  hubOpener=document.activeElement instanceof HTMLElement&&!sheet.contains(document.activeElement)?document.activeElement:null;
+  const background=document.querySelector('.app');
+  backgroundWasInert=Boolean(background?.inert);
+  if(background)background.inert=true;
+ }
  const definition=hubDefinition(hubId) || hubDefinition('portal');
  renderHubGroups(hubId);
  const heading=sheet.querySelector('.sheethead h3');if(heading)heading.textContent=definition.label;
@@ -181,20 +312,57 @@ function openHub(hubId){
  sheet.dataset.hub=hubId;
  sheet.classList.add('open');
  sheet.setAttribute('aria-hidden','false');
+ syncHubTriggerState(true);
+ el('closePages')?.focus({preventScroll:true});
 }
 function closeHub(){
  const sheet=el('allPages');if(!sheet)return;
+ const wasOpen=sheet.classList.contains('open');
  sheet.classList.remove('open');
  sheet.removeAttribute('data-hub');
  sheet.setAttribute('aria-hidden','true');
+ syncHubTriggerState(false);
+ if(wasOpen){
+  const background=document.querySelector('.app');
+  if(background&&!backgroundWasInert)background.inert=false;
+ }
+ hubOpener=null;
+}
+function dismissHub(){
+ const opener=hubOpener;
+ const returnTarget=hubReturnTarget;
+ closeHub();
+ navigatePortal(returnTarget,{replace:true});
+ const fallback=document.querySelector('[data-mobile-primary-target="hub:portal"]');
+ const target=opener?.isConnected&&opener.getClientRects().length?opener:fallback;
+ if(target?.getClientRects().length)target.focus({preventScroll:true});
 }
 function ensureNavigationStyles(){
- if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')==='./navigation.css'))return;
- const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css';document.head.appendChild(style);
+ if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')==='./navigation.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a'))return;
+ const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';document.head.appendChild(style);
 }
 
-document.documentElement.classList.add('portal-entitlements-loading');
-fetchPortalPlan().then(subscription=>{
+let planAuthSubject='',planReadRevision=0;
+let accountActivationStarted=false;
+async function activatePurchasedAccount(){
+ if(accountActivationStarted||new URL(location.href).searchParams.get('activate')!=='subscription')return;
+ accountActivationStarted=true;
+ const status=document.createElement('p');status.setAttribute('role','status');status.textContent='Je abonnement wordt aan je account gekoppeld…';
+ (document.querySelector('.main')||document.body).prepend(status);
+ try{
+  const response=await fetch('/api/checkout/activate',{method:'POST',credentials:'same-origin',headers:await portalStateClient.authHeaders()});
+  const data=await response.json();
+  if(!response.ok||data?.ok!==true)throw Error('ACTIVATION_PENDING');
+  if(data.refresh_required)await portalStateClient.currentUser()?.jwt?.(true);
+  const target=new URL(location.href);target.searchParams.delete('activate');location.replace(target.toString());
+ }catch{status.textContent='Je abonnement is nog niet gekoppeld. Controleer of je e-mailadres bevestigd is en of je hetzelfde account gebruikt als bij de aankoop.'}
+}
+async function refreshAuthenticatedPlan(subject){
+ const revision=++planReadRevision;
+ document.documentElement.classList.add('portal-entitlements-loading');
+ try{
+ const subscription=await fetchPortalPlan(globalThis.fetch,await portalStateClient.authHeaders());
+ if(revision!==planReadRevision||planAuthSubject!==subject)return;
  portalSubscription=subscription;
  applyPlanAccess(document,subscription);
  const requestedPage=new URL(location.href).searchParams.get('page');
@@ -203,27 +371,140 @@ fetchPortalPlan().then(subscription=>{
    return;
  }
  if(subscription?.plan){
+   const trialText=trialBannerText(subscription);
+   if(trialText&&!document.getElementById('portalTrialBanner')){
+     const bar=document.createElement('a');bar.id='portalTrialBanner';bar.className='portal-trial-banner';bar.setAttribute('role','status');
+     bar.href=`https://www.bedrijfsgeheugen.nl/afsluiten?plan=${encodeURIComponent(subscription.plan)}`;bar.textContent=`${trialText} Nu afrekenen →`;
+     bar.style.cssText='display:block;padding:10px 16px;background:#fff7d6;color:#14171a;border-bottom:1px solid #e6d58a;font:600 14px/1.4 system-ui,sans-serif;text-align:center;text-decoration:none';
+     document.body.insertBefore(bar,document.body.firstChild);
+   }
    const host=document.querySelector('.portal-topbar,.topbar,.sidebar')||document.body;
    if(!document.getElementById('portalPlanBadge')){
      const badge=document.createElement('a');badge.id='portalPlanBadge';badge.className='portal-plan-badge';badge.href='https://www.bedrijfsgeheugen.nl/prijzen#saas';badge.textContent=`Pakket: ${subscription.planName}`;host.appendChild(badge);
    }
  }
-}).catch(()=>null).finally(()=>document.documentElement.classList.remove('portal-entitlements-loading'));
+ }catch{}finally{if(revision===planReadRevision)document.documentElement.classList.remove('portal-entitlements-loading')}
+}
 
 const portalStateClient=createPortalStateClient();
+const scanClaimBridge=createScanClaimBridge({
+ authHeaders:()=>portalStateClient.authHeaders(),
+ // A server-verified Frisse Blik/Bedrijfslek claim already lives in the same
+ // tenant's canonical Brain layer. Refresh that read-model immediately, rather
+ // than leaving every open dashboard on the anonymous pre-claim snapshot.
+ onClaimed:async({tenantIdentity})=>{
+  const current=portalStateClient.currentUser?.();
+  if(!current?.id||String(current.id)!==String(tenantIdentity))
+   return {applied:false,reason:'TENANT_SWITCHED'};
+  return portalDomainState.refresh();
+ }
+});
 const portalDomainState=createPortalDomainState(portalStateClient);
-const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({stateClient:portalStateClient,domainState:portalDomainState,onRuntime:next=>{runtime=next;previewMode=false;render();}});
+// The authenticated portal uses the same canonical read API for periodic
+// revalidation. No new scheduler, browser store or duplicate source of truth.
+const PORTAL_REVALIDATION_INTERVAL_MS=15*60*1000;
+let revalidationRequestedAt=0;
+let pendingRevalidation=null;
+function revalidateVisibleCustomer(){
+ if(document.visibilityState==='hidden'||portalStateClient.isDemo()
+    ||!portalDomainState.initialized?.()||!portalStateClient.currentUser?.())return;
+ if(pendingRevalidation)return pendingRevalidation;
+ if(Date.now()-revalidationRequestedAt<60*1000)return;
+ revalidationRequestedAt=Date.now();
+ pendingRevalidation=portalDomainState.refresh().catch(()=>null).finally(()=>{pendingRevalidation=null});
+ return pendingRevalidation;
+}
+
+// Runtime evidence is transient and belongs to the exact current principal.
+// Keep the bearer-bound readback out of canonical stored customer answers.
+let latestOwnerRuntime=null;
+const currentOwnerRuntime=()=>{
+ const snap=portalStateClient.getSnapshot?.();
+ const identity=snap?.mode==='authenticated'&&snap.user&&!portalStateClient.isDemo?.()?String(snap.user.id||''):'';
+ return identity&&identity===latestOwnerRuntime?.subject?latestOwnerRuntime.value:null;
+};
+const powerhouseRuntimeBridge=mountPowerhouseRuntimeBridge({
+ stateClient:portalStateClient,domainState:portalDomainState,
+ onRuntime:next=>{
+  const snap=portalStateClient.getSnapshot?.();
+  if(snap?.mode!=='authenticated'||!snap.user?.id||portalStateClient.isDemo?.())return;
+  latestOwnerRuntime={subject:String(snap.user.id),value:next};
+  runtime=next;previewMode=false;render();
+  // No customer IDs, token or provider payload is broadcast in the event.
+  globalThis.dispatchEvent?.(new Event('bg:portal-owner-runtime-updated'));
+ }
+});
 globalThis.__BG_POWERHOUSE_RUNTIME_BRIDGE__=powerhouseRuntimeBridge;
+/*
+ * Original owner-only Control Plane must be mounted by the real app, not merely
+ * exported by a module. Same Netlify Identity/JWT and admin-API as before.
+ * The subscription clears private DOM and aborts stale reads on logout/change.
+ */
+const existingControlPlaneBoot=attachExistingControlPlaneCockpit({
+ stateClient:portalStateClient,
+ root:document,
+ fetchImpl:(...args)=>globalThis.fetch(...args),
+ mountImpl:mountControlPlaneCockpit
+});
+
 configurePortalShell({domainState:portalDomainState});
-portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
-portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
+configurePortalShell({stateClient:portalStateClient});
+// One guided entry over the existing authenticated tenant state and Brain authority.
+mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClient,getTenantRuntime:currentOwnerRuntime});
+// Make the existing scenario/relationship experience available to the same
+// logged-in tenant rather than leaving its independent module unmounted.
+mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient});
+// Close tenant-bound visual detail whenever the authenticated subject changes.
+// Do not expose user identifiers through the DOM event payload.
+let portalVisualAuthSubject='';
+function refreshConfirmedImportedPage(){
+ const root=document.getElementById('portalView');
+ if(!root?.classList.contains('open'))return;
+ const native=root.querySelector('#pvNative');
+ if(!native)return;
+ renderImportedDataOnPage(native,{pageId:root.dataset.pageId,stateClient:portalStateClient,openPage:gatedOpenPage});
+}
+portalStateClient.subscribe(snap=>{
+ refreshConfirmedImportedPage();
+ const nextVisualSubject=(snap.mode==='authenticated'||snap.mode==='empty')&&snap.user&&!portalStateClient.isDemo()
+   ? String(snap.user.id||'') : '';
+ if(nextVisualSubject!==portalVisualAuthSubject){
+   portalVisualAuthSubject=nextVisualSubject;
+   latestOwnerRuntime=null;
+   runtime=null;
+   previewMode=true;
+   document.dispatchEvent(new Event('bg:portal-identity-boundary'));
+   globalThis.dispatchEvent?.(new Event('bg:portal-owner-runtime-updated'));
+ }
+ applyCustomerBranding({state:snap.state||{},user:snap.user});
+ const authenticated=(snap.mode==='authenticated'||snap.mode==='empty')&&!!snap.user&&!portalStateClient.isDemo();
+ const planSubject=authenticated?String(snap.user.id):'';
+ if(planSubject!==planAuthSubject){
+   planAuthSubject=planSubject;planReadRevision++;
+   portalSubscription=null;document.getElementById('portalPlanBadge')?.remove();
+   if(planSubject){refreshAuthenticatedPlan(planSubject);activatePurchasedAccount()}
+ }
+ document.documentElement.classList.toggle('portal-customer-authenticated',authenticated);
+ scanClaimBridge.setAuthenticated(authenticated,snap.user?.id);
+ mountCanonicalDesktopNavigation();
+ if(el('allPages')?.classList.contains('open'))renderHubGroups(el('allPages').dataset.hub||'portal');
+ const requested=new URL(location.href).searchParams.get('page');
+ if(requested&&isProtectedTrustPage(requested)&&!authenticated){
+   closePortalPage();
+   navigatePortal('overzicht',{replace:true});
+ }
+});
+portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});refreshConfirmedImportedPage();if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});mountVoiceSignalCenter({stateClient:portalStateClient,domainState:portalDomainState});mountDataImport({stateClient:portalStateClient,domainState:portalDomainState});
 bindPortalNavigation({
  openPage:gatedOpenPage,
  openHub,
  closeHub,
  showOverview:()=>{closePortalPage();closeHub()}
 });
+mountMobilePrimaryNavigation();
+mountPortalQuickSwitcher({stateClient:portalStateClient});
+mountOverviewDepthDisclosure();
 document.querySelectorAll('[data-open-page]').forEach(control=>{
  control.addEventListener('click',event=>{
   if(control.tagName==='A') event.preventDefault();
@@ -233,13 +514,47 @@ document.querySelectorAll('[data-open-page]').forEach(control=>{
 document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
 el('portalFullMenuToggle')?.addEventListener('click',()=>navigatePortal('hub:portal'));
 el('showPages')?.addEventListener('click',()=>navigatePortal('hub:portal'));
-el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overzicht',{replace:true})});
-el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){closeHub();navigatePortal('overzicht',{replace:true})}});
-addEventListener('keydown',e=>{if(e.key==='Escape'&&el('allPages')?.classList.contains('open')){closeHub();navigatePortal('overzicht',{replace:true})}});
+el('closePages')?.addEventListener('click',dismissHub);
+el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages'))dismissHub()});
+addEventListener('keydown',e=>{
+ const sheet=el('allPages');
+ if(!sheet?.classList.contains('open'))return;
+ if(e.key==='Escape'){e.preventDefault();dismissHub();return;}
+ if(e.key!=='Tab')return;
+ const focusable=[...sheet.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])')]
+  .filter(node=>node.getClientRects().length>0&&!node.closest('[hidden]'));
+ if(!focusable.length){e.preventDefault();el('closePages')?.focus();return;}
+ const first=focusable[0],last=focusable[focusable.length-1],active=document.activeElement;
+ if(e.shiftKey&&(active===first||!sheet.contains(active))){e.preventDefault();last.focus();}
+ else if(!e.shiftKey&&(active===last||!sheet.contains(active))){e.preventDefault();first.focus();}
+});
 addEventListener('resize',render);render();
+// One original mounted-shell signal for the parser-time boot watchdog.
+// This is shell readiness only, never an authenticated tenant/Brain receipt.
+document.documentElement.dataset.bgPortalAppBoot='ready';
+globalThis.__bgMarkPortalBootReady?.();
+// Revalidate when the user returns and every 15 minutes while the portal is
+// visible. Domain refresh rejects dirty state and never overwrites a pending ACK.
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)void revalidateVisibleCustomer();});
+globalThis.addEventListener('focus',()=>void revalidateVisibleCustomer());
+globalThis.setInterval(()=>void revalidateVisibleCustomer(),PORTAL_REVALIDATION_INTERVAL_MS);
 ensureIdentityWidget().then(identity=>{
- const refreshDomainState=()=>portalDomainState.init().catch(()=>null);
+ const refreshDomainState=async()=>{
+  const before=String(portalStateClient.currentUser?.()?.id||'');
+  try{
+   await portalDomainState.init();
+   // A delayed identity hydration must not leave a valid deep-linked page
+   // hidden after the old tenant's private DOM has been revoked.
+   // Re-open through the original entitlement/security gate, and only for
+   // the same principal that just hydrated successfully.
+   const after=String(portalStateClient.currentUser?.()?.id||'');
+   if(before!==after)return;
+   const requested=new URL(location.href).searchParams.get('page');
+   const view=document.getElementById('portalView');
+   if(requested&&view?.getAttribute('aria-hidden')==='true')gatedOpenPage(requested);
+  }catch{return null;}
+ };
  identity?.on?.('login',refreshDomainState);
  identity?.on?.('logout',refreshDomainState);
- refreshDomainState();
+ void refreshDomainState();
 });

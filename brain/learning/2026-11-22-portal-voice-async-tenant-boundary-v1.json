@@ -1,0 +1,40 @@
+{
+  "fingerprint": "portal-v2-voice-async-tenant-boundary-v1",
+  "obligation_id": "portal-v2-voice-async-tenant-boundary-20261122",
+  "date": "2026-11-22",
+  "compiler": {
+    "failure_class": "PORTAL_ASYNC_ASSISTANT_OR_SPEECH_RESULT_CROSSES_IDENTITY_BOUNDARY",
+    "scope": "PORTAL_IDENTITY_VOICE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Existing tenant-proof and connector metadata fetches already rejected stale users, but a pending /api/portaalvraag answer and browser SpeechRecognition onresult/onerror path could still display or act after logout, account switch or close; browser abort did not guarantee callback invalidation.",
+  "prevention_rule": "For original Portal V2 voice use monotone request epoch and current verified identity after every async assistant await, for both errors and successful answers. Invalidate on each new command, logout/account switch, modal close and destroy. Speech callbacks must compare recognizer instance, microphone epoch, original principal and open dialog before applying transcript or error. Never auto-invoke privileged actions, emit external alerts, create a parallel worker/sender, or promote CI to production without independent browser readback.",
+  "regression_contract": "Historically reproduce in-flight assistant after identity A-to-B, logout, modal close, or superseding question; stale answer/error must be invisible. Late speech onresult/onerror after recognizer abort/dialog close/identity switch must be discarded. Ensure native approvals, safe typed fallback, opt-in and tenant status continue unchanged.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-voice-async-tenant-boundary-20261122.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-voice-async-tenant-boundary-20261122.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-voice-async-tenant-boundary-20261122.test.mjs"
+    ]
+  },
+  "evidence": {
+    "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6116",
+    "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4547",
+    "test": "tests/brain-portal-voice-async-tenant-boundary-20261122.test.mjs",
+    "production_readback": "DUE",
+    "independent_browser_two_tenant": "NOT_PROVEN",
+    "real_connector_ingest": "NOT_PROVEN",
+    "provider_email_push_delivery": "NOT_PROVEN"
+  },
+  "outcome": {
+    "implementation": "SOURCE_CANDIDATE",
+    "release": "NOT_YET_PROVEN",
+    "financial_value": "UNMEASURED"
+  }
+}

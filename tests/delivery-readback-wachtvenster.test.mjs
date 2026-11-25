@@ -50,8 +50,24 @@ test('wie op een deploy preview wacht, doet dat niet met een eigen krappe lus', 
     `deze workflows pollen zelf op een deploy preview; gebruik ${SCRIPT} zodat het venster en de foutmelding op één plek staan`);
 });
 
+
+// The old preview readiness failure was a 30-attempt EXTERNAL fetch. A short
+// loopback-only http.server startup probe is not a provider preview poll.
+const shortPreviewLoop = /for\s+\w+\s+in\s+\$\(\s*seq\s+1\s+30\s*\)\s*;\s*do\b[\s\S]{0,1000}?\bdone\b/g;
+const usesShortLegacyPreviewPolling = source => [...source.matchAll(shortPreviewLoop)]
+  .some(([loop]) => /\bcurl\b[^\n]*(?:deploy-preview-|PORTAL_ALIAS_URL|READBACK_URL)/.test(loop));
+
+test('het regressie-orakel onderscheidt externe preview-polling van lokale serverstart', () => {
+  const localStartup = 'for i in $(seq 1 30); do\n curl -fsS http://127.0.0.1:4173/portaal/demo/\n sleep 1\ndone';
+  const badAlias = 'for i in $(seq 1 30); do\n curl -fsS "$PORTAL_ALIAS_URL/portal-v2/"\n sleep 10\ndone';
+  const badDirect = 'for i in $(seq 1 30); do\n curl -fsS https://deploy-preview-42--bedrijfsgeheugen.netlify.app/portal-v2/\n sleep 10\ndone';
+  assert.equal(usesShortLegacyPreviewPolling(localStartup), false, 'lokale serverbootstrap is geen deploy-preview');
+  assert.equal(usesShortLegacyPreviewPolling(badAlias), true, 'de oude preview-aliaslus moet rood blijven');
+  assert.equal(usesShortLegacyPreviewPolling(badDirect), true, 'de oude directe preview-lus moet rood blijven');
+});
+
 test('de readback van Portal V2 gebruikt het gedeelde script', () => {
   const bron = readFileSync(`${WORKFLOW_DIR}/portal-v2-production-dom-readback.yml`, 'utf8');
   assert.match(bron, /tools\/ci\/wait-for-url\.sh/, 'de readback wacht niet via het gedeelde script');
-  assert.doesNotMatch(bron, /seq 1 30/, 'de oude lus van vijf minuten staat er nog');
+  assert.equal(usesShortLegacyPreviewPolling(bron), false, 'de oude korte EXTERNE preview-lus staat er nog');
 });

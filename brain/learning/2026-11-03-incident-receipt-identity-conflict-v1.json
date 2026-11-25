@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-03",
+  "fingerprint": "powerhouse|brain|incident-receipt-conflicting-recovery-identity|20261103-v1",
+  "obligation_id": "powerhouse|brain|incident-receipt-conflicting-recovery-identity|20261103-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918",
+  "status": "CANDIDATE_NOT_PROVEN_LIVE",
+  "owner": "existing-one-brain-powerhouse-heartbeat-governance-owner",
+  "failure_class": "INCIDENT_RECEIPT_IDENTITY_CONFLICT",
+  "compiler": {
+    "scope": "POWERHOUSE",
+    "failure_class": "INCIDENT_RECEIPT_IDENTITY_CONFLICT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original incident audit deduplicated by provider event ID plus fingerprint, permitting contradictory classifications of one source event, and selected the first recovery receipt even if another record contradicted it.",
+  "fix": "One original pure reconciler now pre-scans provider event ID collisions across fingerprints and rejects multiple matching recovery receipts before reporting any verified recovery.",
+  "prevention_rule": "One provider event ID must resolve to one source-backed fingerprint and one canonical independently verifiable recovery. Disagreement creates an open identity incident; never select favorable evidence or claim global green.",
+  "tests": [
+    "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-incident-register-self-fix-preflight-20261029.test.mjs"
+    ],
+    "invariants": [
+      "same provider ID never yields two proven incident identities",
+      "competing recovery receipts never result in proven recovery",
+      "source coverage missing never looks green"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-self-improvement-layer"
+  ],
+  "evidence": {
+    "original_source": "brain/observability/incident-obligation-assurance.mjs",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5347",
+    "production_verification": "PENDING",
+    "original_owner_required": true
+  },
+  "terminal_rule": "Exact-head Required, full BRAIN, CodeQL, protected merge, original runtime readback, portal and next natural run. Not a promise of all-agent incident coverage."
+}

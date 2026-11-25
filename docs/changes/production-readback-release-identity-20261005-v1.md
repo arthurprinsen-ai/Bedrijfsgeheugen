@@ -12,3 +12,6 @@ Geobserveerde productie-evidence voor de oorspronkelijke merge:
 - state: `ready`
 - context: `production`
 - live `release.json`: dezelfde commit-ref en deploy-id.
+
+## Protected owner reconciliation — 25 november 2026
+De historische test is onder behoud van zijn release-identiteit-versus-pricingsemantiek hernoemd naar `tests/site-shell-production-readback-release-identity-v1.test.mjs`, zodat de bestaande delivery-classifier hem aan de website-lane koppelt. De bestaande website-lane voert deze test nu expliciet uit. De productie-readback gebruikt identity-only uitsluitend voor browser-required releases; de canonieke shell-readback en niet-browserrelease blijven pricing-streng. Exact-head Required en CodeQL blijven verplicht.

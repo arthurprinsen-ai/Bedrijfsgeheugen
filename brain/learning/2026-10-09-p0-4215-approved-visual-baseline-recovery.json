@@ -1,0 +1,44 @@
+{
+  "date": "2026-10-09",
+  "obligationId": "p0-4215-approved-visual-baseline-recovery-20261009-v1",
+  "fingerprint": "powerhouse|portal|approved-visual-pr-head-artifact-unavailable|trusted-immutable-deploy-recovery-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "authority": "existing protected GitHub merge, immutable Netlify preview and strict Playwright production DOM",
+  "root_causes": [
+    "A protected-merged Portal V2 change can have no successful auxiliary workflow_run preview artifact even after Required/CodeQL succeed, blocking production DOM baseline resolution despite an available trusted exact-head Netlify deploy."
+  ],
+  "prevention": [
+    "Preserve existing exact-head approved visual artifact path as primary.",
+    "When auxiliary approved screenshot missing, allow only exact merged PR head via successful Netlify provider status, strict allowlisted immutable deploy URL, matching release commit_ref and deploy_id, and successful Playwright screenshot from that immutable head.",
+    "Compare independent immutable production to this exact-head source screenshot with the original pixel threshold; never skip or force success."
+  ],
+  "tests": [
+    "tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-p0-4215-approved-visual-baseline-recovery-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PORTAL_APPROVED_VISUAL_ARTIFACT_UNAVAILABLE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "externalActionEvidence": "NOT_YET_VERIFIED",
+  "closureRequired": [
+    "protected exact-head Required and CodeQL",
+    "exact-main deployed Netlify immutable production release",
+    "new successful production visual DOM comparison against verified merged PR head",
+    "separate genuine two-customer tenant persistent ONE BRAIN consumer-ACK readback and CSRD/ESRS compliance applicability",
+    "large >750KB transactional outbox/split batch and complete dynamic DOM mapping"
+  ]
+}

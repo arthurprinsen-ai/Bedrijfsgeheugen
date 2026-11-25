@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migrationUrl = new URL('../supabase/migrations/20260915162000_powerhouse_execution_learning_closure_v1.sql', import.meta.url);
+const migrationUrl = new URL('../supabase/migration-history/repository-only/20260915162000_powerhouse_execution_learning_closure_v1.sql', import.meta.url);
 const policyUrl = new URL('../brain/policies/powerhouse-revenue-flywheel-v1.json', import.meta.url);
 const migration = fs.existsSync(migrationUrl) ? fs.readFileSync(migrationUrl, 'utf8') : '';
 const policy = fs.existsSync(policyUrl) ? fs.readFileSync(policyUrl, 'utf8') : '';

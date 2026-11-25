@@ -1,0 +1,49 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "tavily|delivery|lesson-correction|20261106-v1",
+  "owner": "existing delivery-failure-lessons and delivery-prevention-rules preflight; no new register",
+  "compiler": {
+    "failure_class": "UNVERIFIED_ASSUMPTION_STORED_AS_PROVEN_LESSON",
+    "scope": "DELIVERY_PREFLIGHT_LESSON_ACCURACY",
+    "machine_enforceable": false,
+    "security_sensitive": false
+  },
+  "root_cause": "The PROVEN Tavily lesson said the same 432 blind spot probably also affected bg-bedrijfsnieuws. Reading the deployed function (version 12) shows it throws on any non-ok Tavily response and records a failed bg_bewijs, so the statement was an unverified guess that stayed in the lesson.",
+  "prevention_rule": "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT stays unchanged; the lesson now states what was read instead of a guess. A lesson sentence about another component is written only after its source has been read.",
+  "prevention_rules": [
+    "PROVIDER_ERROR_NEVER_WRITTEN_AS_EMPTY_RESULT"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-system-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Edge function bg-bedrijfsnieuws version 12 source read through Supabase on 2026-11-06"
+    ],
+    "current": [
+      "bg_bedrijf_gecheckt: 15 companies checked per day on 26-29 Oct and 4-6 Nov, with hits on 4-6 Nov"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer"
+  ],
+  "known_limits": [
+    "Zero hits on 26-29 Oct are not explained; they may be real or a provider outage."
+  ],
+  "fingerprints": [
+    "tavily|pipeline|shared|plan-limit-432-read-as-no-results"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "fingerprint": "janitor-unbounded-api-sweep-v1",
+  "obligation_id": "janitor-bounded-cleanup-20261026",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-janitor-bounded-cleanup.test.mjs"
+    ]
+  },
+  "root_cause": "Janitor cleanup enumerates all action runs and refs without a hard job deadline, so GitHub API latency or growing history delays final provider readback.",
+  "prevention_rule": "Cap per-run actions and branch enumeration to bounded windows, rotate deterministic per-run page cursors, and terminate the job after 15 minutes while retaining exact-head and latest-state checks.",
+  "evidence": {
+    "source_run": 40298252894,
+    "source_job": 121489510742,
+    "production": "NOT_VERIFIED",
+    "ci": "PENDING"
+  },
+  "status": "CANDIDATE"
+}

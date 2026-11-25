@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "github|recovery-supervisor|drift-observability-evidence-gap|20261023-v1",
+  "obligation_id": "github|recovery-supervisor|native-head-cas-bounded-drift|20261023-v1",
+  "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4120",
+  "status": "CANDIDATE_NOT_RUNTIME_VERIFIED",
+  "root_cause": "Native CAS Supervisor output has no bounded machine-readable per-run drift counters; successful GitHub workflow alone cannot prove how many individual PRs converged.",
+  "prevention_rule": "Track distinct drift PRs, repeat drift, lease denial, native CAS and independently proven updates in the same run. Never infer customer or release outcome from run success.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-supervisor-drift-metrics-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-recovery-supervisor-drift-metrics-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-recovery-supervisor-drift-metrics-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39960974891",
+    "baseline": {
+      "drift_classifications": 49,
+      "lease_denials": 58
+    },
+    "actual_new_receipt": null,
+    "canonicalization_repair": {
+      "failed_workflow_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39963706106",
+      "failure": "LEARNING_FAILURE_CLASS_REQUIRED",
+      "fix": "same learning document now declares machine-enforceable CI failure classification"
+    }
+  },
+  "failure_class": "CI",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "automation",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

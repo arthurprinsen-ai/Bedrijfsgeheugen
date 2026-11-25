@@ -1,0 +1,512 @@
+import postgres from "npm:postgres@3.4.7";
+import {planOriginalHeartbeatObservations,planOriginalHeartbeatScans,planNotificationSafety,PORTAL_SIGNAL_HEARTBEAT_CONTRACT} from "./portal-signal-heartbeat.mjs";
+import {buildConnectorKpiIndex} from "./connector-kpi-source.mjs";
+
+const DB_REF="adhjwmvyoixzjtmiroln";
+const DB_POOLER_HOST="aws-0-eu-central-1.pooler.supabase.com";
+const STATEMENT_TIMEOUT_MS=90_000;
+const SERVICE_TOKEN_HASH="0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75";
+
+let sql:ReturnType<typeof postgres>|null=null;
+
+const clean=(value:unknown)=>String(value??"").trim();
+const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{
+  status,
+  headers:{"content-type":"application/json","cache-control":"no-store"}
+});
+
+async function sha256(value:string){
+  const bytes=new TextEncoder().encode(value);
+  const digest=await crypto.subtle.digest("SHA-256",bytes);
+  return [...new Uint8Array(digest)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+function poolerUrl(){
+  const raw=clean(Deno.env.get("SUPABASE_DB_URL"));
+  if(!raw)throw new Error("SUPABASE_DB_URL_MISSING");
+  const url=new URL(raw);
+  url.hostname=DB_POOLER_HOST;
+  url.port="6543";
+  url.username="postgres."+DB_REF;
+  return url.toString();
+}
+
+function db(){
+  if(!sql)sql=postgres(poolerUrl(),{
+    max:1,
+    prepare:false,
+    connect_timeout:4,
+    idle_timeout:10,
+    max_lifetime:60,
+    connection:{application_name:"powerhouse-commercial-heartbeat-runner"}
+  });
+  return sql;
+}
+
+async function runHeartbeat(){
+  const startedAt=new Date().toISOString();
+  return await db().begin(async tx=>{
+    await tx.unsafe("set local statement_timeout = '90000ms'");
+    await tx.unsafe("set local lock_timeout = '3000ms'");
+
+    const lockRows=await tx.unsafe(
+      "select pg_try_advisory_xact_lock(hashtextextended('powerhouse-commercial-heartbeat-external-v1',0)) as locked"
+    );
+    if(lockRows?.[0]?.locked!==true){
+      const peerRows=await tx.unsafe(
+        "select occurred_at,dedupe_key,state,data_quality,confidence from public.powerhouse_runtime_events where event_type='commercial_heartbeat' and occurred_at >= transaction_timestamp()-interval '2 minutes' order by occurred_at desc limit 1"
+      );
+      const peerReceipt=peerRows?.[0]??null;
+      const peerDurable=Boolean(
+        peerReceipt &&
+        String(peerReceipt.data_quality||"")==="VERIFIED" &&
+        ["actioned","observed","done"].includes(String(peerReceipt.state||""))
+      );
+      return {
+        ok:peerDurable,
+        state:peerDurable?"COMPLETED_BY_PEER":"SKIPPED_OVERLAP",
+        contract:"powerhouse-commercial-heartbeat-external-v1",
+        started_at:startedAt,
+        receipt:peerReceipt,
+        durable_readback_verified:peerDurable
+      };
+    }
+
+    await tx.unsafe(
+      "select set_config('powerhouse.external_heartbeat_owner','netlify-supabase-edge-v1',true)"
+    );
+
+    const heartbeatRows=await tx.unsafe(
+      "select public.powerhouse_commercial_heartbeat_v1(now()) as heartbeat"
+    );
+
+    const sovereigntyRows=await tx.unsafe(
+      "select public.powerhouse_refresh_data_sovereignty_v1() as data_sovereignty"
+    );
+    const readbackRows=await tx.unsafe(
+      "select occurred_at,dedupe_key,state,data_quality,confidence from public.powerhouse_runtime_events where event_type='commercial_heartbeat' and occurred_at >= transaction_timestamp()-interval '2 minutes' order by occurred_at desc limit 1"
+    );
+    const receipt=readbackRows?.[0]??null;
+    const durable=Boolean(
+      receipt &&
+      String(receipt.data_quality||"")==="VERIFIED" &&
+      ["actioned","observed","done"].includes(String(receipt.state||""))
+    );
+    if(!durable)throw new Error("HEARTBEAT_DURABLE_READBACK_MISSING");
+
+    return {
+      ok:true,
+      state:"COMPLETED",
+      contract:"powerhouse-commercial-heartbeat-external-v1",
+      transport:"supavisor-ipv4-transaction",
+      started_at:startedAt,
+      completed_at:new Date().toISOString(),
+      heartbeat:heartbeatRows?.[0]?.heartbeat??null,
+      data_sovereignty:sovereigntyRows?.[0]?.data_sovereignty??null,
+      receipt,
+      durable_readback_verified:true
+    };
+  });
+}
+
+// The EXISTING five-minute commercial Heartbeat owns these distinct lanes.
+// This is not a second scheduler or a new sender: the only provider calls are
+// dispatched by the three already deployed, approval- and CAS-gated executors.
+// Each hourly lane has its own unique runtime receipt and database transaction.
+type OutboundLane="email"|"linkedin_dm"|"linkedin_comment"|"linkedin_like";
+const outboundLanes=[
+  {lane:"email",executor:"powerhouse_dispatch_autonomous_outreach_v1",
+   eligible:"action_type='autonomous_email' and channel='email' and ((status='prepared' and evidence->>'human_approved'='true' and due_at<=now()) or (status='waiting' and evidence#>>'{autonomous_outbound,needs_readback}'='true'))"},
+  {lane:"linkedin_dm",executor:"powerhouse_dispatch_linkedin_sales_machine_v1",
+   eligible:"channel='linkedin_dm' and status in ('prepared','suggested') and evidence->>'human_approved'='true' and nullif(trim(coalesce(message_draft,'')),'') is not null"},
+  {lane:"linkedin_comment",executor:"powerhouse_dispatch_linkedin_comment_autopilot_v1",
+   eligible:"action_type='reply_post' and channel='linkedin_personal' and status='suggested' and nullif(trim(coalesce(message_draft,'')),'') is not null and source_url ~* '^https://(www[.])?linkedin[.]com/(posts/|feed/update/|pulse/)' and evidence#>>'{social_execution_gate,quality_passed}'='true' and coalesce(evidence->>'linkedin_post_urn',evidence->>'post_urn',evidence#>>'{commercial_intelligence,post_urn}',evidence#>>'{social_execution_gate,post_urn}') ~ '^urn:li:(share|ugcPost):[0-9]+$'"},
+  {lane:"linkedin_like",executor:null,eligible:"action_type='like_post' and channel='linkedin_personal' and status='suggested'"}
+] as const;
+async function runOneOutboundLane(def:(typeof outboundLanes)[number]){
+  try{
+    return await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '12000ms'");
+      await tx.unsafe("set local lock_timeout = '2000ms'");
+      const bucketRows=await tx.unsafe("select to_char(now() at time zone 'UTC','YYYYMMDDHH24') bucket,(now() at time zone 'Europe/Amsterdam')::date as business_date");
+      const {bucket,business_date}=bucketRows[0];
+      const dedupeKey="commercial-channel-dispatch:"+def.lane+":"+bucket;
+      const rows=await tx.unsafe("select count(*)::int ready from public.powerhouse_sales_actions where "+def.eligible);
+      const ready=Number(rows[0]?.ready||0);
+      const state=def.executor===null?"PROVIDER_WRITE_NOT_AVAILABLE":ready===0?"NO_ELIGIBLE_APPROVED_ACTION":"READY";
+      // Persist a genuine JSONB OBJECT (postgres.js serializes JSON strings as JSON
+      // string scalars). The 5-minute Heartbeat may see an eligible action later
+      // within the SAME hour: allow an earlier NO_ELIGIBLE receipt to promote
+      // atomically to READY. Never replay a READY/queued delivery claim.
+      const inserted=await tx.unsafe(
+        "insert into public.powerhouse_runtime_events (dedupe_key,event_type,source,subject_key,channel,occurred_at,state,data_quality,evidence,context) "+
+        "values ($1,'commercial_outbound_lane_dispatch','powerhouse-commercial-heartbeat-runner','growth-revenue-os',$2,now(),'observed','OBSERVED',"+
+        "jsonb_build_object('contract','powerhouse-independent-commercial-lanes-v2','lane',$2::text,'ready',$3::int,'decision',$4::text,'provider_side_effect_verified',false),"+
+        "jsonb_build_object('source','Brain+POWERHOUSE+Heartbeat','original_scheduler',true,'no_parallel_sender',true)) "+
+        "on conflict (dedupe_key) do update set evidence=excluded.evidence,context=excluded.context,occurred_at=excluded.occurred_at,updated_at=now() "+
+        "where excluded.evidence->>'decision'='READY' "+
+        "and public.powerhouse_runtime_events.state='observed' "+
+        "and (case when jsonb_typeof(public.powerhouse_runtime_events.evidence)='object' "+
+        "then coalesce(public.powerhouse_runtime_events.evidence->>'decision','') else '' end) "+
+        "in ('','NO_ELIGIBLE_APPROVED_ACTION','PROVIDER_WRITE_NOT_AVAILABLE') "+
+        "returning event_id",
+        [dedupeKey,def.lane,ready,state]
+      );
+      if(inserted.length===0)return {lane:def.lane,dispatched:false,reason:"ALREADY_EVALUATED_THIS_HOUR"};
+      if(state!=="READY"||def.executor===null)return {lane:def.lane,dispatched:false,ready,reason:state};
+      // Reuse ONLY existing provider executors: per-recipient authorization,
+      // quality, CAS, contact-pressure, suppression and proof remain mandatory.
+      const dispatched=await tx.unsafe(
+        "select public."+def.executor+"($1::date) as result",[business_date]
+      );
+      const receipt=dispatched[0]?.result||{};
+      const queued=receipt?.dispatched===true&&Number(receipt?.request_id)>0;
+      await tx.unsafe(
+        "update public.powerhouse_runtime_events set evidence=evidence||"+
+        "jsonb_build_object('queued',$2::boolean,'request_id',$3::bigint,'reason',$4::text),updated_at=now() "+
+        "where dedupe_key=$1",
+        [dedupeKey,queued,queued?Number(receipt.request_id):null,
+          queued?"PROVIDER_RESULT_PENDING_READBACK":clean(receipt?.reason)||"DISPATCH_DECLINED"]
+      );
+      return {lane:def.lane,dispatched:queued,ready,request_id:queued?Number(receipt.request_id):null,
+        reason:queued?"QUEUED_NOT_DELIVERED":clean(receipt?.reason)||"DISPATCH_DECLINED"};
+    });
+  }catch(error){
+    console.error("COMMERCIAL_LANE_DISPATCH_FAILED",def.lane,error instanceof Error?error.message:String(error));
+    return {lane:def.lane,dispatched:false,reason:"INDEPENDENT_LANE_ERROR"};
+  }
+}
+async function materializeCommercialIntent(){
+  // Materialize ORIGINAL Brain next-best-actions once per hour before delivery
+  // checks. This merely prepares candidate rows, never calls provider sends.
+  // Protected from expensive view failures by its own bounded transaction.
+  try{
+    return await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '16000ms'");
+      await tx.unsafe("set local lock_timeout = '2000ms'");
+      const got=await tx.unsafe("select pg_try_advisory_xact_lock(hashtextextended('powerhouse-outbound-brain-intent-v1',0)) locked");
+      if(got[0]?.locked!==true)return {state:"PEER_PROCESSING",ok:true};
+      const r=await tx.unsafe(
+        "select (now() at time zone 'Europe/Amsterdam')::date as business_date,to_char(now() at time zone 'UTC','YYYYMMDDHH24') as bucket"
+      );
+      const {business_date,bucket}=r[0],key="commercial-intent-materialization:"+bucket;
+      const claimed=await tx.unsafe(
+        "insert into public.powerhouse_runtime_events(dedupe_key,event_type,source,subject_key,occurred_at,state,data_quality,evidence,context) "+
+        "values ($1,'commercial_intent_materialization','powerhouse-commercial-heartbeat-runner','growth-revenue-os',now(),'observed','OBSERVED',"+
+        "jsonb_build_object('contract','powerhouse-brain-action-feed-v1','source','canonical-command-center','provider_side_effect_verified',false),"+
+        "jsonb_build_object('no_provider_mutation',true,'canonical_scheduler_owner',true)) "+
+        "on conflict(dedupe_key) do nothing returning event_id",[key]
+      );
+      if(!claimed.length)return {state:"ALREADY_MATERIALIZED_THIS_HOUR",ok:true};
+      const result=await tx.unsafe(
+        "select public.powerhouse_materialize_command_center_actions_v1($1::date) as outcome",[business_date]
+      );
+      const outcome=result[0]?.outcome||{};
+      await tx.unsafe(
+        "update public.powerhouse_runtime_events set evidence=evidence||"+
+        "jsonb_build_object('actions_touched',$2::int,'email_actions',$3::int,'linkedin_dm_actions',$4::int,'linkedin_comments',$5::int,'research_actions',$6::int),updated_at=now() "+
+        "where dedupe_key=$1",
+        [key,Number(outcome.actions_touched)||0,Number(outcome.email_actions)||0,
+          Number(outcome.linkedin_dm_actions)||0,Number(outcome.linkedin_comments)||0,
+          Number(outcome.research_actions)||0]
+      );
+      return {state:"CANONICAL_BRAIN_ACTIONS_MATERIALIZED",ok:true,
+        actions_touched:Number(outcome.actions_touched)||0,
+        email_actions:Number(outcome.email_actions)||0,
+        dm_actions:Number(outcome.linkedin_dm_actions)||0,
+        comment_actions:Number(outcome.linkedin_comments)||0,
+        research_actions:Number(outcome.research_actions)||0};
+    });
+  }catch(error){
+    console.error("COMMERCIAL_INTENT_MATERIALIZATION_FAILED",error instanceof Error?error.message:String(error));
+    return {state:"INDEPENDENT_BRAIN_FEED_ERROR",ok:false};
+  }
+}
+// Assess existing contact facts on every canonical Heartbeat tick. This never sends.
+// Independent transaction: an authority-review error cannot block other channels.
+// The original identity/contact owner (#138) remains active and is responsible
+// for the large daily queue. This supplemental Heartbeat review is bounded,
+// idempotent by 15-minute UTC slot, and never sends external messages.
+// Persist a slot claim BEFORE the expensive query so a timeout cannot cause a
+// retry storm on every subsequent Heartbeat tick in the same slot.
+async function reviewContactAuthority(){
+  let slotKey="";
+  try{
+    const claim=await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '3000ms'");
+      await tx.unsafe("set local lock_timeout = '1000ms'");
+      const clock=await tx.unsafe(
+        "select to_char(date_trunc('hour',now() at time zone 'UTC') + floor(extract(minute from now())/15)::int * interval '15 minutes','YYYYMMDDHH24MI') as slot"
+      );
+      const key="contact-authority-heartbeat:"+String(clock[0]?.slot||"");
+      if(!clock[0]?.slot)throw new Error("CONTACT_AUTHORITY_SLOT_CLOCK_UNAVAILABLE");
+      const rows=await tx.unsafe(
+        "insert into public.powerhouse_runtime_events(dedupe_key,event_type,source,subject_key,occurred_at,state,data_quality,evidence,context) "+
+        "values($1,'contact_authority_heartbeat_review','powerhouse-commercial-heartbeat-runner','growth-revenue-os',now(),'observed','OBSERVED',"+
+        "jsonb_build_object('batch_cap',200,'external_messages_sent',0,'authority','existing_identity_graph'),"+
+        "jsonb_build_object('canonical_cron_owner','powerhouse-identity-graph-v1','independent_sender',false)) "+
+        "on conflict(dedupe_key) do nothing returning event_id",[key]
+      );
+      return {key,acquired:rows.length>0};
+    });
+    slotKey=claim.key;
+    if(!claim.acquired)return {state:"REVIEW_SLOT_ALREADY_CLAIMED",external_messages_sent:0};
+    return await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '12000ms'");
+      await tx.unsafe("set local lock_timeout = '2000ms'");
+      const rows=await tx.unsafe(
+        "select public.powerhouse_contact_authority_review_batch_v1((now() at time zone 'Europe/Amsterdam')::date,200) as result"
+      );
+      return rows[0]?.result||{state:"NO_REVIEW_RECEIPT",external_messages_sent:0};
+    });
+  }catch(error){
+    console.error("COMMERCIAL_CONTACT_AUTHORITY_REVIEW_FAILED",error instanceof Error?error.message:String(error));
+    return {state:"AUTHORITY_REVIEW_RETRYABLE_ERROR",slot_reserved:Boolean(slotKey),external_messages_sent:0};
+  }
+}
+
+// Source-only CRO observation within the ORIGINAL authorized Heartbeat runner.
+// No outbound messages, new scheduler, separate Brain, claim of revenue, or BG211 replay.
+async function observeCroCommercialProof(){
+  try{
+    const outcome=await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '8500ms'");
+      await tx.unsafe("set local lock_timeout = '1500ms'");
+      const conversionRows=await tx.unsafe(
+        "select event_evidence_status,observed_cta_events_7d,linked_qualified_lead_records_30d,orders_with_recorded_provider_readback_30d,last_persisted_event_at from public.powerhouse_cro_conversion_evidence_v1 limit 1"
+      );
+      const experimentRows=await tx.unsafe(
+        "select experiment_key,evidence_status,minimum_matured_per_arm,matured_treatment,matured_holdout from public.powerhouse_cro_experiment_evidence_v1 order by experiment_key limit 2"
+      );
+      const conversion=conversionRows?.[0]??null;
+      if(!conversion)throw new Error("CRO_CONVERSION_PROOF_SOURCE_UNAVAILABLE");
+      const exp=experimentRows?.[0]??null;
+      const positiveInt=(n:unknown)=>n!==null&&n!==undefined&&Number.isSafeInteger(Number(n))&&Number(n)>=0?Number(n):null;
+      // These views are observations: no independent buyer/payment, event UID
+      // receipt, pre-treatment assignment or Brain delivery attestation.
+      const gates=[
+        {gate:"BRAIN_DELIVERY_READBACK",verified:false},
+        {gate:"FIRST_PARTY_EVENT_RECEIPT",verified:false},
+        {gate:"ACTUAL_CTA_EXPOSURE",verified:positiveInt(conversion.observed_cta_events_7d)>0},
+        {gate:"CONTROLLED_CRO_EXPERIMENT",verified:false},
+        {gate:"QUALIFIED_BUYER_READBACK",verified:false},
+        {gate:"PAID_ORDER_READBACK",verified:false},
+        {gate:"ONE_BRAIN_LEARNING_APPLIED",verified:false}
+      ];
+      const snapshot={
+        contract:"POWERHOUSE_CRO_COMMERCIAL_CLOSURE_V1",
+        status:"EVIDENCE_INCOMPLETE",
+        evidence_origin:"existing_supabase_read_models",
+        verified_paid_revenue_eur:null,
+        verified_qualified_leads:null,
+        verified_paid_orders:null,
+        gates,
+        observed:{
+          eventStatus:String(conversion.event_evidence_status||"UNKNOWN").slice(0,90),
+          ctaEvents7d:positiveInt(conversion.observed_cta_events_7d),
+          linkedLeadRecords30d:positiveInt(conversion.linked_qualified_lead_records_30d),
+          orderProviderReferenceRecords30d:positiveInt(conversion.orders_with_recorded_provider_readback_30d),
+          experimentStatus:String(exp?.evidence_status||"NO_EXPERIMENT_SOURCE").slice(0,90),
+          maturedTreatment:positiveInt(exp?.matured_treatment),
+          maturedHoldout:positiveInt(exp?.matured_holdout),
+          minimumPerArm:positiveInt(exp?.minimum_matured_per_arm)
+        },
+        truth_boundary:"Read-model metrics and an internal heartbeat receipt do not independently verify buyer, payment, delivery or applied CRO learning.",
+        nextAction:"USE_ORIGINAL_HEARTBEAT_OWNER_TO_VERIFY_EVENT_IDS_AND_REAL_CONTROL_BUYER_PAYMENT_OUTCOMES"
+      };
+      const current=await tx.unsafe("select to_char((now() at time zone 'Europe/Amsterdam')::date,'YYYY-MM-DD') as day");
+      const day=String(current?.[0]?.day||"");
+      if(!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(day))throw new Error("CRO_DAY_UNAVAILABLE");
+      const key="cro-commercial-evidence:"+day;
+      const written=await tx.unsafe(
+        "insert into public.brain_records(tenant_id,record_id,record_type,record_kind,subject_id,correlation_id,owner_id,status,observed_at,executed,verified,result,evidence_ids,provenance,payload,idempotency_key,source_revision) "+
+        "values('canonical',$1,'Verification','verification','cro-commercial-closure','powerhouse-cro-commercial-closure-v1','powerhouse-commercial-heartbeat-runner','OBSERVED',now(),true,false,"+
+        "jsonb_build_object('commercial_proof_status','EVIDENCE_INCOMPLETE','business_outcome_verified',false,'causal_winner_proven',false),"+
+        "ARRAY['supabase:powerhouse_cro_conversion_evidence_v1','supabase:powerhouse_cro_experiment_evidence_v1']::text[],"+
+        "jsonb_build_object('owner','original-commercial-heartbeat','no_parallel_scheduler',true),($2::text)::jsonb,$1,'original-heartbeat-cro-proof-v1') "+
+        "on conflict(tenant_id,idempotency_key) do update set observed_at=excluded.observed_at,executed=true,verified=false,"+
+        "result=excluded.result,payload=excluded.payload,provenance=excluded.provenance,updated_at=now() "+
+        "where public.brain_records.record_type='Verification' and public.brain_records.owner_id='powerhouse-commercial-heartbeat-runner' "+
+        "returning record_id,status,verified,executed",
+        [key,JSON.stringify(snapshot)]
+      );
+      if(written.length!==1)throw new Error("CRO_CANONICAL_BRAIN_OWNER_CONFLICT");
+      return {record_id:key,status:"OBSERVED",business_outcome_verified:false};
+    });
+    // Independent readback AFTER commit, never inferred from a successful SQL call alone.
+    const again=await db().unsafe(
+      "select record_id,status,executed,verified,payload->>'contract' contract,jsonb_typeof(payload) payload_kind from public.brain_records "+
+      "where tenant_id='canonical' and record_id=$1 order by observed_at desc limit 1",
+      [outcome.record_id]
+    );
+    const verified=again.length===1&&again[0].record_id===outcome.record_id&&
+      again[0].status==="OBSERVED"&&again[0].executed===true&&
+      again[0].verified===false&&again[0].payload_kind==="object"&&again[0].contract==="POWERHOUSE_CRO_COMMERCIAL_CLOSURE_V1";
+    return {state:verified?"BRAIN_OBSERVATION_READBACK_VERIFIED":"BRAIN_OBSERVATION_READBACK_MISSING",
+      source:"canonical_brain_records",record_id:outcome.record_id,
+      technical_readback_verified:verified,business_outcome_verified:false,
+      commercial_loop_closed:false};
+  }catch(error){
+    console.error("CRO_COMMERCIAL_OBSERVATION_FAILED",error instanceof Error?error.message:String(error));
+    return {state:"EVIDENCE_UNAVAILABLE",technical_readback_verified:false,
+      business_outcome_verified:false,commercial_loop_closed:false};
+  }
+}
+
+async function runOutboundLanes(){
+  const results=await Promise.allSettled(outboundLanes.map(def=>runOneOutboundLane(def)));
+  return results.map((item,i)=>item.status==="fulfilled"?item.value:{
+    lane:outboundLanes[i].lane,dispatched:false,reason:"INDEPENDENT_LANE_UNHANDLED_FAILURE"
+  });
+}
+
+
+/**
+ * Tenant alert observations in the existing five-minute Powerhouse Heartbeat.
+ * No parallel scheduler, sender, customer state writer or approval bypass.
+ */
+async function observePortalSignals(){
+  try{
+    const outcome=await db().begin(async tx=>{
+      await tx.unsafe("set local statement_timeout = '10000ms'");
+      await tx.unsafe("set local lock_timeout = '1200ms'");
+      const lock=await tx.unsafe("select pg_try_advisory_xact_lock(hashtextextended('portal-voice-alert-heartbeat-v1',0)) as held");
+      if(lock?.[0]?.held!==true)return {state:"ALREADY_CHECKED_BY_PEER",planned:0,keys:[],coverageTruncated:false};
+      const rows=await tx.unsafe(
+        "select tenant_id,layer,payload,source_updated_at,updated_at from public.portal_state_layers "+
+        "where layer in ('legacy-migration','canonical-brain') "+
+        // Include revocations (including empty rules and missing portal data):
+        // excluding them would resurrect consent from older tenant layers.
+        "order by updated_at desc limit 201"
+      );
+      // This is a gated bridge, not a new reader of third-party APIs.
+      // Configured/test-only connector definitions MUST NOT become KPI values.
+      // Resolve only newest opted-in tenant layers: an older consent can
+      // never resurrect connector reads after the user revoked monitoring.
+      const candidates=monitoringRuleCandidates(rows.slice(0,200))
+        .filter(source=>source.rules.some(rule=>rule?.monitoring===true&&rule?.enabled!==false&&rule?.source?.type==='connector'));
+      const scopeUuid=/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      const allTenants=[...new Set(candidates.map(source=>String(source.tenant)).filter(tenant=>scopeUuid.test(tenant)))];
+      const allConnectors=[...new Set(candidates.flatMap(source=>source.rules
+        .filter(rule=>rule?.monitoring===true&&rule?.enabled!==false&&rule?.source?.type==='connector')
+        .map(rule=>String(rule.source.connectorId||'').toLowerCase())).filter(id=>scopeUuid.test(id)))];
+      const connectorRuleCoverageTruncated=allTenants.length>100||allConnectors.length>100;
+      const requiredTenants=allTenants.slice(0,100),neededConnectors=allConnectors.slice(0,100);
+      let connectorMeasurements=new Map(),connectorReadTruncated=false;
+      if(requiredTenants.length&&neededConnectors.length){
+        const defs=await tx.unsafe(
+          "select organisatie_id,id,versie,status,configuratie from public.connector_definitions "+
+          "where organisatie_id=any($1::uuid[]) and id=any($2::uuid[]) and status='Active' "+
+          "order by bijgewerkt_op desc limit 251",[requiredTenants,neededConnectors]);
+        const execs=await tx.unsafe(
+          "select e.id,e.organisatie_id,e.connector_id,e.connector_versie,e.status,e.evidence "+
+          "from public.connector_executions e "+
+          "where e.organisatie_id=any($1::uuid[]) and e.connector_id=any($2::uuid[]) "+
+          "and e.status='LIVE_INGEST_VERIFIED' order by e.afgerond_op desc limit 401",
+          [requiredTenants,neededConnectors]);
+        const sourceRows=await tx.unsafe(
+          "select tenant_id,observation_id,source_type,normalized_source_revision,raw_payload,observed_at "+
+          "from public.powerhouse_source_observation_v1 "+
+          "where tenant_id=any($1::text[]) and source_type='connector-kpi' "+
+          "order by observed_at desc limit 501",[requiredTenants]);
+        connectorReadTruncated=defs.length>250||execs.length>400||sourceRows.length>500;
+        connectorMeasurements=buildConnectorKpiIndex({
+          definitions:defs.slice(0,250),executions:execs.slice(0,400),
+          observations:sourceRows.slice(0,500)
+        });
+      }
+      const observations=await planOriginalHeartbeatObservations(rows.slice(0,200),{connectorMeasurements});
+      const scans=await planOriginalHeartbeatScans(rows.slice(0,200),{connectorMeasurements});
+      const keys=[];
+      let inserted=0,scansInserted=0;
+      for(const observation of observations.slice(0,15)){
+        const delivery=planNotificationSafety(observation);
+        const evidence={...observation.evidence,notificationState:delivery.state,
+          externalMessagesSent:0,actionExecutionVerified:false};
+        const stored=await tx.unsafe(
+          "insert into public.powerhouse_runtime_events "+
+          "(dedupe_key,event_type,source,subject_key,channel,occurred_at,state,data_quality,evidence,context) "+
+          "values($1,'portal_user_signal_observed','powerhouse-commercial-heartbeat-runner',$2,'portal',now(),'observed','OBSERVED',"+
+          "$3::jsonb,jsonb_build_object('contract',$4::text,'original_heartbeat_owner',true,'tenant_identifier_masked',true,'no_parallel_worker',true)) "+
+          "on conflict(dedupe_key) do nothing returning event_id",
+          [observation.dedupeKey,'tenant:'+observation.tenantFingerprint,
+           JSON.stringify(evidence),PORTAL_SIGNAL_HEARTBEAT_CONTRACT]
+        );
+        keys.push(observation.dedupeKey);
+        inserted+=stored.length;
+      }
+      // Durable tenant observation that an enabled policy was checked, even
+      // when no anomaly fired. Never claim fresh measurements or delivery.
+      for(const scan of scans.slice(0,20)){
+        const stored=await tx.unsafe(
+          "insert into public.powerhouse_runtime_events "+
+          "(dedupe_key,event_type,source,subject_key,channel,occurred_at,state,data_quality,evidence,context) "+
+          "values($1,'portal_user_signal_scan','powerhouse-commercial-heartbeat-runner',$2,'portal',now(),'observed','OBSERVED',"+
+          "$3::jsonb,jsonb_build_object('contract',$4::text,'original_heartbeat_owner',true,'tenant_identifier_masked',true,'no_parallel_worker',true)) "+
+          "on conflict(dedupe_key) do nothing returning event_id",
+          [scan.dedupeKey,'tenant:'+scan.tenantFingerprint,
+            JSON.stringify(scan.evidence),PORTAL_SIGNAL_HEARTBEAT_CONTRACT]
+        );
+        keys.push(scan.dedupeKey);
+        scansInserted+=stored.length;
+      }
+      return {state:scans.length?"SCANS_AND_TRIGGERS_OBSERVED":"NO_CONFIGURED_MONITORING",
+        planned:observations.length,scanned:scans.length,inserted,scansInserted,keys,
+        coverageTruncated:rows.length>200||observations.length>15||scans.length>20||connectorReadTruncated||connectorRuleCoverageTruncated};
+    });
+    if(!outcome.keys?.length)return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
+      state:outcome.state,observedSignalCount:outcome.planned||0,scannedTenantCount:outcome.scanned||0,
+      technicalReadbackVerified:false,notificationsSent:0,actionsExecuted:0,
+      coverageTruncated:outcome.coverageTruncated||false};
+    const placeholders=outcome.keys.map((_:string,i:number)=>'$'+(i+1)).join(',');
+    const rows=await db().unsafe(
+      "select dedupe_key,source,event_type,state,evidence->>'contract' as contract "+
+      "from public.powerhouse_runtime_events where dedupe_key in ("+placeholders+")",
+      outcome.keys
+    );
+    const exact=new Set(rows.filter((row:any)=>row.source==="powerhouse-commercial-heartbeat-runner"&&
+      ["portal_user_signal_observed","portal_user_signal_scan"].includes(row.event_type)&&row.state==="observed"&&
+      row.contract===PORTAL_SIGNAL_HEARTBEAT_CONTRACT).map((row:any)=>row.dedupe_key));
+    return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,
+      state:exact.size===outcome.keys.length?"OBSERVATION_READBACK_VERIFIED":"OBSERVATION_READBACK_DUE",
+      observedSignalCount:outcome.planned,insertedObservations:outcome.inserted,
+      scannedTenantCount:outcome.scanned,insertedScans:outcome.scansInserted,
+      technicalReadbackVerified:exact.size===outcome.keys.length,
+      coverageTruncated:outcome.coverageTruncated,
+      measurementFreshnessVerified:false,notificationsSent:0,actionsExecuted:0};
+  }catch(error){
+    console.error("ORIGINAL_PORTAL_SIGNAL_HEARTBEAT_FAILED",error instanceof Error?error.message:String(error));
+    return {contract:PORTAL_SIGNAL_HEARTBEAT_CONTRACT,state:"RETRYABLE_OBSERVATION_ERROR",
+      technicalReadbackVerified:false,notificationsSent:0,actionsExecuted:0};
+  }
+}
+
+Deno.serve(async(req:Request)=>{
+  if(req.method!=="POST")return json({ok:false,error:"METHOD_NOT_ALLOWED"},405);
+
+  const provided=clean(req.headers.get("x-bg-service-token"));
+  if(!provided||await sha256(provided)!==SERVICE_TOKEN_HASH)return json({ok:false,error:"UNAUTHORIZED"},401);
+
+  // The outbound lanes are not coupled to the expensive Brain transaction.
+  // A failure/timeout of the commercial scoring cycle cannot starve email,
+  // DM, comments, or the honest unsupported-likes status.
+  const brainActionFeed=await materializeCommercialIntent();
+  const contactAuthorityReview=await reviewContactAuthority();
+  const outboundLanesResult=await runOutboundLanes();
+  const portalSignalObservation=await observePortalSignals();
+  try{
+    const result=await runHeartbeat();
+    const croCommercialEvidence=await observeCroCommercialProof();
+    return json({...result,cro_commercial_evidence:croCommercialEvidence,brain_action_feed:brainActionFeed,contact_authority_review:contactAuthorityReview,outbound_lanes:outboundLanesResult,portal_signal_observation:portalSignalObservation},result.state==="SKIPPED_OVERLAP"?202:200);
+  }catch(error){
+    console.error("POWERHOUSE_COMMERCIAL_HEARTBEAT_RUNNER_FAILED",error instanceof Error?error.message:String(error));
+    return json({
+      ok:false,
+      error:"COMMERCIAL_HEARTBEAT_FAILED",
+      contract:"powerhouse-commercial-heartbeat-external-v1",
+      brain_action_feed:brainActionFeed,
+      outbound_lanes:outboundLanesResult,
+      portal_signal_observation:portalSignalObservation
+    },503);
+  }
+});

@@ -92,11 +92,24 @@ test('ISO expiry and arbitrary tenant field survive generic extraction and mappi
 
 test('activation evaluator refuses incomplete evidence and accepts complete test evidence only',()=>{
   assert.deepEqual(evaluateActivationEvidence({version:2},{configVersion:2,testExecutionId:'x'}),{eligible:false,reason:'TEST_EVIDENCE_INCOMPLETE'});
-  assert.deepEqual(evaluateActivationEvidence({version:2},{configVersion:2,testExecutionId:'x',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}}),{eligible:true,reason:'ELIGIBLE'});
+  assert.deepEqual(evaluateActivationEvidence({version:2},{configVersion:2,testExecutionId:'x',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}}),{eligible:false,reason:'EXTERNAL_PROVIDER_PROOF_REQUIRED'});
+  assert.deepEqual(evaluateActivationEvidence({version:2},{configVersion:2,testExecutionId:'x',proofLevel:'PROVIDER_VERIFIED',sourceReadSuccess:true,extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}}),{eligible:true,reason:'ELIGIBLE'});
 });
 
 test('connector error classification allows one controlled retry only for transient transport failures',()=>{
   assert.deepEqual(classifyConnectorError({code:'ETIMEDOUT'}),{retryable:true,maxAttempts:1,recoveryRequired:false,class:'transport'});
   assert.deepEqual(classifyConnectorError({code:'UNAUTHORIZED'}),{retryable:false,maxAttempts:0,recoveryRequired:true,class:'auth'});
   assert.deepEqual(classifyConnectorError({code:'LOOKUP_AMBIGUOUS'}),{retryable:false,maxAttempts:0,recoveryRequired:true,class:'validation'});
+});
+
+test('server-side source plus destination proof is required for a provider-verified activation',async()=>{
+  const adapters=baseAdapters({hash:'verified-h1'});
+  adapters.source.read=async()=>({content:'provider data',hash:'verified-h1',verification:'PROVIDER_VERIFIED'});
+  adapters.target.safeTest=async()=>({ok:true,reference:'sandbox-readback-1',verification:'PROVIDER_VERIFIED'});
+  const connector=draft();
+  const result=await runConnectorTest({connector,input:{},adapters});
+  assert.equal(result.status,'TEST_PASSED');
+  assert.equal(result.evidence.proofLevel,'PROVIDER_VERIFIED');
+  assert.deepEqual(evaluateActivationEvidence(connector,result.evidence),{eligible:true,reason:'ELIGIBLE'});
+  // This is an adapter contract unit test, not evidence of a real third-party provider connection.
 });

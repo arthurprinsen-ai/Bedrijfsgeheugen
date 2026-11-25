@@ -1,0 +1,41 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "seo|linkedin-link-in-comment|20261105-v1",
+  "owner": "powerhouse-linkedin-company-growth",
+  "compiler": {
+    "failure_class": "LINKEDIN_LINK_RULE_CONTRADICTS_EVIDENCE",
+    "scope": "LINKEDIN_LINK_PLACEMENT",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "The visitor target rule put the LinkedIn link in the post, which contradicts the stored evidence speelboek-2026-07-link (links in the post text lower reach).",
+  "prevention_rule": "Links with UTM go in the first comment, never in the post text; at least a third of posts carry one.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-visitor-growth-target-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-visitor-growth-target-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-visitor-growth-target-20261105.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "bg_linkedin_bewijs speelboek-2026-07-link: link not in main text"
+    ],
+    "current": [
+      "config/visitor-growth-target.json and the linkedin skill now say first comment"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

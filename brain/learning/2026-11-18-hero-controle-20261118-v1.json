@@ -1,0 +1,41 @@
+{
+  "fingerprint": "site|rituals|hero-controle|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|hero-controle|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 11,
+    "security_sensitive": false
+  },
+  "root_cause": "Tekst en kleur van de hero waren geverifieerd, maar niet de eerste-scherm-indeling met cookiebanner en zwevende elementen: die lagen over de hoofdknop en microtekst.",
+  "correction": "Hero-inhoud hoger, pil pas na scroll, mobiel beeld kleiner; gemeten met posities van knop en banner.",
+  "prevention": [
+    "Hero-controle meet altijd de posities van de hoofdknop, cookiebanner en zwevende elementen op 1440x900 en 390x844, met banner zichtbaar."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "assets/rituals-belevenis.css",
+      "assets/rituals-beleving.js",
+      "tools/bouw-v18-chrome-alles.mjs",
+      "portal-v2/index.html"
+    ],
+    "outcome": "Lokaal gemeten tegen live: knop vrij van banner; live-readback open."
+  }
+}

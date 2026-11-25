@@ -9,6 +9,7 @@ import { mountControlPlaneCockpit } from '../control-plane-cockpit.js';
 import { buildBusinessContext, BUSINESS_STAGES } from '../../brain/context/business-context-engine.mjs';
 import { renderManagementAccountingIntelligence } from './management-accounting-intelligence.js';
 import { mountOverviewForesight } from '../foresight-context-ui.js';
+import { mountOwnerOperatingSystem } from '../owner-operating-system.js';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);
@@ -29,6 +30,7 @@ export function legacyOverviewInsights(state={}){
  const profile=state?.portal?.profile||{};
  if(!profile.maturity||typeof profile.maturity!=='object')return null;
  const metrics=profileOverviewMetrics(state);
+ if(metrics.evidenceStatus!=='MODEL_ESTIMATE_FROM_ENTERED_INPUTS')return null;
  const dimensions=PROFILE_DIMENSION_LABELS.map(([id,label])=>({id,label,level:Number(profile.maturity?.[id])||2}));
  const blockers=[...dimensions].sort((a,b)=>a.level-b.level).slice(0,3);
  const level=Math.max(1,Math.min(5,Math.round(metrics.averageMaturity)));
@@ -45,13 +47,14 @@ export function overviewViewModel(state={}){
  const profile=state?.portal?.profile;
  if(!profile||typeof profile!=='object'||!profile.maturity)return null;
  const metrics=profileOverviewMetrics(state);
+ if(metrics.evidenceStatus!=='MODEL_ESTIMATE_FROM_ENTERED_INPUTS')return null;
  return Object.freeze({
   weeksPerYear:metrics.weeksPerYear,
   capacityNotCash:metrics.capacityNotCash,
   cards:Object.freeze([
-   Object.freeze({label:'Gemiddelde volwassenheid',value:`${nl1(metrics.averageMaturity)}/5`,note:'gemiddeld over 13 bedrijfsonderdelen'}),
-   Object.freeze({label:'Handmatig werk per jaar',value:`${nl0(metrics.annualManualHours)} uur`,note:'46 weken als conservatieve jaarbasis'}),
-   Object.freeze({label:'Vermijdbare capaciteit',value:`${nl1(metrics.fteLost)} fte`,note:'ruimte die je terugkrijgt'}),
+   Object.freeze({label:'Gemiddelde volwassenheid',value:`${nl1(metrics.averageMaturity)}/5`,note:'modelberekend uit 13 ingevulde bedrijfsonderdelen'}),
+   Object.freeze({label:'Handmatig werk per jaar',value:`${nl0(metrics.annualManualHours)} uur`,note:'modelaanname: 46 werkweken; geen gemeten tijd'}),
+   Object.freeze({label:'Vermijdbare capaciteit',value:`${nl1(metrics.fteLost)} fte`,note:'indicatieve capaciteit, niet gerealiseerd'}),
    Object.freeze({label:'Indicatieve capaciteitswaarde',value:euro(metrics.annualManualCost),note:'capaciteitswaarde; geen cashbesparing'})
   ])
  });
@@ -86,7 +89,7 @@ export function bindPageButtons(scope){
 function renderLegacyOverviewInsights(root,state){
  const main=root?.querySelector?.('.main');if(!main)return false;
  let section=main.querySelector('[data-legacy-overview-insights]');
- if(!section){section=(root.ownerDocument||document).createElement('section');section.className='legacy-overview-insights';section.dataset.legacyOverviewInsights='true';const anchor=main.querySelector('.dashboard')||main.querySelector('.lower');main.insertBefore(section,anchor||null);}
+ if(!section){section=(root.ownerDocument||document).createElement('section');section.className='legacy-overview-insights';section.dataset.legacyOverviewInsights='true';const anchor=main.querySelector('.dashboard')||main.querySelector('.lower');(anchor?.parentElement||main).insertBefore(section,anchor||null);}
  const model=legacyOverviewInsights(state);
  if(!model){section.innerHTML=`<article class="legacy-insight-card company-state"><div class="legacy-insight-head"><span>Stand van je bedrijf</span><strong>CMMI —/5</strong></div><h3>Nog niet ingevuld</h3><p>Vul het organisatieprofiel in om de actuele volwassenheid en voortgang te berekenen.</p><div class="legacy-progress"><i style="width:0%"></i></div></article><article class="legacy-insight-card adoption-card"><div class="legacy-insight-head"><span>Adoptiecurve</span><strong>Nog niet bepaald</strong></div><div class="adoption-curve">${ADOPTION_STAGES.map((item,index)=>`<div class="adoption-step"><i></i><b>${item.label}</b><small>Niveau ${index+1}</small></div>`).join('')}</div></article><article class="legacy-insight-card blockers-card"><div class="legacy-insight-head"><span>Waar organisatie staat</span><strong>Onbekend</strong></div><div class="legacy-blockers"><button type="button" data-pv-page="profiel"><span>Organisatieprofiel aanvullen</span><strong>→</strong></button></div><p>Blokkades en aandachtspunten worden pas berekend uit expliciete klantinvoer.</p></article>`;bindPageButtons(section);return true;}
  section.innerHTML=`<article class="legacy-insight-card company-state"><div class="legacy-insight-head"><span>Stand van je bedrijf</span><strong>CMMI ${model.level}/5</strong></div><h3>${model.stage.label}</h3><p>Gemiddelde volwassenheid ${nl1(model.averageMaturity)}/5 · ${model.progress}% op de volwassenheidsladder.</p><div class="legacy-progress"><i style="width:${model.progress}%"></i></div></article><article class="legacy-insight-card adoption-card"><div class="legacy-insight-head"><span>Adoptiecurve</span><strong>${model.stage.label}</strong></div><div class="adoption-curve">${ADOPTION_STAGES.map((item,index)=>`<div class="adoption-step ${index+1<=model.level?'active':''} ${index+1===model.level?'current':''}"><i></i><b>${item.label}</b><small>Niveau ${index+1}</small></div>`).join('')}</div></article><article class="legacy-insight-card blockers-card"><div class="legacy-insight-head"><span>Waar organisatie staat</span><strong>${model.blockers.length} aandachtspunten</strong></div><div class="legacy-blockers">${model.blockers.map(item=>`<button type="button" data-pv-page="profiel"><span>${item.label}</span><strong>${item.level}/5</strong></button>`).join('')}</div><p>${nl0(model.annualManualHours)} uur handmatig werk per jaar op basis van de huidige invoer.</p></article>`;
@@ -94,6 +97,57 @@ function renderLegacyOverviewInsights(root,state){
  return true;
 }
 
+
+function renderBedrijfslekIntelligence(root,state){
+ const main=root?.querySelector?.('.main');if(!main)return false;
+ const scan=state?.portal?.assessments?.bedrijfslekScan;
+ let section=main.querySelector('[data-bedrijfslek-intelligence]');
+ // A verified scan with an absent score is NOT a measured zero. Preserve
+ // unknown status on every owner overview surface, not just the new entry.
+ const rawScore=scan?.score;
+ const hasExplicitScore=rawScore!==null&&rawScore!==undefined&&(typeof rawScore!=='string'||rawScore.trim().length>0);
+ const score=hasExplicitScore?Number(rawScore):NaN;
+ if(scan?.verifiedIdentity!==true||!hasExplicitScore||!Number.isFinite(score)||score<0||score>100){
+  section?.remove?.();return false;
+ }
+ const doc=root.ownerDocument||document;
+ if(!section){
+  section=doc.createElement('section');
+  section.dataset.bedrijfslekIntelligence='true';
+  section.className='legacy-overview-insights';
+  section.setAttribute('aria-label','Mijn Bedrijfslek nulmeting en voorgestelde acties');
+  const anchor=main.querySelector('[data-legacy-overview-insights]')||main.querySelector('.dashboard');
+  (anchor?.parentElement||main).insertBefore(section,anchor||null);
+ }
+ section.replaceChildren();
+ const article=doc.createElement('article');article.className='legacy-insight-card';
+ const title=doc.createElement('h3');title.textContent='Jouw Bedrijfslek-nulmeting';
+ const label=doc.createElement('p');
+ label.textContent=`Score ${Math.round(score)}/100 · Zelfgerapporteerd · Gekoppeld aan dit bedrijf`;
+ const caution=doc.createElement('p');
+ caution.textContent='Dit is een indicatieve nulmeting uit jouw antwoorden, geen geauditeerde KPI of bewezen financiële besparing.';
+ const heading=doc.createElement('strong');heading.textContent='Drie voorgestelde vervolgstappen';
+ article.append(title,label,caution,heading);
+ const source=String(scan.source||'');
+ const recs=Array.isArray(state?.recommendedActions)?state.recommendedActions.filter(item=>
+  item?.status==='voorgesteld'&&item?.executed===false&&item?.verified===false&&
+  (item?.source===source)&&String(item?.id||'').startsWith('bedrijfslek:')).slice(0,3):[];
+ const list=doc.createElement('ul');
+ if(!recs.length){
+  const li=doc.createElement('li');li.textContent='Bekijk de onderdelen met de laagste scores en bespreek de eerstvolgende verbetering.';list.appendChild(li);
+ }else for(const item of recs){
+  const li=doc.createElement('li');
+  li.textContent=`${String(item.priority||'Voorstel')} · ${String(item.title||'Verbeteractie')} — nog niet uitgevoerd`;
+  list.appendChild(li);
+ }
+ article.appendChild(list);
+ const action=doc.createElement('button');action.type='button';action.dataset.pvPage='actieve-acties';
+ action.textContent='Bekijk acties en impact →';
+ article.appendChild(action);
+ section.appendChild(article);
+ bindPageButtons(section);
+ return true;
+}
 
 function renderBusinessJourneyOverview(root,state){
  const main=root?.querySelector?.('.main');if(!main)return false;
@@ -125,8 +179,10 @@ function renderDirectievragen(root,state){
   houder=doc.createElement('div');houder.className='dv-houder';
   const insights=doel.querySelector('[data-legacy-overview-insights]');
   const lower=doel.querySelector('.lower');
-  if(insights?.parentNode===doel)insights.after(houder);
-  else if(lower?.parentNode===doel)lower.after(houder);
+  // Original overview model may be inside a native disclosure now.
+  // Use the true parent, preserving one logical model and human-readable UI.
+  if(insights?.parentElement)insights.after(houder);
+  else if(lower?.parentElement)lower.after(houder);
   else doel.appendChild(houder);
  }
  houder.innerHTML=directievragenMarkup(state);
@@ -134,11 +190,58 @@ function renderDirectievragen(root,state){
  return true;
 }
 
+/**
+ * Visible proof boundary for the public portal shell. Static illustrative KPI
+ * cards are only unlocked for the explicit demo tenant. Real tenants see
+ * their own profile-derived calculations (if available), never sample revenue,
+ * actions, progress or AI scores pretending to be customer results.
+ */
+export function portalSteeringEvidenceState(state={}){
+ const demo=isDemoCustomer(state);
+ const profile=state?.portal?.profile;
+ const maturity=profile?.maturity;
+ const allDimensionsProvided=PROFILE_DIMENSION_LABELS.every(([id])=>{
+  const value=maturity?.[id];
+  return value!==undefined&&value!==null&&value!==''&&Number.isInteger(Number(value))&&Number(value)>=1&&Number(value)<=5;
+ });
+ const hasProfile=Boolean(
+  profile && allDimensionsProvided
+  && Number.isFinite(Number(profile.employees))&&Number(profile.employees)>0
+  && Number.isFinite(Number(profile.hourlyCost))&&Number(profile.hourlyCost)>0
+ );
+ const partiallyEntered=Boolean(maturity&&typeof maturity==='object'&&Object.keys(maturity).length>0);
+ return Object.freeze({
+  demo,hasProfile,
+  status:demo
+   ? 'Demonstratie: de voorbeeldcijfers en acties zijn fictief, geen klantresultaten.'
+   : hasProfile
+    ? 'Je hebt bedrijfsprofielgegevens ingevuld. Berekeningen uit klantinvoer zijn indicatief; gerealiseerde resultaten vereisen apart bewijs.'
+    : partiallyEntered ? 'Je bedrijfsprofiel is nog onvolledig. Vul alle onderdelen, medewerkers en uurkosten expliciet in voordat indicatieve KPI’s verschijnen.'
+    : 'Nog geen geverifieerde klantcijfers. Vul je bedrijfssituatie in en koppel relevante bronnen; onbekende waarden blijven leeg.'
+ });
+}
+
+export function applyPortalSteeringEvidenceGate(root=document,state={}){
+ const evidence=portalSteeringEvidenceState(state);
+ root?.querySelectorAll?.('[data-portal-sample-only]').forEach(node=>{node.hidden=!evidence.demo;});
+ const status=root?.querySelector?.('#dailySteeringProof');
+ if(status)status.textContent=evidence.status;
+ const metrics=root?.querySelector?.('[data-portal-customer-metrics]');
+ if(metrics)metrics.hidden=!evidence.hasProfile||evidence.demo;
+ const lastStaticMetric=metrics?.querySelector?.('.kpi:last-child');
+ if(lastStaticMetric)lastStaticMetric.hidden=!evidence.demo;
+ return evidence;
+}
+
 export function applyOverviewDashboard(root=document,state={}){
+ applyPortalSteeringEvidenceGate(root,state);
+ const ownerMain=root?.querySelector?.('.main');
+ if(ownerMain)mountOwnerOperatingSystem(ownerMain,{state,compact:true});
  ensureCompanyCockpit(root);
  ensureControlPlaneCockpit(root);
  renderLegacyOverviewComplete(root,state,openPortalPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
  renderLegacyOverviewInsights(root,state);
+ renderBedrijfslekIntelligence(root,state);
  renderBusinessJourneyOverview(root,state);
  mountOverviewForesight(root,{state,openPage:openPortalPage}).catch(()=>null);
  renderManagementAccountingIntelligence(root,state);

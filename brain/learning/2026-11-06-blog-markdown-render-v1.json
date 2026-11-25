@@ -1,0 +1,48 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-06",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "powerhouse|daily-blog|markdown-list-in-heading-and-paragraph|20261106-v1",
+  "owner": "existing daily blog publisher tools/site-shell/publish_powerhouse_blog_artifact.py and content publication blocker register",
+  "compiler": {
+    "failure_class": "MARKDOWN_BLOCKS_RENDERED_INTO_HEADINGS_AND_PARAGRAPHS",
+    "scope": "DAILY_BLOG_RENDERER_MARKUP",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "body_html turned a whole block starting with '## ' into one h2 and wrote blocks mixing text and '- ' lines as a single p, while faq_items already read the same source shape correctly. Live evidence on 2026-11-06: six paragraphs with markdown lists and five headings over 200 characters in the article, the same in its table of contents. The same pattern is present in the 15, 22, 23 and 24 October articles. The malformed text nodes were also what STATIC_I18N_CACHE_INCOMPLETE reported on main (PR #5494 added the missing keys).",
+  "prevention_rule": "A heading is its first line only; the rest of its block becomes a paragraph or list. Mixed text and list lines become separate p and ul elements. assert_rendered_body_clean fails closed with MARKDOWN_LIST_IN_P, MARKDOWN_LIST_IN_H2 or HEADING_TOO_LONG before the page is written. Shapes that already rendered correctly stay byte-identical. Articles already published are not repaired by this change.",
+  "prevention_rules": [
+    "RENDER_EVERY_MARKDOWN_BLOCK_SHAPE_AND_FAIL_CLOSED_ON_MARKUP_LEAK"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "Live article https://www.bedrijfsgeheugen.nl/blog/voorbereiden-op-boekhoud-koppelingen-hoe-je-jouw-mkb-klaarmaakt-voor-e/ measured 6 Nov 2026: 6 of 23 paragraphs with markdown lists, 5 of 9 headings over 200 characters",
+      "Defect counts in committed HTML: 2026-10-15 4 of 11 paragraphs; 2026-10-22 15 of 24 paragraphs; 2026-10-23 3 of 18 and 6 of 8 headings over 200; 2026-10-24 4 of 14 and 8 of 11; 2026-11-06 6 of 11 and 5 of 6; clean: 2026-10-19 and 2026-10-25",
+      "PR #5494 (symptom: static i18n cache keys)"
+    ],
+    "current": [
+      "Reconstructing the source markdown from the live article: old body_html gives 6 paragraphs with dashes, 5 headings over 160 characters, 0 lists; new body_html gives 0 and 0 with 9 lists; assert_rendered_body_clean passes the new output and blocks the old",
+      "Seven shapes that rendered correctly before (plain, h2 alone, h3 alone, list only, bold line plus list, multi-line plain, rule and h1) are byte-identical old versus new",
+      "tests/brain-blog-markdown-render-20261106.test.mjs: 5 of 5 green on the new renderer; the file fails on the old renderer"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST_AND_ORIGINAL_BRAIN",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

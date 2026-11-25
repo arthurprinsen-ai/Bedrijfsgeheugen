@@ -1,0 +1,68 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "github|recovery-supervisor|unguarded-main-drift-merge|20261023-v1",
+  "obligation_id": "github|recovery-supervisor|native-head-cas-bounded-drift|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "Existing Recovery Supervisor refreshed same-repository PR branches with POST /merges without a native expected-head precondition. A concurrently advanced candidate head could change after lease readback; repeated main drift had no per-PR persisted attempt cap.",
+  "fix": "Use GitHub native PUT /pulls/{number}/update-branch with expected_head_sha; check branch and main before metadata transition, require old-head and main ancestry after update, keep one writer/scheduled supervisor, preserve MAIN_SYNC for asynchronous reconciliation and bound attempts to two per PR.",
+  "prevention_rule": "Never refresh an open PR from a stale head without GitHub native expected-head compare-and-swap, current exclusive lease metadata, overlap exclusion, immutable provenance readback and capped per-PR attempts. Do not bypass Required, CodeQL, preview, tenant or production gates.",
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/main/.github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "test": "tests/delivery-powerhouse-supervisor.test.mjs",
+    "proof_level": "SOURCE_REVIEW_AND_TEST_CANDIDATE",
+    "required_production_proof": [
+      "exact-head Required and CodeQL success",
+      "protected merge into main",
+      "source readback shows native CAS",
+      "supervisor run confirms no repeated unsafe drift"
+    ],
+    "first_failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39950164728",
+    "first_failed_gate": "LEARNING_EVALUATION_TEST_PATH_INVALID",
+    "admission_repair": "Canonicalization requires an existing `tests/brain-*.test.mjs` entrypoint; a dedicated wrapper imports and executes the original supervisor suite and asserts the single-workflow CAS invariant.",
+    "second_failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39950458980"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-main-drift-native-cas.test.mjs"
+    ],
+    "metrics": [
+      "drift_refresh_attempts_per_pr",
+      "drift_budget_exhausted_prs",
+      "main_sync_reconciled_total",
+      "stale_head_rejections",
+      "time_to_required_gate_on_refreshed_sha"
+    ],
+    "guardrails": [
+      "one existing supervisor schedule",
+      "one PR per supervisor recovery cycle",
+      "two main-drift attempts per PR",
+      "no forced push",
+      "no manual merge bypass",
+      "one canonical failure memory"
+    ],
+    "status_reason": "Code candidate only: provider CI and production readback not yet complete.",
+    "shadow": [
+      "tests/brain-recovery-main-drift-native-cas.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-recovery-main-drift-native-cas.test.mjs"
+    ],
+    "expected_behaviors": [
+      "stale expected head returns non-success and does not update a second writer",
+      "accepted asynchronous update never marks green before immutable ancestry proof",
+      "no branch change within 10 minutes consumes bounded retry attempt",
+      "MAIN_SYNC reconciliation requires old-head and main-epoch ancestry"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "automation",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "runtime_verification": "NOT_YET_DEPLOYED"
+}

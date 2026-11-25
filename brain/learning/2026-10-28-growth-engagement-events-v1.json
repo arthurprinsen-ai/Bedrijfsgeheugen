@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE_UNVERIFIED",
+  "obligation_id": "website|seo-cro|engagement-events-scroll-dwell-exit|20261028-v1",
+  "fingerprint": "website|measurement|no-scroll-dwell-exit-signal|20261028-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "VISITOR_BEHAVIOUR_NOT_MEASURED_BEYOND_PAGE_VIEW",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Only page_view, one engaged_view and CTA events were measured; reading depth, visible time and exit were unobservable; the server allowlist rejected other types and value was not forwarded.",
+  "fix": "scroll_depth and page_exit from the existing script; allowlist and bounded value forwarding.",
+  "prevention_rule": "Every behaviour signal uses an allowlisted type, bounded numeric value and no personal field.",
+  "tests": [
+    "tests/brain-growth-engagement-events-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-engagement-events-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-growth-engagement-events-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-growth-engagement-events-v1.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "required": null,
+    "codeql": null,
+    "netlify_preview": null,
+    "production": null,
+    "real_conversion_lift_proven": false
+  }
+}

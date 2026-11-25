@@ -1,0 +1,40 @@
+{
+  "fingerprint": "powerhouse|brain|telemetry-503-vs-stale-202-test|20261102-v1",
+  "compiler": {
+    "failure_class": "BACKEND_TEST_DEBT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original BRAIN historical telemetry pressure test required status: 202 for a PostgREST outage, contradicting canonical secured bg-interactie Edge handler which returns HTTP 503 with ok:false, degraded:true, stored=0, confirmed=0 and a degraded header, guarded by 2500ms DB timeout and 30000ms circuit-breaker. The old 202 could falsely imply accepted measurement where no event was persisted.",
+  "prevention_rule": "Original incident and CRO measurements must never count unavailable PostgREST writes as successful. Preserve 503 no-store degradedResponse with independent reason and header, zero storage and confirmation, 2.5s timeout, 30s breaker and fail-closed provider truth; any old 202 fixture must be corrected rather than changing real producer or lying about data.",
+  "owner": "Original ONE BRAIN telemetry/observability source owner and original backend contract validator",
+  "evidence": {
+    "original_full_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41416918147",
+    "backend_job_id": 125183392982,
+    "total_tests": 5377,
+    "passed": 5347,
+    "failed": 28,
+    "affected_test": "tests/brain-supabase-runtime-pressure-v1.test.mjs",
+    "actual_telemetry_source": "supabase/functions/bg-interactie/index.ts",
+    "verified_source_contract": "HTTP 503 degraded, ok false, stored 0, confirmed 0, x-bg-telemetry-degraded; timeout 2500ms, breaker 30000ms",
+    "new_provider_output": "NOT_CLAIMED",
+    "production_deploy": "UNVERIFIED",
+    "other_brain_failures": "OPEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-runtime-pressure-v1.test.mjs"
+    ]
+  },
+  "fix": "Correct obsolete test for original error response and preserve all negative source evidence assertions, augment original AGENTS and continuity skill, human root cause/runbook/append-only ledger, ONE BRAIN learning. No original Edge runtime changes or signal reclassification.",
+  "status": "CANDIDATE_NOT_PROVEN",
+  "proven_fix": null
+}

@@ -5,6 +5,71 @@ import {entitlementAllows,enforceAgentMode,enforceConnectorRefreshPolicy,enforce
 import {billingReadiness,requireBillingReady} from '../platform/saas/billing-readiness.mjs';
 import {canAgentExecute} from '../platform/agents/agent-work.mjs';
 
+const ENV={SUPABASE_URL:'https://example.supabase.co',SUPABASE_SERVICE_ROLE_KEY:'service-fixture'};
+
+test('checkout hands the validated plan, cycle and attempt to the Mollie function with the service role',async()=>{
+  const module=await import('../netlify/functions/checkout-create.mjs');
+  assert.equal(typeof module.createCheckoutHandler,'function');
+  const sent=[];
+  const handler=module.createCheckoutHandler({env:ENV,storeFactory:()=>({getPlan:async()=>({code:'starter',name:'Starter',monthly_price_cents:9900,direct_checkout:true})}),fetchFn:async(url,options)=>{
+    sent.push({url,auth:options.headers.authorization,body:JSON.parse(options.body)});
+    return Response.json({url:'https://www.mollie.com/checkout/select-method/test'});
+  }});
+  const body={attempt_id:'7fed14f9-6e6a-4f7c-8ed9-dc0b6cf2a318',plan:'starter',billing_cycle:'yearly',email:'owner@example.test',company_name:'Acme'};
+  for(let i=0;i<2;i++){
+    const r=await handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify(body)}));
+    assert.equal(r.status,200);assert.equal((await r.json()).url,'https://www.mollie.com/checkout/select-method/test');
+  }
+  assert.equal(sent.length,2);
+  assert.equal(sent[0].url,'https://example.supabase.co/functions/v1/bg-mollie-checkout');
+  assert.equal(sent[0].auth,'Bearer service-fixture');
+  assert.deepEqual(sent[0].body,{plan:'starter',billing_cycle:'yearly',email:'owner@example.test',company_name:'Acme',attempt_id:body.attempt_id});
+  assert.deepEqual(sent[0].body,sent[1].body,'a retry must reuse the same attempt so the provider stays idempotent');
+});
+
+test('a provider failure or unsafe redirect never reaches the browser',async()=>{
+  const module=await import('../netlify/functions/checkout-create.mjs');
+  const make=fetchFn=>module.createCheckoutHandler({env:ENV,storeFactory:()=>({getPlan:async()=>({code:'starter',direct_checkout:true,monthly_price_cents:9900})}),fetchFn});
+  const call=handler=>handler(new Request('https://www.bedrijfsgeheugen.nl/api/checkout/create',{method:'POST',body:JSON.stringify({plan:'starter',email:'a@example.test',company_name:'Acme'})}));
+  let r=await call(make(async()=>{throw Error('network')}));
+  assert.equal(r.status,502);assert.equal((await r.json()).error,'checkout_provider_failed');
+  r=await call(make(async()=>Response.json({url:'https://evil.example/pay'})));
+  assert.equal(r.status,502);
+  r=await call(make(async()=>Response.json({error:'checkout_expired'},{status:409})));
+  assert.equal(r.status,409);assert.equal((await r.json()).error,'checkout_expired');
+});
+
+test('account activation accepts only a confirmed identity and one paid organisation',async()=>{
+  const {createAccountActivationHandler}=await import('../platform/saas/account-activation.mjs');
+  let writes=0;
+  const user={id:'user-1',email:'owner@example.test',confirmedAt:'2026-10-21T00:00:00Z',appMetadata:{roles:['customer']}};
+  const handler=createAccountActivationHandler({getUserFn:async()=>user,verifyOrigin:()=>{},
+    storeFactory:()=>({resolvePaidInvitation:async()=> '91c9cdf0-f1d6-46ad-aabe-5080eb70d02a',hasPersonalPortalState:async()=>false}),
+    updateUser:async(id,attributes)=>{writes++;assert.equal(id,'user-1');assert.equal(attributes.app_metadata.tenantId,'91c9cdf0-f1d6-46ad-aabe-5080eb70d02a');return {id,appMetadata:attributes.app_metadata}}
+  });
+  const request=()=>new Request('https://www.bedrijfsgeheugen.nl/api/checkout/activate',{method:'POST'});
+  assert.equal((await handler(request())).status,200);assert.equal(writes,1);
+  delete user.confirmedAt;assert.equal((await handler(request())).status,403);assert.equal(writes,1);
+  user.confirmedAt='2026-10-21T00:00:00Z';user.appMetadata.tenantId='another-tenant';
+  assert.equal((await handler(request())).status,409);assert.equal(writes,1);
+});
+
+test('Control, Scale and Enterprise stay out of direct checkout in the database migration',async()=>{
+  const sql=await readFile(new URL('../supabase/migrations/20261027170000_saas_direct_checkout_published_plans_only_v1.sql',import.meta.url),'utf8');
+  assert.match(sql,/set direct_checkout = false/);
+  assert.match(sql,/code not in \('starter','pro','groei'\)/);
+});
+
+test('checkout status needs the provider-side proof, never only a redirect',async()=>{
+  const {checkoutStatus}=await import('../platform/saas/billing-readiness.mjs');
+  const id='7fed14f9-6e6a-4f7c-8ed9-dc0b6cf2a318';
+  const calls=[];
+  const make=data=>async(url,options)=>{calls.push(url);assert.equal(options.headers.authorization,'Bearer service-fixture');return Response.json(data)};
+  assert.deepEqual(await checkoutStatus(id,{fetchFn:make({ready:false,state:'provisioning'}),env:ENV}),{ready:false,state:'provisioning'});
+  assert.deepEqual(await checkoutStatus(id,{fetchFn:make({ready:true,state:'ready'}),env:ENV}),{ready:true,state:'ready'});
+  assert.match(calls[0],/bg-mollie-checkout\?status=7fed14f9/);
+});
+
 test('pricing exposes canonical Starter Pro Groei and Enterprise tiers',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
   for(const token of ['Starter','€ 99','Pro','€ 299','Groei','€ 749','Enterprise','Op maat']) assert.ok(html.includes(token),token);
@@ -33,7 +98,7 @@ test('checkout backend trusts canonical plans and direct-checkout entitlement',a
   assert.match(source,/getPlan\(code\)/);
   assert.match(source,/direct_checkout/);
   assert.match(source,/monthly_price_cents/);
-  assert.match(source,/mode','subscription/);
+  assert.match(source,/bg-mollie-checkout|functionUrl/);
 });
 
 
@@ -43,22 +108,16 @@ test('yearly checkout remains ten monthly fees with the new plans',async()=>{
     readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8')
   ]);
   for(const token of ["starter:{","pro:{","groei:{","yearly:'€ 990'","yearly:'€ 2.990'","yearly:'€ 7.490'"]) assert.ok(checkoutPage.includes(token),token);
-  assert.match(backend,/monthly_price_cents\)\*10/);
-  assert.match(backend,/billingCycle==='yearly'\?'year':'month'/);
-  assert.match(backend,/metadata\[billing_cycle\]/);
+  assert.match(backend,/billing_cycle:billingCycle/);
+  const mollie=await readFile(new URL('../supabase/functions/_shared/mollie-billing.mjs',import.meta.url),'utf8');
+  assert.match(mollie,/monthly \* 10/);
+  assert.match(mollie,/'12 months' : '1 month'/);
 });
 
 test('connector store enforces the server-side source entitlement',async()=>{
   const source=await readFile(new URL('../netlify/functions/_portal-connectors-store.mjs',import.meta.url),'utf8');
   assert.match(source,/saas_active_entitlements/);
   assert.match(source,/PLAN_DATA_SOURCE_LIMIT/);
-});
-
-test('subscription webhook verifies signatures and provisions portal access',async()=>{
-  const source=await readFile(new URL('../netlify/functions/stripe-webhook.mjs',import.meta.url),'utf8');
-  assert.match(source,/stripe-signature/);
-  assert.match(source,/ensureInvitation/);
-  assert.match(source,/upsertSubscription/);
 });
 
 test('central entitlement policy fails closed without an active subscription',()=>{
@@ -90,18 +149,16 @@ test('connector creation now requires an active subscription policy',async()=>{
   assert.match(source,/PLAN_DATA_SOURCE_LIMIT/);
 });
 
-test('billing readiness fails closed until both Stripe secrets exist',()=>{
-  assert.deepEqual(billingReadiness({}),{
-    provider:'stripe',stripeSecretConfigured:false,webhookSecretConfigured:false,selfServeAvailable:false,state:'blocked'
-  });
+test('billing readiness fails closed until the Supabase service authority exists',()=>{
+  assert.deepEqual(billingReadiness({}),{provider:'mollie',functionConfigured:false,selfServeAvailable:false,state:'blocked'});
   assert.throws(()=>requireBillingReady({}),/BILLING_NOT_CONFIGURED/);
-  assert.equal(billingReadiness({STRIPE_SECRET_KEY:'sk_live_x',STRIPE_WEBHOOK_SECRET:'whsec_x'}).selfServeAvailable,true);
+  assert.equal(billingReadiness(ENV).selfServeAvailable,true);
 });
 
 test('checkout endpoint uses the billing readiness contract',async()=>{
   const source=await readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8');
-  assert.match(source,/billingReadiness/);
-  assert.match(source,/selfServeAvailable/);
+  assert.match(source,/billingConfig/);
+  assert.match(source,/billing_not_configured/);
 });
 
 test('checkout readiness endpoint never exposes secret values',async()=>{

@@ -1,0 +1,33 @@
+{
+  "fingerprint": "social-publication|manual-recovery-control-plane|same-day-full-loop|v2",
+  "date": "2026-10-06",
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "obligation_id": "social-publication-manual-recovery-control-plane-20261006",
+  "root_cause": "The canonical automated recovery existed but an operator could neither invoke the protected Netlify scheduled endpoint nor inspect the exact closed-loop blocker when no daily provider publication appeared. Invoking only the publisher would also be insufficient when the missing prerequisite is content generation, media readiness, provider preflight or orchestration.",
+  "prevention_rule": "Provide an auditable same-day recovery control plane that can be started by workflow_dispatch or a reviewed main-branch request marker, retrieves the existing scheduler token only inside GitHub Actions, invokes the full canonical powerhouse-content-loop, persists sanitized loop and decision evidence, and never introduces a second provider writer or bypasses identity, capability, uniqueness or provider-readback gates.",
+  "compiler": {
+    "failure_class": "SOCIAL_PUBLICATION_RECOVERY_CONTROL_PLANE_GAP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "runtime": [
+      ".github/workflows/social-publication-recovery.yml",
+      "docs/development-ledger-events/2026-10-06-social-publication-manual-recovery-control-plane-v1.md"
+    ],
+    "regression": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  }
+}

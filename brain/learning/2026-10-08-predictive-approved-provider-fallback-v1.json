@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse|predictive-engine|approved-composio-groq-provider-fallback|v1",
+  "obligationId": "one-brain-predictive-approved-fallback-20261008-v1",
+  "status": "CANDIDATE_NOT_PRODUCTION_VERIFIED",
+  "root_cause": "Anthropic insufficient-credit response blocked the predictive cycle even though a separate already-approved Composio/Groq fallback use case and existing credential were present; the predictive engine only implemented the primary API path.",
+  "failureModes": [
+    "primary AI_400 credit exhaustion propagated without checking existing approved fallback governance",
+    "a successful cron trigger was misleading without a provider-verified predictive outcome",
+    "an unrestricted fallback could leak prohibited raw private content"
+  ],
+  "prevention": [
+    "only activate a separately active and approved exact predictive fallback use case for explicit provider credit, rate-limit, outage or key-missing conditions",
+    "sanitize to public-news and search-demand signals; exclude raw private payloads, DMs, contact data, credentials and non-approved sources",
+    "strictly validate JSON forecast structure, approved evidence keys and numerical limits before existing predictive write gates",
+    "persist real provider, model and reason in the canonical forecast and same-day health receipt; never mark a failed model as successful"
+  ],
+  "compiler": {
+    "failure_class": "PROVIDER_UNAVAILABLE",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-approved-fallback-v1.test.mjs",
+      "tests/brain-predictive-production-lineage.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_incident": "2026-10-08 pg_net request 984 status_code 500, Anthropic AI_400 insufficient credit",
+    "existing_fallback_registration": "brain_ai_governance_registry:supabase-powerhouse-predictive-first-mover-fallback-v1",
+    "production_readback": "PENDING",
+    "outbound_generation": "NOT_YET_VERIFIED"
+  }
+}

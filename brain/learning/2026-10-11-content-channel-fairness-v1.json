@@ -1,0 +1,54 @@
+{
+  "fingerprint": "powerhouse|p0-4198|content-channel-fairness|2026-10-11|v1",
+  "contract": "powerhouse-material-writeback-closure-v1",
+  "compiler": {
+    "failure_class": "CONTENT_GENERATION_PRIORITY_STARVATION"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-generation-fairness.test.mjs"
+    ]
+  },
+  "root_cause": "Priority-sorted singleton content selection always picks the same failed personal LinkedIn item. A provider credit outage or an editorial rejection starves the blog and company.",
+  "prevention_rule": "Persist per-channel generation_retry_after only after generation failure without provider side effect. Select the next eligible due channel while preserving editorial, authorization, duplicate and provider readback gates.",
+  "evidence": {
+    "production": {
+      "commercial_day": "DEGRADED",
+      "pub_obligations": [
+        "linkedin_personal PLANNED",
+        "linkedin_company PLANNED",
+        "blog PLANNED",
+        "instagram BLOCKED"
+      ],
+      "error_reason": [
+        "AI_PROVIDER_REQUEST_FAILED Anthropic 400 credit balance too low",
+        "PERSONAL_EDITORIAL_CONTRACT_FAILED:PERSONAL_EDITORIAL_WORD_COUNT"
+      ],
+      "source": "Supabase public.bg_gezondheid and content_publication_obligations 2026-10-11",
+      "provider_published_proven": false
+    },
+    "tests": [
+      "tests/brain-content-generation-fairness.test.mjs"
+    ],
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4316"
+  },
+  "outcome": {
+    "state": "PROPOSED_NOT_DEPLOYED",
+    "protected_checks_required": true,
+    "provider_publication_outcome_proven": false
+  },
+  "historical_provider_evidence": [
+    {
+      "date": "2026-10-11",
+      "state": "PROVIDER_OBSERVED",
+      "source": "bg_gezondheid:powerhouse-content-orchestrator",
+      "outcome": "Anthropic 400 credit error then strict word-count rejection"
+    },
+    {
+      "date": "2026-10-11",
+      "state": "REGRESSION_TEST_ADDED",
+      "source": "tests/brain-content-generation-fairness.test.mjs",
+      "outcome": "channel fairness and bounded retry checks"
+    }
+  ]
+}

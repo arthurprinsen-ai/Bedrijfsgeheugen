@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-living-company-decision-world-20261110-v1",
+  "fingerprint": "portal|living-company|dashboard-first-instead-of-evidence-first-journey|20261110-v1",
+  "compiler": {
+    "failure_class": "PORTAL_UX_DECISION_COMPREHENSION_GAP",
+    "scope": "PORTAL_V2_ORIGINAL_ENTREPRENEUR_HOME",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Technical modules, textual journeys and dense dashboards occupy cognitive space before the entrepreneur can explore the relationship between ambition, sources, decision and actual measured result. A previous textual evidence flow did not make missing proof easy to discover interactively.",
+  "fix": "A bounded interactive company orbit embedded inside the original logged-in entrepreneur decision hero, reusing the original authenticated buildEntrepreneurJourneyModel. Five independent evidence stages remain distinct and unknown or unsupported outcomes never become green. UI interactions write nothing; no duplicate tenant state, scheduler, provider, AI inference or action executor.",
+  "tests": [
+    "tests/brain-portal-living-company-20261110.test.mjs",
+    "portal-v2/tests/decision-world.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-living-company-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-living-company-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-living-company-20261110.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "Every new portal hero must preserve one primary useful action and authenticated company context; keep technical pages progressive.",
+    "Separate a confirmed scan, saved goal, source proof, supported proposal and independently verified outcome; never create a false cumulative health score.",
+    "Guest/demo never receives a customer evidence visualization; never trust cross-tenant mutable snapshots while hydrating.",
+    "No Red Dot, WCAG or user-success claim before independent accessible browser, user, jury or audit proof.",
+    "Never bypass original GitHub admission, CodeQL, Required, BRAIN, protected merge and exact production readback; verify the PR body contains all four mandatory admission fields before opening."
+  ],
+  "owner": "original Portal V2 Living Interface owner #4547 + original ONE BRAIN",
+  "proof_state": "SOURCE_CANDIDATE_NOT_LIVE_AWARD_NOT_VERIFIED",
+  "incident_observation": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42775921580",
+    "failure": "PR_MACHINE_METADATA_INVALID",
+    "cause": "Initial PR description omitted exact machine metadata fields",
+    "recovery": "Repair same original PR body; retain historical failure evidence and rerun exact-head gates",
+    "status": "OPEN_FOLLOWUP",
+    "learning_source_failure": {
+      "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42776401527",
+      "failure": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:portal-v2/tests/decision-world.test.mjs",
+      "root_cause": "Original feature test was not in the enforced tests/brain-* executable canonical namespace.",
+      "correction": "Add executable original-regression bridge tests/brain-portal-living-company-20261110.test.mjs and point all historical/shadow/canary evaluations to it.",
+      "proof_state": "RETEST_DUE"
+    }
+  }
+}

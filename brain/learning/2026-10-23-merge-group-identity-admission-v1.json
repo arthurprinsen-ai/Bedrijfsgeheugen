@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "github|merge-group|run-id-spoofed-as-pr-and-manifest-fallback|20261023-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "obligation_id": "github|merge-group|immutable-identity-and-unverified-scope-rejection|20261023-v1",
+  "status": "CANDIDATE",
+  "failure_class": "CI",
+  "root_cause": "merge_group normalized GitHub Actions run ID as pull request number and the workflow could fall through to unrelated static PR manifest metadata.",
+  "evidence": {
+    "source": [
+      "tools/delivery-github-event-context.mjs",
+      ".github/workflows/required-test.yml",
+      "tools/delivery/delivery-metadata-authority.mjs"
+    ],
+    "native_queue_live_observed": false,
+    "organization_owned": false
+  },
+  "fix": "Match event group head SHA to workflow SHA, keep PR number null, reject missing authoritative aggregate group membership/scope instead of static manifest fallback.",
+  "prevention_rule": "No merge-group promotion without provider-verified group PR lineage, writer lease, scope and all required checks on group SHA. No status forgery or skip.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-merge-group-admission-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-merge-group-admission-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-merge-group-admission-authority-v1.test.mjs"
+    ],
+    "invariants": [
+      "No run-id-to-PR spoofing",
+      "No legacy one-loop manifest fallback for group events",
+      "PR checks unchanged",
+      "Required and CodeQL remain mandatory"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "runtime_verification": "NOT_YET_DEPLOYED"
+}

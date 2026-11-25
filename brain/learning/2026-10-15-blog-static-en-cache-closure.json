@@ -1,0 +1,41 @@
+{
+  "date": "2026-10-15",
+  "obligation_id": "content-publication:2026-10-15:blog",
+  "fingerprint": "powerhouse|blog|2026-10-15|25-public-source-translations",
+  "compiler": {
+    "failure_class": "BILINGUAL_STATIC_CACHE_MISSING_WHILE_PRIMARY_AI_PROVIDER_UNFUNDED",
+    "scope": "CONTENT_TRANSLATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The canonical daily blog is generated, but the approved static EN cache lacks 25 exact public Dutch source strings. Anthropic translation billing HTTP 400 prevents EN completeness and protected publication.",
+  "prevention": "Restore each exact public Dutch source key to a separately reviewed natural-English translation in the existing scoped i18n patch. Preserve numbers, link addresses, funding attribution and canonical live-URL proof; never publish missing/untranslated EN or skip native provider release checks.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-i18n-cache-20261015.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-i18n-cache-20261015.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-i18n-cache-20261015.test.mjs"
+    ]
+  },
+  "evidence": {
+    "business_date": "2026-10-15",
+    "run_id": 38751766437,
+    "cache_gap_diagnostic": "STATIC_I18N_CACHE_GAPS_V1",
+    "source_key_count": 25,
+    "locale": "en",
+    "scope": "public website copy",
+    "source": "canonical Powerhouse blog export / GitHub production SEO transforms",
+    "urls_preserved": true,
+    "dates_amounts_preserved": true
+  },
+  "outcome": {
+    "cache_source_created": true,
+    "ci_verified": false,
+    "blog_live_verified": false
+  }
+}

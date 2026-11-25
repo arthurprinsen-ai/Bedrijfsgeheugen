@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "ci|supabase-preview|max-concurrent-branches-provider-wording|20261023-v1",
+  "obligation_id": "ci|supabase-preview|max-concurrent-branches-provider-wording|20261023-v1",
+  "canonical_parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4120",
+  "related_incident_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4733",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "PREVIEW_CAPACITY_DIAGNOSIS_STRING_DRIFT",
+  "root_cause": "The canonical Required preview diagnosis only recognized old wording for branch-cap exhaustion; an exact Supabase-owned check on PR #4733 returned 'Maximum number of concurrent branches reached' and was classified PREVIEW_PROVIDER_NON_SUCCESS instead of PREVIEW_CAPACITY_EXHAUSTED.",
+  "fix": "Extend the existing strictly read-only provider check classifier to recognize current maximum concurrent branches wording; preserve skip/cancelled fail-closed status and exact-head source provenance; add test fixtures for the observed cancelled message and stale-success precedence.",
+  "prevention_rule": "Preview provider cancellations must remain blocking, typed by latest provider-owned exact SHA check; never delete other active PR branches, introduce another scheduler, or declare success from skipped checks.",
+  "source_evidence": [
+    "PR #4733 native provider check 120341815184 returned cancelled with maximum concurrent branch message",
+    "tools/ci/supabase-preview-diagnosis.mjs existing match omitted that exact wording",
+    "Canonical parent #4120 already owns preview capacity policy"
+  ],
+  "tests": [
+    "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "PREVIEW_CAPACITY_DIAGNOSIS_STRING_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-preview-diagnosis-v1.test.mjs"
+    ],
+    "invariants": [
+      "Exact provider-owned newest check remains authority",
+      "Only provider success becomes success",
+      "Existing branch ownership and spend authority preserved",
+      "No new schedule, agent or persistence"
+    ]
+  },
+  "promotion": "Only after exact-HEAD Required and CodeQL, protected merge, then main-file readback. No runtime speedup or new model claimed.",
+  "production_modified": false,
+  "observed_customer_outcome": false
+}

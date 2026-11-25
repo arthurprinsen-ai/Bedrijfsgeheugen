@@ -1,0 +1,35 @@
+{
+  "id": "commercial-heartbeat-current-set-v2-20261007",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "fingerprint": "powerhouse|commercial-heartbeat|current-action-set|orphan-prepared|v2",
+  "compiler": {
+    "failure_class": "COMMERCIAL_CONTINUATION_OWNER_GAP",
+    "scope": "NETLIFY_SUPABASE_COMMERCIAL_HEARTBEAT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The external Netlify→Supabase heartbeat became the canonical scheduler owner, but the retired pg_cron topology left no owner for current daily-set reconciliation, quality-ready social release, or canonical social autopilot dispatch. Output assurance therefore saw current_daily_action_set_count=0 while a verified NBA-v5 LinkedIn action remained prepared.",
+  "prevention": "The same external heartbeat now owns one lightweight continuation: promote fresh research, label current external NBA-v5 actions, release quality-ready social actions, invoke the existing canonical social dispatcher, then run closure, terminal lineage and output assurance. No new cron owner is introduced.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-heartbeat-current-set-v2.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evidence": {
+    "production": [
+      "External commercial heartbeat produced durable VERIFIED receipts under NETLIFY_SUPABASE_EDGE on 2026-10-07.",
+      "Fresh post-#4045 application runtime window contained 0 HTTP 401/500/503/522 responses.",
+      "Output assurance repeatedly reported DEGRADED_NO_CURRENT_DAILY_ACTION_SET.",
+      "No active cron scheduler owned prepare_quality_social_comments, canonical social autopilot dispatch, or daily-set reconciliation.",
+      "One NBA-v5 LinkedIn action remained prepared while source URL, post context, exact message hash and social quality gate were all verified."
+    ],
+    "repository": [
+      "supabase/migrations/20261007094500_commercial_heartbeat_current_set_v2.sql",
+      "tests/brain-commercial-heartbeat-current-set-v2.test.mjs"
+    ]
+  }
+}

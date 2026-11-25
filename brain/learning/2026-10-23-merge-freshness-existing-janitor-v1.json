@@ -1,0 +1,58 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|predictive-lane-capacity|fixed-epoch-merge-drift-advisory|20261023-v1",
+  "obligation_id": "delivery|predictive-lane-capacity|fixed-epoch-merge-drift-advisory|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "GITHUB_AUTOMERGE_BEHIND_MAIN_EPOCH_DRIFT",
+  "root_cause": "Multiple agents can pass exact-head CI while protected main advances. Existing hourly Janitor reads open PRs and compares them to moving main ref, but lacks a single immutable-epoch advisory summarizing where canonical writers may need to refresh after checking branch protection.",
+  "observed_evidence": {
+    "canonical_owner_issue": 4661,
+    "observed_provider_comment": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-6362889086",
+    "github_compare_reference": "https://docs.github.com/en/rest/commits/commits",
+    "github_merge_queue_reference": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-a-merge-queue",
+    "no_measured_speedup": true
+  },
+  "failed_approaches": [
+    "Treat green CI on stale SHA as proof of mergeability",
+    "Compare many open PRs against a ref that may change mid-sweep without recording an epoch",
+    "Rerun or force-rebase unrelated active agents rather than keeping one owner"
+  ],
+  "fix": "Pin existing Janitor GitHub compare GETs to GITHUB_SHA and publish a read-only bounded advisory matching the exact open-PR snapshot, immutable main epoch, head SHA, behind/ahead counts and canonical obligation grouping. Contradictory/missing proofs suppress advice. Retired/draft/contained candidates excluded. No new API reads, scheduler, CI dispatch, merge, or change to protected checks.",
+  "prevention_rule": "Never promote stale-main PRs or interpret behind/green as authorized automatically refreshed. Confirm exact head checks, current-main epoch, nonoverlapping changes and a single writer lease before any existing coordinator reconciles the branch. Missing evidence or contradictory compare status requires WITHHELD state. Keep merge_group branch protections if merge queue is ever configured.",
+  "tests": [
+    "tests/brain-merge-freshness-janitor-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_AUTOMERGE_BEHIND_MAIN_EPOCH_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-merge-freshness-janitor-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-merge-freshness-janitor-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-merge-freshness-janitor-v1.test.mjs"
+    ],
+    "invariants": [
+      "single immutable GITHUB_SHA comparison epoch",
+      "full open PR identity and head match or no advice",
+      "no duplicate obligation writers",
+      "only existing hourly Janitor and already fetched snapshots",
+      "never triggers new CI, branch updates or merge",
+      "Required and CodeQL remain protected"
+    ]
+  },
+  "terminal_rule": "Source status live only after exact-head Required/CodeQL, protected merge, exact-main source readback, existing Janitor post-merge artifact and skill projection; no throughput speedup inferred."
+}

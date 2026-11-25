@@ -1,0 +1,41 @@
+{
+  "type": "BRAIN_LEARNING",
+  "id": "delivery-recovery-priority-base-drift-fairness-20261029",
+  "fingerprint": "ci|strict-main-drift|missing-terminal-writer-lease-owner-starvation|20261023-v1",
+  "status": "CANDIDATE_PRIORITY_PREVENTION_NOT_MAIN_OR_RUNTIME_PROVEN",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "OBSERVABILITY",
+    "scope": "POWERHOUSE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-recovery-priority-base-epoch-20261029.test.mjs"
+    ]
+  },
+  "root_cause": "The existing Recovery Supervisor prioritizer only treated Writer-Lease-Main-Epoch != mainSha as a preflight drift signal. A canonical PR with a freshly acquired terminal lease pointing to current main, but whose GitHub PR base SHA was older, received lowest tier despite successful exact-head Required. In run 40908048689 old PR #3978 was selected, budget 1/1 exhausted, PR #5134 starved.",
+  "change": "In existing tools/delivery/recovery-pr-prioritizer.mjs, incorporate a validated PR base.sha != current mainSha into advisory refreshEvidence while keeping existing exact-head lease validation, active-Required deferral, bounded budget and live compare/CAS authority. Add exact historical replay regression with #3978 versus #5134.",
+  "prevention": "Never equate a current writer-lease epoch with main-inclusive PR ancestry. On the existing recovery lane, distinguish actual current-main/PR-base provider evidence; rank valid-lease, recent exact-head green candidates ahead of stale candidates without evidence, then recheck live merge/behind and exclusive owner before mutation. Unknown/malformed base is UNKNOWN, never fabricate drift. Do not create a scheduler or bypass GitHub protections.",
+  "evidence": {
+    "source": "GitHub Workflow 40908048689 complete logs and PR #5134 native CAS update",
+    "observed_at": "2026-10-29",
+    "owner_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4914",
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5134",
+    "supervisor_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40908048689",
+    "selected_stale_pr": 3978,
+    "starved_pr": 5134,
+    "backend_required_old_head_succeeded": true,
+    "codeql_old_head_succeeded": true,
+    "new_head_native_cas": "ca5cd590e1e41af4f32ea009494e32d4f10fe071",
+    "main_merge_proven": "eead20219269341e1933bd33d3a10c7bf2ad43e9",
+    "netlify_production_provider_commit_proven": "eead20219269341e1933bd33d3a10c7bf2ad43e9",
+    "fix_candidate_live": false,
+    "claims": "The case was manually recovered through native GitHub CAS. The proposed ranking code is not proven live until separate protected merge and regression readback.",
+    "test": [
+      "tests/brain-recovery-priority-base-epoch-20261029.test.mjs"
+    ]
+  }
+}

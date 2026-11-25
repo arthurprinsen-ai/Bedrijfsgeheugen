@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-23",
+  "fingerprint": "delivery|agents|innovation-benchmark-invalid-metrics-failclosed|20261023-v1",
+  "obligation_id": "delivery|agents|innovation-benchmark-invalid-metrics-failclosed|20261023-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "status": "CANDIDATE",
+  "failure_class": "AI_INNOVATION_BENCHMARK_INVALID_NUMERIC_INPUT_FALSE_ADOPT",
+  "root_cause": "The existing innovation benchmark checked only presence of six metrics. Negative runtime/cost, non-finite values, out-of-range false-positive/reproducibility rates and a non-verified incumbent security baseline could all produce decision ADOPT through ordinary JS numeric comparisons.",
+  "observed_evidence": {
+    "source": "scripts/brain/quality/innovation-benchmark.mjs",
+    "synthetic_repro": "incumbent defect_yield=0.2 runtime=100 cost=10 false_positive_rate=0.2 reproducibility=0.95 security_fit=true; candidate defect_yield=0.3 runtime=-200 cost=-1 false_positive_rate=-1 reproducibility=2 security_fit=true; old comparator returned ADOPT",
+    "positive_benchmark_evidence_count": 0,
+    "measured_speedup_proven": false,
+    "related_active_candidate": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4763"
+  },
+  "failed_approaches": [
+    "Interpret presence of a metric as comparable valid numeric evidence",
+    "Interpret negative cost/runtime as excellent improvement",
+    "Allow missing verification of incumbent security baseline",
+    "Treat ADOPT as provider or production release authority"
+  ],
+  "fix": "Validate both benchmark records using finite nonnegative numeric values, false-positive/reproducibility ratios in [0,1] and genuine Boolean security evidence. Reject candidate security regression. Withhold comparison when baseline security is unapproved. Preserve original defect-yield/false-positive/runtime/cost/reproducibility comparison for valid metrics; make every result explicitly advisory with promotion_authorized=false.",
+  "prevention_rule": "No autonomous technology/model adoption from invalid, coerced, negative, out-of-domain, unverified or self-declared benchmark metrics. Quality comparison is advisory only. Before any promotion require independently collected baseline/cohort, appropriate sample size, shadow/canary, Required, CodeQL, Supabase/tenant/RLS, cost/permission approval and production outcome readback under the existing single-writer authority.",
+  "tests": [
+    "tests/brain-innovation-benchmark-evidence-integrity-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "AI_INNOVATION_BENCHMARK_INVALID_NUMERIC_INPUT_FALSE_ADOPT",
+    "scope": "POWERHOUSE_QUALITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-benchmark-evidence-integrity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-benchmark-evidence-integrity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-benchmark-evidence-integrity-v1.test.mjs"
+    ],
+    "invariants": [
+      "numeric metrics must be finite real numbers, not coerced strings",
+      "runtime and costs cannot be negative",
+      "false positive and reproducibility proportions must lie in [0,1]",
+      "incumbent security baseline must be true",
+      "candidate security regression is REJECT",
+      "valid realistic improvement remains an advisory only",
+      "promotion_authorized always false",
+      "no new scheduler, agent, queue, model spend or release bypass"
+    ]
+  },
+  "terminal_rule": "This fix is live only after exact-head Required+CodeQL and protected merge with main readback, canonical Brain skill projection and evidence of the existing Quality workflow using the validated comparator. An advisory ADOPT does not authorize a model upgrade or production deploy."
+}

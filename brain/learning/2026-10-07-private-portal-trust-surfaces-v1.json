@@ -1,0 +1,41 @@
+{
+  "id": "private-portal-trust-surfaces-v1",
+  "date": "2026-10-07",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "portal|trust-surfaces|authenticated-customer-or-admin|v1",
+  "root_cause": "Trust- en sovereignty-content was technisch API-authenticated, maar de pagina-identiteit en navigatie konden nog als zelfstandige of previewbare portalroutes bestaan. Dat voldoet niet aan de gewenste productgrens: deze pagina's horen uitsluitend na login zichtbaar te zijn voor klanten en Bedrijfsgeheugen.",
+  "prevention": {
+    "access": "Protected trust pages are removed from portal navigation, hubs and search before authenticated customer state.",
+    "deep_link": "Direct protected page calls fail closed and trigger the existing portal login flow.",
+    "demo": "Demo/preview never counts as authenticated customer access.",
+    "tenant": "Customer data is read only through existing server-side tenant-resolved APIs.",
+    "admin": "Canonical Bedrijfsgeheugen scope remains server-side admin-only.",
+    "standalone": "Legacy standalone trust URLs only redirect into private Portal V2 deep-links."
+  },
+  "evidence": {
+    "tests": [
+      "tests/portal-private-trust-surfaces-v1.test.mjs"
+    ],
+    "runtime_surfaces": [
+      "portal-v2/?page=data-ai-passport",
+      "portal-v2/?page=trust-center"
+    ],
+    "apis": [
+      "/api/data-sovereignty",
+      "/api/security-trust"
+    ],
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/portal-private-trust-surfaces-v1.test.mjs"
+    ],
+    "expected_outcome": "public_and_demo_users_cannot_discover_or_render_protected_trust_pages"
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_TRUST_SURFACE_EXPOSURE",
+    "scope": "PORTAL_AUTHORIZATION",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  }
+}

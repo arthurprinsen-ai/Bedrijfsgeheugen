@@ -16,7 +16,7 @@ test('€1M revenue operating contract is machine-readable and revenue-first',()
 });
 
 test('single canonical commercial scheduler executes full acquisition cycle',()=>{
-  const sql=read('supabase/migrations/20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql');
+  const sql=read('supabase/migration-history/repository-only/20260929162000_powerhouse_one_million_revenue_operating_contract_v1.sql');
   assert.match(sql,/jobname='powerhouse-commercial-learning-v1'/);
   assert.match(sql,/cron\.schedule\(\s*'powerhouse-commercial-learning-v1'/);
   assert.match(sql,/powerhouse_trigger_based_mkb_acquisition_cycle_v1\(\)/);
@@ -24,12 +24,12 @@ test('single canonical commercial scheduler executes full acquisition cycle',()=
 });
 
 test('agents chats skills and system map inherit the same commercial authority',()=>{
-  const agents=read('AGENTS.md');
+  // AGENTS.md and the System Map were condensed (571ecf86) and no longer name this contract;
+  // authority is inherited through the chat-learning contract, the growth playbook and the skills.
   const chats=JSON.parse(read('config/brain-chat-learning-contract.json'));
-  const map=read('platform/system-map/canonical-system-map.mjs');
-  assert.match(agents,/powerhouse-one-million-revenue-operating-contract-v1/);
+  const playbook=read('config/powerhouse-growth-swarm-playbook-v1.json');
   assert.equal(chats.policy.requireOneMillionRevenueOperatingContract,true);
-  assert.match(map,/one-million-revenue-operating-contract/);
+  assert.match(playbook,/powerhouse-one-million-revenue-operating-contract-v1/);
   for(const p of [
     '.agents/skills/powerhouse-growth-swarm/SKILL.md',
     '.agents/skills/powerhouse-linkedin-sales-machine/SKILL.md',

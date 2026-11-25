@@ -15,8 +15,10 @@ test('product-led homepage presents one platform with three product lines', () =
 });
 
 test('homepage product architecture is part of production and preview builds', () => {
-  const uses = netlify.match(/node tools\/site-shell\/apply-product-led-home\.mjs/g) || [];
-  assert.ok(uses.length >= 2, 'production and deploy-preview must both apply the product-led homepage');
+  // Production and deploy-preview share one build entry, which owns the ordered homepage step.
+  const uses = netlify.match(/node tools\/ci\/netlify-build-entry\.mjs/g) || [];
+  assert.ok(uses.length >= 2, 'production and deploy-preview must both run the shared build entry');
+  assert.match(readFileSync('tools/ci/netlify-build-entry.mjs','utf8'),/\['product-led-home','tools\/site-shell\/apply-product-led-home\.mjs'\]/);
   assert.doesNotMatch(apply,/prototype-v18-stable\.html/);
 });
 

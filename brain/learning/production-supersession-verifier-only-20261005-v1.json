@@ -1,0 +1,45 @@
+{
+  "learningId": "production-supersession-verifier-only-20261005-v1",
+  "fingerprint": "production-supersession-verifier-only-drift-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-05T20:30:27+02:00",
+  "problem": "Canonical brand shell production readback failed after #3788 because production-supersession classified verifier-only files as runtime-affecting, so the current verifier commit could not safely supersede its live ancestor.",
+  "rootCause": "The runtime applicability contract enumerated verifier-only paths, but production-supersession maintained a separate non-production allowlist that omitted those same paths.",
+  "root_cause": "The runtime applicability contract enumerated verifier-only paths, but production-supersession maintained a separate non-production allowlist that omitted those same paths.",
+  "preventionRule": "Every path classified as verifier-only by production-readback authority must also be non-runtime for safe production supersession, while actual website/runtime paths must remain fail-closed.",
+  "prevention": [
+    "Keep verifier-only paths explicit and exact.",
+    "Allow ancestor-to-descendant supersession only when every changed path is non-runtime.",
+    "Keep HTML, assets, Netlify functions and shared runtime changes unsafe.",
+    "Regression-test both allowed verifier-only and blocked runtime descendants."
+  ],
+  "evidence": {
+    "originatingPr": 3788,
+    "failedRun": 37355455178,
+    "failedJob": 111917660847,
+    "observedExpected": "cf0b4b6a77b19cfafc69f19d7151dae43a5662f0",
+    "observedProduction": "eb51760dc95db37b8e2ee1f02b30134dbc035782",
+    "implementation": [
+      "tools/site-shell/production-supersession.mjs"
+    ],
+    "regression": [
+      "tests/brain-production-runtime-applicability-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-runtime-applicability-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-runtime-applicability-v1.test.mjs"
+    ],
+    "expected": "Verifier-only descendants safely supersede a live ancestor; runtime-affecting descendants remain blocked."
+  }
+}

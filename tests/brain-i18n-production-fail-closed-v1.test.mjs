@@ -12,8 +12,8 @@ test('production localized build is provider-independent and fails closed when c
   assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
   assert.match(source,/const cacheRequired = String\(process\.env\.STATIC_I18N_REQUIRE_CACHE/);
   assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
-  assert.match(source,/runtimeFallback:!translations/);
-  assert.match(source,/setLocaleMetadata\(enDoc,'en',route,Boolean\(translations\)\)/);
+  assert.match(source,/runtimeFallback:!translations \|\| aggregate\.untranslatedRefs > 0/);
+  assert.match(source,/setLocaleMetadata\(enDoc,'en',route,missingForRoute\.length===0\)/);
   assert.match(runtime,/\/api\/i18n-translate/);
 });
 
@@ -28,6 +28,7 @@ test('English production success is fail-closed at the browser proof layer',()=>
   assert.match(verifier,/async function switchPublicLocale/);
   assert.match(verifier,/expectedPath/);
   assert.match(verifier,/page\.locator\('html'\)\.getAttribute\('lang'\)/);
-  assert.match(verifier,/Pricing/);
+  assert.match(verifier,/English route has no visible Powerhouse SaaS text/);
+  assert.match(verifier,/English route still shows Dutch pricing hero copy/);
   assert.match(verifier,/language switch exposed runtime translation failure/);
 });

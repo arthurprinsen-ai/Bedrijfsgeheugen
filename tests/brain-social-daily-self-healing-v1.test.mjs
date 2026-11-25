@@ -3,12 +3,16 @@ import fs from 'node:fs';
 
 const setup=fs.readFileSync('supabase/functions/powerhouse-composio-linkedin-setup/index.ts','utf8');
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
-const migration=fs.readFileSync('supabase/migrations/20260927153500_social_daily_self_healing_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migration-history/repository-only/20260927153500_social_daily_self_healing_v1.sql','utf8');
 
-assert.match(setup,/LINKEDIN_CANONICAL_PERSON_URN='urn:li:person:N1twnCNCrD'/);
-assert.match(setup,/probe-canonical-member-and-prefer-canonical-alias-v1/);
-assert.doesNotMatch(setup,/if\(accounts\.length>1\).*CONNECTION_AMBIGUOUS/s);
-assert.match(setup,/COMPOSIO_LINKEDIN_NO_HEALTHY_CANONICAL_CONNECTION/);
+// Current setup contract: exactly one healthy connection may be selected (fresh OAuth proof first,
+// then the bound OAuth account, then the canonical alias); anything else blocks as ambiguous.
+assert.match(setup,/const selectable=proofHealthy\.length===1\?proofHealthy:\(boundHealthy\.length===1\?boundHealthy:\(canonical\.length===1\?canonical:healthy\)\)/);
+assert.match(setup,/if\(selectable\.length!==1\)/);
+assert.match(setup,/COMPOSIO_LINKEDIN_CONNECTION_AMBIGUOUS/);
+assert.match(setup,/COMPOSIO_LINKEDIN_BOUND_OAUTH_NOT_HEALTHY/);
+assert.match(setup,/BLOCKED_AMBIGUOUS/);
+assert.match(setup,/COMPOSIO_LINKEDIN_REAUTH_REQUIRED/);
 
 assert.match(publisher,/active_discovery/);
 assert.match(publisher,/LINKEDIN_REAUTH_REQUIRED/);

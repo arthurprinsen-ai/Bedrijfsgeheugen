@@ -1,0 +1,26 @@
+{
+  "routes": [
+    "/",
+    "/zelfscan",
+    "/assets/downloads/7-verborgen-bedrijfslekken.pdf"
+  ],
+  "change_class": "growth-funnel-build-persistence",
+  "preserve": [
+    "canonical generated homepage output",
+    "primary scan CTA",
+    "Powerhouse secondary CTA",
+    "no duplicate workbook",
+    "NL/EN i18n parity",
+    "privacy-aware existing analytics",
+    "mobile typography and contrast",
+    "exact production evidence"
+  ],
+  "hypothesis": "Restoring the direct PDF link in the actual V18 production homepage increases discoverability and qualified free-scan engagement without reducing paid-order intent.",
+  "target_metric": "live homepage PDF CTA -> actual click -> diagnostic scan -> qualified call -> genuine paid order",
+  "rollback_condition": "missing V18 home boundary or risk reversal, mobile/SEO/localization regressions, mismatched href, duplicate CTA or provider proof loss",
+  "evidence_refs": [
+    "P0 #4198",
+    "PR #4287",
+    "powerhouse|revenue|seven-leaks-homepage-final-build-persistence|v1"
+  ]
+}

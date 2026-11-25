@@ -1,0 +1,28 @@
+{
+  "fingerprint": "powerhouse|portal|2026-10-12|daily-operating-journey-no-fake-customer-outcomes|v1",
+  "compiler": {
+    "failure_class": "PORTAL_AI_FIRST_DEMO_NUMBERS_MASQUERADE_AS_CUSTOMER_TRUTH",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Public Portal V2 opened with AI-oriented tool labels, disconnected dashboard metrics and static example progress, financial gains and customer activities that were visible before customer context had been verified.",
+  "prevention_rule": "One top-level customer journey connects source -> impact -> decision -> accountable action -> verified result using existing Portal V2 registered pages. Do not create a second navigation, AI platform or data source. Only explicit demo tenant may see sample static figures with visible demo notice; real customer profile data is marked indicative and actual outcomes require evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-daily-operating-truth-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "protected_pr_pending": true,
+    "production_readback_pending": true,
+    "customer_impact_unproven": true
+  }
+}

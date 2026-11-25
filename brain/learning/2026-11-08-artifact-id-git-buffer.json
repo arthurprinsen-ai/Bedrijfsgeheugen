@@ -1,0 +1,45 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-08",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "ci|git|shared|ls-files-default-maxbuffer|20261108-v1",
+  "owner": "build artifact id tool and the delivery test-coverage guard",
+  "compiler": {
+    "failure_class": "CHILD_PROCESS_DEFAULT_OUTPUT_BUFFER_EXCEEDED",
+    "scope": "BUILD_AND_TEST_GIT_LISTINGS",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Node execFileSync limits child output to 1 MiB by default. git ls-files -s of this repository (about 10.7k files, about 1.2 MB) passed that limit, so tools/build/artifact-id.mjs failed with spawnSync git ENOBUFS and the required test check was red on every pull request, including the daily blog PR 5525 and old PRs. The failure only appeared when the file index crossed the limit.",
+  "prevention_rule": "Every git ls-files call in tools/build/artifact-id.mjs and the delivery test-coverage guard sets an explicit maxBuffer of 256 MiB. A dependency-free test pins both calls and proves the default fails; a planned-action trigger guards removal.",
+  "prevention_rules": [
+    "GIT_LS_FILES_MUST_SET_MAXBUFFER"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-error-register-20261106.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-chat-learning-completeness.test.mjs"
+    ]
+  },
+  "evidence": {
+    "historical": [
+      "PR 5525 and older PRs: required test red with spawnSync git ENOBUFS in tools/build/artifact-id.mjs; rerun of failed jobs failed the same way",
+      "git trees API: main has 10719 blobs, about 1.2 MB of ls-files -s output, above the 1 MiB default"
+    ],
+    "current": [
+      "the pinning test passes locally; the fix is not proven end to end until the required test of a pull request with this change is green and PR 5525 can merge"
+    ]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-continuity"
+  ]
+}

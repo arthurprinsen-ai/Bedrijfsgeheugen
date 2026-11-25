@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-28",
+  "status": "CANDIDATE",
+  "obligation_id": "bg-bedrijfsprofiel-20261028",
+  "fingerprint": "powerhouse|connection-enrichment|company-profile-from-own-website-20261028-v1",
+  "compiler": {
+    "failure_class": "EXTERNAL_ENRICHMENT_ZERO_YIELD",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ]
+  },
+  "root_cause": "De dagelijkse verrijking telt alleen interne tabellen (fresh_external_lookup_performed is false). De enige externe bron, bg-bedrijfsnieuws, controleert 15 tot 20 van 17.035 bedrijven per dag en vond sinds 15 oktober 0 treffers per dag, omdat kleine mkb-bedrijven zelden in het nieuws staan. De cron meldt succeeded zodra de aanroep is verstuurd, zonder opbrengst te meten.",
+  "prevention": "Een profiel uit de eigen website van het bedrijf (diensten, sector, systemen, algemeen bedrijfscontact, bron-URL), in batches, met governance-poort, tijdbudget, uitsluiting van eenmanszaken en een alarm bij nul opbrengst.",
+  "evidence": {
+    "tests": [
+      "tests/brain-bedrijfsprofiel-20261028.test.mjs"
+    ],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "Nog niet uitgerold; migratie niet toegepast; geen cron. Eerste gemeten run volgt na akkoord."
+  },
+  "limitations": [
+    "Geen cron in deze PR: eerst een handmatige run meten op echte bedrijven",
+    "De kwaliteit van de AI-extractie is niet bewezen tot de eerste run is nagelezen",
+    "Alleen openbare websites; geen privegegevens van personen"
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-10-24",
+  "fingerprint": "content-publication|daily-blog|missing-three-way-closure|20261024-prevention",
+  "obligation_id": "content-publication:daily-blog:future-proof-bundle-v1",
+  "status": "CANDIDATE",
+  "failure_class": "DAILY_BLOG_CANDIDATE_MISSING_BRAIN_CLOSURE",
+  "root_cause": "The existing Powerhouse daily-blog workflow staged the generated blog and i18n files but not a semantic Brain learning artifact, append-only development ledger or human-readable change note. Required admission for daily PR #4820 failed with INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE.",
+  "observed_evidence": {
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4820",
+    "required_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/40045993025",
+    "code_path": ".github/workflows/powerhouse-daily-blog.yml",
+    "publication_state": "NOT_YET_LIVE_VERIFIED"
+  },
+  "fix": "Add bounded, deterministic source-validated closure writer within the already existing daily publishing workflow, before creating its one canonical PR; preserve reviewed evidence on retry.",
+  "prevention_rule": "Never publish a dated material content candidate without canonical Brain, append-only ledger, human documentation and exact source identity. Public readback and attribution are separate terminal gates. Reuse the one existing publisher and scheduler.",
+  "tests": [
+    "tests/brain-daily-blog-proof-bundle-v1.test.mjs",
+    "tests/brain-material-writeback-closure-guard.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DAILY_BLOG_CANDIDATE_MISSING_BRAIN_CLOSURE",
+    "scope": "CONTENT_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-blog-proof-bundle-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "This change is only live after exact-head Required/CodeQL, protected merge and a subsequent daily publisher run producing a properly closed candidate. No fabricated success."
+}

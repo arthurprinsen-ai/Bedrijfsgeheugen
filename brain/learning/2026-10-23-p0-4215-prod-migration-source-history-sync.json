@@ -1,0 +1,101 @@
+{
+  "fingerprint": "p0-4215-production-migration-source-divergence-20261023",
+  "date": "2026-10-23",
+  "parent_incident": "#4215",
+  "source_pr": "#4558",
+  "source_only_owner_pr": "#4733",
+  "obligation": "p0-4215-prod-applied-migration-history-sync-20261023",
+  "root_cause": "Supabase production migration 20261023070053 was already applied with the forecast lower(scope_key) index; protected GitHub main tracked 745 versions, while Supabase production tracked 746, leaving exactly this one provider-applied version without a local file. Supabase main deployment workflow failed Remote migration versions not found in local migrations directory.",
+  "intervention": "Restore byte-for-byte identical 1,620-byte original provider-applied SQL as its exact historical versioned file through protected GitHub PR; do not rewrite remote migration history, recreate the physical index, add another scheduler, or merge the separate unverified maturity view refactor.",
+  "prevention": "Git blob SHA-1 regression requires production-applied SQL source bytes to stay immutable; CI delivery closure records canonical learning, human explanation, and activity ledger, and production postmerge requires provider deployment and migration count reconciliation. Distinguish native GitHub-associated preview replay from dashboard-created branch replay; skip repeated provider retries when a PR is unassociated and the concurrent preview cap is exhausted. Keep both native provider and protected GitHub Required/CodeQL gates fail-closed; tie historical replay drift to existing canonical issue #3742.",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "P0_4215_REMOTE_MIGRATION_HISTORY_VERSION_MATCH",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-p0-4215-prod-migration-source-history-sync.test.mjs"
+    ]
+  },
+  "test_evidence": {
+    "remote_version": "20261023070053",
+    "remote_version_count_at_diagnosis": 746,
+    "protected_main_file_count_at_diagnosis": 745,
+    "remote_sql_byte_length": 1620,
+    "pinned_git_blob_sha1": "3e6af2848e72d8733b73900eff7174315427a55c",
+    "provider_failed_at_utc": "2026-10-23T07:42:53Z",
+    "error": "Remote migration versions not found in local migrations directory",
+    "already_live_index": "ph_forecasts_active_scope_lower_p0",
+    "already_live_index_def_md5": "26970207b59f178ef927b57a4ab57d8c",
+    "natural_cron_run_success": 122338,
+    "natural_cron_duration_s": 109.766,
+    "natural_snapshot_rows": 838,
+    "natural_snapshot_refreshed_at_utc": "2026-10-23T07:55:01.279174Z",
+    "release_status": "BLOCKED_NATIVE_PREVIEW_ASSOCIATION_AND_PROTECTED_REQUIRED",
+    "provider_preview_status": "SKIPPED_UNASSOCIATED_NOT_GREEN",
+    "last_verified_pr_head": "a737d8784c5e65552b738909f04bdc7c68782371",
+    "last_verified_codeql_run": 39926558685,
+    "last_verified_codeql_conclusion": "success",
+    "last_verified_required_run": 39926558731,
+    "last_verified_required_conclusion": "failure",
+    "last_verified_native_supabase_check": 120324254886,
+    "last_verified_native_supabase_conclusion": "skipped",
+    "provider_main_status": "MIGRATIONS_FAILED",
+    "production_migration_count_readback": 746,
+    "main_executable_migration_count_readback": 745,
+    "main_duplicate_migration_versions": 0
+  },
+  "status": "SOURCE_SYNC_CANDIDATE",
+  "evidence_urls": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4558",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/3742",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4733",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39926558731"
+  ],
+  "dependencies": {
+    "native_provider_pr_association": {
+      "required": true,
+      "current_status": "PREVIEW_BRANCH_UNASSOCIATED",
+      "supabase_project_ref": "adhjwmvyoixzjtmiroln",
+      "pr_number": 4733,
+      "git_branch": "fix/p0-4215-live-applied-migration-source-sync-20261023",
+      "current_associated_owner_preview_prs": [
+        4573,
+        4630
+      ],
+      "control_plane_action": "Supabase Project Settings > Integrations > GitHub: enable Automatic branching, set working directory '.', allow 1 additional concurrent PR preview, then re-evaluate the native provider check.",
+      "no_detached_manual_preview_substitution": true
+    },
+    "historical_replay": {
+      "canonical_issue": "#3742",
+      "dashboard_branch_failure_migrations_applied": 568,
+      "production_migration_versions": 746,
+      "historical_sql_version": "20261006085416",
+      "historical_sql_error": "CRON_PRESSURE_CONTRACT_JOB_MISSING:powerhouse-identity-graph-v1",
+      "historical_prod_statement_md5": "6e4aa572b4c8f5bb4091958db833eba3",
+      "source_sql_git_blob_sha1": "8e074f7d663cfb704a6cf0a864a4b935d2f7efe7",
+      "native_git_preview_replay": "NOT_YET_MEASURED",
+      "note": "Dashboard branch replays stored production migration statements; GitHub-integrated branch replays source migrations. Do not equate the two results."
+    }
+  },
+  "autonomous_policy": {
+    "canonical_owner_incident": "#4215",
+    "historical_replay_owner_incident": "#3742",
+    "no_second_scheduler_or_error_register": true,
+    "no_manual_branch_when_native_pr_association_required": true,
+    "no_repeat_ci_when_provider_configuration_unchanged": true,
+    "no_delete_other_pr_owned_preview_branches": true,
+    "release_rule": "ONLY_AFTER_CURRENT_SHA_NATIVE_SUPABASE_PREVIEW_SUCCESS_AND_REQUIRED_SUCCESS_AND_CODEQL_SUCCESS_AND_CLEAN_REPLAY",
+    "post_release_readback": [
+      "main_migration_parity_746_of_746",
+      "supabase_main_not_MIGRATIONS_FAILED",
+      "tenant_rls_and_acl_unchanged",
+      "cron_46_natural_success_and_snapshot_838_distinct"
+    ]
+  }
+}

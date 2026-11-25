@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "date": "2026-10-25",
+  "fingerprint": "external-intelligence|same-hour-run-dedupe-hides-recovery|20261025-v1",
+  "parent_issue": 4198,
+  "failure_class": "EXTERNAL_SOURCE_OBSERVATION_SAME_HOUR_COLLISION",
+  "root_cause": "The canonical bg-externe-signalen producer keyed its source-observation run receipts to observedAt.slice(0,13) (hour) plus rotating start. An independent 09:49 partially failed provider execution and a successful 09:50 execution selected the same three topics in that 20-minute slot. ON CONFLICT(dedupe_key) DO NOTHING kept the first producer observation, hiding later success from daily Powerhouse source-learning evidence.",
+  "observed_proof": {
+    "initial_provider_failure": "2026-10-25T09:49:17.092Z; same-topic set 2 succeeded, 1 failed in external-intelligence producer record",
+    "recovery_request_id": 12509,
+    "recovery_provider_status": 200,
+    "recovery_completed": "2026-10-25T09:50:47.474Z",
+    "recovery_processed_topics": 3,
+    "recovery_successful_topics": 3,
+    "recovery_failed_topics": 0,
+    "recovery_received_search_results": 27,
+    "recovery_allowed_signals": 1,
+    "recovery_saved_source_rows": true,
+    "missing_recovered_run_observation": true,
+    "canonical_dedupe_behavior": "powerhouse_record_source_observation_v1 on conflict (dedupe_key) do nothing"
+  },
+  "fix": "Use full immutable observedAt for run-level source and canonical producer dedupe keys, preserving deduplication of identical event IDs and URL-upsert of actual source articles; never collapse two independent invocations in the same hour.",
+  "prevention_rules": [
+    "A recovered invocation must be independently visible even when the preceding attempt failed in the same hour and searched the same source topics.",
+    "Source receipt dedupe is event identity, not hourly cache TTL.",
+    "Never rewrite or delete prior failed provider evidence to make status green.",
+    "Keep existing scheduler, provider limits, client authentication, one Brain registry and bounded retry."
+  ],
+  "tests": [
+    "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-external-signal-quota-failover-20261019.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact-head Required and CodeQL, protected merge, Supabase Edge deployment, then independent successive provider runs within same hour with distinct canonical source observation records. Do not claim future 44-topic completeness or paid customer orders.",
+  "compiler": {
+    "failure_class": "EXTERNAL_SOURCE_OBSERVATION_SAME_HOUR_COLLISION",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "initial_provider_failure": "2026-10-25T09:49:17.092Z; same-topic set 2 succeeded, 1 failed in external-intelligence producer record",
+    "recovery_request_id": 12509,
+    "recovery_provider_status": 200,
+    "recovery_completed": "2026-10-25T09:50:47.474Z",
+    "recovery_processed_topics": 3,
+    "recovery_successful_topics": 3,
+    "recovery_failed_topics": 0,
+    "recovery_received_search_results": 27,
+    "recovery_allowed_signals": 1,
+    "recovery_saved_source_rows": true,
+    "missing_recovered_run_observation": true,
+    "canonical_dedupe_behavior": "powerhouse_record_source_observation_v1 on conflict (dedupe_key) do nothing"
+  }
+}

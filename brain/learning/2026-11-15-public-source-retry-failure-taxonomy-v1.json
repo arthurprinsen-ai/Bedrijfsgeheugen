@@ -1,0 +1,70 @@
+{
+  "fingerprint": "powerhouse|research|unclassified-public-html-unavailable-four-hour-retry-loop|20261115-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "observed_at_utc": "2026-11-15T18:22:00Z",
+  "failure_class": "PUBLIC_FIRST_PARTY_SOURCE_UNCLASSIFIED_FAILURE_RETRY_STARVATION",
+  "scope": "ORIGINAL_RESEARCH_PRODUCER_AND_CONSUMER_HANDOFF",
+  "machine_enforceable": true,
+  "repeat_count": 5,
+  "security_sensitive": true,
+  "root_cause": "Native original Edge research logged SOURCE_HTML_UNAVAILABLE 10 times and repeatedly retried individual inaccessible company domains every 4 hours without diagnostic codes. As of 18:07 UTC it retried 2 due actions, obtained 0 readable sites and 0 new verified candidates, and 8 other source debts stayed due. The source reader collapsed HTTP denial, network timeout, oversized HTML, unsupported mime and rejected redirects to a single null, making owner-specific decisions impossible.",
+  "evidence": {
+    "native_provider_ref": "adhjwmvyoixzjtmiroln",
+    "native_last_research_at_utc": "2026-11-15T18:07:02.061Z",
+    "native_original_due_retry_count": 2,
+    "native_html_unavailable_count": 2,
+    "native_new_addresses_proven": 0,
+    "open_original_source_debt_count": 10,
+    "original_registered_contact_count": 23295,
+    "original_known_email_addresses": 605,
+    "original_handoff_failure_count": 4
+  },
+  "owner": "original #116 research worker, #138 identity consumer, original-agent:commercial, agent-reliability",
+  "corrective_action": "Keep original Edge and original records; record small stable fetch-failure class counts in original action evidence; exponential bounded next retry at 4/8/16/32/48h; retain canonical owner, source revision, actual successful page proof and legal send gate. Never replay expired emails.",
+  "prevention_rule": "Source reader failure cannot be terminal success; must preserve false checked flag, real recorded failure classification, exact action, next scheduled bounded retry and independent consumer. Only successful official HTML with named published business mailto produces a non-sendable candidate.",
+  "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs; tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs",
+  "human_documentation": "docs/changes/2026-11-15-public-source-retry-failure-taxonomy.md",
+  "human_ledger": "docs/development-ledger-events/2026-11-15-public-source-retry-failure-taxonomy.md",
+  "release_status": "CANDIDATE_REQUIRES_REQUIRED_CODEQL_PRODUCTION_EDGE_SOURCE_PARITY",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+      "tests/brain-public-work-email-same-domain-redirect-20261114.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_FIRST_PARTY_SOURCE_UNCLASSIFIED_FAILURE_RETRY_STARVATION",
+    "scope": "ORIGINAL_RESEARCH_PRODUCER_AND_CONSUMER_HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": true
+  },
+  "candidate_failures_observed": [
+    {
+      "code": "LEARNING_EVALUATION_TESTS_REQUIRED:shadow",
+      "reason": "security_sensitive=true requires canonical historical_replay+shadow+canary tests in admission",
+      "fix": "explicit local reproducible original read-only regression in all three canonical evaluation modes",
+      "prevention": "Require compiler-evaluation mode parity for all security-sensitive original source-reader changes"
+    },
+    {
+      "code": "SOURCE_READER_DYNAMIC_TEST_MOCK_SYNTAX",
+      "reason": "Existing same-domain redirect regression extracts bounded reader from source with new Function and assumes old one-arg TypeScript signature. The new optional diagnostics argument and typed record arrow caused SyntaxError before any redirect test executed.",
+      "fix": "Update original SAME regression source transformer to strip the exact optional diagnostics TypeScript annotations, and add real safety assertions for 403 and cross-domain redirect classification.",
+      "prevention": "When extending a source function called through a historical JS extraction harness, update extraction adapter and rerun all original threat-model tests; do not weaken forbidden-host guards."
+    },
+    {
+      "code": "SOURCE_READER_DYNAMIC_TEST_CATCH_TYPE_ANNOTATION",
+      "reason": "Initial extraction adapter fixed optional arguments but new catch(error:any) TypeScript annotation inside dynamically evaluated reader still threw SyntaxError. Existing CI correctly rejected all three original unsafe redirect tests.",
+      "fix": "Use runtime-safe catch(error) and Error instanceof discrimination, keeping Deno and JavaScript extraction behavior identical; verify actual redirect + HTTP-denial tests.",
+      "prevention": "All adapted source-reader tests must execute the exact function under existing JS runner, not only parse static patterns."
+    }
+  ]
+}

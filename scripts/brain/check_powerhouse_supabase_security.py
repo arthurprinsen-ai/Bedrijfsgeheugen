@@ -13,6 +13,60 @@ SECURITY_DEFINER = re.compile(r"security\s+definer", re.I)
 # only while their Git blob is byte-for-byte the reviewed production statement.
 # Any edit changes the blob SHA and immediately restores normal fail-closed checking.
 HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
+    # 2026-11-24 native 896 historical restoration (PR #6145, not new DDL).
+    # Original 20261105080000 revokes PUBLIC/anon/authenticated EXECUTE on
+    # all three existing signatures; CREATE OR REPLACE preserves those ACLs.
+    # Independent native pg_proc readback: fixed empty search_path, postgres
+    # and service_role EXECUTE only. Exact provider statement MD5s and Git
+    # blobs verified; hosted replay and native ACL readback remain required.
+    "supabase/migrations/20261124063737_original_social_loop_comparable_provider_windows.sql": "7539984b8e8929700e219842dba30d563c2e071f",
+    "supabase/migrations/20261124063938_original_social_analyst_variant_rotation_and_proof.sql": "36949527558ad6c0e0a85bd98b0ea7c43ece1fb5",
+    "supabase/migrations/20261124064859_original_personal_observational_analyst.sql": "bdc24987007d4726b89557930064292139899851",
+    # Provider-applied 2026-10-14 runtime mux SQL; immutable historical source.
+    # Live pg_proc ACL verified: anon=false, authenticated=false, service_role=true;
+    # explicit fixed search_path. Arbitrary SQL executor remains restricted to service role.
+    "supabase/migrations/20261014162635_restore_runtime_mux_statement_timeout_20261014.sql": "9609cd69f89dbe746bd36b96b8bb7c0aaeca38f7",
+    # Provider-applied 2026-10-10/11 SQL, read back from schema_migrations.statements.
+    # Production ACL verified 2026-10-15 for BOTH security-definer functions:
+    # anon=false, authenticated=false, service_role=true; deterministic search_path.
+    # Exact immutable Git blob SHA; edited SQL is rejected by this security gate.
+    "supabase/migrations/20261010070959_filter_expired_content_signals_v1_20261010.sql": "f391cbdeea0ca5afa14103d8ab172cea46b9868f",
+    # Original applied production statements, reconstructed byte-for-byte from the
+    # Supabase migration ledger. The preceding 20261007094500 migration already
+    # revoked browser/PUBLIC EXECUTE; CREATE OR REPLACE preserves those ACLs.
+    # Current production: anon=false, authenticated=false, service_role=true.
+    # A byte changed in either file invalidates its Git blob exception.
+    "supabase/migrations/20261008073832_fix_current_day_commercial_action_proof_v1.sql": "24e72187af36076f88ace3cb783986344517e764",
+    "supabase/migrations/20261008073907_fix_expired_commercial_action_supersede_v1.sql": "080696ca32462c1c049a5b6192969f8bb54dfca4",
+    "supabase/migrations/20261007111449_correct_netlify_sovereignty_truth_v1.sql": "cb6f52905e4404f0b574e994379fada6894a2ef9",
+    "supabase/migrations/20261007112233_powerhouse_end_to_end_one_heart_runtime_v2.sql": "5e78c8d2f39adb4b63a4df0b2d266ae297e0f70f",
+    "supabase/migrations/20261007112514_powerhouse_autonomous_email_economics_v1.sql": "125cf7ac9f46f1a4dcb02a9becc995778a51dfdc",
+    "supabase/migrations/20261007112817_powerhouse_ai_native_builder_personal_content_v1.sql": "070b58a181b3db245b248ddc9c2cabc46b930784",
+    "supabase/migrations/20261007113609_linkedin_personal_ai_native_builder_obligation_gate_v2.sql": "aab63acbfaa44e201809076b6a3d64ed72665a76",
+    "supabase/migrations/20261007113723_linkedin_personal_ai_native_builder_artifact_gate_v1.sql": "abbb385c40cd0209558fed0feba83a4515351ce8",
+    "supabase/migrations/20261007113951_powerhouse_reconciler_accept_ai_native_builder_v1.sql": "4aeea4778a070460750357d44432fa2c7c8d1a74",
+    "supabase/migrations/20261006102646_linkedin_company_admin_oauth_live_proof_guard_v1.sql": "83ea8b26bc1e364262f15e24f43ed796931c3e8a",
+    "supabase/migrations/20261006102754_linkedin_company_org_oauth_live_proof_guard_v1.sql": "1cf7f0c2236a3df15062a72fb2b8528ae8c9ddc4",
+    "supabase/migrations/20261006103336_linkedin_company_fresh_oauth_terminal_guard_v2.sql": "180394a12587c01d67f2a840538ce8edc9fbd36a",
+    "supabase/migrations/20261006103408_linkedin_org_reauth_scoped_setup_v2.sql": "713d5081e90e4b36ace9b168f03297c97cafb82c",
+    "supabase/migrations/20261006103432_linkedin_company_admin_oauth_function_execute_hardening_v1.sql": "0bdec55ec411f4f89cba61444a978b73c4a025b1",
+    "supabase/migrations/20261006103445_linkedin_company_fresh_oauth_live_proof_guard_v2.sql": "bc3a179dfc76f5a57d1d67b39fa593e3f8d611ef",
+    "supabase/migrations/20261006103617_linkedin_company_org_oauth_security_closure_v3.sql": "412f550ec3196b4fc1f204512fac024f593c0c5a",
+    "supabase/migrations/20261006103856_linkedin_company_live_proof_state_canonical_v3.sql": "1b522d67e6b6e1b0872dddde814c92650e6acfd2",
+    "supabase/migrations/20261006095958_normalize_publication_evidence_objects_v1.sql": "8e8e651e441effb0ba5e4bb5c84c42474eb32488",
+    "supabase/migrations/20261006095838_cache_research_freshness_and_split_one_brain_v1.sql": "3cea4a60c22538334a8e4cefe99a3d0eb6941907",
+    "supabase/migrations/20261006095118_remove_account_strategy_correlated_committee_scan_v1.sql": "d7ef9bcb930fe39a469b11f4785f1c15a248fa40",
+    "supabase/migrations/20261006094410_canonicalize_person_intelligence_alias_joins_v1.sql": "d5650394299d5d6972a6e38fb51b19f32b5ce13a",
+    "supabase/migrations/20261006093653_canonical_content_loop_scheduler_auth_authority_v1.sql": "f218849cd3b7218b0e67b8d881e050b5174f7503",
+    "supabase/migrations/20261006093529_remove_snapshot_truncate_lock_contention_v1.sql": "92a0cccda9870884fe98489bc91f8a6e519e657c",
+    "supabase/migrations/20261006093340_materialize_revenue_snapshot_from_canonical_nba_v1.sql": "3f0d20a03d3399e0714224d361e3822a09ecebb5",
+    "supabase/migrations/20261006093306_runtime_pressure_maintenance_v2.sql": "c0ec48d1ea813e9b5504225bcf96c6b3fb06e788",
+    "supabase/migrations/20261006092411_align_revenue_snapshot_v3_dependencies.sql": "13e9ee31a3bff6ec66fc7a1382e375f2e069ea45",
+    "supabase/migrations/20261006092322_repair_revenue_snapshot_projection_v3.sql": "4c407dc2bf3a3f0e361927c65624a92bfe0df1c3",
+    "supabase/migrations/20261006092057_bound_heavy_maintenance_pressure_v2.sql": "6b10193f0ddc79144b2a4646e6dec610bb98c42b",
+    "supabase/migrations/20261006091918_bound_loop_assurance_cron_history_scan_v1.sql": "e3920e72e091d3bc78feef9c58cb5768f7bf412e",
+    "supabase/migrations/20260915102500_powerhouse_revenue_flywheel_v1_state_fix.sql": "0a0255acbfd16a545df96c84fcb7caf385b64569",
+    "supabase/migrations/20260916053500_powerhouse_public_rls_regression_guard.sql": "bf33ce3422de96676dcf5aae1bdeb43bff09805b",
     "supabase/migrations/20260914125000_single_content_operations_tenant.sql": "8c2cf4dafd8aaa1bda16fb49638cc93b27945d0d",
     "supabase/migrations/20260915123100_powerhouse_revenue_flywheel_health_v1.sql": "e1fe3b099f8da6ef2cb97eaad769c24af9923205",
     "supabase/migrations/20260915130000_powerhouse_autonomous_gap_closer_v1.sql": "c3564610b63fa5d0e3d7d64a5e2a22733b2c508f",
@@ -341,6 +395,8 @@ HISTORICAL_PRODUCTION_MIRROR_BLOBS = {
     "supabase/migrations/20261005141555_powerhouse_verified_linkedin_post_context_gate_v1.sql": "50e475c60ddcb18ba870f68f8067bfb622170ac2",
     "supabase/migrations/20261005142034_powerhouse_exact_message_hash_and_linkedin_dedupe_v1.sql": "5e3854283a7189562b10727b2c311a1b4a7a3305",
     "supabase/migrations/20261005142118_powerhouse_social_exact_hash_two_phase_v2.sql": "9cc840e7bda664a23fabce57b4b0a29f6bea0a4e",
+    "supabase/migrations/20261007063439_bound_identity_graph_hotpath_and_heartbeat_batch.sql": "e84fa337b7b99979e768c269b3f359056091c285",
+    "supabase/migrations/20261007063948_fold_prediction_audit_and_retire_duplicate_runtime_cron.sql": "06753550c7edc51b8bdc3977334393a5ef993ac1",
 }
 
 
@@ -380,13 +436,13 @@ def check_sql(sql: str, label: str):
 
     if SECURITY_DEFINER.search(sql):
         intentional = "POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL" in sql
-        revoke_exec = "revoke execute on function" in low and "from public" in low and "anon" in low and "authenticated" in low
+        revoke_exec = ("revoke execute on function" in low or "revoke all on function" in low) and "from public" in low and "anon" in low and "authenticated" in low
         if not intentional and not revoke_exec:
             errors.append(f"{label}: SECURITY DEFINER introduced without fail-closed EXECUTE revocation or explicit POWERHOUSE_SECURITY_EXCEPTION: PUBLIC_INTENTIONAL marker")
 
     for fn in CREATE_FUNCTION.findall(sql):
         fn_mentioned = re.search(rf"alter\s+function\s+public\.{re.escape(fn)}\s*\([^;]*\)\s+set\s+search_path", sql, re.I | re.S)
-        body_has_set = re.search(r"set\s+search_path\s+(?:to|=)", sql, re.I)
+        body_has_set = re.search(r"set\s+search_path\s*(?:to|=)", sql, re.I)
         if not fn_mentioned and not body_has_set:
             errors.append(f"{label}: public.{fn} is created/replaced without deterministic search_path")
     return errors
@@ -414,6 +470,8 @@ def self_test():
     assert check_sql(safe_inline_view, "safe_inline_view") == []
     assert check_sql(public_view_exception, "public_view_exception") == []
     assert check_sql(safe_fn, "safe_fn") == []
+    safe_fn_equivalent = "create function public.good_fn_equivalent() returns void language plpgsql security definer set search_path=\'public\' as $ begin null; end $; revoke all on function public.good_fn_equivalent() from public, anon, authenticated; grant execute on function public.good_fn_equivalent() to service_role;"
+    assert check_sql(safe_fn_equivalent, "safe_fn_equivalent") == []
     assert check_sql(public_exception, "public_exception") == []
     print("Powerhouse Supabase security contract self-test passed: unsafe tables/views/functions blocked, safe fixtures accepted.")
 

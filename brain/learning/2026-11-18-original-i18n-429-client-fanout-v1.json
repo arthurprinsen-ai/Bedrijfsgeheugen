@@ -1,0 +1,58 @@
+{
+  "fingerprint": "netlify|production-i18n-translate|browser-recursive-429-burst|20261118-v1",
+  "date": "2026-11-18",
+  "original_owner": "assets/js/i18n.js and original /api/i18n-translate",
+  "parent_issue": 4215,
+  "related_issue": 4198,
+  "stage": "CODE_CANDIDATE",
+  "terminal_success": false,
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "RECOVERY_BURST",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "occurrence_count": 515
+  },
+  "evidence": {
+    "netlify_deploy_id": "6afd583c726cf176ada08779",
+    "netlify_main_sha": "2408a130dd04c8d01398d54e11ff97558d25c477",
+    "native_observed_status_counts": {
+      "499": 412,
+      "502": 515
+    },
+    "independent_upstream_status": 429,
+    "upstream_failure_class": "UPSTREAM_HTTP_REJECTION",
+    "original_provider_credential_scope": "UNKNOWN",
+    "independent_postrelease_improvement_verified": false,
+    "tests": [
+      "tests/brain-i18n-provider-storm-bounds-20261118.test.mjs"
+    ]
+  },
+  "root_cause": "Browser translated already-static public EN DOM mutations and, on any failed batch, retried twice, recursively split batches into groups of 5, and sent per-string requests for all unresolved items, amplifying genuine upstream 429 into hundreds of 502/499 responses.",
+  "prevention": "No provider retry fan-out: fail at first provider 429/5xx/network, stop all remaining work, hold 5-minute in-tab cooldown, preserve original/local/static content and visible error, never retranslate static public /en DOM, keep original locale links; no unapproved provider fallback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-provider-storm-bounds-20261118.test.mjs"
+    ],
+    "shadow": [
+      "netlify request logs after deployed exact SHA"
+    ],
+    "outcome": [
+      "independent actual /en page and provider request-rate monitoring"
+    ]
+  },
+  "security_guardrails": [
+    "No raw user data in logs",
+    "No private portal runtime bypass",
+    "No new provider or paid fallback",
+    "No fake English text; keep build fail-closed",
+    "No main bypass/duplicate PR author",
+    "No false terminal status"
+  ],
+  "linked_obligations": [
+    "content-publication:2026-11-18:blog",
+    "netlify|production-i18n-translate|http-502|20261022-v1"
+  ],
+  "independent_effect_verified": false
+}

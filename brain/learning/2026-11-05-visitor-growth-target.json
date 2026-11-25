@@ -1,0 +1,28 @@
+{
+  "type": "CONTROL_PLANE_PREVENTION",
+  "version": "v1",
+  "date": "2026-11-05",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "seo|visitor-growth-target|daily-qualified-visits|20261105-v1",
+  "owner": "seo-revenue-growth",
+  "compiler": {
+    "failure_class": "NO_DAILY_VISITOR_TARGET_AND_LOW_DISTRIBUTION",
+    "scope": "SEO_VISITOR_GROWTH_TARGET",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "root_cause": "Over 28 days the site had about 35 GA4 sessions, 230 Search Console impressions and 1 click. The SEO loop optimised revenue per opportunity but had no daily visitor metric, and 69 of about 145 LinkedIn posts carry no link by design.",
+  "prevention_rule": "A daily qualified-visits 7-day average is the first-class SEO metric. Unmeasured stays UNKNOWN. Levers run in order: indexing and technical SEO, keyword-to-page match on existing pages, internal links, LinkedIn links with UTM, and new content only for a proven intent gap.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-visitor-growth-target-20261105.test.mjs"],
+    "shadow": ["tests/brain-visitor-growth-target-20261105.test.mjs"],
+    "canary": ["tests/brain-visitor-growth-target-20261105.test.mjs"]
+  },
+  "evidence": {
+    "historical": ["Windsor.ai GA4 and Search Console readback, 28 days to 2026-11-05"],
+    "current": ["config/visitor-growth-target.json matches the existing 3-changes-per-day cap"]
+  },
+  "customer_outcome": "NOT_PROVEN",
+  "independent_verification": "PENDING_PROTECTED_REQUIRED_TEST",
+  "skill_targets": ["powerhouse-self-improvement-layer", "powerhouse-continuity"]
+}

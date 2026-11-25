@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1",
+  "obligation_id": "delivery|brain|runtime-tenant-proof-skipped-on-backend-release|20261022-v1",
+  "status": "CANDIDATE_UNVERIFIED",
+  "failure_class": "PRODUCTION_PROOF_SKIP",
+  "root_cause": "Protected #4699 deployed the transitive Brain operating-loop function but Production Release Readback #39830412618 classified portal_required=false on a backend runtime change and skipped existing Verify authenticated Portal production API proof. Correct exact provider SHA alone is not authenticated per-tenant outcome proof.",
+  "impact": "Release workflow can report success while customer-authenticated portal and tenant boundary remain unverified after deployed Brain runtime changes.",
+  "fix": "Reuse the existing authenticated Portal production proof step whenever the imported Brain runtime paths change; preserve portal lane original trigger and existing exact SHA/deploy/tenant validation. No second verifier or scheduler.",
+  "prevention_rule": "Brain runtime imports must not allow a green production release unless the existing exact-deploy authenticated tenant proof succeeds; 401/403/invalid or missing proof stays red. Two-tenant acceptance remains separately required.",
+  "compiler": {
+    "failure_class": "PRODUCTION_PROOF_SKIP",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-runtime-authenticated-production-readback-required-v1.test.mjs",
+    "tests/brain-portal-authenticated-production-authority-v1.test.mjs"
+  ],
+  "evidence": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4699",
+    "release_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/39830412618",
+    "provider_deploy": "6ada53da8e99139b5e12e8e9",
+    "authenticated_step": "SKIPPED",
+    "production_verified": false
+  },
+  "outcome": "CANDIDATE_UNVERIFIED"
+}

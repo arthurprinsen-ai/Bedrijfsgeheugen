@@ -1,0 +1,6 @@
+# 2026-11-13 — original provider-848 exact applied source-lock
+- Root incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198; canonical Supabase migration lock owner, no second writer.
+- Original protected #5744 merged 1422e08ef48c89f3305e2effc0ba5d8e55ef91fb. Real production provider read-only checked at 2026-11-13T16:05:16.124635Z: exactly 848 migrations with last 20261113155800/original_historic_handoff_source_revision_priority_v1. Actual function and original ACL verified. Independent first 847 Git/provider pairs 0 mismatches.
+- Change scope: append precisely one real 848 identity to original supabase/migration-history.lock.json and captured_at, plus source-only test, ONE BRAIN learning, change, event. No SQL/provider writes, additional scheduler or historical record rewrites.
+- Test: tests/brain-original-provider-848-migration-lock-20261113.test.mjs. Learning: brain/learning/2026-11-13-original-provider-848-migration-lock-v1.json.
+- Release acceptance requires protected exact-head Required/CodeQL/BRAIN then provider-vs-source exact parity and original terminal workflow. Original #171 21/21 consumer ack remains independently due until proven, as do seven RED assurance loops and revenue.

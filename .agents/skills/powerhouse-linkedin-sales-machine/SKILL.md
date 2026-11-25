@@ -137,3 +137,14 @@ Hard rules:
 - Deduplicate against prior actions/threads before dispatch.
 - Email replies and LinkedIn outcomes must write back to the exact action/source lineage and update trigger quality, angle, CTA, objection handling, channel fit and revenue-per-send.
 - A source/context failure is fail-closed; do not silently fall back to generic outreach.
+
+
+## Onafhankelijke e-mail-lane bij commerciële ketenfouten — 2026-10-09
+Fingerprint: `powerhouse|commercial|independent-email-lane-within-single-scheduler|v1`.
+
+- Bestaande pg_cron-job 116 `powerhouse-commercial-learning-v1` blijft de enige scheduler voor relatieverrijking en commerciële outbound; geen nieuwe uitvoerder, campagne of CRM.
+- De volledige connectiegraph wordt dagelijks opnieuw geprojecteerd zodra `enriched_today < total_connections`; de normale commerciële cyclus blijft eerst verantwoordelijk voor alle kanalen.
+- Alleen na een exception in die normale cyclus mag de bestaande `prepare_autonomous_outreach` → `optimize_prepared_outreach` → `dispatch_autonomous_outreach` als e-mailfallback worden uitgevoerd. Geen tweede dispatch bij succes van de normale cyclus.
+- De fallback gaat nooit voorbij recipient approval, consent/opt-out, suppressie, contactdruk, cooldown, message quality, persoonsbewijs of idempotency.
+- `prepared`, `dispatched` en SMTP/Gmail-providerclaim blijven afzonderlijk; alleen echte Gmail-ID plus onafhankelijke SENT-readback bewijst een verzending. Geen onterecht groene dag bij nul geschikte kandidaten.
+- Canonieke migration: `supabase/migrations/20261009135700_commercial_email_lane_fault_isolation_4198.sql`; regressie: `tests/brain-email-lane-fault-isolation-v1.test.mjs`; ouder-P0: #4198.

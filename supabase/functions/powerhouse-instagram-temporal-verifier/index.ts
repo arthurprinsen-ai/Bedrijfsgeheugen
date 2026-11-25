@@ -1,3 +1,4 @@
+import {requestMiraVision} from '../_shared/mira-openai-vision.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const USE_CASE='supabase-powerhouse-instagram-media-verifier-v1';
@@ -26,8 +27,8 @@ Deno.serve(async(req)=>{
   try{
     const gov=await db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status')
       .eq('tenant_id','canonical').eq('use_case_id',USE_CASE).maybeSingle();
-    if(!gov.data||gov.data.approved!==true||gov.data.lifecycle_status!=='ACTIVE'||gov.data.provider!=='Anthropic') throw new Error('AI_GOVERNANCE_UNAVAILABLE');
-    const apiKey=clean((await db.rpc('bg_geheim',{p_naam:'ANTHROPIC_API_KEY'})).data);
+    if(!gov.data||gov.data.approved!==true||gov.data.lifecycle_status!=='ACTIVE'||gov.data.provider!=='OpenAI') throw new Error('AI_GOVERNANCE_UNAVAILABLE');
+    const apiKey=clean((await db.rpc('bg_geheim',{p_naam:'OPENAI_API_KEY'})).data);
     if(!apiKey) throw new Error('AI_KEY_UNAVAILABLE');
     const tool={name:'temporal_verdict',description:'Conservatively judge temporal continuity across ordered start, middle and end frames of one short Reel.',input_schema:{
       type:'object',additionalProperties:false,properties:{
@@ -41,14 +42,7 @@ Deno.serve(async(req)=>{
       content.push({type:'text',text:['START','MIDDLE','END'][i]});
       content.push({type:'image',source:{type:'base64',media_type:mime(f),data:b64(f)}});
     }
-    const response=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({
-      model:gov.data.model_id,max_tokens:700,messages:[{role:'user',content}],tools:[tool],tool_choice:{type:'tool',name:'temporal_verdict'}
-    })});
-    const rb:any=await response.json().catch(()=>({}));
-    if(!response.ok) throw new Error('VISION_PROVIDER_REQUEST_FAILED:'+response.status);
-    const item=(rb.content||[]).find((x:any)=>x.type==='tool_use'&&x.name==='temporal_verdict');
-    if(!item?.input) throw new Error('TEMPORAL_TOOL_OUTPUT_MISSING');
-    const v=item.input;
+    const v=await requestMiraVision({apiKey,model:gov.data.model_id,name:tool.name,schema:tool.input_schema,content});
     const pass=v.single_continuous_take===true&&v.continuous_motion_verified===true&&v.scene_continuity_verified===true&&v.identity_continuity_verified===true
       &&v.human_motion_verified===true&&v.realistic_camera_motion===true&&v.slideshow_detected===false&&v.still_image_animation_detected===false&&Number(v.confidence)>=0.9;
     const evidenceHash=await sha256(videoSha256+'|'+ordered.map((f:any)=>clean(f.position)+':'+clean(f.seconds)).join('|'));
@@ -57,7 +51,7 @@ Deno.serve(async(req)=>{
       scene_continuity_verified:v.scene_continuity_verified===true,identity_continuity_verified:v.identity_continuity_verified===true,human_motion_verified:v.human_motion_verified===true,
       realistic_camera_motion:v.realistic_camera_motion===true,slideshow_detected:v.slideshow_detected===true,still_image_animation_detected:v.still_image_animation_detected===true,
       evidence_method:'vision',confidence:Number(v.confidence)||0,reason:clean(v.reason).slice(0,700),video_sha256:videoSha256,
-      evidence_refs:[`temporal:anthropic:${gov.data.model_id}:${evidenceHash.slice(0,20)}`]
+      evidence_refs:[`temporal:openai:${gov.data.model_id}:${evidenceHash.slice(0,20)}`]
     };
     return json({ok:true,pass,publicationDate,temporal_proof});
   }catch(error){return json({ok:false,error:clean((error as Error)?.message||error).slice(0,300)},500);}

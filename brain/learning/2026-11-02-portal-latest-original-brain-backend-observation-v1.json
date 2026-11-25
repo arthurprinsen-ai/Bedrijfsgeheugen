@@ -1,0 +1,33 @@
+{
+  "fingerprint": "powerhouse|portal|stale-brain-failure-count-after-latest-run|20261102-v1",
+  "compiler": {
+    "failure_class": "STALE_VERIFIED_SOURCE_MEASUREMENT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs"
+    ]
+  },
+  "root_cause": "Original CRO admin-only portal projection displayed historical evidence.failed_tests=34 even after ONE BRAIN recorded exact original second BRAIN run 41409216287 with 32 failures. The projection used the first observation without any latest-run selection.",
+  "prevention_rule": "Original Portal must show historical baseline and most recently original source-observed BRAIN run separately; prefer versioned latest_original_brain_run with trusted positive GitHub run identity, fall back to independently logged second_full_brain_run, and fail closed for malformed/missing data. Latest register evidence is not proof of successful terminal control or customer orders. Never add a scheduler/writer.",
+  "owner": "original CRO/ONE BRAIN Portal read-model and existing Heartbeat/SkillOps owners",
+  "evidence": {
+    "baseline_run": 41406918918,
+    "baseline_failures": 34,
+    "latest_run": 41409216287,
+    "latest_failures": 32,
+    "original_terminal_run": 41409165747,
+    "original_terminal_state": "FAILED",
+    "original_netlify_production_sha": "31d3d213c79e3e85c34604294e4ea97c7043d47f",
+    "source": "public.brain_failure_registry original fingerprint powerhouse|brain|postmerge-backend-suite-34-failures|20261102-v1",
+    "original_github": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/41409216287",
+    "regression": "tests/brain-portal-latest-original-backend-observation-20261102.test.mjs",
+    "current_candidate_status": "PROTECTED_CHECKS_PENDING",
+    "provider_live_after_fix": false,
+    "all_32_failures_resolved": false,
+    "independent_orders": false
+  }
+}

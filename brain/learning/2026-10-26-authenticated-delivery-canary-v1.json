@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|delivery|authenticated-canary|20261026-v1",
+  "version": "AUTHENTICATED-DELIVERY-CANARY-v1",
+  "date": "2026-10-26",
+  "obligation_id": "authenticated-delivery-canary-20261026-v1",
+  "root_cause": {
+    "escaped_defect": "A live deployment and a 401 response were incorrectly conflated with evidence of an authenticated admin dashboard end-to-end readback."
+  },
+  "prevention": {
+    "rule": "After actual admin Identity JWT and 200 API readback, reconcile provider identities, derived status trio and rendered DOM, with missing evidence fail closed."
+  },
+  "regression": [
+    "tests/brain-release-status-three-stage.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-release-status-three-stage.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-release-status-three-stage.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-release-status-three-stage.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "AUTHENTICATED_DASHBOARD_E2E_PROOF_MISSING",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-release-status-three-stage.test.mjs"
+    ],
+    "proof_boundary": "Authenticated production runtime canary only verified when an existing legitimate admin actually loads Delivery & bewijs."
+  },
+  "status": "DRAFT_NOT_LIVE"
+}

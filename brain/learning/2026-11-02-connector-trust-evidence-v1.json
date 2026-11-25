@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-02",
+  "status": "CANDIDATE",
+  "obligation_id": "portal-connector-trust-gates-20261102-v1",
+  "fingerprint": "portal|connectors|upstream-secret-leak-and-no-tenant-trust-evidence|20261102-v1",
+  "compiler": {
+    "failure_class": "CONNECTOR_UPSTREAM_SECRET_DISCLOSURE",
+    "scope": "PORTAL_CONNECTORS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original connector failure returned and stored raw third-party error code/message/stage/id. Customer Studio exposed configured connections without a separate evidence-bound security status.",
+  "fix": "Hard allowlist for public provider error codes/stages, generic messages before persistence and recovery; read-only tenant-scoped trust endpoint, accessible per-connector proof view; no green without actual external data and security audit.",
+  "tests": [
+    "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs",
+    "tests/connector-trust-evidence-20261102.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-connection-studio-multipage-recovery-20261102.test.mjs"
+    ]
+  },
+  "prevention_rules": [
+    "No raw untrusted provider errors or identifiers persist in failures or return through customer APIs.",
+    "Every trust status derives from authenticated original tenant connector store and persisted version-checked provider test only.",
+    "Provider safe-tests and configured links never mean real production records, compliant data location or independent security certification.",
+    "Preserve original ONE BRAIN, issue #4215, existing Portal V2 and protected release; run security regression and independent readback."
+  ],
+  "owner": "original Portal V2 + canonical connectors + Security Agent + ONE BRAIN/Heartbeat",
+  "proof_state": "CANDIDATE_LIVE_RECORDS_AND_SECURITY_COMPLIANCE_EVIDENCE_DUE"
+}

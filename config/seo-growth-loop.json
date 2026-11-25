@@ -52,6 +52,130 @@
     "paid_provider_guard": "deterministic opportunity pre-gate and bounded paid canary only"
   },
   "optimization": {
+    "daily_search_and_ai_traffic_growth": {
+      "fingerprint": "seo|daily-google-chatgpt-claude-qualified-traffic|20261112-v1",
+      "objective": "increase independently verified Google organic and ChatGPT/Claude human referral visits with qualified engagement and commercial conversion; daily action not guaranteed daily positive search volume",
+      "primary_owner": "existing Powerhouse SEO Order Engine / BG169",
+      "original_automation_id": "6ad5b66790548191ad87ca89c4fd00ab",
+      "target": "sustained growth in complete-day 7d and 28d rolling qualified organic/AI landing traffic, leads and paid outcomes; no fabricated targets or daily result guarantee",
+      "baseline_observed_2026_11_12": {
+        "source": "Supabase growth_events and bg_ga4_sync, inspected 2026-11-12",
+        "window": "7 days; current-day partial; events are not unique visitors",
+        "non_robot_events": 316,
+        "non_robot_page_view_events": 125,
+        "canonical_pages_with_events": 38,
+        "pageviews_with_observed_referrer_field": 0,
+        "tagged_bing_organic_events": 5,
+        "keyword_intelligence_records": 15,
+        "latest_keyword_record_at": "2026-10-25T05:02:00.755Z",
+        "ga4_latest_sync_status": "ok",
+        "ga4_latest_sync_pages_loaded": 9,
+        "ga4_latest_sync_measurements_written": 0,
+        "google_clicks": "NOT_MEASURED",
+        "chatgpt_human_referrals": "NOT_MEASURED",
+        "claude_human_referrals": "NOT_MEASURED"
+      },
+      "measurement_invariants": [
+        "events_are_not_unique_visitors",
+        "source_and_medium_are_not_verified_platform_referrals_without_provenance",
+        "consent_correct_GA4_and_GSC_are_primary_when_available",
+        "a_zero_update_success_must_not_count_as_fresh_metric_delivery",
+        "GSC_complete_days_28_vs_prior_28_not_calendar_partial",
+        "ChatGPT_and_Claude_citations_are_not_human_visits",
+        "bot_crawls_are_not_human_visits",
+        "missing_referrer_or_GSC_or_provider_results_means_UNKNOWN_not_zero",
+        "AI_answers_only_from_actual_authorized_provider_response_with_citation_url_and_timestamp"
+      ],
+      "acquisition_channels": [
+        "google_organic",
+        "chatgpt_referral",
+        "claude_referral"
+      ],
+      "diagnostic_guardrails": {
+        "stale_keyword_data": "older than 7 complete days opens original freshness/retry obligation, never current rank claim",
+        "ga4_zero_update": "requires source completeness and independent readback; no silent green on ok+0 writes",
+        "referrer_unknown": "retain unknown attribution bucket, never automatically force google/chatgpt/claude classification",
+        "search_visibility": "use Google Search Console and bounded DataForSEO, not empty third-party responses as proof of zero ranking",
+        "prompt_panel": "20 fixed versioned nonbrand prompts, provider-separated and NOT_MEASURED without access",
+        "crawler_access": [
+          "OAI-SearchBot",
+          "Claude-SearchBot",
+          "Claude-User"
+        ],
+        "training_robots_separate": [
+          "GPTBot",
+          "ClaudeBot"
+        ],
+        "privacy": "no unconsented tracking, IP or user agent retention as personal identifiers",
+        "duplicate_content": "reuse original money intent owner before publishing a distinct blog"
+      },
+      "source_observed_multichannel_distribution_2026_11_17": {
+        "contract": "ORIGINAL_OWNED_SEO_TO_APPROVED_CHANNELS_V1",
+        "objective": "increase real human qualified organic, LinkedIn and authorized email referral visits to ONE existing canonical landing page, then verified CTA, lead, order and revenue; no guaranteed impressions, ranking, recipients or sends",
+        "source_observed_search_console": {
+          "window": "28 completed days ending 2026-11-14",
+          "impressions": 249,
+          "clicks": 0,
+          "afas_page_impressions": 137,
+          "afas_lightspeed_query_cluster": "afas lightspeed koppeling",
+          "campaign_canonical_owner": "https://www.bedrijfsgeheugen.nl/afas-koppeling",
+          "technical_crawl_support": "https://www.bedrijfsgeheugen.nl/systemen-koppelen",
+          "avoid_new_doorway_or_duplicate_landing_page": true
+        },
+        "original_distribution_owners": {
+          "seo_and_site": "existing Powerhouse SEO Order Engine BG169 protected GitHub/Netlify writer",
+          "linkedin_company": "original daily corporate publisher with provider ID and readback",
+          "linkedin_personal": "original personal storyteller; only a genuine first-person experience supported by user-authored evidence, no fabricated autobiography",
+          "instagram": "original Mira generator, original media/face verification and provider publication ID",
+          "email": "original authorized commercial email owner and legitimate recipient eligibility; no list purchase, silent bulk sends or bypass of provider authentication",
+          "measurement": "original GA4/GSC/first-party source owner 175 to ONE BRAIN consumer 140 and Heartbeat CRO"
+        },
+        "channel_to_landing": {
+          "company_linkedin": "source-backed operational example: AFAS/Lightspeed manual-order entry, test prerequisites, canonical page, authentic CTA",
+          "personal_linkedin": "real personal first-person story only when independently supplied or otherwise verified; no recycled corporate post",
+          "instagram": "distinct visual problem-solution scenario and point, only with authorized media",
+          "email": "existing consent- or lawfully-authorized eligible audience; useful advisory link only after original source and compliance gate"
+        },
+        "measurement": {
+          "campaign": "afas_lightspeed_qualified_traffic_20261117",
+          "utm_tags": "use distinct truthful utm_source and utm_medium on outbound links only; preserve clean canonical in page HTML",
+          "success_metrics": ["provider_confirmed_gsc_query_page_impressions_and_clicks","consented_organic_or_attributed_human_sessions","landing_to_cta_rate","qualified_leads","verified_orders","realized_revenue_eur"],
+          "measure_windows_days": [7,14,28],
+          "organic_growth_not_proven_by": ["technical_200","scheduler_success","keyword_volume","post_created","email_drafted","utm_created","source_persisted_without_consumer_ack"],
+          "when_source_missing": "UNKNOWN_WITH_ORIGINAL_REPAIR_OBLIGATION",
+          "no_user_level_tracking_without_consent": true
+        },
+        "live_release": "original protected Required CodeQL and exact-current READY Netlify plus public canonical H1 internal-link CTA readback",
+        "no_parallel_scheduler_or_marketing_writer": true
+      },
+      "daily_loop": [
+        "read_original_source_freshness_and_anomaly_receipts",
+        "reconcile_GSC_GA4_growth_event_attribution_and_real_AI_referrals",
+        "rank_commercial_query_page_opportunities_using_current_source_data",
+        "verify_NL_EN_sitewide_crawl_and_ai_search_bot_access",
+        "execute_up_to_three_original_owner_safe_reversible_edits",
+        "run_Required_BRAIN_CodeQL_and_exact_Netlify_production_readback",
+        "measure_7d_14d_28d_qualified_human_visits_and_sales",
+        "persist_ONE_BRAIN_owner_ACK_Heartbeat_Portal_and_next_run_learning"
+      ],
+      "original_handoff_required_fields": [
+        "tenant_id",
+        "source_revision",
+        "original_owner",
+        "canonical_url",
+        "correlation_id",
+        "idempotency_key",
+        "provider_or_source_event_id",
+        "measuring_consumer",
+        "consumer_processed_ack",
+        "timestamp"
+      ],
+      "incomplete_state": "SOURCE_OR_ATTRIBUTION_DEGRADED",
+      "max_changes_per_day": 3,
+      "same_original_writer": true,
+      "no_parallel_scheduler": true,
+      "claim_live_only_on_exact_provider_readback": true
+    },
     "mode": "bounded",
     "allowlist_config": "config/seo-optimization-allowlist.json",
     "objective": "qualified organic demand -> message match -> engaged visit -> CTA -> qualified lead -> order -> revenue -> outcome learning",
@@ -272,6 +396,217 @@
         ],
         "evidence_policy": "measure search, engagement, selfscan progression, qualified lead, proposal, paid order and realized revenue; do not infer demand or revenue from traffic alone"
       }
+    },
+    "ai_answer_visibility": {
+      "fingerprint": "seo|public-ai-search-discovery-and-proposition-truth|20261111-v1",
+      "owner": "existing Powerhouse SEO Order Engine / BG169",
+      "scheduler": "reuse existing daily Powerhouse SEO Order Engine, never create second scheduler",
+      "source_integrity": [
+        "robots.txt search/user bot permissions",
+        "llms.txt product and service truth",
+        "sitemap.xml NL/EN canonical discoverability",
+        "public URL 200 response",
+        "truthful Organization, SoftwareApplication and FAQ JSON-LD"
+      ],
+      "ai_search_user_agents": [
+        "OAI-SearchBot",
+        "ChatGPT-User",
+        "Claude-SearchBot",
+        "Claude-User"
+      ],
+      "training_bots_separate": [
+        "GPTBot",
+        "ClaudeBot"
+      ],
+      "citation_sample": {
+        "prompt_panel_size_target": 20,
+        "priority": "unbranded Dutch business-problem questions",
+        "providers": [
+          "ChatGPT",
+          "Claude"
+        ],
+        "required_receipt_fields": [
+          "provider",
+          "timestamp",
+          "prompt_version",
+          "answer_url_if_available",
+          "observed_mention",
+          "observed_citation",
+          "canonical_target_url",
+          "discovery_method",
+          "confidence",
+          "qualified_lead",
+          "paid_order"
+        ],
+        "unavailable_state": "NOT_MEASURED; never infer 0% visibility",
+        "warning": "Do not fabricate AI platform access or citations; only verified provider answer content counts"
+      },
+      "decision_policy": "Fix existing intent-owner pages first; no duplicate content, unsupported ranking claims, bot simulation, cloaking, extra event store or unconsented tracking",
+      "handoff": "original BG169 SEO Order Engine -> ONE BRAIN with owner ACK -> Heartbeat -> Portal -> next original daily cycle",
+      "live_gate": "original Required+CodeQL+preview (where applicable) -> protected merge -> exact Netlify READY commit -> public robots/llms live readback",
+      "visibility_proven": false,
+      "production_proven": false
+    },
+    "sitewide_daily_audit": {
+      "fingerprint": "seo|sitewide|daily-audit-to-conversion-learning|20261110-v1",
+      "scheduler_authority": "existing Powerhouse SEO Order Engine daily automation (id 6ad5b66790548191ad87ca89c4fd00ab); NO second scheduler",
+      "execution_owner": "original Powerhouse SEO Order Engine + BG169 protected website writer",
+      "expected_site_coverage": "every discoverable public indexable production NL/EN canonical, including blog, money, pillar and product pages",
+      "discovery_sources": [
+        "live sitemap.xml",
+        "live robots.txt",
+        "canonical production registry",
+        "live linked/public discovery"
+      ],
+      "mandatory_technical_checks": [
+        "HTTP status and redirect chains",
+        "sitemap/indexability/canonical parity",
+        "robots and noindex",
+        "title/description/H1",
+        "NL/EN hreflang",
+        "structured-data-to-visible-truth",
+        "orphan and broken internal links",
+        "mobile accessibility",
+        "LCP CLS INP when provider-measured",
+        "image performance",
+        "security and privacy guardrails"
+      ],
+      "mandatory_keyword_checks": [
+        "GSC query x landing page x locale with reporting lag",
+        "28 complete days versus previous 28",
+        "keyword intent owner and cannibalization",
+        "current title/description to SERP intent match",
+        "bounded DataForSEO supplemental evidence",
+        "new intent gap only if commercially distinct"
+      ],
+      "mandatory_cro_checks": [
+        "real non-bot visits and consent",
+        "CTA exposure and click",
+        "server-confirmed form success",
+        "qualified lead and meeting",
+        "order and paid provider receipt",
+        "real assigned and matured control/treatment experiment"
+      ],
+      "evidence_readbacks": [
+        "scan timestamp and discovered/scanned/excluded/failed URLs",
+        "origin source and freshness",
+        "hypothesis and route owner",
+        "protected PR and checks",
+        "exact Netlify main deploy SHA",
+        "independent live URL readback",
+        "outcome comparison and rollback decision",
+        "ONE BRAIN ACK and Heartbeat/portal handoff"
+      ],
+      "actions_max_per_day": 3,
+      "single_writer_lease": true,
+      "auto_promote_only_after_protected_checks_and_preview": true,
+      "experiment_policy": "single registered controlled experiment per page/metric; do not claim lift without matured evidence",
+      "on_missing_data": "UNKNOWN not zero, no automatic winner or claimed conversion",
+      "on_incomplete_coverage": "COVERAGE_INCOMPLETE; preserve missing-route obligation and retry through original owner",
+      "terminal_states": [
+        "LIVE_PROVEN",
+        "NO_SAFE_CHANGE_WITH_EVIDENCE",
+        "PENDING_ORIGINAL_OWNER_RETRY",
+        "HUMAN_ONLY_ACTION"
+      ],
+      "no_parallel_executor": true,
+      "no_duplicate_intent_content": true,
+      "never_claim_sales_without_provider_readback": true,
+      "rendered_href_integrity": {
+        "fingerprint": "seo|rendered-nl-en-href-full-inventory-and-consumer-ack|20261112-v1",
+        "original_executor": "Powerhouse SEO Order Engine / BG169; original website lane browser only",
+        "inventory": "final public sitemap NL and generated EN; all discovered public indexable routes",
+        "source": "existing tools/site-shell/standalone-visibility-check.mjs desktop DOM inside current three-viewport full-site sweep",
+        "checks": [
+          "every rendered a[href] accounted for without truncation",
+          "HTTPS-only absolute external links and safe mailto/tel/fragment",
+          "no empty placeholder javascript data scheme-relative HTTP apex-host or ambiguous relative href",
+          "first-party page target present in final canonical sitemap or explicitly nonindexed functional route",
+          "real HTTP/redirect and fragment/interaction effects require separate independent browser/provider readback"
+        ],
+        "coverage_goal_percent": 100,
+        "allow_partial_coverage_green": false,
+        "consumer_handoff": {
+          "original_tenant_and_content_revision": true,
+          "original_owner_and_idempotency_key": true,
+          "original_producer_accepted_ack": true,
+          "consumer_processing_receipt_required": true,
+          "heartbeat_and_portal_original_projection": true,
+          "learning_next_natural_run_verification": true
+        },
+        "on_failure": "same original Website/SEO owner lease -> one BRAIN failure fingerprint -> bounded repair -> protected Required/CodeQL/Netlify -> independent public route check -> original consumer ACK; no second executor, no fake green",
+        "release_proven": false
+      },
+      "ahrefs_class_audit_v1": {
+        "fingerprint": "seo|ahrefs-class-sitemap-audit-and-dataforseo-commercial-opportunities|20261112-v1",
+        "exact_scope": "Ahrefs-inspired issue taxonomy; NOT full parity with proprietary Site Explorer, Ahrefs 170+ rules, backlink index or Brand Radar",
+        "measured_code": "tools/site-shell/seo-site-audit-intelligence.mjs",
+        "existing_crawl_owner": "tools/site-shell/standalone-visibility-check.mjs (current website release lane, no new scheduler)",
+        "mandatory_discovery": "public sitemap NL and EN; no 100-percent coverage claim if any sitemap URL is unscanned or hash unverified",
+        "measured_rules": [
+          "title present and length",
+          "meta description present and length",
+          "single H1",
+          "self-canonical",
+          "noindex-in-sitemap",
+          "NL/EN HTML lang",
+          "invalid JSON-LD",
+          "ALT attribute presence",
+          "oversized intrinsic image dimensions",
+          "OG title/description presence",
+          "duplicate sitewide title/description",
+          "all rendered internal hrefs from existing href gate"
+        ],
+        "delegated_existing_separate_checks": [
+          "robots.txt accessibility",
+          "sitemap parity",
+          "mobile and tablet functional UI",
+          "CLS <= 0.1",
+          "WCAG normal contrast",
+          "security headers",
+          "checkout and scan conversion"
+        ],
+        "external_provider_required": [
+          "real CRUX LCP/INP by source",
+          "real external HTTPS redirect status",
+          "Google Search Console clicks, impressions, position and freshness",
+          "DataForSEO keywords, domain/competitor opportunities",
+          "indexed backlinks and referring domains",
+          "LLM mentions and actual ChatGPT/Claude cited response URLs"
+        ],
+        "not_built_or_proven": [
+          "170+ Ahrefs proprietary issue checks",
+          "Ahrefs exact backlink index",
+          "Ahrefs Web Analytics/Rank Tracker/Content Explorer full parity",
+          "24/7 continuous crawler",
+          "complete real-time Google and LLM source referrals"
+        ],
+        "observed_coverage_report": "SEO_SITE_AUDIT_V1 with scoped rule counts, severity, scanned/discovered, canonical source SHA, issue samples, real denominator; warnings are not full-site green",
+        "severity_priority": "P0 crawlability/canonical/noindex / P1 invalid structured data or broken indexable href / P2 metadata, images, duplicate intent / P3 enhancements",
+        "original_readback_to_owner": "BG169 -> exact GitHub/Netlify readback -> ONE BRAIN tenant+source revision+idempotency -> original consumer PROCESSED ACK -> Powerhouse/Heartbeat/Portal -> 7/14/28d measured effect -> original next natural run",
+        "no_new_executor": true,
+        "auto_publish_without_provider_proof": false
+      },
+      "deterministic_health_score": {
+        "version": "sitewide-seo-health-v1-20261112",
+        "original_lane": ".github/workflows/lane-website.yml / website browser",
+        "source": "tools/site-shell/seo-health-score.mjs",
+        "artifact": ".artifacts/sitewide-seo-health-report.json",
+        "artifact_upload": "sitewide-seo-health-${candidate_sha}",
+        "deterministic_issue_types": 17,
+        "score": "Count fully crawled sitemap URLs with zero observed ERROR findings divided by expected sitemap URLs * 100; null for incomplete URL coverage",
+        "parity_claim": "NOT_AHREFS_170_RULES",
+        "missing_external_source_is_unknown": true,
+        "release_gate": "existing fail-closed href/HTTP/CLS browser gate plus exact SEO scan coverage; new issue types are reported and assigned, not silently counted as green",
+        "caveats": [
+          "17 independently auditable on-page rules are not Ahrefs' 170+ rules",
+          "AI citations, GSC, backlinks and real-user Core Web Vitals require separate provider source events",
+          "Browser-produced artifact alone is not a ONE BRAIN downstream consumer processed acknowledgment"
+        ],
+        "owner": "existing Powerhouse SEO Order Engine / BG169",
+        "handoff": "original tenant_id, source revision, owner, idempotency, producer receipt, independently processed named ONE BRAIN → Powerhouse → Heartbeat → Portal ACK",
+        "completion_definition": "source scan + artifact + protected CI + exact Netlify production readback + measured effect + original downstream consumer ACK; otherwise leave obligation OPEN"
+      }
     }
   },
   "failure_policy": {
@@ -294,6 +629,105 @@
       "NO_ACTION_EVIDENCE_INSUFFICIENT"
     ],
     "first_mover_objective": "detect commercially meaningful Dutch search demand early, combine with external market signals, and publish through the existing protected content chain only when a distinct intent gap is proven",
-    "execution_guard": "no duplicate publisher; no direct main; exact production readback remains terminal proof"
+    "execution_guard": "no duplicate publisher; no direct main; exact production readback remains terminal proof",
+    "dataforseo_daily_guard_v1": {
+      "fingerprint": "seo|provider-current-business-fit-and-owner-gate|20261112-v1",
+      "engine": "tools/site-shell/seo-site-audit-intelligence.mjs#triageExternalSeoOpportunities",
+      "source_required": "DataForSEO original provider ID + published keyword last_updated_time + location and language; GSC independent query/page observation if available",
+      "reject_unrelated": "No high-volume dictionary queries, online dice, irrelevant consumer topics or generic traffic without explicit >=0.75 documented business fit and canonical intent owner",
+      "staleness": "older than 30 days = source stale, recover original same owner before execution; rank updates and AI search volume not equal to human referrals",
+      "opportunity_actions": [
+        "OPTIMIZE_EXISTING_OWNER_PAGE",
+        "REPAIR_CRAWLABILITY",
+        "REPAIR_QUERY_PAGE_INTENT_MATCH",
+        "CREATE_ONLY_VERIFIED_UNIQUE_INTENT_GAP",
+        "NO_SAFE_ACTION_PENDING_SOURCE"
+      ],
+      "handoff": "one existing BG169 change lease, protected CI, exact Netlify prod readback, ONE BRAIN processing ACK, Powerhouse and Heartbeat review, measured CRO experiment outcome",
+      "measured_market_sample_20261112": [
+        {
+          "term": "afas koppeling",
+          "google_estimated_searches_month": 170,
+          "google_provider_updated": "2026-10-19",
+          "ai_estimated_searches_month": 22,
+          "ai_period": "2026-10",
+          "owner": "/afas-koppeling",
+          "state": "REQUIRES_ORIGINAL_SOURCE_FRESHNESS_AND_GSC_LINKAGE"
+        },
+        {
+          "term": "ai governance",
+          "google_estimated_searches_month": 390,
+          "google_provider_updated": "2026-09-17",
+          "ai_estimated_searches_month": 7,
+          "ai_period": "2026-10",
+          "owner": "/ai-governance",
+          "state": "STALE_GOOGLE_SOURCE"
+        },
+        {
+          "term": "bedrijfsprocessen automatiseren",
+          "google_estimated_searches_month": 170,
+          "google_provider_updated": "2026-10-20",
+          "ai_estimated_searches_month": 3,
+          "ai_period": "2026-10",
+          "owner": "/bedrijfsprocessen-automatiseren",
+          "state": "REQUIRES_SOURCE_FRESHNESS"
+        },
+        {
+          "term": "exact online koppeling",
+          "google_estimated_searches_month": 70,
+          "google_provider_updated": "2026-11-12",
+          "ai_estimated_searches_month": 5,
+          "ai_period": "2026-10",
+          "owner": "/exact-online-koppeling",
+          "state": "REQUIRES_REAL_RANK_AND_GSC_CHECK"
+        }
+      ],
+      "sample_disclaimer": "Market-size estimates NOT actual organic clicks, visits, ranks, paid revenue or provider AI citation share; never automatically publish from samples",
+      "provider_budget": "bounded, cost-aware; freshness check before paid call; no unbounded 1000-keyword/LLM crawl"
+    },
+    "evidence_priority_v2": {
+      "fingerprint": "seo|google-ai-external-evidence-revenue-priority|20261112-v2",
+      "original_owner": "Powerhouse SEO Order Engine BG169",
+      "new_scheduler": false,
+      "scorer": "tools/site-shell/seo-opportunity-evidence-model.mjs#scoreSeoOpportunityEvidence",
+      "dispatch": "existing tools/site-shell/seo-site-audit-intelligence.mjs#triageExternalSeoOpportunities",
+      "weights_percent": {
+        "commercialFit": 30,
+        "organicFeasibility": 20,
+        "demand": 15,
+        "ownSearchGap": 15,
+        "verifiedMarketMovement": 10,
+        "technicalAndExternal": 10
+      },
+      "hard_gates": [
+        "Original provider ID, source timestamp, Netherlands/nl scope, source freshness <=30d",
+        "Verifiable businessFit >=0.75 linked to true service proposition and source rationale",
+        "Existing canonical search-intent owner or explicitly independently proven new intent gap; no autonomous publication from unknown owner",
+        "Suppress dictionary/entertainment/nonbuyer keyword-ideas and duplicate keyword clusters",
+        "Never convert AI estimated search demand or crawler bot events into verified ChatGPT/Claude visitors"
+      ],
+      "sources": {
+        "primary": [
+          "site/seo-order-map.json canonical owner",
+          "DataForSEO Google Keyword Overview search_volume/keyword_difficulty/search_intent/paid_cpc, all source-dated",
+          "Google Search Console actual query/page impressions/clicks/average position; last complete 28d vs previous complete 28d",
+          "Site Audit actual 279/279 full route errors/warnings and page dependencies",
+          "First-party consent-compatible qualified source/referral/lead/order events"
+        ],
+        "independent_market": [
+          "First-party official regulator/product changelogs and standards with article URL/date",
+          "Independently dated industry association, trade-publications and official partner API integrations",
+          "DataForSEO organic SERP top-10 competitor pages, intent and weak content; backlink opportunities only when provider returns data",
+          "DataForSEO AI mentions and verified source citations only if successful and identifiable provider observation"
+        ],
+        "source_tiers": "Provider/official original facts > independent dated corroborated sources > community discussions as hypotheses only; no unsourced trend or social sentiment allowed to trigger publication",
+        "datum_semantics": "Paid competition and CPC are Google Ads concepts, NOT organic keyword difficulty, conversions or revenue; GSC zero clicks only when the actual query/page record exists; missing is NOT_MEASURED",
+        "monitoring": "Daily inexpensive first-party audit/GSC, bounded weekly source freshening and monthly seasonality/history; official urgent event may trigger bounded same-executor review but never a new cron"
+      },
+      "scoring_action": "Score ranks candidate owner review, does not authorize publish; prioritize page relevance if GSC rank >30, technical remediation when verified, CTR review only if source position supports it, research before net-new content",
+      "confidence": "Every score has weighted components, missingEvidence, real organicDifficulty vs paidCompetition, evidenceConfidence, original URL and no fabricated incremental revenue",
+      "value_model": "Only calculate attributable incremental lead/order value where consented historical conversion rate, order value and verified attribution exist; otherwise scenario NOT_MEASURED, no invented ROI",
+      "score_success_contract": "Protected original CI/CD -> Netlify exact live SHA -> ONE BRAIN original producer + processed consumer ACK -> Powerhouse/Heartbeat/Portal -> 7/28-day source/lead/sales readback -> next run learning; original incident remains OPEN until complete"
+    }
   }
 }

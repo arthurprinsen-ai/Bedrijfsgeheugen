@@ -1,0 +1,51 @@
+{
+  "id": "p0-4198-linkedin-length-fence-20261010-v1",
+  "date": "2026-10-10",
+  "status": "PROTECTED_CANDIDATE",
+  "root_cause": "Generated personal LinkedIn post exceeded LinkedIn API's 3000 character commentary limit; provider rejected before creating post, but daily publication authority was already consumed, stranding the canonical writer.",
+  "change": [
+    "Bound generated LinkedIn personal and company copy to 2800 characters, preserving complete paragraphs and sentence boundaries when needed.",
+    "Reject any overlength social artifact before claiming day-scoped dispatch, unique publication reservation or consuming publication capability.",
+    "Keep existing identity, global duplicate and provider proof gates unchanged."
+  ],
+  "proof_required": [
+    "Required CI and protected merge",
+    "Production Edge function parity",
+    "Exact provider post ID and readback for each LinkedIn channel",
+    "Distinct no-side-effect reconciliation before repairing a historically consumed capability"
+  ],
+  "evidence": {
+    "day": "2026-10-10",
+    "provider_rejection": "Invalid request data provided: LinkedIn commentary over 3000 characters",
+    "personal_provider_id": null,
+    "pr": 4308,
+    "regression": "tests/brain-linkedin-length-preflight-p0-4198.test.mjs"
+  },
+  "production_claim": "Unproven until protected merge, deployment and provider live proof.",
+  "fingerprint": "powerhouse|social|linkedin-commentary-overlength-pre-provider-fence|v1",
+  "compiler": {
+    "failure_class": "LINKEDIN_PROVIDER_PAYLOAD_TOO_LONG",
+    "scope": "SOCIAL_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-length-preflight-p0-4198.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-length-preflight-p0-4198.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-length-preflight-p0-4198.test.mjs"
+    ],
+    "canonical_eligible": false
+  },
+  "prevention": [
+    "Reject provider-invalid LinkedIn commentary prior to consuming publication authority.",
+    "Bound personal and company generated body text before final hash and review.",
+    "Keep duplicate, organization-admin OAuth and provider-readback proofs mandatory.",
+    "Recover historical consumed daily capability only with independent evidence that no provider side effect occurred."
+  ]
+}

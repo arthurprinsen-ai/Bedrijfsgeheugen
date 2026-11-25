@@ -1,0 +1,59 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {verifiedGmailReadback} from '../supabase/functions/_shared/verified-gmail-readback.mjs';
+import {outboundDeliveryGap} from '../supabase/functions/_shared/outreach-composer-hold.mjs';
+
+const sender=readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
+const map=readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
+
+test('Gmail created response is not independent SENT evidence',()=>{
+ assert.match(sender,/GMAIL_SEND_EMAIL/);
+ assert.match(sender,/GMAIL_FETCH_MESSAGE_BY_MESSAGE_ID/);
+ assert.match(sender,/verifiedGmailReadback\(x,messageId,recipient\)/);
+ const provider={data:{messageId:'1a1c4b1f339a051f',labelIds:['SENT'],payload:{headers:[{name:'To',value:'Contact <contact@example.org>'}]}}};
+ assert.equal(verifiedGmailReadback(provider,'1a1c4b1f339a051f','contact@example.org').ok,true);
+ assert.equal(verifiedGmailReadback(provider,'wrong','contact@example.org').ok,false);
+ assert.equal(verifiedGmailReadback(provider,'1a1c4b1f339a051f','wrong@example.org').ok,false);
+ assert.equal(verifiedGmailReadback({...provider,data:{...provider.data,labelIds:['INBOX']}},'1a1c4b1f339a051f','contact@example.org').ok,false);
+ assert.match(sender,/recipient_matches:/);
+ assert.match(sender,/provider_readback_verified:true/);
+ assert.ok(sender.indexOf('const proof=await readback(')<sender.indexOf('provider_ack_verified:true'));
+});
+
+test('provider side effect with unknown completion never auto-retries',()=>{
+ assert.match(sender,/COMPOSIO_GMAIL_SEND_UNCERTAIN/);
+ assert.match(sender,/SEND_ACK_MESSAGE_ID_MISSING/);
+ assert.match(sender,/SEND_OUTCOME_AMBIGUOUS_NO_RESEND/);
+ assert.match(sender,/\.eq\('status','waiting'\)\.contains\('evidence',\{autonomous_outbound:\{needs_readback:true\}\}\)/);
+ assert.match(sender,/republish_forbidden:true/);
+ assert.match(sender,/status:'unverified'/);
+ assert.doesNotMatch(sender,/retryable:true\}\},updated_at:now\}\)\.eq\('action_id',a\.action_id\)\.eq\('status','waiting'\)/);
+});
+
+test('side effect ID is checkpointed before readback and outcome before done',()=>{
+ const ack=sender.indexOf("code:'ACK_CHECKPOINT_WRITEBACK'");
+ const settle=sender.indexOf('out.push(await settle(',ack);
+ const writeOutcome=sender.indexOf("const{error:oe}=await db.from('powerhouse_sales_outcomes')");
+ const writeDone=sender.indexOf("const{data:done,error:we}=await db.from('powerhouse_sales_actions')");
+ assert.ok(ack>=0&&settle>ack);
+ assert.ok(writeOutcome>=0&&writeDone>writeOutcome);
+ assert.match(sender,/onConflict:'dedupe_key'/);
+ assert.match(sender,/\.eq\('status','prepared'\)\s*\.eq\('updated_at',a\.updated_at\)\.select\('action_id'\)/);
+ assert.match(sender,/\.update\(\{status:'waiting',updated_at:now,evidence:sendIntent\}\)/);
+ assert.ok(sender.indexOf('evidence:sendIntent')<sender.indexOf('ack=await send('));
+});
+
+test('the existing zero-send warning and suppression gate remain intact',()=>{
+  assert.match(sender,/outboundDeliveryGap\(\{selected:\(acts\|\|\[\]\)\.length,sent,results:out\}\)/);
+  assert.equal(outboundDeliveryGap({selected:0,sent:0,results:[]}), 'NO_ELIGIBLE_PREPARED_EMAIL');
+  assert.equal(outboundDeliveryGap({selected:1,sent:0,results:[{status:'held'}]}), 'NO_PROVIDER_CONFIRMED_EMAIL');
+  assert.equal(outboundDeliveryGap({selected:1,sent:0,results:[{status:'unverified'}]}), 'PROVIDER_READBACK_UNVERIFIED');
+ assert.match(sender,/status:sent===0\|\|out\.some/);
+ assert.match(sender,/CONTACT_SUPPRESSED/);
+ assert.match(sender,/HUMAN_MESSAGE_QUALITY_NOT_PROVEN/);
+ assert.match(sender,/external_outreach_executed:providerAttemptedNow>0/);
+ assert.match(sender,/verified_new_sends:verifiedNewSends/);
+ assert.match(sender,/prior_readbacks_settled:priorReadbacksSettled/);
+ assert.match(map,/COMMERCIAL_OUTBOUND_READBACK_P0_V1/);
+});

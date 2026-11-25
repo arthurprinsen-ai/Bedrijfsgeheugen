@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse|personal-linkedin|schedule-projection-stale-20261124",
+  "event_date": "2026-11-24",
+  "owner": "original-powerhouse-content-orchestrator",
+  "user_instruction": "Waarom ontbreekt de planning terwijl LinkedIn persoonlijk door agents automatisch moet doorgaan? Los oorzaak op en wijs uitvoering toe.",
+  "compiler": {
+    "failure_class": "STALE_PUBLICATION_SCHEDULE_RECOVERY_HANDOFF",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ]
+  },
+  "root_cause": "The original publication obligation was marked schedule missing at 00:04 NL before the original dated channel decision was created at 00:24 NL. The original handoff planner only wrote new recovery blockers, never reconciled a stale missing-schedule warning after the valid later decision appeared.",
+  "correction": "Use same original shared pure handoff planner and same existing content-loop CAS writer to self-reconcile exact stale publication schedule warning from one valid pre-due canonical channel decision; no new publisher, scheduler or guessed deadline. 24Nov row independently repaired by CAS and linked to original scheduled_for 2026-11-24T07:00Z.",
+  "prevention_rule": "If prior exact missing-schedule next_action conflicts with a newly verified original dated channel decision with valid future scheduled_for, original writer replaces warning with original schedule confirmation at next existing tick. Never change actual scheduled_for, approval or provider IDs, and never clear a true overdue failure.",
+  "evidence": {
+    "canonical_table": "public.powerhouse_channel_decisions",
+    "obligation_table": "public.content_publication_obligations",
+    "exact_due": "2026-11-24T07:00:00Z",
+    "decision_state": "content_ready",
+    "existing_owner": "powerhouse-content-orchestrator / powerhouse-social-publisher",
+    "historical_warning_recorded_at": "2026-11-23T23:04:45.877Z",
+    "source_decision_created_at": "2026-11-23T23:24:23Z",
+    "code": "supabase/functions/_shared/publication-recovery-obligation-writeback.mjs",
+    "tests": [
+      "tests/brain-publication-obligation-recovery-handoff-20261031.test.mjs"
+    ],
+    "related_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  },
+  "boundaries": [
+    "Never create a shadow sender/scheduler",
+    "Never fabricate a due time",
+    "Never change external provider side effect or original approved content",
+    "No false-green until LinkedIn provider ID/readback",
+    "Original user-authority and content quality rules remain"
+  ],
+  "implementation_state": "PROTECTED_PR_CI_PENDING"
+}

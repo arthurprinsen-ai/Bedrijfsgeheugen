@@ -1,0 +1,41 @@
+{
+  "id": "terminalizer-supabase-migration-readback-20261007-v1",
+  "date": "2026-10-07",
+  "type": "incident_prevention",
+  "source": "pr-4049-post-merge-terminalizer",
+  "fingerprint": "powerhouse|terminalizer|supabase-migration-provider-readback|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The post-merge terminalizer classified ordinary supabase/migrations/*.sql changes as unknown non-Netlify runtime. PR #4049 had an already-applied production migration and clean live runtime evidence, but the terminalizer had no dedicated migration-provider evidence class and therefore failed with UNWIRED_NON_NETLIFY_RUNTIME_READBACK.",
+  "prevention": [
+    "Classify timestamped supabase/migrations/*.sql as a dedicated migration runtime class.",
+    "Require one machine-readable Terminal-Supabase-Migration-Readback marker for every changed migration, including exact version, name, APPLIED state, project ref and UTC observation time.",
+    "Keep Edge function provider readback, Netlify runtime readback and unknown backend path handling unchanged and fail-closed.",
+    "Persist migration readbacks in terminal evidence instead of treating migrations as verifier-only."
+  ],
+  "evidence": {
+    "source_pr": 4049,
+    "source_merge_sha": "a05518bdbd6ae348a9ab9f84a9695199bf6ef968",
+    "failed_terminalizer_run": 37607393435,
+    "failure": "UNWIRED_NON_NETLIFY_RUNTIME_READBACK",
+    "migration_version": "20261007101156",
+    "migration_name": "close_current_set_provider_errors_v1",
+    "provider_state": "APPLIED",
+    "fresh_runtime_window": "2026-10-07T10:27:00Z/2026-10-07T10:38:00Z",
+    "runtime_errors_401_500_503_522": 0,
+    "latest_verified_heartbeat": "2026-10-07T10:37:06.358373Z"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminalizer-quality-surface-governance-v1.test.mjs"
+    ],
+    "expected": "Migration-only runtime changes require explicit provider-applied evidence; missing evidence and unknown backend paths remain fail-closed."
+  }
+}

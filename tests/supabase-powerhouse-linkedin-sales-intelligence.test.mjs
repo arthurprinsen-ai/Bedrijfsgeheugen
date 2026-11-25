@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 
-const migration = 'supabase/migrations/20260915125500_powerhouse_linkedin_sales_intelligence_v1.sql';
-const executionGateMigration = 'supabase/migrations/20260915143000_powerhouse_revenue_acceleration_mode_v1.sql';
+const migration = 'supabase/migration-history/repository-only/20260915125500_powerhouse_linkedin_sales_intelligence_v1.sql';
+const executionGateMigration = 'supabase/migration-history/repository-only/20260915143000_powerhouse_revenue_acceleration_mode_v1.sql';
 
 test('Powerhouse LinkedIn sales intelligence closes person company prediction action outcome learning loop', () => {
   assert.equal(existsSync(migration), true, 'LinkedIn sales intelligence migration must exist');
