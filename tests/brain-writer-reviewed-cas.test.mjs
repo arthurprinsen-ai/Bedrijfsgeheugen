@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {publishReviewedUnion,classifyPrewriteResolution,collectPrewriteReadback} from '../tools/delivery/reviewed-cas.mjs';
+import {publishReviewedUnion,classifyPrewriteResolution,collectPrewriteReadback,prepareReviewedPrewrite} from '../tools/delivery/reviewed-cas.mjs';
 const H='a'.repeat(40),M='b'.repeat(40),N='c'.repeat(40),T='d'.repeat(40),B='e'.repeat(40);
 function fixture(){
  const manifest={prNumber:5940,expectedHead:H,expectedBase:B,branch:'fix/original',obligation:'original'};
@@ -86,4 +86,41 @@ test('uncertain transport outcome never automatically releases original writer l
   assert.equal(f.state.pushes,1,label);
   assert.equal(f.calls.filter(sql=>sql.includes('.release(')).length,0,label);
  }
+});
+
+function durableFixture(){
+ const i={...readIntent,intentDigest:'9'.repeat(64)},calls=[];
+ const row={repository:i.repository,generation:String(i.generation),revision:String(i.revision),holder:i.holder,pr_number:String(i.prNumber),
+ head_sha:i.head,main_sha:i.main,branch:i.branch,obligation:i.obligation,commit_sha:i.commit,tree_sha:i.tree,
+ manifest_digest:i.manifestSha256,intent_digest:i.intentDigest,evidence_digest:i.intentDigest,state:'prewrite_pending'};
+ const state={prepare:[{generation:String(i.generation),revision:String(i.revision),state:'prewrite_pending'}],rows:[row],failure:0};
+ const query=async(sql,args)=>{calls.push({sql,args});
+ if(calls.length===state.failure)throw Error('LOST_RESPONSE');
+ if(sql.includes('.prepare_prewrite('))return state.prepare;
+ if(sql.includes('promotion_prewrite_intent'))return state.rows;
+ throw Error('UNEXPECTED_SQL');};
+ return {i,row,state,calls,query};
+}
+for(const [name,change,expected,count] of [
+ ['exact',()=>{},'PREWRITE_DURABLE_INTENT_OBSERVED_OWNER_REVIEW',2],
+ ['missing digest',f=>{delete f.i.intentDigest},'PREWRITE_INPUT_UNPROVEN',0],
+ ['invalid revision',f=>{f.i.revision=1},'PREWRITE_INPUT_UNPROVEN',0],
+ ['prepare timeout',f=>{f.state.failure=1},'PREWRITE_PREPARE_UNCONFIRMED',1],
+ ['wrong prepare revision',f=>{f.state.prepare[0].revision=3},'PREWRITE_PREPARE_UNCONFIRMED',1],
+ ['prepare duplicate rows',f=>{f.state.prepare.push(f.state.prepare[0])},'PREWRITE_PREPARE_UNCONFIRMED',1],
+ ['readback timeout',f=>{f.state.failure=2},'PREWRITE_DURABLE_READBACK_UNAVAILABLE',2],
+ ['missing durable row',f=>{f.state.rows=[]},'PREWRITE_DURABLE_READBACK_UNPROVEN',2],
+ ['duplicate durable rows',f=>{f.state.rows.push(f.row)},'PREWRITE_DURABLE_READBACK_UNPROVEN',2],
+ ['different event digest',f=>{f.row.evidence_digest='8'.repeat(64)},'PREWRITE_DURABLE_READBACK_UNPROVEN',2],
+ ['wrong commit',f=>{f.row.commit_sha=f.i.head},'PREWRITE_DURABLE_READBACK_UNPROVEN',2],
+ ['wrong obligation',f=>{f.row.obligation='other'},'PREWRITE_DURABLE_READBACK_UNPROVEN',2],
+ ['wrong holder',f=>{f.row.holder='github-actions:9:1'},'PREWRITE_DURABLE_READBACK_UNPROVEN',2],
+ ['wrong generation',f=>{f.row.generation='9'},'PREWRITE_DURABLE_READBACK_UNPROVEN',2],
+ ['wrong state',f=>{f.row.state='reserved'},'PREWRITE_DURABLE_READBACK_UNPROVEN',2]
+])test('durable prewrite: '+name,async()=>{
+ const f=durableFixture();change(f);
+ const r=await prepareReviewedPrewrite({intent:f.i,authorizedPgQuery:f.query});
+ assert.equal(r.state,expected);assert.equal(f.calls.length,count);
+ for(const v of [r.mutationAuthority,r.releaseAuthorized,r.retryAuthorized,r.mergeAuthorized])assert.equal(v,false);
+ if(count){assert.equal(f.calls[0].args[3],f.i.revision-1);assert.equal(f.calls[0].args[10],f.i.commit);assert.equal(f.calls[0].args[12],f.i.intentDigest)}
 });

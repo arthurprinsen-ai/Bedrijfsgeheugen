@@ -118,3 +118,46 @@ export async function collectPrewriteReadback({intent,github}={}) {
   return Object.freeze({...classifyPrewriteResolution({intent,observation}),observation});
  }catch{return hold('NATIVE_READBACK_UNAVAILABLE')}
 }
+
+// Staging-only adapter for the existing durable SQL intent contract.
+// This adapter never transports, grants, retries or resolves a reservation.
+// A lost response can mean the intent committed: fail closed and reconcile.
+export async function prepareReviewedPrewrite({intent,authorizedPgQuery}={}) {
+ const result=state=>Object.freeze({state,mutationAuthority:false,releaseAuthorized:false,retryAuthorized:false,mergeAuthorized:false});
+ if(classifyPrewriteResolution({intent,observation:null}).state==='INTENT_IDENTITY_UNPROVEN'||
+    !positive(intent.revision-1)||!HASH.test(intent.intentDigest||''))
+  return result('PREWRITE_INPUT_UNPROVEN');
+ if(typeof authorizedPgQuery!=='function')return result('PREWRITE_SQL_ADAPTER_REQUIRED');
+ const i=Object.freeze({...intent});
+ const numberEquals=(value,expected)=>value===expected||(typeof value==='string'&&/^[1-9][0-9]*$/.test(value)&&value===String(expected));
+ try {
+  const rows=await authorizedPgQuery(
+   'select generation,revision,state from delivery_control.prepare_prewrite($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)',
+   [i.repository,i.holder,i.generation,i.revision-1,i.prNumber,i.head,i.main,i.manifestSha256,i.branch,i.obligation,i.commit,i.tree,i.intentDigest]);
+  if(!Array.isArray(rows)||rows.length!==1||!numberEquals(rows[0].generation,i.generation)||
+     !numberEquals(rows[0].revision,i.revision)||rows[0].state!=='prewrite_pending')
+   return result('PREWRITE_PREPARE_UNCONFIRMED');
+ } catch {return result('PREWRITE_PREPARE_UNCONFIRMED')}
+ try {
+  const rows=await authorizedPgQuery(
+   `select i.repository,i.generation,i.revision,i.holder,i.pr_number,i.head_sha,i.main_sha,i.branch,i.obligation,
+    i.commit_sha,i.tree_sha,i.manifest_digest,i.intent_digest,e.evidence_digest,r.state
+    from delivery_control.promotion_prewrite_intent i
+    join delivery_control.promotion_reservation r on r.repository=i.repository and r.generation=i.generation
+     and r.revision=i.revision and r.holder=i.holder and r.pr_number=i.pr_number and r.head_sha=i.head_sha
+     and r.main_sha=i.main_sha and r.manifest_digest=i.manifest_digest
+    join delivery_control.promotion_reservation_event e on e.repository=i.repository and e.generation=i.generation
+     and e.revision=i.revision and e.holder=i.holder and e.pr_number=i.pr_number and e.head_sha=i.head_sha
+     and e.main_sha=i.main_sha and e.manifest_digest=i.manifest_digest and e.action='prepare_prewrite' and e.state=r.state
+    where i.repository=$1 and i.generation=$2 and r.state='prewrite_pending'`,
+   [i.repository,i.generation]);
+  const r=rows?.[0];
+  if(!Array.isArray(rows)||rows.length!==1||r.state!=='prewrite_pending'||!numberEquals(r.generation,i.generation)||
+     !numberEquals(r.revision,i.revision)||!numberEquals(r.pr_number,i.prNumber)||
+     r.repository!==i.repository||r.holder!==i.holder||r.head_sha!==i.head||r.main_sha!==i.main||
+     r.branch!==i.branch||r.obligation!==i.obligation||r.commit_sha!==i.commit||r.tree_sha!==i.tree||
+     r.manifest_digest!==i.manifestSha256||r.intent_digest!==i.intentDigest||r.evidence_digest!==i.intentDigest)
+   return result('PREWRITE_DURABLE_READBACK_UNPROVEN');
+  return result('PREWRITE_DURABLE_INTENT_OBSERVED_OWNER_REVIEW');
+ }catch{return result('PREWRITE_DURABLE_READBACK_UNAVAILABLE')}
+}
