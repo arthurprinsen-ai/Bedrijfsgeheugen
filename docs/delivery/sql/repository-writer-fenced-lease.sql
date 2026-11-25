@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS delivery_control.promotion_reservation (
  repository text PRIMARY KEY CHECK (repository='arthurprinsen-ai/Bedrijfsgeheugen'),
  generation bigint NOT NULL CHECK (generation>0),
  revision bigint NOT NULL CHECK (revision>0),
- state text NOT NULL CHECK (state IN ('reserved','grant_pending','granted','revoke_pending','idle')),
+ state text NOT NULL CHECK (state IN ('reserved','prewrite_pending','grant_pending','granted','revoke_pending','idle')),
  holder text NOT NULL,
  pr_number bigint NOT NULL CHECK (pr_number>0),
  head_sha text NOT NULL CHECK (head_sha ~ '^[0-9a-f]{40}$'),
@@ -160,3 +160,58 @@ END $$;
 REVOKE ALL ON FUNCTION delivery_control.reserve_promotion(text,text,bigint,text,text,text,integer,text) FROM PUBLIC;
 REVOKE ALL ON FUNCTION delivery_control.transition_promotion(text,text,bigint,bigint,text,text) FROM PUBLIC;
 -- Evidence digests are audit references, not provider proof. No live adapter or grant.
+
+-- Staging-only: exact immutable prewrite intent, no release or grant.
+CREATE TABLE IF NOT EXISTS delivery_control.promotion_prewrite_intent (
+ repository text NOT NULL CHECK(repository='arthurprinsen-ai/Bedrijfsgeheugen'),
+ generation bigint NOT NULL CHECK(generation>0),
+ revision bigint NOT NULL CHECK(revision>0),
+ holder text NOT NULL,
+ pr_number bigint NOT NULL CHECK(pr_number>0),
+ head_sha text NOT NULL CHECK(head_sha ~ '^[0-9a-f]{40}$'),
+ main_sha text NOT NULL CHECK(main_sha ~ '^[0-9a-f]{40}$'),
+ branch text NOT NULL CHECK(branch<>'' AND branch<>'main'),
+ obligation text NOT NULL CHECK(obligation<>''),
+ commit_sha text NOT NULL CHECK(commit_sha ~ '^[0-9a-f]{40}$' AND commit_sha<>head_sha AND commit_sha<>main_sha),
+ tree_sha text NOT NULL CHECK(tree_sha ~ '^[0-9a-f]{40}$'),
+ manifest_digest text NOT NULL CHECK(manifest_digest ~ '^[0-9a-f]{64}$'),
+ intent_digest text NOT NULL CHECK(intent_digest ~ '^[0-9a-f]{64}$'),
+ recorded_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+ PRIMARY KEY(repository,generation)
+);
+REVOKE ALL ON delivery_control.promotion_prewrite_intent FROM PUBLIC;
+CREATE OR REPLACE FUNCTION delivery_control.prepare_prewrite(
+ p_repository text,p_holder text,p_generation bigint,p_revision bigint,p_pr bigint,
+ p_head text,p_main text,p_manifest text,p_branch text,p_obligation text,
+ p_commit text,p_tree text,p_evidence text)
+RETURNS TABLE(generation bigint,revision bigint,state text)
+LANGUAGE plpgsql SECURITY INVOKER SET search_path='' AS $$
+DECLARE rec delivery_control.promotion_reservation%ROWTYPE;
+BEGIN
+ IF p_repository IS DISTINCT FROM 'arthurprinsen-ai/Bedrijfsgeheugen' OR
+ p_holder IS NULL OR p_holder !~ '^github-actions:[0-9]+:[0-9]+$' OR
+ p_generation IS NULL OR p_revision IS NULL OR p_pr IS NULL OR
+ p_head IS NULL OR p_main IS NULL OR p_manifest IS NULL OR
+ p_branch IS NULL OR p_branch='' OR p_branch='main' OR
+ p_obligation IS NULL OR btrim(p_obligation)='' OR
+ p_commit IS NULL OR p_commit !~ '^[0-9a-f]{40}$' OR p_commit=p_head OR p_commit=p_main OR
+ p_tree IS NULL OR p_tree !~ '^[0-9a-f]{40}$' OR
+ p_evidence IS NULL OR p_evidence !~ '^[0-9a-f]{64}$'
+ THEN RAISE EXCEPTION 'INVALID_PREWRITE_INTENT'; END IF;
+ SELECT * INTO rec FROM delivery_control.promotion_reservation r WHERE r.repository=p_repository FOR UPDATE;
+ IF NOT FOUND OR rec.holder IS DISTINCT FROM p_holder OR rec.generation<>p_generation OR rec.revision<>p_revision OR
+ rec.pr_number<>p_pr OR rec.head_sha<>p_head OR rec.main_sha<>p_main OR rec.manifest_digest<>p_manifest
+ THEN RAISE EXCEPTION 'PREWRITE_IDENTITY_CAS_MISMATCH'; END IF;
+ IF rec.state<>'reserved' OR rec.valid_until<=clock_timestamp() THEN RAISE EXCEPTION 'PREWRITE_STATE_DENIED'; END IF;
+ UPDATE delivery_control.promotion_reservation r SET state='prewrite_pending',revision=r.revision+1
+ WHERE r.repository=p_repository AND r.generation=p_generation AND r.revision=p_revision RETURNING * INTO rec;
+ IF NOT FOUND THEN RAISE EXCEPTION 'PREWRITE_IDENTITY_CAS_MISMATCH'; END IF;
+ INSERT INTO delivery_control.promotion_prewrite_intent(repository,generation,revision,holder,pr_number,head_sha,main_sha,branch,obligation,commit_sha,tree_sha,manifest_digest,intent_digest)
+ VALUES(rec.repository,rec.generation,rec.revision,rec.holder,rec.pr_number,rec.head_sha,rec.main_sha,p_branch,p_obligation,p_commit,p_tree,rec.manifest_digest,p_evidence);
+ INSERT INTO delivery_control.promotion_reservation_event(repository,generation,revision,action,state,holder,pr_number,head_sha,main_sha,manifest_digest,evidence_digest)
+ VALUES(rec.repository,rec.generation,rec.revision,'prepare_prewrite',rec.state,rec.holder,rec.pr_number,rec.head_sha,rec.main_sha,rec.manifest_digest,p_evidence);
+ RETURN QUERY SELECT rec.generation,rec.revision,rec.state;
+END $$;
+REVOKE ALL ON FUNCTION delivery_control.prepare_prewrite(text,text,bigint,bigint,bigint,text,text,text,text,text,text,text,text) FROM PUBLIC;
+-- The existing transition function deliberately has NO exit from prewrite_pending.
+-- Provider-verified resolution and exclusive release authority are still required.
