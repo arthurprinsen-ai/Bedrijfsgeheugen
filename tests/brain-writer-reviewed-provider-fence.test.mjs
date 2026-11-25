@@ -48,3 +48,44 @@ test('invalid epoch or credential does not request provider',async()=>{
  const f=inventory();const r=await readReviewedProviderFence({...f.input,expectedMainSha:'main'});
  assert.equal(r.state,'NATIVE_READ_CREDENTIAL_OR_EPOCH_UNPROVEN');assert.equal(f.calls.length,0);
 });
+
+import {generateKeyPairSync} from 'node:crypto';
+import {proveScopedFenceRead} from '../tools/delivery/reviewed-provider-fence.mjs';
+const readPem=generateKeyPairSync('rsa',{modulusLength:2048}).privateKey.export({type:'pkcs8',format:'pem'});
+const readNow=Date.parse('2026-11-25T18:00:00Z');
+const appPerms={statuses:'write',contents:'read',pull_requests:'read',checks:'read',administration:'read',metadata:'read'};
+const scopedRead={administration:'read',contents:'read',metadata:'read'};
+function scopedFixture({permissions=scopedRead,denied=401,wrongRepo=false,inventoryMode=''}={}){
+ const base=inventory(),calls=[];base.state.mode=inventoryMode;let revoked=false;
+ const reply=(status,value)=>({status,ok:status===200||status===201,headers:{get:()=>null},json:async()=>value});
+ const fetchImpl=async(u,o)=>{
+   calls.push([u.pathname,o.method]);assert.equal(u.origin,'https://api.github.com');assert.equal(o.redirect,'error');
+   if(u.pathname==='/app')return reply(200,{id:5916428,owner:{login:'arthurprinsen-ai',type:'User'},permissions:appPerms});
+   if(u.pathname==='/repos/arthurprinsen-ai/Bedrijfsgeheugen/installation')return reply(200,{id:185660155,app_id:5916428,account:{login:'arthurprinsen-ai'},repository_selection:'selected',suspended_at:null,permissions:appPerms});
+   if(u.pathname==='/app/installations/185660155/access_tokens'){assert.equal(o.method,'POST');assert.deepEqual(JSON.parse(o.body),{repository_ids:[1303700955],permissions:scopedRead});return reply(201,{token:'fixture_read_only',permissions,expires_at:new Date(readNow+3600000).toISOString()})}
+   assert.equal(o.headers.Authorization,'Bearer fixture_read_only');
+   if(u.pathname==='/installation/token'){assert.equal(o.method,'DELETE');revoked=true;return reply(204)}
+   if(u.pathname==='/installation/repositories'){assert.equal(o.method,'GET');return revoked?reply(denied):reply(200,{total_count:1,repositories:[{id:wrongRepo?7:1303700955,full_name:'arthurprinsen-ai/Bedrijfsgeheugen'}]})}
+   return base.input.fetchImpl(u.href,o);
+ };
+ return {calls,input:{appId:5916428,privateKey:readPem,expectedMainSha:MAIN,now:readNow,fetchImpl,sleep:async()=>{}}};
+}
+test('separate scoped read token inventories exact native configuration and revokes without grant',async()=>{
+ const f=scopedFixture();const p=await proveScopedFenceRead(f.input);
+ assert.equal(p.fenceState,'NATIVE_CONTEXT_BOUND_EXCLUSIVE_WRITER_UNPROVEN');assert.equal(p.scopeVerified,true);assert.equal(p.revocationVerified,true);assert.equal(p.mutationAuthority,false);assert.equal(p.exclusiveWriterVerified,false);assert.equal(JSON.stringify(p).includes('fixture_read_only'),false);
+ assert.equal(f.calls.filter(c=>c[1]==='POST').length,1);assert.equal(f.calls.filter(c=>c[1]==='DELETE').length,1);assert.deepEqual(f.calls.slice(-2),[['/installation/token','DELETE'],['/installation/repositories','GET']]);
+});
+test('write permission or wrong repository must stop before inventory and revoke',async()=>{
+ for(const [opts,error] of [[{permissions:{...scopedRead,statuses:'write'}},'FENCE_READ_TOKEN_PERMISSIONS_UNPROVEN'],[{wrongRepo:true},'FENCE_READ_TOKEN_REPOSITORY_SCOPE_UNPROVEN']]){
+ const f=scopedFixture(opts);await assert.rejects(proveScopedFenceRead(f.input),e=>e.message===error);assert.equal(f.calls.some(c=>c[0].endsWith('/protection')),false);assert.deepEqual(f.calls.slice(-2),[['/installation/token','DELETE'],['/installation/repositories','GET']]);
+ }
+});
+test('native inventory denial is not an exclusive fence proof and still revokes',async()=>{
+ const f=scopedFixture({inventoryMode:'HTTP403'});const p=await proveScopedFenceRead(f.input);assert.equal(p.fenceState,'NATIVE_FENCE_HTTP_403');assert.equal(p.mutationAuthority,false);assert.equal(p.revocationVerified,true);
+});
+test('unconfirmed revocation fails closed with no second issuance',async()=>{
+ const f=scopedFixture({denied:200});await assert.rejects(proveScopedFenceRead(f.input),e=>e.message==='FENCE_READ_TOKEN_REVOCATION_READBACK_UNPROVEN');assert.equal(f.calls.filter(c=>c[1]==='POST').length,1);
+});
+test('invalid expected epoch stops before token issuance',async()=>{
+ const f=scopedFixture();await assert.rejects(proveScopedFenceRead({...f.input,expectedMainSha:'main'}),e=>e.message==='FENCE_READ_EPOCH_UNPROVEN');assert.equal(f.calls.length,0);
+});
