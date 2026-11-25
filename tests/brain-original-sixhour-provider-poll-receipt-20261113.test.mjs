@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
+  observedProviderMetricNumber,
   originalProviderPollReceiptIdentity,
   originalProviderPollAuditEvent,
   assertOriginalProviderPollReceipt,
@@ -144,4 +145,15 @@ test('the ONE existing original #177 metric reader persists source-time slots, w
  assert.match(source,/onConflict:'tenant_id,source_event_id',ignoreDuplicates:true/);
  assert.doesNotMatch(source,/const snapshotId='composio:'\+platform\+':'\+providerId\+':'\+day/);
  assert.doesNotMatch(source,/cron\.schedule|INSTAGRAM_CREATE_MEDIA|LINKEDIN_CREATE_LINKED_IN_POST/);
+});
+
+test('original provider reader does not turn absent or malformed observations into zero',()=>{
+  for(const input of [undefined,null,'','  ',false,true,[],[0],{},'0x10','0b0','Infinity','NaN',NaN,Infinity,-1,'-1'])
+    assert.equal(observedProviderMetricNumber(input),null);
+  for(const [input,expected] of [[0,0],['0',0],[' 0 ',0],[12,12],['12',12],[1.5,1.5],['1.5',1.5]])
+    assert.equal(observedProviderMetricNumber(input),expected);
+  const source=readFileSync(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
+  assert.match(source,/const numeric=observedProviderMetricNumber;/);
+  assert.match(source,/if\(total===null\)throw new Error\('LINKEDIN_REACTION_TOTAL_UNAVAILABLE'\)/);
+  assert.match(source,/if\(!Object.keys\(metrics\).length\)throw new Error\('IG_INSIGHTS_UNAVAILABLE'\)/);
 });

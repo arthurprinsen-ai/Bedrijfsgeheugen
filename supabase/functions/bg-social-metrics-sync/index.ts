@@ -5,7 +5,7 @@ import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs 
 import { stageOriginalWindsorCompanySources, originalCompanySourceProviderHealth, readOriginalWindsorCompanySourcePair } from '../_shared/original-windsor-company-stage.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
-import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity,originalCompanySourceBrainFailureInput} from '../_shared/original-provider-poll-receipt.mjs';
+import {observedProviderMetricNumber,originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity,originalCompanySourceBrainFailureInput} from '../_shared/original-provider-poll-receipt.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -14,7 +14,7 @@ const clean=(v:unknown)=>String(v??'').trim();
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const localDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const delayMs=90*1000;
-const numeric=(v:unknown)=>{const n=Number(v);return Number.isFinite(n)&&n>=0?n:null;};
+const numeric=observedProviderMetricNumber;
 async function secret(db:any,name:string){
   const {data,error}=await db.rpc('bg_geheim',{p_naam:name});
   if(error)throw new Error('SECRET_READ_FAILED:'+name);
