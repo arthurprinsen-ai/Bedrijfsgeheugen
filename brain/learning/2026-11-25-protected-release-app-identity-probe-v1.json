@@ -6,8 +6,8 @@
   "status": "CANDIDATE",
   "owner": "Original #4661 release-control owner",
   "root_cause": "Dedicated App configured in protected environment but existing supervisor has no protected main-only identity probe. Draft #6179 cannot safely access its secret.",
-  "fix": "Extract identical reviewed identity verifier and test; add mutually exclusive manual identity-only mode to existing supervisor, no production mutation.",
-  "prevention_rule": "Never expose protected App credentials to candidate code or grant status/ref authority from identity-only evidence.",
+  "fix": "Extract identical reviewed identity verifier and test; add mutually exclusive manual identity-only mode to existing supervisor, no production mutation. Explicitly scope the dedicated credential exception to the exact reviewed job bytes and canonical workflow; global allowlist unchanged.",
+  "prevention_rule": "Never expose protected App credentials to candidate code or grant status/ref authority from identity-only evidence. Reject altered job, other workflow, or additional secret reference outside the approved job.",
   "compiler": {
     "failure_class": "MISSING_PROTECTED_PROVIDER_IDENTITY_PROOF",
     "scope": "delivery",
@@ -18,15 +18,18 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-release-app-identity.test.mjs",
-      "tests/brain-release-app-protected-probe.test.mjs"
+      "tests/brain-release-app-protected-probe.test.mjs",
+      "tests/brain-egress-guard.test.mjs"
     ],
     "shadow": [
       "tests/brain-release-app-identity.test.mjs",
-      "tests/brain-release-app-protected-probe.test.mjs"
+      "tests/brain-release-app-protected-probe.test.mjs",
+      "tests/brain-egress-guard.test.mjs"
     ],
     "canary": [
       "tests/brain-release-app-identity.test.mjs",
-      "tests/brain-release-app-protected-probe.test.mjs"
+      "tests/brain-release-app-protected-probe.test.mjs",
+      "tests/brain-egress-guard.test.mjs"
     ]
   },
   "evidence": {
@@ -34,6 +37,21 @@
     "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6179#issuecomment-7155734043",
     "original_reviewed_head": "b0bb96a1134089b4cb6eed1495ed4373c5227ff3",
     "candidate_proof": "PENDING_CI_AND_NATIVE_IDENTITY",
-    "production_verified": false
+    "production_verified": false,
+    "required_failure": {
+      "run": 45567879670,
+      "job": 139048043127,
+      "rule": "SECRET_NOT_ALLOWLISTED",
+      "secret_name": "POWERHOUSE_RELEASE_APP_PRIVATE_KEY"
+    },
+    "native_app_permissions_verified": {
+      "appId": 5916428,
+      "administration": "read",
+      "checks": "read",
+      "contents": "read",
+      "metadata": "read",
+      "pull_requests": "read",
+      "statuses": "write"
+    }
   }
 }
