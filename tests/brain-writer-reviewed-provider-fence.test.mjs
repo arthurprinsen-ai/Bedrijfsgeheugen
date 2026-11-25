@@ -55,7 +55,7 @@ const readPem=generateKeyPairSync('rsa',{modulusLength:2048}).privateKey.export(
 const readNow=Date.parse('2026-11-25T18:00:00Z');
 const appPerms={statuses:'write',contents:'read',pull_requests:'read',checks:'read',administration:'read',metadata:'read'};
 const scopedRead={administration:'read',contents:'read',metadata:'read'};
-function scopedFixture({permissions=scopedRead,denied=401,wrongRepo=false,inventoryMode=''}={}){
+function scopedFixture({permissions=scopedRead,denied=401,wrongRepo=false,inventoryMode='',scopeHeaders='complete'}={}){
  const base=inventory(),calls=[];base.state.mode=inventoryMode;let revoked=false;
  const reply=(status,value)=>({status,ok:status===200||status===201,headers:{get:()=>null},json:async()=>value});
  const fetchImpl=async(u,o)=>{
@@ -65,7 +65,7 @@ function scopedFixture({permissions=scopedRead,denied=401,wrongRepo=false,invent
    if(u.pathname==='/app/installations/185660155/access_tokens'){assert.equal(o.method,'POST');assert.deepEqual(JSON.parse(o.body),{repository_ids:[1303700955],permissions:scopedRead});return reply(201,{token:'fixture_read_only',permissions,expires_at:new Date(readNow+3600000).toISOString()})}
    assert.equal(o.headers.Authorization,'Bearer fixture_read_only');
    if(u.pathname==='/installation/token'){assert.equal(o.method,'DELETE');revoked=true;return reply(204)}
-   if(u.pathname==='/installation/repositories'){assert.equal(o.method,'GET');return revoked?reply(denied):reply(200,{total_count:1,repositories:[{id:wrongRepo?7:1303700955,full_name:'arthurprinsen-ai/Bedrijfsgeheugen'}]})}
+   if(u.pathname==='/installation/repositories'){assert.equal(o.method,'GET');if(revoked)return reply(denied);const response=reply(200,{total_count:1,repositories:[{id:wrongRepo?7:1303700955,full_name:'arthurprinsen-ai/Bedrijfsgeheugen'}]});if(scopeHeaders==='paginated')response.headers={get:k=>k==='link'?'<https://api.github.com/installation/repositories?page=2>; rel="next"':null};if(scopeHeaders==='missing')delete response.headers;return response}
    return base.input.fetchImpl(u.href,o);
  };
  return {calls,input:{appId:5916428,privateKey:readPem,expectedMainSha:MAIN,now:readNow,fetchImpl,sleep:async()=>{}}};
@@ -88,4 +88,14 @@ test('unconfirmed revocation fails closed with no second issuance',async()=>{
 });
 test('invalid expected epoch stops before token issuance',async()=>{
  const f=scopedFixture();await assert.rejects(proveScopedFenceRead({...f.input,expectedMainSha:'main'}),e=>e.message==='FENCE_READ_EPOCH_UNPROVEN');assert.equal(f.calls.length,0);
+});
+
+test('contradictory pagination or missing scope headers deny inventory and revoke',async()=>{
+ for(const scopeHeaders of ['paginated','missing']){
+ const f=scopedFixture({scopeHeaders});
+ await assert.rejects(proveScopedFenceRead(f.input),e=>e.message==='FENCE_READ_TOKEN_REPOSITORY_SCOPE_UNPROVEN');
+ assert.equal(f.calls.some(c=>c[0].endsWith('/protection')),false);
+ assert.equal(f.calls.filter(c=>c[1]==='POST').length,1);
+ assert.deepEqual(f.calls.slice(-2),[['/installation/token','DELETE'],['/installation/repositories','GET']]);
+ }
 });

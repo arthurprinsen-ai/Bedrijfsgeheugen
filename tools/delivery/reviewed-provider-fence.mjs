@@ -107,6 +107,8 @@ export async function proveScopedFenceRead({appId,privateKey,expectedMainSha,fet
    need(Number.isFinite(expiry)&&expiry>now&&expiry<=now+3660000,'FENCE_READ_TOKEN_EXPIRY_UNPROVEN');
    const inventory=await request('/installation/repositories?per_page=100','GET',tokenAuth);
    need(inventory.status===200,'FENCE_READ_TOKEN_SCOPE_READBACK_FAILED');
+   // A contradictory or inaccessible pagination header cannot prove complete scope.
+   need(typeof inventory.headers?.get==='function'&&!inventory.headers.get('link'),'FENCE_READ_TOKEN_REPOSITORY_SCOPE_UNPROVEN');
    const body=await json(inventory);
    need(body?.total_count===1&&Array.isArray(body.repositories)&&body.repositories.length===1&&body.repositories[0]?.id===REPO_ID&&body.repositories[0]?.full_name===REPO,'FENCE_READ_TOKEN_REPOSITORY_SCOPE_UNPROVEN');
    fence=await readReviewedProviderFence({token,expectedMainSha,fetchImpl:async(url,opts)=>fetchImpl(new URL(url),{...opts,signal:AbortSignal.timeout(5000)})});
