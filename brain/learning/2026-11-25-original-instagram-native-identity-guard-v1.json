@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "powerhouse|social-learning|original-177-instagram-native-id-proof|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "original bg-social-metrics-sync #177",
+  "root_cause": "Unique timestamp proximity accepted as native alias proof, plus ambiguous exact matches not rejected",
+  "fix": "Exact native tenant/platform/ID, collision rejection, separate registration readback",
+  "prevention_rule": "Time proximity alone cannot establish provider identity or authorize duplicate registry rows",
+  "compiler": {
+    "failure_class": "IG_LEGACY_ALIAS_NATIVE_PROOF_REQUIRED",
+    "scope": "social-learning",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ]
+  },
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "exact_observations": 600,
+    "unverified_legacy_observations": 300,
+    "legacy_posts": 4,
+    "production_verified": false
+  }
+}

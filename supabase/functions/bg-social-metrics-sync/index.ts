@@ -5,7 +5,7 @@ import { buildVerifiedCompanyMetricSnapshots, evaluateCompanyExperimentHandoffs 
 import { stageOriginalWindsorCompanySources, originalCompanySourceProviderHealth, readOriginalWindsorCompanySourcePair } from '../_shared/original-windsor-company-stage.mjs';
 import { verifiedPersonalPostBatch } from '../_shared/verified-personal-publication-registry.mjs';
 import { identifyOriginalPublicationHandoff } from '../_shared/original-publication-metric-handoff.mjs';
-import {originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity,originalCompanySourceBrainFailureInput} from '../_shared/original-provider-poll-receipt.mjs';
+import {selectOriginalInstagramPost,observedProviderMetricNumber,originalProviderPollReceiptIdentity,originalProviderPollAuditEvent,assertOriginalProviderPollReceipt,originalProviderMetricSnapshotIdentity,originalCompanySourceBrainFailureInput} from '../_shared/original-provider-poll-receipt.mjs';
 
 // Provider reader for the existing ONE BRAIN social_posts and social_metric_snapshots.
 // Never sends a post, never infers impressions from likes, never stores actor PII.
@@ -14,7 +14,7 @@ const clean=(v:unknown)=>String(v??'').trim();
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const localDay=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const delayMs=90*1000;
-const numeric=(v:unknown)=>{const n=Number(v);return Number.isFinite(n)&&n>=0?n:null;};
+const numeric=observedProviderMetricNumber;
 async function secret(db:any,name:string){
   const {data,error}=await db.rpc('bg_geheim',{p_naam:name});
   if(error)throw new Error('SECRET_READ_FAILED:'+name);
@@ -85,17 +85,18 @@ async function snapshot(db:any,tenantId:string,postId:string,platform:string,pro
 async function resolveInstagram(db:any,media:any){
   const mediaId=clean(media.id),timestamp=clean(media.timestamp);
   if(!/^\d{10,25}$/.test(mediaId)||!Number.isFinite(Date.parse(timestamp)))throw new Error('IG_MEDIA_ID_OR_DATE_INVALID');
-  const {data:exact,error:exactErr}=await db.from('social_posts').select('tenant_id,post_id')
+  const {data:exact,error:exactErr}=await db.from('social_posts').select('tenant_id,post_id,platform,external_post_id')
     .eq('tenant_id','bedrijfsgeheugen').eq('platform','instagram').eq('external_post_id',mediaId).limit(2);
   if(exactErr)throw new Error('IG_EXACT_LOOKUP:'+exactErr.message);
-  if((exact||[]).length===1)return exact[0];
+  const exactPost=selectOriginalInstagramPost({mediaId,exactRows:exact});
+  if(exactPost)return exactPost;
   const ms=Date.parse(timestamp);
   const {data:near,error:nearErr}=await db.from('social_posts').select('tenant_id,post_id,external_post_id')
     .eq('tenant_id','bedrijfsgeheugen').eq('platform','instagram')
     .gte('published_at',new Date(ms-60000).toISOString()).lte('published_at',new Date(ms+60000).toISOString()).limit(5);
   if(nearErr)throw new Error('IG_TIMESTAMP_LOOKUP:'+nearErr.message);
-  if((near||[]).length===1)return near[0];
-  if((near||[]).length>1)throw new Error('IG_POST_IDENTITY_AMBIGUOUS');
+  // Timestamp proximity is a collision signal, never proof of a legacy alias.
+  selectOriginalInstagramPost({mediaId,exactRows:[],nearRows:near});
   // Verified provider media missing in the older Buffer register: register the exact owned post.
   const postId='instagram:'+mediaId;
   const {error}=await db.from('social_posts').upsert({
@@ -105,7 +106,13 @@ async function resolveInstagram(db:any,media:any){
     learning_status:'pending_measurement'
   },{onConflict:'tenant_id,post_id',ignoreDuplicates:true});
   if(error)throw new Error('IG_PROVIDER_POST_REGISTER:'+error.message);
-  return {tenant_id:'bedrijfsgeheugen',post_id:postId};
+  const {data:registered,error:registerReadError}=await db.from('social_posts')
+    .select('tenant_id,post_id,platform,external_post_id')
+    .eq('tenant_id','bedrijfsgeheugen').eq('platform','instagram').eq('external_post_id',mediaId).limit(2);
+  if(registerReadError)throw new Error('IG_PROVIDER_POST_REGISTER_READBACK_FAILED');
+  const registeredPost=selectOriginalInstagramPost({mediaId,exactRows:registered});
+  if(!registeredPost||registeredPost.post_id!==postId)throw new Error('IG_PROVIDER_POST_REGISTER_READBACK_UNPROVEN');
+  return registeredPost;
 }
 // Shares only already LIVE_PROVEN organization publications into the existing
 // owned-brand social_posts index. No external publish, no metrics and no consent bypass.

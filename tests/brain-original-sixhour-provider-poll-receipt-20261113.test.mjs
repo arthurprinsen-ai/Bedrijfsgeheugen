@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {
+  selectOriginalInstagramPost,
+  observedProviderMetricNumber,
   originalProviderPollReceiptIdentity,
   originalProviderPollAuditEvent,
   assertOriginalProviderPollReceipt,
@@ -144,4 +146,35 @@ test('the ONE existing original #177 metric reader persists source-time slots, w
  assert.match(source,/onConflict:'tenant_id,source_event_id',ignoreDuplicates:true/);
  assert.doesNotMatch(source,/const snapshotId='composio:'\+platform\+':'\+providerId\+':'\+day/);
  assert.doesNotMatch(source,/cron\.schedule|INSTAGRAM_CREATE_MEDIA|LINKEDIN_CREATE_LINKED_IN_POST/);
+});
+
+test('original provider reader does not turn absent or malformed observations into zero',()=>{
+  for(const input of [undefined,null,'','  ',false,true,[],[0],{},'0x10','0b0','Infinity','NaN',NaN,Infinity,-1,'-1'])
+    assert.equal(observedProviderMetricNumber(input),null);
+  for(const [input,expected] of [[0,0],['0',0],[' 0 ',0],[12,12],['12',12],[1.5,1.5],['1.5',1.5]])
+    assert.equal(observedProviderMetricNumber(input),expected);
+  const source=readFileSync(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
+  assert.match(source,/const numeric=observedProviderMetricNumber;/);
+  assert.match(source,/if\(total===null\)throw new Error\('LINKEDIN_REACTION_TOTAL_UNAVAILABLE'\)/);
+  assert.match(source,/if\(!Object.keys\(metrics\).length\)throw new Error\('IG_INSIGHTS_UNAVAILABLE'\)/);
+});
+
+test('Instagram source identity never accepts time-near legacy aliases or ambiguous native matches',()=>{
+  const mediaId='17929031778142284';
+  const exact={tenant_id:'bedrijfsgeheugen',platform:'instagram',external_post_id:mediaId,post_id:'original-post'};
+  const legacy={...exact,external_post_id:'buffer-legacy-id'};
+  assert.equal(selectOriginalInstagramPost({mediaId,exactRows:[exact]}),exact);
+  assert.equal(selectOriginalInstagramPost({mediaId,exactRows:[],nearRows:[]}),null);
+  for(const nearRows of [[legacy],[legacy,exact]])assert.throws(()=>selectOriginalInstagramPost({mediaId,exactRows:[],nearRows}),/IG_LEGACY_ALIAS_NATIVE_PROOF_REQUIRED/);
+  assert.throws(()=>selectOriginalInstagramPost({mediaId,exactRows:[exact,exact]}),/IG_POST_IDENTITY_AMBIGUOUS/);
+  for(const bad of [legacy,{...exact,tenant_id:'canonical'},{...exact,platform:'linkedin'},{...exact,post_id:''}])
+    assert.throws(()=>selectOriginalInstagramPost({mediaId,exactRows:[bad]}),/IG_POST_IDENTITY_MISMATCH/);
+  for(const exactRows of [null,undefined,{}])assert.throws(()=>selectOriginalInstagramPost({mediaId,exactRows}),/IG_POST_IDENTITY_LOOKUP_UNPROVEN/);
+  const source=readFileSync(new URL('../supabase/functions/bg-social-metrics-sync/index.ts',import.meta.url),'utf8');
+  assert.doesNotMatch(source,/return near\[0\]/);
+  const near=source.indexOf('selectOriginalInstagramPost({mediaId,exactRows:[],nearRows:near})');
+  const registration=source.indexOf("const postId='instagram:'+mediaId");
+  const readback=source.indexOf('selectOriginalInstagramPost({mediaId,exactRows:registered})');
+  assert.ok(near>0&&registration>near&&readback>registration);
+  assert.match(source,/IG_PROVIDER_POST_REGISTER_READBACK_UNPROVEN/);
 });
