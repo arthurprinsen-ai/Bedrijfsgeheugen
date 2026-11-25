@@ -21,7 +21,8 @@
     ],
     "regression": [
       "tools/site-shell/test-live-contract.mjs",
-      "tests/site-shell-production-readback-release-identity-v1.test.mjs"
+      "tests/site-shell-production-readback-release-identity-v1.test.mjs",
+      "tests/brain-production-readback-release-identity-20261005-v1.test.mjs"
     ],
     "liveObservation": {
       "merge_sha": "6a9452fa905073290c9274c2364d2aaaa52ad492",
@@ -31,7 +32,13 @@
     "classification_and_lane_registration": [
       "tests/site-shell-production-readback-release-identity-v1.test.mjs",
       ".github/workflows/lane-website.yml"
-    ]
+    ],
+    "admission_failure": {
+      "run_id": 45692094819,
+      "job_id": 139479909729,
+      "failure": "LEARNING_EVALUATION_TEST_PATH_INVALID",
+      "correction": "Dependency-free tests/brain-* replay verifies the classified site-shell test, existing website-lane registration and caller-scoped identity-only mode."
+    }
   },
   "invariants": {
     "exactShaRequired": true,
@@ -50,8 +57,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/site-shell-production-readback-release-identity-v1.test.mjs"
+      "tests/brain-production-readback-release-identity-20261005-v1.test.mjs"
     ],
-    "expected": "A valid exact production release can clear identity polling independently of pricing semantics, while the default pricing contract still fails closed when its required semantics are absent."
+    "expected": "A valid exact production release can clear identity polling independently of pricing semantics, while the default pricing contract still fails closed when its required semantics are absent.",
+    "canary": [
+      "tests/brain-production-readback-release-identity-20261005-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-readback-release-identity-20261005-v1.test.mjs"
+    ]
   }
 }

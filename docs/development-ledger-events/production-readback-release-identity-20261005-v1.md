@@ -11,3 +11,5 @@
 - Reconciliatie 2026-11-25: historische branch met protected main samengevoegd zonder reset; testpad geclassificeerd als website en expliciet geregistreerd in de bestaande website-lane.
 - Caller-scope: identity-only uitsluitend bij `browser_required=true`; canonieke shell en niet-browserpad blijven strikt; terminal website-uitkomst vereist routes én pricing.
 - Gate-status: CODE_CANDIDATE totdat exact-head Required, CodeQL, protected merge en productie-readback slagen.
+- Eerste exact-head poortfout: Required 45692094819 blokkeerde op `LEARNING_EVALUATION_TEST_PATH_INVALID`; classificatie, workflowdekking, lease en admission waren al groen.
+- Correctie: dependency-vrije `tests/brain-production-readback-release-identity-20261005-v1.test.mjs` is de canonieke learning replay en controleert het website-testpad, lane-registratie en de beperkte caller-scope.
