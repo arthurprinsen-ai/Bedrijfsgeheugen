@@ -26,6 +26,10 @@ export async function verifyReleaseApp({appId,privateKey,fetchImpl=globalThis.fe
  const app=await api('/app');
  check(app.id===appId&&app.owner?.login==='arthurprinsen-ai'&&app.owner?.type==='User'&&validPermissions(app.permissions),'APP_IDENTITY_OR_PERMISSIONS_UNPROVEN');
  const inst=await api('/repos/'+repo+'/installation');
- check(positive(inst.id)&&inst.app_id===appId&&inst.account?.login==='arthurprinsen-ai'&&inst.repository_selection==='selected'&&inst.suspended_at===null&&validPermissions(inst.permissions),'APP_INSTALLATION_SCOPE_UNPROVEN');
+ check(positive(inst.id)&&inst.app_id===appId,'APP_INSTALLATION_SCOPE_UNPROVEN_IDENTITY');
+ check(inst.account?.login==='arthurprinsen-ai','APP_INSTALLATION_SCOPE_UNPROVEN_ACCOUNT');
+ check(inst.repository_selection==='selected','APP_INSTALLATION_SCOPE_UNPROVEN_SELECTION');
+ check(inst.suspended_at===null,'APP_INSTALLATION_SCOPE_UNPROVEN_SUSPENSION');
+ check(validPermissions(inst.permissions),'APP_INSTALLATION_SCOPE_UNPROVEN_PERMISSIONS');
  return Object.freeze({appId,installationId:inst.id,repository:repo,authenticated:true,exclusiveWriterVerified:false,mutationAuthority:false,state:'APP_IDENTITY_VERIFIED_FENCE_UNPROVEN'});
 }
