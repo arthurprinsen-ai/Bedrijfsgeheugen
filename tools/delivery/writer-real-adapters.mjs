@@ -7,6 +7,7 @@ const GITHUB_ROUTES=Object.freeze({
   /^\/pulls\/[1-9]\d*$/,
   /^\/git\/ref\/heads\/[A-Za-z0-9._~%\/-]+$/,
   /^\/git\/commits\/[a-f0-9]{40}$/,
+  /^\/compare\/[a-f0-9]{40}\.\.\.[a-f0-9]{40}$/,
   /^\/contents\/[A-Za-z0-9._~%\/-]+\?ref=[a-f0-9]{40}$/,
  ],
  POST:[/^\/git\/blobs$/, /^\/git\/trees$/, /^\/git\/commits$/],
@@ -14,7 +15,8 @@ const GITHUB_ROUTES=Object.freeze({
 });
 function canonicalGithubTarget(method,route) {
  if (typeof route!=='string' || !(GITHUB_ROUTES[method]||[]).some(p=>p.test(route))) throw Error('GITHUB_ROUTE_NOT_ALLOWED');
- if (route.includes('..') || route.includes('//') || route.includes('%2e') || route.includes('%2E')) throw Error('GITHUB_ROUTE_TRAVERSAL_DENIED');
+ const exactCompare = method==='GET' && /^\/compare\/[a-f0-9]{40}\.\.\.[a-f0-9]{40}$/.test(route);
+ if ((!exactCompare && route.includes('..')) || route.includes('//') || route.includes('%2e') || route.includes('%2E')) throw Error('GITHUB_ROUTE_TRAVERSAL_DENIED');
  const target=new URL(CANONICAL_GITHUB_API+route);
  if (target.protocol!=='https:' || target.origin!=='https://api.github.com' ||
      !target.pathname.startsWith('/repos/arthurprinsen-ai/Bedrijfsgeheugen/') ||
@@ -32,6 +34,21 @@ export function createGitHubWriterAdapter({owner,repo,token,fetchImpl=globalThis
  const branchPath=b=>{if(typeof b!=='string'||!b||b.startsWith('/')||b.includes('..')||b.includes('//')||b.includes(':')||b.includes('\\')||b.includes('\n'))throw Error('INVALID_BRANCH');return b.split('/').map(encodeURIComponent).join('/');};
  return {
    async readPR(number){const p=await api('GET',`/pulls/${number}`);return {number:p.number,branch:p.head.ref,headSha:assertSha(p.head.sha),baseSha:assertSha(p.base.sha),open:p.state==='open'};},
+   async readReviewedPR(number){
+     if(!Number.isSafeInteger(number)||number<1)throw Error('INVALID_REVIEWED_PR');
+     const p=await api('GET',`/pulls/${number}`);
+     if(p.number!==number||p.head?.repo?.full_name!=='arthurprinsen-ai/Bedrijfsgeheugen'||p.base?.repo?.full_name!=='arthurprinsen-ai/Bedrijfsgeheugen'||p.base?.ref!=='main'||p.state!=='open')throw Error('REVIEWED_PR_NATIVE_IDENTITY_MISMATCH');
+     const lines=String(p.body??'').split(/\r?\n/).filter(x=>x.startsWith('Obligation-ID:'));
+     if(lines.length!==1||!lines[0].slice(14).trim())throw Error('REVIEWED_PR_OBLIGATION_UNPROVEN');
+     return {number:p.number,branch:p.head.ref,headSha:assertSha(p.head.sha),baseSha:assertSha(p.base.sha),open:true,obligation:lines[0].slice(14).trim()};
+   },
+   async verifyReviewedAncestor(ancestor,descendant){
+     assertSha(ancestor);assertSha(descendant);
+     const c=await api('GET',`/compare/${ancestor}...${descendant}`);
+     return c.base_commit?.sha===ancestor&&c.merge_base_commit?.sha===ancestor&&c.behind_by===0&&
+       Number.isSafeInteger(c.ahead_by)&&c.ahead_by>=0&&
+       (ancestor===descendant?c.status==='identical'&&c.ahead_by===0:c.status==='ahead'&&c.ahead_by>0);
+   },
    async readHead(branch){const r=await api('GET',`/git/ref/heads/${branchPath(branch)}`);return assertSha(r.object.sha);},
    async readFile(path,ref){
      if(!ref)throw Error('IMMUTABLE_REF_REQUIRED');
