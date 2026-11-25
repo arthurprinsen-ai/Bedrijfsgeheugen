@@ -145,3 +145,15 @@ export function originalCompanySourceBrainFailureInput({identity,sourceRefresh}=
     }
   };
 }
+
+/** Provider observations must not coerce missing data into real zero. Accept
+ * actual finite nonnegative numbers and unambiguous decimal numeric strings.
+ * Null, blank, boolean, objects, arrays, and non-decimal encodings are unknown. */
+export function observedProviderMetricNumber(value){
+  if(typeof value==='string'){
+    const normalized=value.trim();
+    if(!/^\d+(?:\.\d+)?$/.test(normalized))return null;
+    value=Number(normalized);
+  }
+  return typeof value==='number'&&Number.isFinite(value)&&value>=0?value:null;
+}

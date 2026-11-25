@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "powerhouse|social-learning|original-177-null-metric-coercion|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "original bg-social-metrics-sync #177",
+  "root_cause": "Number(value) coerces null, blank, booleans and arrays into numeric values; historical impact unproven",
+  "fix": "strict observedProviderMetricNumber; true zero remains valid; no backfill",
+  "prevention_rule": "Missing or malformed provider input must never be recorded as an observed zero",
+  "compiler": {
+    "failure_class": "PROVIDER_MISSING_METRIC_COERCION",
+    "scope": "social-learning",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-sixhour-provider-poll-receipt-20261113.test.mjs"
+    ]
+  },
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198#issuecomment-7163623961",
+    "production_verified": false
+  }
+}
