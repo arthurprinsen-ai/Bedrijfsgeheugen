@@ -6,7 +6,7 @@
   "status": "CANDIDATE",
   "owner": "original obligation terminal closure",
   "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved; missing identity fields and case-variant candidate titles can also escape both exact match and unresolved detection. A time-bounded main/workflow_dispatch provider inventory with contradictory nonempty metadata cannot prove completeness.",
-  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved; hold missing event/branch metadata and case-variant titles without inferring identity; reject any contradictory event/branch in a scoped history, even alongside an exact title.",
+  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved; hold missing event/branch metadata and case-variant titles without inferring identity; reject any contradictory event/branch in a scoped history, even alongside an exact title. Completed generic relevant rows also deny dispatch until independently attributable identity; time-bound the inventory using native PR creation and preserve existing skew.",
   "compiler": {
     "failure_class": "ACTIVE_FLIGHT_IDENTITY_UNPROVEN",
     "scope": "delivery",
@@ -38,6 +38,22 @@
     "required_ci_run": 45679572956,
     "codeql_run": 45679572583,
     "protected_ci_verified": true,
-    "provider_flight_identity_verified": false
+    "provider_flight_identity_verified": false,
+    "terminal_identity_candidate": {
+      "source_blob": "28bce41d100dc81225575078a378c70e42d85e07",
+      "test_blob": "366275a884a53d82a29b37d6e02e85ccec7b354c",
+      "tests_pass": 29,
+      "consumer_compatibility": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#issuecomment-7175668294",
+      "native_window_since": "2026-11-25T16:33:24Z",
+      "native_rows": 3,
+      "native_run_ids": [
+        45702049193,
+        45692067123,
+        45673427596
+      ],
+      "classification": "NO_FLIGHT_PROVEN_FULL_HISTORY",
+      "dispatch_authorized": false,
+      "production_verified": false
+    }
   }
 }

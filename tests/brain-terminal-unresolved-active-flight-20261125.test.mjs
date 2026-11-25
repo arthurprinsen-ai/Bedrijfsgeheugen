@@ -8,7 +8,7 @@ test('observed queued generic run denies a duplicate without claiming exact iden
 test('unresolved or missing active status remains fail closed',()=>{for(const status of ['requested','pending','waiting','in_progress',undefined,'unknown'])assert.equal(index([{...generic,status}]).safe_to_dispatch,false);});
 test('resolved exact run is existing, never a second dispatch',()=>{const r=index([{...generic,display_title:title}]);assert.equal(r.status,'EXISTING_FLIGHT');assert.equal(r.run_id,generic.id);assert.equal(r.safe_to_dispatch,false);});
 test('known other PR flight does not starve eligible independent work',()=>{assert.equal(index([{...generic,display_title:'BRAIN delivery PR #9999 '+('a'.repeat(40))}]).safe_to_dispatch,true);});
-test('completed generic run is not proof of exact identity',()=>{const r=index([{...generic,status:'completed',conclusion:'success'}]);assert.equal(r.status,'NO_FLIGHT_PROVEN_FULL_HISTORY');assert.equal(r.run_id,undefined);});
+test('completed generic run is not proof of exact identity',()=>{const r=index([{...generic,status:'completed',conclusion:'success'}]);assert.equal(r.status,'TERMINAL_FLIGHT_IDENTITY_UNPROVEN');assert.equal(r.safe_to_dispatch,false);assert.equal(r.run_id,undefined);});
 test('incomplete inventory never permits a dispatch',()=>{assert.equal(classify([{total_count:2,workflow_runs:[generic]}],title).safe_to_dispatch,false);});
 test('exact existing run plus unresolved active row does not trigger a duplicate',()=>{const r=index([generic,{...generic,id:45652120064,display_title:title}]);assert.equal(r.status,'EXISTING_FLIGHT');assert.equal(r.safe_to_dispatch,false);});
 test('empty fully observed history permits original verification only',()=>{assert.equal(index([]).safe_to_dispatch,true);});
@@ -49,3 +49,7 @@ test('scoped missing or contradictory metadata withholds even exact identity',()
     assert.equal(r.run_id,undefined);
   }
 });
+
+for(const conclusion of ['success','failure','cancelled','skipped','timed_out',undefined]) test('completed generic scoped run holds: '+conclusion,()=>{const r=scopedIndex([{...generic,status:'completed',conclusion}]);assert.equal(r.status,'TERMINAL_FLIGHT_IDENTITY_UNPROVEN');assert.equal(r.complete,false);assert.equal(r.safe_to_dispatch,false);assert.equal(r.run_id,undefined);});
+test('completed known other PR remains eligible',()=>{assert.equal(scopedIndex([{...generic,status:'completed',display_title:'BRAIN delivery PR #9999 '+('a'.repeat(40))}]).safe_to_dispatch,true);});
+test('mixed terminal and active ambiguity retains active hold',()=>{const r=scopedIndex([{...generic,status:'completed'},{...generic,id:generic.id+1}]);assert.equal(r.status,'ACTIVE_FLIGHT_IDENTITY_UNPROVEN');assert.equal(r.safe_to_dispatch,false);});
