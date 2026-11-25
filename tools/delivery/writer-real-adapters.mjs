@@ -34,6 +34,12 @@ export function createGitHubWriterAdapter({owner,repo,token,fetchImpl=globalThis
  const branchPath=b=>{if(typeof b!=='string'||!b||b.startsWith('/')||b.includes('..')||b.includes('//')||b.includes(':')||b.includes('\\')||b.includes('\n'))throw Error('INVALID_BRANCH');return b.split('/').map(encodeURIComponent).join('/');};
  return {
    async readPR(number){const p=await api('GET',`/pulls/${number}`);return {number:p.number,branch:p.head.ref,headSha:assertSha(p.head.sha),baseSha:assertSha(p.base.sha),open:p.state==='open'};},
+   async readCommit(sha){
+     assertSha(sha);
+     const c=await api('GET',`/git/commits/${sha}`);
+     if(c.sha!==sha||!Array.isArray(c.parents))throw Error('NATIVE_COMMIT_IDENTITY_UNPROVEN');
+     return {sha,tree:assertSha(c.tree?.sha),parents:c.parents.map(p=>assertSha(p.sha))};
+   },
    async readReviewedPR(number){
      if(!Number.isSafeInteger(number)||number<1)throw Error('INVALID_REVIEWED_PR');
      const p=await api('GET',`/pulls/${number}`);

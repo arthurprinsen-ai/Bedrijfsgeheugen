@@ -1,16 +1,16 @@
 {
   "fingerprint": "delivery|reviewed-writer-execution-epoch|20261124-v1",
-  "status": "REVIEWED_CAS_BOUNDARY_CANDIDATE",
+  "status": "NATIVE_GIT_PROTOCOL_CAS_CANDIDATE",
   "root_cause": "Separately reviewed manifest moves protected main while v6 ties reviewed PR base to current execution main.",
   "owner": "Original #4661 release-control owner",
   "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7142713623",
   "prevention": "Bind immutable reviewed source and independently verified execution epoch; retain current-main and exact-head checks, scoped digests, protected environment and fenced lease; no write authorization from validator.",
   "verification": {
-    "local_synthetic_tests": 57,
+    "local_synthetic_tests": 62,
     "live": false,
     "provider_integration_verified": false
   },
-  "next_action": "Provide independently authenticated exclusive native main-wide prewrite reservation and real expected-head ref transport, prove protected workflow/full history integration and actual provider readback; keep deny-all and v2 production entrypoint closed until proven.",
+  "next_action": "Verify independently authenticated dedicated GitHub App authority, provider-required native context and durable single-slot reservation; integrate trusted full-history checkout and pinned native transport in protected workflow only after real provider proof. Retain deny-all.",
   "no_new_agent": true,
   "no_new_scheduler": true,
   "no_policy_expansion": true,
@@ -31,38 +31,44 @@
     "admission_failure_run": 45479883878,
     "admission_failure_job": 138749843583,
     "source_observation": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7142713623",
-    "local_synthetic_tests": 57,
+    "local_synthetic_tests": 62,
     "provider_integration_verified": false,
     "production_verified": false,
     "native_adapter_mock_tests": 6,
     "real_local_git_union_tests": 6,
-    "fenced_cas_mock_tests": 7
+    "fenced_cas_mock_tests": 7,
+    "native_local_receive_pack_tests": 4,
+    "native_commit_readback_mock_tests": 1
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-writer-reviewed-epoch.test.mjs",
       "tests/brain-writer-reviewed-native-preflight.test.mjs",
       "tests/brain-writer-reviewed-union.test.mjs",
-      "tests/brain-writer-reviewed-cas.test.mjs"
+      "tests/brain-writer-reviewed-cas.test.mjs",
+      "tests/brain-writer-reviewed-native-cas.test.mjs"
     ],
     "shadow": [
       "tests/brain-writer-reviewed-epoch.test.mjs",
       "tests/brain-writer-reviewed-native-preflight.test.mjs",
       "tests/brain-writer-reviewed-union.test.mjs",
-      "tests/brain-writer-reviewed-cas.test.mjs"
+      "tests/brain-writer-reviewed-cas.test.mjs",
+      "tests/brain-writer-reviewed-native-cas.test.mjs"
     ],
     "canary": [
       "tests/brain-writer-reviewed-epoch.test.mjs",
       "tests/brain-writer-reviewed-native-preflight.test.mjs",
       "tests/brain-writer-reviewed-union.test.mjs",
-      "tests/brain-writer-reviewed-cas.test.mjs"
+      "tests/brain-writer-reviewed-cas.test.mjs",
+      "tests/brain-writer-reviewed-native-cas.test.mjs"
     ]
   },
   "tests": [
     "tests/brain-writer-reviewed-epoch.test.mjs",
     "tests/brain-writer-reviewed-native-preflight.test.mjs",
     "tests/brain-writer-reviewed-union.test.mjs",
-    "tests/brain-writer-reviewed-cas.test.mjs"
+    "tests/brain-writer-reviewed-cas.test.mjs",
+    "tests/brain-writer-reviewed-native-cas.test.mjs"
   ],
-  "evaluation_scope": "57 isolated native HTTP mock, actual local Git tree preparation and CAS orchestration tests; no actual native provider reservation or production writes."
+  "evaluation_scope": "62 isolated native HTTP mock, real local Git tree and receive-pack CAS tests; no actual GitHub ref mutation or native exclusive provider reservation."
 }
