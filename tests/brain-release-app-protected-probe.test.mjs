@@ -32,3 +32,29 @@ test('scoped token proof is opt-in within identity job only; normal writer and s
  assert.match(probe,/scopeVerified:true,revocationVerified:true,exclusiveWriterVerified:false,mutationAuthority:false/);
  assert.doesNotMatch(probe,/console\.log\(tokenProof\)|console\.error\(e\)/);
 });
+
+import {scanText} from '../tools/ci/egress-guard.mjs';
+const path='.github/workflows/powerhouse-delivery-recovery-supervisor.yml';
+test('read-only fence mode is manual, opt-in, isolated from promotion and existing scheduler',()=>{
+ assert.match(yaml,/release_app_fence:\s*\n\s*description:[^\n]+\n\s*type: boolean\n\s*required: false\n\s*default: false/);
+ assert.match(yaml,/inputs.patch_handoff != true && inputs.release_app_identity != true && inputs.release_app_token != true && inputs.release_app_fence != true/);
+ assert.match(yaml,/inputs.patch_handoff == true && inputs.release_app_identity != true && inputs.release_app_token != true && inputs.release_app_fence != true/);
+ assert.match(probe,/inputs.release_app_fence != true \|\| inputs.release_app_token != true/);
+ assert.match(probe,/expectedMainSha:process.env.GITHUB_SHA/);
+ assert.match(probe,/fenceState:complete\?f.fenceState:'NATIVE_INVENTORY_UNPROVEN'/);
+ assert.match(probe,/if\(!complete\) throw Error\('FENCE_READ_NATIVE_INVENTORY_UNPROVEN'\)/);
+ assert.doesNotMatch(probe,/console\.log\(f\)|console\.error\(e\)/);
+});
+test('exact secret exception permits only the reviewed job bytes',()=>{
+ assert.deepEqual(scanText(path,yaml,true),[]);
+ const marker='\n  release-app-identity-proof:';
+ const start=yaml.indexOf(marker);
+ const prefix=yaml.slice(0,start),suffix=yaml.slice(start);
+ const denied=(a,b)=>{assert.ok(suffix.includes(a));const changed=prefix+suffix.replace(a,b);assert.notEqual(changed,yaml);assert.ok(scanText(path,changed,true).some(v=>v.rule==='SECRET_NOT_ALLOWLISTED'));};
+ denied('contents: read','contents: write');
+ denied('persist-credentials: false','persist-credentials: true');
+ denied('if(!complete) throw Error','if(complete) throw Error');
+ denied('    environment: powerhouse-release-controller','    environment: other');
+ denied('          RELEASE_APP_FENCE_PROOF:','          EXPOSE: ${{ secrets.POWERHOUSE_RELEASE_APP_PRIVATE_KEY }}\n          RELEASE_APP_FENCE_PROOF:');
+ assert.ok(scanText('other.yml',yaml,true).some(v=>v.rule==='SECRET_NOT_ALLOWLISTED'));
+});
