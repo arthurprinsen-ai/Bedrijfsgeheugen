@@ -5,8 +5,8 @@
   "fingerprint": "powerhouse|terminal|unresolved-active-brain-flight|20261125-v1",
   "status": "CANDIDATE",
   "owner": "original obligation terminal closure",
-  "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved",
-  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved",
+  "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved; missing identity fields and case-variant candidate titles can also escape both exact match and unresolved detection",
+  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved; hold missing event/branch metadata and case-variant titles without inferring identity",
   "compiler": {
     "failure_class": "ACTIVE_FLIGHT_IDENTITY_UNPROVEN",
     "scope": "delivery",
@@ -28,6 +28,8 @@
   "evidence": {
     "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7168274422",
     "native_run": 45652120063,
-    "production_verified": false
+    "production_verified": false,
+    "review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#issuecomment-7169609102",
+    "isolated_classifier_test_groups": 12
   }
 }

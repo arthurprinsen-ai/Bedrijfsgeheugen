@@ -57,8 +57,13 @@ export function classifyOriginalBrainFlightPages(pages,expectedTitle,{since=null
   // A provider may expose a queued dispatch before its run-name resolves.
   // A complete inventory is not proof of absence while an active identity is unknown.
   // Never treat an ambiguous run as exact candidate evidence or cancel it.
-  const unresolved=rows.filter(run=>run.event==='workflow_dispatch'&&run.head_branch==='main'&&
-    !TITLE.test(String(run.display_title||''))&&run.status!=='completed');
+  const unresolved=rows.filter(run=>
+    (run.event==='workflow_dispatch'||typeof run.event!=='string'||!run.event.trim())&&
+    (run.head_branch==='main'||typeof run.head_branch!=='string'||!run.head_branch.trim())&&
+    ((!TITLE.test(String(run.display_title||''))&&run.status!=='completed')||
+     (String(run.display_title||'').toLowerCase()===expectedTitle.toLowerCase()&&
+      (run.display_title!==expectedTitle||run.event!=='workflow_dispatch'||run.head_branch!=='main'))||
+     ((typeof run.event!=='string'||!run.event.trim()||typeof run.head_branch!=='string'||!run.head_branch.trim())&&run.status!=='completed')));
   if(unresolved.length)return {status:'ACTIVE_FLIGHT_IDENTITY_UNPROVEN',complete:false,
     safe_to_dispatch:false,provider_total:total,observed_rows:rows.length,
     unresolved_run_ids:unresolved.map(run=>run.id).sort((a,b)=>a-b)};
