@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {publishReviewedUnion} from '../tools/delivery/reviewed-cas.mjs';
+import {publishReviewedUnion,classifyPrewriteResolution} from '../tools/delivery/reviewed-cas.mjs';
 const H='a'.repeat(40),M='b'.repeat(40),N='c'.repeat(40),T='d'.repeat(40),B='e'.repeat(40);
 function fixture(){
  const manifest={prNumber:5940,expectedHead:H,expectedBase:B,branch:'fix/original',obligation:'original'};
@@ -25,3 +25,28 @@ test('post-write main movement is reconcile-only, never green or retry',async()=
 test('prepared union must bind the immutable manifest digest',async()=>{const f=fixture();f.input.prepared.manifestSha256='0'.repeat(64);await assert.rejects(publishReviewedUnion(f.input),/UNION_IDENTITY_UNPROVEN/);assert.equal(f.calls.length,0)});
 
 test('dedicated App identity must remain exact after lease acquisition',async()=>{const f=fixture();const read=f.input.slot.readReservation;f.input.slot.readReservation=async e=>{const r=await read(e);return f.state.slotReads===2?{...r,appId:5916429}:r};await assert.rejects(publishReviewedUnion(f.input),/MAIN_WIDE_PROVIDER_RESERVATION_UNPROVEN/);assert.equal(f.state.pushes,0);assert.ok(f.calls.at(-1).includes('.release('))});
+
+const intent={repository:'arthurprinsen-ai/Bedrijfsgeheugen',state:'prewrite_pending',prNumber:6165,generation:1,revision:2,holder:'github-actions:123:1',branch:'fix/original',head:'a'.repeat(40),main:'b'.repeat(40),commit:'c'.repeat(40),tree:'d'.repeat(40),manifestSha256:'e'.repeat(64)};
+const observed={...intent,independentReadback:true,branchBefore:intent.commit,branchAfter:intent.commit,mainBefore:intent.main,mainAfter:intent.main,transportOutcome:'accepted',commitObject:{sha:intent.commit,tree:intent.tree,parents:[intent.head,intent.main]}};
+const unchanged={branchBefore:intent.head,branchAfter:intent.head};
+const resolutions=[
+ ['exact accepted',{}, {},'EXACT_WRITE_OBSERVED_OWNER_REVIEW'],
+ ['no intent',{state:'reserved'}, {},'INTENT_IDENTITY_UNPROVEN'],
+ ['wrong repo',{repository:'other/repo'}, {},'INTENT_IDENTITY_UNPROVEN'],
+ ['wrong revision',{}, {revision:3},'READBACK_IDENTITY_UNPROVEN'],
+ ['wrong digest',{}, {manifestSha256:'f'.repeat(64)},'READBACK_IDENTITY_UNPROVEN'],
+ ['no independent readback',{}, {independentReadback:false},'READBACK_IDENTITY_UNPROVEN'],
+ ['branch movement',{}, {branchAfter:intent.head},'PROVIDER_MOVEMENT_RECONCILE_ONLY'],
+ ['main movement',{}, {mainAfter:intent.head},'PROVIDER_MOVEMENT_RECONCILE_ONLY'],
+ ['bad parents',{}, {commitObject:{...observed.commitObject,parents:[intent.main,intent.head]}},'COMMIT_OBJECT_UNPROVEN'],
+ ['wrong tree',{}, {commitObject:{...observed.commitObject,tree:intent.main}},'COMMIT_OBJECT_UNPROVEN'],
+ ['ambiguous but visible',{}, {transportOutcome:'ambiguous'},'EXPECTED_COMMIT_VISIBLE_CAUSALITY_UNPROVEN'],
+ ['main drift',{}, {mainBefore:intent.head,mainAfter:intent.head},'MAIN_MOVED_RECONCILE_ONLY'],
+ ['unchanged ambiguous',{}, {...unchanged,transportOutcome:'ambiguous'},'UNCHANGED_HEAD_UNRESOLVED'],
+ ['unchanged accepted',{}, {...unchanged},'UNCHANGED_HEAD_UNRESOLVED'],
+ ['rejected but no quiescence',{}, {...unchanged,transportOutcome:'rejected'},'UNCHANGED_HEAD_UNRESOLVED'],
+ ['quiescent but possible in-flight',{}, {...unchanged,transportOutcome:'rejected',credentialQuiescenceVerified:true},'UNCHANGED_HEAD_UNRESOLVED'],
+ ['exact rejection review',{}, {...unchanged,transportOutcome:'rejected',credentialQuiescenceVerified:true,inFlightTransportExcluded:true},'EXACT_REJECTION_OBSERVED_OWNER_REVIEW'],
+ ['unexpected head',{}, {branchBefore:intent.main,branchAfter:intent.main},'UNEXPECTED_BRANCH_RECONCILE_ONLY']
+];
+for(const [name,di,doo,state] of resolutions)test('prewrite resolution: '+name,()=>{const x=classifyPrewriteResolution({intent:{...intent,...di},observation:{...observed,...doo}});assert.equal(x.state,state);for(const v of [x.mutationAuthority,x.releaseAuthorized,x.retryAuthorized,x.mergeAuthorized])assert.equal(v,false)});

@@ -51,3 +51,35 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
    requireCondition(released?.length===1&&released[0].released===true,'WRITER_LEASE_RELEASE_NOT_CONFIRMED');
  }
 }
+
+ // Review-only classifier. Never release a reservation, grant, retry or write.
+ // Trusted provider adapters must independently establish receipt provenance.
+ export function classifyPrewriteResolution({intent:i,observation:o}={}) {
+  const result=state=>Object.freeze({state,mutationAuthority:false,releaseAuthorized:false,retryAuthorized:false,mergeAuthorized:false});
+  if(i?.repository!=='arthurprinsen-ai/Bedrijfsgeheugen'||i.state!=='prewrite_pending'||
+     !positive(i.prNumber)||!positive(i.generation)||!positive(i.revision)||
+     typeof i.holder!=='string'||!/^github-actions:\d+:\d+$/.test(i.holder)||
+     typeof i.branch!=='string'||!i.branch||i.branch==='main'||
+     ![i.head,i.main,i.commit,i.tree].every(x=>typeof x==='string'&&SHA.test(x))||
+     i.commit===i.head||i.commit===i.main||typeof i.manifestSha256!=='string'||!HASH.test(i.manifestSha256))
+    return result('INTENT_IDENTITY_UNPROVEN');
+  const fields=['repository','prNumber','generation','revision','holder','branch','head','main','commit','tree','manifestSha256'];
+  if(!o||fields.some(k=>o[k]!==i[k])||o.independentReadback!==true||
+     ![o.branchBefore,o.branchAfter,o.mainBefore,o.mainAfter].every(x=>typeof x==='string'&&SHA.test(x)))
+    return result('READBACK_IDENTITY_UNPROVEN');
+  if(o.branchBefore!==o.branchAfter||o.mainBefore!==o.mainAfter)
+    return result('PROVIDER_MOVEMENT_RECONCILE_ONLY');
+  if(o.branchAfter===i.commit) {
+    const c=o.commitObject;
+    if(c?.sha!==i.commit||c.tree!==i.tree||!Array.isArray(c.parents)||c.parents.length!==2||c.parents[0]!==i.head||c.parents[1]!==i.main)
+      return result('COMMIT_OBJECT_UNPROVEN');
+    if(o.mainAfter!==i.main)return result('MAIN_MOVED_RECONCILE_ONLY');
+    if(o.transportOutcome!=='accepted')return result('EXPECTED_COMMIT_VISIBLE_CAUSALITY_UNPROVEN');
+    return result('EXACT_WRITE_OBSERVED_OWNER_REVIEW');
+  }
+  if(o.branchAfter!==i.head)return result('UNEXPECTED_BRANCH_RECONCILE_ONLY');
+  if(o.mainAfter!==i.main)return result('MAIN_MOVED_RECONCILE_ONLY');
+  if(o.transportOutcome==='rejected'&&o.credentialQuiescenceVerified===true&&o.inFlightTransportExcluded===true)
+    return result('EXACT_REJECTION_OBSERVED_OWNER_REVIEW');
+  return result('UNCHANGED_HEAD_UNRESOLVED');
+ }
