@@ -13,7 +13,7 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
  const expected={prNumber:manifest.prNumber,head,main,branch,obligation,holder,manifestSha256:preflight.manifestSha256};
  const readSlot=async()=>{
    const s=await slot.readReservation(expected);
-   requireCondition(s?.state==='EXCLUSIVE_PREWRITE_RESERVED'&&s.providerEnforced===true&&s.mutationAuthority===true&&positive(s.appId)&&s.appId!==15368&&positive(s.revision)&&s.prNumber===expected.prNumber&&s.head===head&&s.main===main&&s.branch===branch&&s.obligation===obligation&&s.holder===holder&&s.manifestSha256===expected.manifestSha256&&s.activeGrantCount===0&&s.nativeBypassDenied===true,'MAIN_WIDE_PROVIDER_RESERVATION_UNPROVEN');
+   requireCondition(s?.state==='EXCLUSIVE_PREWRITE_RESERVED'&&s.providerEnforced===true&&s.mutationAuthority===true&&s.appId===5916428&&positive(s.revision)&&s.prNumber===expected.prNumber&&s.head===head&&s.main===main&&s.branch===branch&&s.obligation===obligation&&s.holder===holder&&s.manifestSha256===expected.manifestSha256&&s.activeGrantCount===0&&s.nativeBypassDenied===true,'MAIN_WIDE_PROVIDER_RESERVATION_UNPROVEN');
    return s.revision;
  };
  const identity=async()=>{
