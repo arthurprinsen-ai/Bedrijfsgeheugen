@@ -21,3 +21,14 @@ test('probe exposes identity only and cannot authorize mutation',()=>{
  assert.match(probe,/APP_PROBE_FAILED/);
  assert.doesNotMatch(probe,/console\.error\(e\)/);
 });
+
+test('scoped token proof is opt-in within identity job only; normal writer and scheduler not invoked by token-only dispatch',()=>{
+ assert.match(yaml,/release_app_token:\s*\n\s*description:[^\n]+\n\s*type: boolean\n\s*required: false\n\s*default: false/);
+ assert.match(yaml,/inputs.patch_handoff != true && inputs.release_app_identity != true && inputs.release_app_token != true/);
+ assert.match(yaml,/inputs.patch_handoff == true && inputs.release_app_identity != true && inputs.release_app_token != true/);
+ assert.match(probe,/RELEASE_APP_TOKEN_PROOF: \$\{\{ inputs.release_app_token \}\}/);
+ assert.match(probe,/if\(process.env.RELEASE_APP_TOKEN_PROOF==='true'\)/);
+ assert.match(probe,/proveScopedPromotionToken/);
+ assert.match(probe,/scopeVerified:true,revocationVerified:true,exclusiveWriterVerified:false,mutationAuthority:false/);
+ assert.doesNotMatch(probe,/console\.log\(tokenProof\)|console\.error\(e\)/);
+});
