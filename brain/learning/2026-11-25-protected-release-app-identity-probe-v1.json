@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "delivery|protected-release-app-identity-probe|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "Original #4661 release-control owner",
+  "root_cause": "Dedicated App configured in protected environment but existing supervisor has no protected main-only identity probe. Draft #6179 cannot safely access its secret.",
+  "fix": "Extract identical reviewed identity verifier and test; add mutually exclusive manual identity-only mode to existing supervisor, no production mutation.",
+  "prevention_rule": "Never expose protected App credentials to candidate code or grant status/ref authority from identity-only evidence.",
+  "compiler": {
+    "failure_class": "MISSING_PROTECTED_PROVIDER_IDENTITY_PROOF",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-release-app-identity.test.mjs",
+      "tests/brain-release-app-protected-probe.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-release-app-identity.test.mjs",
+      "tests/brain-release-app-protected-probe.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-release-app-identity.test.mjs",
+      "tests/brain-release-app-protected-probe.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed": "Native environment ID 28483687180; exact main policy 68177971; secret and variable names verified, no value read; owner confirms permissions updated",
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6179#issuecomment-7155734043",
+    "original_reviewed_head": "b0bb96a1134089b4cb6eed1495ed4373c5227ff3",
+    "candidate_proof": "PENDING_CI_AND_NATIVE_IDENTITY",
+    "production_verified": false
+  }
+}
