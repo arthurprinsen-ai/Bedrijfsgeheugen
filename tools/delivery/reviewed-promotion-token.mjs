@@ -10,7 +10,7 @@ const need=(v,c)=>{if(v!==true)throw Error(c)};
 const statusOnly=p=>p&&p.statuses==='write'&&p.metadata==='read'&&Object.keys(p).length===2;
 // Provider-issued credential is opaque; only enforce safe Bearer transport syntax.
 const safeToken=t=>typeof t==='string'&&/^[A-Za-z0-9._~+/-]+=*$/.test(t);
-export async function proveScopedPromotionToken({appId,privateKey,fetchImpl=globalThis.fetch,now=Date.now()}){
+export async function proveScopedPromotionToken({appId,privateKey,fetchImpl=globalThis.fetch,now=Date.now(),sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms))}){
  need(appId===APP_ID,'PROMOTION_APP_ID_UNPROVEN');
  let appAuth;
  // Reuse the reviewed identity verifier. JWT stays only in this function.
@@ -24,7 +24,7 @@ export async function proveScopedPromotionToken({appId,privateKey,fetchImpl=glob
  need(identity.authenticated===true&&identity.appId===APP_ID&&identity.installationId===INSTALLATION_ID&&identity.repository===REPO&&identity.mutationAuthority===false&&identity.exclusiveWriterVerified===false&&typeof appAuth==='string','PROMOTION_IDENTITY_UNPROVEN');
  const request=async(path,method,auth,body)=>{
    let res;
-   try {res=await fetchImpl(new URL(path,ORIGIN),{method,redirect:'error',headers:{Authorization:auth,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})})}catch{throw Error('PROMOTION_TOKEN_TRANSPORT_UNPROVEN')}
+   try {res=await fetchImpl(new URL(path,ORIGIN),{method,redirect:'error',signal:AbortSignal.timeout(5000),headers:{Authorization:auth,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(body?{'Content-Type':'application/json'}:{})},...(body?{body:JSON.stringify(body)}:{})})}catch{throw Error('PROMOTION_TOKEN_TRANSPORT_UNPROVEN')}
    need(Number.isInteger(res?.status),'PROMOTION_TOKEN_RESPONSE_INVALID');return res;
  };
  const json=async(res)=>{try{return await res.json()}catch{throw Error('PROMOTION_TOKEN_RESPONSE_INVALID')}};
@@ -47,8 +47,18 @@ export async function proveScopedPromotionToken({appId,privateKey,fetchImpl=glob
  }finally{
    const revoked=await request('/installation/token','DELETE',tokenAuth);
    need(revoked.status===204,'PROMOTION_TOKEN_REVOCATION_UNPROVEN');
-   const denied=await request('/installation/repositories?per_page=100','GET',tokenAuth);
-   need(denied.status===401,'PROMOTION_TOKEN_REVOCATION_READBACK_UNPROVEN');
+   // A successful DELETE may precede provider-wide rejection. Only read back
+   // the same token, with bounded delays; never mint a replacement or grant.
+   let denied=false;
+   for(const delay of [0,250,750,1500,3000,5000]){
+     if(delay)await sleep(delay);
+     const readback=await request('/installation/repositories?per_page=100','GET',tokenAuth);
+     if(readback.status===401){denied=true;break}
+     // Only a still-valid 200 is a possible propagation delay. Other HTTP
+     // results do not prove rejection and must fail closed.
+     need(readback.status===200,'PROMOTION_TOKEN_REVOCATION_READBACK_UNPROVEN');
+   }
+   need(denied,'PROMOTION_TOKEN_REVOCATION_READBACK_UNPROVEN');
  }
  return Object.freeze({state:'SCOPED_TOKEN_REVOKED_FENCE_UNPROVEN',appId:APP_ID,installationId:INSTALLATION_ID,repository:REPO,scopeVerified:true,revocationVerified:true,exclusiveWriterVerified:false,mutationAuthority:false});
 }
