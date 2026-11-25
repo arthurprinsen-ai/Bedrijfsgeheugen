@@ -80,29 +80,50 @@ IFS='|' read -r gen rev holder pr head epoch manifest < <(
 )
 [[ "$gen" =~ ^[1-9][0-9]*$ && "$rev" =~ ^[1-9][0-9]*$ && "$holder" =~ ^github-actions:[0-9]+:[0-9]+$ && "$pr" =~ ^[1-9][0-9]*$ && "$head" =~ ^[a-f0-9]{40}$ && "$epoch" =~ ^[a-f0-9]{40}$ && "$manifest" =~ ^[a-f0-9]{64}$ ]]
 prewrite_race() {
- local digit="$1" tree_digit="$2"
+ local digit="$1" tree_digit="$2" evidence_digit="$3"
  psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At \
    -v gen="$gen" -v rev="$rev" -v holder="$holder" -v pr="$pr" \
    -v head="$head" -v epoch="$epoch" -v manifest="$manifest" \
-   -v digit="$digit" -v tree_digit="$tree_digit" <<'SQL'
+   -v digit="$digit" -v tree_digit="$tree_digit" -v evidence_digit="$evidence_digit" <<'SQL'
 BEGIN;
-SELECT revision FROM delivery_control.prepare_prewrite('arthurprinsen-ai/Bedrijfsgeheugen', :'holder', :'gen'::bigint, :'rev'::bigint, :'pr'::bigint, :'head', :'epoch', :'manifest', 'review/prewrite-race', 'fixture-obligation', repeat(:'digit',40), repeat(:'tree_digit',40),repeat('e',64));
+SELECT revision FROM delivery_control.prepare_prewrite('arthurprinsen-ai/Bedrijfsgeheugen', :'holder', :'gen'::bigint, :'rev'::bigint, :'pr'::bigint, :'head', :'epoch', :'manifest', 'review/prewrite-race', 'fixture-obligation', repeat(:'digit',40), repeat(:'tree_digit',40),repeat(:'evidence_digit',64));
 SELECT pg_sleep(0.25);
 COMMIT;
 SQL
 }
 set +e
-prewrite_race c a >"$tmp/prewrite-a" 2>&1 & a=$!
-prewrite_race d b >"$tmp/prewrite-b" 2>&1 & b=$!
+prewrite_race c a e >"$tmp/prewrite-a" 2>&1 & a=$!
+prewrite_race d b f >"$tmp/prewrite-b" 2>&1 & b=$!
 wait "$a"; ea=$?; wait "$b"; eb=$?
 set -e
 if [[ "$ea" -eq 0 && "$eb" -ne 0 ]]; then
  grep -q 'PREWRITE_IDENTITY_CAS_MISMATCH' "$tmp/prewrite-b"
+ winner_commit=c; winner_tree=a; winner_evidence=e; winner_log="$tmp/prewrite-a"
 elif [[ "$eb" -eq 0 && "$ea" -ne 0 ]]; then
  grep -q 'PREWRITE_IDENTITY_CAS_MISMATCH' "$tmp/prewrite-a"
+ winner_commit=d; winner_tree=b; winner_evidence=f; winner_log="$tmp/prewrite-b"
 else
  echo 'Exactly one prewrite claimant must win' >&2; exit 1
 fi
+# Match the durable intent and event to the actual successful session, not either fixture.
+next_rev="$((rev+1))"
+grep -Fxq "$next_rev" "$winner_log"
+observed="$(psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At -F '|' <<'SQL'
+SELECT i.generation,i.revision,i.holder,i.pr_number,i.head_sha,i.main_sha,i.manifest_digest,
+ i.branch,i.obligation,i.commit_sha,i.tree_sha,i.intent_digest,e.evidence_digest
+FROM delivery_control.promotion_prewrite_intent i
+JOIN delivery_control.promotion_reservation r ON r.repository=i.repository AND r.generation=i.generation AND r.revision=i.revision
+JOIN delivery_control.promotion_reservation_event e ON e.repository=i.repository AND e.generation=i.generation AND e.revision=i.revision
+WHERE i.repository='arthurprinsen-ai/Bedrijfsgeheugen' AND r.state='prewrite_pending'
+ AND e.action='prepare_prewrite' AND e.state=r.state AND e.holder=i.holder AND e.pr_number=i.pr_number
+ AND e.head_sha=i.head_sha AND e.main_sha=i.main_sha AND e.manifest_digest=i.manifest_digest;
+SQL
+)"
+printf -v expected_commit '%040d' 0; expected_commit="${expected_commit//0/$winner_commit}"
+printf -v expected_tree '%040d' 0; expected_tree="${expected_tree//0/$winner_tree}"
+printf -v expected_evidence '%064d' 0; expected_evidence="${expected_evidence//0/$winner_evidence}"
+expected="$gen|$next_rev|$holder|$pr|$head|$epoch|$manifest|review/prewrite-race|fixture-obligation|$expected_commit|$expected_tree|$expected_evidence|$expected_evidence"
+[[ "$observed" == "$expected" ]] || { echo 'Durable prewrite intent/event does not match successful session' >&2; exit 1; }
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $$
 DECLARE r delivery_control.promotion_reservation%ROWTYPE; i delivery_control.promotion_prewrite_intent%ROWTYPE;
