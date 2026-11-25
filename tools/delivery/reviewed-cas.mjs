@@ -1,0 +1,53 @@
+// Reviewed union transport boundary. Never called by the production entrypoint
+// until an independent, provider-enforced main-wide reservation exists.
+import { createSupabaseLeaseVerifier } from './writer-real-adapters.mjs';
+const SHA=/^[a-f0-9]{40}$/;
+const HASH=/^[a-f0-9]{64}$/;
+const positive=n=>Number.isSafeInteger(n)&&n>0;
+function requireCondition(ok,code){if(ok!==true)throw Error(code);}
+export async function publishReviewedUnion({manifest,preflight,prepared,holder,authorizedPgQuery,github,slot,transport,ttlSeconds=120}){
+ const head=manifest?.expectedHead, main=preflight?.executionMainSha, branch=manifest?.branch, obligation=manifest?.obligation;
+ requireCondition(!!prepared&&!!preflight&&HASH.test(preflight.manifestSha256||'')&&prepared.manifestSha256===preflight.manifestSha256&&prepared.state==='PREPARED_NOT_PUBLISHED'&&prepared.writeAuthorized===false&&preflight.writeAuthorized===false&&head===prepared.head&&head===preflight.headSha&&main===prepared.main&&branch===preflight.branch&&obligation===preflight.obligation&&manifest.expectedBase===preflight.prBaseSha&&[head,main,prepared.commit,prepared.tree].every(s=>typeof s==='string'&&SHA.test(s))&&prepared.commit!==head&&prepared.commit!==main,'UNION_IDENTITY_UNPROVEN');
+ requireCondition(typeof branch==='string'&&branch!=='main'&&branch.length>0&&typeof obligation==='string'&&obligation.length>0&&typeof holder==='string'&&/^github-actions:\d+:\d+$/.test(holder)&&positive(manifest.prNumber)&&positive(ttlSeconds)&&ttlSeconds<=300,'REVIEWED_WRITER_CONTEXT_INVALID');
+ requireCondition(typeof authorizedPgQuery==='function'&&typeof github?.readReviewedPR==='function'&&typeof github?.readHead==='function'&&typeof slot?.readReservation==='function'&&typeof transport?.inspect==='function'&&typeof transport?.pushExact==='function'&&typeof transport?.readCommit==='function','REVIEWED_CAS_ADAPTER_REQUIRED');
+ const expected={prNumber:manifest.prNumber,head,main,branch,obligation,holder,manifestSha256:preflight.manifestSha256};
+ const readSlot=async()=>{
+   const s=await slot.readReservation(expected);
+   requireCondition(s?.state==='EXCLUSIVE_PREWRITE_RESERVED'&&s.providerEnforced===true&&s.mutationAuthority===true&&positive(s.appId)&&s.appId!==15368&&positive(s.revision)&&s.prNumber===expected.prNumber&&s.head===head&&s.main===main&&s.branch===branch&&s.obligation===obligation&&s.holder===holder&&s.manifestSha256===expected.manifestSha256&&s.activeGrantCount===0&&s.nativeBypassDenied===true,'MAIN_WIDE_PROVIDER_RESERVATION_UNPROVEN');
+   return s.revision;
+ };
+ const identity=async()=>{
+   const p=await github.readReviewedPR(manifest.prNumber);
+   requireCondition(p?.open===true&&p.number===manifest.prNumber&&p.headSha===head&&p.branch===branch&&p.obligation===obligation&&p.baseSha===manifest.expectedBase,'REVIEWED_CANDIDATE_DRIFT');
+   requireCondition(await github.readHead('main')===main,'MAIN_EPOCH_DRIFT');
+   requireCondition(await github.readHead(branch)===head,'BRANCH_HEAD_DRIFT');
+ };
+ const object=await transport.inspect(prepared.commit);
+ requireCondition(object?.tree===prepared.tree&&Array.isArray(object.parents)&&object.parents.length===2&&object.parents[0]===head&&object.parents[1]===main,'UNION_OBJECT_MISMATCH');
+ await identity();
+ const revision=await readSlot(); // no lease acquisition on an unproven global slot
+ const rows=await authorizedPgQuery('select token, valid_until from writer_control.acquire($1,$2,$3,$4,$5,$6)',[obligation,holder,branch,head,main,ttlSeconds]);
+ const raw=rows?.[0]?.token;
+ const token=typeof raw==='number'?raw:typeof raw==='string'&&/^[1-9]\d*$/.test(raw)?Number(raw):NaN;
+ requireCondition(Array.isArray(rows)&&rows.length===1&&positive(token),'ACQUIRE_NOT_CONFIRMED');
+ const db=createSupabaseLeaseVerifier({query:authorizedPgQuery});
+ try {
+   const verify=async()=>requireCondition(await db.verifyLease({obligation,holder,token,branch,head,main}),'REVIEWED_LEASE_LOST');
+   await verify();
+   await identity();
+   requireCondition(await readSlot()===revision,'MAIN_WIDE_RESERVATION_CHANGED');
+   await verify();
+   // Provider must perform exact expected-old-ref CAS; a plain REST fast-forward
+   // or force=true update is not sufficient. Do not retry an ambiguous response.
+   const response=await transport.pushExact({branch,expectedHead:head,newHead:prepared.commit,main,token,revision});
+   requireCondition(response?.accepted===true,'NATIVE_EXPECTED_HEAD_CAS_UNPROVEN');
+   requireCondition(await github.readHead(branch)===prepared.commit,'CAS_BRANCH_READBACK_MISMATCH');
+   const commit=await transport.readCommit(prepared.commit);
+   requireCondition(commit?.sha===prepared.commit&&commit.tree===prepared.tree&&Array.isArray(commit.parents)&&commit.parents.length===2&&commit.parents[0]===head&&commit.parents[1]===main,'CAS_COMMIT_READBACK_MISMATCH');
+   requireCondition(await github.readHead('main')===main,'MAIN_MOVED_AFTER_CAS_RECONCILE_ONLY');
+   return Object.freeze({status:'PUBLISHED_PENDING_FULL_BRAIN',newHead:prepared.commit,tree:prepared.tree,leaseGeneration:token,slotRevision:revision,mergeAuthorized:false,productionVerified:false});
+ }finally{
+   const released=await authorizedPgQuery('select writer_control.release($1,$2,$3) as released',[obligation,holder,token]);
+   requireCondition(released?.length===1&&released[0].released===true,'WRITER_LEASE_RELEASE_NOT_CONFIRMED');
+ }
+}

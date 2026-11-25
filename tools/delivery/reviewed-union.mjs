@@ -70,6 +70,6 @@ export function prepareReviewedUnion({cwd,manifest,manifestBytes,preflight,decla
   const commit=git(cwd,['commit-tree',sha,'-p',head,'-p',main,'-m','Reviewed writer union candidate (not published)']).toString().trim();
   const parents=git(cwd,['show','-s','--format=%P',commit]).toString().trim().split(' ');
   if(!eqPaths(parents,[head,main])||git(cwd,['show','-s','--format=%T',commit]).toString().trim()!==sha)throw Error('UNION_COMMIT_READBACK_MISMATCH');
-  return Object.freeze({state:'PREPARED_NOT_PUBLISHED',head,main,commit,tree:sha,scope:Object.freeze(delta),writeAuthorized:false});
+  return Object.freeze({state:'PREPARED_NOT_PUBLISHED',head,main,commit,tree:sha,scope:Object.freeze(delta),manifestSha256:preflight.manifestSha256,writeAuthorized:false});
  }finally{rmSync(dir,{recursive:true,force:true});}
 }
