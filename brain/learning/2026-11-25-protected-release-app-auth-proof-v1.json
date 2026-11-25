@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "delivery|protected-release-app-auth-proof|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "Original #4661 release-control owner",
+  "root_cause": "App identity and repository installation cannot be verified via OAuth connector; configured protected environment must be used without exposing the key or granting writer authority.",
+  "fix": "Stage the exact reviewed read-only App identity module and its tests from #6179; add one explicit manual main-only proof mode to the existing supervisor.",
+  "prevention_rule": "Never emit key/JWT or grant a status, change a ref, or activate a required check from identity proof alone.",
+  "compiler": {
+    "failure_class": "provider_identity_unproven",
+    "scope": "release-control",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-release-app-identity.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-release-app-identity.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-release-app-identity.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6179#issuecomment-7155734043",
+    "reviewed_head": "b0bb96a1134089b4cb6eed1495ed4373c5227ff3",
+    "required_run": 45554259868,
+    "codeql_run": 45554259811,
+    "production_verified": false
+  }
+}
