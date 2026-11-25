@@ -1,6 +1,6 @@
 {
   "fingerprint": "delivery|reviewed-writer-execution-epoch|20261124-v1",
-  "status": "NATIVE_GIT_PROTOCOL_CAS_CANDIDATE",
+  "status": "DEDICATED_APP_IDENTITY_VERIFIER_CANDIDATE",
   "root_cause": "Separately reviewed manifest moves protected main while v6 ties reviewed PR base to current execution main.",
   "owner": "Original #4661 release-control owner",
   "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7142713623",
@@ -10,7 +10,7 @@
     "live": false,
     "provider_integration_verified": false
   },
-  "next_action": "Verify independently authenticated dedicated GitHub App authority, provider-required native context and durable single-slot reservation; integrate trusted full-history checkout and pinned native transport in protected workflow only after real provider proof. Retain deny-all.",
+  "next_action": "Owner provisions actual dedicated app and protected secret. Verify native installation token narrowed to canonical repository, exclusive provider-enforced reservation, durable atomic ledger and native context before enabling any mutation. Deny-all retained.",
   "no_new_agent": true,
   "no_new_scheduler": true,
   "no_policy_expansion": true,
@@ -38,7 +38,8 @@
     "real_local_git_union_tests": 6,
     "fenced_cas_mock_tests": 7,
     "native_local_receive_pack_tests": 4,
-    "native_commit_readback_mock_tests": 1
+    "native_commit_readback_mock_tests": 1,
+    "app_identity_mock_tests": 5
   },
   "evaluation": {
     "historical_replay": [
@@ -46,21 +47,24 @@
       "tests/brain-writer-reviewed-native-preflight.test.mjs",
       "tests/brain-writer-reviewed-union.test.mjs",
       "tests/brain-writer-reviewed-cas.test.mjs",
-      "tests/brain-writer-reviewed-native-cas.test.mjs"
+      "tests/brain-writer-reviewed-native-cas.test.mjs",
+      "tests/brain-release-app-identity.test.mjs"
     ],
     "shadow": [
       "tests/brain-writer-reviewed-epoch.test.mjs",
       "tests/brain-writer-reviewed-native-preflight.test.mjs",
       "tests/brain-writer-reviewed-union.test.mjs",
       "tests/brain-writer-reviewed-cas.test.mjs",
-      "tests/brain-writer-reviewed-native-cas.test.mjs"
+      "tests/brain-writer-reviewed-native-cas.test.mjs",
+      "tests/brain-release-app-identity.test.mjs"
     ],
     "canary": [
       "tests/brain-writer-reviewed-epoch.test.mjs",
       "tests/brain-writer-reviewed-native-preflight.test.mjs",
       "tests/brain-writer-reviewed-union.test.mjs",
       "tests/brain-writer-reviewed-cas.test.mjs",
-      "tests/brain-writer-reviewed-native-cas.test.mjs"
+      "tests/brain-writer-reviewed-native-cas.test.mjs",
+      "tests/brain-release-app-identity.test.mjs"
     ]
   },
   "tests": [
@@ -68,7 +72,8 @@
     "tests/brain-writer-reviewed-native-preflight.test.mjs",
     "tests/brain-writer-reviewed-union.test.mjs",
     "tests/brain-writer-reviewed-cas.test.mjs",
-    "tests/brain-writer-reviewed-native-cas.test.mjs"
+    "tests/brain-writer-reviewed-native-cas.test.mjs",
+    "tests/brain-release-app-identity.test.mjs"
   ],
   "evaluation_scope": "62 isolated native HTTP mock, real local Git tree and receive-pack CAS tests; no actual GitHub ref mutation or native exclusive provider reservation."
 }
