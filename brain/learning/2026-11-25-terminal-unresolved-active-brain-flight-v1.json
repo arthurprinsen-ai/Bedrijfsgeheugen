@@ -5,8 +5,8 @@
   "fingerprint": "powerhouse|terminal|unresolved-active-brain-flight|20261125-v1",
   "status": "CANDIDATE",
   "owner": "original obligation terminal closure",
-  "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved; missing identity fields and case-variant candidate titles can also escape both exact match and unresolved detection. A time-bounded main/workflow_dispatch provider inventory with contradictory nonempty metadata cannot prove completeness.",
-  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved; hold missing event/branch metadata and case-variant titles without inferring identity; reject any contradictory event/branch in a scoped history, even alongside an exact title. Completed generic relevant rows also deny dispatch until independently attributable identity; time-bound the inventory using native PR creation and preserve existing skew.",
+  "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved; missing identity fields and case-variant candidate titles can also escape both exact match and unresolved detection. A time-bounded main/workflow_dispatch provider inventory with contradictory nonempty metadata cannot prove completeness. Native concurrency is PR-number scoped; active different-head flights of the same PR were classified as unrelated.",
+  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved; hold missing event/branch metadata and case-variant titles without inferring identity; reject any contradictory event/branch in a scoped history, even alongside an exact title. Completed generic relevant rows also deny dispatch until independently attributable identity; time-bound the inventory using native PR creation and preserve existing skew. Hold any known active or nonterminal different-head flight of the same PR without granting dispatch authority.",
   "compiler": {
     "failure_class": "ACTIVE_FLIGHT_IDENTITY_UNPROVEN",
     "scope": "delivery",
@@ -54,6 +54,20 @@
       "classification": "NO_FLIGHT_PROVEN_FULL_HISTORY",
       "dispatch_authorized": false,
       "production_verified": false
+    },
+    "same_pr_concurrency_candidate": {
+      "base": "f5294f32dc0afdebf4ae2f601dedd3a40237a452",
+      "source_blob": "6f5ed1f4824dec34d6f743271376547a2b708ebd",
+      "test_blob": "1d2b42b376f6b4f6e22592caf273b6ba98acd453",
+      "baseline_pass": 32,
+      "baseline_fail": 9,
+      "local_node_version": "22.16.0",
+      "tests_pass": 41,
+      "tests_fail": 0,
+      "cli_exit": 78,
+      "production_verified": false,
+      "dispatch_authorized": false,
+      "review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#pullrequestreview-6065557963"
     }
   }
 }

@@ -53,3 +53,14 @@ test('scoped missing or contradictory metadata withholds even exact identity',()
 for(const conclusion of ['success','failure','cancelled','skipped','timed_out',undefined]) test('completed generic scoped run holds: '+conclusion,()=>{const r=scopedIndex([{...generic,status:'completed',conclusion}]);assert.equal(r.status,'TERMINAL_FLIGHT_IDENTITY_UNPROVEN');assert.equal(r.complete,false);assert.equal(r.safe_to_dispatch,false);assert.equal(r.run_id,undefined);});
 test('completed known other PR remains eligible',()=>{assert.equal(scopedIndex([{...generic,status:'completed',display_title:'BRAIN delivery PR #9999 '+('a'.repeat(40))}]).safe_to_dispatch,true);});
 test('mixed terminal and active ambiguity retains active hold',()=>{const r=scopedIndex([{...generic,status:'completed'},{...generic,id:generic.id+1}]);assert.equal(r.status,'ACTIVE_FLIGHT_IDENTITY_UNPROVEN');assert.equal(r.safe_to_dispatch,false);});
+
+const siblingTitle='BRAIN delivery PR #6194 '+('b'.repeat(40));
+for(const status of ['queued','requested','pending','in_progress','waiting',undefined,'unknown']) test('same PR different head holds: '+status,()=>{
+  const r=scopedIndex([{...generic,display_title:siblingTitle,status}]);
+  assert.equal(r.status,'SAME_PR_ACTIVE_FLIGHT_CONFLICT');assert.equal(r.complete,false);assert.equal(r.safe_to_dispatch,false);assert.deepEqual(r.conflicting_run_ids,[generic.id]);assert.equal(r.run_id,undefined);
+});
+test('completed same PR different head does not prove candidate or block new verification',()=>{const r=scopedIndex([{...generic,display_title:siblingTitle,status:'completed'}]);assert.equal(r.status,'NO_FLIGHT_PROVEN_FULL_HISTORY');assert.equal(r.safe_to_dispatch,true);assert.equal(r.run_id,undefined);});
+test('case variant same PR sibling active holds',()=>{assert.equal(scopedIndex([{...generic,display_title:siblingTitle.toLowerCase()}]).safe_to_dispatch,false);});
+test('exact candidate flight plus active sibling never triggers a new dispatch',()=>{const r=scopedIndex([{...generic,display_title:siblingTitle},{...generic,id:generic.id+1,display_title:title}]);assert.equal(r.status,'EXISTING_FLIGHT');assert.equal(r.safe_to_dispatch,false);});
+test('same PR sibling without scoped filter still holds',()=>{assert.equal(index([{...generic,display_title:siblingTitle}]).status,'SAME_PR_ACTIVE_FLIGHT_CONFLICT');});
+test('unrelated PR active and completed sibling preserve independent eligibility',()=>{assert.equal(scopedIndex([{...generic,display_title:siblingTitle,status:'completed'},{...generic,id:generic.id+1,display_title:'BRAIN delivery PR #9999 '+('c'.repeat(40))}]).safe_to_dispatch,true);});

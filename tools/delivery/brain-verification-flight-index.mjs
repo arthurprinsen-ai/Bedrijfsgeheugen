@@ -59,6 +59,15 @@ export function classifyOriginalBrainFlightPages(pages,expectedTitle,{since=null
       run_id:found.id,run_status:found.status||'unknown',
       active:ACTIVE.has(found.status)};
   }
+  // Native concurrency is PR-number scoped, not candidate-head scoped.
+  // A different active head of the same PR can occupy that same group.
+  const expectedPr=String(expectedTitle).match(/^BRAIN delivery PR #([1-9]\d*) /i)[1];
+  const conflicting=rows.filter(run=>run.event==='workflow_dispatch'&&run.head_branch==='main'&&
+    run.status!=='completed'&&TITLE.test(String(run.display_title||''))&&
+    String(run.display_title).match(/^BRAIN delivery PR #([1-9]\d*) /i)[1]===expectedPr);
+  if(conflicting.length)return {status:'SAME_PR_ACTIVE_FLIGHT_CONFLICT',complete:false,
+    safe_to_dispatch:false,provider_total:total,observed_rows:rows.length,
+    conflicting_run_ids:conflicting.map(run=>run.id).sort((a,b)=>a-b)};
   // A provider may expose a queued dispatch before its run-name resolves.
   // A complete inventory cannot prove absence while any relevant identity is unknown, including terminal rows.
   // Never treat an ambiguous run as exact candidate evidence or cancel it.
