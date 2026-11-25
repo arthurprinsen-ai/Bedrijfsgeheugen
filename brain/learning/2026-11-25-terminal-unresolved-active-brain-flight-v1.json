@@ -5,8 +5,8 @@
   "fingerprint": "powerhouse|terminal|unresolved-active-brain-flight|20261125-v1",
   "status": "CANDIDATE",
   "owner": "original obligation terminal closure",
-  "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved; missing identity fields and case-variant candidate titles can also escape both exact match and unresolved detection",
-  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved; hold missing event/branch metadata and case-variant titles without inferring identity",
+  "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved; missing identity fields and case-variant candidate titles can also escape both exact match and unresolved detection. A time-bounded main/workflow_dispatch provider inventory with contradictory nonempty metadata cannot prove completeness.",
+  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved; hold missing event/branch metadata and case-variant titles without inferring identity; reject any contradictory event/branch in a scoped history, even alongside an exact title.",
   "compiler": {
     "failure_class": "ACTIVE_FLIGHT_IDENTITY_UNPROVEN",
     "scope": "delivery",
@@ -30,6 +30,14 @@
     "native_run": 45652120063,
     "production_verified": false,
     "review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#issuecomment-7169609102",
-    "isolated_classifier_test_groups": 12
+    "isolated_classifier_test_groups": 12,
+    "native_node_test_count": 21,
+    "native_node_test_pass": 21,
+    "scoped_inventory_review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#issuecomment-7170483706",
+    "verified_candidate_sha": "7258bef10835a7fb7afccaba0c360d5dcd856659",
+    "required_ci_run": 45679572956,
+    "codeql_run": 45679572583,
+    "protected_ci_verified": true,
+    "provider_flight_identity_verified": false
   }
 }
