@@ -83,3 +83,29 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
     return result('EXACT_REJECTION_OBSERVED_OWNER_REVIEW');
   return result('UNCHANGED_HEAD_UNRESOLVED');
  }
+
+// Provider readback collector. Read only; cannot establish transport causality or
+// credential quiescence. The durable resolver must obtain those separately.
+export async function collectPrewriteReadback({intent,github}={}) {
+ const hold=reason=>Object.freeze({state:reason,mutationAuthority:false,releaseAuthorized:false,retryAuthorized:false});
+ const invalid=classifyPrewriteResolution({intent,observation:null});
+ if(invalid.state==='INTENT_IDENTITY_UNPROVEN')return hold(invalid.state);
+ if(typeof github?.readReviewedPR!=='function'||typeof github?.readHead!=='function'||typeof github?.readCommit!=='function')return hold('PROVIDER_READ_ADAPTER_REQUIRED');
+ const keys=['repository','prNumber','generation','revision','holder','branch','head','main','commit','tree','manifestSha256'];
+ const id=Object.fromEntries(keys.map(k=>[k,intent[k]]));
+ const validPR=p=>p?.open===true&&p.number===id.prNumber&&p.branch===id.branch&&p.obligation===intent.obligation&&typeof p.headSha==='string'&&SHA.test(p.headSha);
+ if(typeof intent.obligation!=='string'||!intent.obligation.trim())return hold('INTENT_OBLIGATION_UNPROVEN');
+ try {
+  const p=await github.readReviewedPR(id.prNumber);
+  if(!validPR(p))return hold('NATIVE_PR_IDENTITY_UNPROVEN');
+  const mainBefore=await github.readHead('main'),branchBefore=await github.readHead(id.branch);
+  if(p.headSha!==branchBefore)return hold('NATIVE_PR_REF_DRIFT');
+  let commitObject=null;
+  if(branchBefore===id.commit)commitObject=await github.readCommit(id.commit);
+  const branchAfter=await github.readHead(id.branch),mainAfter=await github.readHead('main');
+  const q=await github.readReviewedPR(id.prNumber);
+  if(!validPR(q)||q.headSha!==branchAfter||p.baseSha!==q.baseSha)return hold('NATIVE_PR_REF_DRIFT');
+  const observation=Object.freeze({...id,independentReadback:true,mainBefore,branchBefore,mainAfter,branchAfter,commitObject,transportOutcome:'ambiguous',credentialQuiescenceVerified:false,inFlightTransportExcluded:false});
+  return Object.freeze({...classifyPrewriteResolution({intent,observation}),observation});
+ }catch{return hold('NATIVE_READBACK_UNAVAILABLE')}
+}

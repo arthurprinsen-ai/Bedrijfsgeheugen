@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {publishReviewedUnion,classifyPrewriteResolution} from '../tools/delivery/reviewed-cas.mjs';
+import {publishReviewedUnion,classifyPrewriteResolution,collectPrewriteReadback} from '../tools/delivery/reviewed-cas.mjs';
 const H='a'.repeat(40),M='b'.repeat(40),N='c'.repeat(40),T='d'.repeat(40),B='e'.repeat(40);
 function fixture(){
  const manifest={prNumber:5940,expectedHead:H,expectedBase:B,branch:'fix/original',obligation:'original'};
@@ -50,3 +50,21 @@ const resolutions=[
  ['unexpected head',{}, {branchBefore:intent.main,branchAfter:intent.main},'UNEXPECTED_BRANCH_RECONCILE_ONLY']
 ];
 for(const [name,di,doo,state] of resolutions)test('prewrite resolution: '+name,()=>{const x=classifyPrewriteResolution({intent:{...intent,...di},observation:{...observed,...doo}});assert.equal(x.state,state);for(const v of [x.mutationAuthority,x.releaseAuthorized,x.retryAuthorized,x.mergeAuthorized])assert.equal(v,false)});
+
+const readIntent={repository:'arthurprinsen-ai/Bedrijfsgeheugen',state:'prewrite_pending',prNumber:6165,generation:1,revision:2,holder:'github-actions:123:1',branch:'fix/original',obligation:'original',head:'a'.repeat(40),main:'b'.repeat(40),commit:'c'.repeat(40),tree:'d'.repeat(40),manifestSha256:'e'.repeat(64)};
+function readFixture(){const i={...readIntent},s={branch:i.head,main:i.main,reads:0,prReads:0,commitReads:0};
+ const github={readReviewedPR:async()=>{s.prReads++;return {open:true,number:i.prNumber,branch:i.branch,obligation:i.obligation,headSha:s.branch,baseSha:i.main}},readHead:async b=>{s.reads++;return b==='main'?s.main:s.branch},readCommit:async()=>{s.commitReads++;return {sha:i.commit,tree:i.tree,parents:[i.head,i.main]}}};return {intent:i,github,s};}
+const readCases=[
+ ['unchanged head no receipt',f=>{},'UNCHANGED_HEAD_UNRESOLVED'],
+ ['visible expected commit no causality',f=>{f.s.branch=f.intent.commit},'EXPECTED_COMMIT_VISIBLE_CAUSALITY_UNPROVEN'],
+ ['wrong commit tree',f=>{f.s.branch=f.intent.commit;f.github.readCommit=async()=>({sha:f.intent.commit,tree:f.intent.main,parents:[f.intent.head,f.intent.main]})},'COMMIT_OBJECT_UNPROVEN'],
+ ['wrong obligation',f=>{f.github.readReviewedPR=async()=>({open:true,number:f.intent.prNumber,branch:f.intent.branch,obligation:'other',headSha:f.intent.head})},'NATIVE_PR_IDENTITY_UNPROVEN'],
+ ['main drifts',f=>{f.s.main=f.intent.head},'MAIN_MOVED_RECONCILE_ONLY'],
+ ['read fails',f=>{f.github.readHead=async()=>{throw Error('transport')}},'NATIVE_READBACK_UNAVAILABLE'],
+ ['PR/ref mismatch',f=>{f.github.readHead=async b=>b==='main'?f.intent.main:f.intent.commit},'NATIVE_PR_REF_DRIFT'],
+ ['missing adapter',f=>{delete f.github.readCommit},'PROVIDER_READ_ADAPTER_REQUIRED'],
+ ['invalid intent',f=>{f.intent.state='reserved'},'INTENT_IDENTITY_UNPROVEN'],
+ ['changed branch during readback',f=>{let n=0;f.github.readHead=async b=>b==='main'?f.intent.main:(++n===1?f.intent.head:(f.s.branch=f.intent.commit))},'PROVIDER_MOVEMENT_RECONCILE_ONLY']
+];
+
+for(const [name,mut,state] of readCases)test('native readback: '+name,async()=>{const f=readFixture();mut(f);const r=await collectPrewriteReadback(f);assert.equal(r.state,state);assert.equal(r.mutationAuthority,false);assert.equal(r.releaseAuthorized,false);assert.equal(r.retryAuthorized,false);});
