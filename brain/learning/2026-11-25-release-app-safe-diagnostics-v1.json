@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "delivery|release-app-safe-diagnostics|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "Original #4661 release-control owner",
+  "root_cause": "Observed generic APP_PROBE_FAILED masks root cause. Actual underlying credential or transport fault remains unknown.",
+  "fix": "Classify key parsing, JWT signing, network and response failures with fixed safe codes; update exact protected job and matching egress guard together.",
+  "prevention_rule": "Do not output raw exception, key, JWT, token or response body; do not grant authority on failure or identity-only proof.",
+  "compiler": {
+    "failure_class": "OPAQUE_APP_PROBE_FAILURE",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-release-app-identity.test.mjs",
+      "tests/brain-release-app-protected-probe.test.mjs",
+      "tests/brain-egress-guard.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-release-app-identity.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-release-app-identity.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45569232416",
+    "job_id": 139051487653,
+    "observed": "APP_PROBE_FAILED",
+    "production_verified": false
+  }
+}

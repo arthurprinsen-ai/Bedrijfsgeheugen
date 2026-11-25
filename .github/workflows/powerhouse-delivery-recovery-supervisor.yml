@@ -11,6 +11,11 @@ on:
         type: boolean
         required: false
         default: false
+      release_app_identity:
+        description: 'Read-only dedicated release App identity probe (protected main only)'
+        type: boolean
+        required: false
+        default: false
   # Shift identical five-minute cadence off the hour's overloaded minute zero.
   # One existing owner: do not introduce a second scheduler or workflow.
   schedule:
@@ -28,7 +33,7 @@ concurrency:
 
 jobs:
   supervise:
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.patch_handoff != true)
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.patch_handoff != true && inputs.release_app_identity != true)
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -192,7 +197,13 @@ jobs:
             echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$effective_active_runs effective active runs; recovery dispatch suppressed until authoritative backlog drains."
             exit 0
           fi
-          gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
+          # Collect complete native pages; concatenated JSON is not an inventory.
+          gh api --paginate --slurp "repos/$repo/pulls?state=open&base=main&per_page=100" > /tmp/open-pr-pages.json
+          jq -e 'if type=="array" and all(.[]; type=="array") then add // [] else error("INCOMPLETE_NATIVE_PR_PAGES") end' /tmp/open-pr-pages.json > /tmp/open-prs.json
+          # Shadow-only central slot planning. No status writes, lease or grant.
+          if ! node tools/delivery/main-wide-promotion-slot.mjs /tmp/open-prs.json /tmp/promotion-slot-shadow.json "$repo" "$current_main_sha"; then
+            echo "::warning::PROMOTION_SLOT_SHADOW_UNAVAILABLE"
+          fi
           # One bounded evidence read; sorting is advisory only. Every PR still
           # traverses the original live merge, lease, overlap and GitHub CAS gates.
           # On provider failure or malformed evidence retain the original order.
@@ -634,7 +645,7 @@ jobs:
           done < <(jq -c '.[] | select(.merged_at != null)' <<<"$closed")
 
   authorized-patch-handoff:
-    if: github.event_name == 'workflow_dispatch' && inputs.patch_handoff == true && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && inputs.patch_handoff == true && inputs.release_app_identity != true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: writer-patch-approval
     timeout-minutes: 8
@@ -665,3 +676,37 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           WRITER_HOLDER: github-actions:${{ github.run_id }}:${{ github.run_attempt }}
         run: node scripts/ci/authorized-writer-handoff.mjs
+
+  release-app-identity-proof:
+    if: github.event_name == 'workflow_dispatch' && inputs.release_app_identity == true && inputs.patch_handoff != true && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: powerhouse-release-controller
+    timeout-minutes: 3
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify dedicated App identity without mutation authority
+        env:
+          RELEASE_APP_ID: ${{ vars.POWERHOUSE_RELEASE_APP_ID }}
+          RELEASE_APP_PRIVATE_KEY: ${{ secrets.POWERHOUSE_RELEASE_APP_PRIVATE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node --input-type=module <<'NODE'
+          import {verifyReleaseApp} from './tools/delivery/release-app-identity.mjs';
+          try {
+            const proof=await verifyReleaseApp({appId:Number(process.env.RELEASE_APP_ID),privateKey:process.env.RELEASE_APP_PRIVATE_KEY});
+            if(proof.appId!==5916428 || proof.authenticated!==true || proof.exclusiveWriterVerified!==false || proof.mutationAuthority!==false) throw Error('APP_PROBE_CONTRACT_MISMATCH');
+            console.log('RELEASE_APP_IDENTITY_PROOF:'+JSON.stringify({appId:proof.appId,installationId:proof.installationId,repository:proof.repository,state:proof.state,authenticated:true,exclusiveWriterVerified:false,mutationAuthority:false}));
+          } catch(e) {
+            const code=String(e?.message??'');
+            const safe=/^(APP_NATIVE_AUTH_HTTP_\d{3}|APP_IDENTITY_OR_PERMISSIONS_UNPROVEN|APP_INSTALLATION_SCOPE_UNPROVEN_(?:IDENTITY|ACCOUNT|SELECTION|SUSPENSION|PERMISSIONS)|DEDICATED_APP_CREDENTIAL_REQUIRED|APP_RSA_KEY_REQUIRED|APP_PRIVATE_KEY_PARSE_FAILED|APP_JWT_SIGN_FAILED|APP_NATIVE_NETWORK_FAILED|APP_NATIVE_RESPONSE_INVALID|APP_PROBE_CONTRACT_MISMATCH)$/.test(code)?code:'APP_PROBE_FAILED';
+            console.error(safe);process.exitCode=1;
+          }
+          NODE
