@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "delivery|release-app-installation-diagnostics|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "Original #4661 release-control owner",
+  "root_cause": "Native probe passed key parsing, signing and app verification, but combined installation predicate failed; exact rejected predicate unknown.",
+  "fix": "Split identical fail-closed installation predicates into fixed error codes, update exact protected workflow and egress admission bytes together.",
+  "prevention_rule": "Never weaken installation predicates or log raw metadata, JWTs or credentials; no writer authority from identity proof.",
+  "compiler": {
+    "failure_class": "OPAQUE_APP_INSTALLATION_PREDICATE",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-release-app-identity.test.mjs",
+      "tests/brain-egress-guard.test.mjs",
+      "tests/brain-release-app-protected-probe.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-release-app-identity.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-release-app-identity.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45570698724/job/139056331374",
+    "observed": "APP_INSTALLATION_SCOPE_UNPROVEN",
+    "production_verified": false
+  }
+}
