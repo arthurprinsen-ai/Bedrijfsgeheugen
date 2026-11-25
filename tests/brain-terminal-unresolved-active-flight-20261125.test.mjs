@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {classifyOriginalBrainFlightPages as classify} from '../tools/delivery/brain-verification-flight-index.mjs';
+const title='BRAIN delivery PR #6194 fac054c98b0ac6099d4e03e73b8a091ec4b2ed72';
+const generic={id:45652120063,display_title:'Unified Brain Delivery',status:'queued',event:'workflow_dispatch',head_branch:'main',created_at:'2026-11-25T16:15:18Z'};
+const index=rows=>classify([{total_count:rows.length,workflow_runs:rows}],title);
+test('observed queued generic run denies a duplicate without claiming exact identity',()=>{const r=index([generic]);assert.equal(r.status,'ACTIVE_FLIGHT_IDENTITY_UNPROVEN');assert.equal(r.complete,false);assert.equal(r.safe_to_dispatch,false);assert.deepEqual(r.unresolved_run_ids,[generic.id]);assert.equal(r.run_id,undefined);});
+test('unresolved or missing active status remains fail closed',()=>{for(const status of ['requested','pending','waiting','in_progress',undefined,'unknown'])assert.equal(index([{...generic,status}]).safe_to_dispatch,false);});
+test('resolved exact run is existing, never a second dispatch',()=>{const r=index([{...generic,display_title:title}]);assert.equal(r.status,'EXISTING_FLIGHT');assert.equal(r.run_id,generic.id);assert.equal(r.safe_to_dispatch,false);});
+test('known other PR flight does not starve eligible independent work',()=>{assert.equal(index([{...generic,display_title:'BRAIN delivery PR #9999 '+('a'.repeat(40))}]).safe_to_dispatch,true);});
+test('completed generic run is not proof of exact identity',()=>{const r=index([{...generic,status:'completed',conclusion:'success'}]);assert.equal(r.status,'NO_FLIGHT_PROVEN_FULL_HISTORY');assert.equal(r.run_id,undefined);});
+test('incomplete inventory never permits a dispatch',()=>{assert.equal(classify([{total_count:2,workflow_runs:[generic]}],title).safe_to_dispatch,false);});
+test('exact existing run plus unresolved active row does not trigger a duplicate',()=>{const r=index([generic,{...generic,id:45652120064,display_title:title}]);assert.equal(r.status,'EXISTING_FLIGHT');assert.equal(r.safe_to_dispatch,false);});
+test('empty fully observed history permits original verification only',()=>{assert.equal(index([]).safe_to_dispatch,true);});

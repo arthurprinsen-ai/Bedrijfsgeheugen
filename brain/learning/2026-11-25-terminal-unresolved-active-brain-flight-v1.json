@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "powerhouse|terminal|unresolved-active-brain-flight|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "original obligation terminal closure",
+  "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved",
+  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved",
+  "compiler": {
+    "failure_class": "ACTIVE_FLIGHT_IDENTITY_UNPROVEN",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-unresolved-active-flight-20261125.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-unresolved-active-flight-20261125.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-unresolved-active-flight-20261125.test.mjs"
+    ]
+  },
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7168274422",
+    "native_run": 45652120063,
+    "production_verified": false
+  }
+}

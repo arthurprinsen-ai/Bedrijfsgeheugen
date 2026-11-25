@@ -54,6 +54,14 @@ export function classifyOriginalBrainFlightPages(pages,expectedTitle,{since=null
       run_id:found.id,run_status:found.status||'unknown',
       active:ACTIVE.has(found.status)};
   }
+  // A provider may expose a queued dispatch before its run-name resolves.
+  // A complete inventory is not proof of absence while an active identity is unknown.
+  // Never treat an ambiguous run as exact candidate evidence or cancel it.
+  const unresolved=rows.filter(run=>run.event==='workflow_dispatch'&&run.head_branch==='main'&&
+    !TITLE.test(String(run.display_title||''))&&run.status!=='completed');
+  if(unresolved.length)return {status:'ACTIVE_FLIGHT_IDENTITY_UNPROVEN',complete:false,
+    safe_to_dispatch:false,provider_total:total,observed_rows:rows.length,
+    unresolved_run_ids:unresolved.map(run=>run.id).sort((a,b)=>a-b)};
   return {status:'NO_FLIGHT_PROVEN_FULL_HISTORY',complete:true,safe_to_dispatch:true,
     provider_total:total,observed_rows:rows.length,matching_flights:0};
 }
