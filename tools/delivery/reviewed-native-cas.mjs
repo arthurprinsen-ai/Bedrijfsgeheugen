@@ -42,7 +42,13 @@ export function createNativeReviewedTransport({cwd,github,githubToken}){
  const env={GIT_CONFIG_COUNT:'2',GIT_CONFIG_KEY_0:'http.https://github.com/.extraheader',GIT_CONFIG_VALUE_0:'AUTHORIZATION: basic '+Buffer.from('x-access-token:'+githubToken).toString('base64'),GIT_CONFIG_KEY_1:'http.followRedirects',GIT_CONFIG_VALUE_1:'false',GIT_TRACE:'0',GIT_TRACE_PACKET:'0',GIT_TRACE_CURL:'0',GIT_CURL_VERBOSE:'0'};
  return {
   inspect:async sha=>object(cwd,sha),
-  pushExact:async ({branch,expectedHead,newHead,main})=>pushReviewedGitRef({cwd,destination:CANONICAL,branch,expectedHead,newHead,main,env}),
+  pushExact:async ({branch,expectedHead,newHead,main})=>{
+   // Reject configured URL rewriting before the credential-bearing push.
+   // Inspect the same effective Git configuration without logging its contents.
+   const rewrite=run(cwd,['config','--name-only','--get-regexp','^url[.].*[.](insteadof|pushinsteadof)'],env);
+   if(rewrite.error||rewrite.status!==1)throw Error('NATIVE_CAS_URL_REWRITE_UNPROVEN');
+   return pushReviewedGitRef({cwd,destination:CANONICAL,branch,expectedHead,newHead,main,env});
+  },
   readCommit:async sha=>github.readCommit(sha)
  };
 }
