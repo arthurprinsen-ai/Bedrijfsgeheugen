@@ -31,6 +31,10 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
  const token=typeof raw==='number'?raw:typeof raw==='string'&&/^[1-9]\d*$/.test(raw)?Number(raw):NaN;
  requireCondition(Array.isArray(rows)&&rows.length===1&&positive(token),'ACQUIRE_NOT_CONFIRMED');
  const db=createSupabaseLeaseVerifier({query:authorizedPgQuery});
+ // A transport attempt may have mutated the provider even if its response is lost.
+ // Retain the writer lease on any uncertain post-attempt outcome. This is only
+ // a local safety barrier: lease expiry is NOT durable prewrite resolution.
+ let attempted=false,readbackComplete=false;
  try {
    const verify=async()=>requireCondition(await db.verifyLease({obligation,holder,token,branch,head,main}),'REVIEWED_LEASE_LOST');
    await verify();
@@ -39,16 +43,20 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
    await verify();
    // Provider must perform exact expected-old-ref CAS; a plain REST fast-forward
    // or force=true update is not sufficient. Do not retry an ambiguous response.
+   attempted=true;
    const response=await transport.pushExact({branch,expectedHead:head,newHead:prepared.commit,main,token,revision});
    requireCondition(response?.accepted===true,'NATIVE_EXPECTED_HEAD_CAS_UNPROVEN');
    requireCondition(await github.readHead(branch)===prepared.commit,'CAS_BRANCH_READBACK_MISMATCH');
    const commit=await transport.readCommit(prepared.commit);
    requireCondition(commit?.sha===prepared.commit&&commit.tree===prepared.tree&&Array.isArray(commit.parents)&&commit.parents.length===2&&commit.parents[0]===head&&commit.parents[1]===main,'CAS_COMMIT_READBACK_MISMATCH');
    requireCondition(await github.readHead('main')===main,'MAIN_MOVED_AFTER_CAS_RECONCILE_ONLY');
+   readbackComplete=true;
    return Object.freeze({status:'PUBLISHED_PENDING_FULL_BRAIN',newHead:prepared.commit,tree:prepared.tree,leaseGeneration:token,slotRevision:revision,mergeAuthorized:false,productionVerified:false});
  }finally{
-   const released=await authorizedPgQuery('select writer_control.release($1,$2,$3) as released',[obligation,holder,token]);
-   requireCondition(released?.length===1&&released[0].released===true,'WRITER_LEASE_RELEASE_NOT_CONFIRMED');
+   if(!attempted||readbackComplete){
+    const released=await authorizedPgQuery('select writer_control.release($1,$2,$3) as released',[obligation,holder,token]);
+    requireCondition(released?.length===1&&released[0].released===true,'WRITER_LEASE_RELEASE_NOT_CONFIRMED');
+   }
  }
 }
 

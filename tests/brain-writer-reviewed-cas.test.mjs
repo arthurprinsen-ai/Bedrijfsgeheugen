@@ -71,3 +71,19 @@ for(const [name,mut,state] of readCases)test('native readback: '+name,async()=>{
 
 const obligationCases=[['missing intent',{obligation:undefined},{},'INTENT_IDENTITY_UNPROVEN'],['blank intent',{obligation:' '},{},'INTENT_IDENTITY_UNPROVEN'],['wrong receipt',{}, {obligation:'other'},'READBACK_IDENTITY_UNPROVEN'],['missing receipt',{}, {obligation:undefined},'READBACK_IDENTITY_UNPROVEN'],['exact binding',{}, {},'EXACT_WRITE_OBSERVED_OWNER_REVIEW']];
 for(const [name,di,doo,state] of obligationCases)test('obligation binding: '+name,()=>{const r=classifyPrewriteResolution({intent:{...intent,...di},observation:{...observed,...doo}});assert.equal(r.state,state);assert.equal(r.mutationAuthority,false);assert.equal(r.releaseAuthorized,false);});
+
+test('uncertain transport outcome never automatically releases original writer lease',async()=>{
+ for(const [label,mutate] of [
+  ['transport exception after mutation',f=>{f.input.transport.pushExact=async()=>{f.state.pushes++;f.state.head=N;throw Error('RESPONSE_LOST')}}],
+  ['transport false',f=>{f.input.transport.pushExact=async()=>{f.state.pushes++;return {accepted:false}}}],
+  ['branch readback mismatch',f=>{f.input.transport.pushExact=async()=>{f.state.pushes++;return {accepted:true}}}],
+  ['commit readback unavailable',f=>{f.input.transport.readCommit=async()=>{throw Error('READBACK_LOST')}}],
+  ['wrong commit object',f=>{f.input.transport.readCommit=async()=>({sha:N,tree:H,parents:[H,M]})}],
+  ['main changed after push',f=>{const old=f.input.transport.pushExact;f.input.transport.pushExact=async r=>{const v=await old(r);f.state.main=B;return v}}]
+ ]){
+  const f=fixture();mutate(f);
+  await assert.rejects(publishReviewedUnion(f.input),/RESPONSE_LOST|NATIVE_EXPECTED_HEAD_CAS_UNPROVEN|CAS_BRANCH_READBACK_MISMATCH|READBACK_LOST|CAS_COMMIT_READBACK_MISMATCH|MAIN_MOVED_AFTER_CAS_RECONCILE_ONLY/,label);
+  assert.equal(f.state.pushes,1,label);
+  assert.equal(f.calls.filter(sql=>sql.includes('.release(')).length,0,label);
+ }
+});
