@@ -130,3 +130,29 @@ for(const [name,change,expected,count] of [
 });
 
 for(const mode of ['prepare reply lost','durable readback lost','provider fence lost'])test('uncertain '+mode+' retains writer lease',async()=>{const f=fixture(),q=f.input.authorizedPgQuery;if(mode==='provider fence lost')f.input.slot.readPendingReservation=async()=>{throw Error('FENCE_LOST')};else f.input.authorizedPgQuery=async(sql,args)=>{const r=await q(sql,args);if((mode==='prepare reply lost'&&sql.includes('.prepare_prewrite('))||(mode==='durable readback lost'&&sql.includes('promotion_prewrite_intent')))throw Error('REPLY_LOST');return r};await assert.rejects(publishReviewedUnion(f.input));assert.equal(f.state.pending,true);assert.equal(f.state.pushes,0);assert.equal(f.calls.filter(x=>x.includes('.release(')).length,0)});
+
+import {createHash as recoveryHash} from 'node:crypto';
+import {recoverReviewedPrewrite} from '../tools/delivery/reviewed-cas.mjs';
+function recoveryFixture(){
+ const f=durableFixture(),g=readFixture(),i=f.i;
+ const canonical={repository:i.repository,state:i.state,prNumber:i.prNumber,head:i.head,main:i.main,branch:i.branch,obligation:i.obligation,holder:i.holder,manifestSha256:i.manifestSha256,generation:i.generation,revision:i.revision,commit:i.commit,tree:i.tree};
+ i.intentDigest=recoveryHash('sha256').update(JSON.stringify(canonical)).digest('hex');
+ f.row.intent_digest=f.row.evidence_digest=i.intentDigest;
+ return {...f,g,input:{intent:i,authorizedPgQuery:f.query,github:g.github}};
+}
+for(const [name,change,state,providerState,count] of [
+ ['unchanged head',()=>{},'RECOVERY_READBACK_OWNER_REVIEW','UNCHANGED_HEAD_UNRESOLVED',2],
+ ['visible commit without receipt',f=>{f.g.s.branch=f.i.commit},'RECOVERY_READBACK_OWNER_REVIEW','EXPECTED_COMMIT_VISIBLE_CAUSALITY_UNPROVEN',2],
+ ['invalid digest',f=>{f.i.intentDigest='0'.repeat(64)},'RECOVERY_INTENT_DIGEST_MISMATCH',undefined,0],
+ ['missing row',f=>{f.state.rows=[]},'RECOVERY_DURABLE_INTENT_UNPROVEN',undefined,1],
+ ['wrong audit digest',f=>{f.row.evidence_digest='0'.repeat(64)},'RECOVERY_DURABLE_INTENT_UNPROVEN',undefined,1],
+ ['expired lease remains visible',f=>{f.row.valid_until='2020-01-01T00:00:00Z'},'RECOVERY_READBACK_OWNER_REVIEW','UNCHANGED_HEAD_UNRESOLVED',2],
+ ['reservation drifts',f=>{const q=f.input.authorizedPgQuery;f.input.authorizedPgQuery=async(...a)=>{const r=await q(...a);return f.calls.length===2?[]:r}},'RECOVERY_RESERVATION_CHANGED',undefined,2],
+ ['read failure',f=>{f.state.failure=1},'RECOVERY_DURABLE_READBACK_UNAVAILABLE',undefined,1]
+])test('read-only pending recovery: '+name,async()=>{
+ const f=recoveryFixture();change(f);
+ const r=await recoverReviewedPrewrite(f.input);
+ assert.equal(r.state,state);assert.equal(r.providerState,providerState);assert.equal(f.calls.length,count);
+ assert.ok(f.calls.every(c=>/^select i\.repository/.test(c.sql)&&!c.sql.includes('clock_timestamp')&&!c.sql.includes('.prepare_prewrite(')));
+ for(const v of [r.mutationAuthority,r.releaseAuthorized,r.retryAuthorized,r.mergeAuthorized])assert.equal(v,false);
+});

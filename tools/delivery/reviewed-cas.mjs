@@ -176,3 +176,29 @@ export async function prepareReviewedPrewrite({intent,authorizedPgQuery}={}) {
   return result('PREWRITE_DURABLE_INTENT_OBSERVED_OWNER_REVIEW');
  }catch{return result('PREWRITE_DURABLE_READBACK_UNAVAILABLE')}
 }
+
+// Read-only recovery after an ambiguous prepare or transport, including expired leases.
+// No renewal, release, retry, status mutation or authority is inferred.
+export async function recoverReviewedPrewrite({intent,authorizedPgQuery,github}={}) {
+ const hold=state=>Object.freeze({state,mutationAuthority:false,releaseAuthorized:false,retryAuthorized:false,mergeAuthorized:false});
+ if(classifyPrewriteResolution({intent,observation:null}).state==='INTENT_IDENTITY_UNPROVEN'||!HASH.test(intent.intentDigest||'')||!positive(intent.revision-1))return hold('RECOVERY_INPUT_UNPROVEN');
+ if(typeof authorizedPgQuery!=='function')return hold('RECOVERY_SQL_ADAPTER_REQUIRED');
+ const i=Object.freeze({...intent});
+ // Reconstruct the exact canonical write-intent serialization, not caller property order.
+ const canonical={repository:i.repository,state:i.state,prNumber:i.prNumber,head:i.head,main:i.main,branch:i.branch,obligation:i.obligation,holder:i.holder,manifestSha256:i.manifestSha256,generation:i.generation,revision:i.revision,commit:i.commit,tree:i.tree};
+ if(createHash('sha256').update(JSON.stringify(canonical)).digest('hex')!==i.intentDigest)return hold('RECOVERY_INTENT_DIGEST_MISMATCH');
+ const query=()=>authorizedPgQuery(
+ `select i.repository,i.generation,i.revision,i.holder,i.pr_number,i.head_sha,i.main_sha,i.branch,i.obligation,i.commit_sha,i.tree_sha,i.manifest_digest,i.intent_digest,e.evidence_digest,r.state
+ from delivery_control.promotion_prewrite_intent i
+ join delivery_control.promotion_reservation r on r.repository=i.repository and r.generation=i.generation and r.revision=i.revision and r.holder=i.holder and r.pr_number=i.pr_number and r.head_sha=i.head_sha and r.main_sha=i.main_sha and r.manifest_digest=i.manifest_digest
+ join delivery_control.promotion_reservation_event e on e.repository=i.repository and e.generation=i.generation and e.revision=i.revision and e.holder=i.holder and e.pr_number=i.pr_number and e.head_sha=i.head_sha and e.main_sha=i.main_sha and e.manifest_digest=i.manifest_digest and e.action='prepare_prewrite' and e.state=r.state
+ where i.repository=$1 and i.generation=$2 and r.state='prewrite_pending'`,[i.repository,i.generation]);
+ const eq=(a,b)=>a===b||(typeof a==='string'&&a===String(b));
+ const exact=rows=>{const r=rows?.[0];return Array.isArray(rows)&&rows.length===1&&r?.state==='prewrite_pending'&&eq(r.generation,i.generation)&&eq(r.revision,i.revision)&&eq(r.pr_number,i.prNumber)&&r.repository===i.repository&&r.holder===i.holder&&r.head_sha===i.head&&r.main_sha===i.main&&r.branch===i.branch&&r.obligation===i.obligation&&r.commit_sha===i.commit&&r.tree_sha===i.tree&&r.manifest_digest===i.manifestSha256&&r.intent_digest===i.intentDigest&&r.evidence_digest===i.intentDigest};
+ try{
+  if(!exact(await query()))return hold('RECOVERY_DURABLE_INTENT_UNPROVEN');
+  const observed=await collectPrewriteReadback({intent:i,github});
+  if(!exact(await query()))return hold('RECOVERY_RESERVATION_CHANGED');
+  return Object.freeze({...hold('RECOVERY_READBACK_OWNER_REVIEW'),providerState:observed.state});
+ }catch{return hold('RECOVERY_DURABLE_READBACK_UNAVAILABLE')}
+}
