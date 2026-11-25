@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|daily-blog|original-20261124-title-readback|v1",
+  "root_cause": "Protected renderer #5888 corrected source intent but the already LIVE_PROVEN same-date publication is intentionally skipped by the canonical scheduler; existing static title therefore remains generic.",
+  "scope": "ORIGINAL_PUBLISHED_ARTICLE_METADATA_IN_PLACE",
+  "owner": "Existing original Powerhouse daily blog publisher and existing SEO/CRO/Data Quality",
+  "prevention_rule": "For a verified already-published source defect, correct existing static title references and translation in place using the exact deployed renderer's source-derived title. Retain original URL, GUID, pubDate, source body and publication ID; do not resubmit, alter history or claim live before exact merge, Netlify and independent public readback.",
+  "regression": [
+    "tests/brain-original-20261124-blog-title-readback.test.mjs"
+  ],
+  "evidence": {
+    "source_table": "public.powerhouse_content_artifacts",
+    "source_day": "2026-11-24",
+    "source_title": "Bankverschillen oplossen met Twinfield: praktische controle op betaalreferenties en openstaande facturen",
+    "source_updated_at": "2026-11-24T15:47:29.228Z",
+    "previous_public_title": "Bankverschillen oplossen: wat verandert er voor jou?",
+    "corrected_title": "Bankverschillen oplossen met Twinfield: praktische controle",
+    "canonical_url": "https://www.bedrijfsgeheugen.nl/blog/voorbereid-op-een-mogelijke-twinfield-api-hoe-je-als-mkb-je-boekhoudin/",
+    "original_publication_id": "6b05cd4f89a778f21aec79c9",
+    "original_publication_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6149",
+    "renderer_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5888",
+    "provider_post_created_by_fix": false,
+    "release_state": "SOURCE_CANDIDATE_REQUIRES_PROTECTED_CI_AND_PUBLIC_READBACK"
+  },
+  "learning_state": "OBSERVED_QUALITY_DEFECT_PREVENTION_SOURCE_CANDIDATE",
+  "compiler": {
+    "failure_class": "ALREADY_PUBLISHED_STATIC_TITLE_STALE_AFTER_RENDERER_FIX",
+    "scope": "WEBSITE_SEO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-20261124-blog-title-readback.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-20261124-blog-title-readback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-20261124-blog-title-readback.test.mjs"
+    ]
+  }
+}
