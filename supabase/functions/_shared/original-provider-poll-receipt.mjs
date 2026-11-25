@@ -157,3 +157,22 @@ export function observedProviderMetricNumber(value){
   }
   return typeof value==='number'&&Number.isFinite(value)&&value>=0?value:null;
 }
+
+/** Exact native identity only. A time-near legacy record is an unresolved
+ * collision, not authorization to attach measurements or register a duplicate.
+ * A null/malformed query result is not evidence that no post exists. */
+export function selectOriginalInstagramPost({mediaId,exactRows,nearRows=[]}={}){
+  if(typeof mediaId!=='string'||!/^\d{10,25}$/.test(mediaId)||
+      !Array.isArray(exactRows)||!Array.isArray(nearRows))
+    throw new Error('IG_POST_IDENTITY_LOOKUP_UNPROVEN');
+  if(exactRows.length>1)throw new Error('IG_POST_IDENTITY_AMBIGUOUS');
+  if(exactRows.length===1){
+    const p=exactRows[0];
+    if(p?.tenant_id!=='bedrijfsgeheugen'||p?.platform!=='instagram'||
+       p?.external_post_id!==mediaId||typeof p?.post_id!=='string'||!p.post_id.trim())
+      throw new Error('IG_POST_IDENTITY_MISMATCH');
+    return p;
+  }
+  if(nearRows.length)throw new Error('IG_LEGACY_ALIAS_NATIVE_PROOF_REQUIRED');
+  return null;
+}
