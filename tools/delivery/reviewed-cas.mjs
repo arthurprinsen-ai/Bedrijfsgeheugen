@@ -14,11 +14,13 @@ function reviewedIntentDigest(i){
 }
 function requireCondition(ok,code){if(ok!==true)throw Error(code);}
 export async function publishReviewedUnion({manifest,preflight,prepared,holder,authorizedPgQuery,github,slot,transport,ttlSeconds=120}){
+ // Pin caller-owned scalar identities before any asynchronous adapter invocation.
+ manifest=Object.freeze({...manifest}); preflight=Object.freeze({...preflight}); prepared=Object.freeze({...prepared});
  const head=manifest?.expectedHead, main=preflight?.executionMainSha, branch=manifest?.branch, obligation=manifest?.obligation;
  requireCondition(!!prepared&&!!preflight&&HASH.test(preflight.manifestSha256||'')&&prepared.manifestSha256===preflight.manifestSha256&&prepared.state==='PREPARED_NOT_PUBLISHED'&&prepared.writeAuthorized===false&&preflight.writeAuthorized===false&&head===prepared.head&&head===preflight.headSha&&main===prepared.main&&branch===preflight.branch&&obligation===preflight.obligation&&manifest.expectedBase===preflight.prBaseSha&&[head,main,prepared.commit,prepared.tree].every(s=>typeof s==='string'&&SHA.test(s))&&prepared.commit!==head&&prepared.commit!==main,'UNION_IDENTITY_UNPROVEN');
  requireCondition(typeof branch==='string'&&branch!=='main'&&branch.length>0&&typeof obligation==='string'&&obligation.length>0&&typeof holder==='string'&&/^github-actions:\d+:\d+$/.test(holder)&&positive(manifest.prNumber)&&positive(ttlSeconds)&&ttlSeconds<=300,'REVIEWED_WRITER_CONTEXT_INVALID');
  requireCondition(typeof authorizedPgQuery==='function'&&typeof github?.readReviewedPR==='function'&&typeof github?.readHead==='function'&&typeof slot?.readReservation==='function'&&typeof slot?.readPendingReservation==='function'&&typeof transport?.inspect==='function'&&typeof transport?.pushExact==='function'&&typeof transport?.readCommit==='function','REVIEWED_CAS_ADAPTER_REQUIRED');
- const expected={prNumber:manifest.prNumber,head,main,branch,obligation,holder,manifestSha256:preflight.manifestSha256};
+ const expected=Object.freeze({prNumber:manifest.prNumber,head,main,branch,obligation,holder,manifestSha256:preflight.manifestSha256});
  const readSlot=async()=>{
    const s=await slot.readReservation(expected);
    requireCondition(s?.state==='EXCLUSIVE_PREWRITE_RESERVED'&&s.providerEnforced===true&&s.mutationAuthority===true&&s.appId===5916428&&positive(s.generation)&&positive(s.revision)&&s.prNumber===expected.prNumber&&s.head===head&&s.main===main&&s.branch===branch&&s.obligation===obligation&&s.holder===holder&&s.manifestSha256===expected.manifestSha256&&s.activeGrantCount===0&&s.nativeBypassDenied===true,'MAIN_WIDE_PROVIDER_RESERVATION_UNPROVEN');
