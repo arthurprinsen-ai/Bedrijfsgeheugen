@@ -45,7 +45,7 @@ const RELEASE_APP_PROBE_JOB = [
   "            console.log('RELEASE_APP_IDENTITY_PROOF:'+JSON.stringify({appId:proof.appId,installationId:proof.installationId,repository:proof.repository,state:proof.state,authenticated:true,exclusiveWriterVerified:false,mutationAuthority:false}));",
   "          } catch(e) {",
   "            const code=String(e?.message??'');",
-  "            const safe=/^(APP_NATIVE_AUTH_HTTP_\\d{3}|APP_IDENTITY_OR_PERMISSIONS_UNPROVEN|APP_INSTALLATION_SCOPE_UNPROVEN|DEDICATED_APP_CREDENTIAL_REQUIRED|APP_RSA_KEY_REQUIRED|APP_PROBE_CONTRACT_MISMATCH)$/.test(code)?code:'APP_PROBE_FAILED';",
+  "            const safe=/^(APP_NATIVE_AUTH_HTTP_\\d{3}|APP_IDENTITY_OR_PERMISSIONS_UNPROVEN|APP_INSTALLATION_SCOPE_UNPROVEN|DEDICATED_APP_CREDENTIAL_REQUIRED|APP_RSA_KEY_REQUIRED|APP_PRIVATE_KEY_PARSE_FAILED|APP_JWT_SIGN_FAILED|APP_NATIVE_NETWORK_FAILED|APP_NATIVE_RESPONSE_INVALID|APP_PROBE_CONTRACT_MISMATCH)$/.test(code)?code:'APP_PROBE_FAILED';",
   "            console.error(safe);process.exitCode=1;",
   "          }",
   "          NODE",
