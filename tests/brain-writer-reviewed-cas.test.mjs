@@ -93,7 +93,9 @@ test('uncertain transport outcome never automatically releases original writer l
 });
 
 function durableFixture(){
- const i={...readIntent,intentDigest:'9'.repeat(64)},calls=[];
+ const i={...readIntent},calls=[];
+ const canonical={repository:i.repository,state:i.state,prNumber:i.prNumber,head:i.head,main:i.main,branch:i.branch,obligation:i.obligation,holder:i.holder,manifestSha256:i.manifestSha256,generation:i.generation,revision:i.revision,commit:i.commit,tree:i.tree};
+ i.intentDigest=recoveryHash('sha256').update(JSON.stringify(canonical)).digest('hex');
  const row={repository:i.repository,generation:String(i.generation),revision:String(i.revision),holder:i.holder,pr_number:String(i.prNumber),
  head_sha:i.head,main_sha:i.main,branch:i.branch,obligation:i.obligation,commit_sha:i.commit,tree_sha:i.tree,
  manifest_digest:i.manifestSha256,intent_digest:i.intentDigest,evidence_digest:i.intentDigest,state:'prewrite_pending'};
@@ -108,6 +110,8 @@ function durableFixture(){
 for(const [name,change,expected,count] of [
  ['exact',()=>{},'PREWRITE_DURABLE_INTENT_OBSERVED_OWNER_REVIEW',2],
  ['missing digest',f=>{delete f.i.intentDigest},'PREWRITE_INPUT_UNPROVEN',0],
+ ['valid-shaped wrong digest',f=>{f.i.intentDigest='9'.repeat(64)},'PREWRITE_INTENT_DIGEST_MISMATCH',0],
+ ['intent changed after digest',f=>{f.i.obligation='other'},'PREWRITE_INTENT_DIGEST_MISMATCH',0],
  ['invalid revision',f=>{f.i.revision=1},'PREWRITE_INPUT_UNPROVEN',0],
  ['prepare timeout',f=>{f.state.failure=1},'PREWRITE_PREPARE_UNCONFIRMED',1],
  ['wrong prepare revision',f=>{f.state.prepare[0].revision=3},'PREWRITE_PREPARE_UNCONFIRMED',1],
@@ -155,4 +159,13 @@ for(const [name,change,state,providerState,count] of [
  assert.equal(r.state,state);assert.equal(r.providerState,providerState);assert.equal(f.calls.length,count);
  assert.ok(f.calls.every(c=>/^select i\.repository/.test(c.sql)&&!c.sql.includes('clock_timestamp')&&!c.sql.includes('.prepare_prewrite(')));
  for(const v of [r.mutationAuthority,r.releaseAuthorized,r.retryAuthorized,r.mergeAuthorized])assert.equal(v,false);
+});
+
+test('canonical prewrite digest is independent of caller property order',async()=>{
+ const f=durableFixture();
+ const reordered=Object.fromEntries(Object.entries(f.i).reverse());
+ const r=await prepareReviewedPrewrite({intent:reordered,authorizedPgQuery:f.query});
+ assert.equal(r.state,'PREWRITE_DURABLE_INTENT_OBSERVED_OWNER_REVIEW');
+ assert.equal(f.calls.length,2);
+ assert.equal(f.calls[0].args[12],f.i.intentDigest);
 });

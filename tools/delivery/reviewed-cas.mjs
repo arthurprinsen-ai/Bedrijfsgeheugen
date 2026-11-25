@@ -7,6 +7,11 @@ const HASH=/^[a-f0-9]{64}$/;
 const positive=n=>Number.isSafeInteger(n)&&n>0;
 const safeInteger=n=>typeof n==='string'&&/^[1-9]\d*$/.test(n)?Number(n):n;
 const REPO='arthurprinsen-ai/Bedrijfsgeheugen';
+// One canonical serialization for preparation, transport and recovery.
+function reviewedIntentDigest(i){
+ const canonical={repository:i.repository,state:i.state,prNumber:i.prNumber,head:i.head,main:i.main,branch:i.branch,obligation:i.obligation,holder:i.holder,manifestSha256:i.manifestSha256,generation:i.generation,revision:i.revision,commit:i.commit,tree:i.tree};
+ return createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
+}
 function requireCondition(ok,code){if(ok!==true)throw Error(code);}
 export async function publishReviewedUnion({manifest,preflight,prepared,holder,authorizedPgQuery,github,slot,transport,ttlSeconds=120}){
  const head=manifest?.expectedHead, main=preflight?.executionMainSha, branch=manifest?.branch, obligation=manifest?.obligation;
@@ -47,7 +52,7 @@ export async function publishReviewedUnion({manifest,preflight,prepared,holder,a
    const pendingRevision=revision+1;
    requireCondition(positive(pendingRevision),'PREWRITE_REVISION_INVALID');
    const intent={repository:REPO,state:'prewrite_pending',...expected,generation,revision:pendingRevision,commit:prepared.commit,tree:prepared.tree};
-   const intentDigest=createHash('sha256').update(JSON.stringify(intent)).digest('hex');
+   const intentDigest=reviewedIntentDigest(intent);
    prepareAttempted=true;
    const proof=await prepareReviewedPrewrite({intent:{...intent,intentDigest},authorizedPgQuery});
    requireCondition(proof.state==='PREWRITE_DURABLE_INTENT_OBSERVED_OWNER_REVIEW',proof.state);
@@ -144,6 +149,7 @@ export async function prepareReviewedPrewrite({intent,authorizedPgQuery}={}) {
   return result('PREWRITE_INPUT_UNPROVEN');
  if(typeof authorizedPgQuery!=='function')return result('PREWRITE_SQL_ADAPTER_REQUIRED');
  const i=Object.freeze({...intent});
+ if(reviewedIntentDigest(i)!==i.intentDigest)return result('PREWRITE_INTENT_DIGEST_MISMATCH');
  const numberEquals=(value,expected)=>value===expected||(typeof value==='string'&&/^[1-9][0-9]*$/.test(value)&&value===String(expected));
  try {
   const rows=await authorizedPgQuery(
@@ -185,8 +191,7 @@ export async function recoverReviewedPrewrite({intent,authorizedPgQuery,github}=
  if(typeof authorizedPgQuery!=='function')return hold('RECOVERY_SQL_ADAPTER_REQUIRED');
  const i=Object.freeze({...intent});
  // Reconstruct the exact canonical write-intent serialization, not caller property order.
- const canonical={repository:i.repository,state:i.state,prNumber:i.prNumber,head:i.head,main:i.main,branch:i.branch,obligation:i.obligation,holder:i.holder,manifestSha256:i.manifestSha256,generation:i.generation,revision:i.revision,commit:i.commit,tree:i.tree};
- if(createHash('sha256').update(JSON.stringify(canonical)).digest('hex')!==i.intentDigest)return hold('RECOVERY_INTENT_DIGEST_MISMATCH');
+ if(reviewedIntentDigest(i)!==i.intentDigest)return hold('RECOVERY_INTENT_DIGEST_MISMATCH');
  const query=()=>authorizedPgQuery(
  `select i.repository,i.generation,i.revision,i.holder,i.pr_number,i.head_sha,i.main_sha,i.branch,i.obligation,i.commit_sha,i.tree_sha,i.manifest_digest,i.intent_digest,e.evidence_digest,r.state
  from delivery_control.promotion_prewrite_intent i
