@@ -71,3 +71,52 @@ wait "$a"; ea=$?; wait "$b"; eb=$?
 set -e
 if [[ "$ea" -eq 0 && "$eb" -ne 0 ]]; then :; elif [[ "$eb" -eq 0 && "$ea" -ne 0 ]]; then :; else echo 'Exactly one promotion reservation must win' >&2; exit 1; fi
 echo "POSTGRES_PROMOTION_RESERVATION_REPLAY_PASSED"
+
+
+# Exact prewrite CAS race in the existing disposable service. Both processes
+# use the same generation/revision; different prepared objects cannot both win.
+IFS='|' read -r gen rev holder pr head epoch manifest < <(
+ psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At -F '|' -c "SELECT generation,revision,holder,pr_number,head_sha,main_sha,manifest_digest FROM delivery_control.promotion_reservation WHERE repository='arthurprinsen-ai/Bedrijfsgeheugen' AND state='reserved'"
+)
+[[ "$gen" =~ ^[1-9][0-9]*$ && "$rev" =~ ^[1-9][0-9]*$ && "$holder" =~ ^github-actions:[0-9]+:[0-9]+$ && "$pr" =~ ^[1-9][0-9]*$ && "$head" =~ ^[a-f0-9]{40}$ && "$epoch" =~ ^[a-f0-9]{40}$ && "$manifest" =~ ^[a-f0-9]{64}$ ]]
+prewrite_race() {
+ local digit="$1" tree_digit="$2"
+ psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At \
+   -v gen="$gen" -v rev="$rev" -v holder="$holder" -v pr="$pr" \
+   -v head="$head" -v epoch="$epoch" -v manifest="$manifest" \
+   -v digit="$digit" -v tree_digit="$tree_digit" <<'SQL'
+BEGIN;
+SELECT revision FROM delivery_control.prepare_prewrite('arthurprinsen-ai/Bedrijfsgeheugen', :'holder', :'gen'::bigint, :'rev'::bigint, :'pr'::bigint, :'head', :'epoch', :'manifest', 'review/prewrite-race', 'fixture-obligation', repeat(:'digit',40), repeat(:'tree_digit',40),repeat('e',64));
+SELECT pg_sleep(0.25);
+COMMIT;
+SQL
+}
+set +e
+prewrite_race c a >"$tmp/prewrite-a" 2>&1 & a=$!
+prewrite_race d b >"$tmp/prewrite-b" 2>&1 & b=$!
+wait "$a"; ea=$?; wait "$b"; eb=$?
+set -e
+if [[ "$ea" -eq 0 && "$eb" -ne 0 ]]; then
+ grep -q 'PREWRITE_IDENTITY_CAS_MISMATCH' "$tmp/prewrite-b"
+elif [[ "$eb" -eq 0 && "$ea" -ne 0 ]]; then
+ grep -q 'PREWRITE_IDENTITY_CAS_MISMATCH' "$tmp/prewrite-a"
+else
+ echo 'Exactly one prewrite claimant must win' >&2; exit 1
+fi
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 <<'SQL'
+DO $$
+DECLARE r delivery_control.promotion_reservation%ROWTYPE; i delivery_control.promotion_prewrite_intent%ROWTYPE;
+BEGIN
+ SELECT * INTO STRICT r FROM delivery_control.promotion_reservation WHERE repository='arthurprinsen-ai/Bedrijfsgeheugen';
+ SELECT * INTO STRICT i FROM delivery_control.promotion_prewrite_intent WHERE repository=r.repository AND generation=r.generation;
+ IF r.state<>'prewrite_pending' OR i.revision<>r.revision OR i.holder<>r.holder OR i.head_sha<>r.head_sha OR i.main_sha<>r.main_sha OR i.manifest_digest<>r.manifest_digest OR i.obligation<>'fixture-obligation'
+ OR NOT ((i.commit_sha=repeat('c',40) AND i.tree_sha=repeat('a',40)) OR (i.commit_sha=repeat('d',40) AND i.tree_sha=repeat('b',40))) THEN RAISE EXCEPTION 'prewrite winner identity mismatch'; END IF;
+ IF (SELECT count(*) FROM delivery_control.promotion_reservation_event e WHERE e.repository=r.repository AND e.generation=r.generation AND e.action='prepare_prewrite')<>1 THEN RAISE EXCEPTION 'duplicate prewrite event'; END IF;
+ UPDATE delivery_control.promotion_reservation SET valid_until=clock_timestamp()-interval '1 second' WHERE repository=r.repository;
+ BEGIN
+ PERFORM delivery_control.reserve_promotion(r.repository,'github-actions:5:1',5,repeat('5',40),r.main_sha,r.manifest_digest,30,repeat('e',64));
+ RAISE EXCEPTION 'unresolved prewrite taken over';
+ EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'PROMOTION_RESERVATION_BUSY' THEN RAISE; END IF; END;
+END $$;
+SQL
+echo "POSTGRES_EXACT_PREWRITE_RACE_PASSED"
