@@ -122,6 +122,18 @@ IFS='|' read -r gen rev holder pr head epoch manifest < <(
  psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At -F '|' -c "SELECT generation,revision,holder,pr_number,head_sha,main_sha,manifest_digest FROM delivery_control.promotion_reservation WHERE repository='arthurprinsen-ai/Bedrijfsgeheugen' AND state='reserved'"
 )
 [[ "$gen" =~ ^[1-9][0-9]*$ && "$rev" =~ ^[1-9][0-9]*$ && "$holder" =~ ^github-actions:[0-9]+:[0-9]+$ && "$pr" =~ ^[1-9][0-9]*$ && "$head" =~ ^[a-f0-9]{40}$ && "$epoch" =~ ^[a-f0-9]{40}$ && "$manifest" =~ ^[a-f0-9]{64}$ ]]
+# Use the same canonical intent serialization as the reviewed runtime, so
+# the winning durable intent can also exercise the recovery adapter below.
+intent_digest() {
+ node --input-type=module - "$gen" "$rev" "$holder" "$pr" "$head" "$epoch" "$manifest" "$1" "$2" <<'NODE'
+import {createHash} from 'node:crypto';
+const [g,r,holder,pr,head,main,manifestSha256,c,t]=process.argv.slice(2);
+const intent={repository:'arthurprinsen-ai/Bedrijfsgeheugen',state:'prewrite_pending',prNumber:Number(pr),head,main,branch:'review/prewrite-race',obligation:'fixture-obligation',holder,manifestSha256,generation:Number(g),revision:Number(r)+1,commit:c.repeat(40),tree:t.repeat(40)};
+process.stdout.write(createHash('sha256').update(JSON.stringify(intent)).digest('hex'));
+NODE
+}
+digest_a="$(intent_digest c a)"; digest_b="$(intent_digest d b)"
+[[ "$digest_a" =~ ^[a-f0-9]{64}$ && "$digest_b" =~ ^[a-f0-9]{64}$ ]]
 prewrite_race() {
  local digit="$1" tree_digit="$2" evidence_digit="$3"
  psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At \
@@ -129,22 +141,22 @@ prewrite_race() {
    -v head="$head" -v epoch="$epoch" -v manifest="$manifest" \
    -v digit="$digit" -v tree_digit="$tree_digit" -v evidence_digit="$evidence_digit" <<'SQL'
 BEGIN;
-SELECT revision FROM delivery_control.prepare_prewrite('arthurprinsen-ai/Bedrijfsgeheugen', :'holder', :'gen'::bigint, :'rev'::bigint, :'pr'::bigint, :'head', :'epoch', :'manifest', 'review/prewrite-race', 'fixture-obligation', repeat(:'digit',40), repeat(:'tree_digit',40),repeat(:'evidence_digit',64));
+SELECT revision FROM delivery_control.prepare_prewrite('arthurprinsen-ai/Bedrijfsgeheugen', :'holder', :'gen'::bigint, :'rev'::bigint, :'pr'::bigint, :'head', :'epoch', :'manifest', 'review/prewrite-race', 'fixture-obligation', repeat(:'digit',40), repeat(:'tree_digit',40),:'evidence_digit');
 SELECT pg_sleep(0.25);
 COMMIT;
 SQL
 }
 set +e
-prewrite_race c a e >"$tmp/prewrite-a" 2>&1 & a=$!
-prewrite_race d b f >"$tmp/prewrite-b" 2>&1 & b=$!
+prewrite_race c a "$digest_a" >"$tmp/prewrite-a" 2>&1 & a=$!
+prewrite_race d b "$digest_b" >"$tmp/prewrite-b" 2>&1 & b=$!
 wait "$a"; ea=$?; wait "$b"; eb=$?
 set -e
 if [[ "$ea" -eq 0 && "$eb" -ne 0 ]]; then
  grep -q 'PREWRITE_IDENTITY_CAS_MISMATCH' "$tmp/prewrite-b"
- winner_commit=c; winner_tree=a; winner_evidence=e; winner_log="$tmp/prewrite-a"
+ winner_commit=c; winner_tree=a; winner_evidence="$digest_a"; winner_log="$tmp/prewrite-a"
 elif [[ "$eb" -eq 0 && "$ea" -ne 0 ]]; then
  grep -q 'PREWRITE_IDENTITY_CAS_MISMATCH' "$tmp/prewrite-a"
- winner_commit=d; winner_tree=b; winner_evidence=f; winner_log="$tmp/prewrite-b"
+ winner_commit=d; winner_tree=b; winner_evidence="$digest_b"; winner_log="$tmp/prewrite-b"
 else
  echo 'Exactly one prewrite claimant must win' >&2; exit 1
 fi
@@ -164,7 +176,7 @@ SQL
 )"
 printf -v expected_commit '%040d' 0; expected_commit="${expected_commit//0/$winner_commit}"
 printf -v expected_tree '%040d' 0; expected_tree="${expected_tree//0/$winner_tree}"
-printf -v expected_evidence '%064d' 0; expected_evidence="${expected_evidence//0/$winner_evidence}"
+expected_evidence="$winner_evidence"
 expected="$gen|$next_rev|$holder|$pr|$head|$epoch|$manifest|review/prewrite-race|fixture-obligation|$expected_commit|$expected_tree|$expected_evidence|$expected_evidence"
 [[ "$observed" == "$expected" ]] || { echo 'Durable prewrite intent/event does not match successful session' >&2; exit 1; }
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 <<'SQL'
@@ -184,3 +196,41 @@ BEGIN
 END $$;
 SQL
 echo "POSTGRES_EXACT_PREWRITE_RACE_PASSED"
+
+# Native read-only recovery must work even after the winning reservation expires.
+# GitHub reads are fixture-only here; this test cannot authorize a write or retry.
+(
+ cd "$ROOT"
+ node --input-type=module - "$gen" "$next_rev" "$holder" "$pr" "$head" "$epoch" "$manifest" "$expected_commit" "$expected_tree" "$expected_evidence" <<'NODE'
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {recoverReviewedPrewrite} from './tools/delivery/reviewed-cas.mjs';
+const [g,r,holder,pr,head,main,manifestSha256,commit,tree,intentDigest]=process.argv.slice(2);
+const intent={repository:'arthurprinsen-ai/Bedrijfsgeheugen',state:'prewrite_pending',prNumber:Number(pr),head,main,branch:'review/prewrite-race',obligation:'fixture-obligation',holder,manifestSha256,generation:Number(g),revision:Number(r),commit,tree,intentDigest};
+const psql=sql=>execFileSync('psql',[process.env.DATABASE_URL,'-X','-v','ON_ERROR_STOP=1','-Atq','-c',sql],{encoding:'utf8'}).trim();
+const snapshot=()=>psql("select json_build_array((select json_agg(r order by repository) from delivery_control.promotion_reservation r),(select json_agg(i order by repository,generation) from delivery_control.promotion_prewrite_intent i),(select json_agg(e order by repository,generation,revision) from delivery_control.promotion_reservation_event e))");
+const before=snapshot();
+let calls=0,branchHead=head;
+const query=async(sql,args)=>{
+ assert.match(sql,/^select i\.repository/);
+ assert.deepEqual(args,[intent.repository,intent.generation]);
+ calls++;
+ // Both values are exact test fixtures, not general-purpose SQL interpolation.
+ const q=sql.replace('$1',"'arthurprinsen-ai/Bedrijfsgeheugen'").replace('$2',String(intent.generation));
+ return JSON.parse(psql("begin read only; select coalesce(json_agg(x),'[]'::json) from ("+q+") x; commit;"));
+};
+const github={readReviewedPR:async()=>({number:intent.prNumber,open:true,headSha:branchHead,baseSha:main,branch:intent.branch,obligation:intent.obligation}),readHead:async b=>b==='main'?main:branchHead,readCommit:async()=>({sha:commit,tree,parents:[head,main]})};
+const check=async(i,expected,provider,n)=>{
+ calls=0;const result=await recoverReviewedPrewrite({intent:i,authorizedPgQuery:query,github});
+ assert.equal(result.state,expected);assert.equal(result.providerState,provider);assert.equal(calls,n);
+ for(const k of ['mutationAuthority','releaseAuthorized','retryAuthorized','mergeAuthorized'])assert.equal(result[k],false);
+};
+assert.equal(psql("select (valid_until<clock_timestamp())::text from delivery_control.promotion_reservation"),'true');
+await check(intent,'RECOVERY_READBACK_OWNER_REVIEW','UNCHANGED_HEAD_UNRESOLVED',2);
+branchHead=commit;
+await check(intent,'RECOVERY_READBACK_OWNER_REVIEW','EXPECTED_COMMIT_VISIBLE_CAUSALITY_UNPROVEN',2);
+await check({...intent,intentDigest:'0'.repeat(64)},'RECOVERY_INTENT_DIGEST_MISMATCH',undefined,0);
+assert.equal(snapshot(),before);
+console.log('POSTGRES_READ_ONLY_PENDING_RECOVERY_PASSED');
+NODE
+)
