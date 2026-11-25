@@ -1,0 +1,5 @@
+# Protected release App authentication proof
+
+25 November 2026. Original #4661. Stage exact reviewed identity module and regression from #6179 separately so real credentials can be tested on protected main without shipping incomplete writer code. Environment `powerhouse-release-controller` is main-only, admin bypass disabled. The existing supervisor has an explicit manual read-only probe, isolated from scheduled recovery and patch handoff. Job checkout is immutable, no persisted credentials, no status/ref mutations and no key/JWT output. App ID 5916428. Existing permission checks, repository scope and native evidence are mandatory. A successful probe is identity proof only, not exclusive provider fence, installation-token authority or release grant. Protected Required/CodeQL, merge and native manual run are due. Do not duplicate scheduler or change branch protection. Original #6179 owner must reconcile the identical staged files on main; no changes to original draft in this release.
+
+Source: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6179#issuecomment-7155734043
