@@ -3,6 +3,49 @@ set -euo pipefail
 : "${DATABASE_URL:?Must use an isolated disposable PostgreSQL 17 database}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f "$ROOT/docs/delivery/sql/repository-writer-fenced-lease.sql" >/dev/null
+# Exercise the legacy schema upgrade on the same disposable service, in a
+# transaction that restores the pristine test state and never touches live data.
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -v sql_file="$ROOT/docs/delivery/sql/repository-writer-fenced-lease.sql" <<'SQL'
+BEGIN;
+ALTER TABLE delivery_control.promotion_reservation DROP CONSTRAINT promotion_reservation_state_check,
+ ADD CONSTRAINT promotion_reservation_state_check CHECK (state IN ('reserved','grant_pending','granted','revoke_pending','idle'));
+SELECT * FROM delivery_control.reserve_promotion('arthurprinsen-ai/Bedrijfsgeheugen','github-actions:99:1',99,repeat('1',40),repeat('2',40),repeat('a',64),120,repeat('b',64));
+CREATE TEMP TABLE expected_reservation AS SELECT * FROM delivery_control.promotion_reservation;
+CREATE TEMP TABLE expected_events AS SELECT * FROM delivery_control.promotion_reservation_event;
+\i :sql_file
+DO $$
+BEGIN
+ IF EXISTS (SELECT * FROM expected_reservation EXCEPT SELECT * FROM delivery_control.promotion_reservation) OR EXISTS (SELECT * FROM delivery_control.promotion_reservation EXCEPT SELECT * FROM expected_reservation) THEN RAISE EXCEPTION 'upgrade changed reservation'; END IF;
+ IF EXISTS (SELECT * FROM expected_events EXCEPT SELECT * FROM delivery_control.promotion_reservation_event) OR EXISTS (SELECT * FROM delivery_control.promotion_reservation_event EXCEPT SELECT * FROM expected_events) THEN RAISE EXCEPTION 'upgrade changed audit events'; END IF;
+END $$;
+SELECT * FROM delivery_control.prepare_prewrite('arthurprinsen-ai/Bedrijfsgeheugen','github-actions:99:1',1,1,99,repeat('1',40),repeat('2',40),repeat('a',64),'review/upgrade','fixture-upgrade',repeat('c',40),repeat('d',40),repeat('e',64));
+CREATE TEMP TABLE expected_pending AS SELECT * FROM delivery_control.promotion_reservation;
+CREATE TEMP TABLE expected_intents AS SELECT * FROM delivery_control.promotion_prewrite_intent;
+CREATE TEMP TABLE expected_pending_events AS SELECT * FROM delivery_control.promotion_reservation_event;
+\i :sql_file
+DO $$
+BEGIN
+ IF EXISTS (SELECT * FROM expected_pending EXCEPT SELECT * FROM delivery_control.promotion_reservation) OR EXISTS (SELECT * FROM delivery_control.promotion_reservation EXCEPT SELECT * FROM expected_pending) THEN RAISE EXCEPTION 'reapply changed pending reservation'; END IF;
+ IF EXISTS (SELECT * FROM expected_intents EXCEPT SELECT * FROM delivery_control.promotion_prewrite_intent) OR EXISTS (SELECT * FROM delivery_control.promotion_prewrite_intent EXCEPT SELECT * FROM expected_intents) THEN RAISE EXCEPTION 'reapply changed pending intent'; END IF;
+ IF EXISTS (SELECT * FROM expected_pending_events EXCEPT SELECT * FROM delivery_control.promotion_reservation_event) OR EXISTS (SELECT * FROM delivery_control.promotion_reservation_event EXCEPT SELECT * FROM expected_pending_events) THEN RAISE EXCEPTION 'reapply changed pending events'; END IF;
+END $$;
+ROLLBACK;
+SQL
+echo "POSTGRES_LEGACY_UPGRADE_AND_REAPPLY_PASSED"
+# Unknown constraint must fail closed; connection exit rolls back its transaction.
+set +e
+drift_output="$(psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -v sql_file="$ROOT/docs/delivery/sql/repository-writer-fenced-lease.sql" 2>&1 <<'SQL'
+BEGIN;
+ALTER TABLE delivery_control.promotion_reservation DROP CONSTRAINT promotion_reservation_state_check,
+ ADD CONSTRAINT promotion_reservation_state_check CHECK (state IN ('reserved','idle'));
+\i :sql_file
+ROLLBACK;
+SQL
+)"
+drift_exit=$?
+set -e
+[[ "$drift_exit" -ne 0 && "$drift_output" == *UNRECOGNIZED_PROMOTION_STATE_CONSTRAINT* ]] || { echo 'Unknown state constraint not rejected' >&2; exit 1; }
+echo "POSTGRES_UNKNOWN_CONSTRAINT_DENIAL_PASSED"
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $$
 DECLARE g1 bigint;g2 bigint;a text:=repeat('1',64);b text:=repeat('2',64);
