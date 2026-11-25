@@ -89,6 +89,21 @@ CREATE TABLE IF NOT EXISTS delivery_control.promotion_reservation (
  manifest_digest text NOT NULL CHECK (manifest_digest ~ '^[0-9a-f]{64}$'),
  valid_until timestamptz NOT NULL
 );
+-- Upgrade only the known legacy state check; reject unexpected schema drift.
+DO $upgrade$
+DECLARE observed text;
+BEGIN
+ LOCK TABLE delivery_control.promotion_reservation IN ACCESS EXCLUSIVE MODE;
+ SELECT pg_get_constraintdef(oid) INTO STRICT observed FROM pg_constraint
+ WHERE conrelid='delivery_control.promotion_reservation'::regclass
+ AND conname='promotion_reservation_state_check' AND contype='c' AND convalidated;
+ IF observed = $old$CHECK ((state = ANY (ARRAY['reserved'::text, 'grant_pending'::text, 'granted'::text, 'revoke_pending'::text, 'idle'::text])))$old$ THEN
+  ALTER TABLE delivery_control.promotion_reservation DROP CONSTRAINT promotion_reservation_state_check,
+   ADD CONSTRAINT promotion_reservation_state_check CHECK (state IN ('reserved','prewrite_pending','grant_pending','granted','revoke_pending','idle'));
+ ELSIF observed <> $new$CHECK ((state = ANY (ARRAY['reserved'::text, 'prewrite_pending'::text, 'grant_pending'::text, 'granted'::text, 'revoke_pending'::text, 'idle'::text])))$new$ THEN
+  RAISE EXCEPTION 'UNRECOGNIZED_PROMOTION_STATE_CONSTRAINT';
+ END IF;
+END $upgrade$;
 CREATE TABLE IF NOT EXISTS delivery_control.promotion_reservation_event (
  repository text NOT NULL,
  generation bigint NOT NULL,
