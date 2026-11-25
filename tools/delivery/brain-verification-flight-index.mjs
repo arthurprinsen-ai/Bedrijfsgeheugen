@@ -44,6 +44,11 @@ export function classifyOriginalBrainFlightPages(pages,expectedTitle,{since=null
       Date.parse(run.created_at)>=Date.parse(since)));
   if(!complete)return {status:'PROVIDER_HISTORY_INCOMPLETE',complete:false,
     observed_rows:rows.length,provider_total:total,safe_to_dispatch:false};
+  // Time-bounded provider query is filtered by main + workflow_dispatch.
+  // Contradictory rows cannot establish complete scoped inventory.
+  if(since!==null&&rows.some(run=>run.event!=='workflow_dispatch'||run.head_branch!=='main'))
+    return {status:'PROVIDER_HISTORY_INCOMPLETE',complete:false,
+      observed_rows:rows.length,provider_total:total,safe_to_dispatch:false};
   const matches=rows.filter(run=>run.event==='workflow_dispatch'&&run.head_branch==='main'&&
     run.display_title===expectedTitle);
   matches.sort((a,z)=>String(z.created_at||'').localeCompare(String(a.created_at||''))||z.id-a.id);

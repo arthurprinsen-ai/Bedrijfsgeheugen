@@ -17,3 +17,35 @@ test('active dispatch with missing event or branch fails closed',()=>{for(const 
 test('case-variant titles never establish exact identity or safe absence',()=>{for(const display_title of [title.toLowerCase(),title.slice(0,-40)+title.slice(-40).toUpperCase()])for(const status of ['queued','completed']){const p=index([{...generic,display_title,status}]);assert.equal(p.safe_to_dispatch,false);assert.equal(p.run_id,undefined);}});
 test('exact title with missing provider identity metadata is not proof even on completion',()=>{for(const r of [{...generic,display_title:title,status:'completed',event:undefined},{...generic,display_title:title,status:'completed',head_branch:undefined}]){const p=index([r]);assert.equal(p.safe_to_dispatch,false);assert.equal(p.run_id,undefined);}});
 test('known unrelated branch and push event retain existing independent eligibility',()=>{for(const r of [{...generic,head_branch:'other-branch'},{...generic,event:'push'}])assert.equal(index([r]).safe_to_dispatch,true);});
+
+const scopedSince='2026-11-25T16:00:00Z';
+const scopedIndex=rows=>classify([{total_count:rows.length,workflow_runs:rows}],title,{since:scopedSince});
+for(const [name,change] of [
+  ['unknown event',{event:'unknown'}],
+  ['trailing event',{event:'workflow_dispatch '}],
+  ['uppercase event',{event:'WORKFLOW_DISPATCH'}],
+  ['trailing branch',{head_branch:'main '}],
+  ['push event',{event:'push'}],
+  ['other branch',{head_branch:'other-branch'}],
+  ['completed exact unknown event',{event:'unknown',display_title:title,status:'completed'}]
+])test('scoped inventory rejects '+name,()=>{
+  const r=scopedIndex([{...generic,...change}]);
+  assert.equal(r.status,'PROVIDER_HISTORY_INCOMPLETE');
+  assert.equal(r.complete,false);
+  assert.equal(r.safe_to_dispatch,false);
+  assert.equal(r.run_id,undefined);
+});
+test('scoped controls preserve valid empty, unrelated exact and existing flights',()=>{
+  assert.equal(scopedIndex([]).safe_to_dispatch,true);
+  assert.equal(scopedIndex([{...generic,display_title:'BRAIN delivery PR #9999 '+('a'.repeat(40))}]).safe_to_dispatch,true);
+  assert.equal(scopedIndex([{...generic,display_title:title}]).run_id,generic.id);
+  assert.equal(scopedIndex([generic]).safe_to_dispatch,false);
+});
+test('scoped missing or contradictory metadata withholds even exact identity',()=>{
+  for(const change of [{event:undefined},{head_branch:undefined},{event:'push'}]){
+    const r=scopedIndex([{...generic,...change},{...generic,id:generic.id+1,display_title:title}]);
+    assert.equal(r.status,'PROVIDER_HISTORY_INCOMPLETE');
+    assert.equal(r.safe_to_dispatch,false);
+    assert.equal(r.run_id,undefined);
+  }
+});
