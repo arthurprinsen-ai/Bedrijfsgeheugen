@@ -19,3 +19,9 @@ test('conservative reserve survives delayed provider visibility and rising press
   if(remaining>0)assert.ok(pressure+3*remaining<=10);
  }
 });
+
+import {evaluateLearningSemantics} from '../scripts/brain/material-writeback-closure-guard.mjs';
+test('runtime learning satisfies existing semantic closure contract',()=>{
+ const result=evaluateLearningSemantics({learningFiles:['brain/learning/2026-11-27-adaptive-recovery-runtime.json']});
+ assert.equal(result.ok,true,JSON.stringify(result.missing));
+});
