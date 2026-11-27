@@ -4,10 +4,10 @@ import {readFileSync} from 'node:fs';
 import {reconcile} from '../tools/delivery/branch-reconciler.mjs';
 const workflow=readFileSync('.github/workflows/powerhouse-repository-janitor.yml','utf8');
 const oldHead='a'.repeat(40),newHead='b'.repeat(40),main='c'.repeat(40);
-const pr=(changes={})=>({number:1,state:'open',draft:false,head:{sha:oldHead,repo:{full_name:'fixture/repo'}},base:{sha:main},labels:[{name:'autonomous-sync'}],...changes});
+const pr=(changes={})=>({number:1,state:'open',draft:false,head:{sha:oldHead,repo:{full_name:'fixture/repo'}},base:{sha:main},body:null,labels:[{name:'autonomous-sync'}],...changes});
 async function simulate(listed,{latest=listed[0],fresh=pr({head:{sha:newHead,repo:{full_name:'fixture/repo'}}}),error=null}={}){
   let gets=0,compares=0;const requests=[];
-  const github={paginate:async()=>listed,rest:{pulls:{list(){},get:async()=>({data:gets++===0?latest:fresh})},repos:{compareCommits:async()=>({data:{ahead_by:compares++===0?1:0}})}},request:async(route,body)=>{requests.push({route,body});if(error)throw error;}};
+  const github={paginate:async()=>listed,rest:{pulls:{list(){},get:async()=>({data:gets++<2?latest:fresh})},repos:{compareCommits:async()=>({data:{ahead_by:compares++===0?1:0}})}},request:async(route,body)=>{requests.push({route,body});if(error)throw error;}};
   const report=await reconcile({github,owner:'fixture',repo:'repo',maxPolls:2,logger:{warn(){}}});
   return {report,requests};
 }

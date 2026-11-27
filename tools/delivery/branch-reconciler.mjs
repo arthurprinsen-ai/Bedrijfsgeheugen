@@ -10,6 +10,16 @@ export function classifyError(error) {
   if (/timeout|ECONNRESET|ETIMEDOUT/i.test(msg)) return 'RETRYABLE_NETWORK';
   return 'UNKNOWN_BLOCKER';
 }
+// Generic enrollment is not a writer lease. Never mutate a candidate that declares
+// any writer/retirement metadata: the original lease supervisor owns MAIN_SYNC.
+export function genericSyncBlocker(pr) {
+  if (pr.body !== null && typeof pr.body !== 'string') return 'PR_BODY_UNPROVEN';
+  if (/^[\t ]*(?:Writer-Lease(?:-[\w-]+)?|Retirement-State)[\t ]*:/im.test(pr.body || '')) return 'OWNER_LEASE_SUPERVISOR_REQUIRED';
+  return null;
+}
+function enrolled(pr, owner, repo, label) {
+  return pr.state === 'open' && !pr.draft && pr.head.repo?.full_name === owner+'/'+repo && (pr.labels||[]).some(x=>x.name===label);
+}
 export async function reconcile({github, owner, repo, logger = console, enrolledLabel = 'autonomous-sync', wait = async()=>{}, maxPolls = 8}) {
   const report = {updated:[],current:[],blocked:[],skipped:[],pending:[]};
   const prs = await github.paginate(github.rest.pulls.list, {owner,repo,state:'open',base:'main',per_page:100});
@@ -23,8 +33,20 @@ export async function reconcile({github, owner, repo, logger = console, enrolled
       if(latest.state!=='open' || latest.draft || latest.head.repo?.full_name!==owner+'/'+repo || !(latest.labels||[]).some(x=>x.name===enrolledLabel)) {
         report.skipped.push(id); continue;
       }
+      const blocker=genericSyncBlocker(latest);
+      if(blocker) { report.blocked.push({pr:id,reason:blocker}); continue; }
       const before=(await github.rest.repos.compareCommits({owner,repo,base:latest.head.sha,head:latest.base.sha})).data;
       if(before.ahead_by===0) { report.current.push({pr:id,head:latest.head.sha,base:latest.base.sha}); continue; }
+      // Re-read after comparison; an enrolled branch can acquire a lease or move
+      // while the provider comparison is running. Never synthesize lease transitions.
+      const prewrite=(await github.rest.pulls.get({owner,repo,pull_number:id})).data;
+      const prewriteBlocker=genericSyncBlocker(prewrite);
+      if(prewriteBlocker || !enrolled(prewrite,owner,repo,enrolledLabel) ||
+         prewrite.head.sha!==latest.head.sha || prewrite.base.sha!==latest.base.sha ||
+         prewrite.body!==latest.body) {
+        report.blocked.push({pr:id,reason:prewriteBlocker || 'PREWRITE_IDENTITY_CHANGED'});
+        continue;
+      }
       await github.request('PUT /repos/{owner}/{repo}/pulls/{pull_number}/update-branch', {
         owner,repo,pull_number:id,expected_head_sha:latest.head.sha
       });
