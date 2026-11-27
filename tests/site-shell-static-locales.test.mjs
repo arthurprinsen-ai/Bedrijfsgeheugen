@@ -8,7 +8,9 @@ test('static locale routes are built and language switching navigates between th
   const netlify = fs.readFileSync('netlify.toml','utf8');
   const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
 
-  assert.equal(pkg.dependencies.parse5,'7.2.1');
+  assert.equal(pkg.dependencies.parse5,'8.1.1');
+  assert.equal(pkg.dependencies['@netlify/blobs'],'11.1.11');
+  assert.equal(pkg.dependencies['@netlify/identity'],'2.0.1');
   assert.match(netlify,/build-localized-routes\.mjs/);
   assert.match(build,/const LOCALES = \['nl','en'\]/);
   assert.match(build,/hreflang/);
