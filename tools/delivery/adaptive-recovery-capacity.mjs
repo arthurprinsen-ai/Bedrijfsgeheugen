@@ -27,7 +27,10 @@ import {evidenceIds,GHOST_INCIDENT} from '../../.github/scripts/github-actions-g
 const statuses={queued:'queued',inProgress:'in_progress',pending:'pending',waiting:'waiting',requested:'requested'};
 const validSha=s=>typeof s==='string'&&/^[a-f0-9]{40}$/.test(s);
 const validId=id=>Number.isSafeInteger(id)&&id>0;
-const same=(a,b)=>a.id===b.id&&a.head_sha===b.head_sha&&a.head_branch===b.head_branch&&a.created_at===b.created_at&&a.updated_at===b.updated_at&&a.status===b.status&&a.conclusion===b.conclusion;
+const sameIdentity=(a,b)=>a.id===b.id&&a.head_sha===b.head_sha&&a.head_branch===b.head_branch&&a.created_at===b.created_at&&a.status===b.status&&a.conclusion===b.conclusion;
+// Queued ghost credit requires unchanged timestamps. Nonqueued progress updates
+// do not change occupied capacity; exact IDs/status/head must still match.
+const same=(a,b)=>sameIdentity(a,b)&&a.updated_at===b.updated_at;
 
 // Read-only adapter: callers supply a native GET function. All proof is fresh,
 // bounded and independently correlated. No mutation method or authority.
@@ -93,7 +96,8 @@ export async function collectRecoveryQueueEvidence({read,repo,now=()=>Date.now()
  // Re-read queue and protected heads so races cannot manufacture ghost credit.
  for(const [key,status] of Object.entries(statuses)){
   const again=await readStatus(status),prior=inventory[key],second=new Map(again.map(x=>[x.id,x]));
-  if(again.length!==prior.length||prior.some(x=>!second.has(x.id)||!same(x,second.get(x.id))))throw new Error('RECOVERY_QUEUE_CHANGED');
+  const match=status==='queued'?same:sameIdentity;
+  if(again.length!==prior.length||prior.some(x=>!second.has(x.id)||!match(x,second.get(x.id))))throw new Error('RECOVERY_QUEUE_CHANGED');
  }
  if(await readMain()!==currentMainSha||JSON.stringify(await readHeads())!==JSON.stringify(openPrHeadShas))throw new Error('RECOVERY_AUTHORITY_EPOCH_CHANGED');
  if(now()-started>45_000)throw new Error('RECOVERY_QUEUE_READ_BUDGET');

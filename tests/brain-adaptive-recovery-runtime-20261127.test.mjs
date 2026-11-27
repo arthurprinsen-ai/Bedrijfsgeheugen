@@ -94,6 +94,26 @@ test('read-only native census excludes only independently verified incident ghos
  await assert.rejects(collect(async path=>path.includes('status=queued')?{total_count:5,workflow_runs:[...ghosts.slice(0,4),ghosts[0]]}:read(path)),/RECOVERY_QUEUE_INCOMPLETE/);
  let mainReads=0;
  await assert.rejects(collect(async path=>path==='/git/ref/heads/main'&&++mainReads>1?{object:{sha:'c'.repeat(40)}}:read(path)),/RECOVERY_AUTHORITY_EPOCH_CHANGED/);
+ // Live run 46033525258 advanced only updated_at between native snapshots.
+ let activeReads=0;
+ const progressOnly=await collect(async path=>{
+  const data=await read(path);
+  if(path.includes('status=in_progress')&&++activeReads===2)return {...data,workflow_runs:data.workflow_runs.map(x=>({...x,updated_at:new Date(now).toISOString()}))};
+  return data;
+ });
+ assert.equal(remainingProvenRecoveryCapacity({initial:progressOnly,observed:progressOnly}).remaining,2);
+ let changedReads=0;
+ await assert.rejects(collect(async path=>{
+  const data=await read(path);
+  if(path.includes('status=in_progress')&&++changedReads===2)return {...data,workflow_runs:data.workflow_runs.map((x,i)=>i===0?{...x,id:999}:x)};
+  return data;
+ }),/RECOVERY_QUEUE_CHANGED/);
+ let queuedReads=0;
+ await assert.rejects(collect(async path=>{
+  const data=await read(path);
+  if(path.includes('status=queued')&&++queuedReads===2)return {...data,workflow_runs:data.workflow_runs.map((x,i)=>i===0?{...x,updated_at:new Date(now).toISOString()}:x)};
+  return data;
+ }),/RECOVERY_QUEUE_CHANGED/);
  const stale={...snapshot,queueEvidence:{...snapshot.queueEvidence,now:now+600001}};
  assert.equal(remainingProvenRecoveryCapacity({initial:stale,observed:stale}).remaining,0);
 });
