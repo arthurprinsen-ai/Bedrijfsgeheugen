@@ -1,0 +1,30 @@
+{
+  "fingerprint": "delivery|netlify|regulatory-projection-runtime-classification|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RUNTIME_DEPENDENCY_CLASSIFICATION",
+    "scope": "DELIVERY"
+  },
+  "root_cause": "Canonical source observation belongs to automation delivery lane, but the independently observed browser fetch is absent from both Netlify deployment applicability and terminal production runtime exact-path sets. Native Netlify skipped a real runtime data change.",
+  "prevention_rule": "Classify exact proven browser dependency as hosted in existing canonical classifiers without widening all data paths or changing producer ownership. Required and terminal proofs remain mandatory; future dependency graph discovery must be source verified.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-netlify-runtime-classification-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-netlify-runtime-classification-20261127.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-netlify-runtime-classification-20261127.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6213",
+    "skipped_deploy": "https://app.netlify.com/projects/bedrijfsgeheugen/deploys/6b09a448d2c047526018cd19",
+    "recovered_deploy": "https://app.netlify.com/projects/bedrijfsgeheugen/deploys/6b09a6b09b728cd18580d33c",
+    "recovery_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46027735668",
+    "baseline_isolated": "deploymentRequired=false",
+    "candidate_isolated": "deploymentRequired=true; netlifyRuntimeRequired=true; docs-only=false",
+    "test_evidence": "Isolated V8 actual applicability function with explicit automation-lane fixture and real test-suite selector; full repository Node tests, protected CI and live prevention pending."
+  }
+}
