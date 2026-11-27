@@ -1,0 +1,35 @@
+{
+  "fingerprint": "regulatory-source-watch|material-closure-bundle|45996045356",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The original source producer intentionally writes a narrow one-file projection; protected Required admission separately requires semantic learning, activity ledger and human documentation in the same lineage. Re-running immutable one-file candidate #6201 cannot create those artifacts.",
+  "prevention_rule": "Preserve original exact source blob, raw run provenance and original writer; one canonical recovery successor per observation obligation, no metadata-only retry, no scope or security relaxation. Before publication verify exact source/main identity and complete material closure. Only original authorized owner may adopt and close predecessor after protected release proof.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulation-writer-candidate-mode.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6201",
+    "source_head": "1186a92eb04d3ed3c35250c4e9fa36ee0bfee5d2",
+    "source_blob": "462a0399dd33cdfdbb0f7ee15610d448d221832b",
+    "base_main": "e54300347203d07b61dfb4a22d49d7d7d1400284",
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45996045356",
+    "raw_artifact": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45996045356/artifacts/15195852098",
+    "failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46023997001/job/140590562634",
+    "historical_protected_successor": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2345",
+    "source_provider_raw_independent_readback": "NOT_RUN",
+    "runtime_verified": false
+  }
+}
