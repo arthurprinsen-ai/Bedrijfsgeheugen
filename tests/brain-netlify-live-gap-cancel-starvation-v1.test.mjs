@@ -43,3 +43,13 @@ test('production workflow queues newest pending state but never interrupts deplo
  assert.match(workflow,/forceDeployment:forceDeployment\|\|gap.forceDeployment/);
  assert.match(workflow,/skipDeployment:manual&&!forceDeployment/);
 });
+
+ test('snapshot uses independent source identity and emits RDI status without inventing eligible age',()=>{
+ assert.match(workflow,/publishedSha=await readVerifiedPublishedSha\(\)/);
+ assert.match(workflow,/const driftStatus=releaseDriftStatus\(/);
+ assert.match(workflow,/requiresDeployment:applicability.reason==='explicit-no-deploy'\?undefined:applicability.deploymentRequired/);
+ assert.match(workflow,/eligibleAgeMinutes:null,productionVerified:false/);
+ assert.match(workflow,/NETLIFY_RDI_STATUS/);
+ assert.match(workflow,/cron: '35 6 \* \* \*'/);
+ assert.doesNotMatch(workflow,/release\.json\?reconcile=/);
+});
