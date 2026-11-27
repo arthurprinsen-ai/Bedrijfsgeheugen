@@ -1,6 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { publishedProductionSha } from '../delivery/netlify-live-gap-reconcile.mjs';
+import { readVerifiedPublishedSha } from '../delivery/netlify-live-gap-reconcile.mjs';
 import { deriveNetlifyDeploymentApplicability } from '../delivery/netlify-deployment-applicability.mjs';
 
 let cached = String(process.env.CACHED_COMMIT_REF || '').trim();
@@ -15,11 +15,7 @@ function failOpen(reason) {
 // the real production marker, not the last cached build, before skipping.
 if (process.env.CONTEXT === 'production') {
   try {
-    const response = await fetch('https://www.bedrijfsgeheugen.nl/release.json?ignore=' + encodeURIComponent(commit), {
-      headers: {'cache-control':'no-cache'}, signal: AbortSignal.timeout(6000), redirect:'error'
-    });
-    if (!response.ok) failOpen('production marker unavailable');
-    const published = publishedProductionSha(await response.json());
+    const published = await readVerifiedPublishedSha();
     if (!published) failOpen('production marker identity unverified');
     if (published === commit) {
       console.log('NETLIFY_BUILD_SKIPPED: exact production source already published');
