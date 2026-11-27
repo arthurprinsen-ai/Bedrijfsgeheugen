@@ -308,7 +308,7 @@ jobs:
         run: node scripts/brain/innovation-original-code-delivery.mjs --prepare
       - name: Generate one bounded original engineering code candidate in workspace sandbox
         if: steps.candidate.outputs.selected == 'true'
-        uses: openai/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675 # v1.13 SHA-pinned
+        uses: openai/codex-action@306c6a196a99dcc6582530c396a19d2672d5e9ec # v1.13 SHA-pinned
         with:
           openai-api-key: ${{ secrets.OPENAI_API_KEY }}
           permission-profile: ":workspace"
