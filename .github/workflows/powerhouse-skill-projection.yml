@@ -1,5 +1,5 @@
 name: Powerhouse Skill Projection
-run-name: ${{ github.event_name == 'workflow_dispatch' && format('Skill projection replay PR #{0} {1}', inputs.pr_number, inputs.merge_sha) || 'Powerhouse Skill Projection' }}
+run-name: "${{ github.event_name == 'workflow_dispatch' && format('Skill projection replay PR #{0} {1}', inputs.pr_number, inputs.merge_sha) || 'Powerhouse Skill Projection' }}"
 
 on:
   workflow_dispatch:
@@ -28,6 +28,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   # Supersede stale projection work for the same PR/ref.
