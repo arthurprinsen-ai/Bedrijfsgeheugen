@@ -11,9 +11,10 @@ export function remainingProvenRecoveryCapacity({initial,observed,used=0,initial
  if(!Number.isSafeInteger(used)||used<0||!Number.isSafeInteger(initialBudget)||initialBudget<0||initialBudget>5||used>initialBudget)return hold("INVALID_RESERVATION");
  const read=s=>{
   if(!s||!s.queueEvidence||!["queued","inProgress","pending","waiting","requested"].every(k=>Number.isSafeInteger(s[k])&&s[k]>=0))return null;
-  const p=assessQueuePressure({...s,projectedNewRuns:0,limits:QUEUE_PRESSURE_DEFAULTS});
+  const p=assessQueuePressure({...s,queueEvidence:{...s.queueEvidence,now:observed.queueEvidence?.now},projectedNewRuns:0,limits:QUEUE_PRESSURE_DEFAULTS});
   return p.queueSnapshotInconsistent||!p.allowOptionalDispatch?null:p;
  };
+ if(initial?.queueEvidence?.currentMainSha!==observed?.queueEvidence?.currentMainSha)return hold('AUTHORITY_EPOCH_CHANGED');
  const i=read(initial),o=read(observed);if(!i||!o)return hold("PRESSURE_OR_PROOF_UNVERIFIED");
  const fanout=3,active=Math.max(o.active,i.active+fanout*used),queued=Math.max(o.counts.queued,i.counts.queued+fanout*used);
  const limits=QUEUE_PRESSURE_DEFAULTS;
@@ -90,12 +91,64 @@ export async function collectRecoveryQueueEvidence({read,repo,now=()=>Date.now()
   runProofs.push({incident:GHOST_INCIDENT,runId:id,providerBoundary:'GITHUB_CANONICAL_PROVIDER_BLOCKED',jobsTotalCount:0,runStatus:run.status,runHeadSha:run.head_sha,runCreatedAt:run.created_at,runUpdatedAt:run.updated_at,readbackAt:new Date(now()).toISOString()});
  }
  // Re-read queue and protected heads so races cannot manufacture ghost credit.
- const queuedAgain=await readStatus('queued');
- const second=new Map(queuedAgain.map(x=>[x.id,x]));
- if(queuedAgain.length!==queuedRuns.length||queuedRuns.some(x=>!second.has(x.id)||!same(x,second.get(x.id))))throw new Error('RECOVERY_QUEUE_CHANGED');
+ for(const [key,status] of Object.entries(statuses)){
+  const again=await readStatus(status),prior=inventory[key],second=new Map(again.map(x=>[x.id,x]));
+  if(again.length!==prior.length||prior.some(x=>!second.has(x.id)||!same(x,second.get(x.id))))throw new Error('RECOVERY_QUEUE_CHANGED');
+ }
  if(await readMain()!==currentMainSha||JSON.stringify(await readHeads())!==JSON.stringify(openPrHeadShas))throw new Error('RECOVERY_AUTHORITY_EPOCH_CHANGED');
  if(now()-started>45_000)throw new Error('RECOVERY_QUEUE_READ_BUDGET');
  return {...Object.fromEntries(Object.keys(statuses).map(k=>[k,inventory[k].length])),
   queueEvidence:{queuedRuns,runProofs,currentMainSha,openPrHeadShas,snapshotComplete:true,rawTotalCount:queuedRuns.length,knownUnresolvedQueuedIds,providerIncidentOpen:issue.state==='open',now:now()}};
 }
 
+
+
+import {readFile,writeFile,rename} from 'node:fs/promises';
+import {pathToFileURL} from 'node:url';
+// One supervisor-local reservation journal, not a new writer. Charge every
+// attempted dispatch/CAS before calling the provider; ambiguous results retain
+// their reservation. A new supervisor cycle gets a fresh bounded census.
+export function reserveRecoveryAction(state,observed){
+ if(!state||!Number.isSafeInteger(state.used)||!Number.isSafeInteger(state.limit))
+  return {allowed:false,reason:'RESERVATION_STATE_UNPROVEN'};
+ const plan=remainingProvenRecoveryCapacity({initial:state.initial,observed,used:state.used,initialBudget:state.limit});
+ const limit=Math.min(state.limit,state.used+plan.remaining);
+ return {allowed:plan.remaining>0,reason:plan.reason,plan,
+  state:{...state,limit,used:state.used+(plan.remaining>0?1:0)}};
+}
+async function nativeSnapshot(){
+ const repo=process.env.GITHUB_REPOSITORY,token=process.env.GH_TOKEN||process.env.GITHUB_TOKEN;
+ if(!token)throw new Error('RECOVERY_READ_TOKEN_MISSING');
+ const deadline=AbortSignal.timeout(40_000);
+ return collectRecoveryQueueEvidence({repo,read:async path=>{
+  const response=await fetch('https://api.github.com/repos/'+repo+path,{
+   method:'GET',redirect:'error',cache:'no-store',
+   headers:{authorization:'Bearer '+token,accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'},
+   signal:AbortSignal.any([deadline,AbortSignal.timeout(5000)])
+  });
+  if(!response.ok)throw new Error('RECOVERY_PROVIDER_READ_'+response.status);
+  return response.json();
+ }});
+}
+async function saveState(path,state){
+ await writeFile(path+'.tmp',JSON.stringify(state),{mode:0o600});
+ await rename(path+'.tmp',path);
+}
+async function runCli(){
+ const [mode,path]=process.argv.slice(2);
+ if(!path||!['init','reserve'].includes(mode))throw Error('RECOVERY_CLI_ARGUMENTS');
+ const observed=await nativeSnapshot();
+ if(mode==='init'){
+  const plan=remainingProvenRecoveryCapacity({initial:observed,observed});
+  await saveState(path,{initial:observed,limit:plan.remaining,used:0});
+  console.log(JSON.stringify({remaining:plan.remaining,reason:plan.reason,raw:observed.queued+observed.inProgress+observed.pending+observed.waiting+observed.requested,effective:plan.active??null,verified:observed.queueEvidence.runProofs.length}));
+  return;
+ }
+ const state=JSON.parse(await readFile(path,'utf8'));
+ const next=reserveRecoveryAction(state,observed);
+ if(next.state)await saveState(path,next.state);
+ console.log(JSON.stringify({allowed:next.allowed,reason:next.reason,remaining:next.plan?.remaining??0,used:next.state?.used??0}));
+ if(!next.allowed)process.exitCode=78;
+}
+if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href)
+ runCli().catch(error=>{console.error('RECOVERY_CAPACITY_UNPROVEN:'+String(error?.message||'unknown').replace(/[^A-Za-z0-9_:-]/g,'_').slice(0,120));process.exitCode=78;});

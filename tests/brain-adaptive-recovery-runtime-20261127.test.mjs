@@ -4,11 +4,11 @@ import fs from 'node:fs';
 import {recoveryBudget} from '../tools/delivery/adaptive-recovery-capacity.mjs';
 test('runtime calls canonical capacity and checks reserved pressure before next recovery',()=>{
  const y=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
- assert.ok(y.includes('cycle_budget="$(recovery_budget "$initial_active_runs")"'));
- assert.ok(y.includes('reserved_pressure=$((initial_active_runs + 3 * recovered_prs))'));
- assert.ok(y.includes('remaining="$(recovery_budget "$reserved_pressure")"'));
- assert.ok(y.includes('[ "$candidate_budget" -ge "$cycle_budget" ] || cycle_budget="$candidate_budget"'));
- assert.ok(y.includes('[ "$recovered_prs" -ge "$cycle_budget" ]'));
+ assert.ok(y.includes("adaptive-recovery-capacity.mjs init \"$capacity_state\""));
+ assert.ok(y.includes("adaptive-recovery-capacity.mjs reserve \"$capacity_state\""));
+ assert.ok(y.includes("reserve_recovery_capacity || return 1"));
+ assert.ok(y.includes("reserved_actions=\"$(jq -r '.used' \"$capacity_state\")\""));
+ assert.ok(y.includes("[ \"$reserved_actions\" -ge \"$cycle_budget\" ]"));
  assert.ok(y.includes("ACTIVE_RUN_CIRCUIT_BREAKER: '12'"));
 });
 test('conservative reserve survives delayed provider visibility and rising pressure',()=>{
@@ -96,4 +96,24 @@ test('read-only native census excludes only independently verified incident ghos
  await assert.rejects(collect(async path=>path==='/git/ref/heads/main'&&++mainReads>1?{object:{sha:'c'.repeat(40)}}:read(path)),/RECOVERY_AUTHORITY_EPOCH_CHANGED/);
  const stale={...snapshot,queueEvidence:{...snapshot.queueEvidence,now:now+600001}};
  assert.equal(remainingProvenRecoveryCapacity({initial:stale,observed:stale}).remaining,0);
+});
+
+
+import {reserveRecoveryAction} from '../tools/delivery/adaptive-recovery-capacity.mjs';
+test('reservation journal charges attempted dispatches before provider result and never replenishes mid-cycle',()=>{
+ const now=Date.parse('2026-11-27T16:00:00Z'),sha='a'.repeat(40);
+ const s={queued:0,inProgress:4,pending:0,waiting:0,requested:0,queueEvidence:{queuedRuns:[],runProofs:[],snapshotComplete:true,rawTotalCount:0,currentMainSha:sha,now}};
+ let state={initial:s,limit:2,used:0};
+ const a=reserveRecoveryAction(state,s);assert.equal(a.allowed,true);assert.equal(a.state.used,1);
+ const b=reserveRecoveryAction(a.state,s);assert.equal(b.allowed,true);assert.equal(b.state.used,2);
+ const c=reserveRecoveryAction(b.state,s);assert.equal(c.allowed,false);
+ const drift={...s,queueEvidence:{...s.queueEvidence,currentMainSha:'b'.repeat(40)}};
+ assert.equal(reserveRecoveryAction(state,drift).allowed,false);
+ const full={...s,inProgress:12};const denied=reserveRecoveryAction(state,full);
+ assert.equal(denied.allowed,false);assert.equal(denied.state.limit,0);
+ assert.equal(reserveRecoveryAction(denied.state,s).allowed,false);
+ const y=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+ assert.ok(y.indexOf('reserve_recovery_capacity || return 1')<y.indexOf('gh workflow run required-test.yml'));
+ assert.ok(y.indexOf('if ! reserve_recovery_capacity; then')<y.indexOf('emit_metric "$number" CAS_REQUEST'));
+ assert.ok(y.indexOf('ADAPTIVE_TERMINAL_RESERVATION')<y.indexOf('gh workflow run obligation-terminal-closure.yml'));
 });

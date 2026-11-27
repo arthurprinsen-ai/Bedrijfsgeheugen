@@ -200,19 +200,30 @@ jobs:
           cancel_stale_runs in_progress "$STALE_IN_PROGRESS_MIN_AGE_SECONDS"
           echo "::notice::STALE_ACTIONS_RUN_CANCEL_TOTAL:$stale_cancelled"
 
-          active_runs=0
-          for active_status in queued in_progress pending waiting requested; do
-            status_count="$(gh api --paginate "repos/$repo/actions/runs?status=$active_status&per_page=100" --jq '.workflow_runs[] | .id' | wc -l | tr -d ' ')"
-            active_runs=$((active_runs + status_count))
-          done
-          # Cancellation errors are not verified ghost credits. Until canonical proof is wired, use raw pressure.
-          effective_active_runs="$active_runs"
-          echo "::notice::ACTIONS_ACTIVE_RUNS_RAW:$active_runs effective:$effective_active_runs unverified_cancel_failures:$obsolete_uncancellable circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
-          if [ "$effective_active_runs" -ge "$ACTIVE_RUN_CIRCUIT_BREAKER" ]; then
+          capacity_state="$RUNNER_TEMP/recovery-capacity-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+          if ! capacity="$(node tools/delivery/adaptive-recovery-capacity.mjs init "$capacity_state")"; then
+            echo "::warning::RECOVERY_CAPACITY_UNPROVEN:no new recovery dispatch."
             emit_metric 0 CIRCUIT_OPEN 0
-            echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$effective_active_runs effective active runs; recovery dispatch suppressed until authoritative backlog drains."
             exit 0
           fi
+          active_runs="$(jq -r '.raw' <<<"$capacity")"
+          effective_active_runs="$(jq -r '.effective // .raw' <<<"$capacity")"
+          cycle_budget="$(jq -r '.remaining' <<<"$capacity")"
+          echo "::notice::ACTIONS_ACTIVE_RUNS_RAW:$active_runs effective:$effective_active_runs unverified_cancel_failures:$obsolete_uncancellable circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
+          echo "::notice::ADAPTIVE_RECOVERY_BUDGET:$cycle_budget proof:$capacity"
+          if [ "$cycle_budget" -le 0 ]; then
+            emit_metric 0 CIRCUIT_OPEN 0
+            echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:canonical capacity is unavailable."
+            exit 0
+          fi
+          reserve_recovery_capacity() {
+            local receipt
+            if ! receipt="$(node tools/delivery/adaptive-recovery-capacity.mjs reserve "$capacity_state")"; then
+              echo "::warning::RECOVERY_PR_BUDGET_EXHAUSTED:provider evidence or reserved capacity unavailable" >&2
+              return 1
+            fi
+            echo "::notice::ADAPTIVE_RECOVERY_RESERVATION:$receipt"
+          }
           # Collect complete native pages; concatenated JSON is not an inventory.
           gh api --paginate --slurp "repos/$repo/pulls?state=open&base=main&per_page=100" > /tmp/open-pr-pages.json
           jq -e 'if type=="array" and all(.[]; type=="array") then add // [] else error("INCOMPLETE_NATIVE_PR_PAGES") end' /tmp/open-pr-pages.json > /tmp/open-prs.json
@@ -235,36 +246,11 @@ jobs:
           else
             echo "::warning::RECOVERY_PRIORITY_PROVIDER_READ_FAILED:original-provider-order-preserved"
           fi
-          # Use raw pressure for new capacity; never spend unverified ghost credits.
-          initial_active_runs="$active_runs"
-          recovery_budget() {
-            node --input-type=module - "$1" "$ACTIVE_RUN_CIRCUIT_BREAKER" "$RECOVERY_PR_BUDGET" <<'NODE'
-          import { recoveryBudget } from './tools/delivery/adaptive-recovery-capacity.mjs';
-          const [activeRuns,limit,max]=process.argv.slice(2).map(Number);
-          process.stdout.write(String(recoveryBudget({activeRuns,limit,max})));
-          NODE
-          }
-          cycle_budget="$(recovery_budget "$initial_active_runs")"
           recovered_prs=0
-          checked_after=0
           while read -r pr; do
-            # Recheck only after a counted recovery; reserve fanout even before
-            # GitHub's eventually consistent run inventory reflects dispatch.
-            if [ "$recovered_prs" -gt "$checked_after" ]; then
-              observed=0
-              for active_status in queued in_progress pending waiting requested; do
-                status_count="$(gh api --paginate "repos/$repo/actions/runs?status=$active_status&per_page=100" --jq '.workflow_runs[] | .id' | wc -l | tr -d ' ')"
-                observed=$((observed + status_count))
-              done
-              reserved_pressure=$((initial_active_runs + 3 * recovered_prs))
-              [ "$observed" -le "$reserved_pressure" ] || reserved_pressure="$observed"
-              remaining="$(recovery_budget "$reserved_pressure")"
-              candidate_budget=$((recovered_prs + remaining))
-              [ "$candidate_budget" -ge "$cycle_budget" ] || cycle_budget="$candidate_budget"
-              checked_after="$recovered_prs"
-            fi
-            echo "::notice::ADAPTIVE_RECOVERY_BUDGET:$cycle_budget used:$recovered_prs"
-            if [ "$recovered_prs" -ge "$cycle_budget" ]; then
+            reserved_actions="$(jq -r '.used' "$capacity_state")"
+            cycle_budget="$(jq -r '.limit' "$capacity_state")"
+            if [ "$reserved_actions" -ge "$cycle_budget" ]; then
               echo "::notice::RECOVERY_PR_BUDGET_EXHAUSTED:$cycle_budget"
               break
             fi
@@ -369,6 +355,7 @@ jobs:
                 echo "::notice::PR#$number exact-head Required test already active; duplicate dispatch suppressed."
                 return 1
               fi
+              reserve_recovery_capacity || return 1
               gh workflow run required-test.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
             }
             # Required test is the canonical open-PR recovery heartbeat.
@@ -555,6 +542,12 @@ jobs:
                 if ! node tools/delivery/github-delivery-state-machine.mjs terminal-write-guard --input /tmp/main-sync-prewrite.json; then
                   echo "::warning::MAIN_SYNC_PREWRITE_GUARD_DENIED:PR#$number"; continue
                 fi
+                if ! reserve_recovery_capacity; then
+                  echo "::warning::MAIN_SYNC_CAPACITY_UNAVAILABLE:PR#$number; restore terminal lease if unchanged."
+                  latest_body="$(gh api "repos/$repo/pulls/$number" --jq '.body // ""')"
+                  if [ "$latest_body" = "$sync_body" ]; then gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null; fi
+                  continue
+                fi
                 emit_metric "$number" CAS_REQUEST "$next_drift_count"
                 if gh api --method PUT "repos/$repo/pulls/$number/update-branch" -f expected_head_sha="$head" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
                   emit_metric "$number" CAS_ACCEPTED "$next_drift_count"
@@ -683,6 +676,12 @@ jobs:
               fi
             fi
             echo "::notice::PR#$number is merged but nonterminal; dispatching one canonical terminal closure recovery."
+            capacity_state="$RUNNER_TEMP/recovery-capacity-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}.json"
+            if ! receipt="$(node tools/delivery/adaptive-recovery-capacity.mjs reserve "$capacity_state")"; then
+              echo "::warning::TERMINAL_RECOVERY_CAPACITY_UNPROVEN:no dispatch."
+              break
+            fi
+            echo "::notice::ADAPTIVE_TERMINAL_RESERVATION:$receipt"
             gh workflow run obligation-terminal-closure.yml --ref main -f pr_number="$number"
             echo "::notice::Serialized recovery: one terminal closure dispatched; remaining obligations wait for the next supervisor cycle."
             break

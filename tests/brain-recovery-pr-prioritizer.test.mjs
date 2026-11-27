@@ -10,5 +10,5 @@ test('canonical Recovery Supervisor remains the only protected writer and CAS ow
   assert.match(yaml,/RECOVERY_PRIORITY_EVIDENCE_UNAVAILABLE/);
   assert.match(yaml,/expected_head_sha/);
   assert.match(yaml,/cancel-in-progress: false/);
-  assert.match(yaml,/RECOVERY_PR_BUDGET:\s*'5'/); assert.ok(yaml.includes('cycle_budget="$(recovery_budget "$initial_active_runs")"')); assert.ok(yaml.includes('reserved_pressure=$((initial_active_runs + 3 * recovered_prs))')); assert.ok(yaml.includes('remaining="$(recovery_budget "$reserved_pressure")"')); assert.ok(yaml.includes('[ "$recovered_prs" -ge "$cycle_budget" ]'));
+  assert.match(yaml,/RECOVERY_PR_BUDGET:\s*'5'/); assert.ok(yaml.includes("adaptive-recovery-capacity.mjs init \"$capacity_state\"")); assert.ok(yaml.includes("adaptive-recovery-capacity.mjs reserve \"$capacity_state\"")); assert.ok(yaml.includes("reserve_recovery_capacity || return 1")); assert.ok(yaml.includes("[ \"$reserved_actions\" -ge \"$cycle_budget\" ]"));
 });
