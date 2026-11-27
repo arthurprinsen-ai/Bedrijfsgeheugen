@@ -7,11 +7,12 @@
     "machine_enforceable": true,
     "repeat_count": 1
   },
-  "root_cause": "Fixed budget one remains in existing supervisor after advisory module merge #6209. CI run 46021719503 additionally failed because explicit semantic evidence was omitted despite successful canonical replay.",
-  "prevention_rule": "Invoke canonical capacity with raw pressure and reserve pending fanout; never increase cycle budget after dispatch; preserve authority gates. Execute existing material-writeback semantic guard in historical replay before promotion; require actual evidence, never fabricate production outcomes.",
+  "root_cause": "Fixed budget one remains in existing supervisor after advisory module merge #6209. CI run 46021719503 additionally failed because explicit semantic evidence was omitted despite successful canonical replay. Shared admission single-flight regression also hardcoded the old budget of one; 99/100 preflight tests passed.",
+  "prevention_rule": "Invoke canonical capacity with raw pressure and reserve pending fanout; never increase cycle budget after dispatch; preserve authority gates. Execute existing material-writeback semantic guard in historical replay before promotion; require actual evidence, never fabricate production outcomes. Include shared single-flight assertions in capacity change validation; preserve scheduling, circuit breaker and exact-head CAS assertions.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-adaptive-recovery-runtime-20261127.test.mjs"
+      "tests/brain-adaptive-recovery-runtime-20261127.test.mjs",
+      "tests/brain-ci-admission-single-flight.test.mjs"
     ],
     "shadow": [
       "tests/brain-adaptive-recovery-runtime-20261127.test.mjs"
@@ -28,6 +29,7 @@
     "tests": [
       "tests/brain-adaptive-recovery-runtime-20261127.test.mjs"
     ],
-    "runtime_verified": false
+    "runtime_verified": false,
+    "preflight_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46022431408/job/140585501454"
   }
 }
