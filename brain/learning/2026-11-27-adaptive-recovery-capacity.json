@@ -1,0 +1,23 @@
+{
+  "fingerprint": "delivery|adaptive-recovery-capacity|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Existing recovery supervisor fixed budget one; increased budget without capacity reserve may create queue pressure.",
+  "prevention_rule": "Bound advisory capacity by measured active runs and reserve; invalid evidence returns zero. Original writer must validate fanout before activation.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-adaptive-recovery-capacity-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-adaptive-recovery-capacity-20261127.test.mjs"
+    ],
+    "invariants": [
+      "No mutation or merge authority; conservative capacity bound."
+    ]
+  }
+}
