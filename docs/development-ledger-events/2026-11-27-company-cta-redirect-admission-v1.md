@@ -6,3 +6,5 @@ Original PR #6125; observed Required admission failure 45171157181. Preserve ori
 Second admission failure: unclassified tests/bg-*; moved both newly added unchanged test bodies into existing backend tests/brain-* namespace. No gate or test coverage removed.
 
 Third native check: admission and lease replay passed, System Map regenerated exact two tracked artifacts. Applied only the provider-generated diff; verified resulting blob prefixes matched the provider diff, no unrelated change.
+
+Shared preflight exposed missing bg-l incident protocol. Attach original runtime-event bounded write attempt on fixed server 500 codes, dedupe by code/hour, local suppression, timeout 1500ms, no key/URL/raw error; transport failure remains unverified. Six isolated tests PASS. Global invocation rate and production event readback unverified; no external traffic generated.
