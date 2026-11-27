@@ -1,0 +1,43 @@
+{
+  "fingerprint": "delivery|engineering|6199|critical-path-scope|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "PR_MACHINE_METADATA_INVALID"
+  },
+  "root_cause": "Original admission event lacked obligation ID, lane, candidate type and base SHA; the candidate subsequently received those fields. Material source changes also require repository closure artifacts.",
+  "prevention": "Compile authoritative metadata, exact changed paths and all three closure artifacts before first protected CI run; mixed known/unknown material paths fail closed to Required; prioritize longest dependency chains under existing capacity and conflicts.",
+  "evaluation": {
+    "historical_replay": [
+      {
+        "pr": 6199,
+        "base": "5ce4c1e80d7a5342de43f106ccceffb4dcc217aa",
+        "head": "b3b5589b68129801d73cc1e787509a611fb3e139",
+        "run": 45981402643,
+        "job": 140445930372,
+        "result": "ADMISSION_FAILURE",
+        "error": "PR_MACHINE_METADATA_INVALID"
+      },
+      {
+        "pr": 6182,
+        "run": 45981754302,
+        "job": 140454188238,
+        "result": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+      },
+      {
+        "pr": 5594,
+        "run": 45981764502,
+        "job": 140454200134,
+        "result": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+      }
+    ]
+  },
+  "evidence": {
+    "provider_log": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45981402643/job/140445930372",
+    "obligation_id": "f5ce0355-1d4e-43d3-a9df-fd13a6855870",
+    "tests": "PR description reports 20/20 Node 24 tests, including critical path fixture and fail-closed mixed scope; independently confirmed diff contains both tests. Protected Required remains failed at original admission.",
+    "fixture": "Five packages, capacity 2: four waves to three reported by PR author; no runtime speed claim.",
+    "codeql": "SUCCESS on original head",
+    "production_readback": null,
+    "next": "Protected exact-head admission and Required/CodeQL, then authorized merge and independent runtime readback; measure real lead time and first-time-right."
+  }
+}
