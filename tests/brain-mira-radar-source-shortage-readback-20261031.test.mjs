@@ -52,7 +52,7 @@ test('original one and only Mira radar persists typed ONE BRAIN observation on s
  assert.match(src,/brain_observe_failure/);
  assert.match(src,/mira-radar:source-supply:/);
  assert.match(src,/powerhouse\|mira\|no-new-unique-source-backed-daily-winner/);
- assert.match(src,/ok:errors\.length===0&&supply\.ok/);
+ assert.match(src,/ok:miraBusinessSourceReady/);
  assert.match(src,/status:'RECOVERY_DUE'/);
  assert.match(src,/sendsAuthorized:false/);
  assert.match(src,/powerhouse_materialize_mira_problem_recommendation_v1/);

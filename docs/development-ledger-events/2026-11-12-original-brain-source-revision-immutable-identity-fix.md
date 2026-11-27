@@ -1,0 +1,8 @@
+# Original Powerhouse / BRAIN identity guard runtime regression (2026-11-12)
+
+- **Evidence:** Actual product functions `powerhouse_capture_growth_source_daily_v1('2026-11-11')` and `('2026-11-12')` returned `SOURCE_ARCHIVE_RETRY_REQUIRED` / SQLSTATE `P0001` / `OBLIGATION_IDENTITY_IMMUTABLE`; independent original trigger source `brain_guard_obligation_identity` forbids payload_sha256 update. Code source passed protected Required/CodeQL/Supabase preview, so replay was essential.
+- **Root:** Producer incorrectly treated immutable creation identity as mutable source day revision. Under catch/rollback source stage was lost; legacy stage success alone falsely looked green.
+- **Repair:** Same original producer #175 changes only mutable `evidence.source_revision` and source_manifest, resets old consumer ACK, logs unique new source revisions; same consumer #140 compares SHA against evidence, heartbeat independently reads original raw SHA to reject stale consumed proof. Trigger stays.
+- **No parallel system:** original cron IDs 175/140/171 preserved, no new publisher, third-party bypass, backdated engagement, imaginary A/B result or revenue.
+- **Production truth rule:** source archival + original BRAIN + original Heartbeat all independently read back before terminal claim. Original P0 #4198 remains open for authentic post/social/SEO/A/B outcome debt.
+- **Regression:** `tests/brain-original-source-identity-versioned-ack-20261112.test.mjs`. Failure fingerprint `original-one-loop|mutable-source-revision-attempted-to-update-immutable-brain-payload-hash|20261112-v1`; owner original Powerhouse and ONE BRAIN; prevent immutable identity rewrite and stale heartbeat ACK.

@@ -154,11 +154,38 @@ const safeDate=value=>{
   ?new Intl.DateTimeFormat('nl-NL',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Amsterdam'}).format(d)+' (NL)'
   :'Nog niet vastgesteld';
 };
+/** Bounded LIVE proof, not an assurance of being hack-proof.
+ * Missing/stale evidence is neutral, security regressions remain visible.
+ */
+export function classifyGuardianHeartbeat(observations=[],nowMs=Date.now()){
+ const rows=arr(observations).filter(o=>upper(o.provider_key||o.providerKey)==='WEBSITE'
+  &&upper(o.control_key||o.controlKey)==='SECURITY_HEARTBEAT');
+ rows.sort((a,b)=>Date.parse(String(b.observed_at||b.observedAt||''))-Date.parse(String(a.observed_at||a.observedAt||'')));
+ const latest=rows[0],checkedAt=latest?.observed_at||latest?.observedAt||null;
+ if(!latest)return {state:'unknown',label:'Geen controlebewijs',checkedAt:null};
+ if(securityTone(latest.status)==='bad')return {state:'incident',label:'Beveiligingsincident in onderzoek',checkedAt};
+ const valid=Boolean(latest.evidence_available??latest.evidenceAvailable)
+  &&isCurrentSecurityObservation(latest,nowMs)
+  &&nowMs-Date.parse(String(checkedAt))<=45*60*1000;
+ if(!valid)return {state:'stale',label:'Controlebewijs verlopen',checkedAt};
+ if(securityTone(latest.status)==='ok')return {state:'verified',label:'Controle actueel bevestigd',checkedAt};
+ return {state:'review',label:'Aandacht vereist',checkedAt};
+}
+function renderGuardianStatus(observations){
+ const g=classifyGuardianHeartbeat(observations),signal=g.state==='verified'?'verified':g.state==='incident'?'critical':g.state==='review'?'review':'unknown';
+ return '<section class="guardian-live guardian-live--'+signal+'" data-security-guardian aria-live="polite">'+
+  '<span class="guardian-live-dot" aria-hidden="true"></span><div class="guardian-live-main">'+
+  '<span class="guardian-live-caption">Security-agent · Platformbewaking</span><strong>'+esc(g.label)+'</strong>'+
+  '<span class="guardian-live-meta">Laatste onafhankelijke controle: <time>'+safeDate(g.checkedAt)+'</time></span>'+
+  '<small>Streefritme elke 15 minuten. Groen betekent alleen dat de gemeten controles actueel zijn, geen garantie tegen aanvallen.</small>'+
+  '</div></section>';
+}
+
 function renderSafetyCompass(summary,observations,generatedAt,findings){
  const state=buildSafetyCompass(summary,observations,generatedAt,findings);
  const areas=state.areas.map(a=>'<article class="safety-area safety-area--'+tone(a.status)+'" data-safety-area="'+esc(a.id)+'"><div class="safety-area-heading"><h4>'+esc(a.title)+'</h4>'+status(a.status)+'</div><p>'+esc(a.meaning)+'</p><small>'+a.checked+' van '+a.total+' controles met actueel bewijs · '+esc(safetyLabel(a.status))+'</small></article>').join('');
  return '<section class="safety-compass" aria-labelledby="safety-compass-title" data-safety-compass><div class="safety-compass-lead">'+
-  '<div><span class="trust-kicker">Jouw Veiligheidskompas · transparant & onafhankelijk controleerbaar</span>'+
+  renderGuardianStatus(observations)+'<div><span class="trust-kicker">Jouw Veiligheidskompas · transparant & onafhankelijk controleerbaar</span>'+
   '<h3 id="safety-compass-title">'+esc(state.title)+'</h3><p>'+esc(state.explanation)+'</p>'+
   '<p class="safety-source-time">Laatst beoordeeld: <time>'+safeDate(state.observedAt)+'</time> · '+state.verifiedSources+' actuele bronwaarnemingen</p></div>'+
   '<div class="safety-signal safety-signal--'+tone(state.overall)+'"><span>Bewijsstatus</span><strong>'+esc(safetyLabel(state.overall))+'</strong><small>Geen garantie of veiligheidscijfer</small></div></div>'+
@@ -223,6 +250,9 @@ export async function mountSecurityTrustWorkspace(root,{pageId='trust-center',st
  const initialUser=stateClient.currentUser?.(),subject=initialUser?.id;
  let alive=true,inFlight=null,lastRead=-Infinity,sovereignty=null,security=null,activation=null,refreshAgain=false,controller=null;
  const removers=[];
+ // Status must expire on screen even when no browser interaction occurs.
+ const freshnessTick=globalThis.setInterval?.(()=>{if(alive&&authorized()&&security&&sovereignty&&pageId==='trust-center')render();},60000);
+ if(freshnessTick!=null)removers.push(()=>globalThis.clearInterval?.(freshnessTick));
  const dispose=()=>{if(!alive)return;alive=false;controller?.abort();for(const off of removers)off?.();workspaces.delete(root);};
  workspaces.set(root,dispose);
  const authorized=()=>alive&&Boolean(subject)&&stateClient.currentUser?.()?.id===subject&&!stateClient.isDemo?.();

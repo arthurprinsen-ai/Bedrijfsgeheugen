@@ -109,3 +109,116 @@ test('first-party form intent types are accepted without accepting form contents
   assert.throws(()=>normalizeBehaviorEvent({event_id:'not-safe',event_type:'form_start',canonical,form_fields:{email:'private@example.com'}}),/PII fields/);
   assert.throws(()=>normalizeBehaviorEvent({event_id:'no-outcome',event_type:'paid_order',canonical}),/unsupported behavior event/);
 });
+
+test('one canonical growth producer measures NL and EN pricing, scan and checkout routes without duplicate start events',()=>{
+ const ORIGIN='https://www.bedrijfsgeheugen.nl';
+ const html=injectGrowthMeasurement('<html><body><main></main></body></html>',
+   {canonical:ORIGIN+'/prijzen',page_role:'money',funnel_stage:'decide'});
+ const script=html.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/)?.[1];
+ assert.ok(script);
+ const cases=[
+   ['/zelfscan','zelfscan','selfscan_start'],['/en/zelfscan','zelfscan','selfscan_start'],
+   ['/frisse-blik','frisse-blik','frisse_blik_start'],['/en/frisse-blik','frisse-blik','frisse_blik_start'],
+   ['/prijzen','prijzen',null],['/en/prijzen','prijzen',null],
+   ['/afsluiten?plan=starter','checkout',null],['/en/afsluiten?plan=starter','checkout',null],
+   ['/contact','contact',null],['/en/contact','contact',null],
+   ['/aanmelden','aanmelden',null],['/en/aanmelden','aanmelden',null]
+ ];
+ for(const [route,action,startType] of cases){
+  const sent=[],listeners={};let next=0;
+  const location={origin:ORIGIN,hostname:'www.bedrijfsgeheugen.nl',pathname:'/prijzen',href:ORIGIN+'/prijzen'};
+  const href=ORIGIN+route;
+  vm.runInNewContext(script,{
+   window:{location,addEventListener:()=>{}},location,URL,URLSearchParams,
+   navigator:{webdriver:false,sendBeacon:()=>false},
+   crypto:{randomUUID:()=>String(++next)},
+   sessionStorage:{getItem:()=>'',setItem:()=>{}},localStorage:{getItem:()=>null},
+   document:{referrer:'',visibilityState:'visible',querySelector:()=>null,body:{getAttribute:()=>''},
+    documentElement:{scrollHeight:2100,clientHeight:1000},
+    addEventListener:(name,fn)=>{listeners[name]=fn;}},
+   fetch:(_url,options)=>{sent.push(JSON.parse(options.body));return Promise.resolve({ok:true});},
+   setTimeout:()=>0,Blob,Date,Math
+  });
+  const el={href,getAttribute:()=>null,hasAttribute:()=>false,closest:selector=>selector==='main'?{}:null};
+  listeners.click({target:{closest:selector=>selector==='a'?el:null}});
+  const clicks=sent.filter(e=>e.event_type==='primary_cta_click');
+  assert.equal(clicks.length,1,route);
+  assert.equal(clicks[0].cta_action,action,route);
+  assert.equal(clicks[0].target_canonical,href,route);
+  assert.equal(clicks[0].source,'website',route);
+  assert.equal(clicks[0].medium,'unattributed',route);
+  const starts=sent.filter(e=>e.event_type==='selfscan_start'||e.event_type==='frisse_blik_start');
+  assert.equal(starts.length,startType?1:0,route);
+  if(startType)assert.equal(starts[0].event_type,startType,route);
+  assert.ok(sent.every(e=>!Object.hasOwn(e,'email')&&!Object.hasOwn(e,'phone')));
+ }
+});
+
+test('even an explicitly marked cross-origin EN scan link cannot create a false scan-start event',()=>{
+ const ORIGIN='https://www.bedrijfsgeheugen.nl';
+ const html=injectGrowthMeasurement('<html><body><main></main></body></html>',{canonical:ORIGIN+'/prijzen'});
+ const script=html.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/)?.[1];
+ const sent=[],listeners={};let next=0;
+ const location={origin:ORIGIN,hostname:'www.bedrijfsgeheugen.nl',pathname:'/prijzen',href:ORIGIN+'/prijzen'};
+ vm.runInNewContext(script,{
+  window:{location,addEventListener:()=>{}},location,URL,URLSearchParams,
+  navigator:{webdriver:false,sendBeacon:()=>false},
+  crypto:{randomUUID:()=>String(++next)},
+  sessionStorage:{getItem:()=>'',setItem:()=>{}},localStorage:{getItem:()=>null},
+  document:{referrer:'',visibilityState:'visible',querySelector:()=>null,body:{getAttribute:()=>''},
+   documentElement:{scrollHeight:2100,clientHeight:1000},
+   addEventListener:(name,fn)=>{listeners[name]=fn;}},
+  fetch:(_url,options)=>{sent.push(JSON.parse(options.body));return Promise.resolve({ok:true});},
+  setTimeout:()=>0,Blob,Date,Math
+ });
+ const el={href:'https://untrusted.example/en/zelfscan',
+  getAttribute:n=>n==='data-bg-conversion'?'bedrijfslek':null,
+  hasAttribute:()=>false,closest:selector=>selector==='main'?{}:null};
+ listeners.click({target:{closest:selector=>selector==='a'?el:null}});
+ assert.equal(sent.filter(e=>e.event_type==='primary_cta_click').length,1);
+ assert.equal(sent.filter(e=>e.event_type==='selfscan_start').length,0);
+});
+
+test('critical CTA delivery uses durable ACK, bounded same-ID retry, and current consent', async () => {
+  const ORIGIN='https://www.bedrijfsgeheugen.nl';
+  const html=injectGrowthMeasurement('<html><body><main></main></body></html>',{canonical:ORIGIN+'/prijzen'});
+  const script=html.match(/<script id="bg-growth-measurement">([\s\S]*?)<\/script>/i)[1];
+  async function scenario(kind,consent=true,revoke=false) {
+    let granted=consent,seq=0;
+    const sent=[],timers=[],listeners={},beacons=[];
+    const location={origin:ORIGIN,href:ORIGIN+'/prijzen',pathname:'/prijzen',hostname:'www.bedrijfsgeheugen.nl'};
+    vm.runInNewContext(script,{
+      window:{location,addEventListener:()=>{}},location,URL,URLSearchParams,Blob,
+      document:{referrer:'',body:{getAttribute:()=>''},addEventListener:(n,h)=>{listeners[n]=h;}},
+      navigator:{webdriver:false,sendBeacon:(_url,b)=>{beacons.push(b);return true;}},
+      sessionStorage:{getItem:()=>'',setItem:()=>{}},localStorage:{getItem:()=>granted?'granted':null},
+      crypto:{randomUUID:()=>String(++seq)},setTimeout:(f,ms)=>{if(ms===750)timers.push(f);},
+      fetch:(_url,o)=>{const e=JSON.parse(o.body);sent.push(o.body);
+        if(kind==='offline')return Promise.reject(Error('offline'));
+        if(kind==='permanent')return Promise.resolve({ok:false,status:422});
+        if(kind==='rate')return Promise.resolve({ok:false,status:429});
+        const ack={accepted:true,event_id:kind==='mismatch'?'wrong':e.event_id,queue:kind==='missing'?'unknown':'durable'};
+        return Promise.resolve({ok:true,status:202,json:async()=>ack});
+      }
+    });
+    const button={href:'',getAttribute:n=>n==='data-bg-conversion'?'contact':null,closest:()=>null,hasAttribute:()=>false};
+    listeners.click({target:{closest:s=>s==='button,[role="button"]'?button:null}});
+    await new Promise(resolve=>setImmediate(resolve));
+    if(revoke)granted=false;
+    for(const f of timers.splice(0))f();
+    await new Promise(resolve=>setImmediate(resolve));
+    assert.equal(beacons.length,1,'only noncritical page view uses beacon');
+    assert.equal(timers.length,0,'never schedule more than one retry');
+    assert.ok(sent.every(s=>JSON.parse(s).event_type==='primary_cta_click'));
+    if(sent.length===2)assert.equal(sent[0],sent[1],'same payload and event ID on retry');
+    return sent.length;
+  }
+  assert.equal(await scenario('ok'),1);
+  assert.equal(await scenario('mismatch'),2);
+  assert.equal(await scenario('missing'),2);
+  assert.equal(await scenario('offline'),2);
+  assert.equal(await scenario('offline',false),1);
+  assert.equal(await scenario('offline',true,true),1);
+  assert.equal(await scenario('permanent'),1);
+  assert.equal(await scenario('rate'),1);
+});

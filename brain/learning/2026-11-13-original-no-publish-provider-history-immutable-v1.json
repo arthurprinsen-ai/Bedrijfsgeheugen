@@ -1,0 +1,50 @@
+{
+  "fingerprint": "powerhouse|original-no-publish|provider-history-masked-by-jsonb-overlay-and-incomplete-decision-proof|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_NO_PUBLISH_PROVIDER_EVIDENCE_JSONB_OVERLAY_MASK",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The live original public.record_content_publication_skip RPC checked provider success with powerhouse_jsonb_true(coalesce(v_row.evidence,'{}'::jsonb)||coalesce(p_evidence,'{}'::jsonb),key). PostgreSQL JSONB || takes the RIGHT value for duplicate keys. An incoming false copy of provider_create_success can mask a historical source true BEFORE the fence, even with no external_id/posted_at; possible_provider_side_effect and reconciliation_required/source_state_conflict were also not checked. The same owner set SKIPPED next_action to the factual-sounding 'explicit no-publish decision recorded' despite not requiring existing active veto and decision_code; production had twenty SKIPPED blogs without a complete source decision proof, nineteen with true veto but missing code.",
+  "prevention_rule": "In the SAME original service-role-only record_content_publication_skip, check every original and incoming provider-side-effect field independently using logical OR (never combined || right-wins JSON). Fail closed on source conflict, possible side effect, or reconciliation required; forbid null/false/nonobject downgrade of an original active veto; merge distinct nested veto fields preserving true. Preserve the original SKIPPED/no-send fence but mark the exact original source decision as INCOMPLETE with explicit owner next_action and last_error when the exact original veto+decision_code is absent. No synthetic decision_code from free text or guessed provider outcome. Only the existing #171 original handoff routes/reconciles; original terminal guard still controls CANCELLED.",
+  "evidence": [
+    "Read-only production selected record_content_publication_skip pg_get_functiondef identical to previous protected source migration 20261112131500 except last trailing newline; original original e.g. public powerhouse_jsonb_true(coalesce(v_row.evidence,'{}') || coalesce(p_evidence,'{}'), 'provider_create_success').",
+    "Read-only independent production SQL evaluated original JSONB provider_create_success true, incoming provider_create_success false: original provider true, merged JSONB result false, separate logical OR true. Actual bypass is reproducible with no writes; no assertion that this was exploited in real traffic.",
+    "Read-only original source: 34 blog SKIPPED, 20 missing decision_code, 19/20 active veto and reason, one lacking active veto; all 34 have a no_publish_reason and date. Such missing proof cannot be fabricated or terminal-closed.",
+    "Original 845th production provider migration routes incomplete SKIPPED to OVERDUE_NO_PUBLISH_SOURCE_DECISION_PROOF and original content owner; this patch is on that SAME original upstream RPC producer, not a second queue.",
+    "Original loop assurance 7 RED, 8 GREEN; 366 OPEN original CONTENT_HANDOFF and 185 social-learning. A successful source change does not imply these downstream outcomes or revenue."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-no-publish-immutable-provider-evidence-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-no-publish-immutable-provider-evidence-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-no-publish-immutable-provider-evidence-20261113.test.mjs"
+    ],
+    "invariants": [
+      "no original provider true evidence can be masked by incoming false/null",
+      "no active original veto can be downgraded",
+      "SKIPPED is safe no-send even with missing decision proof",
+      "source decision code is supplied by original owner, never invented",
+      "terminal guard and server-only role unchanged"
+    ]
+  },
+  "source_owner": "public.record_content_publication_skip(text,date,text,text,jsonb)",
+  "runtime_owner": "powerhouse-runtime-scheduler-mux-v1 original cron #171",
+  "safety": {
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_provider_send": false,
+    "production_hotfix": false,
+    "bypass_RLS": false,
+    "historical_backfill": false,
+    "relax_terminal_guard": false
+  },
+  "related_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "CANDIDATE_PENDING_PROTECTED_MIGRATION_PROVIDER_READBACK"
+}

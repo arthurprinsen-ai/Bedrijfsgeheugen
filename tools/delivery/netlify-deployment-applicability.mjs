@@ -16,6 +16,9 @@ export const NETLIFY_GOVERNANCE_PREFIXES = Object.freeze([
 // They must execute full production-parity CI even when under tools/ci/.
 export const NETLIFY_BUILD_RUNTIME_EXACT = Object.freeze(new Set([
   'tools/ci/netlify-build-entry.mjs',
+  // Modifies shipped Portal V2 browser assets during the same original Netlify build.
+  // Governance-only classification here would skip the real security-scoped fix.
+  'tools/ci/build-portal-public-runtime.mjs',
 ]));
 
 export const NETLIFY_GOVERNANCE_EXACT = Object.freeze(new Set([
@@ -58,6 +61,9 @@ export const NETLIFY_RUNTIME_EXACT = Object.freeze(new Set([
   // Imported by Netlify _cost-projection-store and _powerhouse-compound-improvement-proof.
   // A change to the canonical agent roster affects live server code, not only governance.
   'platform/agents/agent-team.mjs',
+  // Imported by the authenticated /api/powerhouse-control-plane Netlify function.
+  // The admin source-read model is live bundled server code, not governance-only.
+  'platform/portal/powerhouse-existing-integration-read-model.mjs',
   // Server-bundled by netlify/functions/powerhouse-observability.mjs.
   // It changes the authenticated portal API even though it lives under brain/.
   'brain/observability/publication-evidence-readback.mjs',

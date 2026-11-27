@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|completion-backfill-duplicate-original-obligation-fanout|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "COMPLETION_BACKFILL_SOURCE_FANOUT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The original active backfill generated one immutable coalesce key per historical candidate lineage even where thousands of candidates mapped to the same registered canonical obligation. Every candidate created a distinct new pending AgentWork, enlarging backlog without independent consumer processing.",
+  "evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "source": "public.brain_outcome_obligation_dispatch",
+    "observed_2026_11_15": true,
+    "original_job": "Completion Supervisor Backfill Resume",
+    "original_run_id": 43697572565,
+    "original_job_id": 132762750664,
+    "measured_concentration": "material-change-live-verification >3200 AgentWork pending",
+    "provider_actions_proven_failed": false,
+    "consumer_processed_delta": "NOT_PROVEN"
+  },
+  "prevention": {
+    "reuse_existing_runtime": true,
+    "one_stable_trigger_per_canonical_registered_obligation": true,
+    "preserve_original_candidate_history": true,
+    "stable_coalesce_key": true,
+    "no_new_worker_or_scheduler": true,
+    "source_candidate_count_and_digest": true,
+    "blocked_external_retriggers_prohibited": true,
+    "force_existing_owner_ack_and_provider_readback": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "HISTORICAL_SOURCE_CANDIDATES_AMPLIFIED_INTO_NEW_PENDING_WORK",
+    "cause": "per candidate lineage backfill coalesce identity instead of original obligation identity",
+    "prevention_rule": "In the existing backfill only, coalesce registered original obligation IDs to one stable event trigger and preserve all historical candidate identities/count/digest for reconciliation.",
+    "regression_guard": "tests/brain-completion-supervisor-backfill.test.mjs",
+    "next_owner": "existing Completion Supervisor and Reliability/Data Quality; original registered consumer",
+    "effect_proof": "PROTECTED_RELEASE_AND_NATURAL_CONSUMER_RUN_PENDING"
+  },
+  "release_state": "PROTECTED_CANDIDATE_PENDING"
+}

@@ -24,7 +24,12 @@ test('finance and external changes map to downstream review without inventing ou
  assert.match(shell,/Niet alle gevolgen zijn al bewezen/);
 });
 test('only exact acknowledged causal impacts are shown as persisted',()=>{
- assert.ok(shell.includes("const impact=event.detail?.impacts?.at?.(-1)||null;"));
+ // A partial multi-section ACK must be attributed to the currently open
+ // affected page; blindly using the most recent unrelated ACK is false-green.
+ assert.ok(shell.includes("const impacts=Array.isArray(event.detail?.impacts)?event.detail.impacts:[];"));
+ assert.ok(shell.includes("const confirmed=[...impacts].reverse().find(item=>item?.affectedPages?.includes(current));"));
+ assert.ok(shell.includes("renderImpactMap(root,confirmed,'confirmed');"));
+ assert.ok(shell.includes("scheduleVisiblePageRebuild(root);"));
  assert.ok(domain.includes("acknowledged.has(pendingImpacts[index].generation)"));
  assert.ok(!domain.includes("pendingImpacts.splice(0,impactSnapshot.length)"));
 });

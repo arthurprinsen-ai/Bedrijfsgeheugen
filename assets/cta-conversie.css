@@ -16,18 +16,21 @@
  * !important-regels in de v18-kern zonder die bevroren kern aan te raken.
  * Bewust niet: .ask-chip.active (een gekozen filter, geen actieknop) en
  * .knop.leeg (secundaire, omlijnde knop). */
-:root{--conversie:#FF4F17;--conversie-hover:#FF6A3D;--conversie-tekst:#14171A}
+/* Herzien 18 nov 2026 (Merkrichting Rituals, 17 nov): de primaire actie is Rituals-blauw.
+ * De isolatie-redenering hierboven gold voor een blauwe hero met geel accent; de site is nu
+ * papier en inkt, waarin blauw als enige kleur vanzelf opvalt. Wit op #2742D6 = 6,9:1 (AA). */
+:root{--conversie:#2742D6;--conversie-hover:#1B2FA0;--conversie-tekst:#FFFFFF;--conversie-rand:#14171A}
 
 :root:root :is(.cta,.hero-primary,.v18-btn-primary,.knop.geel,.btn.geel,.btn.primary,.hk.geel,.bg-knop,.kaart .knop:not(.leeg),.evidence-calc .primary,.scenario-action>a,.scenario-action>button){
   background:var(--conversie)!important;
   background-color:var(--conversie)!important;
   color:var(--conversie-tekst)!important;
-  border-color:var(--conversie-tekst)!important;
+  border-color:var(--conversie)!important;
 }
 :root:root :is(.cta,.hero-primary,.v18-btn-primary,.knop.geel,.btn.geel,.btn.primary,.hk.geel,.bg-knop,.kaart .knop:not(.leeg),.evidence-calc .primary,.scenario-action>a,.scenario-action>button):is(:hover,:focus-visible){
   background:var(--conversie-hover)!important;
   background-color:var(--conversie-hover)!important;
 }
 :root:root :is(.cta,.hero-primary,.v18-btn-primary,.knop.geel,.btn.geel,.btn.primary,.hk.geel,.bg-knop,.kaart .knop:not(.leeg),.evidence-calc .primary,.scenario-action>a,.scenario-action>button):focus-visible{
-  outline:3px solid var(--conversie-tekst)!important;outline-offset:3px!important;
+  outline:3px solid var(--conversie-rand)!important;outline-offset:3px!important;
 }

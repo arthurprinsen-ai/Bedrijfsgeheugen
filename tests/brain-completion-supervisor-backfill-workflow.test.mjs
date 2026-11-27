@@ -18,6 +18,11 @@ test('active backfill workflow reads existing authorities and only resumes canon
   assert.match(yaml, /outcome-obligation-completion-supervisor-backfill\.mjs --collect --mode active/);
   assert.match(yaml, /SUPABASE_SERVICE_ROLE_KEY:\s*\$\{\{\s*secrets\.SUPABASE_SERVICE_ROLE_KEY\s*\}\}/);
   assert.match(yaml, /durableResumeEnabled/);
+  assert.match(yaml, /durable-supabase/);
+  assert.match(yaml, /deferredNotDue/);
+  assert.match(yaml, /NOT_DUE/);
+  assert.match(yaml, /triggerType/);
+  assert.match(yaml, /durableResumed/);
   assert.match(yaml, /upload-artifact/);
   assert.match(yaml, /\.artifacts\/completion-supervisor-backfill-report\.json/);
   assert.match(yaml, /\.artifacts\/completion-supervisor-resume-\*\.json/);

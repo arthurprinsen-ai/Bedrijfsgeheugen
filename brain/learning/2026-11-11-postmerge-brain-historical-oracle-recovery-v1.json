@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "fingerprint": "brain|delivery|postmerge-historical-824-and-model-directory-freshness|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_BRAIN_TEST_ORACLE_RECOVERY",
+  "status": "PROTECTED_CANDIDATE_CI_EVIDENCE_DUE",
+  "original_owner": "ONE BRAIN / backend original postmerge delivery lane",
+  "parent_issues": [
+    4198,
+    4215
+  ],
+  "observed": {
+    "merge_sha": "550b020eeb3e03c6ffc7d0356cbb62c2ac4180ad",
+    "workflow_run_id": 43014341068,
+    "failures": 3,
+    "tests_total": 6313,
+    "provider_applied_migrations": 826,
+    "provider_history_mutated": false
+  },
+  "root_cause": {
+    "observed": "Historical one-time source correction tests assumed the current provider ledger still ended at 824; global supplier-freshness test treated research-only catalog entries as automatically runnable despite the 15 October evidence decision.",
+    "unknowns": [
+      "actual current supplier re-verification",
+      "complete commercial consumer and outcome evidence"
+    ]
+  },
+  "fix": {
+    "scope": "Three regression tests only; no provider SQL, platform API, model catalog date or production code mutated",
+    "invariant": "Immutable exact historic 824-prefix and full current append-only history, stale researched suppliers cannot be automatically selected",
+    "non_goals": [
+      "fabricated supplier verification",
+      "runtime status bypass",
+      "scheduler creation"
+    ]
+  },
+  "compiler": {
+    "failure_class": "HISTORICAL_ORACLE_FROZEN_TO_OLD_PROVIDER_LEDGER",
+    "scope": "BACKEND_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-provider-health-native-ledger-parity-20261110.test.mjs",
+      "tests/brain-verified-provider-health-native-reconciliation-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "HISTORICAL_CHECKPOINT_IS_PREFIX_NOT_CURRENT_TOTAL",
+    "AUTO_ELIGIBLE_MODELS_MUST_HAVE_14_DAY_SUPPLIER_EVIDENCE",
+    "NO_PROVIDER_LEDGER_MUTATION_OR_FAKE_VERIFICATION"
+  ],
+  "evidence": {
+    "source": "GitHub BRAIN delivery run 43014341068 and 2026-11-11 protected provider history",
+    "required": "Exact-head Required/BRAIN/CodeQL and protected merge; independently read back next BRAIN run",
+    "limitation": "Does not resolve unrelated seven red commercial loops or end-to-end business outcomes"
+  }
+}

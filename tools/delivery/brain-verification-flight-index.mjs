@@ -7,20 +7,48 @@ import {pathToFileURL} from 'node:url';
 const TITLE=/^BRAIN delivery PR #[1-9]\d* [0-9a-f]{40}$/i;
 const ACTIVE=new Set(['queued','requested','pending','in_progress','waiting']);
 
-export function classifyOriginalBrainFlightPages(pages,expectedTitle){
+/** An exact PR-number verification flight cannot predate provider PR creation.
+ * Preserve ten minutes of skew while failing closed on invalid provider time. */
+export function originalBrainFlightSince(prCreatedAt){
+  const raw=String(prCreatedAt||'');
+  if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(raw))
+    throw new TypeError('BRAIN_PROVIDER_PR_CREATED_AT_INVALID');
+  const ms=Date.parse(raw);
+  if(!Number.isFinite(ms)||new Date(ms).toISOString()!==raw.replace(/Z$/,'.000Z'))
+    throw new TypeError('BRAIN_PROVIDER_PR_CREATED_AT_INVALID');
+  return new Date(ms-10*60000).toISOString().replace('.000Z','Z');
+}
+
+export function classifyOriginalBrainFlightPages(pages,expectedTitle,{since=null}={}){
   if(!TITLE.test(String(expectedTitle||'')))
     return {status:'INVALID_EXACT_CANDIDATE',complete:false,safe_to_dispatch:false};
   if(!Array.isArray(pages)||pages.length===0||
      !pages.every(p=>p&&Array.isArray(p.workflow_runs)&&Number.isSafeInteger(p.total_count)&&p.total_count>=0))
     return {status:'PROVIDER_PAGINATION_INVALID',complete:false,safe_to_dispatch:false};
   const total=pages[0].total_count;
+  // GitHub Actions filtered workflow-run search stops at 1,000 results.
+  // Never report an absent exact run at the provider search cap.
+  if(total>=1000)
+    return {status:'PROVIDER_SEARCH_CAP_UNPROVEN',complete:false,
+      provider_total:total,safe_to_dispatch:false};
+  if(since!==null&&(typeof since!=='string'||
+    !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(since)||
+    !Number.isFinite(Date.parse(since))))
+    return {status:'PROVIDER_CREATED_FILTER_INVALID',complete:false,safe_to_dispatch:false};
   const rows=pages.flatMap(p=>p.workflow_runs);
   const ids=rows.map(r=>r?.id);
   const complete=pages.every(p=>p.total_count===total)&&
     rows.length===total&&ids.every(id=>Number.isSafeInteger(id)&&id>0)&&
-    new Set(ids).size===total;
+    new Set(ids).size===total&&
+    (since===null||rows.every(run=>Number.isFinite(Date.parse(run?.created_at||''))&&
+      Date.parse(run.created_at)>=Date.parse(since)));
   if(!complete)return {status:'PROVIDER_HISTORY_INCOMPLETE',complete:false,
     observed_rows:rows.length,provider_total:total,safe_to_dispatch:false};
+  // Time-bounded provider query is filtered by main + workflow_dispatch.
+  // Contradictory rows cannot establish complete scoped inventory.
+  if(since!==null&&rows.some(run=>run.event!=='workflow_dispatch'||run.head_branch!=='main'))
+    return {status:'PROVIDER_HISTORY_INCOMPLETE',complete:false,
+      observed_rows:rows.length,provider_total:total,safe_to_dispatch:false};
   const matches=rows.filter(run=>run.event==='workflow_dispatch'&&run.head_branch==='main'&&
     run.display_title===expectedTitle);
   matches.sort((a,z)=>String(z.created_at||'').localeCompare(String(a.created_at||''))||z.id-a.id);
@@ -31,6 +59,28 @@ export function classifyOriginalBrainFlightPages(pages,expectedTitle){
       run_id:found.id,run_status:found.status||'unknown',
       active:ACTIVE.has(found.status)};
   }
+  // Native concurrency is PR-number scoped, not candidate-head scoped.
+  // A different active head of the same PR can occupy that same group.
+  const expectedPr=String(expectedTitle).match(/^BRAIN delivery PR #([1-9]\d*) /i)[1];
+  const conflicting=rows.filter(run=>run.event==='workflow_dispatch'&&run.head_branch==='main'&&
+    run.status!=='completed'&&TITLE.test(String(run.display_title||''))&&
+    String(run.display_title).match(/^BRAIN delivery PR #([1-9]\d*) /i)[1]===expectedPr);
+  if(conflicting.length)return {status:'SAME_PR_ACTIVE_FLIGHT_CONFLICT',complete:false,
+    safe_to_dispatch:false,provider_total:total,observed_rows:rows.length,
+    conflicting_run_ids:conflicting.map(run=>run.id).sort((a,b)=>a-b)};
+  // A provider may expose a queued dispatch before its run-name resolves.
+  // A complete inventory cannot prove absence while any relevant identity is unknown, including terminal rows.
+  // Never treat an ambiguous run as exact candidate evidence or cancel it.
+  const unresolved=rows.filter(run=>
+    (run.event==='workflow_dispatch'||typeof run.event!=='string'||!run.event.trim())&&
+    (run.head_branch==='main'||typeof run.head_branch!=='string'||!run.head_branch.trim())&&
+    ((!TITLE.test(String(run.display_title||'')))||
+     (String(run.display_title||'').toLowerCase()===expectedTitle.toLowerCase()&&
+      (run.display_title!==expectedTitle||run.event!=='workflow_dispatch'||run.head_branch!=='main'))||
+     (typeof run.event!=='string'||!run.event.trim()||typeof run.head_branch!=='string'||!run.head_branch.trim())));
+  if(unresolved.length)return {status:unresolved.some(run=>run.status!=='completed')?'ACTIVE_FLIGHT_IDENTITY_UNPROVEN':'TERMINAL_FLIGHT_IDENTITY_UNPROVEN',complete:false,
+    safe_to_dispatch:false,provider_total:total,observed_rows:rows.length,
+    unresolved_run_ids:unresolved.map(run=>run.id).sort((a,b)=>a-b)};
   return {status:'NO_FLIGHT_PROVEN_FULL_HISTORY',complete:true,safe_to_dispatch:true,
     provider_total:total,observed_rows:rows.length,matching_flights:0};
 }
@@ -40,7 +90,9 @@ function cli(){
   const title=ix>0?process.argv[ix+1]:null;
   try{
     const pages=JSON.parse(readFileSync(0,'utf8'));
-    const result=classifyOriginalBrainFlightPages(pages,title);
+    const sinceIx=process.argv.indexOf('--since');
+    const since=sinceIx>0?process.argv[sinceIx+1]:null;
+    const result=classifyOriginalBrainFlightPages(pages,title,{since});
     process.stdout.write(JSON.stringify(result)+'\n');
     if(!result.complete)process.exitCode=78;
   }catch(error){

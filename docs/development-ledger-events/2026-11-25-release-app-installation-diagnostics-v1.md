@@ -1,0 +1,3 @@
+# Release App installation diagnostics — 25 November 2026
+
+Original #4661 continuation after #6185. Native protected job https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45570698724/job/139056331374 returned APP_INSTALLATION_SCOPE_UNPROVEN. Private key, JWT signing and App identity checks passed; actual installation predicate failing remains unknown. Classify identity, account, selected repository mode, suspension and exact permissions using fixed codes only. No broadened predicate, permission changes, token issuance, new scheduler or writer grant. Exact protected Required and CodeQL must pass, then one native main probe; preserve original #6179 deny-all. A successful probe is identity evidence only, not exclusive writer authority.

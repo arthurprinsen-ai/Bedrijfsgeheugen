@@ -1,0 +1,7 @@
+# Supabase original provider migration lock parity — 828/828
+
+Original provider source `supabase_migrations.schema_migrations` independently returned **828** applied identities at **2026-11-12T13:37:15.498091Z**, with exact terminal `20261112140500 / original_blog_provider_identity_handoff_v1` (count exactly 1). GitHub protected main merge of #5648 was `fc4cf2b22875ddc27c1a11f3021c966ed5a0c539`; the applied source file `supabase/migrations/20261112140500_original_blog_provider_identity_handoff_v1.sql` exists and pg_get_functiondef readback verifies first-party blog HTTP/Netlify source gating.
+
+The original `supabase/migration-history.lock.json` still contained 827 identities, last `20261112131500/original_no_publish_provider_side_effect_fence_v1`. Append only the new provider-proven 828th identity, preserve all earlier 827 entries. No DDL, migration application, reload, provider status invention, bypass or extra scheduler. Future original release admissions need exact lock parity; the 2026-10-25 blog remains `OVERDUE_MEASUREMENT` after its *publication* proof repair. The original 183 social-learning evidence gaps stay unresolved.
+
+Acceptance: protected Required/CodeQL checks; GitHub main SHA, independent Supabase original provider ledger, exact branch lock-source parity and agent skill projection. Regression original provider lock/history tests. This is follow-on release ledger maintenance inside the same ONE BRAIN ownership model.

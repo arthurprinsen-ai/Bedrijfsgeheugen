@@ -24,8 +24,9 @@ export function selectAffectedTests({ paths, deliveryConfig, policy }) {
   if (isKnownNonExecutableDocs(normalizedPaths, deliveryConfig)) { for (const p of tests.docs ?? []) profiles.add(p); return { profiles: stableUnique([...profiles]), lanes, contracts, failClosed: false, reason: null }; }
   for (const lane of lanes) for (const p of tests[lane] ?? []) profiles.add(p);
   if (contracts.includes('delivery-control-plane')) for (const p of tests.control_plane ?? []) profiles.add(p);
+  const unknownPaths = normalizedPaths.filter(p => { const scope = resolveForPaths([p], deliveryConfig); return !scope.lanes.length && !scope.contracts.length && !isKnownNonExecutableDocs([p], deliveryConfig); });
   const known = lanes.length > 0 || contracts.length > 0;
-  if (!known && (policy?.fail_closed_unknown_material_scope ?? policy?.affected_testing?.fail_closed_unknown_material_scope) === true) {
+  if ((!known || unknownPaths.length > 0) && (policy?.fail_closed_unknown_material_scope ?? policy?.affected_testing?.fail_closed_unknown_material_scope) === true) {
     for (const p of tests.full ?? ['required']) profiles.add(p);
     return { profiles: stableUnique([...profiles]), lanes, contracts, failClosed: true, reason: `Unknown material scope: ${normalizedPaths.join(', ')}` };
   }
@@ -80,9 +81,21 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
       cacheIdentity: buildCacheIdentity({ baseSha: raw.baseSha, candidateSha: raw.candidateSha, paths: graph.paths, contracts: graph.contracts, tests: graph.testProfiles, policyVersion: policy?.version ?? 1, environment: raw.environment ?? null, configDigest: raw.configDigest ?? null, schemaDigest: raw.schemaDigest ?? null, dependencyDigest: raw.dependencyDigest ?? null, gateVersion: raw.gateVersion ?? null, contractDigest: raw.contractDigest ?? null })
     };
   }).sort((a, b) => a.id.localeCompare(b.id));
+  // Prefer the longest dependency chain when capacity is constrained; retain stable IDs for ties.
+  const children = new Map(packages.map(p => [p.id, []]));
+  for (const p of packages) for (const dep of p.dependsOn) children.get(dep).push(p.id);
+  const depth = new Map(); const visiting = new Set();
+  function criticalDepth(id) {
+    if (depth.has(id)) return depth.get(id);
+    if (visiting.has(id)) throw new Error('Dependency cycle detected');
+    visiting.add(id);
+    const value = 1 + children.get(id).reduce((max, child) => Math.max(max, criticalDepth(child)), 0);
+    visiting.delete(id); depth.set(id, value); return value;
+  }
+  for (const p of packages) criticalDepth(p.id);
   const remaining = new Map(packages.map(p => [p.id, p])); const completed = new Set(); const waves = [];
   while (remaining.size > 0) {
-    const ready = [...remaining.values()].filter(p => p.dependsOn.every(dep => completed.has(dep))).sort((a, b) => a.id.localeCompare(b.id));
+    const ready = [...remaining.values()].filter(p => p.dependsOn.every(dep => completed.has(dep))).sort((a, b) => depth.get(b.id) - depth.get(a.id) || a.id.localeCompare(b.id));
     if (ready.length === 0) throw new Error('Dependency cycle detected');
     const wave = [];
     for (const candidate of ready) {
@@ -93,6 +106,68 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
     waves.push(wave); for (const p of wave) { completed.add(p.id); remaining.delete(p.id); }
   }
   return { fingerprint: policy?.fingerprint ?? null, maxConcurrentPerWave: maxParallelPackages, waves, packages };
+}
+
+
+/** ERIS-1: Evidence-bound Robust Integration Scheduling. Shadow only.
+ * Compare bounded schedules under two deterministic duration scenarios.
+ * Inputs are externally estimated, not calibrated probabilities or release proof.
+ * No scheduler, test selection, execution or promotion authority is created.
+ */
+export function compareRiskWeightedPlan({workPackages,deliveryConfig,policy,predictions=[]}={}){
+  const incumbent=buildExecutionPlan({workPackages,deliveryConfig,policy});
+  const {packages,maxConcurrentPerWave:capacity}=incumbent;
+  const abstain=reason=>Object.freeze({status:'ABSTAIN',reason,promotionAuthority:false,executionAuthority:false});
+  if(!packages.length||packages.length>64||!Array.isArray(predictions)||predictions.length!==packages.length)return abstain('INCOMPLETE_OR_UNBOUNDED_INPUT');
+  const byId=new Map(predictions.map(p=>[p?.id,p]));
+  if(byId.size!==packages.length)return abstain('DUPLICATE_PREDICTION');
+  const durations=new Map();
+  const validSeconds=x=>typeof x==='number'&&Number.isFinite(x)&&x>=0&&x<=86400;
+  for(const p of packages){
+    const e=byId.get(p.id);
+    if(!e||e.cacheIdentity!==p.cacheIdentity||e.baseSha!==p.baseSha||e.candidateSha!==p.candidateSha||
+       typeof e.evidenceRef!=='string'||!e.evidenceRef.trim()||
+       !validSeconds(e.medianSeconds)||!validSeconds(e.highSeconds)||e.highSeconds<e.medianSeconds||
+       !validSeconds(e.retrySeconds)||typeof e.failureUpper!=='number'||!Number.isFinite(e.failureUpper)||
+       e.failureUpper<0||e.failureUpper>1)return abstain('INVALID_OR_STALE_PREDICTION');
+    // One-retry surcharge, not a quantile of a joint distribution.
+    durations.set(p.id,[e.medianSeconds,e.highSeconds+e.failureUpper*e.retrySeconds]);
+  }
+  const children=new Map(packages.map(p=>[p.id,[]]));
+  for(const p of packages)for(const d of p.dependsOn)children.get(d).push(p.id);
+  const critical=new Map();
+  function tail(id){
+    if(critical.has(id))return critical.get(id);
+    const cost=durations.get(id)[1]+Math.max(0,...children.get(id).map(tail));
+    critical.set(id,cost);return cost;
+  }
+  for(const p of packages)tail(p.id);
+  function schedule(score){
+    const pending=new Map(packages.map(p=>[p.id,p])),done=new Set(),waves=[];
+    while(pending.size){
+      const ready=[...pending.values()].filter(p=>p.dependsOn.every(d=>done.has(d)))
+        .sort((a,b)=>score(b)-score(a)||a.id.localeCompare(b.id));
+      const wave=[];
+      for(const p of ready)if(wave.length<capacity&&wave.every(q=>!packageConflict(p,q)))wave.push(p);
+      if(!wave.length)throw Error('ERIS_UNSCHEDULABLE');
+      waves.push(wave);
+      for(const p of wave){done.add(p.id);pending.delete(p.id);}
+    }
+    return waves;
+  }
+  function evaluate(waves){
+    const costs=[0,1].map(s=>waves.reduce((sum,w)=>sum+Math.max(...w.map(p=>durations.get(p.id)[s])),0));
+    return {waves:waves.map(w=>w.map(p=>p.id)),nominalSeconds:costs[0],conservativeSeconds:costs[1]};
+  }
+  const baseline=evaluate(incumbent.waves);
+  const variants=[['weighted-critical-path',schedule(p=>critical.get(p.id))],
+    ['longest-risk-duration',schedule(p=>durations.get(p.id)[1])]];
+  const alternatives=variants.map(([method,waves])=>({method,...evaluate(waves)}));
+  const preferred=alternatives.filter(p=>p.nominalSeconds<=baseline.nominalSeconds&&p.conservativeSeconds<baseline.conservativeSeconds)
+    .sort((a,b)=>a.conservativeSeconds-b.conservativeSeconds||a.nominalSeconds-b.nominalSeconds||a.method.localeCompare(b.method))[0];
+  return Object.freeze({status:preferred?'SHADOW_CHALLENGER':'KEEP_INCUMBENT',model:'ERIS-1',
+    interpretation:'SCENARIO_SURROGATE_NOT_MEASURED_OR_CALIBRATED',baseline,alternatives,
+    preferred:preferred??null,promotionAuthority:false,executionAuthority:false});
 }
 
 export async function executePlanWaves(plan, workers = {}) {

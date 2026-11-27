@@ -15,6 +15,12 @@ export const MIRA_PROVIDER_OUTPUT_PRESPEND_CONTRACT='mira-native-provider-output
 // NOT spendable again until a new candidate is justified by new evidence.
 export const MIRA_FACE_GATE_MIN=0.94;
 export const MIRA_MODEL_FACE_EVIDENCE=Object.freeze([
+  // Native OpenArt result verified 24 Nov; the terminal frame failed the
+  // original independent face gate. Format compliance is not identity proof.
+  Object.freeze({model:'wan3-0',modes:['element2video'],best_face_score:0.920,
+    rejected_histories:['YIsid7ndXoQRyMBHsGvq'],observed:['2026-11-24'],
+    source:'canonical media job b1ea15d9-7c9b-4667-8ac4-f9cc43147e4b; independent end-frame rejection',
+    observed_frame:'end',native_format:'1080x1920/8s/30fps/silent',quoted_credits:640}),
   Object.freeze({model:'veo3-1',modes:['image2video','element2video'],best_face_score:0.9,
     rejected_histories:['6GYKFxqd9aif8WacnMnL','B5uX1JhoC8hl0kiFTrnl'],
     observed:['2026-11-03','2026-11-07'],source:'brain_failure_occurrences VIDEO_FRAME_CANONICAL_MIRA_FACE_MISMATCH'})
@@ -59,6 +65,27 @@ export function assessMiraProviderBeforeSpend({model,mode,params,masterReference
       observed:MIRA_WAN27_PROVIDER_OBSERVATION,
       reason:'Wan 2.7 I2V resolution is a pixel-count tier. The provider preserves input aspect ratio; OpenArt Wan image2video has no aspect-ratio or mute output control. Actual 1080p result was 1292x1604 with audio.',
       recommended_action:'Use a verified native-9:16, mute-capable provider mode with immutable Mira master, or obtain a separately approved original-master-preserving 9:16 input workflow.'};
+  }
+  // OpenArt's current connected, model-specific FORM for Wan 3.0
+  // element2video (read on 2026-11-17) exposes explicit 9:16, 1080p,
+  // duration 8 and audio:false. This allows ONE source-locked, exclusively
+  // claimed QUALITY TEST under an independently verified <=640-credit quote.
+  // It does NOT certify actual video geometry, silence, identity or motion;
+  // the original native-MP4/frame/temporal verifier remains the only approval.
+  // Unlike Wan 2.7 image2video, this is a different model and reference route.
+  // A later observed quality failure must enter immutable MIRA_MODEL_FACE_EVIDENCE
+  // before any retry, and a new exact history must never be silently recycled.
+  if(name==='wan3-0'&&kind==='element2video'&&
+     p.aspectRatio==='9:16'&&p.audio===false&&
+     (!p.mode||p.mode==='standard')){
+    return {...base,ok:true,code:'PROVIDER_MODEL_CONTROLS_PRESENT_TEST_ONLY',
+      evidence:'Connected OpenArt Wan 3.0 element2video model form: resolution 1080p, aspectRatio 9:16, audio false, duration 8, videoCount 1.',
+      model:'wan3-0',generation_mode:'element2video',
+      requires_verified_original_project_and_credit_quote:true,
+      max_quote_credits:640,
+      actual_media_verified:false,approved_for_publish:false,
+      requires_native_mp4_frame_and_temporal_verifier:true,
+      one_exclusive_source_locked_candidate_only:true};
   }
   // Only the observed Veo3.1 control surface has both explicit 9:16 and mute
   // settings and a historical actual native 1080x1920 result. Its past face

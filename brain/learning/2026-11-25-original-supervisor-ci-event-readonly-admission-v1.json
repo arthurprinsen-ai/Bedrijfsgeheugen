@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "powerhouse|delivery|original-ci-event-readonly-admission|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "original powerhouse delivery recovery supervisor",
+  "root_cause": "schedule/manual only recovery supervisor; overlapping deployment handlers already exist",
+  "prevention_rule": "independent exact native run identity, current PR and replay check before read-only eligibility; never infer mutation authority",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-recovery-ci-event-admission-20261125.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-recovery-ci-event-admission-20261125.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-recovery-ci-event-admission-20261125.test.mjs"
+    ]
+  },
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+    "isolated_assertions_passed": 21,
+    "production_verified": false
+  },
+  "compiler": {
+    "failure_class": "CI_EVENT_ADMISSION_UNPROVEN",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

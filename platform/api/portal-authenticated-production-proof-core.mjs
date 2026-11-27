@@ -29,6 +29,43 @@ export function decodeJwtPayload(token){
   }
 }
 
+/**
+ * Inspect ONLY a signed-admin, immutable-deploy readback from the existing
+ * Powerhouse control-plane. No input identifiers or credentials are persisted.
+ * This proves internal source coverage, NEVER external delivery or outcomes.
+ */
+export function projectOriginalInnovationAdminProof(body,headerScope){
+  const audit=body?.systemIntegration?.salesExecutionAudit;
+  const integer=value=>Number.isSafeInteger(value)&&value>=0;
+  if(headerScope!=='FULL_LAST_7D'||audit?.scope!=='FULL_LAST_7D'||
+     !integer(audit?.totalEvents7d)||audit.totalEvents7d===0||
+     audit.totalEvents7d>500||audit.sampledEvents!==audit.totalEvents7d||
+     !integer(audit.actionBackedSample)||!integer(audit.unsupportedSample)||
+     !integer(audit.missingActionSample)||!integer(audit.currentActionNotDoneSample)||
+     !integer(audit.currentExecutionWithoutEventSample)||
+     audit.currentExecutionWithoutEventSample>audit.actionBackedSample||
+     audit.actionBackedSample+audit.unsupportedSample!==audit.totalEvents7d||
+     audit.missingActionSample>audit.unsupportedSample||
+     audit.currentActionNotDoneSample>audit.actionBackedSample||
+     audit.externalProviderProof!==false||audit.paidOutcomeProof!==false||
+     audit.readOnly!==true) return null;
+  const validState=audit.unsupportedSample>0?'SOURCE_EXECUTION_GAP':
+    audit.currentExecutionWithoutEventSample>0?'CURRENT_EXECUTION_EVENT_MISSING':
+    'HISTORICAL_WRITER_ACTION_JOINED_PROVIDER_UNVERIFIED';
+  if(audit.state!==validState)return null;
+  return Object.freeze({
+    scope:'FULL_LAST_7D',total:audit.totalEvents7d,
+    historical_writer_backed:audit.actionBackedSample,
+    unsupported:audit.unsupportedSample,
+    missing_actions:audit.missingActionSample,
+    currently_not_done:audit.currentActionNotDoneSample,
+    unlogged_execution_attempts:audit.currentExecutionWithoutEventSample,
+    internal_source_gap_present:audit.unsupportedSample>0||
+      audit.currentExecutionWithoutEventSample>0,
+    external_provider_proven:false,business_outcome_proven:false
+  });
+}
+
 export async function runPortalAuthenticatedProductionProof({
   deploy,
   identityAdmin,
@@ -36,6 +73,7 @@ export async function runPortalAuthenticatedProductionProof({
   fetchImpl=fetch,
   now=()=>new Date().toISOString(),
   randomPassword,
+  probeInnovationAudit=false,
 }={}){
   const commitRef=clean(deploy?.commitRef).toLowerCase();
   const deployId=clean(deploy?.id);
@@ -60,6 +98,12 @@ export async function runPortalAuthenticatedProductionProof({
     one_loop_assurance_unauthenticated_denied:false,
     one_loop_assurance_counts:null,
     one_loop_assurance_failure_code:'NOT_EXECUTED',
+    innovation_audit_proof:'UNVERIFIED',
+    innovation_audit_admin_verified:false,
+    innovation_audit_nonadmin_denied:false,
+    innovation_audit_unauthenticated_denied:false,
+    innovation_audit_counts:null,
+    innovation_audit_failure_code:'NOT_EXECUTED',
   };
   if(!/^[0-9a-f]{40}$/.test(commitRef))return {...base,failure_code:'INVALID_COMMIT_REF'};
   if(!deployId)return {...base,failure_code:'DEPLOY_ID_MISSING'};
@@ -78,6 +122,8 @@ export async function runPortalAuthenticatedProductionProof({
   // Never serialize Identity tokens, private forecasts or raw loop rows.
   const assurance={admin:false,nonadmin:false,anonymous:false,counts:null,failure:'NOT_EXECUTED'};
   const oneLoopUrl=`${immutableUrl}/api/powerhouse-one-loop-assurance`;
+  const innovationUrl=`${immutableUrl}/api/powerhouse-control-plane`;
+  const innovation={admin:false,nonadmin:false,anonymous:false,counts:null,failure:'NOT_EXECUTED'};
 
   try{
     const identity=getIdentityConfigFn();
@@ -203,6 +249,27 @@ export async function runPortalAuthenticatedProductionProof({
       }catch{
         assurance.failure='ORIGINAL_ASSURANCE_ROUTE_HTTP_UNVERIFIED';
       }
+      if(probeInnovationAudit){
+        // Same ephemeral, signed admin and distinct non-admin used by the
+        // existing two-tenant proof. Never create a second identity workflow.
+        try{
+          const response=await fetchImpl(innovationUrl,{
+            method:'GET',headers:{accept:'application/json',
+              authorization:`Bearer ${accessToken}`,'cache-control':'no-cache'}
+          });
+          if(slot==='a'){
+            const projection=response?.status===200?await response.json().catch(()=>null):null;
+            const header=response?.headers?.get?.('x-bg-innovation-audit-scope')??null;
+            const counts=projectOriginalInnovationAdminProof(projection,header);
+            if(counts){innovation.admin=true;innovation.counts=counts;innovation.failure=null;}
+            else innovation.failure='ORIGINAL_INNOVATION_ADMIN_SOURCE_READBACK_UNVERIFIED';
+          }else{
+            const denied=response?.status===403?await response.json().catch(()=>null):null;
+            innovation.nonadmin=response?.status===403&&denied?.error==='FORBIDDEN';
+            if(!innovation.nonadmin)innovation.failure='ORIGINAL_INNOVATION_NONADMIN_NOT_DENIED';
+          }
+        }catch{innovation.failure='ORIGINAL_INNOVATION_ROUTE_HTTP_UNVERIFIED';}
+      }
     }
     crossTenantScopeVerified=
       observations.length===2&&
@@ -215,6 +282,15 @@ export async function runPortalAuthenticatedProductionProof({
       assurance.anonymous=response?.status===401&&body?.error==='UNAUTHENTICATED';
       if(!assurance.anonymous)assurance.failure='ORIGINAL_ASSURANCE_ANONYMOUS_NOT_DENIED';
     }catch{assurance.failure='ORIGINAL_ASSURANCE_ANONYMOUS_HTTP_UNVERIFIED';}
+    if(probeInnovationAudit){
+      try{
+        const response=await fetchImpl(innovationUrl,{method:'GET',
+          headers:{accept:'application/json','cache-control':'no-cache'}});
+        const denied=response?.status===401?await response.json().catch(()=>null):null;
+        innovation.anonymous=response?.status===401&&denied?.error==='UNAUTHORIZED';
+        if(!innovation.anonymous)innovation.failure='ORIGINAL_INNOVATION_ANONYMOUS_NOT_DENIED';
+      }catch{innovation.failure='ORIGINAL_INNOVATION_ANONYMOUS_HTTP_UNVERIFIED';}
+    }
   }catch(error){
     failureCode=safeCode(error);
   }finally{
@@ -251,7 +327,53 @@ export async function runPortalAuthenticatedProductionProof({
     one_loop_assurance_counts:assurance.admin&&cleanup==='DELETED'?assurance.counts:null,
     one_loop_assurance_failure_code:assurance.admin&&assurance.nonadmin&&assurance.anonymous&&
       cleanup==='DELETED'&&!failureCode?null:assurance.failure||failureCode||'PROOF_INCOMPLETE',
+    innovation_audit_proof:probeInnovationAudit&&!failureCode&&cleanup==='DELETED'&&
+      innovation.admin&&innovation.nonadmin&&innovation.anonymous?'PROVEN':'UNVERIFIED',
+    innovation_audit_admin_verified:probeInnovationAudit&&innovation.admin&&cleanup==='DELETED',
+    innovation_audit_nonadmin_denied:probeInnovationAudit&&innovation.nonadmin,
+    innovation_audit_unauthenticated_denied:probeInnovationAudit&&innovation.anonymous,
+    innovation_audit_counts:probeInnovationAudit&&innovation.admin&&cleanup==='DELETED'?innovation.counts:null,
+    innovation_audit_failure_code:probeInnovationAudit&&innovation.admin&&innovation.nonadmin&&
+      innovation.anonymous&&cleanup==='DELETED'&&!failureCode?null:
+      innovation.failure||failureCode||'PROOF_INCOMPLETE',
   };
+}
+
+/**
+ * Exact immutable-deploy innovation admin proof, never interpreted as an
+ * autonomous agent ACK or commercial provider delivery. Called only when
+ * the protected source/Identity/deploy-proof path changed.
+ */
+export function assertOriginalInnovationProductionReleaseProof(proof){
+  if(proof?.innovation_audit_proof!=='PROVEN'||
+     proof?.innovation_audit_admin_verified!==true||
+     proof?.innovation_audit_nonadmin_denied!==true||
+     proof?.innovation_audit_unauthenticated_denied!==true||
+     proof?.innovation_audit_failure_code!==null||
+     proof?.synthetic_user_cleanup!=='DELETED')
+    throw fail('ORIGINAL_INNOVATION_ADMIN_PROOF_NOT_PROVEN');
+  const c=proof.innovation_audit_counts;
+  if(!c||c.scope!=='FULL_LAST_7D'||
+     !Number.isSafeInteger(c.total)||c.total<1||c.total>500||
+     ![c.historical_writer_backed,c.unsupported,c.missing_actions,c.currently_not_done,
+       c.unlogged_execution_attempts].every(x=>Number.isSafeInteger(x)&&x>=0)||
+     c.unlogged_execution_attempts>c.historical_writer_backed||
+     c.internal_source_gap_present!==(c.unsupported>0||c.unlogged_execution_attempts>0)||
+     c.historical_writer_backed+c.unsupported!==c.total||
+     c.missing_actions>c.unsupported||
+     c.currently_not_done>c.historical_writer_backed||
+     c.external_provider_proven!==false||
+     c.business_outcome_proven!==false)
+    throw fail('ORIGINAL_INNOVATION_SOURCE_COUNTS_INVALID');
+  return Object.freeze({
+    scope:'FULL_LAST_7D',events:c.total,
+    historical_writer_backed:c.historical_writer_backed,
+    unsupported:c.unsupported,currently_not_done:c.currently_not_done,
+    unlogged_execution_attempts:c.unlogged_execution_attempts,
+    internal_source_gap_present:c.internal_source_gap_present,
+    original_admin_verified:true,nonadmin_denied:true,unauthenticated_denied:true,
+    delivery_proven:false,revenue_proven:false
+  });
 }
 
 export const PORTAL_AUTH_PROOF_CONTRACT=CONTRACT;

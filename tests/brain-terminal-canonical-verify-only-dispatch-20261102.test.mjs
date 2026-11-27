@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {projectOtherData} from '../netlify/functions/powerhouse-cro-other-data.mjs';
-import {classifyOriginalBrainFlightPages} from '../tools/delivery/brain-verification-flight-index.mjs';
+import {classifyOriginalBrainFlightPages,originalBrainFlightSince} from '../tools/delivery/brain-verification-flight-index.mjs';
 
 const terminal=readFileSync('.github/workflows/obligation-terminal-closure.yml','utf8');
 const brain=readFileSync('.github/workflows/unified-brain-delivery.yml','utf8');
@@ -27,7 +27,7 @@ test('still requires real successful BRAIN exact candidate and protected main so
   assert.match(terminal,/TERMINAL_CRITICAL_GATE_NOT_TERMINAL/);
   assert.match(terminal,/TERMINAL_CRITICAL_GATE_FAILED/);
   assert.match(terminal,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
-  assert.match(terminal,/\.display_title==\$title/);
+  assert.match(terminal,/brain-verification-flight-index\.mjs --title "\$expected_title" --since "\$since"/);
   assert.match(brain,/MERGED_CANDIDATE_READ_ONLY_VERIFIED/);
   assert.match(brain,/verification_only != true/);
   assert.match(brain,/BG169 GitHub-native production transport/);
@@ -88,7 +88,10 @@ test('terminal reuses even main-indexed BRAIN run for exact PR/head, not PR head
   assert.match(terminalStep,/BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED/);
   assert.match(terminalStep,/BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN/);
   assert.match(terminalStep,/gh api --paginate --slurp/);
-  assert.match(terminalStep,/runs\?branch=main&event=workflow_dispatch&per_page=100/);
+  assert.match(terminalStep,/runs\?branch=main&event=workflow_dispatch&created=/);
+  assert.match(terminalStep,/originalBrainFlightSince/);
+  assert.match(terminalStep,/--since "\$since"/);
+  assert.match(terminalStep,/PROVIDER_READ_UNVERIFIED/);
   assert.match(terminalStep,/brain-verification-flight-index\.mjs/);
   assert.match(terminalStep,/BRAIN_EXACT_VERIFICATION_ALREADY_REQUESTED/);
   assert.doesNotMatch(terminalStep,/runs\?head_sha=\$\{HEAD_SHA\}/);
@@ -147,4 +150,68 @@ test('partial pages, provider identity conflict and invalid source fail closed',
   assert.equal(classifyOriginalBrainFlightPages([],title).complete,false);
   assert.equal(classifyOriginalBrainFlightPages([{total_count:0,workflow_runs:[]}],'not-an-original-run').complete,false);
   assert.equal(classifyOriginalBrainFlightPages([{total_count:0,workflow_runs:[]}],title).safe_to_dispatch,true);
+});
+
+test('provider-created PR lower bound scopes a complete original flight history without risking a pre-PR match',()=>{
+  const prCreated='2026-11-12T17:07:05Z';
+  assert.equal(originalBrainFlightSince(prCreated),'2026-11-12T16:57:05Z');
+  assert.throws(()=>originalBrainFlightSince('not-a-date'),/BRAIN_PROVIDER_PR_CREATED_AT_INVALID/);
+  assert.throws(()=>originalBrainFlightSince('2026-13-50T17:07:05Z'),/BRAIN_PROVIDER_PR_CREATED_AT_INVALID/);
+  assert.match(terminal,/created=\$\{created_filter\}/);
+  assert.match(terminal,/gh api --paginate --slurp "\$query"/);
+  assert.match(terminal,/for guard_check in 1 2; do/);
+});
+
+test('no false green on GitHub 1000 result cap, old timestamps, truncated or shifting PR-created flight pages',()=>{
+  const since='2026-11-12T16:57:05Z';
+  const title='BRAIN delivery PR #5673 '+('f'.repeat(40));
+  const mk=(id,t,status='completed')=>({id,created_at:t,event:'workflow_dispatch',
+    head_branch:'main',display_title:title,status});
+  const complete=[{total_count:2,workflow_runs:[mk(1,'2026-11-12T17:01:00Z')]},
+    {total_count:2,workflow_runs:[mk(2,'2026-11-12T17:02:00Z','in_progress')]}];
+  const result=classifyOriginalBrainFlightPages(complete,title,{since});
+  assert.equal(result.status,'EXISTING_FLIGHT');
+  assert.equal(result.run_id,2);
+  assert.equal(classifyOriginalBrainFlightPages(complete,'BRAIN delivery PR #5679 '+('f'.repeat(40)),{since}).safe_to_dispatch,true);
+  assert.equal(classifyOriginalBrainFlightPages([{total_count:1000,workflow_runs:[]}],title,{since}).safe_to_dispatch,false);
+  assert.equal(classifyOriginalBrainFlightPages([complete[0]],title,{since}).safe_to_dispatch,false);
+  assert.equal(classifyOriginalBrainFlightPages([{total_count:1,workflow_runs:[mk(3,'2026-11-10T10:00:00Z')]}],title,{since}).safe_to_dispatch,false);
+  assert.equal(classifyOriginalBrainFlightPages(complete,title,{since:'invalid-date'}).safe_to_dispatch,false);
+  assert.equal(classifyOriginalBrainFlightPages([
+    {total_count:2,workflow_runs:[mk(1,'2026-11-12T17:01:00Z')]},
+    {total_count:3,workflow_runs:[mk(2,'2026-11-12T17:02:00Z')]}
+  ],title,{since}).safe_to_dispatch,false);
+});
+
+test('final terminal BRAIN gate consumes the same complete original PR-era flight history as the dispatch guard',()=>{
+  const critical=terminal.split('name: Verify exact-head critical delivery gates before terminal claim')[1]
+    ?.split('name: Require explicit Supabase Edge Function provider readback before terminal claim')[0];
+  assert.ok(critical,'terminal critical gate is required');
+  const consumer=critical.split('require_workflow() {')[1]?.split('require_required_or_descendant() {')[0];
+  assert.ok(consumer,'the original terminal BRAIN verifier must remain the same owner');
+  assert.match(consumer,/originalBrainFlightSince/);
+  assert.match(consumer,/created=\$\{created_filter\}/);
+  assert.match(consumer,/gh api --paginate --slurp "\$query"/);
+  assert.match(consumer,/brain-verification-flight-index\.mjs --title "\$expected_title" --since "\$since"/);
+  assert.match(consumer,/TERMINAL_BRAIN_HISTORY_INCOMPLETE/);
+  assert.match(consumer,/TERMINAL_BRAIN_FLIGHT_ID_UNVERIFIED/);
+  assert.match(consumer,/TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED/);
+  assert.match(consumer,/TERMINAL_CRITICAL_GATE_FAILED/);
+  assert.match(consumer,/TERMINAL_BRAIN_WORKFLOW_SOURCE_NOT_PROTECTED_MAIN/);
+  assert.doesNotMatch(consumer,/runs\?branch=main&event=workflow_dispatch&per_page=100/);
+  assert.doesNotMatch(consumer,/TERMINAL_CRITICAL_GATE_PROVEN.*NO_FLIGHT_PROVEN_FULL_HISTORY/);
+
+  const title='BRAIN delivery PR #5816 '+('a'.repeat(40));
+  const rows=Array.from({length:205},(_,i)=>({
+    id:1000+i,created_at:'2026-11-14T21:25:00Z',
+    event:'workflow_dispatch',head_branch:'main',status:'completed',
+    display_title:i===180?title:'BRAIN delivery PR #9999 '+('b'.repeat(40))
+  }));
+  const pages=[
+    {total_count:205,workflow_runs:rows.slice(0,100)},
+    {total_count:205,workflow_runs:rows.slice(100,200)},
+    {total_count:205,workflow_runs:rows.slice(200)}
+  ];
+  assert.equal(classifyOriginalBrainFlightPages(pages.slice(0,1),title,{since:'2026-11-14T21:00:00Z'}).complete,false);
+  assert.equal(classifyOriginalBrainFlightPages(pages,title,{since:'2026-11-14T21:00:00Z'}).run_id,1180);
 });

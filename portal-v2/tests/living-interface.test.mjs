@@ -52,5 +52,5 @@ test('shared field primitive connects instructions, required state and error to 
  assert.match(markup,/id="omzet-help"/);
  assert.match(markup,/id="omzet-error"/);
  assert.match(read('form-primitives.js'),/node\.checkValidity\(\)/);
- assert.match(read('form-primitives.js'),/if\(!valid\).*return/);
+ assert.match(read('form-primitives.js'),/if\(!valid\)\s*\{[\s\S]*?\breturn;/);
 });

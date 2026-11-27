@@ -25,7 +25,7 @@ test('publisher requires capability consumption before provider calls',()=>{
     assert.ok(consume>branch,'capability consumption must occur inside the channel branch');
     assert.ok(provider>consume,'provider side effect must occur after capability consumption');
   };
-  branchOrder("if (row.channel === 'linkedin_personal')",'publishLinkedInPersonalViaComposio(db,art)');
+  branchOrder("if (row.channel === 'linkedin_personal')",'publishLinkedInPersonalViaComposio(db,art,{');
   branchOrder("if (row.channel === 'linkedin_company')",'publishLinkedInCompanyViaComposio(db,art)');
   branchOrder("if (row.channel === 'instagram_company')",'publishInstagramViaComposio(db,art,runDate,instagramContext)');
   branchOrder("const input: Record<string,unknown>",'created = await createPost(bufferToken, input)');
@@ -57,9 +57,9 @@ test('only canonical publisher contains direct provider side-effect primitives',
 test('completion supervisor requires channel policy authorization evidence',()=>{
   const evidence=[
     ['CANDIDATE_TESTS','BRAIN_DELIVERY'],['PROTECTED_DELIVERY','BG169'],['PRODUCTION_IDENTITY','BG169'],
-    ['FUNCTIONAL_READBACK','PRODUCTION_READBACK'],['OBLIGATIONS_COMPLETE','OUTCOME_OBLIGATION_RUNTIME'],
+    ['FUNCTIONAL_READBACK','PRODUCTION_READBACK'],['OBLIGATIONS_COMPLETE','PRODUCTION_READBACK'],
     ['CAPABILITY_HANDOFF','BG167'],['LEARNING_WRITEBACK','BG168_BG166']
-  ].map(([type,producer])=>({type,producer,accepted:true,independent:true,taskIdentity:'social-publication:x',candidateIdentity:'c',productionIdentity:type==='CANDIDATE_TESTS'?'':'p'}));
+  ].map(([type,producer])=>({type,producer,accepted:true,independent:true,taskIdentity:'social-publication:x',candidateIdentity:'c',productionIdentity:type==='CANDIDATE_TESTS'?'':'p',...(type==='OBLIGATIONS_COMPLETE'?{exactProduction:true,metadata:{materialSourceRef:'material-readback:social-publication:x',materialSourceRevision:'source-rev:c'}}:{})}));
   const result=evaluateCompletion({obligationId:'social-publication:x',workId:'w',candidateIdentity:'c',productionIdentity:'p',channelPolicyRequired:true,materialObligations:[],evidence});
   assert.equal(result.success,false);
   assert.ok(result.required_evidence.includes('CHANNEL_POLICY_AUTHORIZATION'));

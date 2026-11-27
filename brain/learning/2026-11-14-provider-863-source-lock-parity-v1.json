@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-863-lock-862-source-parity|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "Protected original source-to-executor PR #5797 merged, and the native Supabase provider applied the original source-consumption function migration 20261114230000. The immutable original GitHub migration source lock still held only 862 provider-attested identities, causing a missing provider-to-source lock handoff; do not rerun already-applied SQL.",
+  "prevention": "The same original Supabase release owner must independently read back each native provider-applied (version,name) after protected merge and append exactly this real identity to the immutable source lock through one protected source-only PR; never predeclare candidates or create parallel executors.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 863,
+    "source_lock_count_before": 862,
+    "matched_provider_prefix_count": 862,
+    "matched_prefix_conflicts": 0,
+    "provider_applied_extra": {
+      "version": "20261114230000",
+      "name": "original_source_consumption_stage_receipt_parity_v1"
+    },
+    "existing_source_sql": "supabase/migrations/20261114230000_original_source_consumption_stage_receipt_parity_v1.sql",
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5797",
+    "original_merged_sha": "377f114ee8a8ad9f3fdbd6b4dde4132363aea228",
+    "original_native_function": "public.powerhouse_source_consumption_assurance_v1()",
+    "original_native_readback_at": "2026-11-14T19:37:29.228102Z",
+    "source_consumption_healthy": true,
+    "source_consumption_scope": "ORIGINAL_SOURCE_TO_EXECUTOR_RECEIPT_ONLY",
+    "source_enriched_connections": 23295,
+    "provider_delivery_claim": "NOT_ASSESSED_BY_THIS_READ_MODEL",
+    "commercial_outcome_claim": "NOT_ASSESSED_BY_THIS_READ_MODEL",
+    "native_history_observed_at": "2026-11-14T19:38:33.585619Z",
+    "security": "Original applied SQL NOT rerun; no new RLS, cron, agent, queue, send or provider claim."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "Provider 863 exact native-applied version+name identities and protected main original lock 863/863, with 862-entry immutable prefix and no predeclaration",
+    "business_effect": "SOURCE_CONSUMPTION_ASSURANCE_ONLY; not provider/outcome/revenue."
+  },
+  "no_parallel_executor": true
+}

@@ -1,0 +1,16 @@
+# 17 november 2026 — origineel innovatie-kwaliteitsbewijs naar uitvoerbare vervolgstap
+
+Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+Originele bronreconciliatie: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5987
+Originele productierun: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44182776109
+
+## Feitelijke productiekloof
+De vorige oorspronkelijke engineering-run schreef 14/14 `original_evidence_reconciliation`-bewijzen via versiegebonden CAS en onafhankelijke Supabase-GET. Daarvan zijn er zeven historisch verified met nog te meten effect, twee guarded met onafhankelijke actuele proof nodig, twee no-change reviews, één CRO-holdout, één bestaande eerder beschermde bron en één gepubliceerde code-release met ongetoetste impact. **Alle 14 INNOVATION_DELIVERY-verplichtingen blijven OPEN**. De aparte bestaande originele `innovation-original-delivery-continuity.mjs` las die nieuwe kwaliteitsbewijzen echter niet en classificeerde de negen brongebonden kwaliteitsopdrachten nog generiek als `BASELINE_OR_SAFE_SCOPE_DUE`. Hierdoor bleef de overdracht naar de volgende agenthandeling abstract.
+
+## Reparatie zonder extra agent
+Dezelfde originele delivery-continuity-script gebruikt nu de originele `QUALITY_NEXT`-mapping uit dezelfde eerste-party reconciler. Alleen een `bounded_learning_followup` met oorspronkelijke beslissing `BASELINE_AND_EVALUATION_DESIGN_REQUIRED` en een exact passende bestaande ONE BRAIN-receipt mag de status wijzigen naar historisch verified/current-effect-due of historisch guarded/current-proof-due. Vergelijk originele kandidaat- en operation-ID, bronrevisie, payload-SHA, oorspronkelijke owner, wijzigings-ID, pre-review- en beslissingsfingerprints, kwaliteitsfingerprint en bewijsdigest, toegestane actie, expliciete consumenten- en effect-ontkenning. Bij afwijking faalt de originele run gesloten in plaats van een actie te fabriceren.
+
+De originele `examineOriginalDelivery` registreert voortaan de exacte oorspronkelijke `original_quality_next_action` en gecontroleerde bewijsfingerprint in zijn bestaande versiegebonden continuïteitsbewijs. Dit is een **instructie voor de oorspronkelijke eigenaar** en geen externe schrijf- of publicatiebevoegdheid. CRO-holdout, concrete technische PR’s en bestaande implementaties blijven apart. De bestaande `original_delivery_recovery` in het enige Powerhouse Daily Self Evolution schema voert dit uit; geen tweede job of cron.
+
+## Automatisch testen en pas afsluiten bij onafhankelijk effect
+Nieuwe negatieve historische replay en canary: `tests/brain-innovation-quality-next-action-continuity-20261117.test.mjs`, plus verankering van beide originele kwaliteitstests in `.github/workflows/lane-automation.yml`. Foutieve kwaliteit, owner, bronrevisie, status of nepgeclaimd effect veroorzaken testfouten. Required en CodeQL moeten op exact hoofdcommit groen zijn en de beschermde merge moet slagen. Vervolgens originele `original_delivery_recovery` één keer uitvoeren, onafhankelijk native Supabase-GET lezen en de negen specifieke stadia controleren. Alleen echte build/release, named consumer PROCESSED, Heartbeat baseline/actual met holdout waar nodig en toegepaste leercorrectie sluiten individuele innovaties.

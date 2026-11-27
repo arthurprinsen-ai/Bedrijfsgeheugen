@@ -1,0 +1,25 @@
+# Gratis publieke zakelijke e-mailvondsten — uitbreiding bestaande Powerhouse-lus
+
+Datum 14 november 2026. Parent P0 #4198. De bestaande dagelijkse contextbeoordeling van 23.295 relaties is niet hetzelfde als daadwerkelijk nieuwe zakelijke adressen vinden. Voor de wijziging zijn 605 contactadressen in `bg_connecties.email` opgeslagen. De bestaande externe recherchefunctie zoekt bedrijfs-/nieuwstriggers, maar verwerkte geen expliciet gepubliceerd zakelijk contactmailadres voor een geïdentificeerde persoon.
+
+## Hoe het nu wordt aangeleverd
+De originele commerciële cron #116 voert dezelfde `powerhouse-relationship-public-research` Edge-functie uit. Eén bedrijfspagina uit de **reeds bestaande** SERP-uitkomst wordt maximaal 2,5 seconden en 160 kB uitgelezen. Deze extra openbaar toegankelijke webpagina kost geen extra SERP/API-aanvraag; de bestaande DataForSEO-zoekoproep zelf is niet gratis. De bron moet openbaar en HTTPS zijn, zonder login/redirect. Naam, bedrijf en werkdomein moeten overeenkomen; het adres moet letterlijk als gepubliceerde `mailto:` op de bronpagina naast de naam voorkomen. Een onjuist, oud, privémail of algemeen `info@` adres wordt niet als persoonsgebonden e-mail aangenomen.
+
+## Beveiligd opslaan zonder onverwachte verzending
+De originele researchacties vereisen al menselijke goedkeuring van die relatie; bij ingetrokken goedkeuring/opt-out/suppressie geldt HOLD. Vondsten worden alleen met bron, tijd, identiteit, confidence en originele actie-ID onder `bg_connecties.extra.public_work_email_candidate` opgeslagen. E-mailverificatie en rechtmatige kanaalbevoegdheid zijn een **aparte** volgende poort. `bg_connecties.email` wordt door deze verandering nooit aangepast. Een gevonden werkadres blijft daarom niet-verzendbaar.
+
+Een idempotent, geanonimiseerd e-mailvrij `powerhouse_runtime_events`-event geeft de originele bron-INGEST-ACK. De originele identity graph #138 plus ONE BRAIN/Heartbeat/Next Best Action moeten onafhankelijk nog **PROCESSED** aantonen. Bij gebrek aan exacte persoon, providerbewijs, revisie of consumer receipt blijft OPEN; bronvondst of Edge 200 is geen commercieel resultaat.
+
+## Dagelijkse KPI's
+De teller `23.295/23.295` blijft contextbeoordeling. Apart publiceren: (a) openbare bedrijfspagina's bekeken, (b) geldige publieke werkadres**kandidaten** geparkeerd, (c) daadwerkelijk door origineel consumer-pad verwerkte kandidaten, (d) onafhankelijk gevalideerde/legaal geautoriseerde nieuwe adressen naar kanoniek e-mailveld, (e) aantoonbare Gmail-verzendingen met provider-ID/readback, en (f) resultaat/learning. Bij 0 of UNKNOWN niet groen claimen.
+
+## Acceptatiecriteria
+Node- en BRAIN-tests, protected Required + CodeQL + Supabase Preview, beschermd merge, exacte deployed Edge-source/status readback, natuurlijke cron #116/#138 uitvoering, en werkelijke kandidaat/consumer-readback. Alleen geobserveerde prestaties worden als live aangemerkt. Geen tweede cron, queue, e-mailpublisher, betaalde enrichment-call of extra contactdatabase.
+
+## Productiecorrectie: vermijd nulresultaat door toestemming als onderzoeksvoorwaarde
+
+De broncontrolestatistiek toont dat alle 123 bestaande `human_approved` contacten al een e-mailadres hebben; er zijn 22.690 contacten zonder adres en geen enkel adresloos contact in die goedgekeurde deelgroep. Daarom mag alleen het **veilig verzamelen van niet-verzendbare zakelijke bronkandidaten** ook voor een bestaande niet-goedgekeurde connectie, mits beperkt tot een openbare bedrijfsbron, B2B-doelbinding, naam-/bedrijf-/domeinmatch en opt-out en relevante privacy-bezwaren. Geen automatische mail of adrespromotie. Binnen hetzelfde originele worker-endpoint gebruikt de researchagent bestaande bedrijfsdomeinen uit bestaande zakelijke e-mailcontacten en verwerkt maximaal acht originele idempotente interne onderzoekstaken per dag. De twee bekende openbare URL-paden `/team` en `/contact` worden zonder redirects in hoogstens 2,5 seconden per stuk gelezen. Daglimiet wordt uit echte bestaande onderzoeksacties teruggelezen en elke originele researchactie krijgt een bewijsstatus. De daadwerkelijk bruikbare first-party populatie is kleiner dan de totale 22.690 ontbrekende adressen; overige contacten blijven als nog-niet-onderzochte populatie zichtbaar. Nieuwe betaalde externe lookup voor hen vereist voorafgaande kostenautorisatie.
+
+## Extra ontvangstbeveiliging in de oorspronkelijke keten
+
+Ook zonder betaalde onderzoeksactie kan de oorspronkelijke #116-dispatcher de bestaande research-Edge aanspreken wanneer gratis first-party onderzoeksruimte over is. Het originele #138-proces, niet de bronagent zelf, controleert het gevonden zakelijke werkadres opnieuw tegen de oorspronkelijke persoon, bedrijf, onderzoeksactie, URL en revisie. Alleen een geldige cross-table match krijgt in ONE BRAIN een `PROCESSED`-ontvangstbewijs, herkenbaar als **niet-verzendbare kandidaat**. Een Bron-INGEST-ACK, HTTP 200, identity-graph-PROCESSED, Heartbeat-meting en daadwerkelijk geautoriseerde e-mailverzending zijn vijf gescheiden statussen. Tot alle vereiste relevante ontvangers hun bewijs hebben aangeleverd blijft de overkoepelende verplichting open.

@@ -257,7 +257,8 @@ export function kruimelpad(schakels) {
     '@context': 'https://schema.org', '@type': 'BreadcrumbList',
     itemListElement: schakels.map((s, n) => ({
       '@type': 'ListItem', position: n + 1, name: s.naam,
-      ...(s.url ? { item: 'https://www.bedrijfsgeheugen.nl' + s.url } : {})
+      ...(s.url ? { item: /^https:\/\/www\.bedrijfsgeheugen\.nl(?:\/|$)/.test(s.url)
+        ? s.url : 'https://www.bedrijfsgeheugen.nl' + s.url } : {})
     }))
   };
   return `<section class="inhoud-kruim"><div class="wrap"><nav aria-label="Kruimelpad">${delen}</nav></div></section>`
@@ -366,7 +367,7 @@ ${intro ? `<p class="intro">${intro}</p>` : ''}
     + '</div>'
     + EXTRA_HTML
     + RING
-    + LEK
+    + (/\/(frisse-blik|prijzen)\/?$/.test(canoniek || '') ? LEK : '') // rust: de gele teller alleen waar het over geld gaat
     + schil.na;
 
   html = html.replace('</head>', `${eigenStijl}\n${INHOUD_CSS}\n${INTERACTIE_CSS}\n${VOLGENDE_CSS}\n${MODULE_CSS}\n${SPEELS_CSS}\n${VRAAG_CSS}\n${TABEL_CSS}\n${CONTEXT_CSS}\n${BEWEGING_CSS}\n${CLUSTER_CSS}\n</head>`);

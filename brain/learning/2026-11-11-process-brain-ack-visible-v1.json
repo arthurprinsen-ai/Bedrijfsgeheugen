@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "fingerprint": "portal|process|authenticated-input-brain-ack-visible|20261111-v1",
+  "date": "2026-11-11",
+  "type": "ORIGINAL_PROCESS_BRAIN_ACK_CORRELATION",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "original_owner": "Portal V2 original domain-state and deliveryPlan",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "gap": "Process view had no binding-specific validated Brain ACK and collapsed disclosure on save",
+    "commercial_loops_closed_by_this_patch": 0
+  },
+  "root_cause": {
+    "observed": "Original successful authenticated Brain event lacked exact binding identity and originating domain receipt scope",
+    "unknowns": [
+      "authorized approval and external provider execution",
+      "Heartbeat outcome and learning",
+      "real two-tenant production proof"
+    ]
+  },
+  "fix": {
+    "scope": "Original Brain event correlation + process readback, no new backend or scheduler",
+    "truth_boundary": "An input ACK is not approval, execution, outcome or learning"
+  },
+  "compiler": {
+    "failure_class": "PORTAL_PROCESS_BRAIN_ACK_NOT_VISIBLE",
+    "scope": "PORTAL_V2",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-process-handoff-receipt-20261111.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-process-handoff-receipt-20261111.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-process-handoff-receipt-20261111.test.mjs"
+    ]
+  },
+  "prevention": [
+    "REQUIRE_SAME_DOMAIN_SCOPE",
+    "REQUIRE_BINDING_AND_CAUSAL_IMPACT",
+    "NO_PENDING_STALE_RECEIPT_GREEN",
+    "NO_PROVIDER_OR_LEARNING_FABRICATION",
+    "NO_PARALLEL_ENGINE"
+  ],
+  "evidence": {
+    "source": "Original portal business-input handler + Brain authority acknowledgement",
+    "required": "protected CI, exact main SHA Netlify READY and authenticated two-tenant browser proof",
+    "limitation": "same-session input status only; full outcome and learning chain OPEN"
+  }
+}

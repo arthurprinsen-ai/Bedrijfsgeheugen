@@ -1,0 +1,54 @@
+{
+  "fingerprint": "portal|csv-excel|source-deletion-missing|20261123-v1",
+  "date": "2026-11-23",
+  "status": "CANDIDATE_EVIDENCE_DUE",
+  "owner": "Canonical Portal V2 / BusinessInput",
+  "issue": "Customer-imported CSV/XLSX records had no way to remove a stale, incorrect or superseded dataset from the current portal.",
+  "root_cause": "Original importer provided immutable add/history and read-only destination projections but no authenticated source lifecycle operation.",
+  "prevention_rule": "A source removal must require explicit owner confirmation, exact unique fingerprint+ID match in current authenticated tenant state, original domainState writer flush, independent server readback, and destination projection cleanup. Do not pretend removal erases provider records, backups or audit history.",
+  "compiler": {
+    "failure_class": "PORTAL_IMPORTED_SOURCE_LIFECYCLE_GAP",
+    "scope": "PORTAL_V2_SOURCE_MANAGEMENT",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "authenticated_two_tenant_browser": "PENDING",
+    "production_source_removal_readback": "PENDING"
+  },
+  "architecture": {
+    "writer": "existing portal.dataImports + domainState.patch/flush",
+    "proof": "stateClient.load with matching owner and remaining source IDs/fingerprints",
+    "new_scheduler": false,
+    "new_datastore": false,
+    "automaticKpiWrite": false
+  },
+  "gates": [
+    "Required exact PR head",
+    "CodeQL exact PR head",
+    "protected merge",
+    "Netlify exact published SHA",
+    "authenticated independent UI + tenant readback",
+    "named ONE BRAIN consumer ACK"
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-v2-data-import-v1.test.mjs"
+    ],
+    "positive_test": "Exact one-source removal preserves the other source rows and fingerprints; original source writer and server readback are required.",
+    "negative_test": "Cross-source fingerprint mismatch, missing or duplicate source IDs, changed tenant and no explicit user approval must not delete data.",
+    "production_readback": "PENDING",
+    "authenticated_csv_xlsx_user_journey": "PENDING",
+    "independent_brain_consumer_ack": "PENDING",
+    "source_verified": false
+  }
+}

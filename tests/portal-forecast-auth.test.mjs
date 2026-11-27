@@ -3,6 +3,15 @@ import assert from 'node:assert/strict';
 import {createPortalForecastHandler,verifiedForecasts} from '../platform/api/portal-forecast-handler.mjs';
 const point=(date,value)=>({date,value});
 const valid={id:'revenue',metric:'revenue',source:'Finance ledger',model:'time-series-v1',updatedAt:'2026-10-14T10:00:00Z',verified:true,tenantId:'tenant42',validation:{status:'passed',tenantBound:true,tenantId:'tenant42',verifiedAt:'2026-10-14T12:00:00Z'},history:[point('2026-04',50),point('2026-05',60),point('2026-06',70),point('2026-07',80),point('2026-08',90),point('2026-09',100)],forecast:[point('2026-11',110)]};
+/** Handler tests use genuinely fresh independent evidence relative to runtime.
+ * Historical source snapshots stay fixed for explicit negative aging tests.
+ * Never extend the production maximum 30-day freshness window. */
+const freshApiForecast=()=>{
+ const clock=Date.now();
+ return {...valid,updatedAt:new Date(clock-60*60*1000).toISOString(),
+   validation:{...valid.validation,verifiedAt:new Date(clock-30*60*1000).toISOString()}};
+};
+
 test('unauthenticated request never touches canonical data',async()=>{
  let calls=0;const h=createPortalForecastHandler({getUser:async()=>null,getCanonical:async()=>{calls++}});
  const r=await h(new Request('https://example.test/api/portal-forecasts'));
@@ -21,7 +30,8 @@ test('identity provider failure blocks financial forecasts without reading tenan
 });
 
 test('authenticated forecast route scopes lookups to identity tenant',async()=>{
- let seen='';const h=createPortalForecastHandler({getUser:async()=>({id:'user42',app_metadata:{tenantId:'tenant42'}}),getCanonical:async tenant=>{seen=tenant;return{forecasts:[valid]}}});
+ const recent=freshApiForecast();
+ let seen='';const h=createPortalForecastHandler({getUser:async()=>({id:'user42',app_metadata:{tenantId:'tenant42'}}),getCanonical:async tenant=>{seen=tenant;return{forecasts:[recent]}}});
  const r=await h(new Request('https://example.test/api/portal-forecasts'));
  assert.equal(r.status,200);assert.equal(seen,'tenant42');
  assert.equal((await r.json()).forecasts.length,1);
@@ -125,9 +135,10 @@ test('uncertainty bands must align by period and enclose forecast point',()=>{
 
 test('review attestation survives the authenticated API boundary and enables the chart',async()=>{
  const {renderForecastPanel}=await import('../portal/forecast-panel.mjs');
+ const recent=freshApiForecast();
  const h=createPortalForecastHandler({
   getUser:async()=>({id:'user42',app_metadata:{tenantId:'tenant42'}}),
-  getCanonical:async()=>({tenantId:'tenant42',forecasts:[valid]})
+  getCanonical:async()=>({tenantId:'tenant42',forecasts:[recent]})
  });
  const response=await h(new Request('https://example.test/api/portal-forecasts'));
  assert.equal(response.status,200);
@@ -135,7 +146,23 @@ test('review attestation survives the authenticated API boundary and enables the
  assert.equal(data.forecasts.length,1);
  const selected=data.forecasts[0];
  assert.equal(selected.tenantId,'tenant42');
- assert.deepEqual(selected.validation,{status:'passed',tenantBound:true,tenantId:'tenant42',verifiedAt:'2026-10-14T12:00:00Z'});
+ assert.deepEqual(selected.validation,recent.validation);
  assert.match(renderForecastPanel({forecasts:data.forecasts},'today'),/<svg /);
  assert.doesNotMatch(renderForecastPanel({forecasts:[{...selected,validation:undefined}]},'today'),/<svg /);
+});
+
+test('authenticated route still rejects an expired independent financial review even with valid credentials',async()=>{
+ const clock=Date.now(),expired={
+  ...valid,updatedAt:new Date(clock-35*86400000).toISOString(),
+  validation:{...valid.validation,verifiedAt:new Date(clock-34*86400000).toISOString()}
+ };
+ const h=createPortalForecastHandler({
+  getUser:async()=>({id:'user42',app_metadata:{tenantId:'tenant42'}}),
+  getCanonical:async()=>({tenantId:'tenant42',forecasts:[expired]})
+ });
+ const r=await h(new Request('https://example.test/api/portal-forecasts'));
+ assert.equal(r.status,200);
+ assert.deepEqual(await r.json(),{
+  tenantId:'tenant42',forecasts:[],status:'NO_VALIDATED_FINANCIAL_FORECASTS'
+ });
 });

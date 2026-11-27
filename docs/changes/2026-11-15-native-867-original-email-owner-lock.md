@@ -1,0 +1,7 @@
+# Native original commercial owner review — Supabase source-history #867
+
+Parent P0 [#4198](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198). The protected original commercial review [PR #5838](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5838) merged to main `f199aeee30762dc8f2b5e491093eed13e71d2eee`; native Supabase production independently applied `20261115103000 original_public_work_email_commercial_safe_review_ack_v1` as actual **867th** migration. In provider `pg_get_functiondef`, new exact original commercial owner BRAIN safe-review contract is present and permissions remain service_role-only (`anon=false,authenticated=false,service_role=true`).
+
+The prior Git history lock held 866 applied migrations; a read-only ordered pairwise comparison proved all old 866 version/name pairs identical to native provider records, with exactly the one real 867th extra migration. This change **only** appends that real version/name and provider-captured timestamp to `supabase/migration-history.lock.json`. No new SQL migration, cron, scheduler, queue, email source, mailer, provider permission, RLS or duplicate agent writer.
+
+Required acceptance: protected Required/CodeQL/GitOps source-lock checks; protected merge; **independent current-main Git 867/867 native provider comparison with zero conflicts**. Existing source verification, lawful approval and commercial outcomes remain separate original ONE BRAIN obligations; a native migration does not prove any send or realized revenue.

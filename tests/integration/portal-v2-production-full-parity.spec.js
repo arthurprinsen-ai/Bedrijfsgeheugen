@@ -45,7 +45,9 @@ async function bootDemo(page,width=1440,height=1000){
  const retryableStatuses=new Set([403,408,425,429,500,502,503,504]);
  let lastError;
  for(let attempt=1;attempt<=3;attempt++){
-  const response=await page.goto(`${BASE_URL}/klantportaal?klant=demoAI&bg_full_parity=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45_000});
+  // Test the original canonical V2 demo entry, not a redirecting legacy alias.
+  // Repeated 301 redirects from /klantportaal can overlap after transient retries.
+  const response=await page.goto(`${BASE_URL}/portaal/demo?klant=demoAI&bg_full_parity=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45_000});
   const status=response?.status()??null;
   if(status!==null&&status<400){
    await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__?.initialized?.()),{timeout:30_000});

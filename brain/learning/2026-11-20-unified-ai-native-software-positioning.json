@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|unified-ai-native-software-positioning|20261120-v1",
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ]
+  },
+  "owner": "original-powerhouse-editorial-agents",
+  "event_date": "2026-11-20",
+  "root_cause": "A technology leadership brief and generated personal posts could portray software, data, BI and AI as adjacent disciplines or as a linear relay rather than one engineered, continuously measured intelligent business system.",
+  "prevention_rule": "For verified first-person founder and architecture posts, the canonical prompt and shared channel policy must present software, AI, business intelligence and data as one product architecture using shared business context and continuous bidirectional feedback; label future capabilities as vision and never invent customer success.",
+  "user_instruction": "Juist de combinatie software ai Bi data als 1 zien gecombineerd",
+  "design_contract": {
+    "unified_system": true,
+    "positioning": "AI-native Intelligent Business Software",
+    "not_four_apps": true,
+    "feedback_loop": "shared business context -> interpretation and intelligence -> authorized actions -> observed outcomes -> learning within same software",
+    "original_publisher_only": true
+  },
+  "evidence": {
+    "regression_tests": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ],
+    "prior_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6062",
+    "notion_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+    "state": "proposed_on_branch_not_production_proven"
+  },
+  "boundaries": [
+    "no fake first-person experience",
+    "no claim that integrated software is end-to-end live without independent proof",
+    "no substitute for source verification, privacy, final text hash or provider authorized publishing",
+    "no second scheduler or social publisher",
+    "separate personal thought leadership from company advertising"
+  ],
+  "implementation_state": "protected_delivery_candidate_requires_CI_merge_deployment_and_readback"
+}

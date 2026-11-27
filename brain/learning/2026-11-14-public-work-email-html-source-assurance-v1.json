@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse|contacts|original-public-email-zero-html-falsely-no-mailto-green|20261114-v1",
+  "root_cause": "Original public business-email research produced eight source attempts with zero readable HTML pages, yet labeled all as NO_EXPLICIT_NAMED_OFFICIAL_MAILTO and wrote successful health rows. This conflates unreachable source evidence with a human-readable page that contains no explicitly named work mailto. No email candidate or consumer PROCESSED was proven.",
+  "scope": "ORIGINAL_116_RESEARCH_EDGE_138_CONSUMER_OBSERVABILITY",
+  "owner": "Original commercial cron #116/source Edge; original identity graph #138 consumes only actual candidate and original #171 checks downstream",
+  "prevention_rule": "When zero HTML pages are readable, persist SOURCE_HTML_UNAVAILABLE and same-original-action retry; only use NO_EXPLICIT_NAMED_OFFICIAL_MAILTO after at least one readable published company page. Count source failures separately for both new and historical retries; an original Edge HTTP-200 with any unreadable first-party source requires existing bg_gezondheid waarschuwing. Never infer addresses, consent, send authority, consumer ACK or revenue; no second scheduler, queue, paid provider or CRM.",
+  "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+  "evidence": {
+    "source": "Native production readback 2026-11-14 20:49 UTC",
+    "original_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "original_obligation": "43c90754-3fd0-4c97-bb14-fbf815e12f47",
+    "total_connections": 23295,
+    "existing_emails": 605,
+    "missing_emails": 22690,
+    "first_party_attempts": 8,
+    "readable_html_pages": 0,
+    "source_status_misclassified": 8,
+    "existing_original_retry_at_utc": "2026-11-14T23:12:44.234Z",
+    "actual_new_work_email_candidates": 0,
+    "original_consumer_processed_receipts": 0,
+    "release_status": "CANDIDATE_UNTIL_REQUIRED_CODEQL_NATIVE_EDGE_PRODUCTION_READBACK"
+  },
+  "learning_state": "OBSERVED_NOT_CLOSED",
+  "compiler": {
+    "failure_class": "ORIGINAL_FIRSTPARTY_HTML_SOURCE_DISPOSITION_FALSE_GREEN",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ]
+  }
+}

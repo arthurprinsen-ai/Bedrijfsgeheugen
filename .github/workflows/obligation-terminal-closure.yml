@@ -117,17 +117,45 @@ jobs:
           # Exact display title and original workflow source are rechecked by
           # require_workflow below; request at most once per PR+head identity.
           expected_title="BRAIN delivery PR #${PR_NUMBER} ${HEAD_SHA}"
+          # An exact PR-number flight cannot legitimately predate the PR itself.
+          # Use its immutable provider created_at minus a bounded 10-minute
+          # clock-skew margin to avoid unbounded historical Actions scans (504).
+          # This is a COMPLETE time-qualified search, not a first-page shortcut.
+          pr_created_at="$(jq -r '.created_at // empty' <<<"$pr")"
+          if ! since="$(node --input-type=module - "$pr_created_at" <<'NODE'
+          import {originalBrainFlightSince} from './tools/delivery/brain-verification-flight-index.mjs';
+          console.log(originalBrainFlightSince(process.argv[2]));
+          NODE
+          )"; then
+            echo "::error::BRAIN_FLIGHT_PR_CREATION_TIME_UNVERIFIED"; exit 78
+          fi
+          created_filter="$(node -e 'process.stdout.write(encodeURIComponent(">="+process.argv[1]))' "$since")"
+          query="repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&created=${created_filter}&per_page=100"
           # workflow_dispatch is indexed under main SHA, NOT the PR head SHA.
-          # Double-check the original main-indexed provider flight before dispatch.
+          # Double-check full provider pagination for this PR-era cohort.
           for guard_check in 1 2; do
-            # Use ALL native pages. A first 100-run page is never sufficient
-            # to prove absence when GitHub reports >100 historical runs.
-            if ! list="$(gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&per_page=100")"; then
-              echo "::error::BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED"; exit 78
-            fi
-            if ! selected="$(printf '%s' "$list" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title")"; then
-              echo "::error::BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN"; exit 78
-            fi
+            # GitHub caps filtered Actions searches at 1000. The index rejects
+            # cap saturation, missing/duplicate pages and pre-cutoff identities.
+            history_proven=false
+            history_error=BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED
+            for provider_attempt in 1 2 3; do
+              if list="$(timeout 30s gh api --paginate --slurp "$query")"; then
+                if selected="$(printf '%s' "$list" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title" --since "$since")"; then
+                  history_proven=true; break
+                fi
+                history_error=BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN
+                index_failure="$(jq -r '.status // "UNKNOWN"' <<<"$selected" 2>/dev/null || printf UNKNOWN)"
+                case "$index_failure" in
+                  PROVIDER_HISTORY_INCOMPLETE|PROVIDER_PAGINATION_INVALID|PROVIDER_HISTORY_PARSE_ERROR) ;;
+                  *) echo "::error::$history_error:$index_failure"; exit 78 ;;
+                esac
+              else
+                history_error=BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED
+              fi
+              echo "::warning::BRAIN_HISTORY_READ_RETRY:attempt=$provider_attempt:reason=$history_error" >&2
+              [ "$provider_attempt" = 3 ] || sleep "$((provider_attempt * 2))"
+            done
+            [ "$history_proven" = true ] || { echo "::error::$history_error"; exit 78; }
             status="$(jq -r '.status // "INVALID"' <<<"$selected")"
             if [ "$status" = EXISTING_FLIGHT ]; then
               prior_id="$(jq -r '.run_id' <<<"$selected")"
@@ -165,13 +193,56 @@ jobs:
             query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=50"
             selector='[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last'
             if [ "$workflow" = "unified-brain-delivery.yml" ]; then
-              # Trusted main dispatch verifies inputs.head_sha; run.head_sha is its workflow source.
-              query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?branch=main&event=workflow_dispatch&per_page=100"
-              selector='[.workflow_runs[] | select(.head_branch=="main" and .event=="workflow_dispatch" and .display_title==$title)] | sort_by(.created_at) | last'
+              # The earlier dispatch guard uses a complete PR-created bounded
+              # main-indexed run history. Terminal acceptance must use THE SAME
+              # full-history oracle, not the most recent 100 runs.
+              pr_created_at="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" --jq '.created_at // empty')"
+              since="$(node -e 'import("./tools/delivery/brain-verification-flight-index.mjs").then(m=>console.log(m.originalBrainFlightSince(process.argv[1])))' "$pr_created_at")" || {
+                echo "::error::TERMINAL_BRAIN_PR_CREATION_UNVERIFIED"; exit 78
+              }
+              created_filter="$(node -e 'process.stdout.write(encodeURIComponent(">="+process.argv[1]))' "$since")"
+              query="repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?branch=main&event=workflow_dispatch&created=${created_filter}&per_page=100"
             fi
             for attempt in $(seq 1 180); do
-              payload="$(gh api "$query")"
-              selected="$(jq -c --arg sha "$HEAD_SHA" --arg title "$expected_title" "$selector" <<<"$payload")"
+              if [ "$workflow" = "unified-brain-delivery.yml" ]; then
+                # Classify every native provider page and refuse partial,
+                # conflicting, >1000, or stale BRAIN flight history.
+                history_proven=false
+                history_error=TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED
+                for provider_attempt in 1 2 3; do
+                  if payload="$(timeout 30s gh api --paginate --slurp "$query")"; then
+                    if indexed="$(printf '%s' "$payload" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title" --since "$since")"; then
+                      history_proven=true; break
+                    fi
+                    history_error=TERMINAL_BRAIN_HISTORY_INCOMPLETE
+                    index_failure="$(jq -r '.status // "UNKNOWN"' <<<"$indexed" 2>/dev/null || printf UNKNOWN)"
+                    case "$index_failure" in
+                      PROVIDER_HISTORY_INCOMPLETE|PROVIDER_PAGINATION_INVALID|PROVIDER_HISTORY_PARSE_ERROR) ;;
+                      *) echo "::error::$history_error:$index_failure"; exit 78 ;;
+                    esac
+                  else
+                    history_error=TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED
+                  fi
+                  echo "::warning::BRAIN_HISTORY_READ_RETRY:attempt=$provider_attempt:reason=$history_error" >&2
+                  [ "$provider_attempt" = 3 ] || sleep "$((provider_attempt * 2))"
+                done
+                [ "$history_proven" = true ] || { echo "::error::$history_error"; exit 78; }
+                indexed_state="$(jq -r '.status // "UNKNOWN"' <<<"$indexed")"
+                if [ "$indexed_state" = EXISTING_FLIGHT ]; then
+                  indexed_id="$(jq -r '.run_id // empty' <<<"$indexed")"
+                  [[ "$indexed_id" =~ ^[1-9][0-9]*$ ]] || {
+                    echo "::error::TERMINAL_BRAIN_FLIGHT_ID_UNVERIFIED"; exit 78
+                  }
+                  selected="$(jq -c --argjson id "$indexed_id" '[.[] | .workflow_runs[] | select(.id==$id)] | first' <<<"$payload")"
+                elif [ "$indexed_state" = NO_FLIGHT_PROVEN_FULL_HISTORY ]; then
+                  selected='null'
+                else
+                  echo "::error::TERMINAL_BRAIN_FLIGHT_NOT_TRUSTED:${indexed_state}"; exit 78
+                fi
+              else
+                payload="$(gh api "$query")"
+                selected="$(jq -c --arg sha "$HEAD_SHA" --arg title "$expected_title" "$selector" <<<"$payload")"
+              fi
               run_id="$(jq -r '.id // empty' <<<"$selected")"
               status="$(jq -r '.status // empty' <<<"$selected")"
               conclusion="$(jq -r '.conclusion // empty' <<<"$selected")"

@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-15",
+  "fingerprint": "powerhouse|linkedin|personal-observation-review-no-rebootstrap|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "SOURCE_CANDIDATE",
+  "owner": "existing powerhouse-content-loop / original Powerhouse personal LinkedIn editor",
+  "root_cause": "Original hourly cron only invokes powerhouse-content-loop. Its retryableContentBlock lacks the exact original OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED 422; corrected final reviewer therefore cannot re-execute today's already BLOCKED original personal claim.",
+  "prevention_rule": "Bounded original supervisor-only rebootstrap when BOTH daily source+review hash identities agree, exact 422 matches, provider did NOT receive a mutation, authority unconsumed, and recovery_attempts<3; never bypass source/identity, uniqueness, or recipient controls.",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-observational-review-rebootstrap-20261115.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_date": "2026-11-15",
+    "original_channel": "linkedin_personal",
+    "daily_obligation": "BLOCKED",
+    "recovery_attempts": 2,
+    "provider_id": null,
+    "prior_reviewer_code": "OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED",
+    "cron_id": 140,
+    "cron_target": "powerhouse_content_closed_loop_tick_v1",
+    "contract": "tests/brain-personal-observational-review-rebootstrap-20261115.test.mjs",
+    "provider_result": "NOT_YET_PROVEN"
+  },
+  "acceptance": [
+    "Exact-head Required/BRAIN + CodeQL",
+    "Protected main merge and Supabase Edge exact provider parity",
+    "Original hourly cron invocation",
+    "Exact original LinkedIn provider ID + independent GET",
+    "ONE BRAIN named PROCESSED",
+    "Heartbeat outcome/learning"
+  ],
+  "false_green_forbidden": true,
+  "new_sender": false,
+  "new_scheduler": false
+}

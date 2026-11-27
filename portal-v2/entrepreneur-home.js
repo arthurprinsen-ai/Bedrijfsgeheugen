@@ -3,6 +3,9 @@ import {navigatePortal,currentPortalRoute,subscribePortalRoute} from './router.j
 import {findPage} from './page-registry.js';
 import {buildEntrepreneurJourneyModel,journeyGuidance,isBrainAckForImpact} from './entrepreneur-journey-model.js';
 import {renderEntrepreneurJourney} from './entrepreneur-journey-view.js';
+import {renderDecisionWorld} from './decision-world.js';
+import {renderOneRoofWorkspace} from './business-os-home.js';
+import {renderDailyControls} from './daily-controls.js';
 
 const add=(parent,tag,className,text)=>{
   const node=parent.ownerDocument.createElement(tag);
@@ -22,7 +25,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
   host.setAttribute('aria-label','Jouw ondernemersroute');
   const anchor=main.querySelector('.daily-steering')||main.querySelector('.dashboard');
   main.insertBefore(host,anchor||null);
-  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null,impact=null,brainReceipt=null,expanded=false;
+  let notice='',saving=false,subject='',generation=0,verifiedScanCount=null,impact=null,brainReceipt=null,expanded=false,worldStage='decision';
   const updatePageGuide=()=>{
     const root=documentRef.getElementById('portalView');
     if(!root)return;
@@ -46,6 +49,13 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     add(guide,'p','',guidance.why);
     add(guide,'p','',guidance.check);
     add(guide,'p','',guidance.next);
+    const handoff=domainState.pendingHandoffs?.();
+    if(handoff?.pending){
+      const pendingNote=add(guide,'p','eh-truth',handoff.retryable
+        ?'De laatste wijziging wacht nog op bevestiging van het Bedrijfsbrein. De bestaande portaalcontrole probeert opnieuw; het gevolgadvies is nog niet bewezen.'
+        :'Een eerdere wijziging is nog niet volledig bevestigd. Controleer de opgeslagen bedrijfsgegevens in de juiste sessie; het gevolgadvies is nog niet bewezen.');
+      pendingNote.setAttribute('role','status');
+    }
     const back=add(guide,'button','eh-text-action',model.selectedGoal?'Terug naar mijn route →':'Kies mijn ondernemersdoel →');
     back.type='button';back.addEventListener('click',()=>navigate('overzicht'));
     if(!previous){
@@ -111,6 +121,9 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       ?journey.autopilot.outcomes+' onafhankelijk geverifieerde resultaten beschikbaar · zie onderbouwing'
       :'Nog geen onafhankelijk bewezen financieel resultaat.');
     proof.setAttribute('role','status');
+    // A concise personal control surface, using ONLY the current authenticated
+    // source, existing Brain receipts and exact customer evidence. No fake KPIs.
+    renderDailyControls(host,{authenticated:loggedIn&&Boolean(customerState),home:model,journey,pendingHandoff:domainState.pendingHandoffs?.()});
     const advanced=add(host,'details','eh-advanced');
     advanced.dataset.entrepreneurDetails='true';
     advanced.open=expanded;
@@ -118,6 +131,16 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     add(summary,'span','','Meer inzicht en instellingen');
     add(summary,'small','','Doelen, brongegevens, metingen en achtergrond');
     advanced.addEventListener('toggle',()=>{expanded=advanced.open;});
+    // Keep the five-step interactive decision map, but reveal it only on demand.
+    // One visible primary action beats an always-expanded second dashboard.
+    const deeperWorld=add(advanced,'div','eh-deep-world');
+    renderDecisionWorld(deeperWorld,{home:model,journey,selectedStage:worldStage,onSelect:id=>{worldStage=id;}});
+    // One view of this principal's source state; reuses the original route and
+    // handoff owner, never creates a parallel business database or executor.
+    renderOneRoofWorkspace(advanced,{
+      authenticated:loggedIn&&Boolean(customerState),state:customerState,
+      journey,pendingHandoff:domainState.pendingHandoffs?.()
+    });
     const attention=add(advanced,'section','eh-attention');
     attention.dataset.entrepreneurAttention='v1';
     attention.setAttribute('aria-label','Drie zaken die voor jouw bedrijf tellen');
@@ -198,6 +221,13 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
     add(footer,'span','','2 · Maak het meetbaar');
     add(footer,'span','','3 · Onderzoek en besluit');
     add(footer,'span','','4 · Meet wat echt werkt');
+    const pendingHandoff=domainState.pendingHandoffs?.();
+    if(pendingHandoff?.pending){
+      const pendingMessage=add(host,'p','eh-feedback eh-truth',pendingHandoff.retryable
+        ?'Verwerking onderweg: je gegevens zijn nog niet volledig bevestigd in het Bedrijfsbrein. De bestaande controles proberen opnieuw.'
+        :'Niet alle verwerking is bevestigd. Controleer de aangemelde bedrijfsomgeving en de opgeslagen gegevens.');
+      pendingMessage.setAttribute('role','status');
+    }
     const feedback=add(host,'p','eh-feedback',notice||(
       snapshot?.status==='error'?'Gegevens zijn niet bevestigd als opgeslagen. Je wijzigingen blijven herstelbaar.':
       model.intelligence.ready?model.intelligence.verifiedSignals+' brononderbouwde onderdelen beschikbaar in de bestaande ondernemerscockpit.':
@@ -251,7 +281,7 @@ export function mountEntrepreneurHome({documentRef=globalThis.document,domainSta
       if(request===generation&&owner===principal()){saving=false;draw();}
     }
   });
-  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;impact=null;brainReceipt=null;expanded=false;}draw();};
+  const onIdentity=()=>{const next=principal();if(next!==subject){generation++;subject=next;saving=false;notice='';verifiedScanCount=null;impact=null;brainReceipt=null;expanded=false;worldStage='decision';}draw();};
   const onVerifiedScans=event=>{if(!auth())return;const count=event?.detail?.count;verifiedScanCount=Number.isInteger(count)&&count>=0?count:null;draw();};
   const onImpact=event=>{
     if(!auth()||!principal()||principal()!==subject)return;

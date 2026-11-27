@@ -45,8 +45,8 @@ test('only all seven trusted identity-bound evidence classes plus terminal oblig
     evidence:[
       proof('CANDIDATE_TESTS', 'BRAIN_DELIVERY'), proof('PROTECTED_DELIVERY', 'BG169', production),
       proof('PRODUCTION_IDENTITY', 'BG169', production), proof('FUNCTIONAL_READBACK', 'PRODUCTION_READBACK', production),
-      proof('OBLIGATIONS_COMPLETE', 'OUTCOME_OBLIGATION_RUNTIME', production), proof('CAPABILITY_HANDOFF', 'BG167', production),
-      proof('LEARNING_WRITEBACK', 'BG168_BG166', production),
+      proof('OBLIGATIONS_COMPLETE', 'PRODUCTION_READBACK', { ...production, exactProduction:true, metadata:{ materialSourceRef:'material-readback:ob-1', materialSourceRevision:'source-rev:candidate-sha-123' } }), proof('CAPABILITY_HANDOFF', 'BG167', {...production,exactProduction:true,metadata:{sourceRevision:CANDIDATE,sourceReceiptRef:'original:handoff-readback',consumerAckRef:'original:consumer-processed-ack'}}),
+      proof('LEARNING_WRITEBACK', 'BG168_BG166', {...production,exactProduction:true,metadata:{sourceRevision:CANDIDATE,sourceReceiptRef:'original:learning-readback',learningApplicationRef:'original:verified-learning-application'}}),
     ],
   });
   assert.equal(result.canComplete, true);

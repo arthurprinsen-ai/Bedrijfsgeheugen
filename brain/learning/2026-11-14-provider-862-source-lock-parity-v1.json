@@ -1,0 +1,37 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-862-lock-861-source-parity|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "Protected original business-email PR #5787 merged and native provider applied migration 20261114211500, but the immutable GitHub production migration source-lock retained only 861 prior identities. One missing provider→source receipt, not a need to replay native production SQL.",
+  "prevention": "Original single Supabase release owner: record exact provider-applied version/name in protected immutable source lock after independent native readback before releasing downstream dependent migrations; canonicalize one incident fingerprint and original handoff owner, no unapproved parallel scheduler or fabricated success.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 862,
+    "source_lock_count_before": 861,
+    "matched_provider_prefix_count": 861,
+    "matched_prefix_conflicts": 0,
+    "provider_applied_extra": {
+      "version": "20261114211500",
+      "name": "original_public_business_email_dispatch_v1"
+    },
+    "existing_source_sql": "supabase/migrations/20261114211500_original_public_business_email_dispatch_v1.sql",
+    "original_provider_observed_at": "2026-11-14T19:15:21.009609Z",
+    "source_verified": true,
+    "original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5787",
+    "security": "No direct SQL application, RLS permission mutation, new scheduler, AI agent or outbound side effect"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "Native 862 provider-applied identities match unchanged first 861 original source records with only this real extra pair, protected PR + independent main readback",
+    "business_effect": "NO_NEW_PROVIDER_DELIVERY_OR_REVENUE_CLAIM"
+  },
+  "no_parallel_executor": true
+}

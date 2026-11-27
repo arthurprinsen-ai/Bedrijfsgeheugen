@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-13",
+  "status": "CODE_CANDIDATE_UNVERIFIED",
+  "fingerprint": "github|brain|mira-one-chain-playbook-head-regression|20261113-v1",
+  "owner": "original BRAIN backend delivery lane / original Mira P0 #4439 owner within the single engineering fabric",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439",
+  "source": {
+    "original_merged_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5679",
+    "original_merge_sha": "7d27a6bbc17887d7982ae23491007087d6d9e443",
+    "postmerge_brain_workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43378265877",
+    "postmerge_backend_job_id": 131730049080,
+    "observed": {
+      "suite_tests": 6516,
+      "pass": 6513,
+      "failed": 1,
+      "skipped": 2,
+      "failing_test": "tests/brain-groen-draaiboek-20261108.test.mjs :: AGENTS.md points to the playbook near the top",
+      "required_header_char_limit": 2500,
+      "observed_original_link_char_offset": 4054
+    }
+  },
+  "root_cause": "Mira single-chain governance block was inserted at the head of AGENTS.md, shifting the existing required green-runbook pointer to character 4054; the full postmerge BRAIN backend test correctly rejects a pointer beyond the first 2500 characters. This is a documentation/admission regression, not evidence of new Instagram provider output.",
+  "changes": [
+    "Retain complete Mira tenant/day/owner/source revision/idempotency→Meta readback→ONE BRAIN/Heartbeat/Portal ACK contract and newer governance-agent rules.",
+    "Move an explicit reference to docs/brain/groen-draaiboek.md to character 126 of AGENTS.md, before the detailed Mira contract.",
+    "Require the existing tests/brain-groen-draaiboek-20261108.test.mjs postmerge regression before declaring canonical BRAIN handoff closed; never bypass or weaken the guard.",
+    "Write this original-owner Brain learning, human change log and append-only delivery event with same fingerprint and current protected candidate."
+  ],
+  "prevention_rule": "Every future insertion at the start of AGENTS.md must keep docs/brain/groen-draaiboek.md within the first 2500 characters; preserve existing full agents/skills and single original lineages, and require both protected premerge Required/CodeQL and postmerge BRAIN backend readback. Treat absent real original provider readback/consumer ACK as OPEN.",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-groen-draaiboek-20261108.test.mjs",
+      "tests/brain-canonical-radar-cross-channel-source-20261029.test.mjs"
+    ]
+  },
+  "acceptance": [
+    "Protected exact-head Required + CodeQL green for sequential correction PR #5708",
+    "Postmerge BRAIN backend and the original full delivery/learning chain pass on exact resulting main SHA",
+    "Original Supabase Edge active Mira radar bundled shared query-rotation remains exactly equal to already merged source (v922 at initial observation)",
+    "Do not call Instagram production GREEN without a new dated unique winner, exclusive original media producer claim, genuine Meta ID and independent same-tenant ONE BRAIN/Heartbeat/Portal learning ACK."
+  ],
+  "independent_verification": "PENDING",
+  "evidence": {
+    "historical": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43378265877",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4439"
+    ],
+    "current": [
+      "PR #5708 was admitted with corrected Supersedes:none but integration closure correctly rejected AGENTS-only change: missing activity_ledger, brain_learning, human_documentation (Required #43379163926).",
+      "Explicit pointer to docs/brain/groen-draaiboek.md moved from character 4054 to character 126 on branch; existing test checks the first 2500 characters.",
+      "Three closure artifacts added on same existing recovery PR; no new code executor, writer, provider send, schedule, subscriber or queue."
+    ]
+  }
+}

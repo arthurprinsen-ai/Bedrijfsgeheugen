@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|research|same-day-due-public-source-retries-excluded-by-research-calendar-day|20261115-v1",
+  "parent_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "observed_at_utc": "2026-11-15T18:43:00Z",
+  "failure_class": "SAME_DAY_DUE_ORIGINAL_SOURCE_RETRY_STARVATION",
+  "scope": "ORIGINAL_RESEARCH_PRODUCER_AND_CONSUMER_HANDOFF",
+  "machine_enforceable": true,
+  "repeat_count": 5,
+  "security_sensitive": true,
+  "root_cause": "Original due-only source retry selector explicitly excluded all original action keys dated on the current Amsterdam day. Production had five original 2026-11-15 first-party research actions already due at 18:05 UTC, but #116 original research health at 18:41 UTC retried only one older date action; current daily new-domain cap had already been consumed and did not select those due IDs. This was misread as a cron that ran successfully while its due business work stayed stalled.",
+  "evidence": {
+    "project_ref": "adhjwmvyoixzjtmiroln",
+    "native_edge_at_observation": 103,
+    "checked_at": "2026-11-15T18:43:00Z",
+    "original_due_today": 5,
+    "original_open_source_debt": 10,
+    "old_day_future_due": 5,
+    "old_day_retry_per_natural_run": 1,
+    "original_known_addresses": 605,
+    "original_commercial_handoffs_broken": 4
+  },
+  "owner": "Original #116 research worker and original-agent:commercial; #138 identity consumer, agent-reliability and data-quality verify",
+  "corrective_action": "Change existing original due-only action predicate to admit already-due original current Amsterdam-day IDs as well as historical ones, without creating new actions or exceeding two retries per worker invocation. Keep source failure classification, backoff, original idempotent key, read-only public official page checks and separate consumer ACK.",
+  "prevention_rule": "An original research retry queue must be drained by explicit due time and original action identity, not excluded by a day partition that belongs only to new-action allocation. Green cron is insufficient; fail closed if due backlog remains unchanged across natural executions.",
+  "regression": "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs",
+  "human_documentation": "docs/changes/2026-11-15-original-same-day-public-source-due-retry.md",
+  "human_ledger": "docs/development-ledger-events/2026-11-15-original-same-day-public-source-due-retry.md",
+  "release_status": "PENDING_EXACT_HEAD_REQUIRED_CODEQL_PROTECTED_MERGE_AND_EDGE_NATURAL_DUE_READBACK",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-work-email-firstparty-source-pages-20261114.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SAME_DAY_DUE_ORIGINAL_SOURCE_RETRY_STARVATION",
+    "scope": "ORIGINAL_RESEARCH_PRODUCER_AND_CONSUMER_HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": true
+  }
+}

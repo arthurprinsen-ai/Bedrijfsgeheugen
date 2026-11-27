@@ -1,0 +1,225 @@
+/* Rituals-belevenis (besluit Arthur 17 nov 2026: website en portaal voelen exclusief, rustig en begeerlijk;
+   energie en humor blijven voor social). Papier en inkt, een serif voor koppen, één gouden detail per scherm,
+   blauw alleen voor de primaire actie. Alleen vorm, ritme en toon; geen tekst, route of gedrag verandert.
+   Zelf gehost: Fraunces en Instrument Sans (SIL Open Font License, zie assets/fonts). */
+
+@font-face{font-family:"Fraunces R";src:url("/assets/fonts/fraunces-latin-wght-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap}
+@font-face{font-family:"Fraunces R";src:url("/assets/fonts/fraunces-latin-wght-italic.woff2") format("woff2");font-weight:100 900;font-style:italic;font-display:swap}
+@font-face{font-family:"Instrument Sans R";src:url("/assets/fonts/instrument-sans-latin-wght-normal.woff2") format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
+
+:root{
+  --rit-papier:#FBFAF7;--rit-inkt:#14171A;--rit-blauw:#2742D6;--rit-goud:#FFE86B;
+  --rit-lijn:rgba(20,23,26,.12);--rit-zacht:rgba(20,23,26,.66);
+  --rit-serif:"Fraunces R","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --rit-sans:"Instrument Sans R","Instrument Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --rit-tempo:.55s cubic-bezier(.22,.61,.36,1);
+}
+
+/* ---------- Typografie: serif voor koppen, rustige sans voor tekst ---------- */
+html body{font-family:var(--rit-sans)!important;background:var(--rit-papier)}
+html body :is(h1,h2,h3){font-family:var(--rit-serif)!important;font-weight:420!important;letter-spacing:-.012em!important;font-variation-settings:"opsz" 96}
+html body :is(h1,h2){line-height:1.1!important}
+
+/* ---------- Kop: geen tickers, papier, stil ---------- */
+html body .announcement.rich-announcement{display:none!important}
+html body .bg-uniform-trust{background:var(--rit-papier)!important;border-bottom:1px solid var(--rit-lijn)!important;color:var(--rit-zacht)!important}
+html body .bg-uniform-trust *{color:var(--rit-zacht)!important;font-size:12px!important;letter-spacing:.06em}
+html body header.v17-header{background:rgba(251,250,247,.92)!important;backdrop-filter:saturate(1.2) blur(14px);-webkit-backdrop-filter:saturate(1.2) blur(14px);border-bottom:1px solid var(--rit-lijn)!important;box-shadow:none!important;color:var(--rit-inkt)!important}
+html body header.v17-header :is(a,button,.navitem>a,.navitem>button,.v17-navitem>a){color:var(--rit-inkt)!important;font-family:var(--rit-sans)!important;font-weight:500!important;font-size:14px!important;letter-spacing:.01em;transition:opacity var(--rit-tempo)}
+html body header.v17-header :is(a,button):hover{opacity:.62}
+html body header.v17-header .logo,html body header.v17-header [class*="brand"]{color:var(--rit-inkt)!important}
+html body header.v17-header a[href*="login"],html body header.v17-header a[href*="inloggen"]{border:0!important;background:transparent!important;text-decoration:underline;text-underline-offset:5px;text-decoration-color:var(--rit-lijn)}
+html body header.v17-header a[href*="aanmelden"],html body header.v17-header a.btn.blauw,html body header.v17-header .v17-cta{background:var(--rit-blauw)!important;color:#fff!important;border-radius:999px!important;padding:11px 22px!important;box-shadow:none!important;font-weight:600!important}
+html body header.v17-header a[href*="aanmelden"]:hover{opacity:.9}
+
+html body header.v17-header :is(.logo,.brand,[class*="logo"]) :is(span,strong,b){font-family:var(--rit-serif)!important;font-weight:500!important;font-size:1.1rem!important;letter-spacing:-.01em}
+
+/* ---------- Homepage-hero: papier, serif, de video als boogvormig raam ---------- */
+html body section.hero-video.hero-inspiration{background:var(--rit-papier)!important;color:var(--rit-inkt)!important;min-height:min(86vh,820px)!important;overflow:hidden}
+html body section.hero-video.hero-inspiration .hero-video-shade{display:none!important}
+html body section.hero-video.hero-inspiration::before,html body section.hero-video.hero-inspiration::after{display:none!important}
+html body section.hero-video.hero-inspiration video.hero-bg-video{min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;position:absolute!important;inset:auto!important;top:50%!important;right:max(5vw,calc((100vw - 1200px)/2))!important;left:auto!important;transform:translateY(-50%)!important;width:min(34vw,430px)!important;height:min(70vh,600px)!important;border-radius:999px 999px 0 0!important;object-fit:cover!important;filter:sepia(.32) saturate(.75) brightness(.97) contrast(.98)!important;opacity:1!important;box-shadow:0 0 0 1px var(--rit-lijn)}
+html body section.hero-video.hero-inspiration .hero-video-content{position:relative;z-index:2}
+html body section.hero-video.hero-inspiration .hero-copy{max-width:min(620px,58vw)!important}
+html body section.hero-video.hero-inspiration .hero-kicker{background:transparent!important;border:0!important;padding:0!important;color:var(--rit-zacht)!important;font-size:11.5px!important;font-weight:500!important;letter-spacing:.24em!important;text-transform:uppercase}
+html body section.hero-video.hero-inspiration .hero-kicker span{background:var(--rit-goud)!important;box-shadow:none!important}
+html body section.hero-video.hero-inspiration h1{color:var(--rit-inkt)!important;font-size:clamp(2.2rem,3.9vw,3.5rem)!important;font-weight:400!important;line-height:1.08!important;letter-spacing:-.022em!important;max-width:17ch!important;text-shadow:none!important}
+html body section.hero-video.hero-inspiration h1 .accent,html body section.hero-video.hero-inspiration h1 .mark{color:var(--rit-inkt)!important;font-style:italic;font-weight:400!important;background:linear-gradient(transparent 68%,var(--rit-goud) 68%,var(--rit-goud) 92%,transparent 92%)!important;-webkit-text-fill-color:currentColor}
+html body section.hero-video.hero-inspiration .handline{color:var(--rit-zacht)!important;font-size:11.5px!important;font-weight:500!important;letter-spacing:.22em!important;text-transform:uppercase}
+html body section.hero-video.hero-inspiration .hero-sub,html body section.hero-video.hero-inspiration p{color:var(--rit-zacht)!important;font-size:1rem!important;line-height:1.7!important;max-width:32rem!important;text-shadow:none!important}
+html body section.hero-video.hero-inspiration p b,html body section.hero-video.hero-inspiration p strong{color:var(--rit-inkt)!important;font-weight:600}
+html body section.hero-video.hero-inspiration .hero-primary{background:var(--rit-blauw)!important;color:#fff!important;border:0!important;border-radius:999px!important;padding:16px 30px!important;font-weight:600!important;box-shadow:none!important;transition:transform var(--rit-tempo),opacity var(--rit-tempo)!important}
+html body section.hero-video.hero-inspiration .hero-primary:hover{transform:translateY(-2px);opacity:.92}
+html body section.hero-video.hero-inspiration .hero-secondary{background:transparent!important;color:var(--rit-inkt)!important;border:0!important;box-shadow:none!important;text-decoration:underline;text-underline-offset:6px;text-decoration-color:var(--rit-lijn);font-weight:500!important}
+html body section.hero-video.hero-inspiration .hero-note,html body section.hero-video.hero-inspiration .hero-note *{color:var(--rit-zacht)!important;font-size:12.5px!important}
+html body section.hero-video.hero-inspiration .hero-example-switch{background:transparent!important;border:0!important;color:var(--rit-zacht)!important}
+html body section.hero-video.hero-inspiration .hero-example-btn{background:transparent!important;color:var(--rit-inkt)!important;border:1px solid var(--rit-lijn)!important;border-radius:999px!important;box-shadow:none!important}
+html body section.hero-video.hero-inspiration .hero-example-btn.active{background:var(--rit-inkt)!important;color:var(--rit-papier)!important;border-color:var(--rit-inkt)!important}
+html body section.hero-video.hero-inspiration .hero-video-bottom{background:transparent!important;border-top:1px solid var(--rit-lijn)!important;box-shadow:none!important}
+html body section.hero-video.hero-inspiration .hero-video-bottom *{color:var(--rit-inkt)!important;text-shadow:none!important;border-color:var(--rit-lijn)!important}
+html body section.hero-video.hero-inspiration .hero-copy :is(span,small,li,em,a:not(.hero-primary)):not(.accent):not(.mark){color:inherit}
+html body section.hero-video.hero-inspiration .hero-copy{color:var(--rit-zacht)!important}
+html body section.hero-video.hero-inspiration .hero-scroll-cue{display:none!important}
+
+/* ---------- Binnenpagina's: papier-kop met hetzelfde boograam ---------- */
+html body .inhoud-kop{background:var(--rit-papier)!important;color:var(--rit-inkt)!important;padding:clamp(72px,9vw,112px) 0 clamp(48px,6vw,80px)!important;border-bottom:1px solid var(--rit-lijn)}
+html body .inhoud-kop::after{display:none!important}
+html body .inhoud-kop video{position:absolute!important;inset:auto!important;top:50%!important;right:max(5vw,calc((100vw - 1120px)/2))!important;left:auto!important;transform:translateY(-50%)!important;width:clamp(170px,18vw,250px)!important;height:calc(100% - 56px)!important;border-radius:999px 999px 0 0!important;object-fit:cover!important;filter:sepia(.32) saturate(.75) brightness(.97)!important}
+html body .inhoud-kop h1{color:var(--rit-inkt)!important;font-weight:400!important;font-size:clamp(2.2rem,4.4vw,3.6rem)!important;line-height:1.08!important;letter-spacing:-.02em!important;max-width:18ch!important}
+html body .inhoud-kop .intro{color:var(--rit-zacht)!important;max-width:44ch!important;font-size:1.08rem!important}
+html body .inhoud-kop .hero-kicker{color:var(--rit-zacht)!important;font-weight:500!important;letter-spacing:.24em!important;text-transform:uppercase}
+html body .inhoud-kop .hero-kicker span{background:var(--rit-goud)!important;box-shadow:none!important;opacity:1}
+html body .inhoud-kruim{background:var(--rit-papier)!important}
+
+/* ---------- Cookiekaart: klein, onderin, rustig ---------- */
+html body #bgCookie{left:20px!important;right:auto!important;bottom:20px!important;top:auto!important;transform:none!important;width:min(380px,calc(100vw - 40px))!important;max-width:380px!important;background:var(--rit-papier)!important;color:var(--rit-inkt)!important;border:1px solid var(--rit-lijn)!important;border-radius:20px!important;box-shadow:0 18px 48px -24px rgba(20,23,26,.35)!important;padding:20px 22px!important}
+html body #bgCookie :is(h2,h3,strong,b):first-child{font-family:var(--rit-serif)!important;font-weight:450!important;font-size:1.05rem!important}
+html body #bgCookie p,html body #bgCookie div{font-size:13px!important;line-height:1.6!important;color:var(--rit-zacht)!important}
+html body #bgCookie button{border-radius:999px!important;box-shadow:none!important;font-size:13px!important;font-weight:600!important;padding:10px 18px!important}
+html body #bgCookie button:last-of-type{background:var(--rit-inkt)!important;color:var(--rit-papier)!important;border:1px solid var(--rit-inkt)!important}
+html body #bgCookie button:first-of-type{background:transparent!important;color:var(--rit-inkt)!important;border:1px solid var(--rit-lijn)!important}
+html body .bg-whatsapp-contact{background:var(--rit-inkt)!important;box-shadow:none!important;width:48px!important;height:48px!important}
+html body:has(#bgCookie.bgShow) .bg-whatsapp-contact{bottom:20px!important}
+
+/* ---------- Rust op pagina's: ruimte en trage overgangen ---------- */
+html body :is(.kaart,.tegel,.blok,[class*="card"]){transition:border-color var(--rit-tempo),background-color var(--rit-tempo),transform var(--rit-tempo)}
+html body .wrap :is(h2){margin-bottom:.6em}
+@media(max-width:860px){
+  html body section.hero-video.hero-inspiration video.hero-bg-video{position:relative!important;transform:none!important;right:auto!important;top:auto!important;display:block;margin:28px auto 0;width:min(70vw,300px)!important;height:300px!important}
+  html body section.hero-video.hero-inspiration .hero-copy{max-width:100%!important}
+  html body .inhoud-kop video{display:none!important}
+}
+@media(prefers-reduced-motion:reduce){html body *{transition:none!important}}
+
+/* Beleving (interactie): langzame, rustige reacties. Alleen vorm en beweging. */
+html{scroll-behavior:smooth}
+html body main a{transition:color .5s ease,opacity .5s ease,border-color .5s ease}
+html body main :where(.card,[class*="card"],[class*="tile"]){transition:transform .7s cubic-bezier(.22,.61,.36,1),box-shadow .7s ease,border-color .7s ease}
+html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:translateY(-4px);box-shadow:0 18px 40px -26px rgba(20,23,26,.35)}
+html body :focus-visible{outline:2px solid #14171A;outline-offset:3px;border-radius:4px}
+::selection{background:#FFE86B;color:#14171A}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}html body main :where(.card,[class*="card"],[class*="tile"]):hover{transform:none}}
+
+/* Goud is één detail per scherm (besluit 17 nov): de dikke gele markeerstift en het gele vlak worden
+   een dunne gouden lijn en een stil papieren vlak met een gouden rand. */
+html body .bgx-streep.bgx-aan{background-size:100% 14%!important;background-position:0 96%!important}
+@media(prefers-reduced-motion:reduce){html body .bgx-streep{background-size:100% 14%!important;background-position:0 96%!important}}
+html body .bm-kern{background:var(--rit-papier-zacht,#F3F1EC)!important;border-left:3px solid #FFE86B!important;border-radius:6px!important;font-weight:400!important}
+html body .bm-kern strong{font-weight:500!important}
+
+/* Cookiemelding compact (besluit 17 nov: rust): de korte tekst, één rij knoppen, geen kop.
+   De lange variant dekte op desktop de hero-tekst en de primaire knop af. */
+html body #bgCookie{width:min(340px,calc(100vw - 40px))!important;max-width:340px!important;padding:14px 16px!important;border-radius:16px!important}
+html body #bgCookie h4{display:none!important}
+html body #bgCookie .bgLang{display:none!important}
+html body #bgCookie .bgKort{display:inline!important}
+html body #bgCookie .bgBtns{display:flex!important;flex-direction:row!important;flex-wrap:nowrap!important;gap:8px!important;margin-top:10px!important}
+html body #bgCookie .bgBtns button{flex:1 1 0!important;padding:8px 12px!important;white-space:nowrap!important}
+
+/* Hero: eerste scherm blijft rustig en de hoofdactie blijft zichtbaar (18 nov 2026) */
+@media(min-width:900px){html body section.hero-video.hero-inspiration .hero-copy{margin-top:-64px}html body section.hero-video.hero-inspiration .hero-video-content{padding-bottom:150px!important}}
+/* Secundaire regels onder de knop waren wit op papier: nu leesbaar */
+html body section.hero-video.hero-inspiration .hero-video-actions a:not(.hero-primary):not(.hero-secondary):not(.rb-adem-knop){color:var(--rit-inkt,#14171A)!important;text-decoration:underline!important;text-underline-offset:3px;opacity:1!important}
+html body section.hero-video.hero-inspiration .hero-video-actions p,html body section.hero-video.hero-inspiration .hero-video-actions p *:not(a):not(strong){color:var(--rit-zacht,#5B6168)!important;opacity:1!important}
+@media(max-width:760px){html body section.hero-video.hero-inspiration video.hero-bg-video{height:210px!important;max-height:210px!important;object-fit:cover!important}html body section.hero-video.hero-inspiration .hero-video-content{margin-top:-56px!important}}
+
+/* Cookiebanner rechtsonder op brede schermen: de hoofdknop in de hero blijft vrij (18 nov 2026) */
+@media(min-width:900px){html body #bgCookie{left:auto!important;right:20px!important;bottom:88px!important}}
+
+/* Mobiel: de hoofdactie staat direct onder de kop, de uitleg erna (18 nov 2026) */
+@media(max-width:760px){html body section.hero-video.hero-inspiration .hero-copy{display:flex!important;flex-direction:column!important}
+html body section.hero-video.hero-inspiration .hero-copy>*{order:6}
+html body section.hero-video.hero-inspiration .hero-copy>.hero-kicker{order:0}
+html body section.hero-video.hero-inspiration .hero-copy>h1{order:1}
+html body section.hero-video.hero-inspiration .hero-copy>.handline{order:2}
+html body section.hero-video.hero-inspiration .hero-video-actions{display:contents!important}
+html body section.hero-video.hero-inspiration .hero-video-actions>.hero-primary{order:3;align-self:flex-start;margin:14px 0 6px!important}
+html body section.hero-video.hero-inspiration .hero-copy>.hero-sub{order:4}
+html body section.hero-video.hero-inspiration .hero-video-actions>*:not(.hero-primary){order:5}}
+
+/* Hero-beeld: besluitkaart (voorbeeld) i.p.v. stockfilmpje met boog (18 nov 2026) */
+html body section.hero-video.hero-inspiration video.hero-bg-video[data-rb-vervangen]{display:none!important}
+html body .rb-besluit{background:var(--rit-papier-zacht,#F3F1EC);border:1px solid var(--rit-lijn,rgba(20,23,26,.14));border-radius:20px;padding:30px 30px 24px;color:var(--rit-inkt,#14171A);box-shadow:0 30px 60px -40px rgba(20,23,26,.35);font-family:var(--rit-sans,'Instrument Sans',system-ui,sans-serif);z-index:2}
+html body .rb-besluit small{display:flex;align-items:center;gap:9px;font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rit-zacht,#5B6168);font-weight:500}
+html body .rb-besluit small i{display:block;width:8px;height:8px;border-radius:50%;background:#FFE86B;box-shadow:0 0 0 1px rgba(20,23,26,.25)}
+html body .rb-besluit h2{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:1.65rem;line-height:1.2;letter-spacing:-.01em;margin:16px 0 20px;color:var(--rit-inkt,#14171A)}
+html body .rb-besluit dl{margin:0;display:grid;gap:0}
+html body .rb-besluit dl>div{display:grid;grid-template-columns:96px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14))}
+html body .rb-besluit dt{font-size:12.5px;color:var(--rit-zacht,#5B6168)}
+html body .rb-besluit dd{margin:0;font-size:14.5px;line-height:1.5;color:var(--rit-inkt,#14171A)}
+html body .rb-besluit p{display:none;margin:14px 0 0;font-size:13px;line-height:1.55;color:var(--rit-zacht,#5B6168);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding-top:14px}
+html body .rb-film{margin:0;position:relative;z-index:2}
+html body .rb-film video{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;object-position:62% 50%;border-radius:22px;background:#E9E5DC;box-shadow:0 40px 80px -48px rgba(20,23,26,.5)}
+html body .rb-film .rb-besluit{position:absolute;left:-36px;bottom:28px;width:min(78%,330px);padding:20px 22px 16px;background:rgba(251,250,247,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+html body .rb-film .rb-besluit h2{font-size:1.2rem;margin:10px 0 8px}
+html body .rb-film .rb-besluit .rb-b-waarom,html body .rb-film .rb-besluit .rb-b-datum{display:none}
+html body .rb-film .rb-besluit dl>div{grid-template-columns:70px 1fr;padding:8px 0}
+html body .rb-film .rb-besluit dd{font-size:13px}
+@media(min-width:1100px){html body .rb-film{position:absolute;top:calc(50% - 90px);right:max(5vw,calc((100vw - 1200px)/2));transform:translateY(-50%);width:min(30vw,400px)}}
+@media(max-width:1099px){html body .rb-film{max-width:520px;width:calc(100% - 32px);margin:24px auto 0}html body .rb-film video{aspect-ratio:4/3}html body .rb-film .rb-besluit{left:12px;bottom:12px;width:min(76%,300px);padding:14px 16px 10px}html body .rb-film .rb-besluit h2{font-size:1.05rem}}
+@media(prefers-reduced-motion:reduce){html body .rb-film video{animation:none}}
+html body .rb-film .rb-besluit{width:min(62%,250px);left:-44px;bottom:26px;padding:16px 18px 6px;min-height:0;height:auto}
+html body .rb-film .rb-besluit h2{font-size:1.05rem;margin:8px 0 6px}
+html body .rb-film .rb-besluit dl>div:nth-of-type(n+3){display:none}
+html body .rb-film .rb-besluit p{display:none}
+@media(max-width:1099px){html body .rb-film .rb-besluit{left:10px;bottom:10px;width:min(66%,250px);padding:12px 14px 4px}html body .rb-film .rb-besluit dl{display:none}}
+html body .rb-film .rb-besluit{position:absolute!important;margin:0!important;max-width:none}
+@media(max-width:1099px){html body .rb-film .rb-besluit h2{font-size:.95rem}}
+html body .rb-film .rb-besluit{top:auto!important;right:auto!important;transform:none!important}
+html body section.hero-video.hero-inspiration .hero-copy>.rb-film{order:3;width:100%;max-width:520px;margin:6px 0 18px}
+@media(max-width:1099px){html body .rb-film video{aspect-ratio:16/11}}
+@media(max-width:1099px){html body .rb-film .rb-besluit h2{font-size:1rem!important;line-height:1.2!important;margin:6px 0 8px!important}html body .rb-film .rb-besluit{width:min(62%,230px)}}
+/* Hero-film: het drone-filmpje vult weer de hele hero (vlucht door architectuur, overzicht als een vogel).
+   Links vervaagt het beeld in het papier, zodat de tekst rustig leesbaar blijft. */
+html body section.hero-video.hero-inspiration video.hero-bg-video{position:absolute!important;inset:0!important;top:0!important;right:0!important;left:0!important;bottom:0!important;transform:none!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important;object-fit:cover!important;object-position:62% 50%!important;filter:saturate(.82) brightness(1.02) contrast(.96)!important;margin:0!important;-webkit-mask-image:linear-gradient(90deg,transparent 0,transparent 42%,rgba(0,0,0,.5) 58%,#000 80%);mask-image:linear-gradient(90deg,transparent 0,transparent 42%,rgba(0,0,0,.5) 58%,#000 80%)}
+@media(max-width:860px){
+  html body section.hero-video.hero-inspiration video.hero-bg-video{position:absolute!important;inset:0 0 auto 0!important;top:0!important;height:230px!important;width:100%!important;object-position:50% 40%!important;-webkit-mask-image:linear-gradient(180deg,#000 0,#000 45%,transparent 92%);mask-image:linear-gradient(180deg,#000 0,#000 45%,transparent 92%)}
+  html body section.hero-video.hero-inspiration .hero-video-content{padding-top:236px!important}
+}
+/* ---------- Adviseur-ronde (homepage) ---------- */
+html body .rb-adviseur{background:var(--rit-papier-zacht,#F3F1EC);border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));border-bottom:1px solid var(--rit-lijn,rgba(20,23,26,.14));padding:clamp(56px,8vw,104px) 5vw;font-family:var(--rit-sans,'Instrument Sans',system-ui,sans-serif);color:var(--rit-inkt,#14171A)}
+html body .rb-adv-wrap{max-width:1100px;margin:0 auto}
+html body .rb-adviseur small{display:block;font-size:11.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--rit-zacht,#5B6168);font-weight:500}
+html body .rb-adviseur h2{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:clamp(1.9rem,3.4vw,2.9rem);line-height:1.12;letter-spacing:-.02em;margin:18px 0 18px;color:var(--rit-inkt,#14171A);max-width:26ch}
+html body .rb-adviseur .rb-adv-lead{font-size:1.05rem;line-height:1.7;color:var(--rit-zacht,#5B6168);max-width:36rem;margin:0 0 40px}
+html body .rb-adviseur ol{list-style:none;margin:0 0 40px;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+html body .rb-adviseur li{padding:22px 28px 22px 0;border-top:1px solid var(--rit-lijn,rgba(20,23,26,.14));display:flex;flex-direction:column;gap:8px}
+html body .rb-adviseur li b{font-family:var(--rit-serif,'Fraunces',Georgia,serif);font-weight:400;font-size:1.25rem;color:var(--rit-inkt,#14171A)}
+html body .rb-adviseur li span{font-size:.97rem;line-height:1.6;color:var(--rit-zacht,#5B6168)}
+html body .rb-adviseur .rb-adv-knop{display:inline-block;padding:14px 28px;border-radius:999px;border:1px solid var(--rit-inkt,#14171A);color:var(--rit-inkt,#14171A);text-decoration:none;font-weight:600;font-size:.97rem;transition:background-color .4s,color .4s}
+html body .rb-adviseur .rb-adv-knop:hover{background:var(--rit-inkt,#14171A);color:var(--rit-papier,#FBFAF7)}
+@media(max-width:860px){html body .rb-adviseur ol{grid-template-columns:1fr}html body .rb-adviseur li{padding-right:0}}
+/* Eén rustige donkere kleur in plaats van drie blauwtinten. */
+html body :is(section.bgvf,section.pgl,section.v18-chaos-section){background:#14171A!important}
+/* Productkaarten: papier met een dunne lijn in plaats van geel en blauw. */
+html body .service-product-card:is(.lime,.cyan,.blue){background:#F3F1EC!important;color:#14171A!important;border:1px solid rgba(20,23,26,.14)!important;box-shadow:none!important}
+html body .service-product-card:is(.lime,.cyan,.blue) :is(h1,h2,h3,h4,a,b,strong,span,li){color:#14171A!important}
+html body .service-product-card:is(.lime,.cyan,.blue) p{color:#5B6168!important}
+/* Het bedrag mag rustig zijn: serif, kleiner, gewone dikte. */
+html body #annualPotential.count-big{font-family:var(--rit-serif,'Fraunces',Georgia,serif)!important;font-weight:400!important;font-size:clamp(3.2rem,8vw,6rem)!important;letter-spacing:-.025em!important;line-height:1.05!important}
+/* Mobiel: korte hero. Kop, belofte, één knop, één link, één zin geruststelling. */
+@media(max-width:860px){
+  html body section.hero-video.hero-inspiration .hero-sub{display:none!important}
+  html body section.hero-video.hero-inspiration .hero-video-actions p:not(:first-of-type){display:none!important}
+  html body section.hero-video.hero-inspiration :is(.hero-note,.hero-example-switch){display:none!important}
+  html body section.hero-video.hero-inspiration .hero-video-actions p{margin:10px 0 0!important;font-size:.95rem!important;line-height:1.5!important}
+}
+/* Eén stille voortgangsindicator (besluit 17 nov): de leestijd-ring boven de WhatsApp-knop dubbelt de
+   dunne gouden lijn bovenaan en verdwijnt. */
+html body .bgx-ring{display:none!important}
+
+/* Cases: probleem, ingreep en resultaat als drie rustige kaarten in plaats van een lijst met vette hoofdletters. */
+html body .v18-case-scenes{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:20px!important;margin-top:32px!important}
+html body .v18-case-scene{background:var(--rit-papier,#FBFAF7)!important;border:1px solid var(--rit-lijn,#E6E2D8)!important;border-radius:20px!important;padding:28px!important;box-shadow:none!important}
+html body .v18-case-scene>b{display:block!important;font-family:var(--rit-sans,inherit)!important;font-size:11px!important;font-weight:500!important;letter-spacing:.16em!important;text-transform:uppercase!important;color:var(--rit-zacht,#5C646E)!important;margin:0 0 14px!important}
+html body .v18-case-scene>h3{font-family:var(--rit-serif,inherit)!important;font-weight:450!important;font-size:1.3rem!important;line-height:1.3!important;color:var(--rit-inkt,#14171A)!important;margin:0 0 10px!important}
+html body .v18-case-scene>p{font-size:15px!important;line-height:1.65!important;color:var(--rit-zacht,#5C646E)!important;margin:0!important}
+@media(max-width:820px){html body .v18-case-scenes{grid-template-columns:1fr!important}}
+
+/* Case-scenes als redactionele reeks (besluit 17 nov): kleine label, haarlijn ertussen, serif-kop.
+   De leestijd-ring verdwijnt: de gouden voortgangslijn bovenaan toont dat al, en twee meters is onrust. */
+html body .bgx-ring{display:none!important}
+html body .v18-case-scenes{max-width:760px}
+html body .v18-case-scene{padding:34px 0!important;border-top:1px solid var(--rit-lijn)!important;background:transparent!important;box-shadow:none!important}
+html body .v18-case-scene:first-child{border-top:0!important}
+html body .v18-case-scene>b{display:block!important;font:500 11px/1 var(--rit-sans)!important;letter-spacing:.22em!important;text-transform:uppercase!important;color:var(--rit-zacht)!important;margin:0 0 14px!important}

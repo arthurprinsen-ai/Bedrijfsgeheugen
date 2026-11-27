@@ -26,16 +26,68 @@
   ],
   "creativePolicy": {
     "personalLinkedIn": {
-      "defaultTextType": "observational_business_standup",
+      "defaultTextType": "verified_first_person_personal_life_story",
+      "sourceContract": "personal-linkedin-personal-life-only-v1",
+      "verifiedUnusedUserFactRequired": true,
+      "publishAuthority": "original_personal_source_final_review_and_provider_gate_only",
+      "allowedDays": "monday_to_saturday",
       "requiredDimensions": [
-        "emotion",
-        "comedy_device",
-        "pain_trigger",
-        "cta_type",
-        "commercial_hypothesis"
+        "verified_personal_event",
+        "human_detail",
+        "authentic_first_person_voice",
+        "story_family_uniqueness",
+        "privacy_clearance"
       ],
-      "ctaMode": "conversation_first",
-      "objective": "commercial_conversation"
+      "ctaMode": "not_required_only_when_natural",
+      "objective": "authentic_personal_conversation",
+      "separateFromCompanyLearning": true,
+      "commercialConversionOptimizationForbidden": true,
+      "externalNewsOrBusinessFallbackForbidden": true,
+      "promoteWinnerOnlyWithIndependentPersonalMetrics": true,
+      "personalMetricPriority": [
+        "substantive_interactions",
+        "comments",
+        "shares",
+        "reactions",
+        "profile_visits"
+      ],
+      "insufficientMetricsOutcome": "NOT_MEASURED",
+      "declutterComplexity": true,
+      "sourceDeterminesNarrativeShape": true,
+      "mandatoryHook": false,
+      "mandatoryTwist": false,
+      "mandatoryHumor": false,
+      "mandatoryQuestion": false,
+      "mandatoryMoral": false,
+      "patternDiversityDimensions": [
+        "opening",
+        "narrative_arc",
+        "length",
+        "humor",
+        "ending"
+      ],
+      "repeatedPatternOutcome": "REWRITE_NOT_PUBLISH",
+      "researchEvidenceLastReviewedAt": "2026-11-16",
+      "automatedCommentsForbidden": true,
+      "engagementPodsForbidden": true,
+      "unauthorizedProfileScrapingForbidden": true,
+      "imageUse": "optional_only_with_source_and_media_rights",
+      "recentPublishedPatternCheck": "original_independent_reviewer_history_45_days",
+      "learningWindowsHours": [
+        24,
+        48,
+        72
+      ],
+      "metricSource": "original_linkedin_authorized_post_analytics_only",
+      "noMetricsOrNoTruth": "OPEN_NOT_MEASURED_OR_SOURCE_REQUIRED",
+      "outcomePriority": [
+        "authentic_replies",
+        "meaningful_comments",
+        "saves_if_authorized",
+        "profile_visits_if_authorized",
+        "impressions_if_authorized",
+        "reactions"
+      ]
     },
     "companyLinkedIn": {
       "preferredFormats": [

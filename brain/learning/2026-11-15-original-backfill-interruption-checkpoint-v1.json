@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|completion-backfill-no-intermediate-report-on-cancel|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "ORIGINAL_BACKFILL_INTERRUPTED_WITHOUT_PROGRESS_ARTIFACT",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "The existing completion-supervisor backfill wrote its sole summary only after every idempotent resume completed. A failed/cancelled original workflow could leave no intermediate artifact, obscuring evidence of which canonical triggers had returned.",
+  "evidence": {
+    "original_workflow": "Completion Supervisor Backfill Resume",
+    "cancelled_runs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43697572565",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43699612359"
+    ],
+    "source": "tools/outcome-obligation-completion-supervisor-backfill.mjs",
+    "verified_independent_consumer_outcomes": false
+  },
+  "prevention": {
+    "same_original_workflow": true,
+    "atomic_in_progress_before_action": true,
+    "atomic_checkpoint_after_each_canonical_resume": true,
+    "no_complete_without_all_exact_receipts": true,
+    "mixed_WAIT_EXTERNAL_fail_closed": true,
+    "upload_artifact_even_after_step_failure": true,
+    "original_dispatch_evidence_unchanged": true,
+    "no_new_scheduler": true,
+    "no_parallel_sender": true,
+    "no_bulk_close": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "INTERRUPTED_BACKFILL_LEAVES_NO_RESUMED_OR_REMAINING_COUNTS",
+    "cause": "write-report-only-at-end",
+    "prevention_rule": "persist source-bound IN_PROGRESS before first native event and after every exact resumed original obligation",
+    "regression_guard": "tests/brain-completion-supervisor-backfill.test.mjs",
+    "next_owner": "existing Completion Supervisor / Reliability and Data Quality",
+    "effect_proof": "PROTECTED_RELEASE_AND_NATURAL_RUN_PENDING"
+  },
+  "release_state": "PROTECTED_CANDIDATE_PENDING"
+}

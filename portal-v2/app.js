@@ -13,9 +13,13 @@ import { applyOverviewDashboard } from './modules/overview.js?bg_explain=80ad881
 import { renderProjectOverview } from './project-overview.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage, trialBannerText } from './plan-access.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountEntrepreneurHome } from './entrepreneur-home.js';
+import { mountPortalQuickSwitcher } from './quick-switcher.js';
 import { mountWinstnavigator } from './winstnavigator.js';
 import { mountPowerhouseRuntimeBridge } from './powerhouse-runtime-bridge.js?bg_explain=80ad881b4217977c9eb4684228d3191e5631c0f2c0e4dce43f4a956ba895387a';
 import { mountControlPlaneCockpit } from './control-plane-cockpit.js';
+import { mountVoiceSignalCenter } from './voice-signals.js';
+import { mountDataImport } from './data-import.js';
+import { renderImportedDataOnPage } from './imported-data-pages.js';
 import { attachExistingControlPlaneCockpit } from './control-plane-boot.js';
 
 const SOURCES=[
@@ -452,8 +456,16 @@ mountEntrepreneurHome({domainState:portalDomainState,stateClient:portalStateClie
 mountWinstnavigator({domainState:portalDomainState,stateClient:portalStateClient});
 // Close tenant-bound visual detail whenever the authenticated subject changes.
 // Do not expose user identifiers through the DOM event payload.
-let portalVisualAuthSubject=null;
+let portalVisualAuthSubject='';
+function refreshConfirmedImportedPage(){
+ const root=document.getElementById('portalView');
+ if(!root?.classList.contains('open'))return;
+ const native=root.querySelector('#pvNative');
+ if(!native)return;
+ renderImportedDataOnPage(native,{pageId:root.dataset.pageId,stateClient:portalStateClient,openPage:gatedOpenPage});
+}
 portalStateClient.subscribe(snap=>{
+ refreshConfirmedImportedPage();
  const nextVisualSubject=(snap.mode==='authenticated'||snap.mode==='empty')&&snap.user&&!portalStateClient.isDemo()
    ? String(snap.user.id||'') : '';
  if(nextVisualSubject!==portalVisualAuthSubject){
@@ -482,8 +494,8 @@ portalStateClient.subscribe(snap=>{
    navigatePortal('overzicht',{replace:true});
  }
 });
-portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
+portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});refreshConfirmedImportedPage();if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});mountVoiceSignalCenter({stateClient:portalStateClient,domainState:portalDomainState});mountDataImport({stateClient:portalStateClient,domainState:portalDomainState});
 bindPortalNavigation({
  openPage:gatedOpenPage,
  openHub,
@@ -491,6 +503,7 @@ bindPortalNavigation({
  showOverview:()=>{closePortalPage();closeHub()}
 });
 mountMobilePrimaryNavigation();
+mountPortalQuickSwitcher({stateClient:portalStateClient});
 mountOverviewDepthDisclosure();
 document.querySelectorAll('[data-open-page]').forEach(control=>{
  control.addEventListener('click',event=>{
@@ -516,14 +529,32 @@ addEventListener('keydown',e=>{
  else if(!e.shiftKey&&(active===last||!sheet.contains(active))){e.preventDefault();first.focus();}
 });
 addEventListener('resize',render);render();
+// One original mounted-shell signal for the parser-time boot watchdog.
+// This is shell readiness only, never an authenticated tenant/Brain receipt.
+document.documentElement.dataset.bgPortalAppBoot='ready';
+globalThis.__bgMarkPortalBootReady?.();
 // Revalidate when the user returns and every 15 minutes while the portal is
 // visible. Domain refresh rejects dirty state and never overwrites a pending ACK.
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)void revalidateVisibleCustomer();});
 globalThis.addEventListener('focus',()=>void revalidateVisibleCustomer());
 globalThis.setInterval(()=>void revalidateVisibleCustomer(),PORTAL_REVALIDATION_INTERVAL_MS);
 ensureIdentityWidget().then(identity=>{
- const refreshDomainState=()=>portalDomainState.init().catch(()=>null);
+ const refreshDomainState=async()=>{
+  const before=String(portalStateClient.currentUser?.()?.id||'');
+  try{
+   await portalDomainState.init();
+   // A delayed identity hydration must not leave a valid deep-linked page
+   // hidden after the old tenant's private DOM has been revoked.
+   // Re-open through the original entitlement/security gate, and only for
+   // the same principal that just hydrated successfully.
+   const after=String(portalStateClient.currentUser?.()?.id||'');
+   if(before!==after)return;
+   const requested=new URL(location.href).searchParams.get('page');
+   const view=document.getElementById('portalView');
+   if(requested&&view?.getAttribute('aria-hidden')==='true')gatedOpenPage(requested);
+  }catch{return null;}
+ };
  identity?.on?.('login',refreshDomainState);
  identity?.on?.('logout',refreshDomainState);
- refreshDomainState();
+ void refreshDomainState();
 });

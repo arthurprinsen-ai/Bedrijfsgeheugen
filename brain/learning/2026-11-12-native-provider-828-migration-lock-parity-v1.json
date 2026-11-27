@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|provider-828-lock-parity|20261112-v1",
+  "obligation_id": "supabase|migration-history|provider-828-lock-parity|20261112-v1",
+  "title": "Maintain original native migration provider/source parity after protected blog handoff repair",
+  "status": "CANDIDATE",
+  "root_cause": "Original protected PR #5648 applied its Supabase DDL migration 20261112140500 after source merge, while original immutable provider-backed source lock still reflected 827 migrations (last 20261112131500). Historical migration lock controls would reject any next unrelated migration candidate until source parity recovered.",
+  "impact": "Original owner CI/CD may block protected downstream releases even though production blog handoff guard is live; would create repeatable source-history drift.",
+  "fix": "Append only the exact 828th provider-applied version and name independently read from supabase_migrations.schema_migrations, preserve all prior 827 identities and SQL, use original protected GitHub source lock, no DDL replay or parallel executor.",
+  "prevention_rule": "After native Supabase provider migrates a protected original SQL change, verify provider row count and exact version/name, reconcile original migration-history.lock.json using original owner before admitting dependent protected releases. Never claim future planned migrations applied.",
+  "regression_contract": "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs; tests/brain-supabase-migration-lock-provider-20261029.test.mjs; tests/supabase-migration-history-integrity.test.mjs",
+  "tests": [
+    "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+    "tests/brain-supabase-migration-lock-provider-20261029.test.mjs",
+    "tests/supabase-migration-history-integrity.test.mjs"
+  ],
+  "evidence": [
+    "Verified 2026-11-12T13:37:15.498091Z production Supabase supabase_migrations.schema_migrations has 828 rows and exactly one row version 20261112140500/name original_blog_provider_identity_handoff_v1.",
+    "Protected PR #5648 was merged on main as fc4cf2b22875ddc27c1a11f3021c966ed5a0c539 after Required+CodeQL+Supabase preview all passed.",
+    "Production pg_get_functiondef of powerhouse_content_handoff_receipts_v1 includes exact first-party /blog/ provider proof gate and still requires social post IDs and provider_truth_verified. Original 2026-10-25 BRAIN item advanced from OVERDUE_PUBLICATION to OVERDUE_MEASUREMENT; no false outcome claimed.",
+    "Original source lock contained 827 exact provider applied identities ending in 20261112131500, before this append-only 828 reconciliation."
+  ],
+  "outcome": "Provider backed historical source lock reconciliation; proves release integrity only, not historical 183 social metrics or business conversion.",
+  "compiler": {
+    "failure_class": "PROVIDER_SOURCE_PARITY",
+    "scope": "RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs",
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}

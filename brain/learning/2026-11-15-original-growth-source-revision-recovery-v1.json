@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|source-spine|original175-140-heartbeat-current-day-revision-drift|20261115-v1",
+  "root_cause": "Original #175 daily source capture at 12:46 UTC preceded real provider #177 source observations at 14:50 UTC. Existing #140 consumer then recomputed the 28-row canonical manifest and refused older BRAIN sourceRevision, correctly returning consumer_accepted=false and SOURCE_REVISION_MISMATCH_OR_PRODUCER_MISSING_RETRY_ORIGINAL_175. The original #175 schedule interval causes a possible multi-hour no-ack gap after source changes. A cron success is not consumer or effect proof.",
+  "scope": "ORIGINAL_SOURCE_175_CONSUMER_140_HEARTBEAT_IN_EXISTING_CONTENT_LOOP",
+  "owner": "Original content-orchestrator #140 and original growth source #175; independent Data Quality/Heartbeat",
+  "prevention_rule": "Within existing #140 authenticated, leased, day-scoped content-loop only, on exact original mismatch response call the original idempotent #175 capture once, original #140 consumer once, and independent original Heartbeat readback once. Stop safely on busy, bad revision, missing tenant/daily manifest, mismatched receiver or Heartbeat. Never infer CRO executed, provider post sent, customer revenue, or terminal ONE BRAIN status from source ack. Preserve #175/#140/#171 schedulers; no second worker or credentials.",
+  "regression": [
+    "tests/brain-original-growth-source-revision-recovery-20261115.test.mjs"
+  ],
+  "evidence": {
+    "business_date": "2026-11-15",
+    "original_source_rows": 28,
+    "prior_consumer_accepted": false,
+    "original_provider_source_observed_at_utc": "2026-11-15T14:50:09.098Z",
+    "original_producer_replayed_at_utc": "2026-11-15T15:02:16.241197Z",
+    "exact_original_revision": "e108560fd449a29c059c80079c843ea6a1c831d80c9342f87ffb7688186c89b7",
+    "original_consumer_accepted": true,
+    "original_heartbeat_readback_utc": "2026-11-15T15:02:47.346758Z",
+    "original_heartbeat_ack_verified": true,
+    "original_site_receipt_count": 0,
+    "actual_cro_experiment_executed": false,
+    "independently_realized_customer_value_eur": "NOT_PROVEN",
+    "original_p0": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "candidate_release_state": "PROTECTED_PR_AWAITING_CI_DEPLOY_AND_NATURAL_READBACK"
+  },
+  "learning_state": "OBSERVED_SOURCE_HANDOFF_REPAIRED_BUSINESS_OUTCOME_OPEN",
+  "compiler": {
+    "failure_class": "ORIGINAL_GROWTH_SOURCE_CONSUMER_REVISION_DRIFT_AFTER_NEW_PROVIDER_INGEST",
+    "scope": "BACKEND_EDGE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-growth-source-revision-recovery-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-growth-source-revision-recovery-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-growth-source-revision-recovery-20261115.test.mjs"
+    ]
+  }
+}

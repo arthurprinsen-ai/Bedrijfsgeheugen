@@ -1,0 +1,44 @@
+{
+  "fingerprint": "powerhouse|mira|original-exact-job-claim-handoff|20261124-v1",
+  "detected": "2026-11-24",
+  "event_date": "2026-11-24",
+  "owner": "original powerhouse-instagram-media-router / original Mira producer",
+  "root_cause": "Original authenticated router lacks an exact-job producer claim transport. Legacy claim picks first eligible current/future date, and a completed 23 Nov OpenArt history is still GENERATING locally. First protected admission also failed missing PR machine metadata.",
+  "fix": "Add exact-job service-role overload and authenticated claim_generation action preserving same lock and provider fences; keep original agent responsible for completion, publication and analytics.",
+  "correction": "Use same canonical job/date/source and existing original producer, never spend without exact fresh claim; reconcile prior history before retry; supply all protected admission metadata and evidence before PR.",
+  "prevention_rule": "Require exact claim, durable history pin, independent provider completion and media proof, one Meta write and readback, actual metrics and next learning. Validate protected delivery metadata before release.",
+  "implementation_state": "PROTECTED_PR_CI_PENDING",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-original-exact-job-claim-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-original-exact-job-claim-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-original-exact-job-claim-20261124.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-mira-original-exact-job-claim-20261124.test.mjs"
+  ],
+  "test": "tests/brain-mira-original-exact-job-claim-20261124.test.mjs",
+  "protected_release_required": true,
+  "production_proof": "PENDING",
+  "provider_publish_proof": "NOT_CLAIMED",
+  "evidence": {
+    "source_revision": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6138",
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+    "admission_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45342441110",
+    "original_job": "b1ea15d9-7c9b-4667-8ac4-f9cc43147e4b",
+    "original_openart_history": "Zsu21gwbp5MDtRVn9Jcp",
+    "applied_provider_proof": "PENDING"
+  }
+}

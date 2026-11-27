@@ -6,6 +6,12 @@ Bijgewerkt 2026-11-08. Leesroute per poort: je ziet een rode check of blokkade, 
 
 Autonoom uitvoeren, niet terugvragen. Kies zelf de beste route, voer uit, bewijs en leg vast. Stoppen en vragen mag alleen bij wat een agent niet zelf kan of mag: kosten die bevestiging vragen (bijvoorbeeld een Supabase-preview-branch), providerinstellingen en OAuth die alleen Arthur kan doen, en onomkeerbare dataverwijdering. Beschermde checks, vetopoorten en kwaliteitsgates worden nooit omzeild. Groen komt via de beschermde PR-route. Eindig een sessie niet met "zal ik...?" maar met wat gedaan is, wat bewezen is en wat de volgende agent oppakt.
 
+## Mandaat: na groen zonder vraag naar productie (10 november 2026)
+
+De bevoegde originele delivery-agent voert een normale, omkeerbare wijziging **zelfstandig tot en met live-readback** door zodra alle **toepasselijke** verplichte poorten en formele autorisaties op de exacte head groen zijn. Niet eindigen met de vraag of Arthur wil dat het live gaat. Dit mandaat omvat de bestaande beschermde PR-merge, canonieke productiepromotie, onafhankelijke SHA-/provider-/functionele controle, de originele overdrachts-ACK en registratie van uitkomst in ONE BRAIN/Heartbeat/Portaal. Merge, auto-merge of een READY-deploy is op zichzelf niet voldoende om LIVE_BEWEZEN te claimen.
+
+Bij RED/PENDING/autorisatiegebrek: houd dezelfde originele verplichting OPEN, vind en herstel de oorzaak met bestaande bevoegdheden en voer de controles opnieuw uit. Nooit een verplichte check, branch protection, consent of kwaliteitsgate omzeilen; nooit een tweede scheduler of publisher starten. Alleen verplichte menselijke OAuth/providerautorisatie, toestemming voor kosten en onomkeerbare destructieve handelingen opnieuw voorleggen. Als een agent geen effectieve GitHub/Netlify/Supabase-toegang heeft, rapporteert hij dit als niet uitgevoerd, niet als live.
+
 ## 1. De vijf minuten vóór je begint
 
 1. Draai `node tools/delivery-preflight.mjs shared --action "<wat je gaat doen>"`. Blokkeert hij op een regel, noem de regel en volg hem. `--ack` is een verklaring, geen bewijs.

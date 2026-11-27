@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "date": "2026-11-12",
+  "type": "UNIFIED_INSTALLED_BUSINESS_APP_PHONE_TABLET",
+  "fingerprint": "portal|website|one-installable-business-app-responsive-touch-with-no-private-cache|20261112-v1",
+  "status": "PROTECTED_CANDIDATE_EVIDENCE_DUE",
+  "parent_issues": [
+    4215,
+    4198
+  ],
+  "observed": {
+    "technical_baseline": "Original Portal V2 #5634 was production-readback green with canonical four-button phone dock; same four buttons absent on tablet >760px; public website existing mobile menu working, no shared installable manifest or app navigation across public site",
+    "customer_installation_rate": "NOT_MEASURED",
+    "customer_task_completion": "NOT_MEASURED",
+    "business_conversion_lift": "NOT_MEASURED"
+  },
+  "root_cause": {
+    "observed": "Public website had no common installable app metadata and 1-tap public dock; original four-route portal navigation was phone-only, leaving 761–1180px tablets on hidden sidebar with hamburger",
+    "unknowns": [
+      "cross-device authentic app usability metrics",
+      "real installation and retention rates",
+      "commercial outcome effects"
+    ]
+  },
+  "fix": {
+    "original_authorities": [
+      "tools/site-shell/apply-cms-runtime.mjs",
+      "portal-v2/app.js",
+      "portal-v2/page-shell.js",
+      "portal-v2/router.js",
+      "platform/agents/agent-team.mjs"
+    ],
+    "scope": "One progressive install manifest and icons, network-only offline fallback, shared presentational public dock, responsive original portal tablet navigation, existing UX agent and two original skills",
+    "no_business_executor": true,
+    "no_new_customer_store": true,
+    "original_tenant_gate_preserved": true,
+    "private_cache": false
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_PORTAL_MOBILE_TABLET_INSTALLABILITY_AND_NAVIGATION_FRAGMENTATION",
+    "scope": "PORTAL_WEBSITE_UX",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-single-installed-app-mobile-tablet-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-single-installed-app-mobile-tablet-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-single-installed-app-mobile-tablet-20261112.test.mjs"
+    ]
+  },
+  "prevention": [
+    "ONE_MANIFEST_ONE_ORIGINAL_ROUTER",
+    "REAL_192_512_APP_ICONS_AND_STANDALONE",
+    "TOUCH_AND_SAFE_AREA_390_AND_820",
+    "NO_PARALLEL_PORTAL_NAV_ON_TABLET",
+    "ABSOLUTE_HTTPS_HREFS",
+    "NO_OFFLINE_PRIVATE_CACHE_OR_API_INTERCEPTION",
+    "ONLY_REAL_BROWSER_INSTALL_PROMPT",
+    "EXACT_MAIN_NETLIFY_AND_BROWSER_READBACK_BEFORE_LIVE",
+    "IPAD_1024_SINGLE_ORIGINAL_DOCK_LEGACY_SIDEBAR_HIDDEN"
+  ],
+  "evidence": {
+    "required": "Protected Required + CodeQL, exact main Netlify CURRENT READY, Portal V2 DOM readback, Original Skill Projection, public phone and private-portal tablet browser checks",
+    "limitations": "PWA shell installability is not a native App Store binary, real offline customer data is intentionally unavailable; no independent installation adoption, task time or conversion improvement proven",
+    "browser_regression": "tests/integration/portal-v2-website-one-app-phone-tablet.spec.js",
+    "tablet_1024_canary": "tests/integration/portal-v2-website-one-app-phone-tablet.spec.js — Playwright at 1024px requires the original four-tab dock visible, legacy sidebar and hamburger hidden, main width >900px, zero overflow and working More close"
+  }
+}

@@ -15,8 +15,15 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
    &&date.getTime()-instant(p.published_at)>=24*3600000
    &&date.getTime()-instant(p.published_at)<=21*86400000).slice(0,24);
  const ids=new Set(sample.map(p=>p.post_id));
+ const originalIgMediaByPost=new Map(sample.filter(p=>p.platform==='instagram')
+   .map(p=>[p.post_id,String(p.external_post_id||'')]));
+
  const recent=snapshots.filter(s=>s?.tenant_id==='bedrijfsgeheugen'&&ids.has(s.post_id)
-   &&['OBSERVED','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED'].includes(s.data_quality)
+   &&(channel==='instagram_company'
+     ?s.source==='composio-instagram'&&s.data_quality==='OBSERVED'
+       &&/^[0-9]{10,25}$/.test(originalIgMediaByPost.get(s.post_id)||'')
+       &&String(s.source_event_id||'').startsWith('composio:instagram:'+originalIgMediaByPost.get(s.post_id)+':')
+     :['OBSERVED','PROVIDER_OBSERVED','PROVIDER_OBSERVED_LINKED'].includes(s.data_quality))
    &&instant(s.observed_at)!==null
    &&date.getTime()-instant(s.observed_at)<=72*3600000
    &&date.getTime()-instant(s.observed_at)>=-300000)
@@ -24,16 +31,28 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
  const newest=new Map();
  for(const s of recent)if(!newest.has(s.post_id))newest.set(s.post_id,s);
  const qualifying=[];
+ const countedIgMedia=new Set();
  for(const p of sample){
    const s=newest.get(p.post_id);
    if(!s||instant(s.observed_at)<instant(p.published_at))continue;
+   // A post that is mature now does not make its early snapshot mature.
+   // Deduplicate on native Meta media ID, not a mutable internal registry row.
+   const igMediaId=channel==='instagram_company'?String(p.external_post_id||''):null;
+   if(channel==='instagram_company'&&(
+      instant(s.observed_at)-instant(p.published_at)<24*3600000||
+      countedIgMedia.has(igMediaId)))continue;
    const metrics=s.metrics;
    if(!metrics||typeof metrics!=='object'||metrics.metric_scope==='reactions_only'||metrics.views_unavailable===true)continue;
    const exposure=number(metrics.reach)??number(metrics.views)??number(metrics.impressions);
    const comments=number(metrics.comments),likes=number(metrics.likes);
-   if(exposure===null||exposure<50||comments===null||likes===null)continue;
+   if(exposure===null||exposure<50||
+     (channel!=='instagram_company'&&(comments===null||likes===null)))continue;
    const clicks=number(metrics.clicks)??number(metrics.link_clicks);
-   qualifying.push({post_id:p.post_id,exposure,comments,likes,clicks,observed_at:s.observed_at});
+   const shares=number(metrics.shares),saved=number(metrics.saved);
+   if(channel==='instagram_company')countedIgMedia.add(igMediaId);
+   qualifying.push({post_id:p.post_id,exposure,comments,likes,clicks,
+     shares,saved,views:number(metrics.views),reach:number(metrics.reach),
+     observed_at:s.observed_at});
  }
  const base={contract:'POWERHOUSE-MEASURED-NEXT-POST-CHALLENGER-v1',
   evidence_scope:channel==='instagram_company'?'SAME_OWNED_BRAND_INSTAGRAM_ONLY':'SAME_OWNED_BRAND_LINKEDIN_COMPANY_ONLY',mode:'READ_ONLY_DECISION_CONTEXT',
@@ -44,26 +63,67 @@ export function selectMeasuredNextPostTest({posts=[],snapshots=[],now=new Date()
   privacy:'only aggregate provider metrics; no visitor or reacting-person identifiers',
   requires_future_readback:['exact provider published identity','mature comparable impressions and comments','attributed qualified customers or paid orders where observable']};
  const reach=qualifying.reduce((a,x)=>a+x.exposure,0);
- const comments=qualifying.reduce((a,x)=>a+x.comments,0);
+ const comments=qualifying.reduce((a,x)=>a+(x.comments??0),0);
+ // Only observed Instagram owned-post metrics; never infer missing shares,
+ // saves, UTM clicks, leads or revenue from a raw view count. One snapshot
+ // per exact provider post and no LinkedIn/Buffer cross-account transfer.
+ const metricCoverage=(key,reachOnly=false)=>{
+   const rows=qualifying.filter(x=>x[key]!==null&&(!reachOnly||x.reach!==null&&x.reach>0));
+   const exposure=rows.reduce((n,x)=>n+(reachOnly?x.reach:x.exposure),0);
+   return {sample:rows.length,exposure,value:rows.length?rows.reduce((n,x)=>n+x[key],0):null};
+ };
+ const instagramEvidence=channel==='instagram_company'?{
+   source:'composio-instagram',scope:'OWNED_ORGANIC_POST_MEDIA',
+   status:qualifying.length>=2&&reach>=200?'COMPARABLE_AGGREGATE_OBSERVED':'INSUFFICIENT_MATURED_POSTS',
+   no_new_post_or_budget:true,causal_effect_proven:false,sales_not_inferred:true,
+   measured_posts:qualifying.length,observed_at:qualifying[0]?.observed_at||null,
+   reach_exposure_sum:metricCoverage('reach'),
+   views:metricCoverage('views'),likes:metricCoverage('likes'),
+   comments:metricCoverage('comments',true),shares:metricCoverage('shares',true),
+   saves:metricCoverage('saved',true),website_clicks:metricCoverage('clicks'),
+   paid_orders:'UNKNOWN_UNTIL_INDEPENDENT_ATTRIBUTION'
+ }:null;
  if(qualifying.length<2||reach<200)return {...base,state:'WAIT_FOR_COMPARABLE_PROVIDER_METRICS',
-    reason:'No two independently comparable mature posts on the same owned platform with trustworthy exposure and comments',
-    cumulative_verified_exposure:reach,proposed_test:null,decision:'KEEP_CANONICAL_EDITORIAL_DEFAULT'};
+    reason:'No two independently comparable mature posts on the same owned platform with trustworthy exposure',
+    cumulative_verified_exposure:reach,instagram_business_evidence:instagramEvidence,
+    proposed_test:null,decision:'KEEP_CANONICAL_EDITORIAL_DEFAULT'};
  const clickCohort=qualifying.filter(x=>x.clicks!==null);
  const clickExposure=clickCohort.reduce((a,x)=>a+x.exposure,0);
  const verifiedClicks=clickCohort.reduce((a,x)=>a+x.clicks,0);
  const zeroClicks=clickCohort.length>=2&&clickExposure>=200&&verifiedClicks===0;
- const candidate=zeroClicks?'TEST_USEFUL_NEXT_STEP_FOR_ZERO_CLICKS':comments===0?'TEST_RELEVANT_CUSTOMER_DISCUSSION_QUESTION':
-    comments/reach<0.005?'TEST_CONCRETE_PROBLEM_CONSEQUENCE_HOOK':'TEST_CONCRETE_NEXT_STEP_CTA';
+ const share=instagramEvidence?.shares,save=instagramEvidence?.saves,comment=instagramEvidence?.comments;
+ // Only an explicit observed zero is a zero. Low sharing and low saving
+ // suggest one reversible copy hypothesis, not a causal algorithm claim.
+ const shareGap=channel==='instagram_company'&&share?.sample>=2&&share.exposure>=200
+   &&share.value/share.exposure<0.005;
+ const saveGap=channel==='instagram_company'&&save?.sample>=2&&save.exposure>=200
+   &&save.value/save.exposure<0.0075;
+ const hasCommentCoverage=channel!=='instagram_company'||(comment?.sample>=2&&comment.exposure>=200);
+ const commentCount=channel==='instagram_company'?comment?.value:comments;
+ const commentExposure=channel==='instagram_company'?comment?.exposure:reach;
+ if(!zeroClicks&&!shareGap&&!saveGap&&!hasCommentCoverage)return {...base,state:'WAIT_FOR_COMPARABLE_PROVIDER_METRICS',
+  reason:'No sufficiently observed Instagram metric with its own valid denominator; missing comments are not zero',
+  cumulative_verified_exposure:reach,instagram_business_evidence:instagramEvidence,proposed_test:null,
+  decision:'KEEP_CANONICAL_EDITORIAL_DEFAULT'};
+ const candidate=zeroClicks?'TEST_USEFUL_NEXT_STEP_FOR_ZERO_CLICKS':
+   shareGap?'TEST_SHAREABLE_CONCRETE_BUSINESS_FRICTION':
+   saveGap?'TEST_ONE_SAVEABLE_OWNER_CHECK':
+   commentCount===0?'TEST_RELEVANT_CUSTOMER_DISCUSSION_QUESTION':
+    commentCount/commentExposure<0.005?'TEST_CONCRETE_PROBLEM_CONSEQUENCE_HOOK':'TEST_CONCRETE_NEXT_STEP_CTA';
  return {...base,state:'ELIGIBLE_BOUNDED_NEXT_POST_TEST',
-   cumulative_verified_exposure:reach,cumulative_comments:comments,
+   cumulative_verified_exposure:reach,cumulative_comments:channel==='instagram_company'?commentCount:comments,
+   instagram_business_evidence:instagramEvidence,
    cumulative_verified_clicks:clickCohort.length?verifiedClicks:null,verified_click_exposure:clickExposure,
    source_post_ids:qualifying.map(x=>x.post_id).slice(0,5),
    proposed_test:{
       hypothesis_id:candidate,
-      single_change:zeroClicks?'Clarify one useful voluntary next step and its concrete reader benefit; preserve the topic, verified destination and other copy; no clickbait or extra post':comments===0?'Use one useful open question tied to a concrete customer situation; do not use engagement bait':
-       comments/reach<0.005?'Replace one generic opening with a concrete operational problem and consequence':
+      single_change:zeroClicks?'Clarify one useful voluntary next step and its concrete reader benefit; preserve the topic, verified destination and other copy; no clickbait or extra post':
+       shareGap?'Change only the opening to one specific, source-backed MKB friction and its relatable consequence worth sharing with a colleague, without asking for artificial engagement':
+       saveGap?'Make one concrete, actionable owner/checklist step in the existing Mira caption easier to save; preserve the exact source, master video scene and lawful optional CTA':
+       commentCount===0?'Use one useful open question tied to a concrete customer situation; do not use engagement bait':
+       commentCount/commentExposure<0.005?'Replace one generic opening with a concrete operational problem and consequence':
        'Make one relevant next step explicit without pressure or unverified outcome claims',
-      primary_metric:zeroClicks?'provider_observed_clicks_per_eligible_exposure':'provider_observed_comments_per_eligible_exposure',
+      primary_metric:zeroClicks?'provider_observed_clicks_per_eligible_exposure':shareGap?'provider_observed_shares_per_reach':saveGap?'provider_observed_saves_per_reach':(channel==='instagram_company'?'provider_observed_comments_per_reach':'provider_observed_comments_per_eligible_exposure'),
       commercial_guardrail:'never trade off qualified leads, truth, consent or customer trust for likes',
       treatment:'ONE_REVERSIBLE_CREATIVE_COMPONENT_ONLY',
       control:'retain current source-backed editorial contract and topic',
@@ -99,9 +159,12 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
   {name:'READERS_NEXT_STEP',change:'Maak één optionele, brongetrouwe vervolgstap concreter zonder conversiedruk.'}
  ];
  const instagram=[
-  {name:'SCENE_HOOK',change:'Verduidelijk alleen de opening van de bestaande fictieve Mira-scène.'},
-  {name:'CONSEQUENCE',change:'Verhelder uitsluitend één mogelijk zakelijk gevolg zonder claims over echte klanten.'},
-  {name:'RELEVANT_QUESTION',change:'Stel een nuttige vraag bij de bestaande vrijwillige vervolgstap zonder engagementbait.'}
+  {name:'SCENE_HOOK',metric:'provider_observed_shares_per_reach',
+   change:'Verduidelijk uitsluitend de opening van de bestaande fictieve Mira-scène met één herkenbare, bronvaste ondernemersfrictie; geen nepklantcase of engagementbait.'},
+  {name:'CONSEQUENCE',metric:'provider_observed_saves_per_reach',
+   change:'Verhelder uitsluitend één concreet mogelijk gevolg of bruikbare eigenaar/controlehandeling van de bronvaste ondernemersfrictie; behoud de bestaande Mira-scène.'},
+  {name:'RELEVANT_QUESTION',metric:'provider_observed_comments_per_reach',
+   change:'Stel uitsluitend één natuurlijke nuttige vraag bij het probleem, zonder likes, delen of reageren af te dwingen.'}
  ];
  const variants=channel==='blog'?blog:channel==='instagram_company'?instagram:company;
  const choice=variants[Math.floor(stamp/86400000)%variants.length];
@@ -112,9 +175,12 @@ export function proposeBoundedCreativeExploration({runDate,channel,recommendatio
    other_components:'UNCHANGED',experiment_type:'OBSERVATIONAL_SINGLE_CANDIDATE_NOT_RANDOMIZED_AB',
    compare_to:'prior channel-native editorial baseline; no causal inference',
    measure_after_days:[1,3,7,30],
-   lead_metric:channel==='blog'?'verified_qualified_cta_progression':channel==='instagram_company'?'provider_observed_comments_per_verified_exposure':'verified_clicks_and_substantive_comments',
+   lead_metric:channel==='blog'?'verified_qualified_cta_progression':channel==='instagram_company'?choice.metric:'verified_clicks_and_substantive_comments',
    primary_business_metric:'attributed_verified_paid_orders',
-   requires_readback:true,control:'never promote a winner from unknown denominators'};
+   requires_readback:true,control:'never promote a winner from unknown denominators',
+   ...(channel==='instagram_company'?{format_policy:'MIRA_REEL_ONLY_UNTIL_INDEPENDENT_CAROUSEL_ASSET_AUTHORITY',
+     format_learning_note:'Third-party 2026 comparisons suggest carousels may earn more saves, but the existing exact Mira Reel visual gate is not bypassed and no extra post is permitted.',
+     provider_metrics_only:true,causal_effect_proven:false}: {})};
 }
 
 

@@ -3264,8 +3264,332 @@
     {
       "version": "20261106160000",
       "name": "mira_original_pristine_waiting_asset_claim_v1"
+    },
+    {
+      "version": "20261109152200",
+      "name": "original_social_provider_refresh_learning_v1"
+    },
+    {
+      "version": "20261109152945",
+      "name": "original_social_provider_refresh_learning_v1"
+    },
+    {
+      "version": "20261110073500",
+      "name": "original_content_handoff_receipts_v1"
+    },
+    {
+      "version": "20261110120000",
+      "name": "powerhouse_outreach_research_wait_handoff_v1"
+    },
+    {
+      "version": "20261110123000",
+      "name": "original_content_handoff_no_aging_gap_v2"
+    },
+    {
+      "version": "20261110131500",
+      "name": "original_commercial_nested_gmail_provider_outcome_assurance_v1"
+    },
+    {
+      "version": "20261110134500",
+      "name": "original_source_wait_is_not_send_v1"
+    },
+    {
+      "version": "20261110160055",
+      "name": "linkedin_org_readback_sticky_provider_health_v1"
+    },
+    {
+      "version": "20261111093500",
+      "name": "original_loop_assurance_fault_isolation_v1"
+    },
+    {
+      "version": "20261111094222",
+      "name": "original_loop_assurance_fault_isolation_v1"
+    },
+    {
+      "version": "20261112131500",
+      "name": "original_no_publish_provider_side_effect_fence_v1"
+    },
+    {
+      "version": "20261112140500",
+      "name": "original_blog_provider_identity_handoff_v1"
+    },
+    {
+      "version": "20261112144500",
+      "name": "original_social_legacy_alias_acks_v1"
+    },
+    {
+      "version": "20261112162500",
+      "name": "original_metric_source_temporal_handoff_v1"
+    },
+    {
+      "version": "20261112173000",
+      "name": "original_daily_source_brain_heartbeat_v1"
+    },
+    {
+      "version": "20261112184500",
+      "name": "original_daily_post_publication_metric_ack_v1"
+    },
+    {
+      "version": "20261112194500",
+      "name": "original_growth_source_revision_identity_fix_v1"
+    },
+    {
+      "version": "20261112203000",
+      "name": "original_seo_keyword_tenant_alignment_v1"
+    },
+    {
+      "version": "20261112211000",
+      "name": "original_skipped_provider_reference_readback_handoff_v1"
+    },
+    {
+      "version": "20261112211600",
+      "name": "original_seo_opportunity_source_registry_v1"
+    },
+    {
+      "version": "20261112214500",
+      "name": "original_seo_derived_brain_manifest_handoff_v1"
+    },
+    {
+      "version": "20261112230000",
+      "name": "original_seo_daily_archive_cardinality_guard_v1"
+    },
+    {
+      "version": "20261113060000",
+      "name": "portal_brain_record_contract_parity_v1"
+    },
+    {
+      "version": "20261113062500",
+      "name": "original_no_publish_terminal_handoff_ack_v1"
+    },
+    {
+      "version": "20261113071500",
+      "name": "original_content_handoff_source_revision_receipt_v1"
+    },
+    {
+      "version": "20261113082500",
+      "name": "original_cancelled_social_learning_source_ack_v1"
+    },
+    {
+      "version": "20261113083000",
+      "name": "original_one_chain_content_terminal_proof_guard_v1"
+    },
+    {
+      "version": "20261113121500",
+      "name": "original_ga4_handoff_json_operator_precedence_v1"
+    },
+    {
+      "version": "20261113132000",
+      "name": "original_skipped_no_publish_evidence_routing_v1"
+    },
+    {
+      "version": "20261113140500",
+      "name": "original_no_publish_immutable_provider_receipt_v1"
+    },
+    {
+      "version": "20261113153000",
+      "name": "original_no_publish_legacy_source_action_reconcile_v1"
+    },
+    {
+      "version": "20261113155800",
+      "name": "original_historic_handoff_source_revision_priority_v1"
+    },
+    {
+      "version": "20261113164000",
+      "name": "original_seo_one_chain_outcome_assurance_v2"
+    },
+    {
+      "version": "20261113174500",
+      "name": "original_social_learning_source_ack_v1"
+    },
+    {
+      "version": "20261113190000",
+      "name": "original_seo_heartbeat_cro_consumer_receipt_v1"
+    },
+    {
+      "version": "20261114080027",
+      "name": "original_approved_connection_source_priming_v1"
+    },
+    {
+      "version": "20261114083500",
+      "name": "original_approved_connection_source_priming_v1"
+    },
+    {
+      "version": "20261114091500",
+      "name": "original_outreach_source_research_cooldown_scope_v2"
+    },
+    {
+      "version": "20261114101000",
+      "name": "original_research_consumer_handoff_receipts_v1"
+    },
+    {
+      "version": "20261114142500",
+      "name": "original_outreach_feedback_consumer_ack_v2"
+    },
+    {
+      "version": "20261114161000",
+      "name": "original_daily_mira_email_heartbeat_handoff_v1"
+    },
+    {
+      "version": "20261114164500",
+      "name": "preserve_contact_authority_on_connection_refresh_v1"
+    },
+    {
+      "version": "20261114184600",
+      "name": "innovation_canonical_candidate_handoff_v1"
+    },
+    {
+      "version": "20261114193000",
+      "name": "innovation_original_agent_intake_proof_v1"
+    },
+    {
+      "version": "20261114210000",
+      "name": "original_public_work_email_source_priming_v1"
+    },
+    {
+      "version": "20261114211500",
+      "name": "original_public_business_email_dispatch_v1"
+    },
+    {
+      "version": "20261114230000",
+      "name": "original_source_consumption_stage_receipt_parity_v1"
+    },
+    {
+      "version": "20261114235900",
+      "name": "innovation_original_agent_intake_recovery_v1"
+    },
+    {
+      "version": "20261115001500",
+      "name": "original_public_email_overdue_source_replay_dispatch_v1"
+    },
+    {
+      "version": "20261115094500",
+      "name": "original_public_work_email_heartbeat_source_receipt_v1"
+    },
+    {
+      "version": "20261115103000",
+      "name": "original_public_work_email_commercial_safe_review_ack_v1"
+    },
+    {
+      "version": "20261115121500",
+      "name": "original_wrapped_serp_source_dispatch_wakeup_v1"
+    },
+    {
+      "version": "20261115162000",
+      "name": "personal_observation_source_no_resurrection_v1"
+    },
+    {
+      "version": "20261115162500",
+      "name": "original_personal_source_supplier_completeness_v4"
+    },
+    {
+      "version": "20261115170000",
+      "name": "outcome_memory_source_readback_truth_v1"
+    },
+    {
+      "version": "20261115235500",
+      "name": "sales_action_reexecution_immutable_attempt_lineage_v1"
+    },
+    {
+      "version": "20261115235900",
+      "name": "company_intelligence_existing_daily_source_receipt_v1"
+    },
+    {
+      "version": "20261116105000",
+      "name": "original_infinity_missing_signal_isolated_mux_v3"
+    },
+    {
+      "version": "20261116110100",
+      "name": "personal_linkedin_life_only_producer_v1"
+    },
+    {
+      "version": "20261117094500",
+      "name": "original_result_guardian_existing_watchdog_v1"
+    },
+    {
+      "version": "20261117102500",
+      "name": "original_composer_email_channel_fairness_v1"
+    },
+    {
+      "version": "20261117110000",
+      "name": "original_guardian_news_source_provider_truth_v2"
+    },
+    {
+      "version": "20261117123000",
+      "name": "original_composer_bounded_fair_candidate_v2"
+    },
+    {
+      "version": "20261117162500",
+      "name": "powerhouse_cro_site_social_diagnostics_v1"
+    },
+    {
+      "version": "20261117192500",
+      "name": "original_cro_consumer_source_diagnostics_v1"
+    },
+    {
+      "version": "20261118174500",
+      "name": "original_provider_owner_notification_receipt_v3"
+    },
+    {
+      "version": "20261118184000",
+      "name": "original_guardian_provider_scope_source_freshness_v4"
+    },
+    {
+      "version": "20261118194000",
+      "name": "original_guardian_mira_vision_exhausted_owner_notice_v5"
+    },
+    {
+      "version": "20261119090000",
+      "name": "connection_relationship_email_activation_v1"
+    },
+    {
+      "version": "20261119090500",
+      "name": "company_signal_word_boundary_verified_entity_v1"
+    },
+    {
+      "version": "20261120134537",
+      "name": "security_pw_mo14_private_player_data_20261120"
+    },
+    {
+      "version": "20261120143500",
+      "name": "personal_verified_founder_source_v2_policy_alignment"
+    },
+    {
+      "version": "20261121090000",
+      "name": "reconnect_original_email_reply_in_commercial_stage14"
+    },
+    {
+      "version": "20261122162147",
+      "name": "portal_connector_real_afas_source_readback_v1"
+    },
+    {
+      "version": "20261123211950",
+      "name": "growth_atomic_cutover_fence_v1"
+    },
+    {
+      "version": "20261123214500",
+      "name": "personal_founder_perspective_v2_materializer_alignment"
+    },
+    {
+      "version": "20261124063700",
+      "name": "mira_original_exact_job_claim_v1"
+    },
+    {
+      "version": "20261124063737",
+      "name": "original_social_loop_comparable_provider_windows"
+    },
+    {
+      "version": "20261124063938",
+      "name": "original_social_analyst_variant_rotation_and_proof"
+    },
+    {
+      "version": "20261124064216",
+      "name": "original_personal_artifact_evidence_lossless_normalization"
+    },
+    {
+      "version": "20261124064859",
+      "name": "original_personal_observational_analyst"
     }
   ],
-  "captured_at": "2026-11-06T15:30:00.000Z",
-  "project_ref": "adhjwmvyoixzjtmiroln"
+  "project_ref": "adhjwmvyoixzjtmiroln",
+  "captured_at": "2026-11-24T15:35:21.421985Z"
 }

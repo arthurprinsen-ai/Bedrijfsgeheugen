@@ -1,0 +1,88 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|deployment-readback-self-certified-consumer-handoff-learning|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_IMPERSONATED_ORIGINAL_AGENT_ACK_AND_LEARNING",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original outcome-obligation-sweep workflow unconditionally passed --capability-handoff and --learning-writeback when downloading a successful production release readback. The same readback claimant minted supposedly independent BG167/BG168_BG166 receipts without obtaining original consumer PROCESSED ACK, exact source revision or independently applied learning. Existing terminal supervisor accepted legacy flag-generated rows by producer label.",
+  "production_observation": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "checked_at_utc": "2026-11-15T15:43:43Z",
+    "original_CAPABILITY_HANDOFF": 817,
+    "original_LEARNING_WRITEBACK": 817,
+    "consumer_ack_refs_present": 0,
+    "learning_application_refs_present": 0,
+    "source_revisions_present": 0,
+    "external_provider_actions_falsely_claimed": "NOT_INDEPENDENTLY_PROVEN"
+  },
+  "change": {
+    "original_workflow": ".github/workflows/outcome-obligation-sweep.yml",
+    "original_writer": "tools/completion-supervisor-evidence.mjs",
+    "original_supervisor": "platform/agents/completion-supervisor.mjs",
+    "original_agent_roster": "platform/agents/agent-team.mjs",
+    "original_skill": ".agents/skills/powerhouse-recovery-proof/SKILL.md",
+    "no_new_scheduler": true,
+    "no_new_worker": true,
+    "no_db_change": true,
+    "no_bulkclosure": true
+  },
+  "prevention": {
+    "readback_mints_only_deployment_and_functional_evidence": true,
+    "self_mint_consumer_handoff_and_learning_rejected": true,
+    "legacy_817_per_type_rejected_at_consumer_without_source_proof": true,
+    "consumerAckRef_required": true,
+    "learningApplicationRef_required": true,
+    "sourceRevision_must_match_candidate_identity": true,
+    "owner_provider_independent_readback_still_required": true
+  },
+  "semantic_learning": {
+    "failure": "CLAIMANT_DELEGATED_HIS_OWN_CONSUMER_ACK_AND_LEARNING",
+    "cause": "Unconditional workflow flags permitted same writer to mint different agents' independent receipts",
+    "prevention_rule": "Separate deployed/readback from original owner processed handoff and applied learning. Only actual independently verified original source revision, consumer ACK, provider readback and learning application may make terminal receipt eligible; historic arbitrary booleans never.",
+    "regression_guard": [
+      "tests/completion-supervisor-evidence.test.mjs",
+      "tests/completion-supervisor.test.mjs"
+    ],
+    "next_owner": "Original agent-reliability + original affected agent consumer, audited by agent-data-quality",
+    "effect_proof": "PROTECTED_CI_EXACT_PRODUCTION_READBACK_AND_REAL_OWNER_CONSUMER_ACK_DUE"
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-completion-supervisor.test.mjs",
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-completion-readiness.test.mjs",
+      "tests/brain-outcome-obligation-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outcome-obligation-workflow.test.mjs",
+      "tests/brain-completion-supervisor.test.mjs"
+    ]
+  },
+  "evidence": {
+    "native_supabase_project": "adhjwmvyoixzjtmiroln",
+    "original_table": "public.brain_outcome_obligation_evidence",
+    "checked_at_utc": "2026-11-15T15:43:43Z",
+    "capability_handoff_historical": 817,
+    "learning_writeback_historical": 817,
+    "historical_original_consumer_ack_refs": 0,
+    "historical_source_revision_refs": 0,
+    "historical_learning_application_refs": 0,
+    "source_paths": [
+      ".github/workflows/outcome-obligation-sweep.yml",
+      "tools/completion-supervisor-evidence.mjs",
+      "platform/agents/completion-supervisor.mjs"
+    ],
+    "independent_provider_outcomes_verified": false
+  }
+}

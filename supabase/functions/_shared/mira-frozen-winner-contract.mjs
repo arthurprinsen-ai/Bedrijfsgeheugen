@@ -1,6 +1,6 @@
 // One frozen winner governs Instagram media and caption lineage. Never replace
 // an externally sourced daily problem with an unrelated modulo PH-P rotation.
-import {MIRA_CASES,selectMiraProblem,miraCaption as legacyCaption,miraProductionEvidence as legacyEvidence,validateMiraCaptionForDelivery as legacyValidate} from './mira-entrepreneur-caption.mjs';
+import {MIRA_CASES,selectMiraProblem,miraCaption as legacyCaption,miraProductionEvidence as legacyEvidence,validateMiraCaptionForDelivery as legacyValidate,miraExplorationKind} from './mira-entrepreneur-caption.mjs';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid,validMiraGenerationReference} from './mira-canonical-face.mjs';
 // Source-specific editorial approval is immutable repository policy, NOT a
 // user-controllable property of the external complaint/recommendation.
@@ -184,9 +184,53 @@ export function verifiedSourceLedMediaReplacement(approved,winnerId,job){
 }
 
 const normalize = value => String(value??'').replace(/\s+/g,' ').trim();
+export const MIRA_GROWTH_EXPERIMENT_CONTRACT='mira-frozen-source-growth-experiment-v1';
+const measuredKinds=Object.freeze({
+ TEST_SHAREABLE_CONCRETE_BUSINESS_FRICTION:'SCENE_HOOK',
+ TEST_CONCRETE_PROBLEM_CONSEQUENCE_HOOK:'SCENE_HOOK',
+ TEST_ONE_SAVEABLE_OWNER_CHECK:'CONSEQUENCE',
+ TEST_RELEVANT_CUSTOMER_DISCUSSION_QUESTION:'RELEVANT_QUESTION',
+ TEST_USEFUL_NEXT_STEP_FOR_ZERO_CLICKS:'RELEVANT_QUESTION',
+ TEST_CONCRETE_NEXT_STEP_CTA:'RELEVANT_QUESTION'
+});
+export function bindMiraGrowthExperiment(resolved,{runDate,measured,creative}={}){
+ if(resolved?.kind!=='approved_frozen_library_mapping'||!resolved.winner_recommendation_id)return resolved;
+ let kind=null,owner=null,hypothesis=null;
+ if(measured?.state==='ELIGIBLE_BOUNDED_NEXT_POST_TEST'){
+  hypothesis=measured.proposed_test?.hypothesis_id;
+  kind=measuredKinds[hypothesis]||null;
+  if(kind&&measured.hypothesis_not_caused_or_proven===true&&measured.evidence_scope==='SAME_OWNED_BRAND_INSTAGRAM_ONLY')owner='EXISTING_MEASURED_CHALLENGER';
+ }else if(creative?.source_recommendation_id===resolved.winner_recommendation_id){
+  kind=miraExplorationKind(creative,runDate);
+  if(kind){owner='EXISTING_DAILY_EXPLORATION';hypothesis=creative.hypothesis_id;}
+ }
+ const experiment=owner?{contract:MIRA_GROWTH_EXPERIMENT_CONTRACT,owner,hypothesis,kind,run_date:runDate,
+  winner_recommendation_id:resolved.winner_recommendation_id,source_hash:resolved.source_hash,
+  causal_lift_proven:false,additional_publications:0}:null;
+ return {...resolved,growth_experiment:experiment};
+}
+function frozenGrowthVariant(resolved,experiment,runDate){
+ if(!experiment)return null;
+ const k=experiment.kind;
+ if(experiment.contract!==MIRA_GROWTH_EXPERIMENT_CONTRACT||
+    experiment.run_date!==runDate||experiment.winner_recommendation_id!==resolved.winner_recommendation_id||
+    experiment.source_hash!==resolved.source_hash||experiment.causal_lift_proven!==false||
+    experiment.additional_publications!==0||
+    !['SCENE_HOOK','CONSEQUENCE','RELEVANT_QUESTION'].includes(k)||
+    !(experiment.owner==='EXISTING_MEASURED_CHALLENGER'&&measuredKinds[experiment.hypothesis]===k||
+      experiment.owner==='EXISTING_DAILY_EXPLORATION'&&experiment.hypothesis==='instagram_company:'+k+':'+runDate))
+  throw new Error('MIRA_GROWTH_EXPERIMENT_LINEAGE_INVALID');
+ return {state:'ONE_REVERSIBLE_DAILY_COPY_HYPOTHESIS',channel:'instagram_company',run_date:runDate,
+  hypothesis_id:'instagram_company:'+k+':'+runDate,source_recommendation_id:resolved.winner_recommendation_id,
+  causal_lift_proven:false,additional_publications:0,requires_readback:true};
+}
+
 export function miraResolvedCaption(resolved) {
  if(resolved?.kind==='approved_source_led')return resolved.caption;
- if(resolved?.kind==='approved_frozen_library_mapping'||resolved?.kind==='pre_freeze_legacy'){
+ if(resolved?.kind==='approved_frozen_library_mapping'){
+  return legacyCaption(resolved.problem,frozenGrowthVariant(resolved,resolved.growth_experiment,resolved.growth_experiment?.run_date));
+ }
+ if(resolved?.kind==='pre_freeze_legacy'){
   return legacyCaption(resolved.problem);
  }
  throw new Error('MIRA_UNAPPROVED_EDITORIAL_ROUTE');
@@ -203,10 +247,16 @@ export function miraResolvedEvidence(resolved){
   source_evidence_status:'FROZEN_PUBLIC_EXTERNAL_SOURCE',
   source_url:resolved.source_url
  };
+ if(resolved?.kind==='approved_frozen_library_mapping')return {
+  ...legacyEvidence(resolved.problem),mira_frozen_library_contract:MIRA_GROWTH_EXPERIMENT_CONTRACT,
+  mira_winner_recommendation_id:resolved.winner_recommendation_id,mira_source_hash:resolved.source_hash,
+  mira_entrepreneur_scene:resolved.problem.scene,source_url:resolved.source_url,
+  mira_growth_experiment:resolved.growth_experiment||null
+ };
  if(resolved?.problem)return legacyEvidence(resolved.problem);
  throw new Error('MIRA_UNAPPROVED_EDITORIAL_EVIDENCE');
 }
-export function validateResolvedMiraCaptionForDelivery(runDate,body,evidence={}){
+export function validateResolvedMiraCaptionForDelivery(runDate,body,evidence={},independentResolved=null){
  const id=clean(evidence.mira_winner_recommendation_id);
  const approved=APPROVED_SOURCE_LED[runDate+':'+id];
  if(evidence.mira_source_led===true){
@@ -240,6 +290,23 @@ export function validateResolvedMiraCaptionForDelivery(runDate,body,evidence={})
    return {ok:false,reason:'MIRA_FROZEN_SOURCE_LED_CAPTION_PROOF_FAILED'};
   return {ok:true,kind:'approved_source_led',winner_recommendation_id:id,
    verified_replacement:verifiedReplacement};
+ }
+ if(evidence.mira_frozen_library_contract===MIRA_GROWTH_EXPERIMENT_CONTRACT){
+  const r=independentResolved,p=r?.problem;
+  if(r?.kind!=='approved_frozen_library_mapping'||r.ok!==true||!p||!id||
+     id!==r.winner_recommendation_id||clean(evidence.mira_source_hash)!==r.source_hash||
+     clean(evidence.source_url)!==r.source_url||
+     clean(evidence.mira_entrepreneur_scene)!==p.scene)
+   return {ok:false,reason:'MIRA_FROZEN_LIBRARY_AUTHORITY_REQUIRED'};
+  const expectedEvidence=legacyEvidence(p);
+  for(const key of ['caption_contract','canonical_problem_id','source_catalog','portal_capability','portal_page','portal_action','portal_metric','portal_impact_label','fictional_scene']){
+   if(evidence[key]!==expectedEvidence[key])return {ok:false,reason:'MIRA_FROZEN_LIBRARY_CAPTION_LINEAGE_INVALID'};
+  }
+  let variant;
+  try{variant=frozenGrowthVariant(r,evidence.mira_growth_experiment,runDate);}
+  catch{return {ok:false,reason:'MIRA_GROWTH_EXPERIMENT_LINEAGE_INVALID'};}
+  if(normalize(body)!==normalize(legacyCaption(p,variant)))return {ok:false,reason:'MIRA_FROZEN_LIBRARY_EXACT_CAPTION_REQUIRED'};
+  return {ok:true,kind:r.kind,winner_recommendation_id:id,experiment_applied:!!variant};
  }
  if(id)return {ok:false,reason:'MIRA_FROZEN_WINNER_REQUIRES_EXPLICIT_CAPTION_ROUTE'};
  return legacyValidate(runDate,body,evidence);

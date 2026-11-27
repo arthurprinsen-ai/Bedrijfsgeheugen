@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {personalEditorialViolations,PERSONAL_EDITORIAL_POLICY} from '../supabase/functions/_shared/personal-linkedin-editorial-contract.mjs';
+import {personalEditorialViolations,personalNonBuilderBusinessSignal,PERSONAL_EDITORIAL_POLICY} from '../supabase/functions/_shared/personal-linkedin-editorial-contract.mjs';
 
 const read=(p)=>fs.readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const orchestrator=read('supabase/functions/powerhouse-content-orchestrator/index.ts');
@@ -40,7 +40,7 @@ test('verification of numeric claim must match exact phrase and explicit source'
 
 test('generic company marketing and direct calls to buy stay out of personal',()=>{
   assert.ok(codes(valid+'\n\nBoek nu een gratis scan.').includes('PERSONAL_EDITORIAL_PROMOTION'));
-  assert.ok(codes(valid.replace('Welke verandering in jouw bedrijf zou je het liefst eerder zien aankomen?','Ontdek onze diensten.')).includes('PERSONAL_EDITORIAL_OPEN_QUESTION'));
+  assert.ok(codes(valid.replace('Welke verandering in jouw bedrijf zou je het liefst eerder zien aankomen?','Ontdek onze diensten.')).includes('PERSONAL_EDITORIAL_PROMOTION'));
   assert.ok(codes(valid.replace('Vandaag merkte ik','Vandaag ✨ merkte ik')).includes('PERSONAL_EDITORIAL_EMOJI'));
 });
 
@@ -82,4 +82,19 @@ test('2026-11-01 LinkedIn screenshot: internal diagnostics and weak AI hook fail
 test('a relatable verified founder opening is not rejected as a technical report',()=>{
  const newOpening=valid.replace('Vandaag merkte ik bij het bouwen van Bedrijfsgeheugen opnieuw waarom ik hier ooit aan begon.','Vandaag kwam ik terug op een vraag die ondernemers mij stellen: welke klant wacht te lang op een antwoord?');
  assert.ok(!codes(newOpening).some(x=>x==='PERSONAL_EDITORIAL_INTERNAL_METRICS_REPORT'||x==='PERSONAL_EDITORIAL_GENERIC_AI_HOOK'||x==='PERSONAL_EDITORIAL_BUYER_RELEVANT_OPENING'));
+});
+
+test('2026-11-15 observational source does not inherit builder correction copy',()=>{
+  const observation={observational_personal_theme_verified:true,ai_native_builder_story_verified:false};
+  assert.equal(personalNonBuilderBusinessSignal('De trein was vertraagd terwijl iemand op het perron wachtte.',{observational:true}),false);
+  assert.equal(personalNonBuilderBusinessSignal('Het bedrijf mist klanten door de fout.',{observational:true}),true);
+  assert.equal(personalNonBuilderBusinessSignal('Met AI kan ik het bedrijf helpen.',{observational:false}),true);
+  assert.ok(personalEditorialViolations('Het bedrijf mist klanten door de fout.',observation)
+    .some(v=>v.code==='PERSONAL_EDITORIAL_PREPUBLISH_BUSINESS_SIGNAL'));
+  assert.ok(!personalEditorialViolations('Het bedrijf mist klanten door de fout.',{ai_native_builder_story_verified:true})
+    .some(v=>v.code==='PERSONAL_EDITORIAL_PREPUBLISH_BUSINESS_SIGNAL'));
+  assert.match(orchestrator,/personalSource\?\.evidence\?\.observational_personal_theme_verified===true/);
+  assert.match(orchestrator,/Gebruik uitsluitend de feiten uit verified_personal_source/);
+  assert.match(reviewer,/personalNonBuilderBusinessSignal\(text,\{observational:observationalMode\}\)/);
+  assert.doesNotMatch(reviewer,/const businessBlocked = observationalMode/);
 });

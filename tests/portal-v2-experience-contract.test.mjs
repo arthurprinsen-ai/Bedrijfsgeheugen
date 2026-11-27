@@ -8,7 +8,9 @@ const runtime=fs.readFileSync('portal-v2/experience.js','utf8');
 const state=fs.readFileSync('portal-v2/portal-state.js','utf8');
 
 test('Portal V2 loads one explicit experience contract after the base visual layers',()=>{
-  assert.match(html,/href="\.\/experience\.css\?v=20261004-4"/);
+  assert.match(html,/href="\.\/experience\.css\?v=20261122-connector-kpi-v1"/);
+  assert.match(css,/\.vs-dialog/);
+  assert.match(css,/\.vs-trigger/);
   assert.match(html,/src="\.\/experience\.js\?v=20261004-2"/);
   assert.match(css,/--pv-content-max:1600px/);
   assert.match(runtime,/__BG_PORTAL_EXPERIENCE__/);
@@ -38,7 +40,8 @@ test('portal state remains fail-closed and backend writes go through canonical A
   assert.match(state,/const API_URL='\/api\/portal-state'/);
   assert.match(state,/if\(!user\)throw new Error\('AUTH_REQUIRED'\)/);
   assert.match(state,/savePortalBusinessInput\(buildPortalBusinessInput/);
-  assert.match(state,/body\?\.stored===false/);
+  assert.match(state,/body\?\.stored!==true\|\|body\?\.stale!==false/);
+  assert.match(state,/PORTAL_STATE_READBACK_NOT_AUTHENTICATED/);
 });
 
 test('visual assurance covers six routes across four first-class viewports',()=>{

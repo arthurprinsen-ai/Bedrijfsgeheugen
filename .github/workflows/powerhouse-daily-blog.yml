@@ -13,6 +13,8 @@ on:
       - '.github/workflows/powerhouse-daily-blog.yml'
       - 'supabase/functions/powerhouse-blog-queue/**'
       - 'supabase/functions/powerhouse-blog-export/**'
+      # Same original hourly workflow: protected main blog merge also wakes its existing proof reconciler.
+      - 'blog/**'
   workflow_dispatch:
     inputs:
       business_date:

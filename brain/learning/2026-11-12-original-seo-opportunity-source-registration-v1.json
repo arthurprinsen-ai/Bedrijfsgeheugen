@@ -1,0 +1,83 @@
+{
+  "fingerprint": "seo|original-resolver-derived-source-registry-before-write|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "owner": "original powerhouse-seo-opportunity-resolver #105 / registered evidence source → original #175 → ONE BRAIN #140 → Heartbeat",
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "root_cause": "Original protected PR #5677 deployed source readback and fixed cache projection, but original SEO resolver's final powerhouse_record_source_observation_v1 used unregistered source_key seo-opportunity-intelligence. The RPC correctly enforces source registry integrity and rejected it with SOURCE_NOT_REGISTERED. The resolver wrote 18 cached source projections and a healthy row BEFORE checking the mandatory Brain observation; it returned HTTP503 after partial durable writes. Existing producer registry contains provider dataforseo-intelligence but no derived seo-opportunity-intelligence, which must not be impersonated as a provider.",
+  "evidence": {
+    "original_request_id": 29212,
+    "observed_at": "2026-11-12T19:15:44.176813Z",
+    "original_resolver_http_status": 503,
+    "original_error": "SEO_SOURCE_OBSERVATION_WRITE:SOURCE_NOT_REGISTERED:seo-opportunity-intelligence",
+    "durable_cache_projection": {
+      "original_records_before": 15,
+      "observed_records_after": 33,
+      "new_original_cache_records": 18,
+      "actual_upstream_observed_at": "2026-11-09T06:00:08.939Z",
+      "source": "dataforseo-original-keyword-cache"
+    },
+    "original_brain_archive": {
+      "observed_at": "2026-11-12T19:19:00.653246Z",
+      "source_rows": 20,
+      "source_revision": "080cf5af61f2a48e076846a4f5af5b4d652e1c84d66986f135b51227d10275da",
+      "missing_or_unverified_sources": 4
+    },
+    "actual_original_consumer": {
+      "accepted": true,
+      "matched_source_revision": true,
+      "original_heartbeat_ack_verified": true,
+      "stage": "ORIGINAL_BRAIN_INPUT_ACCEPTED_WAIT_CRO_OUTCOME",
+      "experiment_not_executed": true
+    },
+    "original_source_registry": {
+      "table": "public.powerhouse_evidence_sources",
+      "provider_key": "dataforseo-intelligence",
+      "missing_derived_key": "seo-opportunity-intelligence",
+      "owner_should_be": "powerhouse-seo-opportunity-resolver"
+    },
+    "tests": [
+      "tests/brain-original-seo-evidence-source-registry-20261112.test.mjs"
+    ]
+  },
+  "fix": [
+    "Register original derived SEO resolver source (projection, optional, seven-day freshness) under its own canonical source_key and explicit original writer owner; never relabel it as raw DataForSEO provider evidence.",
+    "Guard the original Edge source registry entry and ownership before reading or writing any cached keywords, forecasts, opportunities, health records or follow-on evidence.",
+    "Move the healthy conclusion behind a successfully written canonical source observation, so a failed Brain handoff is not preceded by green health.",
+    "Retain original cron #105, #175, #140, exact source revision and native Supabase GitHub integration. Do not create another executor or artificial provider observation."
+  ],
+  "prevention_rule": "No original intelligence producer may mutate its target tables or report ok before checking the exact registered source identity and original owner. A failed source evidence write must fail closed before any healthy completion. Provider source and derived SEO recommendation must remain separately identifiable; cached keyword data is not new provider rank, visitor, CTA or revenue.",
+  "compiler": {
+    "failure_class": "UNREGISTERED_EVIDENCE_SOURCE_PARTIAL_WRITE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-seo-evidence-source-registry-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-seo-evidence-source-registry-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-seo-evidence-source-registry-20261112.test.mjs"
+    ],
+    "expected": "Exact original derived source registry + source-owner preflight before writes + source ACK before healthy row. Independently verify native 835th migration, deployed Edge source SHA, same original #105 original observation then #175/#140/Heartbeat ack and actual effects."
+  },
+  "regression_contract": "tests/brain-original-seo-evidence-source-registry-20261112.test.mjs",
+  "no_parallel_scheduler": true,
+  "no_new_provider_call": true,
+  "no_experiment_or_traffic_claim": true,
+  "activity_ledger": "docs/development-ledger-events/2026-11-12-original-seo-opportunity-source-registration-v1.md",
+  "delivery": {
+    "migration": "supabase/migrations/20261112211600_original_seo_opportunity_source_registry_v1.sql",
+    "source": "supabase/functions/powerhouse-seo-opportunity-resolver/index.ts",
+    "protected_ci": true,
+    "main_merge_required": true,
+    "native_provider_history_readback_required": true,
+    "original_consumer_ack_required": true
+  }
+}

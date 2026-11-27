@@ -8,10 +8,10 @@ const homepage=readFileSync('index.html','utf8');
 test('actual homepage starts with why daily operating decisions matter, not an AI-feature pitch',()=>{
   const result=applyDailySteeringPositioning(homepage,'nl');
   assert.match(result,/data-bg-daily-steering-title="v2"/);
-  assert.match(result,/Je bedrijf verandert elke dag/);
-  assert.match(result,/Je besturing moet mee/);
-  assert.match(result,/binnen én buiten je onderneming/);
-  assert.match(result,/strategie, doelen, mensen, processen en financiën/);
+  assert.match(result,/Een week vrij/);
+  assert.match(result,/en je bedrijf loopt door/);
+  assert.match(result,/je hoofd, je mailbox en losse Excel-bestanden/);
+  assert.match(result,/weer tijd voor jezelf/);
   assert.match(result,/data-bg-daily-steering-copy="v2"/);
   assert.match(result,/DAGELIJKSE ONDERNEMINGSSTURING/);
   assert.match(result,/Van verandering naar actie en resultaat/);
@@ -24,8 +24,8 @@ test('actual homepage starts with why daily operating decisions matter, not an A
 test('English public homepage has its own natural positioning, without machine translation',()=>{
   const fixture='<html><head></head><body><main><section class="hero"><h1>Peace of mind in your business</h1><p class="hand">Get it done.</p><p class="lead">Knowledge in mailboxes.</p></section><section class="aieco" data-section="ai-ecosysteem"><span class="eyebrow">POWERHOUSE AI</span><h2>Not one AI tool</h2><p class="lead">Many agents.</p></section></main></body></html>';
   const result=applyDailySteeringPositioning(fixture,'en');
-  assert.match(result,/Your business changes every day/);
-  assert.match(result,/outside your business/);
+  assert.match(result,/A week off/);
+  assert.match(result,/your head, your inbox and loose spreadsheets/);
   assert.match(result,/EVERYDAY BUSINESS STEERING/);
   assert.match(result,/Beyond insights/);
   assert.equal(applyDailySteeringPositioning(result,'en'),result);
@@ -61,19 +61,19 @@ test('live-shaped hero replaces the old knowledge pitch rather than stacking a s
 <a href="https://www.bedrijfsgeheugen.nl/ai-ecosysteem">Bekijk het AI-ecosysteem →</a>
 </section></main></body></html>`;
   const nl=applyDailySteeringPositioning(fixture,'nl');
-  assert.match(nl,/Iedere dag beter sturen/);
+  assert.match(nl,/Voor ondernemers die de leiding houden/);
   assert.match(nl,/<p class="hero-sub" data-bg-daily-steering-copy="v2">/);
   assert.equal((nl.match(/data-bg-daily-steering-copy="v2"/g)||[]).length,1);
   assert.doesNotMatch(nl,/Je bedrijf heeft een geheugen\. Alleen zit te veel/);
   assert.doesNotMatch(nl,/<p class="lead" data-bg-daily-steering-copy/);
   assert.doesNotMatch(nl,/Voorbeelden van AI-agents/);
   assert.match(nl,/Kansen eerder herkennen/);
-  assert.match(nl,/Bekijk de technologie erachter/);
+  assert.match(nl,/Ontdek hoe het geheugen werkt/);
   assert.ok(nl.includes('href="https://www.bedrijfsgeheugen.nl/zelfscan"'));
   assert.equal(applyDailySteeringPositioning(nl,'nl'),nl);
   const en=applyDailySteeringPositioning(fixture.replace('Voorbeelden van AI-agents','Examples of AI agents'),'en');
-  assert.match(en,/Better decisions, every day/);
-  assert.match(en,/Value for business owners/);
+  assert.match(en,/For owners who stay in charge/);
+  assert.match(en,/What you get back/);
   assert.match(en,/Spot opportunities sooner/);
   assert.equal((en.match(/data-bg-daily-steering-copy="v2"/g)||[]).length,1);
 });
@@ -189,4 +189,16 @@ test('generated V18 video-hero shade never becomes the owner-value injection poi
 test('homepage reordering rejects comment-based pre-hero markup instead of partial sanitization',()=>{
  const html='<main><section aria-labelledby="bg-predictive-heading"><h2 id="bg-predictive-heading">Evidence</h2></section><!-- nested <!-- unsupported --><div class="wrap hero"><h1>Primary entrepreneur proposition</h1><p class="lead">Real source context</p></div></main>';
  assert.throws(()=>applyDailySteeringPositioning(html,'nl'),/VALUE_FIRST_PRE_HERO_COMMENT_UNSUPPORTED/);
+});
+
+test('hero-tekst blijft eerlijk: geen nep-schaarste, geen marktleider-claim, geen uitroeptekens',()=>{
+  for(const taal of ['nl','en']){
+    const tekst=applyDailySteeringPositioning(homepage,taal).replace(/<[^>]+>/g,' ');
+    assert.doesNotMatch(tekst,/nog \d+ plekken|laatste kans|marktleider|beperkt beschikbaar|only \d+ spots|market leader/i);
+  }
+  const nl=applyDailySteeringPositioning(homepage,'nl');
+  const hero=(nl.match(/<h1[\s\S]*?<\/h1>/)||[''])[0]+(nl.match(/<p[^>]*data-bg-daily-steering-copy="v2"[\s\S]*?<\/p>/)||[''])[0];
+  assert.ok(hero.length>200,'hero gevonden');
+  assert.ok(!hero.includes('!'));
+  assert.match(hero,/AFAS/);
 });

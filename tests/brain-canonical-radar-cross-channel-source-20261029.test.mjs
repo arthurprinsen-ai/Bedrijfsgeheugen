@@ -28,7 +28,7 @@ test('strict channel separation leaves original Mira winner protection in place'
  assert.match(radar,/contract:personalTopic\?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1'/);
  assert.match(radar,/source_channel:personalTopic\?'linkedin_personal':'instagram_company'/);
  assert.match(radar,/first_person_claims_present:false/);
- assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&personalSourceTextComplete/);
  assert.match(radar,/source_published_at:publication\.publishedAt/);
  assert.match(originalSql,/x\.metadata->>'contract'='mira-entrepreneur-portal-story-v1'/);
  assert.ok(originalSql.includes("coalesce(x.metadata->>'portal_problem_id','')"));
@@ -39,8 +39,8 @@ test('personal source collection cannot claim personal lived experience nor rela
  assert.match(radar,/observational_personal_theme_verified:Boolean\(personalTopic\)/);
  assert.match(radar,/first_person_claims_present:false/);
  assert.match(radar,/max_age_days:MAX_AGE_DAYS/);
- assert.match(radar,/ok:errors\.length===0&&supply\.ok/);
- assert.match(radar,/state:supply\.ok\?'SOURCE_READY':'SOURCE_RECOVERY_DUE'/);
+ assert.match(radar,/ok:miraBusinessSourceReady/);
+ assert.match(radar,/state:!miraBusinessSourceReady\?'SOURCE_RECOVERY_DUE':allSourceReady\?'SOURCE_READY':'MIRA_SOURCE_READY_PERSONAL_RECOVERY_DUE'/);
  assert.match(radar,/runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS/);
 });
 test('existing source-to-recommendation materializer is called within original radar only',()=>{
@@ -69,6 +69,48 @@ test('personal-life radar queries are short and rotate without relaxing evidence
   assert.ok(personal.every(x=>x.query.trim().split(/\s+/).length<=3));
   assert.ok(personal.every(x=>!x.query.toLowerCase().includes(' ervaringen ')));
  }
- assert.match(radar,/eligible:total>=0\.72&&publication\.eligible/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&personalSourceTextComplete/);
  assert.match(radar,/MAX_AGE_DAYS=45/);
+});
+
+import {MIRA_SOURCE_TOPIC_QUERIES,MIRA_SOURCE_ALTERNATE_QUERIES,selectMiraSourceQueries} from '../supabase/functions/_shared/mira-source-query-rotation.mjs';
+
+test('original Mira low-recall rotating query variants keep 6 business + 2 personal slots and all proof gates',()=>{
+ assert.equal(MIRA_SOURCE_TOPIC_QUERIES.length,12);
+ assert.equal(Object.keys(MIRA_SOURCE_ALTERNATE_QUERIES).length,12);
+ const original=new Set(),alternates=new Set();
+ for(let offset=0;offset<48;offset++){
+  const day=new Date(Date.UTC(2026,10,1+offset)).toISOString().slice(0,10);
+  const all=selectCanonicalRadarSourceQueries(day);
+  const business=all.filter(x=>x.channel==='instagram_company');
+  assert.equal(all.length,8);
+  assert.equal(business.length,6);
+  assert.equal(all.filter(x=>x.channel==='linkedin_personal').length,2);
+  assert.deepEqual(business.map(x=>x.query),selectMiraSourceQueries(day).slice(0,6));
+  assert.equal(new Set(all.map(x=>x.query)).size,8);
+  for(const {query} of business){
+   const fam=MIRA_SOURCE_TOPIC_QUERIES.find(f=>f.query===query||MIRA_SOURCE_ALTERNATE_QUERIES[f.topic]===query);
+   assert.ok(fam,'each query is inside the approved original portal family list');
+   assert.ok(query.split(/\s+/).length<=5);
+   if(query===fam.query)original.add(fam.topic);else alternates.add(fam.topic);
+  }
+ }
+ assert.equal(original.size,12);
+ assert.equal(alternates.size,12);
+ assert.throws(()=>selectMiraSourceQueries('2026-02-30'),/MIRA_RUN_DATE_INVALID/);
+ assert.match(radar,/eligible:total>=0\.72&&publication\.eligible&&personalSourceTextComplete/);
+ assert.match(originalSql,/x\.metadata->>'contract'='mira-entrepreneur-portal-story-v1'/);
+ assert.match(originalSql,/prior\.source_url=x\.source_url or prior\.source_hash=x\.source_hash/);
+ assert.doesNotMatch(radar,/cron\.schedule|INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
+});
+
+test('Mira agent and skill preserve original single producer, publisher and consumer ACK',()=>{
+ const registry=readFileSync('platform/agents/agent-team.mjs','utf8');
+ const guide=readFileSync('AGENTS.md','utf8');
+ const skill=readFileSync('.agents/skills/instagram-composio-publisher/SKILL.md','utf8');
+ for(const value of ['reconcile-mira-unique-source-to-original-exclusive-producer-claim','verify-canonical-instagram-bedrijfsgeheugen-account-before-provider-write','require-mira-provider-readback-to-brain-heartbeat-portal-consumer-ack'])assert.ok(registry.includes(value));
+ for(const value of ['cron #120','powerhouse-content-loop','powerhouse-instagram-media-router','powerhouse-social-publisher','content_publication_obligations','social-learning-store','bedrijfsgeheugen.nl','consumer receipt'])assert.ok(skill.includes(value),value);
+ assert.match(guide,/MIRA_UNIQUE_SOURCE_WINNER_REQUIRED/);
+ assert.match(guide,/MIRA_PRODUCER_CLAIM_REQUIRED/);
+ assert.match(guide,/geen LIVE_PROVEN zonder echte Meta-provider ID/i);
 });

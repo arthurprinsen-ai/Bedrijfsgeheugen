@@ -1,0 +1,48 @@
+{
+  "fingerprint": "powerhouse|instagram|owned-provider-metrics-not-delivered-to-original-day-obligation|20261117-v1",
+  "obligation_id": "powerhouse|instagram|original-177-brain-heartbeat-post-metric-ack|20261117-v1",
+  "owner": "original bg-social-metrics-source-6h-v1/#177 + original Powerhouse content orchestrator/#140 + ONE BRAIN/Heartbeat",
+  "compiler": {
+    "failure_class": "INSTAGRAM_PROVIDER_METRIC_CONSUMER_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-original-177-provider-ack-growth-intelligence-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-original-177-provider-ack-growth-intelligence-20261117.test.mjs"
+    ]
+  },
+  "root_cause": "Original #177 already ingests exact Composio owned-Instagram media Insights every six hours into social_metric_snapshots. But its original date/channel obligation metric consumer was hardcoded to only linkedin_personal and linkedin_company. Consequently real Instagram data does not become a source_event_id-bound receipt on the original publication obligation, leaving the Brain/Heartbeat learning handoff not fully connected. Existing measured next-post challenger also prioritized only likes/comments/clicks, losing saved/shared IG engagement and did not check exact Composio source/event identity.",
+  "prevention": "Extend only original #177 existing exact provider metric consumer to canonical day/channel instagram with numeric Meta media ID, owned-brand tenant/channel_kind, LIVE_PROVEN, >=24h and immutable source_event_id CAS + independent DB readback, never creating post or learning. Improve same original editorial challenger to select only exact Composio Instagram OBSERVED rows and preserve null-vs-zero, views/reach, shares/saves, and one reversible source-backed creative hypothesis with no causal or conversion claim. Consumer still requires independently proven paid orders from original revenue attribution, not guessed social clicks.",
+  "tests": [
+    "tests/brain-instagram-original-177-provider-ack-growth-intelligence-20261117.test.mjs"
+  ],
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "source_original_cron_id": 177,
+    "source_original_function": "bg-social-metrics-sync",
+    "consumer_original_cron_id": 140,
+    "source_table": "social_metric_snapshots",
+    "projection": "content_publication_obligations.metrics.original_provider_metric_handoff",
+    "snapshot_verified_20261117_utc": "2026-11-17T06:18:17.253Z",
+    "current_actual_owned_instagram_posts_with_observations": 12,
+    "latest_owned_post_at": "2026-10-03T07:01:51Z",
+    "aggregate_latest_post_snapshot_views": 710,
+    "aggregate_latest_post_snapshot_reach": 479,
+    "aggregate_latest_post_snapshot_likes": 1,
+    "aggregate_latest_post_snapshot_comments": 0,
+    "aggregate_latest_post_snapshot_saves": 0,
+    "aggregate_latest_post_snapshot_shares": 0,
+    "not_unique_aggregate_across_posts": true,
+    "not_daily_growth": true,
+    "not_new_reel_evidence": true,
+    "source_verified_sales": false
+  },
+  "next_action": "Protected PR Required+CodeQL, original Supabase Edge provider v readback and original cron #177 natural slot; independently verify IG LIVE_PROVEN next new post and original metric source_event_id CAS after >=24h, ONE BRAIN named consumer and Heartbeat visibility, real attributable qualified leads/orders. Keep OPEN if no genuine new media or attributed sales.",
+  "outcome": "SOURCE_CODE_CANDIDATE_ONLY_UNTIL_DEPLOYMENT_AND_REAL_PROVIDER_CONSUMER_PROOF"
+}

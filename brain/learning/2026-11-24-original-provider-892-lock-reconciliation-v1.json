@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|delivery|native-provider-892-lock-one-behind|20261124-v1",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-892-lock-reconciliation-20261124.test.mjs"
+    ]
+  },
+  "root_cause": "Protected PR #6133 added native applied migration 20261123214500 but Git lock remained at 891; required preflight blocks original innovation PRs #6135/#6137.",
+  "evidence": {
+    "native_project": "adhjwmvyoixzjtmiroln",
+    "observed_at": "2026-11-24T06:48:08.124Z",
+    "git_base": "0893a0975f1cc9a32f05c6f65e1d7af07b45ac97",
+    "lock_before": 891,
+    "native_total": 895,
+    "old_identity_mismatches": 0,
+    "source_version": "20261123214500",
+    "source_blob": "cca0bd2169f330c7c33fafd9cce6eab28dd02215",
+    "provider_statement_md5": "8fb2910f2db2fd59f3353d8879287746",
+    "matched_statements": 3,
+    "unmerged_native_versions_owner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6136",
+    "failed_required_runs": [
+      45341795880,
+      45342427912
+    ]
+  },
+  "prevention": {
+    "append_exact_protected_applied_only": true,
+    "no_history_rewrite": true,
+    "no_sql_replay": true,
+    "no_unmerged_source_claim": true
+  },
+  "release_state": "PROTECTED_SOURCE_CANDIDATE_PENDING",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+}

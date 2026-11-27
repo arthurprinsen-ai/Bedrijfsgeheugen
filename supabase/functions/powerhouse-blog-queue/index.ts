@@ -36,7 +36,7 @@ Deno.serve(async(req)=>{
   const [{data:a,error:ae},{data:d,error:de},{data:o,error:oe}]=await Promise.all([
     db.from('powerhouse_content_artifacts').select('title,body,cta,content_brief,generation_evidence,status').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
     db.from('powerhouse_channel_decisions').select('decision,state,delivery_evidence').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
-    db.from('content_publication_obligations').select('status,slug,external_id,published_at,live_proven_at,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
+    db.from('content_publication_obligations').select('status,slug,approved_at,external_id,published_at,live_proven_at,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
   ]);
   if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
   // The canonical obligation is authoritative. A historical date, explicit
@@ -45,6 +45,15 @@ Deno.serve(async(req)=>{
     runDate,today:localDate(),obligation:o?{...o,evidence:jsonObject(o.evidence)}:null
   });
   if(!admission.allowed) return json({ok:true,queued:false,reason:admission.code,runDate});
+  // A previously approved but now GENERATED row is a state-regression incident.
+  // Never silently reuse an approval for possibly regenerated content.
+  if(clean(o?.status)==='GENERATED'&&o?.approved_at&&
+     jsonObject(o?.evidence)?.auto_approval?.approved_at){
+    return json({ok:false,queued:false,error:'BLOG_APPROVAL_STATE_REGRESSION',
+      runDate,recovery_required:true,
+      next_owner:'original blog approval and protected publisher'},409);
+  }
+
   if(!a||!d||d.decision!=='publish'||!['content_ready','scheduled','published'].includes(clean(d.state))) return json({ok:true,queued:false,reason:'NO_APPROVED_BLOG_ARTIFACT',runDate});
   const fact=assessOfficialBlogDateTruth({title:a.title,body:a.body,cta:a.cta,runDate});
   if(!fact.ok)return json({ok:false,queued:false,error:fact.code,runDate,
@@ -94,11 +103,15 @@ Deno.serve(async(req)=>{
   // Durable obligation is the first material state mutation. A later GitHub runner,
   // provider or execution-surface failure can therefore only leave RECOVERY_REQUIRED work,
   // never an orphaned outcome.
-  const {error:obligationError}=await db.rpc('record_content_publication_state',{
+  // Preserve previously recorded approval. GENERATE must not be used to
+  // 'requeue' an APPROVED obligation; the existing ranked state RPC would
+  // discard all new handoff evidence on a regressive write.
+  const queueStatus=clean(o?.status)==='APPROVED'?'APPROVED':'GENERATED';
+  const {data:originalWrite,error:obligationError}=await db.rpc('record_content_publication_state',{
     p_tenant_id:'canonical',
     p_publication_date:runDate,
     p_channel:'blog',
-    p_status:'GENERATED',
+    p_status:queueStatus,
     p_content_id:'blog:'+slug,
     p_slug:slug,
     p_external_id:null,
@@ -109,6 +122,18 @@ Deno.serve(async(req)=>{
     p_error:null
   });
   if(obligationError) return json({ok:false,error:'OBLIGATION_WRITE:'+obligationError.message},500);
+  // An RPC/HTTP success alone does not establish a handoff. Verify the
+  // original obligation's state and original date/channel idempotency receipt
+  // before forwarding to the protected GitHub publisher.
+  const received=jsonObject(originalWrite);
+  const receipt=jsonObject(received.evidence);
+  if(clean(received.status)!==queueStatus||
+     clean(receipt.idempotency_key)!==evidence.idempotency_key||
+     clean(receipt.next_executor)!==evidence.next_executor){
+    return json({ok:false,error:'BLOG_ORIGINAL_QUEUE_RECEIPT_MISSING',
+      recovery_required:true,runDate,queueStatus},409);
+  }
+
 
   const {error:decisionError}=await db.from('powerhouse_channel_decisions')
     .update({delivery_evidence:evidence,updated_at:new Date().toISOString()})

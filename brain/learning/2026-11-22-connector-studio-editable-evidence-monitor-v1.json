@@ -1,0 +1,55 @@
+{
+  "fingerprint": "portal-connector-studio|saved-transfer-policy-not-editable-or-monitorable|20261122-v1",
+  "date": "2026-11-22",
+  "status": "CANDIDATE_EVIDENCE_DUE",
+  "owner": "Original Koppeling Studio / ONE BRAIN / Heartbeat",
+  "root_cause": "After introducing provider-neutral source/target and transfer policy, the saved-connector list had no edit action for existing direction/frequency and only configuration/trust cards; operator could misinterpret Active or hourly cadence as proven recurring provider sync.",
+  "prevention_rule": "Persisted custom source/target transfer policy must be reloadable and revalidated on every PUT; changed config invalidates the original version-bound proof. Monitoring must independently match tenant, connector version, provider, snapshot columns/row count/hash and real source receipt before claiming records. Desired cadence never implies an executing scheduler, next run or operational SLA.",
+  "compiler": {
+    "failure_class": "CONNECTOR_CONFIGURATION_IMPLIED_LIVE_SYNC",
+    "scope": "PORTAL_CONNECTOR_TRUTH_AND_VERSIONING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connector-studio-proof-monitor-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-connector-studio-proof-monitor-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-connector-studio-proof-monitor-v1.test.mjs"
+    ],
+    "production_browser": "PENDING",
+    "authenticated_provider_tenant_proof": "EVIDENCE_DUE"
+  },
+  "implementation": {
+    "healthEndpoint": "GET /api/connectors/:id/health",
+    "owner": "Original tenant-aware Netlify handler and Supabase source store",
+    "sourceReadback": "SOURCE_SYNCED + matching provider SHA + same tenant/source/fields/version",
+    "editFlow": "Saved custom design to original PUT /draft, version bump and old proof invalidation",
+    "automaticScheduleExecuted": false,
+    "additionalProviderAdapters": false,
+    "newDatabaseTables": false,
+    "newWriter": false,
+    "newScheduler": false
+  },
+  "evidence": {
+    "regressionTests": [
+      "tests/brain-connector-studio-proof-monitor-v1.test.mjs"
+    ],
+    "sourceTruth": "Execution+snapshot provider proof exact version, tenant, source schema, SHA and near-time receipt",
+    "codePaths": [
+      "platform/connectors/connector-operations-proof.mjs",
+      "platform/api/portal-connectors-handler.mjs",
+      "assets/js/koppelingen/view.js"
+    ],
+    "ciRequired": "PENDING_PROTECTED_HEAD",
+    "browserReadback": "PENDING_PRODUCTION",
+    "realCustomerProviderSync": "NOT_VERIFIED",
+    "automaticScheduledRun": "NOT_VERIFIED",
+    "newExternalWrite": false
+  }
+}

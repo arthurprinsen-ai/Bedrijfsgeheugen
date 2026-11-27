@@ -1,0 +1,56 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|stored-entrepreneur-friction-source-bridge|20261120-v1",
+  "compiler": {
+    "failure_class": "CONTENT_QUALITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ]
+  },
+  "owner": "original-powerhouse-editorial-agents",
+  "event_date": "2026-11-20",
+  "root_cause": "The original personal LinkedIn builder prompt asked to use entrepreneur_problem_sources and search_demand_sources but the original model artifactInput never supplied either, so previously recorded MKB problems and human frictions were not actually connected to verified first-person founder source events.",
+  "prevention_rule": "The existing canonical personal AI-builder editorial path must deliver bounded, eligible, dated, deduplicated public problem evidence as external context; connect only if a genuine verified Arthur build/decision event relates, use one integrated software+AI+BI+data system in founder voice, never present outside sources as first-person experiences, avoid forced links and repeated angles; retain original personal identity, truth, provider/readback and Heartbeat gates.",
+  "user_instruction": "Borg leg vast update agents. Zorg ook dat je relatie legt met alle problemen fricties die al zijn vastgelegd van ondernemers mensen check dat dan gebruik wat ook is vastgelegd voor persoonlijke Posts er is al veel vastgelegd voor linkedin persoonlijk",
+  "design_contract": {
+    "sources": [
+      "MKB Probleemradar",
+      "Voice of Customer",
+      "Value Proposition Canvas",
+      "Three channels one story",
+      "Personal profile editorial skill",
+      "config/powerhouse-problem-library.json",
+      "public.powerhouse_mira_problem_signals_v1"
+    ],
+    "runtime": "original personal AI builder source projection only",
+    "source_role": "external-context-only",
+    "first_person_source_requirements_unchanged": true,
+    "force_business_moral_on_private_life": false,
+    "source_data_fabrication_prohibited": true,
+    "original_publisher_only": true
+  },
+  "evidence": {
+    "regression_tests": [
+      "tests/brain-personal-first-person-voice-and-source-20261115.test.mjs"
+    ],
+    "prior_release": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6063",
+    "notion_skill": "https://app.notion.com/p/3e1da36aac8a818686c7cc61ff52d7f2",
+    "notion_problem_radar": "https://app.notion.com/p/3e5da36aac8a8145ab3bd925260276ef",
+    "notion_voice_of_customer": "https://app.notion.com/p/3e5da36aac8a8115a86fdb9ae3882115",
+    "state": "candidate_not_deployed_or_posted"
+  },
+  "boundaries": [
+    "do not invent first-person client, builder or human experiences",
+    "no representative claims from qualitative Voice-of-Customer signals",
+    "no duplicate channel variants or promotional posts on personal profile",
+    "no parallel source database, scheduler or publisher",
+    "do not turn read-only editorial evidence into a new publication authorization",
+    "do not claim live without exact production readback and LinkedIn provider post ID"
+  ],
+  "implementation_state": "protected_delivery_candidate_requires_CI_merge_deployment_and_readback"
+}

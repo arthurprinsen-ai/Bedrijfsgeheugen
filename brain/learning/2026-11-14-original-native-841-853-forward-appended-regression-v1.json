@@ -1,0 +1,63 @@
+{
+  "version": "original-native-841-853-append-only-regressions-v1",
+  "fingerprint": "powerhouse|brain|historical-841-853-source-lock-tests-strict-snapshot-20261114-v1",
+  "compiler": {
+    "failure_class": "HISTORICAL_SOURCE_CONTRACT_STALE_ASSUMPTION",
+    "scope": "BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs",
+      "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs",
+      "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs",
+      "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs"
+    ]
+  },
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "owner": "existing agent-data-quality / native provider-source lock / original GitHub Required and BRAIN Delivery",
+  "root_cause": "After legitimate append-only real Supabase migration-history.lock.json grew to 857 rows and captured_at advanced to 2026-11-14, historical #841 test incorrectly required exactly 2026-11-13 capture day and historical one-time #853 test fed all 857 rows to a deliberately strict exact-853 helper. The provider prefix, migration version/name, SQL content and hash remained correct, but the historical CI tests incorrectly classified legitimate later appends as errors.",
+  "production_readback": {
+    "date": "2026-11-14",
+    "real_provider_lock_count": 857,
+    "lock_source": "supabase_migration_history",
+    "native_841_zero_based_index": 840,
+    "native_853_zero_based_index": 852,
+    "migrated_sender_or_writer": false,
+    "instagram_post_proven": false,
+    "original_mira_obligation": "OPEN",
+    "original_content_loop_edge_version": 874
+  },
+  "prevention": "Keep historical 841 index and its predecessor/name exact, accept only valid ISO observation timestamps >= earliest historical date; reconstruct one-time 853 candidate as an in-memory immutable prefix (first 853 rows), preserve strict protected original base/MD5/migration source hash; prove real current lock is still unique and append-only; negative-test historical mutation and future full lock strict rejection. Full current provider migration+SQL lock exact parity stays with original gate.",
+  "evidence": {
+    "workflow": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43607605829",
+    "failure_tests": [
+      "not ok 2743",
+      "not ok 3218"
+    ],
+    "lock": "supabase/migration-history.lock.json",
+    "source_verifier": "tools/ci/verified-provider-853-original-outreach-source-mirror.mjs",
+    "regressions": [
+      "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs",
+      "tests/brain-original-provider-853-outreach-lock-20261114.test.mjs"
+    ]
+  },
+  "regression": "tests/brain-native-841-source-lock-original-consumer-ack-20261113.test.mjs",
+  "status": "PROTECTED_RELEASE_CANDIDATE",
+  "not_proven": [
+    "protected PR merge",
+    "full exact-head BRAIN Delivery green",
+    "production provider publication",
+    "all ONE BRAIN consumer ACKs",
+    "daily Instagram or email",
+    "all 15 loops green"
+  ]
+}

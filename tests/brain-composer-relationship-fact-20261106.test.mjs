@@ -21,9 +21,12 @@ test('one fact, empty values or unknown status never pass',()=>{
   assert.equal(composerSourcePreflight({...base,evidence:{relationship_evidence:rel}},plan).ok,false);
  }
 });
-test('human readable context stays mandatory and the news path is unchanged',()=>{
+test('19 Nov: relationship facts are readable context themselves; news path still needs human_readable_context',()=>{
  const rel={relationship_evidence:{role:'Eigenaar',company_name:'Van Dijk',status:'in_gesprek'}};
- assert.deepEqual(composerSourcePreflight({...base,evidence:rel},{human_readable_context:false}).missing,['human_readable_context']);
+ assert.equal(composerSourcePreflight({...base,evidence:rel},{human_readable_context:false}).ok,true);
+ assert.ok(composerSourcePreflight(base,{human_readable_context:false}).missing.includes('human_readable_context'));
+ const newsNoCtx=composerSourcePreflight({source_url:'https://nu.nl/a',evidence:{headline:'Bedrijf kondigt overname aan van concurrent in regio'}},{human_readable_context:false,source_trigger_relevance:true});
+ assert.equal(newsNoCtx.ok,false);
  const news={source_url:'https://nu.nl/a',evidence:{headline:'Bedrijf kondigt overname aan van concurrent in regio'}};
  const r=composerSourcePreflight(news,{human_readable_context:true,source_trigger_relevance:true});
  assert.equal(r.ok,true);assert.equal(r.via,'news');
@@ -33,4 +36,13 @@ test('composer feeds the relationship fact to the anchor check and keeps all oth
  const src=readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
  assert.match(src,/relationship_fact:relationshipFact\(action\)\.text/);
  for(const gate of ['banned','factsOk','oneQuestion','lengthOk','topicLeak'])assert.ok(src.includes(gate));
+});
+test('18 Nov: role + company on the action itself count as two facts, bare name or company alone never',()=>{
+ const own={...base,role:'Owner & CEO',company_name:'DP Services Contact Center',evidence:{contract:'powerhouse-predictive-commercial-activation-v2'}};
+ const r=composerSourcePreflight(own,plan);
+ assert.equal(r.ok,true);assert.equal(r.via,'relationship_fact');
+ assert.deepEqual([...relationshipFact(own).facts],['role','company']);
+ assert.equal(composerSourcePreflight({...base,company_name:'DP Services'},plan).ok,false);
+ assert.equal(composerSourcePreflight({...base,role:'CEO'},plan).ok,false);
+ assert.equal(composerSourcePreflight(own,{human_readable_context:false}).ok,true);
 });

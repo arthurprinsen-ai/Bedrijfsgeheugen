@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse|mira|openart-pending-history-lost-between-generator-and-media-router|20261117-v1",
+  "obligation_id": "powerhouse|instagram|original-openart-async-history-cas|20261117-v1",
+  "owner": "original powerhouse-instagram-media-router / original autonomous OpenArt MCP producer",
+  "compiler": {
+    "failure_class": "ORIGINAL_PROVIDER_HANDOFF_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-original-openart-async-receipt-20261117.test.mjs"
+    ]
+  },
+  "root_cause": "The existing original media CAS claim records worker/claim time but not the new asynchronous OpenArt history ID. The original media router had only read-only generation_preflight and actual submit_asset after completion, so a task interruption between paid generation and final asset created a CLAIMED job with no resumable provider history and a risk of duplicate charge.",
+  "prevention": "Add one original-owner authenticated pin_generation action after successful existing claim and actual OpenArt submission. It validates immutable current/next date source/winner/scene, single original worker, project/master/model, <=640 credits, no Meta side effect, and CAS stores exactly one history ID. Same history is idempotent; different history, missing source, stale job, deleted/expired authorization and extra credits are rejected. This only records asynchronous receipt; actual provider get, MP4/face/temporal, Meta send and Brain PROCESSED remain independent.",
+  "tests": [
+    "tests/brain-mira-original-openart-async-receipt-20261117.test.mjs"
+  ],
+  "evidence": {
+    "original_router_actions_before": [
+      "generation_preflight",
+      "preflight",
+      "submit_asset"
+    ],
+    "new_action": "pin_generation",
+    "original_producer": "connected OpenArt MCP, no native OPENART_API_KEY",
+    "actual_publication_proven": false,
+    "original_instagram_winner_today": false,
+    "no_new_scheduler": true,
+    "no_new_meta_writer": true
+  },
+  "outcome": "CODE_CANDIDATE_ONLY; NO PROVIDER GENERATION OR INSTAGRAM POST YET",
+  "next_action": "Protected Required+CodeQL, protected main merge and exact native router source readback; next original fresh frozen winner, actual owner claim and one OpenArt provider history, pin receipt, resume after completion, independent media/Meta/Brain proof."
+}

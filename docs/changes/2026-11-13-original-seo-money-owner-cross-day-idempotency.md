@@ -1,0 +1,14 @@
+# 13 November 2026 — stop cross-day duplicate original SEO money-page tasks
+
+## Source truth and failure
+Independent production read of `public.powerhouse_content_recommendations` shows same original Exact Online and Twinfield canonical owners were offered again on **11, 12, and 13 November 2026**, each as `suggested`, `ORIGINAL_SEO_EXECUTION_HANDOFF_PENDING`, and `EVIDENCE_DUE`, while unchanged underlying DataForSEO observation dated 9 November 2026 was reused. `dedupe_key` starts with `seo-owner-update:<run_date>:<canonical>`; existing upsert only ignores conflicts on the same day. Original 13 November BRAIN/Heartbeat ACK already matches SHA `e4fd6bf6dc6d8222b956283859d1d47368e0757d576fb5868da0d3d0b3dd2084`, but original daily CRO execution is `NOT_EXECUTED`.
+
+## Original-source, same-executor repair
+The existing, already-scheduled `powerhouse-seo-opportunity-resolver` now reads its OWN `powerhouse_content_recommendations` for the prior 45 days (read-failure fail closed), scoped to original website money-page SEO recommendations. The pure `reconcileOriginalSeoMoneyHandoffs` rejects a repeated canonical while a prior original task remains suggested/accepted, regardless of date, or when a done/skipped predecessor has identical upstream `source_observed_at`. A genuinely newer source can reopen a terminal task. All existing source rows, keys, timestamps, roles, and terminal statuses stay intact.
+
+The same original upsert `ignoreDuplicates:true` now requests returned `dedupe_key` and counts only **actually inserted** new rows; source-observation and health evidence expose `owner_handoffs_suppressed` and original prior keys. No new queue, scheduler, schema, CMS, SEO agent, publishing identity, off-site fallback or external network request.
+
+## Acceptance
+Native unit replay for pending / done / skipped / changed provider source / foreign provider; protected Required, CodeQL and Supabase Edge-related build; merge to protected main and independent deployed Edge function code version verification. On next natural original daily resolver run, inspect original `bg_gezondheid` row and `powerhouse_evidence_source_observations` for `owner_handoffs_written=0` and `owner_handoffs_suppressed=2` under unchanged source. If newer provider evidence changes, report it honestly rather than force 0. **Never** mark website published, CTR, GA4 events, leads or revenue merely because a duplicate handoff was suppressed.
+
+Related original money-page production fix: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5700. Preserve its independent site owner and protected release; downstream existing #175→#140→Heartbeat→CRO learning chain remains unchanged.

@@ -1,0 +1,44 @@
+{
+  "fingerprint": "portal-v2-tenant-signal-readback-original-heartbeat-v1",
+  "obligation_id": "portal-v2-tenant-signal-readback-20261121",
+  "date": "2026-11-21",
+  "compiler": {
+    "failure_class": "PORTAL_ORIGINAL_HEARTBEAT_TENANT_READBACK_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The Portal V2 20-Nov release persisted only anomaly events. A customer could not tell if their rule had been checked without crossing its threshold, could not independently read original tenant-scoped runtime receipts, and the older generic dictation path did not use the sensitive field allowlist. Production review on 21-Nov found zero customer-created monitoring rules, hence no real tenant alert evidence, despite working original commercial Heartbeat.",
+  "prevention_rule": "Only the existing Powerhouse/Heartbeat runner may write bounded, hourly idempotent per-tenant scan receipts with source_revision and measurement_freshness=UNKNOWN. Derive a tenant fingerprint server-side, never store or return plaintext tenant identifiers in runtime records. Netlify Identity resolves the caller's tenant before any original EU service-gateway read; the action must restrict source/event_type/subject_key and permit only safely redacted scan/trigger receipts. The portal reads only on authentication and explicit open/refresh, aborts stale account-switch responses, and never treats checked events as provider delivery or executive outcomes. All old and new voice dictation paths share the same sensitive control allowlist. Historical, shadow and canary tests are mandatory.",
+  "regression_contract": "Authenticated principal-only endpoint; ignore forged tenant query; anonymous/mismatch deny; original scheduled events have stable hourly dedupe, redacted tenant identity and opt-in; newest disabled rule suppresses old; no auto-send/cron or unauthorised frontend DB; cross-account async evidence denied; browser preserves explicit user save.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-signal-tenant-evidence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-signal-tenant-evidence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-signal-tenant-evidence-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "Actual production portal_state_layers (1 layer, 0 signal rules), powerhouse_runtime_events (0 tenant signals), original active cron 171; checked 2026-11-21",
+    "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6104",
+    "tests": [
+      "tests/brain-portal-signal-tenant-evidence-v1.test.mjs",
+      "portal-v2/tests/voice-signals.test.mjs"
+    ],
+    "original_scheduler": "powerhouse-commercial-heartbeat-runner, no new scheduler",
+    "production_readback": "NOT_PROVEN",
+    "customer_monitoring_rule_count": 0,
+    "provider_delivery": "NOT_PROVEN",
+    "autonomous_actions_executed": "NOT_PROVEN"
+  },
+  "outcome": {
+    "implementation": "SOURCE_CANDIDATE",
+    "production": "NOT_PROVEN",
+    "financial_value": "UNMEASURED"
+  }
+}

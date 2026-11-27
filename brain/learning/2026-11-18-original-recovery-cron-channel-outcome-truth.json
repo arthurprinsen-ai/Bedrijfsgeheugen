@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse|recovery-control-plane|missing-active-cron-after-applied-migration|20261118-v1",
+  "date": "2026-11-18",
+  "parent_issue": 4198,
+  "related_issue": 5232,
+  "original_owner": "ONE BRAIN original reliability / Powerhouse recovery control plane",
+  "compiler": {
+    "failure_class": "SCHEDULER_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "state": "PARTIAL_RECOVERY_PROVEN",
+  "root_cause": "Original database migration 20261104065001 was present in applied history but its unique pg_cron registration was absent. Existing completed triage-reviews were misleadingly easy to mistake for completed provider recovery. Personal LinkedIn and Instagram source-specific failures were only generically counted, not cured.",
+  "prevention": "Read back exact original scheduler, matching command, real natural run and original provider/consumer outcomes after every release. Restore ONLY already-approved original idempotent schedule under its exclusive owner when missing. Preserve channel source identity, do not reset Mira 3/3 or invent first-person stories; save honest source-specific next actions to original ONE BRAIN/health, keep other lanes alive and never mark green without provider/heartbeat results.",
+  "evidence": {
+    "migration_original": "supabase/migrations/20261104065001_original_recovery_control_plane_native_pgcron_v1.sql",
+    "migration_was_applied": true,
+    "cron_active_before": 0,
+    "cron_active_after": 1,
+    "original_jobid": 186,
+    "original_command": "select public.powerhouse_recovery_control_plane_tick_v1();",
+    "schedule": "*/15 * * * *",
+    "natural_runid": 173114,
+    "natural_run_at": "2026-11-18T09:00:00.044Z",
+    "natural_status": "succeeded",
+    "original_triage_completed": 307,
+    "underlying_outcomes_unresolved": 306,
+    "linkedin_personal_provider_post": null,
+    "instagram_meta_post": null,
+    "instagram_original_history": "r6sZX8kdGyvpD6zEbWg7",
+    "instagram_vision_retry_count": 3,
+    "instagram_vision_retry_max": 3,
+    "human_health_receipts": 3,
+    "provider_recovery_proven": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-recovery-cron-channel-proof-20261118.test.mjs"
+    ]
+  },
+  "required_proof": [
+    "first natural cron run",
+    "independent channel-specific provider result",
+    "consumer ACK and Heartbeat effect",
+    "source-limited learned change applied"
+  ],
+  "terminal_success": false,
+  "independent_effect_verified": false,
+  "no_parallel_executor": true
+}

@@ -1,0 +1,44 @@
+{
+  "date": "2026-11-09",
+  "fingerprint": "cro|proposal-noop-green|original-cro-20261109",
+  "status": "PROTECTED_SOURCE_CANDIDATE_NOT_LIVE",
+  "owner": "original-growth-cro-agent",
+  "incident_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4900",
+  "p0_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Scheduled CRO execution returned ok/green for already-PLANNED proposal without release, real exposure or independent commercial outcome",
+  "observed": {
+    "experiment_id": "bgx-20261103-d3a13c",
+    "state": "PLANNED",
+    "source": "Supabase public.social_experiments",
+    "historical_growth_queue_policy": "delivery-disabled must not be replayed in bulk",
+    "revenue_proven": false
+  },
+  "corrective_action": "truthful typed non-green evidence for proposal/active/low-traffic and invalid generic BUTTON controls",
+  "regression_test": "tests/brain-experimentcyclus-openai-only-20261103.test.mjs",
+  "prevention": "Never promote cron completion, proposal, vanity metric, a control-less variant or unverified conversion into implemented CRO learning",
+  "next_gate": "Protected CI -> merge -> original Edge deploy -> exact source/version readback -> genuine executed experiment and outcome evidence",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-experimentcyclus-openai-only-20261103.test.mjs"
+  ],
+  "test_evidence": {
+    "method": "Original GitHub Required CI historical replay and canary",
+    "expected": "All unchanged owner + non-green state regressions pass",
+    "real_production_outcome": "NOT_YET_VERIFIED",
+    "required_release": "Protected GitHub merge, exact active original Supabase Edge version readback"
+  }
+}

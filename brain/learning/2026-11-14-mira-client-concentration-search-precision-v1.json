@@ -1,0 +1,70 @@
+{
+  "version": "original-mira-client-concentration-search-precision-v1",
+  "fingerprint": "powerhouse|mira|ph-p012-client-concentration-search-pulls-public-stock-noise|20261114-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs"
+    ]
+  },
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/5232",
+  "owner": "original powerhouse-mira-problem-radar-v1, single original cron #120; original OpenArt producer and provider publisher",
+  "root_cause": "After original official DataForSEO Google /goto resolution was fixed and its real production radar source intake readback obtained 13 news results, the broad alternate PH-P012 company-dependency query 'ondernemer afhankelijk grote klant' pulled unrelated stock market, celebrity succession and large-cap technology headlines. These could not pass the original independent PH-P problem topic match; across all provider items nine did not match a canonical topic, no unique approved Mira source was frozen. Unchanged original provider source/quality/dedupe gates correctly rejected this noise.",
+  "prevention": "Change only the existing Mira-local PH-P012 alternate search to 'mkb klantconcentratie omzet' and third variant to 'mkb afhankelijkheid omzetconcentratie'; retain one original 8-query (6 business + 2 personal) fixed daily budget, original shared 12-family search router, provider URL, 45-day source date, score >=0.72, 90-day source and 3-day topic dedupe, immutable daily winner, exclusive OpenArt producer and original Meta/Brain readback. Provider search term is NOT approval or evidence.",
+  "production_readback": {
+    "date": "2026-11-14",
+    "existing_pgnet_id": 31075,
+    "original_source_provider_candidates": 13,
+    "rejected_no_topic_match_total": 9,
+    "source_contract_collision_total": 1,
+    "source_score_date_gate_reject_total": 1,
+    "stored": 3,
+    "eligible_personal": 2,
+    "approved_instagram_source": 0,
+    "instagram_external_id": null,
+    "openart_connected_credits": 0,
+    "original_content_handoff": "OPEN/OVERDUE",
+    "original_cron_120_active": true,
+    "original_cron_140_active": true,
+    "original_cron_171_active": true
+  },
+  "regression": "tests/brain-mira-distinct-source-query-rotation-20261114.test.mjs",
+  "evidence": {
+    "original_source_probe": "Supabase net._http_response 31075",
+    "origin": "approved original Mira Edge source / original ONE BRAIN",
+    "exact_old_query": "ondernemer afhankelijk grote klant",
+    "source_owner_file": "supabase/functions/powerhouse-mira-problem-radar/distinct-source-queries.mjs",
+    "runtime_checks": [
+      "original eight calls",
+      "external article and publication date",
+      "score >=0.72",
+      "90d source",
+      "3d topic",
+      "original Meta provider URL"
+    ]
+  },
+  "status": "PROTECTED_CODE_CANDIDATE",
+  "not_proven": [
+    "protected CI",
+    "main merge",
+    "Supabase exact original helper deployment",
+    "eligible new PH-P012 dated independent source",
+    "unique frozen daily Mira winner",
+    "OpenArt approved media",
+    "canonical Meta new media ID",
+    "original ONE BRAIN named consumer PROCESSED ACK",
+    "Heartbeat and Portal measured actual outcome"
+  ]
+}

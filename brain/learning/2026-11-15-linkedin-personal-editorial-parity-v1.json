@@ -1,0 +1,54 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|linkedin|observation-builder-review-mismatch|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Original personal LinkedIn generator used a founder/business corrective prompt even when independently selected source metadata identified observation-only daily life (observational_personal_theme_verified=true, ai_native_builder_story_verified=false). Local editorial review lacked the exact separate prepublication business-language gate, so a draft could reach final 422 review.",
+  "scope": "Original content orchestrator / original personal editorial contract / original bg-pre-publish-review",
+  "evidence": {
+    "production_date": "2026-11-15",
+    "original_channel": "linkedin_personal",
+    "observed_status": "BLOCKED",
+    "original_error": "PRE_PUBLISH_GATE_BLOCKED",
+    "review_violation": "FINAL_TEXT_BUSINESS_SIGNAL_BLOCK",
+    "linkedin_company_separate_block": "GLOBAL_POST_DUPLICATE_BLOCKED",
+    "unpublished_provider_id": null,
+    "provider_publication_claim": "NOT_PROVEN",
+    "consumer_processed": "NOT_PROVEN"
+  },
+  "remediation": {
+    "shared_prepublication_veto": true,
+    "source_mode_grounded_editorial_rewrite": true,
+    "identical_existing_daily_claim_preserved": true,
+    "strict_quality_and_dedupe_unchanged": true,
+    "original_agent_and_skill_updated": true,
+    "second_publisher_created": false,
+    "scheduler_changed": false
+  },
+  "regression": "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "next_action": "Required/BRAIN/CodeQL must pass on exact head; protected main merge and existing GitOps deployment/readback; same original next natural channel run; LinkedIn exact post ID/readback; original ONE BRAIN named PROCESSED receipt and Heartbeat measurement.",
+  "follow_up": "If still blocked due exhausted fresh sources, forbidden provider readback, or no approved identity/permission, retain original OPEN obligation with owner and typed next safe action; no invented publish success.",
+  "compiler": {
+    "failure_class": "EDITORIAL_MODE_MISMATCH",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "failure": "SOURCE_MODE_EDITORIAL_REWRITE_INCONSISTENT_WITH_FINAL_REVIEW",
+    "cause": "Observation-only source reused verified-builder rewrite prompt while final prepublication rejects business terms",
+    "prevention_rule": "Same shared business-language test in local and final personal review; editorial correction prompt derived from verified source mode; never turn observational content into first-person builder story",
+    "regression_guard": "tests/brain-personal-linkedin-editorial-contract-p0-4198.test.mjs",
+    "next_owner": "Original content editor / social-publisher, Reliability and Data Quality",
+    "effect_proof": "AWAITING_PROTECTED_CI_AND_REAL_PROVIDER_READBACK"
+  }
+}

@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import {isSourceQualifiedSocialSnapshot} from '../../supabase/functions/_shared/social-learning-window-ack.mjs';
 import { createSocialLearningStore } from './_social-learning-store.mjs';
 import { metricVector, buildCohort, selectSnapshotForWindow, selectOptimizationMetric, transitionLearningState } from './_social-learning-model.mjs';
 
@@ -78,7 +79,7 @@ export async function runEvaluation({store,now=new Date(),config=defaultConfig()
     // cannot become an exact 24/48/72-hour experiment observation even if
     // their retrieval timestamp happens to fall inside the window.
     const sourceQualified=(Array.isArray(snapshots)?snapshots:[])
-      .filter(x=>['OBSERVED','PROVIDER_OBSERVED'].includes(x?.dataQuality));
+      .filter(x=>isSourceQualifiedSocialSnapshot(x,post.externalPostId));
     const snapshot=selectSnapshotForWindow({snapshots:sourceQualified,publishedAt:post.publishedAt,windowHours,toleranceHours:Number(config.windowToleranceHours??6)});
     if(!snapshot){
       missedObligations++;
@@ -89,11 +90,24 @@ export async function runEvaluation({store,now=new Date(),config=defaultConfig()
         dueAt:new Date(new Date(post.publishedAt).getTime()+windowHours*36e5).toISOString()});
       continue;
     }
+    // Defense in depth: even if a source label slips through upstream,
+    // a missing numerical observation is not an evaluated post window.
+    const observedVector=metricVector(snapshot.metrics||{});
+    const observedKeys=['impressions','reach','likes','reactions','comments','shares','saves','clicks','views'];
+    if(!observedKeys.some(key=>Number.isFinite(observedVector[key])&&observedVector[key]>=0)){
+      missedObligations++;
+      if(store.recordObligation) await store.recordObligation({tenantId,
+        id:`social-snapshot:${post.postId}:${windowHours}`,
+        type:'UNVERIFIED_OR_PARTIAL_WINDOW',owner:'POWERHOUSE_SOCIAL_LEARNING',
+        postId:post.postId,windowHours,
+        dueAt:new Date(new Date(post.publishedAt).getTime()+windowHours*36e5).toISOString()});
+      continue;
+    }
     const evaluationId=`evaluation:${post.postId}:${windowHours}`;
     const cohortRaw=store.getCohort?await store.getCohort({post,windowHours,toleranceHours:Number(config.windowToleranceHours??6)}):[];
     const cohort=buildCohort(cohortRaw,post);
     const evidence=deriveEvidence(snapshot,cohort,config);
-    const evaluation={evaluationId,postId:post.postId,tenantId,windowHours,observedAt:snapshot.observedAt,metricVector:metricVector(snapshot.metrics||{}),cohortSize:cohort.length,evidence};
+    const evaluation={evaluationId,postId:post.postId,tenantId,windowHours,observedAt:snapshot.observedAt,metricVector:observedVector,cohortSize:cohort.length,evidence};
     await store.putEvaluation(evaluation);
     evaluated++;
     if(evidence&&store.upsertLearning){
@@ -124,7 +138,16 @@ export async function runScheduledTenants({
   }
   const settled=await Promise.allSettled(distinct.map(async tenantId=>{
     const store=storeFactory({tenantId});
-    return runEvaluation({store,now,maxDuePosts,config});
+    const result=await runEvaluation({store,now,maxDuePosts,config});
+    // Same ORIGINAL hourly owner performs post→evaluation→obligation ACK.
+    // The provider snapshot and deterministic evaluation must agree in the
+    // original authenticated store. This also heals previously orphaned ACKs.
+    const receipts=store.reconcileVerifiedObligations
+      ? await store.reconcileVerifiedObligations()
+      : {checked:0,resolved:0};
+    return {...result,
+      obligationReceiptsResolved:receipts.resolved||0,
+      obligationReceiptsChecked:receipts.checked||0};
   }));
   const done=settled.map((result,i)=>result.status==='fulfilled'
     ? {tenantId:distinct[i],...result.value,ok:true}

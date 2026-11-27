@@ -26,6 +26,7 @@ export function createSocialLearningStore({fetchFn=globalThis.fetch,baseUrl=proc
     reconcileApplication:application=>gateway({action:'reconcile_application',tenantId:application.tenantId||tenantId,application,idempotencyKey:`reconcile:${application.applicationId||`${application.postId}:${application.learningId}`}`}),
     reconcileApplications:data=>gateway({action:'reconcile_applications',tenantId:data.tenantId||tenantId,data,idempotencyKey:`reconcile-window:${data.postId}:${data.windowHours}`}),
     recordObligation:obligation=>gateway({action:'record_obligation',tenantId:obligation.tenantId||tenantId,obligation,idempotencyKey:`obligation:${obligation.id}`}),
+    reconcileVerifiedObligations:()=>gateway({action:'reconcile_verified_obligations',tenantId}),
     getProjection:async selectedTenantId=>(await gateway({action:'get_projection',tenantId:selectedTenantId||tenantId})).projection||null,
     putProjection:projection=>gateway({action:'put_projection',tenantId:projection.tenantId||tenantId,projection,idempotencyKey:`projection:${projection.tenantId||tenantId}:${projection.version}`})
   });

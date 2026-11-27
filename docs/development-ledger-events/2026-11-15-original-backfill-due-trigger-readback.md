@@ -1,0 +1,12 @@
+# 2026-11-15 | actual original backfill false resumed: NOT_DUE
+
+- Original P0: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198.
+- Provider evidence: GitHub original run 43704154620, artifact 14158370530, immutable report 3705 source candidates, 9 resumes, 1 NOT_DUE, 0 terminal independently proven. Exact original artifact SHA256 9d83c6ec1328b5a9fe15a6600e7fb6b052e5e58d77f0841f6e75433a6b3b9243.
+- Source root cause: original `tools/outcome-obligation-completion-supervisor-backfill.mjs` called `runOutcomeObligationCli` with hardcoded `--trigger-type event-trigger` for ALL original obligations; original due policy made daily cost-policy NOT_DUE, but workflow counted it as resumed.
+- Existing source patch: export/reuse original defaultDue. Split original candidate dispatch into event/scheduled or explicitly deferredNotDue; never invent external-prewrite event. Require provider `durable-supabase` exact owner readback and reject NOT_DUE. Original source candidates and idempotency remain intact.
+- Existing tests, workflow gate, Reliability/Data Quality tasks, recovery skill, machine Brain JSON and human change doc updated. No new executor, scheduler, worker, DB table/migration, paid branch or content provider send.
+- Release remains gated: original protected Required + CodeQL, main merge, independent Netlify exact production commit, NEXT NATURAL original backfill real result, original actual consumer/provider Heartbeat outcome. No false green, parent issue stays OPEN.
+
+## Protected original stale comparison recovery
+- Exact-head Required #43706465267 ran after an original MAIN_SYNC + PR-base refresh. Its stale event payload evaluated 13 files from the previous pre-Linkedin base and correctly returned `SCOPE_BUDGET_EXCEEDED` (max 10), even though independent current-main GitHub comparison `23a82748... → f5c759ea...` proves the **actual branch source diff is exactly ten owner-scoped files**. The three extra changes came from the separate protected LinkedIn final-truth release #5844 and must not be counted as this original writer's scope.
+- Kept original `Scope-Budget: 10`, preserved the other owner's agent tasks, and generated this same-original-PR new commit after base refresh to get a fresh exact-head delivery payload. No branch-protection bypass, no additional runner, no source migration, no force-push or parallel executor. All Required/CodeQL/Netlify checks must rerun to prove actual present main/source parity.

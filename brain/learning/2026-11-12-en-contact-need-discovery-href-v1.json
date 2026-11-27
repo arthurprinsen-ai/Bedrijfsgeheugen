@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "website|en-contact|nl-only-need-discovery-wrong-locale-href|20261112-v1",
+  "obligation_id": "website|en-contact|nl-only-need-discovery-wrong-locale-href|20261112-v1",
+  "title": "Rendered EN contact rewrites live NL-only utility into non-existent EN target",
+  "status": "CANDIDATE",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "root_cause": "Original static English route builder and client locale synchronizer blindly prepend /en to real same-origin NL-only /behoeftecheck utility. Original postmerge Brand Shell job 131467451001 failed after examining 279 public routes: /en/contact desktop href INTERNAL_TARGET_NOT_IN_FINAL_SITEMAP:/en/behoeftecheck.",
+  "impact": "Broken English contact CTA, one failed canonical brand-shell postmerge check; independent targeted public release and portal DOM checks still succeeded. 279-route sweep has 1 actual broken link; no proof of data loss.",
+  "fix": "Guard only canonical NL-only /behoeftecheck in existing static generator and existing browser sync, preserve full https://www.bedrijfsgeheugen.nl/behoeftecheck with query/hash; no new route or generalized sitemap exemption.",
+  "prevention_rule": "Every postmerge 279-route original browser href failure must be traced to both static source and runtime rewrite, fixed in original writer and protected with deterministic regression; never waive sitemap target validation.",
+  "owner": "Original site-shell NL/EN route writer and existing canonical browser gate / ONE BRAIN consumer",
+  "tests": [
+    "tests/brain-english-need-discovery-href-20261112.test.mjs",
+    "tests/brain-sitewide-href-integrity-20261112.test.mjs"
+  ],
+  "regression_contract": "tests/brain-english-need-discovery-href-20261112.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-english-need-discovery-href-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-english-need-discovery-href-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-english-need-discovery-href-20261112.test.mjs"
+    ]
+  },
+  "evidence": {
+    "upstream_pr": 5678,
+    "main_sha": "6f0497afb07051cf06f62f38efdea59cf7507bf2",
+    "failed_workflow": 43299724834,
+    "failed_job": 131467451001,
+    "broken_source": "/en/contact",
+    "broken_href": "/en/behoeftecheck",
+    "correct_href": "https://www.bedrijfsgeheugen.nl/behoeftecheck",
+    "browser_routes": 279,
+    "failed_hrefs": 1
+  },
+  "outcome": "Original protected repair candidate; no published fix or customer conversion claim until new exact commit Required/CodeQL, protected merge, Netlify CURRENT READY and full public browser sweep.",
+  "compiler": {
+    "failure_class": "PUBLIC_HREF_INTEGRITY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

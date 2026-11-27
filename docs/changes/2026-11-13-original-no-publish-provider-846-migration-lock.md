@@ -1,0 +1,9 @@
+# 13 november 2026 — originele Supabase migratie 846 direct met provider-proof geborgd
+
+**Originele eigenaar:** Supabase production migration-history lock / bestaande ONE BRAIN terminalizer. [PR #5739](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5739) is beschermd gemerged en het originele Supabase-project `adhjwmvyoixzjtmiroln` heeft migratie **846** daadwerkelijk toegepast: versie `20261113140500`, naam `original_no_publish_immutable_provider_receipt_v1`. Onafhankelijk providerbewijs 13 november 2026, **14:39:23.852565 UTC**.
+
+De native provider `pg_get_functiondef` bevat onafhankelijke OR over originele en nieuwe `provider_create_success` en overige side effects; een actief `veto` mag niet worden afgezwakt; ontbrekende originele besluitcode resulteert veilig in open `NO_PUBLISH_SOURCE_DECISION_PROOF_INCOMPLETE` met `SKIPPED` en geen resend. De originele `anon`/ `authenticated` EXECUTE staan **uit**, `service_role` **aan** en de oorspronkelijke `brain_content_handoff_terminal_proof_guard_v1` blijft enabled.
+
+Daarom pas **na** providerreadback precies één oorspronkelijke `supabase/migration-history.lock.json`-registratie toevoegen, namelijk versie+naam als 846e, met de voorafgaande 845 onveranderd. Dit is geen nieuwe migratie en geen nieuwe uitvoerder; nooit een ooit toegepaste migratie vervalsen om Required of BRAIN groen te krijgen. Machineleerregel, regressie en menselijke ledger worden in exact dezelfde beschermde PR vastgelegd. Vereist na beschermde merge de originele `Obligation Terminal Closure` inclusief provider/lock pariteit, delivery-readback en uitgegeven echte ONE BRAIN-leerregistratie.
+
+Nadrukkelijk **niet bewezen door deze code-release**: oorspronkelijk 20 no-publish besluiten met ontbrekende `decision_code`, zeven rode businesslussen of 366 open `CONTENT_HANDOFF` obligations; zij blijven bij de originele eigenaar totdat echte provider-/besluit-/meetrechten zijn bewezen.

@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|canonical-backfill-mixed-source-hard-boundary-bypass|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "BACKFILL_CANONICAL_HARD_BOUNDARY_GROUP_VETO_MISSING",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Original protected release #5835 fixed historical per-source backfill fanout but its activeDispatches first skipped WAIT_EXTERNAL source records and then coalesced other sources of the same original obligationId. One unblocked historic source could therefore still enqueue a new event for an obligation with an independently proven provider/consent hard boundary.",
+  "evidence": {
+    "source": "tools/outcome-obligation-completion-supervisor-backfill.mjs",
+    "protected_main_sha": "ee7d13b347163eef345fee154cb7f56eb1fe14e7",
+    "already_deployed_original_fanout_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5835",
+    "source_code_condition": "candidate.nextAction === WAIT_EXTERNAL was skipped per source before canonical obligation grouping",
+    "regression": "tests/brain-completion-supervisor-backfill.test.mjs",
+    "confirmed_unauthorized_external_side_effect": false,
+    "independent_root_cause": "SOURCE_INSPECTION_AND_NEGATIVE_MIXED_BOUNDARY_REGRESSION"
+  },
+  "prevention": {
+    "one_existing_canonical_workflow": true,
+    "original_candidate_history_retained": true,
+    "group_hard_boundary_applies_to_all_sources": true,
+    "no_hard_boundary_bypass": true,
+    "real_provider_authorization_required": true,
+    "no_new_scheduler": true,
+    "no_bulk_close": true,
+    "no_new_provider_send": true
+  },
+  "semantic_learning": {
+    "failure": "SOURCE_HARD_BOUNDARY_SKIPPED_DURING_OWNER_COALESCING",
+    "cause": "Filtering out WAIT_EXTERNAL candidates before grouping permitted other candidates for the same canonical obligation to create wakeup",
+    "prevention_rule": "When a registered original obligation contains any WAIT_EXTERNAL source, skip the whole owner group's backfill wakeup, retain every source in report.candidates and only resume after independently authorized provider readback.",
+    "regression_guard": "tests/brain-completion-supervisor-backfill.test.mjs",
+    "next_owner": "Existing ONE BRAIN Completion Supervisor, Reliability and Data Quality",
+    "effect_proof": "PROTECTED_SECURITY_CANARY_AND_ORIGINAL_PRODUCTION_READBACK_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-completion-supervisor-backfill.test.mjs",
+      "tests/brain-completion-supervisor-backfill-workflow.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}

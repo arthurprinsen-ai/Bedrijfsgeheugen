@@ -1,0 +1,69 @@
+{
+  "fingerprint": "seo|ahrefs-class-sitemap-audit-and-dataforseo-commercial-opportunities|20261112-v1",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "owner": "original Powerhouse SEO Order Engine / BG169",
+  "pr": 5643,
+  "status": "SOURCE_CANDIDATE",
+  "production_proven": false,
+  "consumer_processed_ack": "NOT_PROVEN",
+  "no_parallel_executor": true,
+  "root_cause": "Existing sitewide browser path had a strict href/CLS gate but no explicit per-page metadata, canonicals, localization, JSON-LD, images, duplicate title/description issues or auditable severity dashboard. DataForSEO broad Keyword Ideas returns many unrelated high-volume terms; source last_updated may be stale and AI demand estimates are not referral traffic.",
+  "fix": [
+    "Add pure read-only seo-site-audit-intelligence with page-level issue categories and full denominator report inside existing sitemap Playwright gate",
+    "Add conservative commercial source/owner/freshness guard; no automatic new pages from irrelevant keywords",
+    "Link original existing BG169/ONE BRAIN/Powerhouse/Heartbeat/Portal processing contract to agent and skill"
+  ],
+  "regressions": [
+    "tests/brain-sitewide-seo-audit-intelligence-20261112.test.mjs",
+    "tests/brain-sitewide-href-integrity-20261112.test.mjs"
+  ],
+  "evidence": {
+    "dataforseo_period": "2026-10 provider-backed estimate, inspected 2026-11-12",
+    "dataforseo_google_estimates": {
+      "ai_governance": 390,
+      "afas_koppeling": 170,
+      "bedrijfsprocessen_automatiseren": 170,
+      "exact_online_koppeling": 70
+    },
+    "dataforseo_ai_estimates": {
+      "ai_governance": 7,
+      "afas_koppeling": 22,
+      "bedrijfsprocessen_automatiseren": 3,
+      "exact_online_koppeling": 5
+    },
+    "broad_keywords_rejected_examples": [
+      "online dobbelsteen",
+      "betekenis",
+      "fascisme betekenis"
+    ],
+    "google_search_console_evidence": "GSC observed 2026-10-12 to 2026-11-09 had AFAS/OCI/Lightspeed impressions but 0 clicks in checked query+landing records; positions 60-95, not near ranking top",
+    "provider_output_id": "DataForSEO API result 11121410-2222-0399-0000-085a556fabc5 (suggestions), 11121410-2222-0619-0000-182306985b3b (AI estimate)",
+    "original_handoff_audit": "32 of 36 original handoffs stalled/overdue; no proven next-run learning",
+    "prod_netlify_sha": "NOT_YET_READ_BACK",
+    "exact_ci_sha": "PENDING"
+  },
+  "prevention": [
+    "Never claim parity with Ahrefs proprietary 170+ issue matrix; maintain exact status per category",
+    "Never conflate query volume, AI question estimates, citations, human visits and sales",
+    "Reject unknown intent owner, business-fit less than 0.75, stale provider metrics >30d",
+    "No green terminal status for coverage incomplete or absent original consumer processed ACK"
+  ],
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-ahrefs-class-seo-ai-growth-single-chain.md",
+    "original_owner": "Powerhouse SEO Order Engine / BG169",
+    "new_parallel_executor": false
+  },
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-seo-audit-intelligence-20261112.test.mjs"
+    ]
+  }
+}

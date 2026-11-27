@@ -1,0 +1,64 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-14",
+  "fingerprint": "powerhouse|innovation|candidate-to-one-brain-delivery-gap|20261114-v1",
+  "maturity": "OBSERVED",
+  "scope": "ONE_BRAIN",
+  "root_cause": "Read-only innovation assignment plus daily candidate creation lacked a durable producer-to-original-execution obligation; hourly self-optimization was already at safe floor.",
+  "source_authority": [
+    "public.powerhouse_optimization_candidate_v1",
+    "public.brain_obligations",
+    "public.powerhouse_optimization_closure_truth_v1"
+  ],
+  "observed": {
+    "candidate_count": 14,
+    "missing_execution_outcomes": 14,
+    "existing_daily_job_active": true,
+    "existing_hourly_job_active": true
+  },
+  "recovery": {
+    "existing_registry_backfill_persisted": 14,
+    "independent_readback_matched": 14,
+    "missing": 0,
+    "owner_mismatch": 0,
+    "production_implementation_complete": false
+  },
+  "prevention": {
+    "same_original_daily_runner": true,
+    "continuous_reconciliation": true,
+    "immutable_key": true,
+    "consumer_ack_required": true,
+    "fail_loud_on_missing_producer_handoff": true,
+    "never_claim_implemented_from_candidate": true
+  },
+  "regression": "tests/brain-innovation-canonical-handoff-20261114.test.mjs",
+  "protected_migration": "supabase/migrations/20261114184600_innovation_canonical_candidate_handoff_v1.sql",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "terminal_proof_status": "PENDING_PROTECTED_RELEASE_AND_NATURAL_RUN",
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-canonical-handoff-20261114.test.mjs"
+    ]
+  },
+  "original_obligation": "powerhouse|innovation|candidate-to-one-brain-delivery-gap|20261114-v1",
+  "status": "BACKFILL_PROVEN_PROTECTED_CANDIDATE_PENDING",
+  "evidence": {
+    "production_readback_at": "2026-11-14T17:45:27Z",
+    "source_candidate_count": 14,
+    "existing_obligation_count": 14,
+    "missing_count": 0,
+    "wrong_owner_count": 0,
+    "source_query": "JOIN public.powerhouse_optimization_candidate_v1 -> public.brain_obligations on original candidate identity",
+    "original_owner": "powerhouse-self-improvement-layer-v1",
+    "migration_not_yet_applied": true,
+    "verified_new_value": false
+  }
+}

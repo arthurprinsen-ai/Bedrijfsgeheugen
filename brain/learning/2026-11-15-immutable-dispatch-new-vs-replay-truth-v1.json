@@ -1,0 +1,87 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|immutable-dispatch-replay-claimed-new-without-provider-insert-proof|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "IMMUTABLE_IDEMPOTENT_DISPATCH_FALSE_NEW_ACK",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The original server-only Supabase append-only dispatch store used PostgREST resolution=ignore-duplicates,return=minimal but always returned created:true after a GET, including on a duplicate replay. Existing owner, trace, obligation and state were not verified after a conflict, allowing a conflicting replay to be silently treated as a successful durable handoff.",
+  "production_observation": {
+    "observed_date": "2026-11-15",
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "original_agentwork_pending": 3313,
+    "agentwork_with_evidence": 3313,
+    "agentwork_with_any_independently_accepted_exact_production_evidence": 70,
+    "original_recoverywork_recovering": 1055,
+    "recoverywork_with_evidence": 0,
+    "original_innovation_intakes_planned": 14,
+    "observed_duplicate_execution_or_wrong_provider_send": false,
+    "actual_bug": "Source inspection of putIfAbsent unconditional created:true, not proof of duplicate side effect"
+  },
+  "change": {
+    "original_source": "tools/outcome-obligation-supabase-store.mjs",
+    "original_test": "tests/brain-outcome-obligation-supabase-store.test.mjs",
+    "original_agent_roster": "platform/agents/agent-team.mjs",
+    "original_skill": ".agents/skills/powerhouse-recovery-proof/SKILL.md",
+    "new_scheduler": false,
+    "new_worker": false,
+    "new_store": false,
+    "new_database_migration": false
+  },
+  "prevention": {
+    "atomic_insert_ignore_duplicates_kept": true,
+    "provider_return_representation_required": true,
+    "new_vs_existing_record_identity_checked": true,
+    "original_owner_trace_state_conflict_fail_closed": true,
+    "no_implicit_completion": true,
+    "mutable_history_updates": false
+  },
+  "semantic_learning": {
+    "failure": "DURABLE_DISPATCH_REPLAY_REPORTED_CREATED",
+    "cause": "Unconditional created:true despite PostgREST ON CONFLICT DO NOTHING",
+    "prevention_rule": "Use atomic resolution=ignore-duplicates with return=representation: created only if exactly one newly inserted row, 0 row means replay; require independent canonical get and exact immutable identity; reject ambiguous provider response.",
+    "regression_guard": "tests/brain-outcome-obligation-supabase-store.test.mjs",
+    "next_owner": "Original agent-reliability with agent-data-quality independent test",
+    "effect_proof": "PROTECTED_CI_AND_PRODUCTION_DEPLOY_READBACK_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs",
+      "tests/brain-outcome-obligation-runtime.test.mjs",
+      "tests/brain-outcome-obligation-durable-runtime.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE",
+  "evidence": {
+    "original_db_project": "adhjwmvyoixzjtmiroln",
+    "source_tables": [
+      "public.brain_outcome_obligation_dispatch",
+      "public.brain_outcome_obligation_evidence"
+    ],
+    "native_sql_observed_at": "2026-11-15",
+    "independent_source_counts": {
+      "agentwork_pending": 3313,
+      "agentwork_with_any_evidence": 3313,
+      "agentwork_with_independent_accepted_exact_production_evidence_of_any_type": 70,
+      "recoverywork_recovering": 1055,
+      "recoverywork_with_evidence": 0
+    },
+    "discovered_code": "tools/outcome-obligation-supabase-store.mjs putIfAbsent always created:true after ignore-duplicates",
+    "regression": [
+      "tests/brain-outcome-obligation-supabase-store.test.mjs"
+    ],
+    "historical_records_updated": false,
+    "provider_side_effect_claim": "NONE",
+    "consumer_terminal_outcome": "NOT_YET_PROVEN"
+  }
+}

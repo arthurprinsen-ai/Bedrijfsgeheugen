@@ -1,0 +1,57 @@
+{
+  "date": "2026-11-14",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|agentwork|immutable-dispatch-backlog-missing-in-admin-ack-readback|20261114-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "ORIGINAL_AGENT_CONSUMER_ACK_OBSERVABILITY_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The existing canonical immutable AgentWork and RecoveryWork dispatch table retained source-bound work from September-November but its aggregate pending/recovery debt was absent from the original admin cockpit. Scheduled success and named agent tasks do not imply an independent consumer receipt.",
+  "evidence": {
+    "project": "adhjwmvyoixzjtmiroln",
+    "observed_date": "2026-11-14",
+    "source_table": "public.brain_outcome_obligation_dispatch",
+    "source_counts": {
+      "AgentWork_PENDING": 3312,
+      "RecoveryWork_RECOVERING": 1055
+    },
+    "other_original_unclaimed_innovation_intakes": 14,
+    "readback_type": "INDEPENDENT_NATIVE_POSTGRES_AGGREGATE",
+    "consumer_executed_claim": false,
+    "regression": "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs",
+    "production_deploy_identity": "NOT_YET_VERIFIED"
+  },
+  "prevention": {
+    "owner_only": true,
+    "existing_admin_route_only": true,
+    "source_count_exact_header_required": true,
+    "never_report_missing_as_zero": true,
+    "no_raw_identity_payload_to_browser": true,
+    "never_close_on_count_or_ready_state": true,
+    "independent_original_consumer_ack_required": true,
+    "no_new_executor": true
+  },
+  "semantic_learning": {
+    "failure": "HISTORICAL_IMMUTABLE_AGENT_DISPATCH_DEBT_INVISIBLE",
+    "cause": "Admin view projected innovation and metrics but not original immutable agent work/recovery backlog; tasks have owner metadata but no proven execution.",
+    "prevention_rule": "Read exact original provider Content-Range counts in admin-only source and render explicit consumer receipt debt; missing count fails closed, not green.",
+    "regression_guard": "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs",
+    "next_owner": "Existing agent-reliability + agent-integration-engineer, original ONE BRAIN #171",
+    "effect_proof": "NOT_YET_PROVEN"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-live-agent-owner-handoff-20261114.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}

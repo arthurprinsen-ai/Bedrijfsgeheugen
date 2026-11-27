@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "status": "CANDIDATE",
+  "version": "v1",
+  "parent_issue": 4198,
+  "fingerprint": "original-one-loop|mutable-source-revision-attempted-to-update-immutable-brain-payload-hash|20261112-v1",
+  "obligation_id": "original-brain-immutable-identity-source-revision-20261112",
+  "owner": "original Powerhouse producer #175 / original ONE BRAIN consumer #140 / Heartbeat",
+  "failure_class": "DATA_INTEGRITY",
+  "root_cause": "Original daily source archive updated brain_obligations.payload_sha256 on conflict whenever real per-day raw source data changed. The canonical brain_guard_obligation_identity trigger correctly rejects this immutable identity rewrite with P0001 OBLIGATION_IDENTITY_IMMUTABLE. Source transaction rolls back daily additional classes, but gross upstream cron returns a green status due intentional stage isolation. If source rows or BRAIN evidence drift, original #140 incorrectly demanded the creation-time payload hash match the current raw source hash, perpetuating a false consumer mismatch. Heartbeat also accepted an older consumer event by day without validating current raw SHA.",
+  "impact": "New post source class was present in production SQL but source archive failed for both 11/12 Nov. No reliable new BRAIN source revision or Heartbeat ACK; original growth loop can show stale accepted receipts.",
+  "prevention": "Keep original creation-time payload_sha256 unchanged forever; only update mutable evidence.source_revision, source manifest and reset consumer_ack to false under same obligation logical key, preserve previous ACK/analysis and immutable hash for provenance, append independent per SHA revision event. #140 independently verify current raw SHA vs current mutable BRAIN source_revision, never old immutable hash. Heartbeat recomputes original raw table SHA and requires exact match to same-day provider event and BRAIN consumer ACK; keep OPEN until actual CRO experiment and outcome. Original #175, #140, Heartbeat active, no new scheduler or token bypass.",
+  "evidence": {
+    "native_2026_11_12": {
+      "source_migration_version": "20261112184500",
+      "source_migration_applied": true,
+      "source_classes_protected_merge": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5663",
+      "production_replay_days": [
+        "2026-11-11",
+        "2026-11-12"
+      ],
+      "actual_sqlstate": "P0001",
+      "actual_error": "OBLIGATION_IDENTITY_IMMUTABLE",
+      "native_function_original_guard_verified": true,
+      "source_replay_result": "SOURCE_ARCHIVE_RETRY_REQUIRED"
+    },
+    "incident_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "prior_source_history_lock_authority": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5665",
+    "never_deactivate_guard": true
+  },
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "ORIGINAL_ONE_BRAIN_IMMUTABLE_IDENTITY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 2
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-source-identity-versioned-ack-20261112.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-source-identity-versioned-ack-20261112.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-source-identity-versioned-ack-20261112.test.mjs"
+    ]
+  },
+  "regression": "tests/brain-original-source-identity-versioned-ack-20261112.test.mjs",
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders"
+  ],
+  "no_parallel_executor": true,
+  "no_unverified_success": true
+}

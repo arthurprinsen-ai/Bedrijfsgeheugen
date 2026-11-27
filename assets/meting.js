@@ -138,7 +138,15 @@
     poging();
   }
 
-  function tekstVan(el){return String(el.getAttribute('data-bg-meet')||el.id||el.tagName||'').replace(/\s+/g,' ').trim().slice(0,120);}
+  /* Use only declarative, authored and stable conversion labels; never read customer text,
+     form fields, innerText or arbitrary on-screen content into analytics. */
+  function tekstVan(el){
+    var label=el.getAttribute('data-bg-meet')||
+      el.getAttribute('data-bg-conversion')||
+      el.getAttribute('data-bg-order-cta')||
+      el.id||el.tagName||'';
+    return String(label).replace(/\s+/g,' ').trim().slice(0,120);
+  }
   function onderdeelVan(el){var c=el.closest&&el.closest('[data-bg-component]');if(c)return c.getAttribute('data-bg-component').slice(0,80);var i=el.parentElement&&el.parentElement.closest&&el.parentElement.closest('section[id],[id]');return i?String(i.id).slice(0,80):'';}
   meet({gebeurtenis:'pagina'});
   var vorig=location.pathname;function route(){if(location.pathname!==vorig){vorig=location.pathname;gehaald={};maxScroll=0;meet({gebeurtenis:'pagina'});}}

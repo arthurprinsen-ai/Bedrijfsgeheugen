@@ -21,6 +21,8 @@ export default {
       getIdentityConfigFn:getIdentityConfig,
       fetchImpl:fetch,
       randomPassword,
+      // Same deploySucceeded run, same signed synthetic users and cleanup.
+      probeInnovationAudit:true,
     });
 
     await store.setJSON(portalAuthProofKey(deploy.commitRef),proof);

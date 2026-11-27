@@ -81,12 +81,45 @@ test('same original content loop performs CAS-only metadata writeback; no provid
   fetchSource('brain/observability/one-loop-guard-diagnostics.mjs'),
   fetchSource('portal-v2/modules/powerhouse-observability.js')]);
  assert.match(loop,/planOriginalPublicationHandoffs\(recovery,obligations\|\|\[\]\)/);
- assert.match(loop,/\.eq\('channel',handoff\.channel\)\.eq\('next_action',handoff\.previous\)/);
- assert.match(loop,/\.in\('status',\['PLANNED','BLOCKED','FAILED'\]\)\.eq\('external_id',null\)/);
+ assert.match(loop,/\.eq\('channel',handoff\.channel\)/);
+ assert.match(loop,/updateQuery=handoff\.previous===null/);
+ assert.match(loop,/\.is\('next_action',null\)/);
+ assert.match(loop,/\.eq\('next_action',handoff\.previous\)/);
+ assert.match(loop,/\.in\('status',\['PLANNED','BLOCKED','FAILED'\]\)\.is\('external_id',null\)/);
  assert.match(loop,/\.select\('channel,next_action,status,external_id'\)/);
  assert.match(loop,/handoffWriteback,\s*incidentLearning,\s*ownerActionEscalation,\s*obligations:\s*obligationSummary/);
  assert.match(loop,/const LOOP_LEASE_MS = 240_000/);
  assert.match(guard,/owner:typeof x\.owner==='string'/);
  assert.match(portal,/Verantwoordelijke herstelagent/);
  assert.match(portal,/esc\(item\.owner\)/);
+});
+
+test('late original channel decision automatically clears stale schedule warning without provider create',()=>{
+ const missing=assessDailyPublicationRecovery({
+   runDate:date,now:'2026-10-31T05:00:00Z',
+   obligations:[obligations[0]],decisions:[],mediaJobs:[],isTerminal:()=>false
+ });
+ const initial=planOriginalPublicationHandoffs(missing,[obligations[0]]);
+ const stale=initial.updates.find(x=>x.channel==='linkedin_personal');
+ assert.match(stale.nextAction,/PUBLICATION_SCHEDULE_MISSING/);
+ const pendingDecision={channel:'linkedin_personal',state:'content_ready',
+   decision:'publish',scheduled_for:new Date('2026-10-31T07:00:00Z'),delivery_evidence:{}};
+ const projected={...obligations[0],next_action:stale.nextAction};
+ const recovered=assessDailyPublicationRecovery({
+   runDate:date,now:'2026-10-31T06:00:00Z',
+   obligations:[projected],decisions:[pendingDecision],mediaJobs:[],isTerminal:()=>false
+ });
+ const update=planOriginalPublicationHandoffs(recovered,[projected]);
+ assert.equal(update.updates.length,1);
+ assert.equal(update.updates[0].code,'PUBLICATION_SCHEDULE_RECONCILED');
+ assert.match(update.updates[0].nextAction,/2026-10-31T07:00:00.000Z/);
+ assert.doesNotMatch(update.updates[0].nextAction,/HERSTEL VEREIST/);
+ const updated={...projected,next_action:update.updates[0].nextAction};
+ assert.equal(planOriginalPublicationHandoffs(recovered,[updated]).updates.length,0);
+ assert.equal(planOriginalPublicationHandoffs(recovered,[{...projected,external_id:'urn:li:share:already-created'}]).updates.length,0);
+ const expired=assessDailyPublicationRecovery({
+   runDate:date,now:'2026-10-31T08:00:00Z',
+   obligations:[projected],decisions:[pendingDecision],mediaJobs:[],isTerminal:()=>false
+ });
+ assert.equal(planOriginalPublicationHandoffs(expired,[projected]).updates.some(x=>x.code==='PUBLICATION_SCHEDULE_RECONCILED'),false);
 });

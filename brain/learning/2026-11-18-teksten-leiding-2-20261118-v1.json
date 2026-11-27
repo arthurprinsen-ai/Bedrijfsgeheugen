@@ -1,0 +1,42 @@
+{
+  "fingerprint": "site|rituals|teksten-leiding-2|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|teksten-leiding-2|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": true,
+    "repeat_count": 8,
+    "security_sensitive": false
+  },
+  "root_cause": "Een tekstwijziging op NL-pagina's werkt niet door naar Engels zonder cachepatch, omdat productie alleen vanuit config/bg-static-i18n-en.d bouwt. Een tekstronde die alleen NL aanpast laat de Engelse pagina's stil achterlopen.",
+  "correction": "NL-bron en EN-patch in dezelfde PR; completeness-gate lokaal met en zonder patch gedraaid.",
+  "prevention": [
+    "Elke publieke tekstwijziging: NL-bron, EN-patch met exacte NL-zin als sleutel en completeness-gate in dezelfde PR.",
+    "Installeer parse5 lokaal (npm install --no-save parse5) om de gate te kunnen draaien; draai hem met en zonder patch."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "bedrijfsgeheugen.html",
+      "hoe-het-werkt.html",
+      "over-ons.html",
+      "config/bg-static-i18n-en.d/teksten-leiding-2026-11-18.json"
+    ],
+    "outcome": "Lokaal: i18n-gates groen, negatieve proef rood. Live-readback open."
+  }
+}

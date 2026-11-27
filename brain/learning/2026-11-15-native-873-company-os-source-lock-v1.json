@@ -1,0 +1,56 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|supabase|provider-applied-873-original-company-os-source-lock-ack|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "compiler": {
+    "failure_class": "NATIVE_PROVIDER_873_APPLIED_GIT_LOCK_ACK_MISSING",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Protected PR #5892 merged and existing original GitOps applied migration #873 in native production. Original source-lock remained at 872, which would make subsequent protected PR preflight fail until the same exact native source identity is acknowledged.",
+  "change": {
+    "source": "supabase/migration-history.lock.json",
+    "append_one_verified_native_identity": true,
+    "source_already_applied": true,
+    "no_database_schema_mutation": true,
+    "no_duplicate_cron": true,
+    "no_new_executor": true
+  },
+  "evidence": {
+    "native_project": "adhjwmvyoixzjtmiroln",
+    "native_applied_version": "20261115235900",
+    "native_applied_name": "company_intelligence_existing_daily_source_receipt_v1",
+    "native_applied_count": 873,
+    "observed_at": "2026-11-15T17:38:12.470160Z",
+    "previous_git_lock_count": 872,
+    "original_protected_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5892",
+    "original_merge_sha": "995353f3fef886314339ef98e102fc4a6b69f1c4",
+    "original_company_os_event": "company-intelligence-os:2026-11-15",
+    "source_event_id": "f846c546-d358-46cb-a9e7-078b70934469",
+    "original_self_improvement_ack": true,
+    "customer_financial_effect_verified": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "cause": "Original GitOps release deployed a valid migration but the applied provider version was not yet acknowledged by original immutable Git source-lock.",
+    "prevention_rule": "After native provider independently applies a migration, acknowledge exactly its official version/name under the original protected source-lock only; never fabricate an applied migration or repeat its SQL.",
+    "regression_guard": "tests/brain-original-native-873-company-os-source-lock-20261115.test.mjs",
+    "next_owner": "Original protected Supabase GitOps source lock owner / ONE BRAIN",
+    "effect_proof": "PROTECTED_REQUIRED_CODEQL_SOURCE_LOCK_TESTS_AND_FINAL_PROVIDER_873_READBACK_REQUIRED"
+  }
+}

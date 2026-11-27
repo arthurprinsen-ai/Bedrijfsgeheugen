@@ -1,0 +1,66 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|original-backfill-reported-not-due-as-durable-resume|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "ORIGINAL_BACKFILL_WRONG_DUE_TRIGGER_FALSE_RESUMED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Existing original Completion Supervisor Backfill Resume always used event-trigger for every historical original obligation. Native workflow 43704154620 produced cost-policy-10000-monthly decision NOT_DUE although claimed 9 durable resumes; this obligation is continuous_with_daily_recalculation. A prewrite-only obligation must not receive an invented generic event as if an external mutation had happened.",
+  "evidence": {
+    "source_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43704154620",
+    "source_artifact_id": 14158370530,
+    "artifact_sha256": "9d83c6ec1328b5a9fe15a6600e7fb6b052e5e58d77f0841f6e75433a6b3b9243",
+    "historical_source_candidates": 3705,
+    "original_report_dispatches": 9,
+    "cli_mode_durable_supabase": 9,
+    "not_due_decisions": 1,
+    "terminal_verified_decisions": 0,
+    "prewrite_only_due_policy": "before_each_material_external_mutation",
+    "original_registered_config": "config/outcome-obligations.json",
+    "tests": [
+      "tests/brain-completion-supervisor-backfill.test.mjs",
+      "tests/brain-completion-supervisor-backfill-workflow.test.mjs"
+    ],
+    "external_provider_outcome_claim": false
+  },
+  "prevention": {
+    "one_original_worker": true,
+    "one_original_writer": true,
+    "source_candidates_never_dropped": true,
+    "default_due_reused_from_original_runtime": true,
+    "event_or_scheduled_only_when_due": true,
+    "prewrite_only_source_explicitly_deferred": true,
+    "report_deferred_not_due_separately": true,
+    "never_count_not_due_as_resumed": true,
+    "durable_supabase_mode_required": true,
+    "exact_original_obligation_result_required": true,
+    "no_false_terminal": true,
+    "no_new_cron": true,
+    "no_db_mutation": true
+  },
+  "semantic_learning": {
+    "failure": "NOT_DUE_INCLUDED_IN_SUCCESSFUL_BACKFILL_RESUMED_COUNT",
+    "cause": "Hardcoded event-trigger ignored original obligation.dueAt and pipeline checked only existence of resumeResults",
+    "prevention_rule": "Apply original defaultDue to distinguish scheduled vs event vs deferred original prewrite source; require durable-supabase exact single decision and no NOT_DUE for each counted resumed item.",
+    "regression_guard": "tests/brain-completion-supervisor-backfill.test.mjs",
+    "next_owner": "original agent-reliability and independent agent-data-quality",
+    "effect_proof": "PROTECTED_DEPLOY_AND_NEXT_NATURAL_ORIGINAL_RUN_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-completion-supervisor-backfill.test.mjs",
+      "tests/brain-completion-supervisor-backfill-workflow.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}

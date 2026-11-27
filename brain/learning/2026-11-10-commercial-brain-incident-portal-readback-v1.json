@@ -1,0 +1,91 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CI_PORTAL_PRODUCTION_READBACK_DUE",
+  "fingerprint": "powerhouse|commercial|original-brain-blocker-portal-readback-gap|20261110-v1",
+  "failure_class": "CANONICAL_COMMERCIAL_INCIDENT_NOT_IN_ADMIN_PORTAL",
+  "root_cause": "Original commercial research/source handoff, provider acknowledgement and Brain outcome fixes were applied, but the existing admin Powerhouse Control Plane read-model displayed only architecture/loop/terminal/revenue summary and did not read native brain_blockers or the original commercial handoff scorecard. Fixed technical incidents and active evidence debt could be conflated, invisible to the portal consumer.",
+  "owner": "existing Netlify admin Powerhouse Control Plane, original ONE BRAIN/Heartbeat and original Growth & Revenue OS",
+  "evidence": {
+    "observed_at_utc": "2026-11-10T17:34:20Z",
+    "original_live_source": "public.brain_blockers + public.powerhouse_commercial_handoff_scorecard_v1",
+    "original_software_repair_registry": {
+      "id": "28fde75b-8ac0-44f1-9404-8dc66f6b61a6",
+      "state": "RESOLVED",
+      "migration": "20261110134500",
+      "source": "supabase_migrations provider readback"
+    },
+    "original_active_e2e_debt_registry": {
+      "id": "055f63e1-7a33-4b18-a8cc-2f7dc8455782",
+      "state": "ACTIVE",
+      "scope": "powerhouse:commercial:original-end-to-end"
+    },
+    "commercial_scorecard": {
+      "original_email_actions_7d": 12,
+      "provider_readback_proven_7d": 1,
+      "broken_or_unproven_handoffs_7d": 10,
+      "provider_linked_replies": 0,
+      "meetings": 0,
+      "revenue_eur": 0,
+      "linked_experiment_treatments": 0,
+      "handoff_health": "DEGRADED"
+    },
+    "brain_runtime": {
+      "wired_layers": 32,
+      "total_layers": 32,
+      "active_jobs": 18,
+      "required_jobs": 18,
+      "runtime_errors": 24,
+      "architecture_state": "AMBER",
+      "learning_state": "EVIDENCE_DUE_GAPS"
+    },
+    "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198"
+  },
+  "repair": "Extend ONLY the existing admin-gated Powerhouse integration read model to read bounded PII-free native brain_blockers filtered to commercial scopes and the original aggregated commercial handoff scorecard. Expose ACTIVE vs RESOLVED and provider-vs-broken counts in existing portal cockpit; missing sources are UNKNOWN, never green. No additional scheduler, incident store, executor, CRM, public API, personal data, provider send or false end-to-end green.",
+  "compiler": {
+    "failure_class": "CANONICAL_COMMERCIAL_INCIDENT_NOT_IN_ADMIN_PORTAL",
+    "scope": "PORTAL_COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs"
+  ],
+  "scope": [
+    "platform/portal/powerhouse-existing-integration-read-model.mjs",
+    "portal-v2/control-plane-cockpit.js",
+    "tests/brain-powerhouse-existing-systems-portal-readback-20261029.test.mjs",
+    "brain/learning/2026-11-10-commercial-brain-incident-portal-readback-v1.json",
+    "docs/changes/2026-11-10-commercial-brain-incident-portal-readback.md",
+    "docs/development-ledger-events/2026-11-10-commercial-brain-incident-portal-readback.md",
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
+  ],
+  "prevention": [
+    "Every fixed commercial code/CI issue must be recorded in original Brain blocker registry as RESOLVED only for exact provider-verified scope, and ongoing end-to-end obligations separately ACTIVE.",
+    "An admin portal must show exact original current provider readback, historical handoff debt and active versus resolved Brain incidents; architecture wiring never implies a green business outcome.",
+    "Server-only Supabase service-role key and admin JWT gate must precede all original native Brain blocker reads. Select only fingerprint/scope/state/severity/updated time, never incident evidence, person/email or provider secret.",
+    "Unreachable, truncated or schema-drift source readback renders UNKNOWN/PARTIAL with explicit gap, not zero open blockers or completed work.",
+    "All new evidence must update the original blocker/scorecard/ONE BRAIN and next natural Heartbeat; no new scheduler or parallel storage."
+  ],
+  "production_proof_to_complete": [
+    "Protected Required/CodeQL and Netlify source/deployment relevance checks green for exact PR head.",
+    "Protected merge and production Netlify deploy of existing admin Control Plane read-model/cockpit.",
+    "Independent live authenticated admin readback shows exactly one original active commercial blocker, one fixed resolved technical blocker, one provider-proven sent and ten broken or unproven historical handoffs; NO PII or secret leaked.",
+    "Later natural original Heartbeat and valid prospective A/B outcomes reconcile the active blocker only on exact provider/consumer proof, not based on portal status."
+  ],
+  "no_false_green": true,
+  "no_parallel_agent": true
+}

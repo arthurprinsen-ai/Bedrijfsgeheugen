@@ -75,6 +75,11 @@ test('public runtime verifier is retired and cannot amplify database outages',()
   assert.match(verifier,/retired:true/);
   assert.match(verifier,/status:"RETIRED_DIAGNOSTIC"/);
   assert.match(verifier,/database_probe_performed:false/);
+  assert.match(verifier,/replacement:"commercial-heartbeat-and-runtime-readback"/);
+  assert.match(verifier,/migration_recovery:"provider-managed-only"/);
+  assert.match(verifier,/provider_preview_required_for_supabase_changes:true/);
+  assert.doesNotMatch(verifier,/\bfetch\s*\(/);
+
   assert.match(verifier,/status:410/);
   assert.doesNotMatch(verifier,/postgres@/);
   assert.doesNotMatch(verifier,/SUPABASE_DB_URL/);

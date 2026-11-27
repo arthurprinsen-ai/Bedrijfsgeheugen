@@ -1,0 +1,62 @@
+{
+  "fingerprint": "seo|sitewide|daily-audit-to-conversion-learning|20261110-v1",
+  "date": "2026-11-10",
+  "status": "CANDIDATE",
+  "production_proven": false,
+  "sitewide_daily_crawl_proven": false,
+  "ci_proven": false,
+  "experiment_lift_proven": false,
+  "existing_executor": "Powerhouse SEO Order Engine",
+  "writer": "BG169",
+  "single_scheduler": true,
+  "policy": "daily full production public NL/EN technical SEO, keyword ownership and CRO with exact evidence handoff",
+  "observed_production_baseline": {
+    "evaluated_at_utc": "2026-11-10T18:03:16Z",
+    "human_flagged_pageviews_7d": 102,
+    "cta_events_7d": 2,
+    "form_submit_intents_7d": 0,
+    "linked_qualified_leads_30d": 0,
+    "orders_provider_confirmed_30d": 0,
+    "assigned_experiments_30d": 0
+  },
+  "root_cause": "The prior daily SEO skill existed, but full public site coverage and separate technical/keyword/CRO audit receipts were not a synchronized required owner-to-learning contract. Real controlled CRO conversion evidence remains insufficient.",
+  "solution": "Extend the existing canonical SEO skill/config/system map/component registry/tests and original scheduler prompt; preserve original BG169 protected writer and ONE BRAIN handoff.",
+  "prevention": [
+    "Never claim daily sitewide coverage without discovered/scanned/excluded/failed URL evidence",
+    "Never promote a title/CTA/keyword hypothesis without independent protected deploy and downstream outcome proof",
+    "No second scheduler, parallel website writer or fabricated paid outcome"
+  ],
+  "acceptance": [
+    "protected PR Required/BRAIN/CodeQL and applicable website preview pass",
+    "protected merge to main",
+    "exact production Netlify commit deployed",
+    "first natural original daily full-site scan records all route coverage and failures",
+    "original Brain ACK and Heartbeat portal handoff",
+    "qualified experiment outcomes measured and lesson reused"
+  ],
+  "production_status": "PENDING_INDEPENDENT_PROOF",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "CONTRACT_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_daily_scheduler_updated": "2026-11-10T18:00:00Z — automation 6ad5b66790548191ad87ca89c4fd00ab update returned success; unchanged enabled=true; this does NOT prove a production crawl",
+    "existing_production_cro_view": "2026-11-10T18:03:16Z public.powerhouse_cro_conversion_evidence_v1; 102 human-flagged pageviews/7d, 2 CTA events/7d, no linked qualified leads, no provider orders, no controlled assignments",
+    "historical_replay": "tests/brain-seo-conversion-orders-v1.test.mjs historical replay passed in protected Required run 42873582132; this is SOURCE_AND_TEST proof only",
+    "production_readback": "NOT_MEASURED: full site coverage, verified lead conversion, experimental lift and postmerge proof pending",
+    "failed_admission_runs": [
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42872487275",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42873384221",
+      "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42873582132"
+    ]
+  }
+}

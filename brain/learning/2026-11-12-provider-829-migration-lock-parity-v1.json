@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "supabase|migration-history|provider-829-lock-parity|20261112-v1",
+  "obligation_id": "supabase|migration-history|provider-829-lock-parity|20261112-v1",
+  "title": "Never let applied Supabase provider migration remain absent from original checked-in source lock",
+  "status": "CANDIDATE",
+  "date": "2026-11-12",
+  "tenant_id": "canonical",
+  "root_cause": "The protected original PR #565? source migration 20261112144500 was applied by production Supabase, but original source migration-history.lock.json stayed on 828 rows instead of provider-confirmed 829. Unrelated SEO/website release therefore failed migration history checks when syncing with newest main.",
+  "impact": "Original protected SEO release #5643 waits on main migration lock parity. Production migration is already applied; no need to replay DDL.",
+  "fix": "Read provider original supabase_migrations ledger (829 rows, exact version/name) and append only matching source entry. Preserve first 828 lock rows, never reapply migration or create a scheduler.",
+  "prevention_rule": "Every original migration deployment requires provider exact version/name readback and synchronized source lock before dependent PRs are merged or consumers given ACK.",
+  "evidence": {
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "provider_applied_count": 829,
+    "provider_migration": {
+      "version": "20261112144500",
+      "name": "original_social_legacy_alias_acks_v1"
+    },
+    "source_lock_before": 828,
+    "source_lock_after": 829,
+    "source_sql": "supabase/migrations/20261112144500_original_social_legacy_alias_acks_v1.sql",
+    "sql_blob_sha": "8c8791a79b55c6e6801d0fd921c91d99d0fd6416",
+    "production_replay": false,
+    "original_consumer_processed_ack": "PENDING_VERIFICATION"
+  },
+  "owner": "Original protected Supabase migration history writer / ONE BRAIN backend owner",
+  "no_new_writer": true,
+  "no_ddl": true,
+  "no_synthetic_business_outcomes": true,
+  "activity_ledger": {
+    "path": "docs/development-ledger-events/2026-11-12-provider-829-migration-lock.md",
+    "original_owner": "Supabase migration history writer",
+    "new_parallel_executor": false
+  },
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cro-production-migration-lock-20261029.test.mjs",
+      "tests/brain-original-supabase-800-provider-migration-lock-20261104.test.mjs"
+    ]
+  }
+}

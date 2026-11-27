@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "SOURCE_CANDIDATE_PENDING_PROTECTED_RELEASE",
+  "fingerprint": "powerhouse|innovation|original-owner-decision-to-original-obligation-receipt|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "ORIGINAL_INNOVATION_OWNER_DECISION_REGISTERED_BUT_ORIGINAL_OBLIGATION_NOT_ACKNOWLEDGED",
+    "severity": "P0_SOURCE_TO_CONSUMER_HANDOFF",
+    "machine_enforceable": true,
+    "repeat_count": 14
+  },
+  "root_cause": "Original daily decision stage successfully created 14 source-bound owner decisions in existing brain_operations, but corresponding original brain_obligations.INNOVATION_DELIVERY evidence did not receive the source-bound decision packet. An agent-only record without original obligation consumer readback can stall implementation transfer even though upstream audit is green.",
+  "evidence": {
+    "upstream_protected_merge_sha": "9d6643ab64ccb5dc7ef8d652d4ca6e07785f22b0",
+    "upstream_protected_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5897",
+    "upstream_original_runtime": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43746595228",
+    "upstream_native_decisions_independently_verified": 14,
+    "upstream_decision_types": {
+      "generic_engineering": 9,
+      "concrete_engineering": 4,
+      "cro_measurement": 1
+    },
+    "original_operations_planned": 14,
+    "original_obligations_open": 14,
+    "original_obligation_decision_receipts_before_fix": 0,
+    "independent_original_agent_implementation_ack": 0,
+    "verified_customer_savings": 0,
+    "protected_merge_of_this_change_not_yet_verified": true
+  },
+  "change": {
+    "original_daily_workflow": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "original_source_consumer": "scripts/brain/innovation-original-owner-decision.mjs",
+    "original_operation_source": "public.brain_operations.INNOVATION_INTAKE",
+    "original_obligation_consumer": "public.brain_obligations.INNOVATION_DELIVERY",
+    "native_transition": "public.brain_transition_obligation",
+    "native_readback": "PostgREST original brain_obligations exact GET",
+    "same_original_script": true,
+    "new_scheduler": false,
+    "new_queue": false,
+    "new_table": false,
+    "new_agent": false,
+    "new_external_dispatch": false,
+    "op_status_preserved": "PLANNED",
+    "obligation_state_preserved": "OPEN"
+  },
+  "prevention": {
+    "source_read_again_after_native_decision_write": true,
+    "preserve_source_revision_owner_sha_correlation_idempotency": true,
+    "preserve_original_obligation_id_and_version": true,
+    "original_native_cas_required": true,
+    "independent_provider_get_after_original_obligation_write": true,
+    "exact_fingerprint_idempotent_replay": true,
+    "never_relabel_decision_as_consumer_verified_implementation": true,
+    "never_write_zero_customer_savings_without_provider_baseline": true,
+    "preexisting_original_daily_job_and_recovery_scope_only": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-owner-decision-20261115.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-owner-decision-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-original-owner-decision-20261115.test.mjs"
+    ],
+    "native_original_production_readback_due": true
+  },
+  "semantic_learning": {
+    "cause": "An accepted source-bound decision in the original Brain operation does not automatically appear in the original obligation consumed by the next agent; the producer must supply a typed independent consumer readback.",
+    "prevention_rule": "The original bounded daily owner-decision routine must take a second canonical source snapshot, match every original decision and obligation by exact owner, source revision, SHA256, operation and idempotency; write same-state original obligation evidence using native version CAS, then read it back independently. Never synthesize terminal agent ACK.",
+    "regression_guard": "tests/brain-innovation-original-owner-decision-20261115.test.mjs",
+    "next_owner": "Original existing engineering and CRO protected implementation agents; original ONE BRAIN/Heartbeat independent outcome and next-decision learning",
+    "effect_proof": "PROTECTED_REQUIRED_CODEQL_MAIN_MERGE_AND_14_OF_14_NATIVE_OBLIGATION_RECEIPTS_DUE"
+  }
+}

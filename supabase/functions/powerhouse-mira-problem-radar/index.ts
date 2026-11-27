@@ -2,11 +2,15 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { authorizePowerhouseScheduler } from '../_shared/powerhouse-scheduler-auth.ts';
 import { evaluateMiraPublicationFreshness } from '../_shared/mira-publication-freshness.mjs';
 import { MIRA_CASES } from '../_shared/mira-entrepreneur-caption.mjs';
-import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource } from '../_shared/personal-observational-source-routing.mjs';
+import { selectCanonicalRadarSourceQueries, classifyObservationalPersonalSource, isPersonalEditorialSourceSafe, canonicalPersonalSourceUrl, reconcileDatedPersonalSourceContext } from '../_shared/personal-observational-source-routing.mjs';
+import {personalFirstPersonSourceViolations,isPersonalPublicationDay} from '../_shared/personal-first-person-story-gate.mjs';
+import { rotateDistinctMiraQueries } from './distinct-source-queries.mjs';
 import { isDataForSeoEmptyNewsTask } from '../_shared/dataforseo-empty-news-task.mjs';
 import { classifyOriginalMiraSourceResult } from '../_shared/mira-radar-source-result.mjs';
+import { classifyMiraRadarHttpStatus } from '../_shared/mira-radar-http-status.mjs';
 import { isSpreadsheetBusinessContext } from '../_shared/mira-business-spreadsheet-context.mjs';
 import { classifyMiraSourceUrl } from '../_shared/mira-source-url-quality.mjs';
+import { classifyMiraBusinessFriction } from './business-friction-signals.mjs';
 
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const domain=(u:string)=>{try{return new URL(u).hostname.replace(/^www\./,'')}catch{return ''}};
@@ -19,9 +23,9 @@ const topic=(text:string)=>{
  if(isSpreadsheetBusinessContext(t)||/verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
  if(/dubbel.*invoe|handmatig.*overzet|crm.*erp|erp.*crm|overtypen/.test(t))return'dubbele-invoer';
  if(/projectmarge|projectbudget|meerwerk/.test(t))return'projectmarge';
- if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
+ if(/groei.*winst|omzet.*marge|krappe marges|marges? onder druk/.test(t))return'groei-zonder-winst';
  if(/personeelstekort|capaciteitsplann|backlog|planning.*vol/.test(t))return'capaciteitsplanning';
- if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling/.test(t))return'debiteuren';
+ if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling|factuurfout|foutieve factu(?:u)?r|onjuiste factu(?:u)?r/.test(t))return'debiteuren';
  if(/late factur|facturatie.*vertraging|facturering.*te laat|werk.*niet gefactureerd/.test(t))return'late-facturering';
  if(/klantconcentratie|klantafhankelijk|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
  if(/klantverlies|churn|klant.*minder bestell/.test(t))return'klantverlies';
@@ -61,22 +65,40 @@ Deno.serve(async(req:Request)=>{
  const dfsUser=String(dfsLogin.data||'').trim(), dfsPass=String(dfsPassword.data||'').trim();
  if(!tavily&&!dfsUser) return json({error:'SEARCH_PROVIDER_UNAVAILABLE'},503);
  const providers:Record<string,number>={};
- const search=async(q:string)=>{
+ const advancedPersonalContextByUrl=new Map<string,string>();
+ // SAME eight source searches: existing 2 personal slots can return 3 contextual chunks.
+ const search=async(q:string,channel:string)=>{
+   const personalDepth=channel==='linkedin_personal';
    if(tavily){
-     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'news',days:MAX_AGE_DAYS,search_depth:'basic',max_results:8,include_answer:false})});
+     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'news',days:MAX_AGE_DAYS,search_depth:personalDepth?'advanced':'basic',...(personalDepth?{chunks_per_source:3}:{}),max_results:8,include_answer:false,...(personalDepth?{include_raw_content:true}:{})})});
      const b:any=await r.json().catch(()=>({}));
      if(r.ok){
        providers.tavily_raw=(providers.tavily_raw||0)+(b.results||[]).length;
-       const rows=(b.results||[]).map((x:any)=>({url:x.url,title:x.title,content:x.content,score:x.score,publishedAt:isoFromProvider(x.published_date||x.published_at)})).filter((x:any)=>withinWindow(x.publishedAt));
+       const rows=(b.results||[]).map((x:any)=>{
+        const sourceUrl=String(x.url||'');
+        const searchContent=String(x.content||'');
+        const rawContent=personalDepth?String(x.raw_content||'').slice(0,4000):'';
+        const contextualContent=rawContent.length>searchContent.length?rawContent:searchContent;
+        const publishedAt=isoFromProvider(x.published_date||x.published_at);
+        const sourceKey=canonicalPersonalSourceUrl(sourceUrl);
+        if(personalDepth&&!publishedAt&&sourceKey&&contextualContent.trim().length>=240){
+          advancedPersonalContextByUrl.set(sourceKey,contextualContent);
+        }
+        return {url:sourceUrl,title:x.title,content:contextualContent,score:x.score,publishedAt};
+       }).filter((x:any)=>withinWindow(x.publishedAt));
        if(rows.length) return {provider:'tavily_news',results:rows};
      } else if(r.status!==432 && r.status!==429) throw new Error('TAVILY_'+r.status);
    }
    if(dfsUser&&dfsPass){
      // Google News live accepts one task per request and ignores time_range, so the age window is enforced here.
      // The request can be 20000 while the task itself failed (e.g. 40101): check both. Task 40101 (Google-side, no results for a niche query) is counted, not an error.
+     // DataForSEO's documented native resolution handles the 2026 Google /goto rollout
+     // inside the SAME paid News task, not an extra search or a guessed publisher URL.
+     // A still-unresolved redirect is rejected by the existing source-quality gate.
+     // https://docs.dataforseo.com/v3/serp/google/news/live/advanced/
      let r:Response, b:any, taskCode=0;
      for(let attempt=0;attempt<1;attempt++){
-       r=await fetch('https://api.dataforseo.com/v3/serp/google/news/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',depth:20}])});
+       r=await fetch('https://api.dataforseo.com/v3/serp/google/news/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',depth:20,resolve_goto_urls:true}])});
        b=await r.json().catch(()=>({}));
        taskCode=Number(b?.tasks?.[0]?.status_code||0);
        if(r.ok&&Number(b?.status_code||0)===20000&&taskCode===20000) break;
@@ -87,7 +109,12 @@ Deno.serve(async(req:Request)=>{
      const rows:any[]=[];
      for(const x of items){
        const flat=x.type==='news_search'?[x]:Array.isArray(x.items)?x.items:[x];
-       for(const y of flat){ if(y?.url) rows.push({url:y.url,title:y.title,content:y.snippet||y.description||'',score:1/Math.max(1,Number(y.rank_absolute||10)),publishedAt:isoFromProvider(y.timestamp||y.date)}); }
+       for(const y of flat){
+         if(!y?.url)continue;
+         const datedSnippet=String(y.snippet||y.description||'');
+         const context=personalDepth?reconcileDatedPersonalSourceContext({url:y.url,snippet:datedSnippet,advancedByUrl:advancedPersonalContextByUrl}):datedSnippet;
+         rows.push({url:y.url,title:y.title,content:context,contentProvider:context!==datedSnippet?'tavily_advanced_exact_url':'dataforseo_news',dateProvider:'dataforseo_news',score:1/Math.max(1,Number(y.rank_absolute||10)),publishedAt:isoFromProvider(y.timestamp||y.date)});
+       }
      }
      return {provider:'dataforseo_news',results:rows.filter(x=>withinWindow(x.publishedAt)).slice(0,8)};
    }
@@ -95,21 +122,69 @@ Deno.serve(async(req:Request)=>{
  };
  const body=await req.json().catch(()=>({}));
  const runDate=String(body?.runDate||new Date(Date.now()+86400000).toISOString().slice(0,10));
- const queries=selectCanonicalRadarSourceQueries(runDate);
+ const queries=rotateDistinctMiraQueries(runDate,selectCanonicalRadarSourceQueries(runDate));
  let stored=0, eligible=0, personalStored=0, personalEligible=0; const seen=new Set<string>(); const errors:string[]=[];
+ // Independent evidence about why a provider result was NOT accepted by the existing
+ // single source consumer. Do not treat provider results as approved sources or posts.
+ let sourceCandidates=0;
+ const sourceRejectCounts:Record<string,number>={};
+ const sourceRejectSamples:Array<{reason:string,query:string,source_domain:string,title:string}>=[];
+ const reject=(reason:string,query:string,url:string,title:string)=>{
+   sourceRejectCounts[reason]=(sourceRejectCounts[reason]||0)+1;
+   if(sourceRejectSamples.length<8)sourceRejectSamples.push({
+     reason,query:query.slice(0,100),source_domain:domain(url),title:title.slice(0,140)
+   });
+ };
+ // Google /goto resolution can add up to 40s per news task. Run only the
+ // SAME original eight queries concurrently (never a ninth call) to keep the
+ // existing 120s scheduler HTTP budget, then consume them deterministically in
+ // the original 6-business/2-personal order to preserve winner/source gates.
+ const sourceResponses=await Promise.all(queries.map(async ({query:q,channel})=>{
+   try{return {result:await search(q,channel),error:null};}
+   catch(e:any){return {result:null,error:String(e?.message||e)};}
+ }));
+ let sourceResponseIndex=0;
  for(const {query:q,channel,topic:personalQueryTopic} of queries){
-  let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}
+  const returned=sourceResponses[sourceResponseIndex++];
+  if(returned.error){errors.push(q+':'+returned.error);continue}
+  const sr:any=returned.result;
   providers[sr.provider]=(providers[sr.provider]||0)+(sr.results||[]).length;
   for(const x of (sr.results||[])){
-   const sourceUrl=String(x.url||'').trim(); if(!sourceUrl||seen.has(sourceUrl)) continue; seen.add(sourceUrl);
+   sourceCandidates++;
+   const sourceUrl=String(x.url||'').trim();
+   if(!sourceUrl){reject('MISSING_PROVIDER_URL',q,'',String(x.title||''));continue}
+   if(seen.has(sourceUrl)){reject('DUPLICATE_IN_SAME_RADAR_RUN',q,sourceUrl,String(x.title||''));continue}
+   seen.add(sourceUrl);
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
-   if(!d||title.length<12||!classifyMiraSourceUrl(sourceUrl).ok) continue;
+   if(!d||title.length<12){reject('INVALID_DOMAIN_OR_SHORT_TITLE',q,sourceUrl,title);continue}
+   if(!classifyMiraSourceUrl(sourceUrl).ok){reject('REJECTED_SOURCE_URL_QUALITY',q,sourceUrl,title);continue}
+   if(channel==='linkedin_personal'&&!isPersonalEditorialSourceSafe({title,excerpt})){
+     reject('PERSONAL_EDITORIAL_SAFETY_REJECTED',q,sourceUrl,title);
+     continue;
+   }
    const personalTopic=channel==='linkedin_personal'?classifyObservationalPersonalSource({topic:personalQueryTopic,title,excerpt}):null;
+   // The two personal source slots must never be reclassified into a Mira business
+   // signal just because a rejected life-context article mentions a PH-P word.
+   if(channel==='linkedin_personal'&&!personalTopic){
+     reject('PERSONAL_SOURCE_NOT_OBSERVATIONAL_CONTEXT',q,sourceUrl,title);
+     continue;
+   }
+   // Original provider text must support the final 150-word factual narrative.
+   const personalSourceTextComplete=!personalTopic || (
+     excerpt.trim().length>=240
+     && !/(?:\.{3}|…)\s*$/u.test(excerpt)
+     && /^https:\/\//i.test(sourceUrl)
+     && !/^https:\/\/google\.com\/goto(?:[/?#]|$)/i.test(sourceUrl)
+   );
    const problemTopic=personalTopic||topic(title+' '+excerpt); const portalProblemId=portalIds[problemTopic]||'';
    // Do not leak unsupported public signals to the Instagram winner or personal publisher.
-   if(!problemTopic||(!personalTopic&&!portalProblemId)) continue;
+   if(!problemTopic||(!personalTopic&&!portalProblemId)){reject('NO_CANONICAL_TOPIC_MATCH',q,sourceUrl,title);continue}
    const all=(title+' '+excerpt).toLowerCase();
-   const complaint=/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
+   const businessEvidence=channel==='instagram_company'
+     ?classifyMiraBusinessFriction({title,excerpt}):null;
+   const complaint=businessEvidence
+     ?businessEvidence.frictionScore
+     :/(klacht|erger|irrit|frustr|gedoe|lastig|waardeloos|probleem|werkt niet|kan niet|steeds|moet ik|waarom)/.test(all)?1:0.55;
    // Recognition is validated differently per lane: a real matched daily-life
    // source should not need entrepreneur vocabulary to reach the SAME 0.72 floor.
    const personal=personalTopic?1:(/(ondernemer|bedrijf|mkb|directie|medewerker|collega|crm|erp|project|offerte|factur|planning|proces|klant)/.test(all)||isSpreadsheetBusinessContext(all))?1:0.6;
@@ -121,7 +196,7 @@ Deno.serve(async(req:Request)=>{
    const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&(Boolean(portalProblemId)||Boolean(personalTopic)),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:problemTopic,source_published_at:publication.publishedAt,observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72&&publication.eligible&&personalSourceTextComplete&&(Boolean(portalProblemId)||Boolean(personalTopic))&&(businessEvidence?.admissible!==false),source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,source_context_provider:x.contentProvider||sr.provider,source_date_provider:x.dateProvider||sr.provider,source_identity_contract:'canonical_https_hostname_path_v1',provider_score:x.score??null,business_friction_contract:businessEvidence?.contract||null,business_source_admissible:businessEvidence?.admissible??null,business_source_admission_reason:businessEvidence?.reason||null,source_publication_date_status:publication.status,source_age_days:publication.ageDays,source_publication_date_evidence:publication.publishedAt?'DATED':'UNVERIFIED',contract:personalTopic?'personal-observational-life-source-v1':'mira-entrepreneur-portal-story-v1',audience:personalTopic?'algemeen-dagelijks-leven':'ondernemers',source_channel:personalTopic?'linkedin_personal':'instagram_company',portal_problem_id:portalProblemId||null,approved_mira_scene:personalTopic?null:MIRA_CASES.find(c=>c.id===portalProblemId)?.scene||null,evidence_kind:'public_signal_not_customer_fact',observational_personal_theme_verified:Boolean(personalTopic),source_text_complete_verified:personalTopic?personalSourceTextComplete:null,first_person_claims_present:false,fictional_mira_scenario:!personalTopic}};
    // Existing source_url is globally unique, but personal and Mira contracts MUST
    // never overwrite each other's previously collected evidence or frozen lineage.
    const prior=await db.from('powerhouse_mira_problem_signals_v1').select('metadata').eq('source_url',sourceUrl).maybeSingle();
@@ -129,10 +204,11 @@ Deno.serve(async(req:Request)=>{
    const priorContract=String(prior.data?.metadata?.contract||'');
    if(priorContract && priorContract!==row.metadata.contract){
      providers.source_contract_collision_skipped=(providers.source_contract_collision_skipped||0)+1;
+     reject('CROSS_CHANNEL_SOURCE_CONTRACT_COLLISION',q,sourceUrl,title);
      continue;
    }
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
-   stored++; if(row.eligible) eligible++;
+   stored++; if(row.eligible) eligible++; else reject(businessEvidence?.admissible===false?'VENDOR_ANNOUNCEMENT_NOT_OBSERVED_OPERATIONAL_FRICTION':!personalSourceTextComplete?'PERSONAL_OBSERVATIONAL_SOURCE_TEXT_INCOMPLETE':'FAILED_SCORE_OR_VERIFIED_DATE_GATE',q,sourceUrl,title);
    if(personalTopic){personalStored++;if(row.eligible)personalEligible++;}
   }
  }
@@ -158,7 +234,8 @@ Deno.serve(async(req:Request)=>{
        problem:'No new eligible independent source-backed Mira winner',
        preventive_action:'Use original dated source search and immutable 90-day source/3-day topic dedupe before media; no original gate bypass.',
        independent_publication_proven:false,
-       no_second_scheduler:true
+       no_second_scheduler:true,
+       source_intake_audit:{provider_candidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples}
      }
    });
    if(observed.error)errors.push('original_brain_source_shortage_writeback_failed');
@@ -167,9 +244,74 @@ Deno.serve(async(req:Request)=>{
  // This is source->recommendation only: no post dispatch or uniqueness bypass.
  const personalRotation=await db.rpc('powerhouse_ensure_personal_source_rotation_v2',{p_date:runDate});
  if(personalRotation.error)errors.push('personal_source_rotation:'+personalRotation.error.message);
+ const personalSourceReady=!personalRotation.error && personalRotation.data?.ok===true;
+ // Public news remains useful context, but is NEVER authorization to
+ // impersonate Arthur. Only original, still-eligible user-fact claims prove
+ // personal story supply. Sunday has no personal publishing obligation.
+ const personalStoryDue=isPersonalPublicationDay(runDate);
+ let genuinePersonalStoryReady=false;
+ if(personalStoryDue){
+   const {data:originalPersonalSources,error:personalFactReadError}=await db
+     .from('powerhouse_content_recommendations')
+     .select('recommendation_id,evidence,status,run_date')
+     .eq('run_date',runDate).eq('target_channel','linkedin_personal')
+     .in('status',['suggested','accepted']).limit(100);
+   if(personalFactReadError)errors.push('original_personal_user_fact_read_failed:'+personalFactReadError.message);
+   else genuinePersonalStoryReady=(originalPersonalSources||[]).some((candidate:any)=>
+     personalFirstPersonSourceViolations(candidate.evidence||{},runDate).length===0);
+   if(!genuinePersonalStoryReady){
+     const occurrenceId='original-personal:first-person-user-fact:'+runDate;
+     const dig=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(occurrenceId));
+     const payloadSha=[...new Uint8Array(dig)].map((v)=>v.toString(16).padStart(2,'0')).join('');
+     const recorded=await db.rpc('brain_observe_failure',{
+       p_occurrence_id:occurrenceId,
+       p_fingerprint:'powerhouse|personal-linkedin|no-verified-user-life-story|'+runDate.replaceAll('-','')+'-v1',
+       p_payload_sha256:payloadSha,
+       p_evidence:{
+         run_date:runDate,original_owner:'powerhouse-content-orchestrator / first-person user-fact source intake',
+         problem:'PERSONAL_USER_EXPERIENCE_NOT_VERIFIED',
+         source_rotation_only_supplied_public_news:personalRotation.data?.ok===true,
+         corrective_action:'Obtain a genuinely new owner-confirmed personal-life moment with canonical user-fact lineage. Never draft first-person from public news or company content.',
+         private_sharing_requires_consent:true,provider_post_proven:false,
+         no_parallel_scheduler:true,one_original_executor:true
+       }
+     });
+     if(recorded.error)errors.push('personal_user_fact_brain_receipt_failed');
+   }
+ }
+ const personalPublishingSourceReady=!personalStoryDue||genuinePersonalStoryReady;
+
+ // Preserve the same original ONE BRAIN and exactly one idempotent daily owner.
+ if(!personalRotation.error&&!personalSourceReady&&personalStoryDue&&!genuinePersonalStoryReady){
+   const occurrenceId='personal-radar:source-supply:'+runDate+':complete-source-not-ready';
+   const digest=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(occurrenceId));
+   const payloadSha=[...new Uint8Array(digest)].map(v=>v.toString(16).padStart(2,'0')).join('');
+   const observed=await db.rpc('brain_observe_failure',{
+     p_occurrence_id:occurrenceId,
+     p_fingerprint:'powerhouse|linkedin|original-personal-source-incomplete|'+runDate.replaceAll('-','')+'-v1',
+     p_payload_sha256:payloadSha,
+     p_evidence:{
+       run_date:runDate,canonical_owner:'powerhouse-mira-problem-radar-v1 / powerhouse_ensure_personal_source_rotation_v2',
+       problem:'NO_COMPLETE_VERIFIED_PERSONAL_OBSERVATION_SOURCE',
+       original_rotation:personalRotation.data||null,
+       corrective_action:'Existing radar must supply unused complete >=240-char nontruncated dated HTTPS source or leave original personal obligation OPEN.',
+       personal_source_ready:false,provider_post_proven:false,no_second_scheduler:true,
+       source_intake_audit:{provider_candidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples}
+     }
+   });
+   if(observed.error)errors.push('personal_source_supply_brain_receipt_failed');
+ }
+ // Existing Mira business/source candidate must not be blocked by the independent
+ // personal first-person source gate. Keep personal fail-closed and BRAIN-reported.
+ const miraBusinessSourceReady=supply.ok&&errors.length===0;
+ const allSourceReady=miraBusinessSourceReady&&personalPublishingSourceReady;
  return json({
-   ok:errors.length===0&&supply.ok,
-   state:supply.ok?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   ok:miraBusinessSourceReady,
+   state:!miraBusinessSourceReady?'SOURCE_RECOVERY_DUE':allSourceReady?'SOURCE_READY':'MIRA_SOURCE_READY_PERSONAL_RECOVERY_DUE',
+   miraBusinessSourceState:miraBusinessSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   allSourceReady,
+   personalSourceState:!personalStoryDue?'NOT_DUE':personalPublishingSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   personalSourceRecovery:personalPublishingSourceReady?null:{owner:'powerhouse-content-orchestrator / original user-fact source intake',reason:'PERSONAL_USER_EXPERIENCE_NOT_VERIFIED',public_news_not_authority:true,sendsAuthorized:false},
    sourceRecovery:supply.ok?null:{
      contract:supply.contract,status:'RECOVERY_DUE',
      reason:supply.reason,code:supply.code,
@@ -177,6 +319,7 @@ Deno.serve(async(req:Request)=>{
      sendsAuthorized:false
    },
    runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
-   materialized:mat.data,personalSourceRotation:personalRotation.data||null,errors
- });
+   sourceIntake:{providerCandidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples},
+   materialized:mat.data,personalSourceRotation:personalRotation.data||null,personalStoryDue,genuinePersonalStoryReady,errors
+ }, classifyMiraRadarHttpStatus({sourceReady:miraBusinessSourceReady,errors}));
 });

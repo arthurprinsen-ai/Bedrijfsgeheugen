@@ -195,6 +195,31 @@ export async function runVisualRegression({ baseUrl, registryPath = 'config/ui-v
   await writeVisualRegressionReport(report, outputDir);
   const failures = summarizeFailures(report);
   if (failures.length) {
+    // The failure report remains authoritative. Log bounded, public-only
+    // CLS entries so the original engineering agent can repair the actual
+    // shifting element instead of weakening clsMax or masking a live defect.
+    const clsEvidence=report.results.filter(item=>
+      item.violations.some(violation=>violation.ruleId==='cls'))
+      .slice(0,5).map(item=>({
+        route:item.route,
+        viewport:item.viewport.name,
+        state:item.state,
+        cls:Number(item.cls?.value||0),
+        threshold:Number(registry.defaults.clsMax),
+        entries:(item.cls?.entries||[]).slice(0,5).map(entry=>({
+          value:entry.value,
+          sources:(entry.sources||[]).slice(0,4).map(source=>({
+            selector:source.selector,
+            previousRect:source.previousRect,
+            currentRect:source.currentRect
+          }))
+        }))
+      }));
+    if(clsEvidence.length)
+      console.error('UI_VISUAL_CLS_DIAGNOSTIC',JSON.stringify({
+        contract:'PUBLIC_VISUAL_CLS_FAILURE_EVIDENCE_V1',
+        failures:clsEvidence
+      }));
     const error = new Error(`UI visual regression failed:\n${failures.join('\n')}`);
     error.report = report;
     throw error;

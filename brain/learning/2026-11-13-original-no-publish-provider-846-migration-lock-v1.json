@@ -1,0 +1,38 @@
+{
+  "fingerprint": "powerhouse|supabase|original-no-publish-provider-846-source-lock-parity|20261113-v1",
+  "compiler": {
+    "failure_class": "ORIGINAL_NO_PUBLISH_PROVIDER_846_APPLIED_SOURCE_LOCK_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The original protected no-publish source provider-hardening migration 20261113140500 was actually applied as Supabase production schema migration 846 while the immutable repository applied-migration lock still had only 845 entries. Prior original #845 entry must never be rewritten or preemptively treated as a future applied version. Original Brain terminal validation requires lock and provider-applied source identities to be exactly equal.",
+  "prevention_rule": "ONLY after independent real Supabase production readback confirms applied version+name and actually installed original service-role source function with original terminal guard, append exact provider version/name as the 846th immutable row. Preserve original 845 source prefix and provider observation time. Never fabricate source lock, edit a prior migration, create a second writer, grant client EXECUTE or treat CI+source ACK as business outcome proof.",
+  "evidence": [
+    "Real production provider read-only select at 2026-11-13T14:39:23.852565Z: applied_count=846, applied name original_no_publish_immutable_provider_receipt_v1, version 20261113140500.",
+    "Production pg_get_functiondef includes separate original+incoming provider success OR fence, explicit true-veto non-downgrade and NO_PUBLISH_SOURCE_DECISION_PROOF_INCOMPLETE. Original anon/authenticated deny, service_role allow and original terminal trigger proven.",
+    "Protected PR #5739 merged c508077165b28720183863d7703cb9f731249d13 after Required, CodeQL, native Supabase preview. Original migration lock before this candidate had 845 records and latest exact version 20261113132000.",
+    "Original 20 blog SKIPPED with no recorded decision_code, 366 original handoffs and seven red assurance loops remain not auto-closed; migration proof != provider post, measurement or applied learning."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-no-publish-provider-846-migration-lock-20261113.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-no-publish-provider-846-migration-lock-20261113.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-no-publish-provider-846-migration-lock-20261113.test.mjs"
+    ]
+  },
+  "safety": {
+    "new_scheduler": false,
+    "new_sql_migration": false,
+    "old_845_prefix_unchanged": true,
+    "provider_readback_first": true,
+    "bypass_terminal_guard": false
+  },
+  "related_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "status": "PROVIDER_APPLIED_CANDIDATE_PENDING_PROTECTED_TERMINAL_READBACK"
+}

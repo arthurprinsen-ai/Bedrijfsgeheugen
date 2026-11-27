@@ -1,0 +1,55 @@
+{
+  "date": "2026-11-14",
+  "fingerprint": "supabase|migration-history|provider-864-lock-863-innovation-recovery|20261114-v1",
+  "status": "CANDIDATE_NOT_LIVE",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "MIGRATION_LOCK_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true
+  },
+  "root_cause": "Protected innovation original-worker recovery PR #5800 merged on main cdb73c78705df28c98a2fc56a98421dff4cabe32 and native provider automatically applied migration version 20261114235900. The immutable GitHub source migration lock still held 863, so native applied 864 had no source-lock consumer ACK. No new schema migration or production replay required.",
+  "prevention": "Same original Supabase release owner independently reads native version/name and preserves source-lock prefix; append only actually applied version/name in protected source-only PR. No predeclaration, duplicate scheduler, worker, queue or producer closure.",
+  "evidence": {
+    "provider_project_ref": "adhjwmvyoixzjtmiroln",
+    "provider_count": 864,
+    "source_lock_before": 863,
+    "unchanged_prefix_count": 863,
+    "extra_native_applied": {
+      "version": "20261114235900",
+      "name": "innovation_original_agent_intake_recovery_v1"
+    },
+    "source_sql": "supabase/migrations/20261114235900_innovation_original_agent_intake_recovery_v1.sql",
+    "protected_original_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5800",
+    "original_main_merge_sha": "cdb73c78705df28c98a2fc56a98421dff4cabe32",
+    "provider_observed_at": "2026-11-14T19:55:53.187901Z",
+    "real_recovery": {
+      "original_intakes": 14,
+      "original_owner_engineering": 13,
+      "original_owner_cro": 1,
+      "operations_planned": 14,
+      "new_recovery_jobs_resolved": 14,
+      "historical_escalations_retained": 14,
+      "original_obligations_open": 14,
+      "consumer_acks_verified": 0,
+      "independent_innovation_effects": 0
+    },
+    "original_runtime_event": "self-improvement-layer:2026-11-14 observed/OWNER_HANDOFF_PENDING/RECOVERY_DUE",
+    "native_cron_active_ids": [
+      52,
+      107,
+      171
+    ],
+    "original_watchdog_replay_extra_jobs": 0,
+    "no_direct_production_ddl": true,
+    "no_external_dispatch": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-lock-provider-20261029.test.mjs"
+    ],
+    "expected": "Native provider 864 and original protected main source lock 864/864, exact immutable 863 prefix, no candidate predeclaration, all original review-required innovation obligations remain OPEN.",
+    "business_effect": "ADMINISTRATIVE_PROVIDER_HISTORY_PARITY_ONLY; no original agent consumer ACK, implementation value, paid order or revenue claim."
+  },
+  "no_parallel_executor": true
+}

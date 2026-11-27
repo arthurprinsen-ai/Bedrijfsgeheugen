@@ -93,3 +93,18 @@ test('CRO 17-event CHECK validation is bounded, non-destructive and separately r
  const prior=read('supabase/migrations/20261029182000_bg_cro_allowlisted_event_types_v1.sql');
  assert.match(prior,/NOT VALID/);
 });
+
+test('CRO original first-party click labels prefer approved conversion codes over misleading BUTTON/A tags',async()=>{
+ const source=read('assets/meting.js');
+ const begin=source.indexOf('function tekstVan(el)'),end=source.indexOf('function onderdeelVan(el)',begin);
+ assert.ok(begin>=0&&end>begin);
+ const implementation=source.slice(begin,end);
+ assert.match(implementation,/getAttribute\('data-bg-meet'\)/);
+ assert.match(implementation,/getAttribute\('data-bg-conversion'\)/);
+ assert.match(implementation,/getAttribute\('data-bg-order-cta'\)/);
+ assert.doesNotMatch(implementation,/innerText|textContent|\.value|outerHTML/);
+ assert.match(implementation,/el\.id\|\|el\.tagName/);
+ const {runInNewContext}=await import('node:vm');
+ const fn=implementation+';tekstVan({getAttribute(n){return n==="data-bg-conversion"?"frisse-blik":null},id:"",tagName:"A"})';
+ assert.equal(runInNewContext(fn),'frisse-blik');
+});

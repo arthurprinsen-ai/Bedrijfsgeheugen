@@ -1,0 +1,56 @@
+{
+  "fingerprint": "powerhouse|email-reply|quoted-outbound-optout-false-suppression-risk|20261121-v1",
+  "obligation_id": "powerhouse|email|reply-visible-text-verified-suppression|20261121-v1",
+  "owner": "powerhouse-email-reply-loop",
+  "detected_at": "2026-11-21",
+  "status": "CANDIDATE_NOT_LIVE",
+  "failure_class": "FALSE_GREEN",
+  "scope": "RUNTIME",
+  "root_cause": "Original Gmail reply classifier performed substring unsubscribe detection on the full messageText which can include the sender's own quoted optout footer. This can convert a real positive reply into an incorrect suppression.",
+  "observed_evidence": {
+    "evidence_type": "SOURCE_ANALYSIS_AND_SYNTHETIC_REPLAY",
+    "production_reply_events_all_time": 4,
+    "observed_false_unsubscribes": 0,
+    "current_sender_brand_footer": "Wil je geen berichten meer van mij? Antwoord met \"afmelden\".",
+    "affected_original_owners": [
+      "supabase/functions/powerhouse-email-reply-loop/index.ts",
+      "supabase/functions/powerhouse-autonomous-outreach/index.ts"
+    ],
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/6095",
+    "no_existing_suppression_removed": true
+  },
+  "prevention": [
+    "Extract only newly recipient-authored visible reply before any classification or outcome mutation; reject quoted-only messages.",
+    "Never classify the original sender's quoted unsubscribe footer or a mention of word 'afmelden' as a recipient request.",
+    "Preserve explicit direct unsubscribes as immediate suppressions and honor historical suppressed contacts.",
+    "Preserve provider message/thread IDs, reply-event exactly-once replay and existing ONE BRAIN -> Powerhouse -> Heartbeat lineage.",
+    "Keep legal marketing email authorization strict; classification repair creates no send permission, new scheduler or bulk emails.",
+    "Measure real provider reply outcomes separately from code deployment and synthetic regression success.",
+    "First split the plain top-post from quoted 'On ... wrote <email>' headers, then parse only allowlisted HTML structural tags; reject incomplete/unknown script or image tags before any classification."
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-email-reply-quoted-footer-20261121.test.mjs",
+      "tests/brain-autonomous-outreach-optout-line-20261027.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-email-reply-quoted-footer-20261121.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-email-reply-quoted-footer-20261121.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-email-reply-quoted-footer-20261121.test.mjs",
+    "tests/brain-autonomous-outreach-optout-line-20261027.test.mjs"
+  ],
+  "prevention_rule": "Only the recipient's newly authored visible text may classify commercial Gmail reply intent. Prior outbound optout footer is a template, never incoming unsubscribe evidence. Empty/quoted-only reply produces no response or suppression. Provider and real contact-response readback are separate from technical deploy truth. CodeQL: never use a generic partial HTML tag stripping regexp for untrusted Gmail payloads; malformed or unknown HTML must hold rather than classify or suppress.",
+  "rollout": "Protected Required + CodeQL -> protected main -> original Supabase GitHub Integration -> 1:1 provider source parity -> subsequent authorized Gmail reply source confirmation. Never claim a false historical unsubscribe without direct evidence."
+}

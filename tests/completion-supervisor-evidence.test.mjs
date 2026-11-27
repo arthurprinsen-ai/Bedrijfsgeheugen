@@ -20,11 +20,23 @@ test('validated BG169 artifact mints exact protected delivery identities', () =>
   assert.ok(evidence.every(item => item.candidateIdentity === CANDIDATE));
 });
 
-test('exact successful production readback mints protected production identity, readback, handoff and learning evidence', () => {
+test('successful production readback proves production observation but not original consumer or learning', () => {
   const readback = { merge_sha:PRODUCTION, status:'LIVE_VERIFIED', routes_ok:true, deployment_required:false, deploy_status:'not_applicable' };
-  const evidence = deriveTrustedCompletionEvidence({ ...base, sourceWorkflow:'Production Release Readback', conclusion:'success', readback, capabilityHandoff:true, learningWriteback:true });
-  assert.deepEqual(evidence.map(item => item.type), ['PROTECTED_DELIVERY','PRODUCTION_IDENTITY','FUNCTIONAL_READBACK','CAPABILITY_HANDOFF','LEARNING_WRITEBACK']);
+  const evidence = deriveTrustedCompletionEvidence({ ...base, sourceWorkflow:'Production Release Readback', conclusion:'success', readback });
+  assert.deepEqual(evidence.map(item => item.type), ['PROTECTED_DELIVERY','PRODUCTION_IDENTITY','FUNCTIONAL_READBACK']);
   assert.ok(evidence.filter(item => ['PROTECTED_DELIVERY','PRODUCTION_IDENTITY'].includes(item.type)).every(item => item.producer === 'PRODUCTION_READBACK' && item.exactProduction === true));
+});
+
+test('boolean release flags cannot impersonate original consumer ACK or learning outcome', () => {
+  const readback={ merge_sha:PRODUCTION,status:'LIVE_VERIFIED',routes_ok:true };
+  for (const fake of [{capabilityHandoff:true},{learningWriteback:true},{capabilityHandoff:true,learningWriteback:true}]) {
+    assert.throws(()=>deriveTrustedCompletionEvidence({
+      ...base,sourceWorkflow:'Production Release Readback',conclusion:'success',readback,...fake,
+    }),/ORIGINAL_CONSUMER_HANDOFF_AND_LEARNING_SOURCE_RECEIPTS_REQUIRED/);
+  }
+  const workflow=readFileSync('.github/workflows/outcome-obligation-sweep.yml','utf8');
+  assert.equal(workflow.includes('--capability-handoff'),false);
+  assert.equal(workflow.includes('--learning-writeback'),false);
 });
 
 test('failed or mismatched source evidence mints nothing and fails closed', () => {

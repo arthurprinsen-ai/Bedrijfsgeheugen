@@ -1,8 +1,8 @@
 import { markCanonicalComponents } from './contracts.mjs';
 
 export const TRUST_BAR_HTML = `<div class="bg-uniform-trust" data-bg-component="trustbar" role="region" aria-label="Onze werkwijze"><div class="bg-uniform-trust-in">
-  <span>✓ Vaste prijs, geen uurtje-factuurtje</span>
-  <span>✓ In twee weken draaiend</span>
+  <span>✓ Duidelijke afspraken vooraf</span>
+  <span>✓ Klein beginnen, resultaat toetsen</span>
   <span>✓ Voor het Nederlandse mkb</span>
 </div></div>`;
 

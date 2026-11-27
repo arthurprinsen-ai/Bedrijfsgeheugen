@@ -1,0 +1,69 @@
+{
+  "fingerprint": "brain|migration|immutable-818-819-823-checkpoints-vs-current-824|20261111-v1",
+  "date": "2026-11-11",
+  "status": "CANDIDATE_NOT_PRODUCTION_TERMINAL_VERIFIED",
+  "owner": "original ONE BRAIN / Supabase provider migration history governance",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "BRAIN_MIGRATION_TEST_HISTORICAL_CHECKPOINT_TREATED_AS_CURRENT_AND_ABSENCE_AS_REQUIRED",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "A new independently provider-applied migration legitimately extended the immutable current lock from 818/819/823 historical checkpoints to 824. Three old Brain tests asserted old total as current, while a fourth test's narrow negative existsSync parser misclassified nested new URL(false) as a required SQL read. No actual provider migration drift: full current Supabase version/name list matched the protected source lock 824/824.",
+  "prevention_rules": [
+    "IMMUTABLE_HISTORICAL_MIGRATION_TESTS_USE_ASOF_PREFIX_NOT_CURRENT_TOTAL",
+    "CURRENT_PROVIDER_VERSION_NAME_IDS_MUST_EQUAL_FULL_CANONICAL_SQL_LOCK",
+    "MIGRATION_NEGATIVE_NESTED_URL_EXISTSSYNC_MUST_NOT_COUNT_AS_POSITIVE_READ",
+    "TRUE_MISSING_SQL_POSITIVE_READ_REMAINS_FAIL_CLOSED",
+    "NO_MIGRATION_REPAIR_OR_SOURCE_LOCK_REWRITE_FROM_HISTORICAL_TEST_FAILURE",
+    "UNRELATED_AI_SUPPLIER_FRESHNESS_MUST_NOT_BE_FAKE_VERIFIED"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-819-migration-lock-parity-20261110.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-commercial-applied-provider-lock-20261110.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-verified-provider-818-history-reconciliation-20261109.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_db_project": "adhjwmvyoixzjtmiroln",
+    "readback_at": "2026-11-11",
+    "provider_rows": 824,
+    "provider_distinct_versions": 824,
+    "source_lock_rows": 824,
+    "exact_version_name_differences": 0,
+    "checkpoint_counts": [
+      {
+        "through": "20261109152945",
+        "count": 818
+      },
+      {
+        "through": "20261110073500",
+        "count": 819
+      },
+      {
+        "through": "20261110134500",
+        "count": 823
+      },
+      {
+        "through": "20261110160055",
+        "count": 824
+      }
+    ],
+    "old_brain_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/42981444211",
+    "still_stale_supplier_claim": "gpt-6-astra: independent 14-day evidence not proven",
+    "live_merge_sha": null
+  },
+  "production_proven": false,
+  "customer_outcome": "NOT_PROVEN",
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-continuity"
+  ]
+}

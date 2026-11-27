@@ -54,6 +54,14 @@ enabled = true
 verify_jwt = true
 entrypoint = "./functions/social-recovery-runner/index.ts"
 
+[functions.powerhouse-relationship-public-research]
+# Original #116 source-only relationship research, never an email sender.
+# Protected-main Supabase GitHub Integration is the only production Edge writer.
+# Public JWT bypass remains guarded by original x-powerhouse-token service auth.
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-relationship-public-research/index.ts"
+
 [functions.powerhouse-mira-problem-radar]
 enabled = true
 verify_jwt = false
@@ -236,6 +244,15 @@ enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-kansenradar/index.ts"
  
+# Original DataForSEO producer: protected-main release parity for the EXISTING
+# scheduler-token-protected Edge function, no new cron, sender or service.
+# Preserve native deployed verify_jwt=false; entrypoint validates the original
+# x-powerhouse-token before service-role provider/cache work.
+[functions.powerhouse-dataforseo-intelligence]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/powerhouse-dataforseo-intelligence/index.ts"
+
 # Original GA4/Data Spine collection via existing pg_cron #42 and bg_roep_functie.
 # Preserve verified production verify_jwt=false: original private
 # x-powerhouse-token (Vault) is checked in Edge BEFORE provider work.
@@ -244,3 +261,10 @@ entrypoint = "./functions/bg-kansenradar/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-analytics-sync-composio/index.ts"
+
+[functions.bg-l]
+# Existing public campaign redirect, provider v10 has verify_jwt=false.
+# Keep native authentication mode; no new route or privilege grant.
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-l/index.ts"

@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-10",
+  "status": "PROTECTED_CANDIDATE_PENDING_EXACT_NETLIFY_READBACK",
+  "fingerprint": "portal|connector-studio|root-route-missing-from-single-authenticated-function|20261110-v1",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4215",
+  "owner": "original portal connector runtime / Netlify protected release",
+  "root_cause": "Production edge-traffic for 9–10 Nov 2026 independently reported 404 on /api/connectors while the canonical portal frontend's GET list and POST draft actions call exactly /api/connectors. Original Netlify connector function registered ONLY /api/connectors/* (wildcard), which does not guarantee the bare root URLPattern. The runtime handler already correctly supports root GET and POST behind the same tenant-authenticated Netlify Identity getUser() gate. This is a missing entrypoint registration, not missing provider data.",
+  "evidence": {
+    "netlify_site": "fd527056-493a-4d8a-8125-d00370104fa3",
+    "source_main_sha": "5bfa40a1e7cf87dc75583571afa8e6f2486e91b7",
+    "observed_404_requests": 8,
+    "period": "2026-11-09T09:20:00Z/2026-11-10T09:30:00Z",
+    "frontend": "assets/js/koppelingen/api.js",
+    "function": "netlify/functions/portal-connectors.mjs",
+    "handler": "platform/api/portal-connectors-handler.mjs"
+  },
+  "fix": "Reuse exact existing authenticated tenant connector function with Netlify-supported custom path array ['/api/connectors','/api/connectors/*']; preserve separate public readiness exclusion and existing tenant identity, suppression, data-sovereignty and safe-test gates. Strengthen existing negative route isolation regressions. No second API handler, SDK or datastore.",
+  "prevention": "Every public portal API root URL invoked from a UI must have a concrete Netlify route registration; include exact-root plus child and readiness-negative tests, protected Netlify deployment and live unauthenticated 401 (never 404/200) readback before marking route live.",
+  "tests": [
+    "tests/brain-production-release-readback-scope.test.mjs",
+    "tests/brain-production-incident-learning.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-incident-learning.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-incident-learning.test.mjs"
+    ],
+    "tenant_authenticated_readback_proven": false,
+    "production_root_routing_proven": false,
+    "external_connector_data_proven": false,
+    "no_parallel_handler": true
+  },
+  "compiler": {
+    "scope": "PORTAL",
+    "failure_class": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "terminal_rule": "Only protected exact-head Required + CodeQL + Netlify deploy corresponding exact commit + public unauthorized GET /api/connectors returns 401 from same function + authenticated tenant A/B listing and draft readback can close the connector root route. Real provider-synced data is a separate obligation."
+}

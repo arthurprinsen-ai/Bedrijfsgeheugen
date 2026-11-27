@@ -33,7 +33,14 @@ test('canonical queue applies NULL-safe CAS and preserves independent provider p
   assert.match(s,/\.eq\('status','GENERATED'\)/);
   assert.match(s,/\.is\('external_id',null\)\.is\('published_at',null\)\.is\('live_proven_at',null\)/);
   assert.match(s,/db\.rpc\('record_content_publication_state'/);
-  assert.match(s,/p_status:'GENERATED'/);
+  // GENERATED remains valid for genuinely generated, never-approved originals.
+  // Already APPROVED originals must retain approval so the ranked-state RPC
+  // actually writes queue idempotency/next_executor evidence and returns a receipt.
+  assert.match(s,/const queueStatus=clean\(o\?\.status\)==='APPROVED'\?'APPROVED':'GENERATED'/);
+  assert.match(s,/p_status:queueStatus/);
+  assert.match(s,/BLOG_ORIGINAL_QUEUE_RECEIPT_MISSING/);
+  assert.match(s,/BLOG_APPROVAL_STATE_REGRESSION/);
+  assert.doesNotMatch(s,/p_status:'GENERATED'/);
   assert.doesNotMatch(s,/p_status:'LIVE_PROVEN'/);
   assert.doesNotMatch(s,/\.eq\('slug',clean\(o\.slug\)\)/);
 });

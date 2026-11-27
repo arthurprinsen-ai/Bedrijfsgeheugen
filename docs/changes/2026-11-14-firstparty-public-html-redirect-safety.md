@@ -1,0 +1,9 @@
+# Veilige publieke bedrijfsbronnen: gecontroleerde doorverwijzing en herprobeerbewijs
+
+Op 14 november 2026 is de originele Powerhouse-relatieonderzoeksfunctie werkend in productie gezet. De eerste acht echte gratis first-party onderzoeksacties vonden nog geen controleerbare persoonsgebonden werkmail op een openbare bron. De database heeft voor alle acht een concrete `NO_EXPLICIT_NAMED_OFFICIAL_MAILTO`-dispositie en veilige herprobeertijd vastgelegd, dus niet heimelijk als nieuwe contactadressen geregistreerd. Alle overige ontvangers blijven in dezelfde gesloten originele lijn (#116 → ONE BRAIN → #138/Heartbeat).
+
+De onderzoeker probeerde alleen vaste bedrijfspagina's onder `/team` en `/contact`; acht acties leverden nul bruikbare HTML-pagina's. Een plausibele oorzaak is een nette HTTPS-doorverwijzing van bedrijfswebsite naar de www-variant of een ander openbaar pad. Dat is nog geen bedrijfsspecifiek bewezen root cause.
+
+De wijziging laat maximaal twee HTTPS-doorverwijzingen toe uitsluitend naar dezelfde bedrijfsdomeinnaam, al dan niet met `www.`; een verwijzing naar HTTP, een ander domein, privé-IP, auth of een andere onveilige bestemming wordt afgewezen. Naast team- en contactpagina wordt de homepage binnen dezelfde bestaande first-party budget onderzocht. 160kB/maximaal 2,5 seconden per verzoek blijft gelden. Ook wordt de daggrens voor idempotente bronacties bepaald in `Europe/Amsterdam` in plaats van UTC.
+
+De nieuwe bronvondsten blijven niet-verzendbare `bg_connecties.extra.public_work_email_candidate`-records tot onafhankelijk adres-/rechtmatigheidsbewijs; geen betaalde vendor-opvraag, Gmail-send, extra scheduler of CRM. Bestaande mislukte bronnen behouden hun oorspronkelijke bewijs en retry. Live werkt pas aantoonbaar als de originele productie-Edge bijgewerkt en de volgende echte bronopvraging en #138-ontvangst onafhankelijk zijn teruggemeten. Niet-gevonden adres is geen verrijkt adres en een bron-ACK is geen consumer-`PROCESSED`-ACK.

@@ -48,6 +48,31 @@ test('Veo 3.1 has the right format controls but is blocked by recorded face-gate
  assert.equal(v.actual_media_verified,false);
  assert.equal(assessMiraProviderBeforeSpend({...wan,model:'veo3-1'}).ok,false);
 });
+test('Wan 3.0 element2video has valid format but the real 24 Nov end-frame rejection blocks further spend',()=>{
+ const model={model:'wan3-0',mode:'element2video',masterReferenceId,
+   params:{resolution:'1080p',duration:8,videoCount:1,aspectRatio:'9:16',audio:false,mode:'standard'}};
+ const evaluated=assessMiraProviderBeforeSpend(model);
+ assert.equal(evaluated.ok,false);
+ assert.equal(evaluated.code,'MIRA_MODEL_FACE_GATE_FAILED_BEFORE');
+ assert.equal(evaluated.approved_for_publish,false);
+ assert.equal(evaluated.actual_media_verified,false);
+ assert.equal(evaluated.best_recorded_face_score,0.920);
+ assert.equal(evaluated.required_face_score,0.940);
+ assert.ok(evaluated.rejected_histories.includes('YIsid7ndXoQRyMBHsGvq'));
+ for(const params of [
+   {...model.params,mode:'prime'},
+   {...model.params,faceEvidenceOverrideScore:0.999},
+   {...model.params,newModelEvidenceId:'invented'},
+   {...model.params,audio:true},
+   {...model.params,videoCount:2}
+ ]) assert.equal(assessMiraProviderBeforeSpend({...model,params}).ok,false);
+ assert.equal(assessMiraProviderBeforeSpend({...model,mode:'text2video'}).ok,false);
+ assert.equal(assessMiraProviderBeforeSpend({...model,masterReferenceId:'not-the-pinned-master'}).ok,false);
+ const knownBad=assessMiraProviderBeforeSpend({...model,model:'veo3-1'});
+ assert.equal(knownBad.ok,false);
+ assert.equal(knownBad.code,'MIRA_MODEL_FACE_GATE_FAILED_BEFORE');
+});
+
 test('original router exposes read-only authorized generation_preflight BEFORE submit_asset',()=>{
  const s=readFileSync(new URL('../supabase/functions/powerhouse-instagram-media-router/index.ts',import.meta.url),'utf8');
  const pre=s.indexOf("if(action==='generation_preflight')");

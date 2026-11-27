@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|completion-backfill|same-identity-boundary-veto-lost-by-representative-selection|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "GROUPED_ORIGINAL_SOURCE_HIDES_EXTERNAL_BOUNDARY",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "candidateFromGroup selected only the first obligation source as its representative. If another original observation had the same identity but a proven complete WAIT_EXTERNAL boundary, the grouped candidate could be presented as safe and activeDispatches might emit a recovery trigger.",
+  "evidence": {
+    "source_path": "tools/outcome-obligation-completion-supervisor-backfill.mjs",
+    "mechanism": "source group representative selection before activeDispatches",
+    "production_side_effect": "NOT_PROVEN",
+    "historical_rows_mutated": false,
+    "regression": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ]
+  },
+  "prevention": {
+    "all_original_source_observations_evaluated": true,
+    "complete_wait_external_veto_wins": true,
+    "observation_order_independent": true,
+    "no_new_wake_for_hard_boundary": true,
+    "preserve_all_source_audit": true,
+    "original_scheduler_and_owner_only": true
+  },
+  "semantic_learning": {
+    "failure": "BOUNDARY_LOST_DURING_SAME_IDENTITY_COALESCING",
+    "cause": "representative-only decision discarded another source's original hard boundary",
+    "prevention_rule": "Before coalescing source observations into a canonical obligation wake, evaluate every source and veto if any carries a proven WAIT_EXTERNAL boundary, independent of ordering.",
+    "regression_guard": "tests/brain-completion-supervisor-backfill.test.mjs",
+    "next_owner": "Original Completion Supervisor Reliability agent / ONE BRAIN #4198",
+    "effect_proof": "PROTECTED_CI_AND_NATURAL_CONSUMER_READBACK_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}

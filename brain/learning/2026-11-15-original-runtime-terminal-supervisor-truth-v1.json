@@ -1,0 +1,59 @@
+{
+  "date": "2026-11-15",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "fingerprint": "powerhouse|one-brain|observation-completed-while-supervisor-unverified|20261115-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "failure_class": "OBSERVATION_COMPLETED_BYPASSES_MATERIAL_SUPERVISOR_VETO",
+    "scope": "BACKEND",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The canonical Outcome Obligation Runtime returned evaluateOutcomeObligation.status=COMPLETED whenever any independent accepted observation (or any exactProduction observation if requested) existed, even when its same-request Completion Supervisor returned success=false and required the source-bound OBLIGATIONS_COMPLETE receipt. Dual incompatible status authorities could yield false terminal claims in original consumer/readback reports.",
+  "evidence": {
+    "source": "tools/outcome-obligation-runtime.mjs",
+    "original_observation": "evaluateOutcomeObligation returns COMPLETED from any accepted independent receipt without checking completion supervisor",
+    "original_consumer": "evaluateCompletion requires 7 trusted identity-bound evidence types and separately source-bound material proof",
+    "native_production_snapshot": "2026-11-15",
+    "provider_project": "adhjwmvyoixzjtmiroln",
+    "original_agentwork_pending": 4958,
+    "original_recoverywork_recovering": 1059,
+    "original_rows_mutated": false,
+    "actual_misreported_external_provider_action": "NOT_PROVEN"
+  },
+  "prevention": {
+    "status_completed_requires_supervisor_success": true,
+    "otherwise_status": "AWAITING_OUTCOME",
+    "explicit_terminalEvidenceDue_flag": true,
+    "original_supervisor_only": true,
+    "same_obligation_and_idempotency_key": true,
+    "preserve_append_only_history": true,
+    "no_automatic_bulkclosure": true,
+    "no_new_scheduler_or_agent": true,
+    "no_external_provider_write": true
+  },
+  "semantic_learning": {
+    "failure": "MULTIPLE_TERMINAL_STATUS_AUTHORITIES",
+    "cause": "observational completion was emitted without checking the independently supervised material proof",
+    "prevention_rule": "At the only existing runtime return boundary, convert observational COMPLETED to AWAITING_OUTCOME when evaluateCompletion.success is false; keep missing source-bound evidence in original SUPERVISOR_DECISION, not as fictitious status mutation.",
+    "regression_guard": "tests/brain-outcome-obligation-runtime.test.mjs",
+    "next_owner": "Original agent-reliability with agent-data-quality / Completion Supervisor Backfill Resume",
+    "effect_proof": "PROTECTED_CI_NATURAL_BACKFILL_AND_INDEPENDENT_SOURCE_READBACK_DUE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-outcome-obligation-runtime.test.mjs",
+      "tests/brain-completion-supervisor-backfill.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-outcome-obligation-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-outcome-obligation-runtime.test.mjs"
+    ]
+  },
+  "release_state": "PROTECTED_CANDIDATE_NOT_YET_LIVE"
+}
