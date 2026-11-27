@@ -261,3 +261,10 @@ entrypoint = "./functions/powerhouse-dataforseo-intelligence/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-analytics-sync-composio/index.ts"
+
+[functions.bg-l]
+# Existing public campaign redirect, provider v10 has verify_jwt=false.
+# Keep native authentication mode; no new route or privilege grant.
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-l/index.ts"
