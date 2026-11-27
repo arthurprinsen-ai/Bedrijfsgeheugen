@@ -1,0 +1,29 @@
+{
+  "fingerprint": "delivery|janitor|brain-queue-stall-early-warning|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Provider run 45652120063 stayed queued without jobs or exact PR identity; native cancellation 409/409 and delete 403 recorded by original Janitor. Existing 24h repair threshold misses early materialization warning.",
+  "prevention_rule": "Existing hourly Janitor observes unidentified unchanged BRAIN dispatch with zero native jobs after 15 min, bounded eight read-only probes, preserve 24h repair gate and original fail-closed flight index. Report missing readback and unprobed count; do not discount risk or authorize dispatch/cancel.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brain-queue-stall-warning-20261127.test.mjs"
+    ],
+    "shadow": {
+      "required": true,
+      "mode": "read-only",
+      "promotion_authority": false
+    }
+  },
+  "evidence": {
+    "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655#issuecomment-7201192009",
+    "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45652120063",
+    "isolated_tests": "4/4 on exact candidate module with unused controller import stub, log_dP9JiVQoQlsi",
+    "model": "1-exp(-(age/15min)^1.5) heuristic advisory, not calibrated probability; no production effectiveness yet",
+    "provider_block_open": true
+  }
+}
