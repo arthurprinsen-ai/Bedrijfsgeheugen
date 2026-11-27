@@ -1,0 +1,27 @@
+{
+  "fingerprint": "commercial|linkedin-company-cta|redirect-source-recovery|20261123-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Original PR #6125 failed admission because mandatory machine metadata was missing. The commercial redirect source change was not safely reconciled with newer main. The next native admission run 45997607046 failed on two unclassified test filenames. Admission subsequently passed but System Map preflight detected the missing bg-l inventory and portal explanation hash. The native shared preflight subsequently detected missing incident protocol on bg-l.",
+  "prevention": "Preserve original candidate and current main, apply the unique original publisher block only, include closure artifacts and executable test paths before protected CI. Require real redirect readback before publication; no duplicate send. Place newly introduced regressions under the existing backend tests/brain- prefix, preserve test bodies and run the existing classifier before CI. Run the canonical inventory generator and check its exact tracked outputs before submission when adding a function. Attach real bounded server-failure recording to the original runtime event store; no public key/body, invalid key no write, report transport failure as unverified.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-cta-redirect-recovery-20261127.test.mjs",
+      "tests/brain-bg-l-incident-20261127.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45171157181/job/137680738503",
+    "isolated_tests": "7/7 static source checks against exact reconciled gate excerpt and full redirect source, Node24.22.1, log_yJ4ZTfr-N-ll. Full candidate CI and runtime effect not yet proven.",
+    "production_readback": null,
+    "second_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45997607046/job/140500837805",
+    "system_map_preflight": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45997953450/job/140502183992",
+    "incident_preflight": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45998256857/job/140503248732",
+    "incident_fixture": "6/6 pass, 2 behavioral incident tests, log_YAo3588Dbvew; provider runtime write/readback not proven"
+  }
+}
