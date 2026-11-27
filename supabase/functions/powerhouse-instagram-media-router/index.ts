@@ -11,6 +11,7 @@ import {writeMediaPreflight,retainMediaProofFailure,recordMediaProofRejection,ch
 import {unchangedMediaPreflightAttempts} from '../_shared/daily-social-recovery-invariants.mjs';
 import {assessMiraOriginalGenerationReceipt,MIRA_ORIGINAL_GENERATION_RECEIPT_CONTRACT} from './pin-generation-history.mjs';
 import {assessMiraFrameVerifierResult} from './frame-verifier-result.mjs';
+import {RECOVERY,frameHash,eligibleRecoveryFrame,signRecoveryFrame,verifyRecoveryFrame} from './exact-recovery-frame-transfer.mjs';
 import {planMiraExactVideoVerificationResume,MIRA_EXACT_VERIFICATION_RESUME,recordMiraExactVerificationFailure} from './exact-video-verification-resume.mjs';
 
 const clean=(v:unknown)=>String(v??'').trim();
@@ -42,13 +43,22 @@ async function observeSourceAutoProofFailure(db:any,runDate:string,historyId:str
 }
 
 Deno.serve(async req=>{
- if(req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
+ const frameRead=req.method==='GET';
+ if(!frameRead&&req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
  const base=Deno.env.get('SUPABASE_URL')||'',key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')||'';
  if(!base||!key)return json({ok:false,error:'CONFIG'},500);
  const db=createClient(base,key,{auth:{persistSession:false,autoRefreshToken:false}});
  const token=clean((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data);
- if(!token||req.headers.get('x-powerhouse-token')!==token)return json({ok:false,error:'UNAUTHORIZED'},401);
- let input:any={};try{input=await req.json()}catch{}
+ let input:any={};
+ if(frameRead){
+  const u=new URL(req.url),position=clean(u.searchParams.get('frame')),expires=Number(u.searchParams.get('expires')),signature=clean(u.searchParams.get('sig'));
+  if(u.searchParams.size!==3||!await verifyRecoveryFrame(token,position,expires,signature))return json({ok:false,error:'UNAUTHORIZED'},401);
+  input={action:'read_recovery_frame',runDate:RECOVERY.date,postType:'reel',position};
+ }else{
+  if(!token||req.headers.get('x-powerhouse-token')!==token)return json({ok:false,error:'UNAUTHORIZED'},401);
+  try{input=await req.json()}catch{}
+  if(input.action==='read_recovery_frame')return json({ok:false,error:'GET_CAPABILITY_REQUIRED'},405);
+ }
  const runDate=clean(input.runDate||input.publicationDate)||today(),action=clean(input.action)||'preflight';
  const [{data:ob},{data:art},{data:rec},{data:ints},{data:job},{data:winner},{data:lineage}]=await Promise.all([
   db.from('content_publication_obligations').select('*').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle(),
@@ -65,6 +75,7 @@ Deno.serve(async req=>{
  const active=new Set((ints||[]).filter((x:any)=>['actief','active','connected','ready'].includes(clean(x.status).toLowerCase())).map((x:any)=>clean(x.integration).toLowerCase()));
  const ready=(p:string)=>p==='openart'?(active.has('openart')||active.has('openart_mcp')):active.has(p);
  const historical=!!clean(ob?.external_id);
+ if((frameRead||action==='issue_recovery_frame')&&(historical||ob?.live_proven_at||job?.republish_forbidden!==false||job?.status!=='WAITING_PROOF'||runDate!==today()))return json({ok:false,error:'RECOVERY_FRAME_SCOPE_REQUIRED'},422);
 
  if(historical&&(ob?.status==='BLOCKED'||ob?.evidence?.republish_forbidden===true)){
   const sameReplacement=job?.status==='REPLACEMENT_REQUIRED'&&clean(job?.replacement_of_external_id)===clean(ob.external_id);
@@ -92,6 +103,32 @@ Deno.serve(async req=>{
  const miraBusinessProblem=winnerContract.problem||null;
  const expectedScene=sourceLed?winnerContract.scene:miraBusinessProblem.scene;
  const expectedProblemId=sourceLed?null:miraBusinessProblem.id;
+
+ // Original, exact same-day input-only frame recovery. A temporary capability
+ // exposes only one verified JPEG, never the scheduler credential or a post.
+ if(action==='issue_recovery_frame'||action==='read_recovery_frame'){
+  const position=clean(input.position),hash=frameHash(position);
+  if(!hash||runDate!==RECOVERY.date||postType!=='reel')return json({ok:false,error:'RECOVERY_FRAME_SCOPE_REQUIRED'},422);
+  const proofResult=await db.from('powerhouse_media_proof_evidence_v1').select('fingerprint,publication_date,provider,provider_status,exact_media_sha256,proof_lineage').eq('fingerprint','instagram-vision-proof:'+runDate+':'+hash).maybeSingle();
+  if(proofResult.error)return json({ok:false,error:'RECOVERY_FRAME_PROOF_UNAVAILABLE'},503);
+  if(!eligibleRecoveryFrame({runDate,localDate:today(),job,ob,winner,lineage,resolved:winnerContract,position,proof:proofResult.data}))return json({ok:false,error:'RECOVERY_FRAME_PROOF_REQUIRED'},422);
+  if(action==='issue_recovery_frame'){
+   const expires=Math.floor(Date.now()/1000)+300;
+   const sig=await signRecoveryFrame(token,position,expires);
+   const url=new URL(base+'/functions/v1/powerhouse-instagram-media-router');
+   url.searchParams.set('frame',position);url.searchParams.set('expires',String(expires));url.searchParams.set('sig',sig);
+   return json({ok:true,reference_candidate_only:true,approved_for_publish:false,authorized_to_spend:false,frame_sha256:hash,expires_at:new Date(expires*1000).toISOString(),url:url.toString(),source_history:RECOVERY.history});
+  }
+  const fx=await fetch(FRAME_EXTRACTOR,{method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},body:JSON.stringify({mediaUrl:RECOVERY.url,duration:8})});
+  const body=await fx.json().catch(()=>({}));
+  if(!fx.ok||body?.ok!==true||body.native_dimensions_verified!==true||body.native_width!==1080||body.native_height!==1920||!Array.isArray(body.frames))return json({ok:false,error:'RECOVERY_FRAME_EXTRACT_UNAVAILABLE'},503);
+  const selected=body.frames.find((x:any)=>x.position===position&&x.mediaType==='image/jpeg');
+  if(!selected||typeof selected.imageBase64!=='string'||selected.imageBase64.length>2000000)return json({ok:false,error:'RECOVERY_FRAME_BYTES_INVALID'},422);
+  let bytes:Uint8Array;try{bytes=Uint8Array.from(atob(selected.imageBase64),c=>c.charCodeAt(0))}catch{return json({ok:false,error:'RECOVERY_FRAME_BYTES_INVALID'},422)}
+  if(await digest(bytes)!==hash)return json({ok:false,error:'RECOVERY_FRAME_HASH_MISMATCH'},422);
+  return new Response(bytes as any,{status:200,headers:{'content-type':'image/jpeg','cache-control':'private, no-store','x-content-type-options':'nosniff','referrer-policy':'no-referrer'}});
+ }
+
 
  // Persist the actual provider-created async history immediately after the
  // ORIGINAL atomic job claim and OpenArt submission. Previous task runs could
@@ -172,7 +209,9 @@ Deno.serve(async req=>{
  // touch a post. This must be called by the ORIGINAL Mira producer before any
  // OpenArt generate_video request. Reject the observed Wan 2.7 config even
  // though OpenArt calls it '1080p': its real output was NOT native 9:16.
- if(action==='generation_preflight'){
+ if(action==='generation_preflight')return await handleGenerationPreflight();
+ if(action==='claim_generation')return await handleGenerationPreflight();
+ async function handleGenerationPreflight(){
    // A quality-rejected PH-P library winner may request a format preflight
    // ONLY when the frozen source, problem, exact scene, original rejected
    // provider history, budget and unique unsent claim all match.
@@ -195,6 +234,36 @@ Deno.serve(async req=>{
    const derivedInput=input.derivedReference
      ?await checkDerivedProducerInput(input.derivedReference):null;
    const eligible=config.ok&&(derivedInput===null||derivedInput.ok===true);
+   // Same authenticated original router, exact job-scoped atomic claim.
+   // No provider side effect occurs here. A lost claim response must be
+   // reconciled by the original producer, never interpreted as spend authority.
+   if(action==='claim_generation'){
+     const quote=Number(input.quoted_credits);
+     const worker='powerhouse-daily-publisher-openart-original';
+     if(!eligible||!initialFrozenLibrary||runDate!==today()||
+       clean(input.job_id)!==clean(job?.id)||clean(input.worker)!==worker||
+       clean(input.openart_project_id)!=='rUF5anXD47gVokckYjf9'||
+       clean(input.openart_reference_id)!==MIRA_MASTER_REFERENCE_ID||
+       clean(input.openart_reference_url)!==MIRA_MASTER_REFERENCE_URL||
+       !ready('openart')||clean(config.code)!=='PROVIDER_MODEL_CONTROLS_PRESENT_TEST_ONLY'||
+       !Number.isFinite(quote)||quote<=0||quote>640||
+       clean(ob?.status)!=='BLOCKED'||clean(ob?.last_error)!=='MEDIA_ASSET_REQUIRED'||
+       ob?.evidence?.veto?.active===true||ob?.evidence?.mira_source_veto_active===true||
+       clean(lineage?.state)!=='WINNER_FROZEN')
+       return json({ok:false,error:'ORIGINAL_EXACT_CLAIM_PREFLIGHT_REQUIRED',ready:false},422);
+     const claimed=await db.rpc('powerhouse_claim_instagram_media_job_v1',{
+       p_worker:worker,p_now:new Date().toISOString(),p_job_id:job.id
+     });
+     if(claimed.error)return json({ok:false,error:'ORIGINAL_EXACT_CLAIM_RPC_FAILED',ready:false},503);
+     if(claimed.data?.state!=='CLAIMED'||clean(claimed.data?.job_id)!==clean(job.id)||
+        clean(claimed.data?.publication_date)!==runDate)
+       return json({ok:false,error:'ORIGINAL_EXACT_CLAIM_NOT_ACQUIRED',ready:false,
+         next_action:'Reread same job and provider history; never generate without new exclusive claim.'},409);
+     return json({ok:true,state:'CLAIMED',runDate,job_id:job.id,worker,
+       source_recommendation_id:winnerContract.winner_recommendation_id,
+       quoted_credits:quote,approved_for_publish:false,actual_media_verified:false,
+       next_action:'Original connected OpenArt producer only: submit one candidate and immediately pin its real history.'});
+   }
    return json({ok:eligible,runDate,postType,source_recommendation_id:winnerContract.winner_recommendation_id,
      original_master_id:clean(job?.asset_manifest?.openart_reference_id),
      provider_generation_preflight:config,derived_reference_proof:derivedInput,

@@ -1,0 +1,22 @@
+{
+  "fingerprint": "commercial|linkedin-company-cta|redirect-source-recovery|20261123-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Original PR #6125 failed admission because mandatory machine metadata was missing. The commercial redirect source change was not safely reconciled with newer main.",
+  "prevention": "Preserve original candidate and current main, apply the unique original publisher block only, include closure artifacts and executable test paths before protected CI. Require real redirect readback before publication; no duplicate send.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-cta-redirect-recovery-20261127.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45171157181/job/137680738503",
+    "isolated_tests": "7/7 static source checks against exact reconciled gate excerpt and full redirect source, Node24.22.1, log_yJ4ZTfr-N-ll. Full candidate CI and runtime effect not yet proven.",
+    "production_readback": null
+  }
+}

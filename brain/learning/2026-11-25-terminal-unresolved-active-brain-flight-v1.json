@@ -1,0 +1,73 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "powerhouse|terminal|unresolved-active-brain-flight|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "original obligation terminal closure",
+  "root_cause": "Complete run inventory could be mistaken for exact candidate absence while an active dispatch title remains unresolved; missing identity fields and case-variant candidate titles can also escape both exact match and unresolved detection. A time-bounded main/workflow_dispatch provider inventory with contradictory nonempty metadata cannot prove completeness. Native concurrency is PR-number scoped; active different-head flights of the same PR were classified as unrelated.",
+  "prevention_rule": "Do not dispatch or infer exact verification when active main-indexed BRAIN run identity is unresolved; hold missing event/branch metadata and case-variant titles without inferring identity; reject any contradictory event/branch in a scoped history, even alongside an exact title. Completed generic relevant rows also deny dispatch until independently attributable identity; time-bound the inventory using native PR creation and preserve existing skew. Hold any known active or nonterminal different-head flight of the same PR without granting dispatch authority.",
+  "compiler": {
+    "failure_class": "ACTIVE_FLIGHT_IDENTITY_UNPROVEN",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-unresolved-active-flight-20261125.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-unresolved-active-flight-20261125.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-unresolved-active-flight-20261125.test.mjs"
+    ]
+  },
+  "evidence": {
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7168274422",
+    "native_run": 45652120063,
+    "production_verified": false,
+    "review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#issuecomment-7169609102",
+    "isolated_classifier_test_groups": 12,
+    "native_node_test_count": 21,
+    "native_node_test_pass": 21,
+    "scoped_inventory_review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#issuecomment-7170483706",
+    "verified_candidate_sha": "7258bef10835a7fb7afccaba0c360d5dcd856659",
+    "required_ci_run": 45679572956,
+    "codeql_run": 45679572583,
+    "protected_ci_verified": true,
+    "provider_flight_identity_verified": false,
+    "terminal_identity_candidate": {
+      "source_blob": "28bce41d100dc81225575078a378c70e42d85e07",
+      "test_blob": "366275a884a53d82a29b37d6e02e85ccec7b354c",
+      "tests_pass": 29,
+      "consumer_compatibility": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#issuecomment-7175668294",
+      "native_window_since": "2026-11-25T16:33:24Z",
+      "native_rows": 3,
+      "native_run_ids": [
+        45702049193,
+        45692067123,
+        45673427596
+      ],
+      "classification": "NO_FLIGHT_PROVEN_FULL_HISTORY",
+      "dispatch_authorized": false,
+      "production_verified": false
+    },
+    "same_pr_concurrency_candidate": {
+      "base": "f5294f32dc0afdebf4ae2f601dedd3a40237a452",
+      "source_blob": "6f5ed1f4824dec34d6f743271376547a2b708ebd",
+      "test_blob": "1d2b42b376f6b4f6e22592caf273b6ba98acd453",
+      "baseline_pass": 32,
+      "baseline_fail": 9,
+      "local_node_version": "22.16.0",
+      "tests_pass": 41,
+      "tests_fail": 0,
+      "cli_exit": 78,
+      "production_verified": false,
+      "dispatch_authorized": false,
+      "review": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6195#pullrequestreview-6065557963"
+    }
+  }
+}

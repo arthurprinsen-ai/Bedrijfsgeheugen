@@ -12,7 +12,13 @@ test('existing security operations workflow observes both sites frequently witho
   assert.match(workflow,/Independent recurring production HTTP security proof/);
   assert.match(workflow,/run: node tools\/security\/verify-public-security-headers\.mjs/);
   assert.match(workflow,/github\.event\.schedule == '17 5 \* \* 1'/,'full weekly recovery/DR closure must not fail the 4x/day header monitor');
-  assert.equal((workflow.match(/- cron:/g)||[]).length,2);
+  assert.equal((workflow.match(/- cron:/g)||[]).length,3);
+  assert.match(workflow,/cron: '7,22,37,52 \* \* \* \*'/);
+  const contract=workflow.split('  contract:')[1].split('  guardian:')[0];
+  const guardian=workflow.split('  guardian:')[1];
+  assert.ok(contract.includes("github.event.schedule == '47 1,7,13,19 * * *'"),'retain the four-daily independent header proof');
+  assert.ok(guardian.includes("github.event.schedule == '7,22,37,52 * * * *'"),'guardian only owns its original 15-minute scheduled ticks');
+  assert.ok(!guardian.includes("github.event.schedule == '47 1,7,13,19 * * *'"),'do not duplicate guardian requests on the legacy cadence');
 });
 test('four monitored production boundaries include the legacy PW root sharing localStorage',()=>{
   assert.deepEqual(TARGETS.map(t=>t.name),[

@@ -136,19 +136,26 @@ jobs:
           for guard_check in 1 2; do
             # GitHub caps filtered Actions searches at 1000. The index rejects
             # cap saturation, missing/duplicate pages and pre-cutoff identities.
-            fetched=false
-            for provider_attempt in 1 2; do
-              if list="$(gh api --paginate --slurp "$query")"; then
-                fetched=true; break
+            history_proven=false
+            history_error=BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED
+            for provider_attempt in 1 2 3; do
+              if list="$(timeout 30s gh api --paginate --slurp "$query")"; then
+                if selected="$(printf '%s' "$list" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title" --since "$since")"; then
+                  history_proven=true; break
+                fi
+                history_error=BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN
+                index_failure="$(jq -r '.status // "UNKNOWN"' <<<"$selected" 2>/dev/null || printf UNKNOWN)"
+                case "$index_failure" in
+                  PROVIDER_HISTORY_INCOMPLETE|PROVIDER_PAGINATION_INVALID|PROVIDER_HISTORY_PARSE_ERROR) ;;
+                  *) echo "::error::$history_error:$index_failure"; exit 78 ;;
+                esac
+              else
+                history_error=BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED
               fi
-              [ "$provider_attempt" = 2 ] || sleep 2
+              echo "::warning::BRAIN_HISTORY_READ_RETRY:attempt=$provider_attempt:reason=$history_error" >&2
+              [ "$provider_attempt" = 3 ] || sleep "$((provider_attempt * 2))"
             done
-            if [ "$fetched" != true ]; then
-              echo "::error::BRAIN_FLIGHT_PROVIDER_READ_UNVERIFIED"; exit 78
-            fi
-            if ! selected="$(printf '%s' "$list" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title" --since "$since")"; then
-              echo "::error::BRAIN_FLIGHT_HISTORY_BOUNDED_UNPROVEN"; exit 78
-            fi
+            [ "$history_proven" = true ] || { echo "::error::$history_error"; exit 78; }
             status="$(jq -r '.status // "INVALID"' <<<"$selected")"
             if [ "$status" = EXISTING_FLIGHT ]; then
               prior_id="$(jq -r '.run_id' <<<"$selected")"
@@ -200,12 +207,26 @@ jobs:
               if [ "$workflow" = "unified-brain-delivery.yml" ]; then
                 # Classify every native provider page and refuse partial,
                 # conflicting, >1000, or stale BRAIN flight history.
-                if ! payload="$(gh api --paginate --slurp "$query")"; then
-                  echo "::error::TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED"; exit 78
-                fi
-                if ! indexed="$(printf '%s' "$payload" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title" --since "$since")"; then
-                  echo "::error::TERMINAL_BRAIN_HISTORY_INCOMPLETE"; exit 78
-                fi
+                history_proven=false
+                history_error=TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED
+                for provider_attempt in 1 2 3; do
+                  if payload="$(timeout 30s gh api --paginate --slurp "$query")"; then
+                    if indexed="$(printf '%s' "$payload" | node tools/delivery/brain-verification-flight-index.mjs --title "$expected_title" --since "$since")"; then
+                      history_proven=true; break
+                    fi
+                    history_error=TERMINAL_BRAIN_HISTORY_INCOMPLETE
+                    index_failure="$(jq -r '.status // "UNKNOWN"' <<<"$indexed" 2>/dev/null || printf UNKNOWN)"
+                    case "$index_failure" in
+                      PROVIDER_HISTORY_INCOMPLETE|PROVIDER_PAGINATION_INVALID|PROVIDER_HISTORY_PARSE_ERROR) ;;
+                      *) echo "::error::$history_error:$index_failure"; exit 78 ;;
+                    esac
+                  else
+                    history_error=TERMINAL_BRAIN_PROVIDER_HISTORY_UNVERIFIED
+                  fi
+                  echo "::warning::BRAIN_HISTORY_READ_RETRY:attempt=$provider_attempt:reason=$history_error" >&2
+                  [ "$provider_attempt" = 3 ] || sleep "$((provider_attempt * 2))"
+                done
+                [ "$history_proven" = true ] || { echo "::error::$history_error"; exit 78; }
                 indexed_state="$(jq -r '.status // "UNKNOWN"' <<<"$indexed")"
                 if [ "$indexed_state" = EXISTING_FLIGHT ]; then
                   indexed_id="$(jq -r '.run_id // empty' <<<"$indexed")"

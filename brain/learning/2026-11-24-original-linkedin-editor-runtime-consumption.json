@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|linkedin|original-editor-runtime-consumption|20261124-v1",
+  "status": "CANDIDATE",
+  "owner": "original-powerhouse-editorial-and-social-analytics",
+  "root_cause": "Merged shared strategy existed outside actual editor invocation; read-only diagnostic output cannot prove consumption.",
+  "fix": "Call merged shared decision module in original editor after existing arbitration and pass bounded source-led text brief. Bind exact draft body hash without claiming applied learning.",
+  "prevention_rule": "No competing experiment or unsupported media, no new provider permission, no cross-channel source or fabricated story. Exact source and proof history; draft context is not provider readback or learned.",
+  "compiler": {
+    "failure_class": "ORIGINAL_LINKEDIN_EDITOR_RUNTIME_CONSUMPTION_MISSING",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-linkedin-editor-runtime-consumption-20261124.test.mjs",
+      "tests/brain-content-feedback-context-20261028.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-linkedin-editor-runtime-consumption-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-linkedin-editor-runtime-consumption-20261124.test.mjs"
+    ]
+  },
+  "evidence": {
+    "parent": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6150",
+    "analysis": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45436206273",
+    "old_mira": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/4265",
+    "runtime": "CANDIDATE_NOT_DEPLOYED",
+    "feedback_regression": {
+      "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45439440799",
+      "job": 138606482680,
+      "failure": "feedback must survive artifact write",
+      "cause": "new evidence key preceded existing stable feedback field",
+      "correction": "preserve exact existing feedback-first artifact write contract; append new decision evidence after it; no test modification"
+    }
+  },
+  "terminal_rule": "Protected deploy and independent exact editor runtime readback; next original eligible artifact receipt, independently verified provider publication and measurement, actual subsequent learning. No false closure."
+}

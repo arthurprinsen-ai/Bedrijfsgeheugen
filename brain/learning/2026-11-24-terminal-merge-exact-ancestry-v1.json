@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "delivery|terminal-merge|exact-ancestry-evidence|20261124-v1",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "MAIN_ANCESTRY_UNVERIFIED",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Number(null), Number(''), and other coercions can appear as zero behind main; missing exact SHA fields can leave the merge guard admitted with no candidate identity. Reproduced by executable regression on protected source; no actual unsafe historical merge asserted.",
+  "evidence": {
+    "issue": 4661,
+    "source_base": "210ec4c3a1136979a9cc392fb0e37b87d798da40",
+    "baseline_regression": "Expected false, actual true",
+    "isolated_tests": "15/15 passed with corrected guard",
+    "protected_admission_failure": {
+      "run": 45470360730,
+      "reason": "LEARNING_EVALUATION_TEST_PATH_INVALID"
+    }
+  },
+  "fix": "Require valid exact candidate/validated/main SHA and a nonnegative integer behindBy equal to zero at terminal merge. Keep admission epoch semantics and existing native protection unchanged.",
+  "prevention": [
+    "Never infer zero behind from missing provider data.",
+    "No drift budget reset, unscoped synchronization, or claim of global promotion arbitration."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-merge-exact-ancestry-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-merge-exact-ancestry-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-merge-exact-ancestry-v1.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-terminal-merge-exact-ancestry-v1.test.mjs",
+    "tests/github-delivery-state-machine.test.mjs",
+    "tests/brain-terminal-writer-prewrite-cas-v1.test.mjs"
+  ],
+  "status": "CANDIDATE_PENDING_PROTECTED_CI"
+}

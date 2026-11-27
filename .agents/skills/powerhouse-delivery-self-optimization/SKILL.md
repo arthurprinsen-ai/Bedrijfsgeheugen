@@ -981,3 +981,8 @@ Verplichte herstel- en preventieregel: voeg alleen de aantoonbaar pure bestaande
 
 De originele test `tests/brain-portal-safe-browser-module-vendor-20261121.test.mjs` bevat replay van deze werkelijk ontbrekende classifier, hash-/manifest-proof en negatieve interne tools-import; compiler-learning `brain/learning/2026-11-21-portal-release-status-public-browser-whitelist-v1.json`. Incident #4198. Alleen beschermd gemergede code, onafhankelijk Netlify productie READY en daadwerkelijke beide viewports met `data-bg-portal-app-boot=ready` mogen als HERSTEL bewezen gelden. De 14 bestaande innovatieverplichtingen blijven OPEN totdat Heartbeat bedrijfsuitkomsten onafhankelijk aantoont.
 
+
+
+## Bounded original BRAIN provider-history retry — 2026-11-24
+
+- On interrupted GitHub paginated JSON reads or transient incomplete/invalid history, the original terminal owner retries at most three complete read-only requests, each bounded to 30 seconds, with 2/4-second backoff. This applies to both the original dispatch guard and final exact-head gate. Never dispatch from partial or untrusted history; cap, invalid identity and invalid cutoff remain immediate fail-closed. Reuse existing exact verification; no extra writer or scheduler. Retain the historical error, require full original history and successful source-bound exact BRAIN before LIVE_BEWEZEN.

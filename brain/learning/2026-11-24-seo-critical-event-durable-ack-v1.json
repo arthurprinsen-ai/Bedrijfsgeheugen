@@ -1,0 +1,41 @@
+{
+  "type": "PUBLIC_SOFTWARE_LEARNING_CONTRACT",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "seo|critical-event-durable-ack|20261124-v1",
+  "status": "SOURCE_CANDIDATE_NOT_LIVE",
+  "failure_class": "UNCONFIRMED_CRITICAL_EVENT_QUEUE_DELIVERY",
+  "root_cause": "Generated first-party CTA producer returned after sendBeacon acceptance without checking durable queue acknowledgement; this is a reliability gap, not proven sole cause of missing conversions.",
+  "observed_evidence": {
+    "kind": "PUBLIC_SOFTWARE_SOURCE_CONTRACT_ONLY",
+    "source_paths": [
+      "tools/seo-order-engine/measurement.mjs",
+      "netlify/functions/growth-event.mjs"
+    ],
+    "private_payloads": "NONE"
+  },
+  "fix": "Critical CTA/form intent uses fetch keepalive and checks exact event_id and durable queue ACK; one same-body retry if consent remains granted; no permanent 4xx/429 retry.",
+  "prevention_rule": "Run generated-browser behavioral tests; durable queue ACK is not DataHub persistence or lead/order. Keep one producer and original protected writer.",
+  "tests": [
+    "tests/brain-seo-cro-public-form-coverage-v1.test.mjs",
+    "tests/seo-order-measurement.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_EVENT_COVERAGE_GAP",
+    "scope": "PUBLIC_WEBSITE_EVENT_CONTRACT",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-cro-public-form-coverage-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-cro-public-form-coverage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-cro-public-form-coverage-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Exact candidate Required/BRAIN/CodeQL, protected merge, Netlify production matching SHA, public browser event and private first-party provider persistence readback. This public record is generic source-level software documentation, not a private Brain export."
+}

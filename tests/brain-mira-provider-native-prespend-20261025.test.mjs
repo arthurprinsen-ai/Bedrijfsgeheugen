@@ -48,28 +48,26 @@ test('Veo 3.1 has the right format controls but is blocked by recorded face-gate
  assert.equal(v.actual_media_verified,false);
  assert.equal(assessMiraProviderBeforeSpend({...wan,model:'veo3-1'}).ok,false);
 });
-test('Wan 3.0 element2video is eligible only for one bounded original-master quality test, never for publication',()=>{
+test('Wan 3.0 element2video has valid format but the real 24 Nov end-frame rejection blocks further spend',()=>{
  const model={model:'wan3-0',mode:'element2video',masterReferenceId,
    params:{resolution:'1080p',duration:8,videoCount:1,aspectRatio:'9:16',audio:false,mode:'standard'}};
  const evaluated=assessMiraProviderBeforeSpend(model);
- assert.equal(evaluated.ok,true);
- assert.equal(evaluated.code,'PROVIDER_MODEL_CONTROLS_PRESENT_TEST_ONLY');
+ assert.equal(evaluated.ok,false);
+ assert.equal(evaluated.code,'MIRA_MODEL_FACE_GATE_FAILED_BEFORE');
  assert.equal(evaluated.approved_for_publish,false);
  assert.equal(evaluated.actual_media_verified,false);
- assert.equal(evaluated.one_exclusive_source_locked_candidate_only,true);
- assert.equal(evaluated.max_quote_credits,640);
- assert.equal(evaluated.requires_verified_original_project_and_credit_quote,true);
- for(const invalid of [
-   {...model,params:{...model.params,audio:true}},
-   {...model,params:{...model.params,aspectRatio:'16:9'}},
-   {...model,params:{...model.params,resolution:'720p'}},
-   {...model,params:{...model.params,videoCount:2}},
-   {...model,params:{...model.params,mode:'prime'}},
-   {...model,mode:'text2video'},
-   {...model,masterReferenceId:'not-the-pinned-master'}
- ]){
-   assert.equal(assessMiraProviderBeforeSpend(invalid).ok,false);
- }
+ assert.equal(evaluated.best_recorded_face_score,0.920);
+ assert.equal(evaluated.required_face_score,0.940);
+ assert.ok(evaluated.rejected_histories.includes('YIsid7ndXoQRyMBHsGvq'));
+ for(const params of [
+   {...model.params,mode:'prime'},
+   {...model.params,faceEvidenceOverrideScore:0.999},
+   {...model.params,newModelEvidenceId:'invented'},
+   {...model.params,audio:true},
+   {...model.params,videoCount:2}
+ ]) assert.equal(assessMiraProviderBeforeSpend({...model,params}).ok,false);
+ assert.equal(assessMiraProviderBeforeSpend({...model,mode:'text2video'}).ok,false);
+ assert.equal(assessMiraProviderBeforeSpend({...model,masterReferenceId:'not-the-pinned-master'}).ok,false);
  const knownBad=assessMiraProviderBeforeSpend({...model,model:'veo3-1'});
  assert.equal(knownBad.ok,false);
  assert.equal(knownBad.code,'MIRA_MODEL_FACE_GATE_FAILED_BEFORE');

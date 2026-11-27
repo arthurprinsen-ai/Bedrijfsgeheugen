@@ -6,7 +6,7 @@ import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-r
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem} from '../_shared/mira-entrepreneur-caption.mjs';
-import {validateResolvedMiraCaptionForDelivery} from '../_shared/mira-frozen-winner-contract.mjs';
+import {validateResolvedMiraCaptionForDelivery,resolveMiraFrozenWinner,MIRA_GROWTH_EXPERIMENT_CONTRACT} from '../_shared/mira-frozen-winner-contract.mjs';
 import {ORIGINAL_HISTORICAL_READBACK_BATCH,originalHistoricalProviderReference,originalProviderReadbackResult,originalProviderReadbackErrorCode} from '../_shared/original-skipped-provider-readback-selection.mjs';
 
 // Protected-main promotion bootstrap: social provider-truth contract v1.
@@ -1629,16 +1629,40 @@ Deno.serve(async (req) => {
     if(row.channel==='instagram_company') {
       const captionEvidence=art.generation_evidence||{};
       const proof=captionEvidence.instagram_media_proof||{};
-      const verdict=validateResolvedMiraCaptionForDelivery(runDate,art.body,captionEvidence);
       const masterFaceOk=miraFaceProofValid(proof.instagram_visual||{},'reel');
       const sourceLed=captionEvidence.mira_source_led===true;
-      const selected=sourceLed?null:selectMiraProblem(runDate);
+      const frozenLibrary=captionEvidence.mira_frozen_library_contract===MIRA_GROWTH_EXPERIMENT_CONTRACT;
       const [{data:dailyWinner,error:winnerError},{data:dailyLineage,error:lineageError}]=await Promise.all([
         db.from('powerhouse_instagram_daily_winners_v1').select('recommendation_id').eq('run_date',runDate).maybeSingle(),
-        db.from('powerhouse_mira_problem_lineage_v1').select('winner_recommendation_id,source_evidence,state').eq('run_date',runDate).maybeSingle()
+        db.from('powerhouse_mira_problem_lineage_v1').select('run_date,winner_recommendation_id,source_evidence,state').eq('run_date',runDate).maybeSingle()
       ]);
+      let independentResolved:any=null,independentMediaOk=false;
+      if(frozenLibrary&&!sourceLed&&dailyWinner&&!winnerError&&!lineageError){
+        const [{data:rec,error:recError},{data:mediaJob,error:mediaError}]=await Promise.all([
+          db.from('powerhouse_content_recommendations').select('recommendation_id,status,evidence').eq('recommendation_id',dailyWinner.recommendation_id).maybeSingle(),
+          db.from('powerhouse_instagram_media_jobs_v1').select('status,asset_manifest,proof_manifest,republish_forbidden').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
+        ]);
+        if(!recError&&!mediaError&&rec&&mediaJob){
+          independentResolved=resolveMiraFrozenWinner(runDate,{winner:{...dailyWinner,run_date:runDate},lineage:dailyLineage,recommendation:rec,job:mediaJob});
+          const stored=mediaJob.proof_manifest||{};
+          independentMediaOk=mediaJob.status==='PROOF_VERIFIED'&&mediaJob.republish_forbidden!==true
+            &&stored.exact_final_media_proven===true&&miraFaceProofValid(stored.instagram_visual||{},'reel')
+            &&stored.temporal_proof?.verified===true
+            &&/^[a-f0-9]{64}$/.test(clean(stored.final_media_sha256))
+            &&clean(stored.final_media_sha256)===clean(proof.final_media_sha256)
+            &&clean(stored.media_url)===clean(proof.media_url)
+            &&clean(stored.mira_winner_recommendation_id)===clean(dailyWinner.recommendation_id)
+            &&clean(stored.mira_source_hash)===clean(captionEvidence.mira_source_hash)
+            &&clean(stored.mira_business_problem_id)===clean(independentResolved?.problem?.id)
+            &&clean(stored.mira_entrepreneur_scene)===clean(independentResolved?.problem?.scene)
+            &&!!clean(stored.mira_generation_source?.openart_history_id)
+            &&clean(stored.mira_generation_source?.openart_history_id)===clean(proof.mira_generation_source?.openart_history_id);
+        }
+      }
+      const selected=sourceLed?null:frozenLibrary?independentResolved?.problem:selectMiraProblem(runDate);
+      const verdict=validateResolvedMiraCaptionForDelivery(runDate,art.body,captionEvidence,independentResolved);
       const sourceConsistent=!winnerError&&!lineageError
-        &&(!sourceLed||(!!dailyWinner&&!!dailyLineage
+        &&(!(sourceLed||frozenLibrary)||(!!dailyWinner&&!!dailyLineage
           &&clean(dailyWinner.recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
           &&clean(dailyLineage.winner_recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
           &&clean(dailyLineage.source_evidence?.source_hash)===clean(captionEvidence.mira_source_hash)
@@ -1650,6 +1674,11 @@ Deno.serve(async (req) => {
           &&clean(proof.mira_entrepreneur_scene)===clean(captionEvidence.mira_entrepreneur_scene)
           &&clean(proof.media_url)===clean(captionEvidence.mira_source_asset_url)
           &&clean(proof.mira_generation_source?.openart_history_id)===clean(captionEvidence.mira_openart_history_id))
+        : frozenLibrary ? (independentResolved?.kind==='approved_frozen_library_mapping'&&independentResolved.ok===true
+           &&independentMediaOk&&clean(proof.mira_business_problem_id)===clean(selected?.id)
+           &&clean(proof.mira_entrepreneur_scene)===clean(selected?.scene)
+           &&clean(proof.mira_winner_recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
+           &&clean(proof.mira_source_hash)===clean(captionEvidence.mira_source_hash))
         : (clean(proof.mira_business_problem_id)===clean(selected?.id)
            &&clean(proof.mira_entrepreneur_scene)===clean(selected?.scene)
            &&!dailyWinner);

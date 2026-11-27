@@ -1,0 +1,53 @@
+{
+  "fingerprint": "security|original-agent|exact-coach-alias|20261124-v1",
+  "obligation_id": "security-guardian-continuous-20261120:exact-coach-alias-20261124",
+  "owner": "existing agent-security / original Security Operations / ONE BRAIN",
+  "compiler": {
+    "failure_class": "SECURITY_GUARDIAN_APPROVED_ALIAS_FALSE_WARNING",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-guardian-continuous-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-guardian-continuous-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-guardian-continuous-20261120.test.mjs"
+    ],
+    "live_validation": "Protected merge plus original signed heartbeat readback and exact CoachOne destination with strict headers. Other warnings stay OPEN.",
+    "mode_note": "Mock redirects alone are not live proof."
+  },
+  "root_cause": "Original Guardian manual HEAD flagged all redirects; approved CoachOne #22 migrated retired field route to a single unified app.",
+  "source_evidence": {
+    "coach_pr": 22,
+    "coach_merge": "15d8cecfe7d51ad16e471d64c3f946bd6fcfc540",
+    "netlify_deploy": "6b05dee9da718ab27344ff0e",
+    "guardian_run": 45466337154,
+    "alias_status": 301,
+    "destination_status": 200,
+    "legacy_noindex": true
+  },
+  "correction": {
+    "exact_source": true,
+    "exact_destination": true,
+    "one_hop": true,
+    "strict_destination_headers": true,
+    "arbitrary_redirects_denied": true
+  },
+  "prevention": [
+    "Assert exact route contract in original build and monitor.",
+    "Keep unrelated security warnings visible.",
+    "Never auto-close incident on redirect acceptance alone."
+  ],
+  "tests": [
+    "tests/brain-security-guardian-continuous-20261120.test.mjs"
+  ],
+  "status": "PR_CANDIDATE_NOT_LIVE",
+  "independent_live_proven": false,
+  "next_action": "Protected CI, BRAIN, original Guardian readback."
+}

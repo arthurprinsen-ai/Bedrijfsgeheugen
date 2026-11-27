@@ -1,0 +1,50 @@
+{
+  "fingerprint": "delivery|exclusive-writer|fixture-transcript-provenance-required|20261125-v1",
+  "canonical_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661",
+  "date": "2026-11-25",
+  "status": "CANDIDATE",
+  "owner": "existing Powerhouse delivery controller owner",
+  "root_cause": "A syntactically complete ruleset proposal or fixture transcript can be mistaken for native provider enforcement even when actor provenance, signed receipts, exact rule binding, denied-ref immutability, positive App merge and rollback were not independently observed.",
+  "correction": "Adopt pure fail-closed reviewers for the exact ruleset proposal and transcript shape. Every result keeps providerEnforced, mutationAuthority and activationAuthorized false; production identity and repository are rejected.",
+  "prevention_rule": "Never activate an exclusive writer from serialized proposal or transcript shape. Require native fixture repository identity, dedicated App identity, distinct signed attempt receipts, unchanged refs for every denial, exact-head green positive merge, baseline restoration, protected delivery and separately reviewed issuer/consumer authorization.",
+  "evidence": {
+    "reviewed_source_commit": "37a259ffebf3e521b7a6275d887a83f2de07977e",
+    "review_proof_comment": 7173459701,
+    "native_negative_proof_comment": 7173749578,
+    "tests": [
+      "tests/brain-writer-reviewed-exclusive-ruleset.test.mjs",
+      "tests/brain-writer-reviewed-exclusive-fixture.test.mjs"
+    ],
+    "limits": [
+      "No token issuance",
+      "No positive App merge",
+      "No production ruleset or permission change",
+      "Issuer and consumer remain unproven"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SERIALIZED_FIXTURE_EVIDENCE_MISTAKEN_FOR_NATIVE_AUTHORITY",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-writer-reviewed-exclusive-ruleset.test.mjs",
+      "tests/brain-writer-reviewed-exclusive-fixture.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-writer-reviewed-exclusive-fixture.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-writer-reviewed-exclusive-ruleset.test.mjs"
+    ]
+  },
+  "activation": {
+    "authorized": false,
+    "provider_enforced": false,
+    "mutation_authority": false,
+    "next_gate": "separately reviewed native fixture-only issuer and consumer with exact signed receipts"
+  }
+}

@@ -3560,8 +3560,36 @@
     {
       "version": "20261122162147",
       "name": "portal_connector_real_afas_source_readback_v1"
+    },
+    {
+      "version": "20261123211950",
+      "name": "growth_atomic_cutover_fence_v1"
+    },
+    {
+      "version": "20261123214500",
+      "name": "personal_founder_perspective_v2_materializer_alignment"
+    },
+    {
+      "version": "20261124063700",
+      "name": "mira_original_exact_job_claim_v1"
+    },
+    {
+      "version": "20261124063737",
+      "name": "original_social_loop_comparable_provider_windows"
+    },
+    {
+      "version": "20261124063938",
+      "name": "original_social_analyst_variant_rotation_and_proof"
+    },
+    {
+      "version": "20261124064216",
+      "name": "original_personal_artifact_evidence_lossless_normalization"
+    },
+    {
+      "version": "20261124064859",
+      "name": "original_personal_observational_analyst"
     }
   ],
   "project_ref": "adhjwmvyoixzjtmiroln",
-  "captured_at": "2026-11-22T20:22:00.443Z"
+  "captured_at": "2026-11-24T15:35:21.421985Z"
 }

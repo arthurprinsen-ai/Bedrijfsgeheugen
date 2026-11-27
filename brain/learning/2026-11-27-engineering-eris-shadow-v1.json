@@ -1,0 +1,29 @@
+{
+  "fingerprint": "delivery|engineering|eris-shadow-risk-wave-planning|20261127-v1",
+  "obligation_id": "delivery|engineering|eris-shadow-risk-wave-planning|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Existing critical-depth ordering considers number of dependent waves but not heterogeneous duration or retry penalty. A synthetic four-package fixture demonstrates unnecessary predicted makespan when short and long independent tasks are paired arbitrarily. Actual production impact is not yet measured.",
+  "prevention": "Compare incumbent with bounded risk-duration and weighted-critical-path shadow schedules using the same conflict and capacity invariants. Reject incomplete, duplicate or stale prediction identities; retain incumbent unless neither nominal nor conservative scenario worsens and conservative scenario improves. No authorization or dispatch may derive from shadow output. Before any real adoption, bind predictions to independently observed lineage, test temporal holdout calibration and measure actual first-attempt success and lead time.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-parallel-engineering-fabric.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": "22/22 Node24.22.1 exact module, tests and policy in isolated sandbox, duration 237.665093ms; log_99SXOYgvSQgS",
+    "fixture": {
+      "baseline_seconds": 200,
+      "challenger_seconds": 101,
+      "kind": "synthetic scenario surrogate not real duration"
+    },
+    "production_readback": null,
+    "model_training": "NOT_PERFORMED",
+    "release_authority": false
+  }
+}

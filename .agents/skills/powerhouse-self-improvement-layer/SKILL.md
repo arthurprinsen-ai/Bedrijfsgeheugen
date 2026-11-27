@@ -5,6 +5,10 @@ description: Use for every Powerhouse task involving autonomous learning, self-i
 
 # Powerhouse Self-Improvement Layer
 
+## AUTO_SHIP_AFTER_GREEN — alle agents/chats/skills (10 november 2026)
+
+**Standaardbevoegdheid:** nooit aan Arthur vragen of een normale, omkeerbare en volledig door verplichte checks, reviews en security/kwaliteit/consent goedgekeurde wijziging live mag. De originele aangewezen delivery-owner promoveert deze automatisch via de bestaande beschermde PR → merge → canonieke productie-keten en sluit uitsluitend bij onafhankelijke exact-SHA/providereffect/functionele readback en ontvangende ONE BRAIN/Heartbeat/Portaal-ACK. Checks groen ≠ live; merge ≠ live; READY ≠ functionele uitkomst. Fouten blijven open met automatische herstelactie via dezelfde lineage. Respecteer expliciete menselijke autorisatie, kostengoedkeuring en onomkeerbare risico's, zonder bypass of tweede uitvoerder. Zonder rechten geen schijn-livegang. Regressie `tests/brain-groen-draaiboek-20261108.test.mjs`.
+
 ## P0 15 november 2026 — herhaalde uitvoering krijgt eigen oorspronkelijke evidencecyclus
 
 De **oorspronkelijke** `public.powerhouse_advance_sales_action_v1(uuid)` genereerde slechts één `execution` per `powerhouse_sales_actions.action_id`. De originele writer leest `powerhouse_ensure_sales_cycle_v1` op een stabiele action source-ref en de al bestaande `powerhouse_append_cycle_event_v2` verbiedt terecht terugwaarts in één monotone cyclus gaan. Wanneer een eerder correct uitgevoerde `research_enrichment`-actie later terug op `waiting` en opnieuw op `done` komt, verandert het **actuele** `executed_at` zonder een nieuw immutable `execution`-record. Exacte geauthenticeerde immutable productieproof van 15 november 2026 (https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/43728192839) wees dit aan: 164 historische events, 163 actueel uitvoerings-tijd-gelijke matches en één echte *missing attempt*, niet een falende admin-rol. Onafhankelijke SQL vond vier acties die later zijn uitgevoerd dan hun vorige writer-event.
