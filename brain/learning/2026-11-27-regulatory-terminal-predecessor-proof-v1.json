@@ -11,7 +11,8 @@
   "prevention_rule": "Only an open exact one-path regulatory source-observation predecessor with matching obligation, direct merged successor, live writer identity, complete file count and identical original/successor/current main blobs is provably non-migration. Keep predecessor open and lease intact until separate owner-authorized terminal closure; all other open predecessors and migration proof requirements remain fail-closed.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-regulatory-terminal-predecessor-proof-20261127.test.mjs"
+      "tests/brain-regulatory-terminal-predecessor-proof-20261127.test.mjs",
+      "tests/brain-terminal-migration-identity-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-regulatory-terminal-predecessor-proof-20261127.test.mjs"
@@ -26,6 +27,8 @@
     "source_blob": "462a0399dd33cdfdbb0f7ee15610d448d221832b",
     "predecessor": 6201,
     "successor": 6213,
-    "proof_status": "Isolated pure helper checks only; protected CI and live closure pending."
+    "proof_status": "Isolated pure helper checks only; protected CI and live closure pending.",
+    "preflight_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46039711545/job/140644202212",
+    "preflight_root_cause": "Existing exact import assertion must include additional proof helper while preserving same heredoc and one canonical import."
   }
 }
