@@ -2,7 +2,7 @@
   "status": "CANDIDATE_TEST_ONLY",
   "fingerprint": "maintenance-dependency-pr-5594",
   "root_cause": "Admission lacks same-candidate closure evidence and static locale test hardcodes prior parse5 pin.",
-  "prevention_rule": "Require exact declared dependency pins, preserve locale invariants and independently validate installed dependency behavior before protected release. Follow canonical build entry and per-route completeness semantics, not stale implementation strings.",
+  "prevention_rule": "Require exact declared dependency pins, preserve locale invariants and independently validate installed dependency behavior before protected release. Follow canonical build entry and per-route completeness semantics, not stale implementation strings. Canonical brain-prefixed replay imports the original test without skips; current approved OpenAI transport must retain strict response shape, immutable tokens and store:false.",
   "compiler": {
     "failure_class": "RECOVERY",
     "scope": "delivery",
@@ -11,10 +11,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/site-shell-static-locales.test.mjs"
+      "tests/brain-production-deps-5594-locale-replay.test.mjs"
     ],
     "shadow": [
-      "tests/site-shell-static-locales.test.mjs"
+      "tests/brain-production-deps-5594-locale-replay.test.mjs"
     ],
     "invariants": [
       "Existing locale route and translation fallback assertions retained; exact pins checked. Source assertion cannot prove dependency runtime compatibility."
@@ -24,6 +24,7 @@
     "failed_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46018686183",
     "production_verified": false,
     "installed_dependency_compatibility_verified": false,
-    "static_locale_initial_replay": "0/2: stale build command and per-route metadata assertions"
+    "static_locale_initial_replay": "0/2: stale build command and per-route metadata assertions",
+    "learning_gate_failure": "LEARNING_EVALUATION_TEST_PATH_INVALID at run 46020762634"
   }
 }
