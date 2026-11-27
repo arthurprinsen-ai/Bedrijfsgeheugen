@@ -4,5 +4,27 @@
   "sourceBase": "59a2836ad53a97ce7239fd6b3b90a56c17335cad",
   "localTests": 10,
   "runtimeVerified": false,
-  "mergeAuthorized": false
+  "mergeAuthorized": false,
+  "fingerprint": "delivery|meris-shadow|20261127-v1",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-meris-shadow-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-meris-shadow-20261127.test.mjs"
+    ],
+    "invariants": [
+      "No merge authorization, stale or unverified evidence deferred, overlapping paths separated; deterministic fixture tests only."
+    ]
+  },
+  "evidence": {
+    "failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46011037898",
+    "repair": "Specify required learning compiler and executable shadow evaluation paths. Original owner adoption, production effect and calibration unproven."
+  }
 }
