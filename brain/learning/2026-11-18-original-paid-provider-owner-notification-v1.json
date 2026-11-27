@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|owner-notification|provider-outage-detected-but-not-delivered|20261118-v1",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_owner": "powerhouse-original-result-guardian-v1, existing #171",
+  "evidence": {
+    "tavily": "Native original provider request 35277 HTTP500 TAVILY_432, news latest 2026-11-08",
+    "openai": "Original personal decision 429 insufficient_quota, no provider URN",
+    "ownerActionEscalation": "Original ONE BRAIN content-closed-loop 2026-11-18 OWNER_ACTION_REQUIRED with notification_sent=false",
+    "task": "Original Powerhouse Metingen & Verzending 2026-11-18 task failed"
+  },
+  "root_cause": "Provider failures persisted but no independently delivered user notification; cron SQL success is not provider success. Paid account does not guarantee API credits or plan allowance.",
+  "repair": {
+    "migration": "20261118174500_original_provider_owner_notification_receipt_v3",
+    "same_original_guardian": true,
+    "source_observations_only": true,
+    "owner_notification_sent": false,
+    "existing_task_fallback": "Powerhouse Daily Publisher",
+    "new_scheduler": false,
+    "new_sender": false
+  },
+  "verification": "Protected original Required+CodeQL, native matching migration/version, original #171 next watchdog readback and exact daily owner-action event; then verified existing task message. Never claim sent, credits restored or green from a database record.",
+  "status": "CANDIDATE_UNTIL_NATIVE_AND_TASK_PROOF",
+  "compiler": {
+    "failure_class": "OWNER_ALERT_DELIVERY_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-provider-owner-notification-20261118.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-provider-owner-notification-20261118.test.mjs"
+    ]
+  },
+  "prevention_rule": "Original provider result must create one source-backed owner action, which remains notification_sent=false until a separate existing-task receipt proves user-visible notification. Paid subscription is not API request budget; exact provider readback and original writer authority must be preserved."
+}

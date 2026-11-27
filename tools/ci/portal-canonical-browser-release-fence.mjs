@@ -4,6 +4,41 @@ const CANONICAL='https://www.bedrijfsgeheugen.nl';
 const SHA=/^[0-9a-f]{40}$/;
 const DEPLOY=/^[0-9a-f]{24}$/;
 
+
+/**
+ * Read CURRENT live Netlify identity without creating a second deployment client
+ * or widening secret access to the original read-only innovation workflow.
+ * Two independently fetched release manifests must match the exact same
+ * SHA + immutable deploy ID. The caller must STILL verify GitHub merge ancestry.
+ * This proves only that code is served, never customer impact or Brain completion.
+ */
+export async function readCanonicalProductionReleaseIdentity({fetchImpl=globalThis.fetch}={}){
+ if(typeof fetchImpl!=='function') throw Error('INNOVATION_PUBLIC_RELEASE_FETCH_INVALID');
+ let response;
+ try{
+  response=await fetchImpl(CANONICAL+'/release.json?innovation_release_readback=1',{
+   headers:{'cache-control':'no-cache',accept:'application/json'},
+   cache:'no-store',redirect:'error',signal:AbortSignal.timeout(15000)
+  });
+ }catch{return null;}
+ if(!response?.ok||response.status!==200||
+    (response.url&&!response.url.startsWith(CANONICAL+'/release.json?')))return null;
+ let release;
+ try{release=await response.json();}catch{return null;}
+ const commit=release?.commit_ref,deployId=release?.deploy_id;
+ if(release?.contract!=='BRAIN-DELIVERY-v2'||release.context!=='production'||
+    !SHA.test(String(commit??''))||!DEPLOY.test(String(deployId??'')))return null;
+ try{
+  await verifyPortalCanonicalBrowserRelease({
+   immutableUrl:'https://'+deployId+'--bedrijfsgeheugen.netlify.app',
+   expectedSha:commit,expectedDeployId:deployId,fetchImpl
+  });
+ }catch{return null;}
+ return Object.freeze({state:'ready',context:'production',commit_ref:commit,
+  id:deployId,manifest_source:'CANONICAL_AND_IMMUTABLE_HTTP_RELEASE_MANIFESTS',
+  independent_release_manifests:2});
+}
+
 export async function verifyPortalCanonicalBrowserRelease({
  immutableUrl,expectedSha,expectedDeployId,fetchImpl=globalThis.fetch
 }={}){

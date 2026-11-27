@@ -1,12 +1,12 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations,personalLastMilePublicationViolations} from '../_shared/personal-first-person-story-gate.mjs';
+import {personalFirstPersonCopyViolations,personalFirstPersonSourceViolations,personalLastMilePublicationViolations,personalFounderDecisionSourceScopeViolations,isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact} from '../_shared/personal-first-person-story-gate.mjs';
 import {canRecoverExpiredCompanyClaim,canRecoverExpiredPersonalClaim} from '../_shared/social-publish-claim-recovery.mjs';
 import {linkedinDispatchReadiness} from '../_shared/social-publication-schedule.mjs';
 import {isTransientPrePublishReviewFailure} from '../_shared/social-prepublish-retry.mjs';
 import { createClient } from 'npm:@supabase/supabase-js@2';
 import {MIRA_MASTER_REFERENCE_ID,MIRA_MASTER_REFERENCE_URL,miraFaceProofValid} from '../_shared/mira-canonical-face.mjs';
 import {selectMiraProblem} from '../_shared/mira-entrepreneur-caption.mjs';
-import {validateResolvedMiraCaptionForDelivery} from '../_shared/mira-frozen-winner-contract.mjs';
+import {validateResolvedMiraCaptionForDelivery,resolveMiraFrozenWinner,MIRA_GROWTH_EXPERIMENT_CONTRACT} from '../_shared/mira-frozen-winner-contract.mjs';
 import {ORIGINAL_HISTORICAL_READBACK_BATCH,originalHistoricalProviderReference,originalProviderReadbackResult,originalProviderReadbackErrorCode} from '../_shared/original-skipped-provider-readback-selection.mjs';
 
 // Protected-main promotion bootstrap: social provider-truth contract v1.
@@ -484,6 +484,13 @@ async function publishLinkedInPersonalViaComposio(db:any,art:any,approval:any){
   // This cannot be bypassed by a stale PASS, prior capability or accepted news.
   const commentary=clean(art.body);
   const exactFinalHash=await digest(commentary);
+  // Ensure THIS original publisher deployment carries the latest source-bound founder
+  // guard. The older production bundle preceded the protected reviewer update.
+  // A successful reviewer or consumed capability never permits unsupported
+  // first-person customer/team claims; veto before any provider POST.
+  const unverifiedFounderClaims=personalFounderDecisionSourceScopeViolations(commentary,approval?.evidence||{});
+  if(unverifiedFounderClaims.length)
+    throw new Error('PERSONAL_FOUNDER_SOURCE_SCOPE_LAST_MILE_VETO:'+unverifiedFounderClaims.join(','));
   const lastMileViolations=personalLastMilePublicationViolations({
     text:commentary,evidence:approval?.evidence,runDate:approval?.runDate,
     review:approval?.review,expectedTextHash:approval?.expectedTextHash,
@@ -598,20 +605,46 @@ async function reserveGlobalUniquePublication(db:any,runDate:string,channel:stri
 async function ensureLinkedInCompanyMeasuredLink(db:any,runDate:string,art:any){
   const compact=runDate.replaceAll('-','');
   const key='li-company-'+compact;
-  const destination='https://www.bedrijfsgeheugen.nl/frisse-blik';
+  // The campaign destination must agree with what the public copy promises.
+  const copy=clean(art?.body)+' '+clean(art?.cta);
+  const freeAction=/checklist|zelfscan|gratis\s+(?:scan|check|test|werkboek)/i.test(copy);
+  const destination='https://www.bedrijfsgeheugen.nl'+(freeAction?'/zelfscan':'/frisse-blik');
   const campaignKey='powerhouse-'+runDate+'-linkedin-company';
   const measuredUrl='https://www.bedrijfsgeheugen.nl/g/'+key;
   const {error:linkError}=await db.from('bg_campaign_links').upsert({
     key,destination,campaign_key:campaignKey,status:'active',updated_at:new Date().toISOString()
   },{onConflict:'key'});
   if(linkError)throw new Error('LINKEDIN_COMPANY_MEASURED_LINK_UPSERT:'+linkError.message);
+  // A DB row is not proof that the published link can actually be opened.
+  let finalUrl:string='';
+  let finalStatus:number=0;
+  try{
+    const response=await fetch(measuredUrl,{method:'GET',redirect:'follow',signal:AbortSignal.timeout(12000)});
+    finalUrl=response.url;
+    finalStatus=response.status;
+    const final=new URL(finalUrl);
+    const expected=new URL(destination);
+    if(!response.ok || final.protocol!=='https:' ||
+       !['www.bedrijfsgeheugen.nl','bedrijfsgeheugen.nl'].includes(final.hostname) ||
+       final.pathname.replace(/\/+$/,'')!==expected.pathname.replace(/\/+$/,'')){
+      throw new Error('HTTP_'+response.status+'_FINAL_'+final.pathname);
+    }
+  }catch(e){
+    throw new Error('LINKEDIN_COMPANY_CTA_END_TO_END_FAILED:'+String(e).slice(0,240));
+  }
   let body=clean(art?.body);
   if(!body.includes('/g/')){
-    const cta='Benieuwd waar in jouw organisatie tijd, risico of besluitvorming blijft hangen? Doe de Frisse blik:\n'+measuredUrl;
+    const cta=freeAction
+      ? 'Ontdek gratis waar kennis en opvolging in jouw bedrijf weglekken:\n'+measuredUrl
+      : 'Benieuwd waar in jouw organisatie tijd, risico of besluitvorming blijft hangen? Doe de Frisse blik:\n'+measuredUrl;
     const hashIndex=body.search(/\n#[A-Za-z0-9_]/);
     body=hashIndex>=0 ? body.slice(0,hashIndex)+'\n\n'+cta+'\n'+body.slice(hashIndex+1) : body+'\n\n'+cta;
   }
-  const generationEvidence={...(art?.generation_evidence||{}),measurable_link:measuredUrl,campaign_key:campaignKey,link_destination:destination,measurable_link_verified:true};
+  const generationEvidence={
+    ...(art?.generation_evidence||{}),measurable_link:measuredUrl,campaign_key:campaignKey,
+    link_destination:destination,measurable_link_verified:true,link_final_url:finalUrl,
+    link_final_status:finalStatus,link_verified_at:new Date().toISOString()
+  };
   if(body!==clean(art?.body) || clean(art?.generation_evidence?.measurable_link)!==measuredUrl){
     const {error:updateError}=await db.from('powerhouse_content_artifacts').update({
       body,generation_evidence:generationEvidence,updated_at:new Date().toISOString()
@@ -1520,6 +1553,10 @@ Deno.serve(async (req) => {
     if(row.channel==='linkedin_personal') {
       const editorialEvidence=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{};
       const violations=personalEditorialViolations(art.body,editorialEvidence);
+      // Redeploy original sender with the exact user-approved giveaway gate;
+      // missing, wrong or additional link is rejected before provider create.
+      if(isVerifiedPersonalMagazineGift(editorialEvidence)&&!magazineGiftLinkIsExact(art.body,editorialEvidence))
+        violations.push({code:'PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED',message:'Exacte gratis magazine-URL ontbreekt of wijkt af.'});
       const ownStoryViolations=personalFirstPersonCopyViolations(art.body,editorialEvidence,runDate);
       const currentPersonalSource=await verifyCurrentPersonalStorySource(db,row,art,runDate);
       if(!currentPersonalSource.ok)ownStoryViolations.push(currentPersonalSource.code,...(currentPersonalSource.violations||[]));
@@ -1592,16 +1629,40 @@ Deno.serve(async (req) => {
     if(row.channel==='instagram_company') {
       const captionEvidence=art.generation_evidence||{};
       const proof=captionEvidence.instagram_media_proof||{};
-      const verdict=validateResolvedMiraCaptionForDelivery(runDate,art.body,captionEvidence);
       const masterFaceOk=miraFaceProofValid(proof.instagram_visual||{},'reel');
       const sourceLed=captionEvidence.mira_source_led===true;
-      const selected=sourceLed?null:selectMiraProblem(runDate);
+      const frozenLibrary=captionEvidence.mira_frozen_library_contract===MIRA_GROWTH_EXPERIMENT_CONTRACT;
       const [{data:dailyWinner,error:winnerError},{data:dailyLineage,error:lineageError}]=await Promise.all([
         db.from('powerhouse_instagram_daily_winners_v1').select('recommendation_id').eq('run_date',runDate).maybeSingle(),
-        db.from('powerhouse_mira_problem_lineage_v1').select('winner_recommendation_id,source_evidence,state').eq('run_date',runDate).maybeSingle()
+        db.from('powerhouse_mira_problem_lineage_v1').select('run_date,winner_recommendation_id,source_evidence,state').eq('run_date',runDate).maybeSingle()
       ]);
+      let independentResolved:any=null,independentMediaOk=false;
+      if(frozenLibrary&&!sourceLed&&dailyWinner&&!winnerError&&!lineageError){
+        const [{data:rec,error:recError},{data:mediaJob,error:mediaError}]=await Promise.all([
+          db.from('powerhouse_content_recommendations').select('recommendation_id,status,evidence').eq('recommendation_id',dailyWinner.recommendation_id).maybeSingle(),
+          db.from('powerhouse_instagram_media_jobs_v1').select('status,asset_manifest,proof_manifest,republish_forbidden').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
+        ]);
+        if(!recError&&!mediaError&&rec&&mediaJob){
+          independentResolved=resolveMiraFrozenWinner(runDate,{winner:{...dailyWinner,run_date:runDate},lineage:dailyLineage,recommendation:rec,job:mediaJob});
+          const stored=mediaJob.proof_manifest||{};
+          independentMediaOk=mediaJob.status==='PROOF_VERIFIED'&&mediaJob.republish_forbidden!==true
+            &&stored.exact_final_media_proven===true&&miraFaceProofValid(stored.instagram_visual||{},'reel')
+            &&stored.temporal_proof?.verified===true
+            &&/^[a-f0-9]{64}$/.test(clean(stored.final_media_sha256))
+            &&clean(stored.final_media_sha256)===clean(proof.final_media_sha256)
+            &&clean(stored.media_url)===clean(proof.media_url)
+            &&clean(stored.mira_winner_recommendation_id)===clean(dailyWinner.recommendation_id)
+            &&clean(stored.mira_source_hash)===clean(captionEvidence.mira_source_hash)
+            &&clean(stored.mira_business_problem_id)===clean(independentResolved?.problem?.id)
+            &&clean(stored.mira_entrepreneur_scene)===clean(independentResolved?.problem?.scene)
+            &&!!clean(stored.mira_generation_source?.openart_history_id)
+            &&clean(stored.mira_generation_source?.openart_history_id)===clean(proof.mira_generation_source?.openart_history_id);
+        }
+      }
+      const selected=sourceLed?null:frozenLibrary?independentResolved?.problem:selectMiraProblem(runDate);
+      const verdict=validateResolvedMiraCaptionForDelivery(runDate,art.body,captionEvidence,independentResolved);
       const sourceConsistent=!winnerError&&!lineageError
-        &&(!sourceLed||(!!dailyWinner&&!!dailyLineage
+        &&(!(sourceLed||frozenLibrary)||(!!dailyWinner&&!!dailyLineage
           &&clean(dailyWinner.recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
           &&clean(dailyLineage.winner_recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
           &&clean(dailyLineage.source_evidence?.source_hash)===clean(captionEvidence.mira_source_hash)
@@ -1613,6 +1674,11 @@ Deno.serve(async (req) => {
           &&clean(proof.mira_entrepreneur_scene)===clean(captionEvidence.mira_entrepreneur_scene)
           &&clean(proof.media_url)===clean(captionEvidence.mira_source_asset_url)
           &&clean(proof.mira_generation_source?.openart_history_id)===clean(captionEvidence.mira_openart_history_id))
+        : frozenLibrary ? (independentResolved?.kind==='approved_frozen_library_mapping'&&independentResolved.ok===true
+           &&independentMediaOk&&clean(proof.mira_business_problem_id)===clean(selected?.id)
+           &&clean(proof.mira_entrepreneur_scene)===clean(selected?.scene)
+           &&clean(proof.mira_winner_recommendation_id)===clean(captionEvidence.mira_winner_recommendation_id)
+           &&clean(proof.mira_source_hash)===clean(captionEvidence.mira_source_hash))
         : (clean(proof.mira_business_problem_id)===clean(selected?.id)
            &&clean(proof.mira_entrepreneur_scene)===clean(selected?.scene)
            &&!dailyWinner);
@@ -1661,7 +1727,26 @@ Deno.serve(async (req) => {
       await recordObligation(db, runDate, row.channel, 'BLOCKED', null, evidence, 'Repair canonical gate evidence before any dispatch.', 'PRE_PUBLISH_GATE_BLOCKED');
       results.push({ channel: row.channel, status: 'blocked', violations: gate.violations || [] }); continue;
     }
-    const gatePassedEvidence={...(row.delivery_evidence||{}),pre_publish_gate:'passed',identity_gate_version:GATE,final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY};
+    // The same original independent final review returned exact PASS/HTTP 200
+    // and confirmed the current SHA256 above. Old 422 evidence from a prior
+    // rejected draft is historical, never the CURRENT approval status.
+    // Preserve one bounded diagnostic without treating it as a live veto.
+    const earlierReview=row.delivery_evidence||{};
+    const priorRejectedReview=Number(earlierReview.review_status)===422
+      &&Array.isArray(earlierReview.violations)&&earlierReview.violations.length>0
+      ? {state:'SUPERSEDED_BY_EXACT_INDEPENDENT_REVIEW',review_status:422,
+          reviewed_text_hash:clean(earlierReview.reviewed_text_hash)||null,
+          violations:earlierReview.violations.slice(0,8),
+          current_approved_text_hash:textHash}
+      : null;
+    const gatePassedEvidence={
+      ...earlierReview,pre_publish_gate:'passed',identity_gate_version:GATE,
+      final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY,
+      review_status:gate.http,reviewed_text_hash:textHash,violations:[],
+      review_transport_error:null,independent_final_review_verified:true,
+      independent_final_review_verified_at:new Date().toISOString(),
+      ...(priorRejectedReview?{prior_rejected_review:priorRejectedReview}:{})
+    };
     if(prepareOnly){
       // An early independent review is PREPARATION, not an irrevocable approval.
       // Validate original LinkedIn auth without creating a post or claiming a lease.

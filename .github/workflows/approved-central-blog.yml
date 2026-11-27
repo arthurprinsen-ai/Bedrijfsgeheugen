@@ -145,10 +145,62 @@ jobs:
             fi
           fi
 
+      - name: Preserve source-bound Brain candidate closure
+        if: steps.render.outputs.changed == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
+        env:
+          SOURCE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import datetime as dt
+          import json
+          import os
+          import pathlib
+          import re
+          lines = [line for line in pathlib.Path('/tmp/publish-result.txt').read_text(encoding='utf-8').splitlines() if line.strip()]
+          q = json.loads(lines[-1])
+          slug = str(q.get('slug') or '')
+          source = str(q.get('content_id') or '')
+          page = str(q.get('queue_page') or '')
+          source_hash = str(q.get('source_hash') or '')
+          run_id = str(os.environ.get('GITHUB_RUN_ID') or '')
+          base_sha = str(os.environ.get('SOURCE_SHA') or '')
+          assert re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', slug), 'approved source slug invalid'
+          assert source and re.fullmatch(r'[0-9a-f-]{36}', page), 'approved source identity missing'
+          assert re.fullmatch(r'[a-f0-9]{64}', source_hash), 'approved immutable source hash missing'
+          assert run_id.isdigit() and re.fullmatch(r'[a-f0-9]{40}', base_sha), 'immutable writer identity missing'
+          key = f'approved-central-blog-{slug}-{run_id}-v1'
+          url = f'https://www.bedrijfsgeheugen.nl/blog/{slug}/'
+          lesson = {
+            'fingerprint': f'{source}|{slug}|candidate-delivery|{run_id}',
+            'observed_at': dt.datetime.now(dt.timezone.utc).date().isoformat(),
+            'obligation_id': f'approved-central-blog|{source}|{page}',
+            'source': {'content_id': source, 'queue_page': page, 'source_hash': source_hash, 'writer_run_id': run_id, 'source_base_sha': base_sha, 'slug': slug},
+            'root_causes': ['An approved queue article is only a source candidate; creation of HTML, PR, and CI do not constitute public publication.'],
+            'prevention': ['Preserve the exact approved source, queue page, immutable hash and producer run across the original candidate, protected BG169 release and public readback.', 'Keep the original queue Pending until independently verified exact production URL and release SHA, then reconcile ONE BRAIN and Heartbeat.', 'Never duplicate canonical or redirected pages.'],
+            'evidence': {'candidate_url': url, 'writer_source_base_sha': base_sha, 'provider_readback': 'NOT_YET_PROVEN'},
+            'compiler': {'failure_class': 'GITHUB_DELIVERY', 'scope': 'GITHUB', 'machine_enforceable': True, 'repeat_count': 1, 'security_sensitive': False},
+            'evaluation': {'historical_replay': ['tests/brain-approved-central-blog-candidate-contract-20261123.test.mjs']},
+            'current_state': 'CANDIDATE_NOT_LIVE'
+          }
+          files = {
+            f'brain/learning/{key}.json': json.dumps(lesson, ensure_ascii=False, indent=2) + '\n',
+            f'docs/changes/{key}.md': f'# Protected central blog kandidaat — {slug}\n\nBron: \u0060{source}\u0060, Notion pagina \u0060{page}\u0060, source hash \u0060{source_hash}\u0060. Originele writer-run: {run_id}, source base SHA: {base_sha}.\n\nDe HTML, blogindex, RSS en sitemap zijn alleen een kandidaat. Required, CodeQL, BG169, Netlify en onafhankelijke live-URL-readback blijven verplicht. Een groen runresultaat is niet hetzelfde als gepubliceerd.\n',
+            f'docs/development-ledger-events/{key}.md': f'# Development ledger — protected approved central blog\n\n- Original producer: approved-central-blog, run {run_id}\n- Source page: {page}\n- Source content: {source}\n- Approved hash: {source_hash}\n- Candidate URL (not yet published): {url}\n- Status: CANDIDATE_NOT_LIVE; existing protected BG169 owner controls merge and public proof\n- Delivery rule: one source-bound candidate, one writer; no main-push, no duplicate canonical page and no green until Heartbeat/ONE BRAIN readback\n'
+          }
+          for filename, content in files.items():
+              dest = pathlib.Path(filename)
+              assert not dest.exists(), f'closure file already exists: {filename}'
+              dest.parent.mkdir(parents=True, exist_ok=True)
+              dest.write_text(content, encoding='utf-8')
+          print('SOURCE_BOUND_CLOSURE_OK', source, page, slug, run_id)
+          PY
+
       - name: Deterministic contract checks
         if: steps.render.outputs.changed == 'true'
         env:
           FORCE_SLUG: ${{ steps.resolve.outputs.slug }}
+          VERIFICATION_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.verification_mode || false }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
@@ -156,7 +208,18 @@ jobs:
           tracked = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
           untracked = subprocess.check_output(['git','ls-files','--others','--exclude-standard'], text=True).splitlines()
           changed = sorted(set(tracked + untracked))
-          allowed_exact = {'blog/index.html','blog/rss.xml','sitemap.xml'}
+          slug = os.environ.get('FORCE_SLUG','').strip()
+          run_id = os.environ.get('GITHUB_RUN_ID','').strip()
+          closure_key = f'approved-central-blog-{slug}-{run_id}-v1'
+          required_closure = {
+            f'brain/learning/{closure_key}.json',
+            f'docs/changes/{closure_key}.md',
+            f'docs/development-ledger-events/{closure_key}.md',
+          }
+          verification_mode = os.environ.get('VERIFICATION_MODE','false').lower() == 'true'
+          allowed_exact = {'blog/index.html','blog/rss.xml','sitemap.xml'} | (set() if verification_mode else required_closure)
+          if not verification_mode:
+              assert required_closure.issubset(changed), f'source-bound closure missing: {sorted(required_closure-set(changed))}'
           article_changes = [p for p in changed if re.fullmatch(r'blog/[a-z0-9-]+/index\.html', p)]
           unexpected = [p for p in changed if p not in allowed_exact and p not in article_changes]
           assert len(article_changes) <= 1, f'maximaal één artikelbestand toegestaan, gevonden={article_changes}; changed={changed}'
@@ -210,7 +273,7 @@ jobs:
           echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
 
       - name: Candidate branch publiceren
-        if: steps.render.outputs.changed == 'true'
+        if: steps.render.outputs.changed == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         env:
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
           BASE_SHA: ${{ steps.base.outputs.sha }}
@@ -234,22 +297,53 @@ jobs:
 
       - name: Candidate PR openen
         id: pr
-        if: steps.render.outputs.changed == 'true'
+        if: steps.render.outputs.changed == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
           SOURCE_SHA: ${{ steps.base.outputs.sha }}
         run: |
           set -euo pipefail
+          PR_BODY="$(python3 - <<'PY'
+          import json, os, pathlib, re
+          lines=[line for line in pathlib.Path('/tmp/publish-result.txt').read_text(encoding='utf-8').splitlines() if line.strip()]
+          q=json.loads(lines[-1])
+          source=str(q.get('content_id') or '').strip()
+          page=str(q.get('queue_page') or '').strip()
+          source_hash=str(q.get('source_hash') or '').strip()
+          base=str(os.environ.get('SOURCE_SHA') or '')
+          paths=[p for p in pathlib.Path('/tmp/validated-approved-blog-files').read_text().splitlines() if p.strip()]
+          if not (source and re.fullmatch(r'[0-9a-f-]{36}',page) and re.fullmatch(r'[a-f0-9]{64}',source_hash) and re.fullmatch(r'[a-f0-9]{40}',base) and len(paths) == 7):
+              raise SystemExit('CANONICAL_PR_BODY_SOURCE_OR_CLOSURE_INVALID')
+          print('Obligation-ID: approved-central-blog|'+source+'|'+page)
+          print('Delivery-Lane: website')
+          print('Candidate-Type: implementation')
+          print('Base-SHA: '+base)
+          print('Change-Scope: '+', '.join(paths))
+          print('Scope-Budget: '+str(len(paths)))
+          print('Supersedes: none')
+          print()
+          print('Original BRAIN-DELIVERY-v2 approved-central-blog writer. Source ID: '+source)
+          print('Queue page: '+page+', approved hash: '+source_hash)
+          print('No direct main push, self-merge, or queue Published before BG169, Netlify, external URL readback and ONE BRAIN/Heartbeat.')
+          PY
+          )"
           number=$(gh pr list --head "$CANDIDATE_BRANCH" --base main --state open --json number --jq '.[0].number // empty')
           if [ -z "$number" ]; then
             url=$(gh pr create \
               --base main \
               --head "$CANDIDATE_BRANCH" \
               --title "Approved blog candidate $GITHUB_RUN_ID" \
-              --body "BRAIN-DELIVERY-v2 candidate uit approved-central-blog. Source SHA: $SOURCE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main. Unified Brain Delivery valideert de lane; BG169 is de productieautoriteit; Netlify en public proof moeten daarna exact groen zijn. De Notion queue blijft Pending totdat productie-uitkomst aantoonbaar is verwerkt.")
+              --body "$PR_BODY")
             number=${url##*/}
           else
+            existing_body="$(gh pr view "$number" --json body --jq '.body')"
+            if ! grep -q '^Obligation-ID:' <<< "$existing_body"; then
+              gh pr edit "$number" --body "$PR_BODY"
+            else
+              expected_obligation="$(printf '%s\n' "$PR_BODY" | sed -n 's/^Obligation-ID: //p')"
+              grep -Fqx "Obligation-ID: $expected_obligation" <<< "$existing_body" || { echo "::error::ORIGINAL_SOURCE_PR_IDENTITY_DRIFT"; exit 1; }
+            fi
             echo "Candidate PR bestaat al: #$number"
           fi
           pr_base_sha=$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${number}" --jq '.base.sha')
@@ -262,7 +356,7 @@ jobs:
           echo "Candidate PR identity: #$number base=$pr_base_sha head=$pr_head_sha ref=$pr_head_ref"
 
       - name: Dispatch read-only shadow verification
-        if: steps.render.outputs.changed == 'true'
+        if: steps.render.outputs.changed == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
@@ -280,7 +374,7 @@ jobs:
             -f candidate_branch="$CANDIDATE_BRANCH"
 
       - name: BRAIN v2 handoff evidence
-        if: steps.render.outputs.changed == 'true'
+        if: steps.render.outputs.changed == 'true' && !(github.event_name == 'workflow_dispatch' && inputs.verification_mode)
         run: |
           echo "candidate_sha=${{ steps.pr.outputs.head_sha }}"
           echo "candidate_branch=${{ steps.commit.outputs.candidate_branch }}"

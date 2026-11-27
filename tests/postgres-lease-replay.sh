@@ -3,6 +3,49 @@ set -euo pipefail
 : "${DATABASE_URL:?Must use an isolated disposable PostgreSQL 17 database}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -f "$ROOT/docs/delivery/sql/repository-writer-fenced-lease.sql" >/dev/null
+# Exercise the legacy schema upgrade on the same disposable service, in a
+# transaction that restores the pristine test state and never touches live data.
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -v sql_file="$ROOT/docs/delivery/sql/repository-writer-fenced-lease.sql" <<'SQL'
+BEGIN;
+ALTER TABLE delivery_control.promotion_reservation DROP CONSTRAINT promotion_reservation_state_check,
+ ADD CONSTRAINT promotion_reservation_state_check CHECK (state IN ('reserved','grant_pending','granted','revoke_pending','idle'));
+SELECT * FROM delivery_control.reserve_promotion('arthurprinsen-ai/Bedrijfsgeheugen','github-actions:99:1',99,repeat('1',40),repeat('2',40),repeat('a',64),120,repeat('b',64));
+CREATE TEMP TABLE expected_reservation AS SELECT * FROM delivery_control.promotion_reservation;
+CREATE TEMP TABLE expected_events AS SELECT * FROM delivery_control.promotion_reservation_event;
+\i :sql_file
+DO $$
+BEGIN
+ IF EXISTS (SELECT * FROM expected_reservation EXCEPT SELECT * FROM delivery_control.promotion_reservation) OR EXISTS (SELECT * FROM delivery_control.promotion_reservation EXCEPT SELECT * FROM expected_reservation) THEN RAISE EXCEPTION 'upgrade changed reservation'; END IF;
+ IF EXISTS (SELECT * FROM expected_events EXCEPT SELECT * FROM delivery_control.promotion_reservation_event) OR EXISTS (SELECT * FROM delivery_control.promotion_reservation_event EXCEPT SELECT * FROM expected_events) THEN RAISE EXCEPTION 'upgrade changed audit events'; END IF;
+END $$;
+SELECT * FROM delivery_control.prepare_prewrite('arthurprinsen-ai/Bedrijfsgeheugen','github-actions:99:1',1,1,99,repeat('1',40),repeat('2',40),repeat('a',64),'review/upgrade','fixture-upgrade',repeat('c',40),repeat('d',40),repeat('e',64));
+CREATE TEMP TABLE expected_pending AS SELECT * FROM delivery_control.promotion_reservation;
+CREATE TEMP TABLE expected_intents AS SELECT * FROM delivery_control.promotion_prewrite_intent;
+CREATE TEMP TABLE expected_pending_events AS SELECT * FROM delivery_control.promotion_reservation_event;
+\i :sql_file
+DO $$
+BEGIN
+ IF EXISTS (SELECT * FROM expected_pending EXCEPT SELECT * FROM delivery_control.promotion_reservation) OR EXISTS (SELECT * FROM delivery_control.promotion_reservation EXCEPT SELECT * FROM expected_pending) THEN RAISE EXCEPTION 'reapply changed pending reservation'; END IF;
+ IF EXISTS (SELECT * FROM expected_intents EXCEPT SELECT * FROM delivery_control.promotion_prewrite_intent) OR EXISTS (SELECT * FROM delivery_control.promotion_prewrite_intent EXCEPT SELECT * FROM expected_intents) THEN RAISE EXCEPTION 'reapply changed pending intent'; END IF;
+ IF EXISTS (SELECT * FROM expected_pending_events EXCEPT SELECT * FROM delivery_control.promotion_reservation_event) OR EXISTS (SELECT * FROM delivery_control.promotion_reservation_event EXCEPT SELECT * FROM expected_pending_events) THEN RAISE EXCEPTION 'reapply changed pending events'; END IF;
+END $$;
+ROLLBACK;
+SQL
+echo "POSTGRES_LEGACY_UPGRADE_AND_REAPPLY_PASSED"
+# Unknown constraint must fail closed; connection exit rolls back its transaction.
+set +e
+drift_output="$(psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -v sql_file="$ROOT/docs/delivery/sql/repository-writer-fenced-lease.sql" 2>&1 <<'SQL'
+BEGIN;
+ALTER TABLE delivery_control.promotion_reservation DROP CONSTRAINT promotion_reservation_state_check,
+ ADD CONSTRAINT promotion_reservation_state_check CHECK (state IN ('reserved','idle'));
+\i :sql_file
+ROLLBACK;
+SQL
+)"
+drift_exit=$?
+set -e
+[[ "$drift_exit" -ne 0 && "$drift_output" == *UNRECOGNIZED_PROMOTION_STATE_CONSTRAINT* ]] || { echo 'Unknown state constraint not rejected' >&2; exit 1; }
+echo "POSTGRES_UNKNOWN_CONSTRAINT_DENIAL_PASSED"
 psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 <<'SQL'
 DO $$
 DECLARE g1 bigint;g2 bigint;a text:=repeat('1',64);b text:=repeat('2',64);
@@ -34,3 +77,160 @@ wait "$a"; ea=$?; wait "$b"; eb=$?
 set -e
 if [[ "$ea" -eq 0 && "$eb" -ne 0 ]]; then :; elif [[ "$eb" -eq 0 && "$ea" -ne 0 ]]; then :; else echo 'Exactly one claimant must win' >&2; exit 1; fi
 echo "POSTGRES_LEASE_REPLAY_PASSED"
+
+# Repository-wide promotion staging replay, using the same isolated PostgreSQL service.
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 <<'SQL'
+DO $$
+DECLARE g bigint; v bigint; s text; r constant text:='arthurprinsen-ai/Bedrijfsgeheugen'; h constant text:='github-actions:1:1'; e constant text:=repeat('a',64);
+BEGIN
+ SELECT generation,revision INTO g,v FROM delivery_control.reserve_promotion(r,h,1,repeat('1',40),repeat('2',40),e,30,e);
+ IF g<>1 OR v<>1 THEN RAISE EXCEPTION 'initial reservation mismatch'; END IF;
+ SELECT revision,state INTO v,s FROM delivery_control.transition_promotion(r,h,g,v,'prepare_grant',e);
+ IF s<>'grant_pending' THEN RAISE EXCEPTION 'missing intent'; END IF;
+ BEGIN
+ PERFORM delivery_control.transition_promotion(r,h,g,v-1,'release_unused',e);
+ RAISE EXCEPTION 'stale revision accepted';
+ EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'PROMOTION_RESERVATION_CAS_MISMATCH' THEN RAISE; END IF; END;
+ UPDATE delivery_control.promotion_reservation SET valid_until=clock_timestamp()-interval '1 second' WHERE repository=r;
+ BEGIN
+ PERFORM delivery_control.reserve_promotion(r,'github-actions:2:1',2,repeat('3',40),repeat('2',40),e,30,e);
+ RAISE EXCEPTION 'expired unresolved grant was replaced';
+ EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'PROMOTION_RESERVATION_BUSY' THEN RAISE; END IF; END;
+ BEGIN
+ PERFORM delivery_control.transition_promotion(r,h,g,v,'release_unused',e);
+ RAISE EXCEPTION 'ambiguous grant cleared';
+ EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'PROMOTION_TRANSITION_DENIED' THEN RAISE; END IF; END;
+ SELECT revision,state INTO v,s FROM delivery_control.transition_promotion(r,h,g,v,'prepare_revoke',e);
+ IF s<>'revoke_pending' THEN RAISE EXCEPTION 'missing revoke intent'; END IF;
+ SELECT revision,state INTO v,s FROM delivery_control.transition_promotion(r,h,g,v,'record_revocation_readback',e);
+ IF s<>'idle' THEN RAISE EXCEPTION 'revocation not recorded'; END IF;
+ IF (SELECT count(*) FROM delivery_control.promotion_reservation_event WHERE repository=r)<>4 THEN RAISE EXCEPTION 'audit event loss'; END IF;
+END $$;
+SQL
+set +e
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -Atqc "SELECT generation FROM delivery_control.reserve_promotion('arthurprinsen-ai/Bedrijfsgeheugen','github-actions:3:1',3,repeat('3',40),repeat('2',40),repeat('a',64),30,repeat('b',64))" >"$tmp/3" 2>&1 & a=$!
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -Atqc "SELECT generation FROM delivery_control.reserve_promotion('arthurprinsen-ai/Bedrijfsgeheugen','github-actions:4:1',4,repeat('4',40),repeat('2',40),repeat('a',64),30,repeat('b',64))" >"$tmp/4" 2>&1 & b=$!
+wait "$a"; ea=$?; wait "$b"; eb=$?
+set -e
+if [[ "$ea" -eq 0 && "$eb" -ne 0 ]]; then :; elif [[ "$eb" -eq 0 && "$ea" -ne 0 ]]; then :; else echo 'Exactly one promotion reservation must win' >&2; exit 1; fi
+echo "POSTGRES_PROMOTION_RESERVATION_REPLAY_PASSED"
+
+
+# Exact prewrite CAS race in the existing disposable service. Both processes
+# use the same generation/revision; different prepared objects cannot both win.
+IFS='|' read -r gen rev holder pr head epoch manifest < <(
+ psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At -F '|' -c "SELECT generation,revision,holder,pr_number,head_sha,main_sha,manifest_digest FROM delivery_control.promotion_reservation WHERE repository='arthurprinsen-ai/Bedrijfsgeheugen' AND state='reserved'"
+)
+[[ "$gen" =~ ^[1-9][0-9]*$ && "$rev" =~ ^[1-9][0-9]*$ && "$holder" =~ ^github-actions:[0-9]+:[0-9]+$ && "$pr" =~ ^[1-9][0-9]*$ && "$head" =~ ^[a-f0-9]{40}$ && "$epoch" =~ ^[a-f0-9]{40}$ && "$manifest" =~ ^[a-f0-9]{64}$ ]]
+# Use the same canonical intent serialization as the reviewed runtime, so
+# the winning durable intent can also exercise the recovery adapter below.
+intent_digest() {
+ node --input-type=module - "$gen" "$rev" "$holder" "$pr" "$head" "$epoch" "$manifest" "$1" "$2" <<'NODE'
+import {createHash} from 'node:crypto';
+const [g,r,holder,pr,head,main,manifestSha256,c,t]=process.argv.slice(2);
+const intent={repository:'arthurprinsen-ai/Bedrijfsgeheugen',state:'prewrite_pending',prNumber:Number(pr),head,main,branch:'review/prewrite-race',obligation:'fixture-obligation',holder,manifestSha256,generation:Number(g),revision:Number(r)+1,commit:c.repeat(40),tree:t.repeat(40)};
+process.stdout.write(createHash('sha256').update(JSON.stringify(intent)).digest('hex'));
+NODE
+}
+digest_a="$(intent_digest c a)"; digest_b="$(intent_digest d b)"
+[[ "$digest_a" =~ ^[a-f0-9]{64}$ && "$digest_b" =~ ^[a-f0-9]{64}$ ]]
+prewrite_race() {
+ local digit="$1" tree_digit="$2" evidence_digit="$3"
+ psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At \
+   -v gen="$gen" -v rev="$rev" -v holder="$holder" -v pr="$pr" \
+   -v head="$head" -v epoch="$epoch" -v manifest="$manifest" \
+   -v digit="$digit" -v tree_digit="$tree_digit" -v evidence_digit="$evidence_digit" <<'SQL'
+BEGIN;
+SELECT revision FROM delivery_control.prepare_prewrite('arthurprinsen-ai/Bedrijfsgeheugen', :'holder', :'gen'::bigint, :'rev'::bigint, :'pr'::bigint, :'head', :'epoch', :'manifest', 'review/prewrite-race', 'fixture-obligation', repeat(:'digit',40), repeat(:'tree_digit',40),:'evidence_digit');
+SELECT pg_sleep(0.25);
+COMMIT;
+SQL
+}
+set +e
+prewrite_race c a "$digest_a" >"$tmp/prewrite-a" 2>&1 & a=$!
+prewrite_race d b "$digest_b" >"$tmp/prewrite-b" 2>&1 & b=$!
+wait "$a"; ea=$?; wait "$b"; eb=$?
+set -e
+if [[ "$ea" -eq 0 && "$eb" -ne 0 ]]; then
+ grep -q 'PREWRITE_IDENTITY_CAS_MISMATCH' "$tmp/prewrite-b"
+ winner_commit=c; winner_tree=a; winner_evidence="$digest_a"; winner_log="$tmp/prewrite-a"
+elif [[ "$eb" -eq 0 && "$ea" -ne 0 ]]; then
+ grep -q 'PREWRITE_IDENTITY_CAS_MISMATCH' "$tmp/prewrite-a"
+ winner_commit=d; winner_tree=b; winner_evidence="$digest_b"; winner_log="$tmp/prewrite-b"
+else
+ echo 'Exactly one prewrite claimant must win' >&2; exit 1
+fi
+# Match the durable intent and event to the actual successful session, not either fixture.
+next_rev="$((rev+1))"
+grep -Fxq "$next_rev" "$winner_log"
+observed="$(psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 -At -F '|' <<'SQL'
+SELECT i.generation,i.revision,i.holder,i.pr_number,i.head_sha,i.main_sha,i.manifest_digest,
+ i.branch,i.obligation,i.commit_sha,i.tree_sha,i.intent_digest,e.evidence_digest
+FROM delivery_control.promotion_prewrite_intent i
+JOIN delivery_control.promotion_reservation r ON r.repository=i.repository AND r.generation=i.generation AND r.revision=i.revision
+JOIN delivery_control.promotion_reservation_event e ON e.repository=i.repository AND e.generation=i.generation AND e.revision=i.revision
+WHERE i.repository='arthurprinsen-ai/Bedrijfsgeheugen' AND r.state='prewrite_pending'
+ AND e.action='prepare_prewrite' AND e.state=r.state AND e.holder=i.holder AND e.pr_number=i.pr_number
+ AND e.head_sha=i.head_sha AND e.main_sha=i.main_sha AND e.manifest_digest=i.manifest_digest;
+SQL
+)"
+printf -v expected_commit '%040d' 0; expected_commit="${expected_commit//0/$winner_commit}"
+printf -v expected_tree '%040d' 0; expected_tree="${expected_tree//0/$winner_tree}"
+expected_evidence="$winner_evidence"
+expected="$gen|$next_rev|$holder|$pr|$head|$epoch|$manifest|review/prewrite-race|fixture-obligation|$expected_commit|$expected_tree|$expected_evidence|$expected_evidence"
+[[ "$observed" == "$expected" ]] || { echo 'Durable prewrite intent/event does not match successful session' >&2; exit 1; }
+psql "$DATABASE_URL" -X -v ON_ERROR_STOP=1 <<'SQL'
+DO $$
+DECLARE r delivery_control.promotion_reservation%ROWTYPE; i delivery_control.promotion_prewrite_intent%ROWTYPE;
+BEGIN
+ SELECT * INTO STRICT r FROM delivery_control.promotion_reservation WHERE repository='arthurprinsen-ai/Bedrijfsgeheugen';
+ SELECT * INTO STRICT i FROM delivery_control.promotion_prewrite_intent WHERE repository=r.repository AND generation=r.generation;
+ IF r.state<>'prewrite_pending' OR i.revision<>r.revision OR i.holder<>r.holder OR i.head_sha<>r.head_sha OR i.main_sha<>r.main_sha OR i.manifest_digest<>r.manifest_digest OR i.obligation<>'fixture-obligation'
+ OR NOT ((i.commit_sha=repeat('c',40) AND i.tree_sha=repeat('a',40)) OR (i.commit_sha=repeat('d',40) AND i.tree_sha=repeat('b',40))) THEN RAISE EXCEPTION 'prewrite winner identity mismatch'; END IF;
+ IF (SELECT count(*) FROM delivery_control.promotion_reservation_event e WHERE e.repository=r.repository AND e.generation=r.generation AND e.action='prepare_prewrite')<>1 THEN RAISE EXCEPTION 'duplicate prewrite event'; END IF;
+ UPDATE delivery_control.promotion_reservation SET valid_until=clock_timestamp()-interval '1 second' WHERE repository=r.repository;
+ BEGIN
+ PERFORM delivery_control.reserve_promotion(r.repository,'github-actions:5:1',5,repeat('5',40),r.main_sha,r.manifest_digest,30,repeat('e',64));
+ RAISE EXCEPTION 'unresolved prewrite taken over';
+ EXCEPTION WHEN raise_exception THEN IF SQLERRM<>'PROMOTION_RESERVATION_BUSY' THEN RAISE; END IF; END;
+END $$;
+SQL
+echo "POSTGRES_EXACT_PREWRITE_RACE_PASSED"
+
+# Native read-only recovery must work even after the winning reservation expires.
+# GitHub reads are fixture-only here; this test cannot authorize a write or retry.
+(
+ cd "$ROOT"
+ node --input-type=module - "$gen" "$next_rev" "$holder" "$pr" "$head" "$epoch" "$manifest" "$expected_commit" "$expected_tree" "$expected_evidence" <<'NODE'
+import assert from 'node:assert/strict';
+import {execFileSync} from 'node:child_process';
+import {recoverReviewedPrewrite} from './tools/delivery/reviewed-cas.mjs';
+const [g,r,holder,pr,head,main,manifestSha256,commit,tree,intentDigest]=process.argv.slice(2);
+const intent={repository:'arthurprinsen-ai/Bedrijfsgeheugen',state:'prewrite_pending',prNumber:Number(pr),head,main,branch:'review/prewrite-race',obligation:'fixture-obligation',holder,manifestSha256,generation:Number(g),revision:Number(r),commit,tree,intentDigest};
+const psql=sql=>execFileSync('psql',[process.env.DATABASE_URL,'-X','-v','ON_ERROR_STOP=1','-Atq','-c',sql],{encoding:'utf8'}).trim();
+const snapshot=()=>psql("select json_build_array((select json_agg(r order by repository) from delivery_control.promotion_reservation r),(select json_agg(i order by repository,generation) from delivery_control.promotion_prewrite_intent i),(select json_agg(e order by repository,generation,revision) from delivery_control.promotion_reservation_event e))");
+const before=snapshot();
+let calls=0,branchHead=head;
+const query=async(sql,args)=>{
+ assert.match(sql,/^select i\.repository/);
+ assert.deepEqual(args,[intent.repository,intent.generation]);
+ calls++;
+ // Both values are exact test fixtures, not general-purpose SQL interpolation.
+ const q=sql.replace('$1',"'arthurprinsen-ai/Bedrijfsgeheugen'").replace('$2',String(intent.generation));
+ return JSON.parse(psql("begin read only; select coalesce(json_agg(x),'[]'::json) from ("+q+") x; commit;"));
+};
+const github={readReviewedPR:async()=>({number:intent.prNumber,open:true,headSha:branchHead,baseSha:main,branch:intent.branch,obligation:intent.obligation}),readHead:async b=>b==='main'?main:branchHead,readCommit:async()=>({sha:commit,tree,parents:[head,main]})};
+const check=async(i,expected,provider,n)=>{
+ calls=0;const result=await recoverReviewedPrewrite({intent:i,authorizedPgQuery:query,github});
+ assert.equal(result.state,expected);assert.equal(result.providerState,provider);assert.equal(calls,n);
+ for(const k of ['mutationAuthority','releaseAuthorized','retryAuthorized','mergeAuthorized'])assert.equal(result[k],false);
+};
+assert.equal(psql("select (valid_until<clock_timestamp())::text from delivery_control.promotion_reservation"),'true');
+await check(intent,'RECOVERY_READBACK_OWNER_REVIEW','UNCHANGED_HEAD_UNRESOLVED',2);
+branchHead=commit;
+await check(intent,'RECOVERY_READBACK_OWNER_REVIEW','EXPECTED_COMMIT_VISIBLE_CAUSALITY_UNPROVEN',2);
+await check({...intent,intentDigest:'0'.repeat(64)},'RECOVERY_INTENT_DIGEST_MISMATCH',undefined,0);
+assert.equal(snapshot(),before);
+console.log('POSTGRES_READ_ONLY_PENDING_RECOVERY_PASSED');
+NODE
+)

@@ -13,7 +13,9 @@ export const VIEWS = [
   { view: 'integrations', bestand: 'systemen-koppelen.html', pad: '/systemen-koppelen', naam: 'Koppelingen',
     titel: 'Systemen koppelen — niet vervangen, verbinden | Bedrijfsgeheugen',
     omschrijving: 'AFAS, Exact Online, Twinfield, webshops en Microsoft 365 aan elkaar knopen zodat dezelfde gegevens niet twee keer worden ingevoerd.',
-    // Canonical ownership comes from the SEO registry; the generated view mirrors it.
+    // Original SEO registry keeps the transactional AFAS ownership. This visible
+    // contextual internal link must survive the V18 generated page, not the stale HTML.
+    seoContextLinks: [{ href: '/afas-koppeling', label: 'Lightspeed-webshop naar AFAS' }],
     zoekwoord: 'systemen koppelen mkb' },
   // 'pricing' staat hier niet meer: /prijzen is een eigen pagina (prijzen.html) met
   // vier pakketten, AI-niveaus en de zelfscan. De generator mag die niet overschrijven.

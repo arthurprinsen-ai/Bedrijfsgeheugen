@@ -12,7 +12,7 @@ test('public locale anchors own navigation and mobile mount is parent-safe', asy
 
 test('i18n asset version changes with runtime navigation fix', async () => {
   const build = await readFile('tools/site-shell/apply-i18n.mjs','utf8');
-  assert.match(build,/cms-i18n-20260930-4/);
+  assert.match(build,/cms-i18n-20261118-1/);
 });
 
 test('capture navigation survives menu teardown and leaves portal switching in place', async()=>{

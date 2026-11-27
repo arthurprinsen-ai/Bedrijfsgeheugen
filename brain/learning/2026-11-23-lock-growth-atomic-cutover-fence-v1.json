@@ -1,0 +1,24 @@
+{
+  "fingerprint": "supabase|migration-lock|growth-atomic-cutover-fence-without-lock|20261123-v1",
+  "date": "2026-11-23",
+  "owner": "agent-reliability",
+  "obligation_id": "supabase|migration-lock|growth-atomic-cutover-fence-without-lock|20261123-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "MIGRATION_LOCK_DRIFT", "scope": "CI", "machine_enforceable": true, "repeat_count": 7, "security_sensitive": false},
+  "root_cause": "PR #5051 voegde migratie 20261123211950 toe; een PR mag de lock niet vooraf declareren (UNEXPECTED_PROTECTED_BASE), dus na merge en provider-apply ontbreekt de lock-regel op main.",
+  "correction": "Eén regel toegevoegd aan de lock na providerreadback (schema_migrations, 23 nov 2026: versie 20261123211950, naam growth_atomic_cutover_fence_v1); geen test aangepast.",
+  "prevention": [
+    "Voeg de lock-regel pas toe nadat de provider de migratie als toegepast toont.",
+    "Lees voor een lockwijziging altijd eerst de providergeschiedenis."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-cro-production-migration-lock-20261029.test.mjs"],
+    "canary": ["tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-cro-production-migration-lock-20261029.test.mjs", "tests/brain-production-supabase-790-provider-source-parity-20261102.test.mjs"],
+    "source": ["supabase/migration-history.lock.json"],
+    "outcome": "Lokaal: lock bevat 20261123211950 en komt overeen met de provider. PR-checks open."
+  }
+}

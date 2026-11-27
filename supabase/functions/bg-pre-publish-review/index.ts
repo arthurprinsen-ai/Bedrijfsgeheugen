@@ -1,5 +1,5 @@
 import {PERSONAL_EDITORIAL_POLICY,personalEditorialViolations,personalNonBuilderBusinessSignal,personalObservationalLifeContextSignal} from '../_shared/personal-linkedin-editorial-contract.mjs';
-import {personalFirstPersonCopyViolations} from '../_shared/personal-first-person-story-gate.mjs';
+import {personalFirstPersonCopyViolations,isVerifiedPersonalMagazineGift,magazineGiftLinkIsExact,isVerifiedPersonalFounderPerspective} from '../_shared/personal-first-person-story-gate.mjs';
 import {COMPANY_EDITORIAL_POLICY,companyEditorialViolations as companyEditorialViolations_raw} from '../_shared/company-linkedin-editorial-contract.mjs';
 const companyEditorialViolations:(...args:any[])=>any=companyEditorialViolations_raw;
 import { createClient } from 'npm:@supabase/supabase-js@2';
@@ -34,7 +34,7 @@ function firstPersonSignal(text: string) {
   return /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
 }
 function personalLifeContextSignal(text: string) {
-  return /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|pakket|bezorging|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport|winkel|app|afhaalpunt|scherm|schermtijd|offline|smartphone)\b/i.test(text);
+  return /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|pakket|bezorging|printer|telefoon|laptop|robotstofzuiger|dweilrobot|dweilrobots|dweilen|waterleiding|afvoer|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport|winkel|app|afhaalpunt|scherm|schermtijd|offline|smartphone)\b/i.test(text);
 }
 function concretePersonalLifeSignal(text: string) {
   const firstPerson = firstPersonSignal(text);
@@ -62,13 +62,18 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(Array.isArray(body.source_lineage) ? body.source_lineage.length > 0 : !!body.source_lineage, 'SOURCE_LINEAGE_REQUIRED', 'Bron/evidence-lineage ontbreekt.');
   // Unconditional post-content review. Neither an accepted article excerpt nor a
   // founder-business claim may impersonate Arthur's own lived experience.
+  // Exact approved magazine gift must have the one direct cover-page link;
+  // keep the normal personal no-URL rule for every other source and copy.
+  if(isVerifiedPersonalMagazineGift(body))
+    require(magazineGiftLinkIsExact(text,body),'PERSONAL_MAGAZINE_GIFT_DIRECT_LINK_REQUIRED','Deze exact geautoriseerde gratis magazinepost moet één correcte landingspaginalink bevatten.');
   for(const code of personalFirstPersonCopyViolations(text,body,body.calendar_date)){
     require(false,code,'Alleen een eigen, geverifieerd ik-verhaal uit een door Arthur aangeleverde bron mag op zijn persoonlijke profiel.');
   }
 
 
   const builderMode = body.ai_native_builder_story_verified === true;
-  const observationalMode = !builderMode && body.observational_personal_theme_verified === true;
+  const founderPerspectiveMode = isVerifiedPersonalFounderPerspective(body);
+  const observationalMode = !builderMode && !founderPerspectiveMode && body.observational_personal_theme_verified === true;
 
   if (builderMode) {
     require(body.ai_native_builder_policy === PERSONAL_AI_NATIVE_POLICY, 'AI_NATIVE_BUILDER_POLICY_REQUIRED', 'AI-native builder policy ontbreekt of is verouderd.');
@@ -83,6 +88,20 @@ function personalViolations(text: string, body: any, finalHash: string) {
     require(body.business_topic === true, 'AI_NATIVE_BUSINESS_CONTEXT_REQUIRED', 'Builder-verhaal moet als zakelijke bouwcontext zijn geclassificeerd.');
     require(body.corporate_voice === false, 'CORPORATE_VOICE_BLOCKED', 'Corporate/consultantstem is geblokkeerd.');
     require(body.company_page_interchangeable === false, 'COMPANY_PAGE_INTERCHANGEABLE_BLOCKED', 'Tekst mag niet uitwisselbaar zijn met de bedrijfspagina.');
+  } else if (founderPerspectiveMode) {
+    // A directly user-owned viewpoint is not evidence of a completed build
+    // or of a personally witnessed client event.
+    require(body.personal_truth_verified===true&&body.first_person_claims_verified===true,
+      'FOUNDER_PERSPECTIVE_TRUTH_REQUIRED','De eigen mening vereist aantoonbare gebruikersbron.');
+    require(firstPersonSignal(text),'FOUNDER_PERSPECTIVE_FIRST_PERSON_REQUIRED',
+      'Schrijf uitsluitend vanuit de geverifieerde eigen opvatting.');
+    require(body.business_topic===true&&body.corporate_voice===false
+      &&body.company_page_interchangeable===false,'FOUNDER_PERSPECTIVE_CHANNEL_SCOPE',
+      'Een persoonlijke opvatting is geen bedrijfsbericht.');
+    require(!publicTechnicalJargonSignal(text),'FOUNDER_PERSPECTIVE_TECH_STATUS_BLOCKED',
+      'Geen interne agent- of technische statuspublicatie.');
+    require(!/\b(boek|koop|plan een afspraak|dm me|download|meld je aan|gratis scan|frisse blik)\b/i.test(text),
+      'FOUNDER_PERSPECTIVE_SALES_PITCH_BLOCKED','Geen verkoopoproep op persoonlijk.');
   } else if (observationalMode) {
     require(body.public_theme_source_verified === true, 'PUBLIC_THEME_SOURCE_UNVERIFIED', 'De publieke bron voor de dagelijkse observatie is niet geverifieerd.');
     require(body.first_person_claims_present === false, 'OBSERVATIONAL_MODE_FIRST_PERSON_FORBIDDEN', 'Observerende fallback mag geen eerste-persoonsclaims bevatten.');
@@ -118,9 +137,12 @@ function personalViolations(text: string, body: any, finalHash: string) {
     out.push({ code: 'SENSITIVE_PRIVATE_DETAIL_BLOCK', message: 'Privé/sensitief detail vereist exacte goedkeuring.' });
   }
   if (!builderMode) {
-    const businessBlocked = personalNonBuilderBusinessSignal(text,{observational:observationalMode});
+    // Preserve existing outside-builder checks for legacy personal-life mode.
+    if (!founderPerspectiveMode) {
+      const businessBlocked = personalNonBuilderBusinessSignal(text,{observational:observationalMode});
     if (businessBlocked) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
-    if (consultantVoiceSignal(text)) out.push({ code: 'FINAL_TEXT_CONSULTANT_VOICE_BLOCK', message: 'Uiteindelijke tekst klinkt als consultant/thought-leadership of forceert een zakelijke moraal.' });
+      if (consultantVoiceSignal(text)) out.push({ code: 'FINAL_TEXT_CONSULTANT_VOICE_BLOCK', message: 'Uiteindelijke tekst klinkt als consultant/thought-leadership of forceert een zakelijke moraal.' });
+    }
   }
   return out;
 }

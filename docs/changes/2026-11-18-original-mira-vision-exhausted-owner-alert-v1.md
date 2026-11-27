@@ -1,0 +1,12 @@
+# 18 November 2026 — original Mira 3/3 exhausted verifier must reach owner without bypass
+Incident: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198
+
+Read-only verified original state: original media job `4a68dc41-6e60-4b64-ba7b-400086cb7296` has completed *one* OpenArt history `r6sZX8kdGyvpD6zEbWg7`, 1080×1920 eight-second video. However `proof_manifest={}` and `vision_retry_count=3/3`, `status=WAITING_PROOF`, `last_error=MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE`, no Meta provider ID. Original Instagram obligation is FAILED. This is a provider-verification failure, NOT measured face mismatch or permission to skip Mira's ≥0.940 on start/middle/end frames.
+
+The original #171 result guardian already registers historical Tavily 432 and OpenAI personal 429 as deduped owner actions, but after personal LinkedIn independently reached LIVE_PROVEN it only listed Tavily; not the more important exhausted Mira owner action. This creates a silent owner-report gap.
+
+Original safe v5 migration updates the SAME guardian function only, inspecting original canonical media job + matching original Instagram obligation for today's date. Only exact same-job WAITING_PROOF, original expected OpenArt history contract, original actual provider failure, >=3 attempts and absent Meta ID triggers a deduped daily `owner_action_required` runtime event with original job/history IDs and bounded human review, **notification_sent=false**. The original #171 status remains DEGRADED; no new scheduler, outgoing message, verifier request, media generation, RLS permission, Meta post or account payment. Only existing owner tasks may deliver a user-visible notice; independent task delivery must be verified, never inferred from the event.
+
+Original Mira/vision owner next action: verify whether the real original vision provider account/key/scope is healthy, assess authorized human review of the existing immutable asset and original retry contract. No fourth attempt or replacement/quality bypass without explicit approved risk/contract change. One Brain incident stays OPEN until actual three-frame face proof and provider post readback.
+
+Protected release criteria: Required+CodeQL+native original Supabase preview, protected merge, native migration/version/function readback, natural #171 health with exact fingerprint, deduped single original runtime event, actual task-visible message receipt separately. Exact production source lock parity must be reconciled to native version after release.

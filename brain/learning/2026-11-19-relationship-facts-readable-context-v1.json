@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|commercial|relationship-facts-not-human-readable-context|20261119-v1",
+  "obligation_id": "powerhouse|commercial|relationship-facts-not-human-readable-context|20261119-v1",
+  "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "problem": "After the 18 Nov fix, connection actions with role + company still cannot pass the composer: composerSourcePreflight always demands plan.human_readable_context===true, and the plan view only sets that for headline/summary/public source/inbound/reply text, never for relationship facts.",
+  "observations": {
+    "date": "2026-11-19",
+    "bg_connecties_total": 23295,
+    "with_role_and_company": 23162,
+    "with_email": 605,
+    "human_approved_recipients": 123,
+    "plan_view_human_readable_context_sources": [
+      "headline",
+      "summary",
+      "public_source_evidence",
+      "inbound.message",
+      "reply_text"
+    ]
+  },
+  "root_cause": "Two gates disagreed: the 27 Oct decision accepts relationship facts, but human_readable_context stayed a separate mandatory flag that a relationship-only action can never set.",
+  "fix": "composerSourcePreflight treats two verifiable relationship facts as readable context; the news path still requires plan.human_readable_context===true. All other composer gates unchanged.",
+  "prevention": "tests/brain-composer-relationship-fact-20261106.test.mjs asserts relationship-only passes with human_readable_context false, news-only without context still fails, and a bare action still reports human_readable_context missing.",
+  "not_proven": [
+    "no message generated for a real connection yet",
+    "no producer yet turns connections without predictive brief into actions",
+    "no provider-confirmed send",
+    "no reply or customer outcome"
+  ],
+  "owner": "powerhouse-commercial-message-composer",
+  "failure_class": "CLASSIFIER_GAP",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "COMMERCIAL_COMPOSER",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "tests": [
+    "tests/brain-composer-relationship-fact-20261106.test.mjs"
+  ],
+  "regression_test": "tests/brain-composer-relationship-fact-20261106.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-composer-relationship-fact-20261106.test.mjs"
+    ]
+  }
+}

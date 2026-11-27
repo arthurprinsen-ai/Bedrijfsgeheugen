@@ -1,0 +1,82 @@
+{
+  "date": "2026-11-17",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "SOURCE_IMPLEMENTATION_CANDIDATE_NOT_YET_PRODUCTION_VERIFIED",
+  "fingerprint": "powerhouse|innovation|original-quality-event-not-reconciled-to-14-native-evaluation-operations|20261117-v1",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "root_cause": "Nine original source-quality follow-ups were indefinitely classified as generic baseline design although their first-party powerhouse_quality_events held fingerprint-bound historical guarded/verified evidence. The existing original engineering code selector never consumed or reconciled this original source; none could become terminal without current effect evidence.",
+  "compiler": {
+    "failure_class": "ORIGINAL_INNOVATION_QUALITY_SOURCE_EVIDENCE_RECONCILIATION_MISSING",
+    "severity": "P0_SOURCE_HANDOFF_STALL",
+    "machine_enforceable": true,
+    "forbidden_false_success": true
+  },
+  "change": {
+    "original_source": "public.powerhouse_optimization_candidate_v1",
+    "original_quality_source": "public.powerhouse_quality_events",
+    "original_operation": "public.brain_operations.INNOVATION_INTAKE",
+    "original_obligation": "public.brain_obligations.INNOVATION_DELIVERY",
+    "read_only_source": "scripts/brain/innovation-original-owner-readback.mjs",
+    "same_daily_job": ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "script": "scripts/brain/innovation-original-evidence-reconciliation.mjs",
+    "original_native_transition": "public.brain_transition_operation",
+    "new_scheduler": false,
+    "new_agent": false,
+    "new_queue": false,
+    "new_table": false,
+    "original_status_preserved": "PLANNED"
+  },
+  "evidence": {
+    "original_candidate_count": 14,
+    "original_planned_count": 14,
+    "original_open_obligations": 14,
+    "historical_quality_event_matches": 9,
+    "original_cro_design_due": 1,
+    "concrete_engineering_candidates": 4,
+    "original_candidate_pr_count": "HISTORICAL_SOURCE_SNAPSHOT_ONLY",
+    "original_nochange_count": "HISTORICAL_SOURCE_SNAPSHOT_ONLY",
+    "current_effect_verified": 0,
+    "no_customer_value_claimed": true,
+    "as_of_2026_11_17_21_15_utc": {
+      "original_intakes_planned": 14,
+      "innovation_obligations_open": 14,
+      "original_quality_events_matching": 9,
+      "original_evidence_reconciliation_receipts": 0,
+      "media_source_block": "instagram 17-Nov WAITING_ASSET; no provider Meta ID",
+      "site_release": "protected main 3ed5bcd live Netlify 6afcc21e44be6323ed75698f, but page outcome measurement not proven"
+    }
+  },
+  "prevention": {
+    "read_only_source_quality_fingerprint_and_component_match": true,
+    "exact_quality_count": true,
+    "original_identity_and_revision_checked": true,
+    "quality_raw_data_digest_only": true,
+    "original_operation_version_CAS": true,
+    "independent_postwrite_GET": true,
+    "source_change_replays_idempotent": true,
+    "no_false_verified_or_roi": true,
+    "no_second_scheduler_or_writer": true,
+    "version_cas_monotonic": true,
+    "nonterminal_all_fourteen_required": true,
+    "only_original_quality_fingerprints_joined": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "cause": "Historical quality source exists but is neither identical to source-bound innovation delivery nor a current effect. The original owner must reconcile and verify the matching first-party source to avoid repeated generic design without progress.",
+    "prevention_rule": "The SAME protected daily source consumer first joins exact original quality fingerprint to the original 14 candidate/operation/obligation sources and records nonterminal original evaluation readiness using original CAS and readback, before real code or effect decisions. Never close from legacy verified status alone.",
+    "regression_guard": "tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs",
+    "next_owner": "original agent-integration-engineer and agent-growth-market through existing protected releases and Heartbeat",
+    "effect_proof": "CURRENT_ORIGINAL_OWNER_EVIDENCE_RECEIPT_AND_INDEPENDENT_PRODUCTION_EFFECT_DUE"
+  }
+}

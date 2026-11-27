@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "delivery|bg169|exact-provider-ancestry-consumer|20261124-v1",
+  "maturity": "OBSERVED",
+  "compiler": {
+    "failure_class": "BG169_MAIN_ANCESTRY_UNVERIFIED",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "root_cause": "Original BG169 terminal transport converted provider compare.behind_by via Number() before the stricter #6176 guard; null and other malformed data become apparent zero. Exact provider base/merge-base and status consistency were not checked at this boundary. Two executable tests against the real inline source consumer reproduce the defect on protected main; no historical unsafe merge is asserted.",
+  "evidence": {
+    "issue": 4661,
+    "predecessor_pr": 6176,
+    "source_base": "dc04d1f76705d05682048991051a67b098761d62",
+    "baseline_regressions_failed": 2,
+    "corrected_combined_regressions": "5/5",
+    "yaml": "parsed"
+  },
+  "fix": "Validate provider numeric ancestry, exact base SHA and zero-behind merge base/status consistency before constructing the native terminal guard payload. Pass the raw numeric value, not a coercion. Preserve all existing protected gates and original transport.",
+  "prevention": [
+    "Never accept missing or coerced provider ancestry at the native merge consumer.",
+    "Do not reset original drift budgets or claim global promotion arbitration."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bg169-terminal-provider-ancestry-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-bg169-terminal-provider-ancestry-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bg169-terminal-provider-ancestry-20261124.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-bg169-terminal-provider-ancestry-20261124.test.mjs",
+    "tests/brain-bg169-squash-transport-20261123.test.mjs"
+  ],
+  "status": "CANDIDATE_PENDING_PROTECTED_CI"
+}

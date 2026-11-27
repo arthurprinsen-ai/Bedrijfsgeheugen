@@ -13,6 +13,19 @@ from brain.publish_approved_blog_v2_core import *
 # learning-driven selection required; render must receive an exact approved slug
 
 
+def is_redirected_blog_slug(slug):
+    """Never schedule a canonical-redirect duplicate as another blog article."""
+    redirects = pathlib.Path('_redirects')
+    if not redirects.is_file():
+        return False
+    source = '/blog/' + slug + '/'
+    for line in redirects.read_text(encoding='utf-8').splitlines():
+        parts = line.split('#', 1)[0].split()
+        if len(parts) >= 3 and parts[0] == source and parts[1].startswith('/blog/') and parts[1] != source and parts[2].startswith('301'):
+            return True
+    return False
+
+
 def select_due_slug():
     """Select the first due article that still needs a new artifact.
 
@@ -27,6 +40,9 @@ def select_due_slug():
 
     for row in rows:
         q = core.queue_contract(row)
+        if is_redirected_blog_slug(q['slug']):
+            print(f"CANONICAL_REDIRECT_DUPLICATE:{q['slug']}: skipped by original publisher", file=core.sys.stderr)
+            continue
         target = pathlib.Path('blog') / q['slug'] / 'index.html'
         if target.exists():
             print(

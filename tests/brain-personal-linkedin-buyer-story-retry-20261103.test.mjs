@@ -6,10 +6,10 @@ const source=readFileSync(new URL('../supabase/functions/powerhouse-content-orch
 test('original personal builder removes the conflicting model/page/action status-dump directive',()=>{
   assert.doesNotMatch(source,/Gebruik journey_snapshot om in gewone taal te laten zien wat er inmiddels aantoonbaar staat en gebeurt: bijvoorbeeld hoeveel AI-modellen/);
   assert.match(source,/Gebruik journey_snapshot uitsluitend als interne feitelijke bron/);
-  assert.match(source,/Schrijf 150–175 gewone Nederlandse woorden/);
-  assert.match(source,/Begin direct met een herkenbaar probleem bij een ondernemer of bedrijf/);
-  assert.match(source,/in precies vier korte alinea’s/);
-  assert.match(source,/als geen geloofwaardig eigen nieuw feit bestaat, verzin niets/);
+  assert.match(source,/P0 EXPERT-BOUWER/);
+  assert.match(source,/Begin bij de echte situatie of een scherpe technische afweging/);
+  assert.match(source,/zonder vast sjabloon/);
+  assert.match(source,/als geen geloofwaardig eigen nieuw feit bestaat, verzin niets/i);
 });
 test('the original strict uniqueness, personal source, protected rights and editorial validator remain intact',()=>{
   assert.match(source,/personalEditorialViolations/);

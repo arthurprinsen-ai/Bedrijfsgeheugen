@@ -1,0 +1,56 @@
+{
+  "fingerprint": "security|original-agent|immutable-github-oidc-subject|20261124-v1",
+  "obligation_id": "security-guardian-continuous-20261120:immutable-oidc-20261124",
+  "owner": "existing agent-security / original Security Operations / ONE BRAIN",
+  "compiler": {
+    "failure_class": "SECURITY_GUARDIAN_OIDC_IMMUTABLE_SUBJECT_MISMATCH",
+    "scope": "SECURITY",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-security-guardian-continuous-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-security-guardian-continuous-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-security-guardian-continuous-20261120.test.mjs"
+    ],
+    "live_validation": "Protected merge + exact Netlify CURRENT/READY + original workflow signed heartbeat HTTP 2xx, stored/readback true; independent customer observation; WARN is not verified site coverage.",
+    "mode_note": "Fixtures do not constitute provider runtime proof."
+  },
+  "root_cause": "After #6084 deployment, existing workflow run 45457361575 received HTTP 401. Native GitHub OIDC subject template readback use_default=true, use_immutable_subject=true; the previous verifier expected a legacy name-only subject.",
+  "source_evidence": {
+    "original_pr": 6084,
+    "run_id": 45457361575,
+    "job_id": 138670327978,
+    "provider_endpoint": "GET /repos/arthurprinsen-ai/Bedrijfsgeheugen/actions/oidc/customization/sub",
+    "use_default": true,
+    "use_immutable_subject": true,
+    "owner_id": "236997948",
+    "repository_id": "1303700955",
+    "verified": 10,
+    "warning": 11,
+    "failed": 0
+  },
+  "correction": {
+    "exact_immutable_subject": true,
+    "independent_owner_and_repo_claims": true,
+    "existing_signature_and_time_gates_preserved": true,
+    "no_repository_policy_change": true
+  },
+  "prevention": [
+    "Read provider subject template before consumer auth changes; reject legacy or foreign IDs.",
+    "Keep authentic WARN and FAIL visible; do not count a transport ACK as security remediation.",
+    "No new agents or schedules."
+  ],
+  "tests": [
+    "tests/brain-security-guardian-continuous-20261120.test.mjs"
+  ],
+  "status": "PR_CANDIDATE_NOT_LIVE",
+  "independent_live_proven": false,
+  "next_action": "Protected Required, CodeQL, BRAIN, Netlify and original signed heartbeat readback."
+}

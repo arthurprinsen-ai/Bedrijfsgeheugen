@@ -1,0 +1,3 @@
+# Dagelijkse blog: titel begon met een kleine letter — 2026-11-20
+
+De dagelijkse Powerhouse-blog van 2026-11-20 kreeg de titel "boekhouding klaarmaakt: wat verandert er voor jou?". `seo_title` bouwt `<zoekwoord>: <suffix>` en het zoekwoord is kleine letters; er werd nergens een hoofdletter gezet. De bestaande test `brain-blog-seo-focus-pronoun-20261108` blokkeerde de PR terecht (`preflight` rood, daardoor ook `test`). `seo_title` geeft nu altijd een titel met hoofdletter terug; alle andere logica, het zoekwoord zelf en de test zijn ongewijzigd. Nieuwe test: `tests/brain-blog-seo-title-capital-20261120.test.mjs`.

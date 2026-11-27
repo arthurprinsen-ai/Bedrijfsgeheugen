@@ -1,0 +1,39 @@
+{
+  "fingerprint": "site|rituals|home-zonder-lek|20261118-v1",
+  "date": "2026-11-18",
+  "owner": "agent-reliability",
+  "obligation_id": "site|rituals|home-zonder-lek|20261118-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {
+    "failure_class": "BRAND_DIRECTION_DRIFT",
+    "scope": "SITE",
+    "machine_enforceable": false,
+    "repeat_count": 4,
+    "security_sensitive": false
+  },
+  "root_cause": "Het besluit van 17 nov (gele LEK-teller alleen op /frisse-blik en /prijzen) was in twee generatoren doorgevoerd, maar de homepage-opbouw in bouw-v18-chrome-alles.mjs voegde het blok nog los toe. Een besluit dat op meerdere plekken in de buildketen wordt uitgevoerd, werd maar op een deel nagelopen.",
+  "correction": "LEK uit de homepage-injectie gehaald; de conditie voor /frisse-blik en /prijzen in de andere generatoren blijft.",
+  "prevention": [
+    "Na een merkbesluit dat een element van pagina's haalt: zoek alle generatoren die het element invoegen (grep op de exportnaam) en lees de live homepage terug, niet alleen de pagina's waar je het besluit voor testte.",
+    "Geen gedragseffect claimen zonder voor/na-meting."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/seo-homepage-context-slider-readability.test.mjs"
+    ],
+    "source": [
+      "tools/bouw-v18-chrome-alles.mjs"
+    ],
+    "outcome": "Lokaal: vier gerelateerde tests groen. Live-readback open."
+  }
+}

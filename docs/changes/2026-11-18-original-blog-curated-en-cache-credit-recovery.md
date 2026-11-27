@@ -1,0 +1,16 @@
+# Blog 18 November — complete source-exact curated English cache under exhausted OpenAI API credit
+
+Date: 2026-11-18. Original controlled blog publisher: `.github/workflows/powerhouse-daily-blog.yml`. Same existing content obligation 2026-11-18/blog, status APPROVED after original 6-hour no-veto window. Parent continuity incident #5232, translator #4215, closed-loop #4198.
+
+## Independent original source and first outage
+GitHub original protected publisher run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44257300433 successfully built the original APPROVED Dutch blog source. Its `STATIC_I18N_CACHE_GAPS_V1` event named **exactly** `powerhouse-blog-2026-11-18.json` and enumerated precisely 76 uncached Dutch public article strings. The same original build called OpenAI's approved `gpt-5-mini` static EN provider, which returned HTTP429 body `credit_balance_exhausted` / `insufficient_quota` and stopped correctly with `STATIC_I18N_PROVIDER_BILLING_BLOCKED`. No credit balance change, unauthorized token or provider swap is performed here. No article or external URL was proven published by that run.
+
+## Controlled same-content recovery instead of disabling the publisher
+A curated English cache patch is prepared in the same **original approved static i18n versioned patch path** `config/bg-static-i18n-en.d/powerhouse-blog-2026-11-18.json`, using precisely those 76 Dutch strings from the original provider-independent GitHub run; no made-up article sources or editable customer data. Each has a nonempty faithful English translation; hypotheses, evidence limitations, deadlines, finance terms, PSD2, OAuth, Twinfield and test-versus-result distinctions are preserved. This is an explicitly curated source patch, **not a claim of an OpenAI API translation receipt**. Immutable URLs/placeholders are checked using the existing original `assertFaithfulTranslationBatch` contract. The tests also check that a 50%-time reduction remains a testable hypothesis, not a guaranteed outcome.
+
+After the protected content-only patch merges, the **same original blog publisher** (no second executor, schedule, service or unverified fallback) can fetch the approved original day content and verify the now-committed full static EN cache offline. Original mandatory quality checks, same-date SEO/brand copy, unique identity, protected PR, main merge and Netlify production readback still apply. A cached bilingual source is not itself a live blog.
+
+## Acceptance evidence and remaining external boundary
+Protected Required/CodeQL and merge of this cache patch, original publisher successful re-run (source approval still live, veto still absent), final blog protected PR merge, independent HTTP200 public NL **and EN** matching article, no missing default NL, exact provider URL/ID as appropriate, original obligation LIVE_PROVEN and Brain/Heartbeat outcome. Do not log green until all of those are true.
+
+This is a content-specific safe recovery for 76 observed strings, not proof that the API account has any credits. Restoring authorised OpenAI API billing/quota is separately necessary for *future* unseen translations, and other website/i18n error incident #4215 remains OPEN for provider availability. Preserve original daily publisher and no duplicate publication.

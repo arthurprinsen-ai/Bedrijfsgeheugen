@@ -9,7 +9,85 @@ const WORKFLOW='powerhouse-daily-self-evolution.yml';
 const EVENTS=new Set(['schedule','workflow_dispatch']);
 const REPO=/^[a-z0-9_.-]+\/[a-z0-9_.-]+$/i;
 
-export function assessDailyRunAdmission({now,runId,event,ref,workflow,snapshot}={}){
+
+/**
+ * A limited recovery run is never a daily learning execution. GitHub Actions
+ * workflow_runs do not reliably include workflow_dispatch input values, so
+ * require independent native GitHub JOB evidence to prove that the daily
+ * admission and both normal daily jobs were SKIPPED and that exactly one
+ * original recovery path ran. Missing/truncated/racing provider evidence is
+ * treated as an earlier full daily candidate (fail closed).
+ */
+const ORIGINAL_RECOVERY_JOBS=Object.freeze([
+  'original-intake-recovery',
+  'original-innovation-code-candidate',
+  'original-delivery-recovery'
+]);
+const ORIGINAL_DAILY_JOBS=Object.freeze([
+  'daily-admission','improve','model-freshness'
+]);
+const ALL_EXPECTED_JOBS=new Set([...ORIGINAL_RECOVERY_JOBS,...ORIGINAL_DAILY_JOBS]);
+
+export function isProvenScopedRecoveryRun(run,jobsReadback){
+  if(run?.event!=='workflow_dispatch'||run?.head_branch!=='main'||
+    !jobsReadback||!Number.isSafeInteger(jobsReadback.total_count)||
+    jobsReadback.total_count!==ALL_EXPECTED_JOBS.size||
+    !Array.isArray(jobsReadback.jobs)||
+    jobsReadback.jobs.length!==jobsReadback.total_count)return false;
+  const byName=new Map();
+  for(const job of jobsReadback.jobs){
+    if(typeof job?.name!=='string'||!ALL_EXPECTED_JOBS.has(job.name)||
+      byName.has(job.name)||typeof job?.status!=='string')return false;
+    byName.set(job.name,job);
+  }
+  if(byName.size!==ALL_EXPECTED_JOBS.size)return false;
+  if(ORIGINAL_DAILY_JOBS.some(name=>{
+    const job=byName.get(name);
+    return job?.status!=='completed'||job?.conclusion!=='skipped';
+  }))return false;
+  const scoped=ORIGINAL_RECOVERY_JOBS.filter(name=>{
+    const job=byName.get(name);
+    return job?.conclusion!=='skipped'&&
+      ((job?.status==='completed'&&['success','failure','cancelled','timed_out','neutral'].includes(job?.conclusion))||
+       (['queued','in_progress','waiting'].includes(job?.status)&&job?.conclusion==null));
+  });
+  if(scoped.length!==1)return false;
+  return ORIGINAL_RECOVERY_JOBS.filter(name=>!scoped.includes(name)).every(name=>{
+    const job=byName.get(name);
+    return job?.status==='completed'&&job?.conclusion==='skipped';
+  });
+}
+
+
+/**
+ * One bounded retry is safe ONLY when native GitHub proves that the previous
+ * full daily run failed at read-only daily-admission BEFORE any improve,
+ * Engineering code candidate, model-freshness or recovery execution began.
+ * A previously admitted (even later failed) true daily must still block.
+ * Unproven or repeated aborts remain blocking to prevent retry storms.
+ */
+export function isProvenPreExecutionAdmissionAbort(run,jobsReadback){
+  if(!EVENTS.has(run?.event)||run?.head_branch!=='main'||
+    run?.status!=='completed'||run?.conclusion!=='failure'||
+    !jobsReadback||jobsReadback.total_count!==ALL_EXPECTED_JOBS.size||
+    !Array.isArray(jobsReadback.jobs)||
+    jobsReadback.jobs.length!==ALL_EXPECTED_JOBS.size)return false;
+  const byName=new Map();
+  for(const job of jobsReadback.jobs){
+    if(!ALL_EXPECTED_JOBS.has(job?.name)||byName.has(job.name)||
+      typeof job.status!=='string')return false;
+    byName.set(job.name,job);
+  }
+  if(byName.size!==ALL_EXPECTED_JOBS.size)return false;
+  const admission=byName.get('daily-admission');
+  if(admission.status!=='completed'||admission.conclusion!=='failure')return false;
+  return [...ORIGINAL_RECOVERY_JOBS,'improve','model-freshness'].every(name=>{
+    const job=byName.get(name);
+    return job?.status==='completed'&&job?.conclusion==='skipped';
+  });
+}
+
+export function assessDailyRunAdmission({now,runId,event,ref,workflow,snapshot,priorJobsByRunId={}}={}){
   const base={contract:'powerhouse-daily-run-admission-v1',status:'HOLD_INVALID_PROVIDER_EVIDENCE',
     allow_execution:false,prior_run_id:null,proof:'NOT_TERMINAL_JOB_SUCCESS'};
   if(typeof now!=='string'||!Number.isFinite(Date.parse(now))||
@@ -40,11 +118,33 @@ export function assessDailyRunAdmission({now,runId,event,ref,workflow,snapshot}=
     (x.created_at<current.created_at ||
     (x.created_at===current.created_at&&x.id<current.id)))
     .sort((a,b)=>a.created_at.localeCompare(b.created_at)||a.id-b.id);
-  if(older.length){
-    return {...base,status:'DUPLICATE_DAILY_RUN_SUPPRESSED',prior_run_id:older[0].id,
-      earlier_status:older[0].status,earlier_conclusion:older[0].conclusion??null};
+  // A recovery-only run has no normal learning/admission jobs, regardless
+  // of its overall success or failure. Do not let it consume today's ONE
+  // allowed genuine daily execution. Unknown job proofs remain blocking.
+  const scopedRecoveries=older.filter(row=>
+    isProvenScopedRecoveryRun(row,priorJobsByRunId?.[row.id]));
+  const preExecutionAborts=older.filter(row=>
+    isProvenPreExecutionAdmissionAbort(row,priorJobsByRunId?.[row.id]));
+  const earlierDaily=older.filter(row=>
+    !scopedRecoveries.some(s=>s.id===row.id)&&
+    !preExecutionAborts.some(a=>a.id===row.id));
+  if(earlierDaily.length){
+    return {...base,status:'DUPLICATE_DAILY_RUN_SUPPRESSED',
+      prior_run_id:earlierDaily[0].id,
+      earlier_status:earlierDaily[0].status,
+      earlier_conclusion:earlierDaily[0].conclusion??null,
+      scoped_recoveries_excluded:scopedRecoveries.length,
+      pre_execution_aborts_verified:preExecutionAborts.length};
   }
-  return {...base,status:'FIRST_DAILY_RUN_ADMITTED',allow_execution:true};
+  if(preExecutionAborts.length>1){
+    return {...base,status:'PRE_EXECUTION_RETRY_BUDGET_EXCEEDED',
+      prior_run_id:preExecutionAborts[0].id,
+      scoped_recoveries_excluded:scopedRecoveries.length,
+      pre_execution_aborts_verified:preExecutionAborts.length};
+  }
+  return {...base,status:'FIRST_DAILY_RUN_ADMITTED',allow_execution:true,
+    scoped_recoveries_excluded:scopedRecoveries.length,
+    pre_execution_aborts_verified:preExecutionAborts.length};
 }
 
 export function evaluateProviderDailyRun({
@@ -58,8 +158,21 @@ export function evaluateProviderDailyRun({
   // Day-scoped history: an incomplete first page is NOT reliable absence.
   const snapshot=request('repos/'+repo+'/actions/workflows/'+WORKFLOW+
     '/runs?branch=main&created='+now.slice(0,10)+'&per_page=100');
+  const priorJobsByRunId={};
+  // All earlier run jobs are native provider evidence: a scoped recovery
+  // can be manual only, but an admission-only aborted daily can be manual
+  // OR scheduled. Both exclusions require independent exact job receipts.
+  for(const row of Array.isArray(snapshot?.workflow_runs)?snapshot.workflow_runs:[]){
+    if(row?.id===id||!EVENTS.has(row?.event)||
+      row?.head_branch!=='main'||row?.created_at?.slice(0,10)!==now.slice(0,10))
+      continue;
+    const thisRun=snapshot.workflow_runs.find(x=>x.id===id);
+    if(!thisRun||!(row.created_at<thisRun.created_at||
+      (row.created_at===thisRun.created_at&&row.id<id)))continue;
+    priorJobsByRunId[row.id]=request('repos/'+repo+'/actions/runs/'+row.id+'/jobs?per_page=100');
+  }
   return assessDailyRunAdmission({now,runId:id,event:env.GITHUB_EVENT_NAME,
-    ref:env.GITHUB_REF,workflow,snapshot});
+    ref:env.GITHUB_REF,workflow,snapshot,priorJobsByRunId});
 }
 
 function gh(endpoint){

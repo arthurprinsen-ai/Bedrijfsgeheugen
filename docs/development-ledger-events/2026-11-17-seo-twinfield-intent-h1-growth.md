@@ -1,0 +1,11 @@
+# SEO original money-page H1 message-match · 2026-11-17
+- Parent issue: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4918
+- Canonical original SEO recommendation: `seo-owner-update:2026-11-17:twinfield-koppeling` (`suggested` before this PR)
+- Scope and original owner: `twinfield-koppeling.html`, original BG169 SEO Order Engine + website protected publisher, no other website changes
+- Provider observation: 2026-11-17 17:33:59 UTC DataForSEO on-page HTTP 200, title `Twinfield API-koppeling laten maken`, H1 missing the same buyer intent; SEO score 100 was not visitor evidence
+- Change: align H1 wording and original canonical source/CTA without making new claims, pages, schedulers or publishing copies
+- Verification: `tests/brain-seo-twinfield-intent-h1-20261117.test.mjs` covers raw HTML, final-build money-prerender, existing canonical owner and learning outcome boundary
+- Pre-merge: protected Required, CodeQL, original writer and lease guards must pass
+- Post-merge: original Netlify exact-commit CURRENT READY, independent public canonical/H1/CTA crawl and same-ID original recommendation receipt
+- Customer result: current GA4 `MISSING` and GSC `AWAITING_PROVIDER`. No verified organic visitor or customer uplift. Require source repair and 7/14/28-day provider metrics and ONE BRAIN/Heartbeat consumer ACK before claiming success
+- Status: candidate evidence, not a released production outcome unless all release readbacks are present

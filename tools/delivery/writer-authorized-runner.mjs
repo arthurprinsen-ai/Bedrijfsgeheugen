@@ -1,4 +1,5 @@
 import { createGitHubWriterAdapter, createSupabaseLeaseVerifier } from './writer-real-adapters.mjs';
+import { resolveReviewedEpoch } from './reviewed-epoch.mjs';
 import { integrateHandoffAfterLease } from './writer-handoff-integration.mjs';
 export async function runAuthorizedWriterHandoff({
  owner,repo,githubToken,authorizedPgQuery,manifest,approvedPaths,
@@ -22,4 +23,23 @@ export async function runAuthorizedWriterHandoff({
    const rows=await authorizedPgQuery('select writer_control.release($1,$2,$3) as released',[manifest.obligation,holder,token]);
    if(rows?.[0]?.released!==true)throw Error('WRITER_LEASE_RELEASE_NOT_CONFIRMED');
  }
+}
+
+// Existing writer's native read-only preflight for reviewed v2. Does not acquire
+// a lease or publish; a separate protected consumer must establish exact CAS.
+export async function preflightReviewedWriterHandoff({
+ owner,repo,githubToken,manifest,manifestBytes,policy,policyBytes,
+ invocationSha,checkoutSha,fetchImpl
+}){
+ if(typeof policyBytes!=='string'||JSON.stringify(JSON.parse(policyBytes))!==JSON.stringify(policy))throw Error('POLICY_BYTES_MISMATCH');
+ const github=createGitHubWriterAdapter({owner,repo,token:githubToken,fetchImpl});
+ // Re-read immutable protected checkout bytes independently from the provider.
+ const [nativeManifest,nativePolicy]=await Promise.all([
+   github.readFile('config/brain-writer-approved-handoff.json',invocationSha),
+   github.readFile('config/brain-writer-approved-paths.json',invocationSha)
+ ]);
+ if(nativeManifest!==manifestBytes||nativePolicy!==policyBytes)throw Error('PROTECTED_REVIEW_BYTES_MISMATCH');
+ return resolveReviewedEpoch({manifest,manifestBytes,policy,invocationSha,checkoutSha,
+   readMain:()=>github.readHead('main'),readPR:n=>github.readReviewedPR(n),
+   readFile:(p,ref)=>github.readFile(p,ref),verifyAncestor:(a,b)=>github.verifyReviewedAncestor(a,b)});
 }

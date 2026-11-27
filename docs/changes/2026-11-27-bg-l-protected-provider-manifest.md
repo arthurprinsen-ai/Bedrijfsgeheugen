@@ -1,0 +1,3 @@
+# Existing bg-l manifest recovery
+
+Original PR #6125 protected merge c42277b1fdf46c67a9fce61cf7345611c60247e9 and Netlify release are verified, but native Supabase authority failed on missing manifest entry. Native bg-l version 10 is ACTIVE with verify_jwt=false and still lacks the merged incident helper. Publisher v1430 entrypoint matches. Register only bg-l in existing config, preserve public redirect mode (no new authorization change), test exact scope against original resolver. Original Git integration remains sole production writer. After protected merge verify provider byte parity and original BRAIN/terminal closure. No external send, duplicate deployment or runtime proof claimed.

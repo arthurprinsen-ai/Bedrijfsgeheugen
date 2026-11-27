@@ -37,3 +37,18 @@ test('the external-recipient incident is registered where every agent and skill 
   }
   assert.match(readFileSync('.github/workflows/powerhouse-autonomous-engineering-optimizer.yml', 'utf8'), /egress-guard\.mjs/);
 });
+
+test('dedicated App key is only allowed inside the exact protected read-only identity job', () => {
+  const file = '.github/workflows/powerhouse-delivery-recovery-supervisor.yml';
+  const wf = readFileSync(file, 'utf8');
+  const secret = 'POWERHOUSE_RELEASE_APP_PRIVATE_KEY';
+  const denied = (path, contents, workflow = true) => scanText(path, contents, workflow).some(v => v.rule === 'SECRET_NOT_ALLOWLISTED' && v.detail === secret);
+  assert.equal(denied(file, wf), false);
+  assert.equal(denied('other.yml', wf), true);
+  assert.equal(denied(file, wf, false), true);
+  assert.equal(denied(file, wf.replace('environment: powerhouse-release-controller', 'environment: untrusted')), true);
+  assert.equal(denied(file, wf.replace('ref: ${{ github.sha }}', 'ref: candidate')), true);
+  assert.equal(denied(file, wf.replace('console.error(safe);', 'console.error(process.env.RELEASE_APP_PRIVATE_KEY);')), true);
+  assert.equal(denied(file, 'env: ${{ secrets.POWERHOUSE_RELEASE_APP_PRIVATE_KEY }}\n' + wf), true);
+  assert.equal(denied(file, wf + '\n  other-job:\n    env: ${{ secrets.POWERHOUSE_RELEASE_APP_PRIVATE_KEY }}\n'), true);
+});

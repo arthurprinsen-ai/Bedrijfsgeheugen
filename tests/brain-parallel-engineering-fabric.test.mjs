@@ -206,3 +206,53 @@ test('parallel policy refuses seven workers despite a forged tuning allowance', 
     policy:{...policy,scheduling:{max_parallel_packages:7}}
   }),/INVALID_PARALLEL_WAVE_BUDGET/);
 });
+
+test('mixed known and unknown paths never enter targeted-only fast path', () => {
+  const result = selectAffectedTests({paths:['brain/a.mjs','mystery/runtime.bin'], deliveryConfig, policy});
+  assert.equal(result.failClosed,true); assert.ok(result.profiles.includes('required'));
+});
+test('critical path first removes one wave under constrained capacity', () => {
+  const workPackages = ['A','B','C','D','E'].map(id => ({id, paths:['brain/'+id+'.mjs'],baseSha:'main',candidateSha:id,dependsOn:id==='D'?['C']:id==='E'?['D']:[]}));
+  const plan = buildExecutionPlan({workPackages,deliveryConfig,policy:{...policy,scheduling:{max_parallel_packages:2}}});
+  assert.deepEqual(plan.waves.map(w=>w.map(p=>p.id)),[['C','A'],['D','B'],['E']]);
+});
+
+test('ERIS shadow selects duration-aware grouping without changing incumbent or granting execution',async()=>{
+  const {compareRiskWeightedPlan}=await import('../scripts/brain/parallel-engineering-fabric.mjs');
+  const workPackages=['A','B','C','D'].map(id=>({id,paths:['brain/'+id+'.mjs'],baseSha:'main',candidateSha:id}));
+  const args={workPackages,deliveryConfig,policy:{...policy,scheduling:{max_parallel_packages:2}}};
+  const plan=buildExecutionPlan(args);
+  const predictions=plan.packages.map(p=>({id:p.id,baseSha:p.baseSha,candidateSha:p.candidateSha,cacheIdentity:p.cacheIdentity,evidenceRef:'synthetic:'+p.id,medianSeconds:['A','C'].includes(p.id)?100:1,highSeconds:['A','C'].includes(p.id)?100:1,retrySeconds:0,failureUpper:0}));
+  const result=compareRiskWeightedPlan({...args,predictions});
+  assert.equal(result.status,'SHADOW_CHALLENGER');
+  assert.equal(result.baseline.conservativeSeconds,200);
+  assert.equal(result.preferred.conservativeSeconds,101);
+  assert.equal(result.promotionAuthority,false);
+  assert.equal(result.executionAuthority,false);
+  assert.deepEqual(buildExecutionPlan(args).waves.map(w=>w.map(p=>p.id)),[['A','B'],['C','D']]);
+  for(const bad of [predictions.slice(1),[...predictions.slice(1),predictions[1]],predictions.map(p=>({...p,cacheIdentity:'stale'})),predictions.map(p=>({...p,failureUpper:NaN}))]){
+    assert.equal(compareRiskWeightedPlan({...args,predictions:bad}).status,'ABSTAIN');
+  }
+  const equal=predictions.map(p=>({...p,medianSeconds:1,highSeconds:1}));
+  assert.equal(compareRiskWeightedPlan({...args,predictions:equal}).status,'KEEP_INCUMBENT');
+});
+test('ERIS preserves dependency, resource, same-obligation and capacity constraints for all variants',async()=>{
+  const {compareRiskWeightedPlan}=await import('../scripts/brain/parallel-engineering-fabric.mjs');
+  const args={workPackages:[
+    {id:'A',paths:['brain/a.mjs'],baseSha:'main',candidateSha:'a',resources:['shared']},
+    {id:'B',paths:['site/b.js'],baseSha:'main',candidateSha:'b',resources:['shared']},
+    {id:'C',paths:['brain/c.mjs'],baseSha:'main',candidateSha:'c',dependsOn:['A'],obligationId:'x'},
+    {id:'D',paths:['site/d.js'],baseSha:'main',candidateSha:'d',obligationId:'x'}
+  ],deliveryConfig,policy:{...policy,scheduling:{max_parallel_packages:2}}};
+  const plan=buildExecutionPlan(args);
+  const predictions=plan.packages.map((p,i)=>({id:p.id,baseSha:p.baseSha,candidateSha:p.candidateSha,cacheIdentity:p.cacheIdentity,evidenceRef:'synthetic',medianSeconds:i+1,highSeconds:i+2,retrySeconds:4,failureUpper:0.1}));
+  const result=compareRiskWeightedPlan({...args,predictions});
+  for(const v of [result.baseline,...result.alternatives]){
+    const index=id=>v.waves.findIndex(w=>w.includes(id));
+    assert.equal(new Set(v.waves.flat()).size,4);
+    assert.ok(v.waves.every(w=>w.length<=2));
+    assert.ok(index('A')<index('C'));
+    assert.notEqual(index('A'),index('B'));
+    assert.notEqual(index('C'),index('D'));
+  }
+});
