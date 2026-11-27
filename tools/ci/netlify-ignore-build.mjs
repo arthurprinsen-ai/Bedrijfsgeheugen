@@ -1,13 +1,31 @@
 import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { readVerifiedPublishedSha } from '../delivery/netlify-live-gap-reconcile.mjs';
 import { deriveNetlifyDeploymentApplicability } from '../delivery/netlify-deployment-applicability.mjs';
 
-const cached = String(process.env.CACHED_COMMIT_REF || '').trim();
+let cached = String(process.env.CACHED_COMMIT_REF || '').trim();
 const commit = String(process.env.COMMIT_REF || '').trim();
 
 function failOpen(reason) {
   console.log(`NETLIFY_BUILD_REQUIRED: ${reason}`);
   process.exit(1);
+}
+
+// A cached build may never have become the live production deploy. Compare to
+// the real production marker, not the last cached build, before skipping.
+if (process.env.CONTEXT === 'production') {
+  try {
+    const published = await readVerifiedPublishedSha();
+    if (!published) failOpen('production marker identity unverified');
+    if (published === commit) {
+      console.log('NETLIFY_BUILD_SKIPPED: exact production source already published');
+      process.exit(0);
+    }
+    execFileSync('git', ['merge-base','--is-ancestor',published,commit], {stdio:'ignore'});
+    cached = published;
+  } catch (error) {
+    failOpen('production ancestry unverified');
+  }
 }
 
 if (!cached || !commit || cached === commit) {

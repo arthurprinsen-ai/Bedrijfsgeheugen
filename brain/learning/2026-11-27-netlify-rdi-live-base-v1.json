@@ -1,0 +1,31 @@
+{
+  "status": "CANDIDATE_TEST_ONLY",
+  "owner": "agent-integration-control-plane",
+  "fingerprint": "delivery|netlify-rdi-live-base|20261127-v1",
+  "sourceBase": "89b94bcd62770015486cb08b2c1a89e5025faa20",
+  "runtimeVerified": false,
+  "mergeAuthorized": false,
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-rdi-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-rdi-20261127.test.mjs"
+    ],
+    "invariants": [
+      "No authorization from score; production marker identity distinct from runtime health."
+    ]
+  },
+  "evidence": {
+    "observed_deploy": "https://app.netlify.com/projects/bedrijfsgeheugen/deploys/6b097891ccb09a2ade2887e7",
+    "comparison": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/compare/c42277b1fdf46c67a9fce61cf7345611c60247e9...89b94bcd62770015486cb08b2c1a89e5025faa20"
+  },
+  "root_cause": "Three source commits ahead; source-only changes may correctly be skipped. Existing native build ignore uses cached commit rather than actually published production base, creating a potential missed-runtime-diff risk; causal link to observed cancellation not established.",
+  "prevention_rule": "Require production release marker identity and ancestor proof before native skip; otherwise build. Keep source-only drift separate; score remains advisory until calibrated and independently verified."
+}

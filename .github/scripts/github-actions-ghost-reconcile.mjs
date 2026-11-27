@@ -10,6 +10,20 @@ export const GHOST_INCIDENT = 4655;
 const DAY = 24 * 60 * 60 * 1000;
 const MAX_REPAIR_PER_SWEEP = 8;
 
+// Advisory, not a calibrated failure probability. No mutation authority.
+const STALL_PROBE_BUDGET=8;
+const STALL_SCALE_MS=15*60_000;
+export function classifyBrainQueueStall(run,{jobsTotal,now=Date.now()}={}){
+ const no={risk:0,state:'NOT_OBSERVED',mutationAuthority:false};
+ if(!run||run.path!=='.github/workflows/unified-brain-delivery.yml'||run.event!=='workflow_dispatch'||run.head_branch!=='main'||run.status!=='queued'||run.conclusion!==null||/^BRAIN delivery PR #[1-9]\d* [0-9a-f]{40}$/i.test(String(run.display_title||'')))return no;
+ const created=Date.parse(run.created_at||''),updated=Date.parse(run.updated_at||'');
+ if(!Number.isFinite(created)||!Number.isFinite(updated)||!Number.isFinite(now)||created>now||updated>now||Math.abs(updated-created)>60_000||jobsTotal!==0)return no;
+ const age=now-created;
+ const risk=-Math.expm1(-Math.pow(age/STALL_SCALE_MS,1.5));
+ return {risk,state:age>=STALL_SCALE_MS?'EARLY_STALL_WARNING':'WATCH',age_ms:age,mutationAuthority:false};
+}
+
+
 export function classifyGhost(run, { jobsTotal, mainSha, openHeadShas = [], now = Date.now() } = {}) {
   if (!run || run.status !== 'queued' || run.conclusion != null) return { eligible: false, reason: 'NOT_QUEUED' };
   if (!Number.isInteger(jobsTotal) || jobsTotal !== 0) return { eligible: false, reason: 'JOBS_EXIST_OR_UNKNOWN' };
@@ -89,6 +103,19 @@ async function main() {
   const reports = [];
   const runProofs = [];
   const newAttempts = [];
+  // Existing sweep only: read-only early warning, independent of the 24h repair gate.
+  const earlyBrainStalls=[];
+  const earlyProbeCandidates=queued.filter(run=>classifyBrainQueueStall(run,{jobsTotal:0}).state==='EARLY_STALL_WARNING')
+    .sort((a,b)=>Date.parse(a.created_at)-Date.parse(b.created_at)||a.id-b.id);
+  for(const item of earlyProbeCandidates.slice(0,STALL_PROBE_BUDGET)){
+    try{
+      const run=await required('/actions/runs/'+item.id);
+      const jobs=await required('/actions/runs/'+item.id+'/jobs?per_page=1');
+      if(run.id!==item.id||run.head_sha!==item.head_sha||run.created_at!==item.created_at)continue;
+      const score=classifyBrainQueueStall(run,{jobsTotal:jobs.total_count});
+      if(score.state==='EARLY_STALL_WARNING')earlyBrainStalls.push({run_id:run.id,head_sha:run.head_sha,...score,providerBoundary:known.blocked.has(run.id),identityProven:false});
+    }catch{earlyBrainStalls.push({run_id:item.id,state:'READBACK_UNVERIFIED',mutationAuthority:false});}
+  }
   let repairCount = 0;
   for (const item of queued) {
     // Avoid probing any fresh run or old but clearly active candidate.
@@ -197,6 +224,7 @@ async function main() {
     independentlyQueuedKnownIds,
     providerIncidentStillOpen: reports.length > 0 || [...known.blocked].some(id => !known.completed.has(id) && !resolvedNew.includes(id)),
     collectionMissingKnownProviderIds,
+    earlyBrainStalls, earlyBrainStallProbeBudget: STALL_PROBE_BUDGET, earlyBrainStallUnprobed: Math.max(0,earlyProbeCandidates.length-STALL_PROBE_BUDGET),
     ghosts: reports, attempts: newAttempts.length,
     provider_blocks: newAttempts.filter(x => x.marker.includes('BLOCKED')).length, newly_resolved: resolvedNew };
   await mkdir('.artifacts', { recursive: true });

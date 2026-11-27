@@ -605,20 +605,46 @@ async function reserveGlobalUniquePublication(db:any,runDate:string,channel:stri
 async function ensureLinkedInCompanyMeasuredLink(db:any,runDate:string,art:any){
   const compact=runDate.replaceAll('-','');
   const key='li-company-'+compact;
-  const destination='https://www.bedrijfsgeheugen.nl/frisse-blik';
+  // The campaign destination must agree with what the public copy promises.
+  const copy=clean(art?.body)+' '+clean(art?.cta);
+  const freeAction=/checklist|zelfscan|gratis\s+(?:scan|check|test|werkboek)/i.test(copy);
+  const destination='https://www.bedrijfsgeheugen.nl'+(freeAction?'/zelfscan':'/frisse-blik');
   const campaignKey='powerhouse-'+runDate+'-linkedin-company';
   const measuredUrl='https://www.bedrijfsgeheugen.nl/g/'+key;
   const {error:linkError}=await db.from('bg_campaign_links').upsert({
     key,destination,campaign_key:campaignKey,status:'active',updated_at:new Date().toISOString()
   },{onConflict:'key'});
   if(linkError)throw new Error('LINKEDIN_COMPANY_MEASURED_LINK_UPSERT:'+linkError.message);
+  // A DB row is not proof that the published link can actually be opened.
+  let finalUrl:string='';
+  let finalStatus:number=0;
+  try{
+    const response=await fetch(measuredUrl,{method:'GET',redirect:'follow',signal:AbortSignal.timeout(12000)});
+    finalUrl=response.url;
+    finalStatus=response.status;
+    const final=new URL(finalUrl);
+    const expected=new URL(destination);
+    if(!response.ok || final.protocol!=='https:' ||
+       !['www.bedrijfsgeheugen.nl','bedrijfsgeheugen.nl'].includes(final.hostname) ||
+       final.pathname.replace(/\/+$/,'')!==expected.pathname.replace(/\/+$/,'')){
+      throw new Error('HTTP_'+response.status+'_FINAL_'+final.pathname);
+    }
+  }catch(e){
+    throw new Error('LINKEDIN_COMPANY_CTA_END_TO_END_FAILED:'+String(e).slice(0,240));
+  }
   let body=clean(art?.body);
   if(!body.includes('/g/')){
-    const cta='Benieuwd waar in jouw organisatie tijd, risico of besluitvorming blijft hangen? Doe de Frisse blik:\n'+measuredUrl;
+    const cta=freeAction
+      ? 'Ontdek gratis waar kennis en opvolging in jouw bedrijf weglekken:\n'+measuredUrl
+      : 'Benieuwd waar in jouw organisatie tijd, risico of besluitvorming blijft hangen? Doe de Frisse blik:\n'+measuredUrl;
     const hashIndex=body.search(/\n#[A-Za-z0-9_]/);
     body=hashIndex>=0 ? body.slice(0,hashIndex)+'\n\n'+cta+'\n'+body.slice(hashIndex+1) : body+'\n\n'+cta;
   }
-  const generationEvidence={...(art?.generation_evidence||{}),measurable_link:measuredUrl,campaign_key:campaignKey,link_destination:destination,measurable_link_verified:true};
+  const generationEvidence={
+    ...(art?.generation_evidence||{}),measurable_link:measuredUrl,campaign_key:campaignKey,
+    link_destination:destination,measurable_link_verified:true,link_final_url:finalUrl,
+    link_final_status:finalStatus,link_verified_at:new Date().toISOString()
+  };
   if(body!==clean(art?.body) || clean(art?.generation_evidence?.measurable_link)!==measuredUrl){
     const {error:updateError}=await db.from('powerhouse_content_artifacts').update({
       body,generation_evidence:generationEvidence,updated_at:new Date().toISOString()
