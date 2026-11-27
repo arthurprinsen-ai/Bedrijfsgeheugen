@@ -1,0 +1,37 @@
+{
+  "fingerprint": "delivery|adaptive-recovery-capacity|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Existing recovery supervisor fixed budget one; increased budget without capacity reserve may create queue pressure.",
+  "prevention_rule": "Bound advisory capacity by measured active runs and reserve; invalid evidence returns zero. Original writer must validate fanout before activation. Before opening the candidate, validate explicit top-level semantic evidence and tests against the canonical material-writeback guard, in addition to the learning compiler. Never treat advisory budget as live capacity.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-adaptive-recovery-capacity-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-adaptive-recovery-capacity-20261127.test.mjs"
+    ],
+    "invariants": [
+      "No mutation or merge authority; conservative capacity bound."
+    ]
+  },
+  "evidence": {
+    "observed_fixed_budget_source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/blob/6536f50b3ae5c39e0ef0422b65646cf026ddc3e1/.github/workflows/powerhouse-delivery-recovery-supervisor.yml#L59-L60",
+    "native_admission_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46019158411/job/140573974337",
+    "failure_code": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE:semantic_learning",
+    "tested_head": "a050094942ca6943262dfe7b7a13950327994925",
+    "regression_source": "tests/brain-adaptive-recovery-capacity-20261127.test.mjs",
+    "runtime_verified": false,
+    "owner_adoption_verified": false,
+    "fanout_assumption": 3,
+    "reserve_assumption": 2
+  },
+  "tests": [
+    "tests/brain-adaptive-recovery-capacity-20261127.test.mjs"
+  ]
+}
