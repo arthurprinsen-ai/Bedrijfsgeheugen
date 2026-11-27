@@ -1,0 +1,31 @@
+{
+  "fingerprint": "delivery|regulatory|terminal-predecessor-proof|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Terminal migration traversal demands that all unmerged predecessors be closed before successor terminal proof, even if one exact non-migration source blob was adopted. Original writer correctly waits for successor terminal evidence, causing circular closure dependency.",
+  "prevention_rule": "Only an open exact one-path regulatory source-observation predecessor with matching obligation, direct merged successor, live writer identity, complete file count and identical original/successor/current main blobs is provably non-migration. Keep predecessor open and lease intact until separate owner-authorized terminal closure; all other open predecessors and migration proof requirements remain fail-closed.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-terminal-predecessor-proof-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-terminal-predecessor-proof-20261127.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-terminal-predecessor-proof-20261127.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_terminal": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46038266326",
+    "successful_skill": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46038507380",
+    "source_blob": "462a0399dd33cdfdbb0f7ee15610d448d221832b",
+    "predecessor": 6201,
+    "successor": 6213,
+    "proof_status": "Isolated pure helper checks only; protected CI and live closure pending."
+  }
+}
