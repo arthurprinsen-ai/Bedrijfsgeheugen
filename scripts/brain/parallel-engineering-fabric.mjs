@@ -24,8 +24,9 @@ export function selectAffectedTests({ paths, deliveryConfig, policy }) {
   if (isKnownNonExecutableDocs(normalizedPaths, deliveryConfig)) { for (const p of tests.docs ?? []) profiles.add(p); return { profiles: stableUnique([...profiles]), lanes, contracts, failClosed: false, reason: null }; }
   for (const lane of lanes) for (const p of tests[lane] ?? []) profiles.add(p);
   if (contracts.includes('delivery-control-plane')) for (const p of tests.control_plane ?? []) profiles.add(p);
+  const unknownPaths = normalizedPaths.filter(p => { const scope = resolveForPaths([p], deliveryConfig); return !scope.lanes.length && !scope.contracts.length && !isKnownNonExecutableDocs([p], deliveryConfig); });
   const known = lanes.length > 0 || contracts.length > 0;
-  if (!known && (policy?.fail_closed_unknown_material_scope ?? policy?.affected_testing?.fail_closed_unknown_material_scope) === true) {
+  if ((!known || unknownPaths.length > 0) && (policy?.fail_closed_unknown_material_scope ?? policy?.affected_testing?.fail_closed_unknown_material_scope) === true) {
     for (const p of tests.full ?? ['required']) profiles.add(p);
     return { profiles: stableUnique([...profiles]), lanes, contracts, failClosed: true, reason: `Unknown material scope: ${normalizedPaths.join(', ')}` };
   }
@@ -80,9 +81,21 @@ export function buildExecutionPlan({ workPackages, deliveryConfig, policy }) {
       cacheIdentity: buildCacheIdentity({ baseSha: raw.baseSha, candidateSha: raw.candidateSha, paths: graph.paths, contracts: graph.contracts, tests: graph.testProfiles, policyVersion: policy?.version ?? 1, environment: raw.environment ?? null, configDigest: raw.configDigest ?? null, schemaDigest: raw.schemaDigest ?? null, dependencyDigest: raw.dependencyDigest ?? null, gateVersion: raw.gateVersion ?? null, contractDigest: raw.contractDigest ?? null })
     };
   }).sort((a, b) => a.id.localeCompare(b.id));
+  // Prefer the longest dependency chain when capacity is constrained; retain stable IDs for ties.
+  const children = new Map(packages.map(p => [p.id, []]));
+  for (const p of packages) for (const dep of p.dependsOn) children.get(dep).push(p.id);
+  const depth = new Map(); const visiting = new Set();
+  function criticalDepth(id) {
+    if (depth.has(id)) return depth.get(id);
+    if (visiting.has(id)) throw new Error('Dependency cycle detected');
+    visiting.add(id);
+    const value = 1 + children.get(id).reduce((max, child) => Math.max(max, criticalDepth(child)), 0);
+    visiting.delete(id); depth.set(id, value); return value;
+  }
+  for (const p of packages) criticalDepth(p.id);
   const remaining = new Map(packages.map(p => [p.id, p])); const completed = new Set(); const waves = [];
   while (remaining.size > 0) {
-    const ready = [...remaining.values()].filter(p => p.dependsOn.every(dep => completed.has(dep))).sort((a, b) => a.id.localeCompare(b.id));
+    const ready = [...remaining.values()].filter(p => p.dependsOn.every(dep => completed.has(dep))).sort((a, b) => depth.get(b.id) - depth.get(a.id) || a.id.localeCompare(b.id));
     if (ready.length === 0) throw new Error('Dependency cycle detected');
     const wave = [];
     for (const candidate of ready) {

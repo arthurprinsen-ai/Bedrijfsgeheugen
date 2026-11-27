@@ -206,3 +206,13 @@ test('parallel policy refuses seven workers despite a forged tuning allowance', 
     policy:{...policy,scheduling:{max_parallel_packages:7}}
   }),/INVALID_PARALLEL_WAVE_BUDGET/);
 });
+
+test('mixed known and unknown paths never enter targeted-only fast path', () => {
+  const result = selectAffectedTests({paths:['brain/a.mjs','mystery/runtime.bin'], deliveryConfig, policy});
+  assert.equal(result.failClosed,true); assert.ok(result.profiles.includes('required'));
+});
+test('critical path first removes one wave under constrained capacity', () => {
+  const workPackages = ['A','B','C','D','E'].map(id => ({id, paths:['brain/'+id+'.mjs'],baseSha:'main',candidateSha:id,dependsOn:id==='D'?['C']:id==='E'?['D']:[]}));
+  const plan = buildExecutionPlan({workPackages,deliveryConfig,policy:{...policy,scheduling:{max_parallel_packages:2}}});
+  assert.deepEqual(plan.waves.map(w=>w.map(p=>p.id)),[['C','A'],['D','B'],['E']]);
+});
