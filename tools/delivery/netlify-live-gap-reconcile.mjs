@@ -28,3 +28,30 @@ export function reconcileNetlifyLiveGap({
   return Object.freeze({reason:'unverified-production-state',forceDeployment:true,
     changedPaths:Object.freeze(parent),publishedParity:false});
 }
+
+/** RDI-1: source identity is not runtime health. Never accept a preview marker. */
+export function publishedProductionSha(marker) {
+  return marker?.context === 'production' && typeof marker.deploy_id === 'string'
+    && marker.deploy_id.trim().length > 0 && validSha(marker.commit_ref)
+    ? marker.commit_ref : null;
+}
+
+/** Advisory, bounded recovery priority; a score never grants execution authority. */
+export function releaseRecoveryScore({eligible,probability,driftMinutesAvoided,value,
+  recoveryMinutes,costMinutes}={}) {
+  const inputs=[probability,driftMinutesAvoided,value,recoveryMinutes,costMinutes];
+  if(eligible!==true || !inputs.every(Number.isFinite) || probability<0 || probability>1
+    || driftMinutesAvoided<0 || value<0 || recoveryMinutes<=0 || costMinutes<0) return null;
+  const score=probability*driftMinutesAvoided*value/(recoveryMinutes+costMinutes);
+  return Number.isFinite(score)?score:null;
+}
+
+/** Keep exact source parity distinct from the independently classified runtime impact. */
+export function releaseDriftStatus({headSha,publishedSha,ancestor,requiresDeployment,ageMinutes}={}) {
+  if(!validSha(headSha)||!validSha(publishedSha)) return 'UNKNOWN';
+  if(headSha===publishedSha) return 'SHA_MATCHED_NEEDS_READBACK';
+  if(ancestor!==true||typeof requiresDeployment!=='boolean') return 'UNKNOWN';
+  if(!requiresDeployment) return 'SOURCE_ONLY_DRIFT';
+  if(!Number.isFinite(ageMinutes)||ageMinutes<0) return 'RUNTIME_DRIFT_AGE_UNKNOWN';
+  return ageMinutes>=15?'P0_RUNTIME_DRIFT':ageMinutes>=5?'WARN_RUNTIME_DRIFT':'RUNTIME_DRIFT';
+}
