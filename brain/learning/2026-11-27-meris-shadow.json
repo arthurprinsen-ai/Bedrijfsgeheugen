@@ -1,0 +1,33 @@
+{
+  "status": "CANDIDATE_TEST_ONLY",
+  "owner": "agent-integration-control-plane",
+  "sourceBase": "59a2836ad53a97ce7239fd6b3b90a56c17335cad",
+  "localTests": 10,
+  "runtimeVerified": false,
+  "mergeAuthorized": false,
+  "fingerprint": "delivery|meris-shadow|20261127-v1",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-meris-shadow-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-meris-shadow-20261127.test.mjs"
+    ],
+    "invariants": [
+      "No merge authorization, stale or unverified evidence deferred, overlapping paths separated; deterministic fixture tests only."
+    ]
+  },
+  "evidence": {
+    "failed_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46011037898",
+    "repair": "Specify required learning compiler and executable shadow evaluation paths. Original owner adoption, production effect and calibration unproven.",
+    "semantic_admission": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46011577927"
+  },
+  "root_cause": "Observed 71 open PRs with stale bases and conflicting paths; the candidate's ranking is an advisory hypothesis, not proof of the underlying backlog cause. Protected admission run 46011577927 failed because the learning record omitted semantic root-cause and prevention fields.",
+  "prevention_rule": "Use exact head/base/owner/check evidence and nonoverlapping scopes for advisory ranking only; defer unverified candidates. Validate BOTH canonical evaluation and material semantic closure before submitting. Never promote or mutate from the score. Original owner review and measured shadow effect required."
+}
