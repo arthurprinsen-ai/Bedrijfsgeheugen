@@ -9,7 +9,7 @@ for(const path of files){
   const source=load(path);
   assert.match(source,/^    runs-on: ubuntu-24\.04$/m);
   assert.doesNotMatch(source,/runs-on: ubuntu-latest/);
-  assert.match(source,/uses: openai\/codex-action@bdf19a4a223ec2549a3e2274a0cf61556bc07675/);
+  assert.match(source,/uses: openai\/codex-action@306c6a196a99dcc6582530c396a19d2672d5e9ec/);
   assert.match(source,/permission-profile: ":workspace"/);
   assert.match(source,/openai-api-key: \$\{\{ secrets\.OPENAI_API_KEY \}\}/);
   assert.doesNotMatch(source,/safety-strategy: (?:unsafe|read-only)/);
