@@ -723,7 +723,7 @@ jobs:
           import path from 'node:path';
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
-          import { resolveTerminalMigrationIdentities, verifyRetiredMigrationSupersession } from './tools/delivery/terminal-migration-identity.mjs';
+          import { resolveTerminalMigrationIdentities, verifyRetiredMigrationSupersession, verifyOpenRegulatoryPredecessor } from './tools/delivery/terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
@@ -772,7 +772,30 @@ jobs:
                 expected.push({version:match[1],name:match[2],source_pr:prNumber});
               }
             } else {
-              if(pr.state!=='closed') throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+              if(pr.state!=='closed'){
+                // Preserve the original writer until the successor has durable terminal proof.
+                // Narrow non-migration identity proof; all other open predecessors remain blocked.
+                if(pr.state!=='open'||metadata.supersedes!==null||!directSuccessor)
+                  throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+                if(pr.changed_files!==1) throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+                const files=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}/files?per_page=100`],{encoding:'utf8'}));
+                const source='data/regulatory-source-state.json';
+                if(!/^[0-9a-f]{40}$/.test(pr.head?.sha||'')||!directSuccessor.merged||
+                   !/^[0-9a-f]{40}$/.test(directSuccessor.merge_commit_sha||''))
+                  throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+                execFileSync('git',['fetch','origin',pr.head.sha,'--no-tags'],{stdio:'ignore'});
+                execFileSync('git',['merge-base','--is-ancestor',directSuccessor.merge_commit_sha,'origin/main']);
+                const blob=ref=>execFileSync('git',['rev-parse',`${ref}:${source}`],{encoding:'utf8'}).trim();
+                const live=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}`],{encoding:'utf8'}));
+                if(live.state!==pr.state||live.merged!==pr.merged||live.body!==pr.body||live.changed_files!==pr.changed_files)
+                  throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+                const receipt=verifyOpenRegulatoryPredecessor({predecessor:pr,successor:directSuccessor,files,
+                  originalBlob:blob(pr.head.sha),successorBlob:blob(directSuccessor.merge_commit_sha),currentBlob:blob('origin/main'),
+                  obligation,headRecheck:live.head?.sha});
+                console.log('OPEN_REGULATORY_PREDECESSOR_PROOF:'+JSON.stringify(receipt));
+                // No migrations on this one-file predecessor. Never mark it closed here.
+                break;
+              }
               if(Number(pr.changed_files)>100) throw new Error(`UNMERGED_SUPERSEDES_CHANGED_FILES_UNBOUNDED:${prNumber}`);
               const files=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}/files?per_page=100`],{encoding:'utf8'}));
               const migrationFiles=files.filter(file=>file.status!=='removed' &&
@@ -796,7 +819,7 @@ jobs:
               console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
             }
 
-            directSuccessor={number:prNumber,body:pr.body};
+            directSuccessor={number:prNumber,body:pr.body,state:pr.state,merged:pr.merged,merge_commit_sha:pr.merge_commit_sha};
             prNumber=metadata.supersedes===null ? 0 : Number(metadata.supersedes);
             if(prNumber && !Number.isInteger(prNumber)) throw new Error('SUPERSEDES_INVALID');
           }
