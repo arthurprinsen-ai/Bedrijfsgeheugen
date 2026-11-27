@@ -2,7 +2,7 @@
   "status": "CANDIDATE_TEST_ONLY",
   "fingerprint": "maintenance-dependency-pr-5594",
   "root_cause": "Admission lacks same-candidate closure evidence and static locale test hardcodes prior parse5 pin.",
-  "prevention_rule": "Require exact declared dependency pins, preserve locale invariants and independently validate installed dependency behavior before protected release. Follow canonical build entry and per-route completeness semantics, not stale implementation strings. Canonical brain-prefixed replay imports the original test without skips; current approved OpenAI transport must retain strict response shape, immutable tokens and store:false. Preserve install failure and lifecycle protections; emit only bounded allowlisted npm error codes, never raw npm output.",
+  "prevention_rule": "Require exact declared dependency pins, preserve locale invariants and independently validate installed dependency behavior before protected release. Follow canonical build entry and per-route completeness semantics, not stale implementation strings. Canonical brain-prefixed replay imports the original test without skips; current approved OpenAI transport must retain strict response shape, immutable tokens and store:false. Preserve install failure and lifecycle protections; emit only bounded allowlisted npm error codes, never raw npm output. Native ETARGET permits one registry-metadata revalidation with --prefer-online; retain exact dependency pins, configured registry, lifecycle protection and final failure. Other codes never trigger this retry.",
   "compiler": {
     "failure_class": "RECOVERY",
     "scope": "delivery",
@@ -26,6 +26,13 @@
     "installed_dependency_compatibility_verified": false,
     "static_locale_initial_replay": "0/2: stale build command and per-route metadata assertions",
     "learning_gate_failure": "LEARNING_EVALUATION_TEST_PATH_INVALID at run 46020762634",
-    "repeat_install_failure": "Required 46036084173 preflight 140631891107: silent npm install exit 1; no error code; root cause unproven"
+    "repeat_install_failure": "Required 46036084173 preflight 140631891107: silent npm install exit 1; no error code; root cause unproven",
+    "native_install_error_code": {
+      "run": 46038650692,
+      "job": 140640714781,
+      "code": "ETARGET",
+      "exit": 1,
+      "root_cause": "Requested version unresolved; exact package and cache causality unproven"
+    }
   }
 }

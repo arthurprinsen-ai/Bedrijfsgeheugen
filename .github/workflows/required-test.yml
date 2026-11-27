@@ -431,6 +431,17 @@ jobs:
             echo "NPM_INSTALL_SUCCEEDED"
           else
             install_status=$?
+            # An observed ETARGET can be caused by stale cached registry metadata.
+            # Retry once with revalidation; no changed pins, registry, or lifecycle policy.
+            if grep -Eq '^(npm error|npm ERR!) code ETARGET[[:space:]]*$' "$install_log"; then
+              echo "NPM_INSTALL_ETARGET_REVALIDATE_ONCE"
+              if npm install --ignore-scripts --prefer-online --no-audit --no-fund --loglevel=error >"$install_log" 2>&1; then
+                echo "NPM_INSTALL_SUCCEEDED_AFTER_REVALIDATION"
+                exit 0
+              else
+                install_status=$?
+              fi
+            fi
             # Never print raw npm output: only allowlisted, bounded error codes.
             node --input-type=module - "$install_log" <<'NODE'
           import { readFileSync } from 'node:fs';
