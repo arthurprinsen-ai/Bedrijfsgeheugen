@@ -31,6 +31,13 @@ export const MIRA_SOURCE_ALTERNATE_LOCAL_PRECISION_QUERIES=Object.freeze({
   // Seek dated real-life 'stuck quote / no reply' evidence, without changing
   // accepted-source score/date/URL/topic or adding another search slot.
   'offertes-zonder-opvolging':'offerte blijft liggen klanten',
+  // Same original source slot; prefer common operational words to low-recall
+  // vendor headlines or the English verb 'excel' from school achievements.
+  'excel-chaos':'Excel administratie fouten',
+  'dubbele-invoer':'dubbele invoer administratie',
+  'projectmarge':'bouw meerwerk kosten',
+  'groei-zonder-winst':'krappe marges mkb',
+  'capaciteitsplanning':'bedrijven personeelstekort',
   // 16-Nov independent Dutch invoice-error news demonstrates the missing
   // real MKB payment process friction that generic 'onbetaalde facturen'
   // news search often misses. This is DISCOVERY ONLY, never proof or approval.

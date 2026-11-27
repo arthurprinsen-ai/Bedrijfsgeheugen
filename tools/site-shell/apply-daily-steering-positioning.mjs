@@ -4,24 +4,24 @@ import { readFile, writeFile } from 'node:fs/promises';
 // product-led, localization, and coherence passes. It never creates a second hero.
 const COPY = Object.freeze({
   nl: {
-    headline:'Je bedrijf verandert elke dag. <span class="mark">Je besturing moet mee.</span>',
-    lead:'Bedrijfsgeheugen verbindt wat er <strong>binnen én buiten je onderneming</strong> verandert met je strategie, doelen, mensen, processen en financiën. Je ziet wat geraakt wordt, welke beslissing nodig is en wie de actie oppakt. Het resultaat wordt gemeten en helpt bij de volgende keuze. <strong>Geen extra AI-tool: een manier om je onderneming iedere dag beter te sturen.</strong> Bovenop de systemen die je al gebruikt.',
+    headline:'Een week vrij, <span class="mark">en je bedrijf loopt door.</span>',
+    lead:'Je weet wat er in je bedrijf gebeurt, maar het zit in <strong>je hoofd, je mailbox en losse Excel-bestanden</strong>. Bedrijfsgeheugen legt vast wie wat doet, waarom je iets besloot en wat er daarna moet gebeuren. Wat vandaag niet wordt vastgelegd, is morgen weg. Zo blus je minder brandjes en houd je weer tijd voor jezelf. <strong>Geen extra AI-tool: een laag bovenop AFAS, Exact Online en Microsoft 365.</strong> Begin gratis: in 3 minuten zie je waar tijd en kennis weglekken.',
     eyebrow:'POWERHOUSE · DAGELIJKSE ONDERNEMINGSSTURING',
-    kicker:'Iedere dag beter sturen',
-    benefitsLabel:'Waarde voor ondernemers',
+    kicker:'Voor ondernemers die de leiding houden',
+    benefitsLabel:'Wat je terugkrijgt',
     benefits:['Kansen eerder herkennen','Risico’s tijdig begrijpen','Keuzes onderbouwen','Acties met eigenaar','Effecten meten','Continu verbeteren'],
-    technologyCta:'Bekijk de technologie erachter →',
+    technologyCta:'Ontdek hoe het geheugen werkt →',
     sectionHeading:'Niet alleen inzicht. <span class="mark">Van verandering naar actie en resultaat.</span>',
     sectionLead:'Een chatbot geeft antwoord. Een dashboard toont cijfers. Een automatisering voert een losse stap uit. Bedrijfsgeheugen verbindt juist interne en externe signalen met je strategie en bedrijfssituatie, helpt gevolgen en prioriteiten bepalen, zet acties uit met een eigenaar en gebruikt de gemeten uitkomst voor de volgende beslissing. POWERHOUSE is de motor; betere ondernemingssturing is het doel.'
   },
   en: {
-    headline:'Your business changes every day. <span class="mark">Your decisions should keep up.</span>',
-    lead:'Bedrijfsgeheugen connects what changes <strong>inside and outside your business</strong> to your strategy, goals, people, processes and finances. See what is affected, which decision matters and who owns the next action. Measure outcomes and use them to improve the next decision. <strong>Not another AI tool: a practical way to run your business better every day.</strong> On top of the software you already use.',
+    headline:'A week off, <span class="mark">and your business keeps running.</span>',
+    lead:'You know what is going on in your business, but it lives in <strong>your head, your inbox and loose spreadsheets</strong>. Bedrijfsgeheugen records who does what, why you decided something and what has to happen next. What is not captured today is gone tomorrow. Fewer fires to put out, and time for yourself again. <strong>Not another AI tool: a layer on top of AFAS, Exact Online and Microsoft 365.</strong> Start free: in 3 minutes you see where time and knowledge leak away.',
     eyebrow:'POWERHOUSE · EVERYDAY BUSINESS STEERING',
-    kicker:'Better decisions, every day',
-    benefitsLabel:'Value for business owners',
+    kicker:'For owners who stay in charge',
+    benefitsLabel:'What you get back',
     benefits:['Spot opportunities sooner','Understand emerging risks','Make informed decisions','Assign accountable actions','Measure real outcomes','Keep improving'],
-    technologyCta:'Explore the technology behind it →',
+    technologyCta:'See how the memory works →',
     sectionHeading:'Beyond insights. <span class="mark">From change to action and results.</span>',
     sectionLead:'A chatbot answers questions. A dashboard displays figures. An automation executes one predefined step. Bedrijfsgeheugen instead connects internal and external signals to your strategy and business context, helps assess impact and priorities, assigns actions and feeds measured results into the next decision. POWERHOUSE is the engine; better daily steering is the outcome.'
   }

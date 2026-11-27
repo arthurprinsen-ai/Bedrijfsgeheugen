@@ -109,6 +109,45 @@
         "privacy": "no unconsented tracking, IP or user agent retention as personal identifiers",
         "duplicate_content": "reuse original money intent owner before publishing a distinct blog"
       },
+      "source_observed_multichannel_distribution_2026_11_17": {
+        "contract": "ORIGINAL_OWNED_SEO_TO_APPROVED_CHANNELS_V1",
+        "objective": "increase real human qualified organic, LinkedIn and authorized email referral visits to ONE existing canonical landing page, then verified CTA, lead, order and revenue; no guaranteed impressions, ranking, recipients or sends",
+        "source_observed_search_console": {
+          "window": "28 completed days ending 2026-11-14",
+          "impressions": 249,
+          "clicks": 0,
+          "afas_page_impressions": 137,
+          "afas_lightspeed_query_cluster": "afas lightspeed koppeling",
+          "campaign_canonical_owner": "https://www.bedrijfsgeheugen.nl/afas-koppeling",
+          "technical_crawl_support": "https://www.bedrijfsgeheugen.nl/systemen-koppelen",
+          "avoid_new_doorway_or_duplicate_landing_page": true
+        },
+        "original_distribution_owners": {
+          "seo_and_site": "existing Powerhouse SEO Order Engine BG169 protected GitHub/Netlify writer",
+          "linkedin_company": "original daily corporate publisher with provider ID and readback",
+          "linkedin_personal": "original personal storyteller; only a genuine first-person experience supported by user-authored evidence, no fabricated autobiography",
+          "instagram": "original Mira generator, original media/face verification and provider publication ID",
+          "email": "original authorized commercial email owner and legitimate recipient eligibility; no list purchase, silent bulk sends or bypass of provider authentication",
+          "measurement": "original GA4/GSC/first-party source owner 175 to ONE BRAIN consumer 140 and Heartbeat CRO"
+        },
+        "channel_to_landing": {
+          "company_linkedin": "source-backed operational example: AFAS/Lightspeed manual-order entry, test prerequisites, canonical page, authentic CTA",
+          "personal_linkedin": "real personal first-person story only when independently supplied or otherwise verified; no recycled corporate post",
+          "instagram": "distinct visual problem-solution scenario and point, only with authorized media",
+          "email": "existing consent- or lawfully-authorized eligible audience; useful advisory link only after original source and compliance gate"
+        },
+        "measurement": {
+          "campaign": "afas_lightspeed_qualified_traffic_20261117",
+          "utm_tags": "use distinct truthful utm_source and utm_medium on outbound links only; preserve clean canonical in page HTML",
+          "success_metrics": ["provider_confirmed_gsc_query_page_impressions_and_clicks","consented_organic_or_attributed_human_sessions","landing_to_cta_rate","qualified_leads","verified_orders","realized_revenue_eur"],
+          "measure_windows_days": [7,14,28],
+          "organic_growth_not_proven_by": ["technical_200","scheduler_success","keyword_volume","post_created","email_drafted","utm_created","source_persisted_without_consumer_ack"],
+          "when_source_missing": "UNKNOWN_WITH_ORIGINAL_REPAIR_OBLIGATION",
+          "no_user_level_tracking_without_consent": true
+        },
+        "live_release": "original protected Required CodeQL and exact-current READY Netlify plus public canonical H1 internal-link CTA readback",
+        "no_parallel_scheduler_or_marketing_writer": true
+      },
       "daily_loop": [
         "read_original_source_freshness_and_anomaly_receipts",
         "reconcile_GSC_GA4_growth_event_attribution_and_real_AI_referrals",

@@ -17,7 +17,7 @@ test('upstream/provider/writeback errors never report a healthy HTTP 200', () =>
 });
 test('original endpoint maps its real content verdict to HTTP and keeps recovery lineage', () => {
   const file = readFileSync(new URL('../supabase/functions/powerhouse-mira-problem-radar/index.ts', import.meta.url), 'utf8');
-  assert.match(file, /classifyMiraRadarHttpStatus\(\{\s*sourceReady:allSourceReady,\s*errors\s*\}\)/);
+  assert.match(file, /classifyMiraRadarHttpStatus\(\{\s*sourceReady:miraBusinessSourceReady,\s*errors\s*\}\)/);
   assert.match(file, /brain_observe_failure/);
   assert.match(file, /powerhouse_materialize_mira_problem_recommendation_v1/);
   assert.match(file, /powerhouse_ensure_personal_source_rotation_v2/);
@@ -31,7 +31,7 @@ test('source verdict is applied after the original provider, BRAIN and rotation 
   const materializeIndex = edge.indexOf("db.rpc('powerhouse_materialize_mira_problem_recommendation_v1'");
   const brainIndex = edge.indexOf("db.rpc('brain_observe_failure'");
   const rotateIndex = edge.indexOf("db.rpc('powerhouse_ensure_personal_source_rotation_v2'");
-  const responseIndex = edge.lastIndexOf('classifyMiraRadarHttpStatus({sourceReady:allSourceReady,errors})');
+  const responseIndex = edge.lastIndexOf('classifyMiraRadarHttpStatus({sourceReady:miraBusinessSourceReady,errors})');
   assert.ok(authIndex >= 0 && materializeIndex > authIndex);
   assert.ok(brainIndex > materializeIndex);
   assert.ok(rotateIndex > brainIndex && responseIndex > rotateIndex);

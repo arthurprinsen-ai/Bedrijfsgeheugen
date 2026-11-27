@@ -1,0 +1,43 @@
+{
+  "contract": "ORIGINAL_QUALITY_RECEIPT_TO_OWNER_NEXT_ACTION_V1",
+  "date": "2026-11-17",
+  "fingerprint": "powerhouse|innovation|nine-native-quality-receipts-stored-but-original-delivery-still-generic|20261117-v1",
+  "root_cause": "After protected PR #5987 and actual same-owner GitHub run 44182776109, all 14 original Brain operations carry version-CAS+independent GET receipts. Nine quality candidate receipts record source-specific next_action and disposition but original delivery continuity logic ignores original_evidence_reconciliation and assigns generic BASELINE_OR_SAFE_SCOPE_DUE. This is a missing consumption edge, not an absent source.",
+  "correction": "Original delivery continuity reuses the SAME original quality disposition and next-action authority (exported from original reconciler). For only bounded_learning_followup source owner, validate immutable tenant-scope candidate/operation/change/revision/SHA, original decision fingerprint, original pre-review, historical quality fingerprint+digest, exact approved component→action, explicit nonterminal/approval assertions. Preserve default generic stage for absent receipt, original prior code and CRO lanes, and no external provider mutation. Add exact original test to existing lane-automation test list, not a second workflow.",
+  "prevention_rule": "A source quality CAS acknowledgment does not count as agent execution until original delivery consumer reads it, validates lineage, and records the exact source-specific next duty in its original versioned operation. Never treat historical verified/guarded as current effect, consumer PROCESSED or ROI. Do not bypass existing lease/Required/CodeQL, no second scheduler.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-quality-next-action-continuity-20261117.test.mjs",
+      "tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-quality-next-action-continuity-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-quality-next-action-continuity-20261117.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_source": "public.brain_operations original_evidence_reconciliation after run 44182776109, 14/14 independently read back, 7 verified quality due, 2 guarded proof due, 2 original no-change, 1 CRO holdout, 1 existing protected source, 1 prior native release impact; 14 delivery obligations remain OPEN",
+    "original_consumer": "scripts/brain/innovation-original-delivery-continuity.mjs original stage default remains BASELINE_OR_SAFE_SCOPE_DUE for all quality candidates because it did not read receipt",
+    "new_provider_side_effect": false,
+    "source_code_live": false
+  },
+  "review_required": true,
+  "automatic_external_side_effect": false,
+  "consumer_ack_verified": false,
+  "terminal_success": false,
+  "next_safe_action": "Protected exact-head Required+CodeQL and merge of current-main bounded source; run once original_delivery_recovery on original existing GitHub workflow after no duplicate run. Independent Supabase GET verifies nine source-specific original continuity stages while 14 original obligations stay OPEN pending real safe action, consumer and Heartbeat effect.",
+  "refs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5987",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44182776109"
+  ]
+}

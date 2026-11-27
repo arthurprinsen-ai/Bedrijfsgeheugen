@@ -3,6 +3,7 @@ import { INTERACTIE_CSS, INTERACTIE_JS, ORGANISATIE_SCHEMA, EXTRA_HTML, mensenbl
          volgendeStap, VOLGENDE_CSS , GEGEVENS, LOCATIE_SCHEMA} from './v18-verrijking.mjs';
 import { INHOUD_CSS, kruimelpad, zetKop, HERO_URL } from './bouw-v18-chrome.mjs';
 import { VIEWS } from './v18-views-lijst.mjs';
+import { renderViewSeoContextLinks, assertViewSeoContextLinksRendered } from './v18-seo-context-links.mjs';
 import { BEWEGING_CSS, BEWEGING_JS, vergelijker, maakBeweeglijk } from './v18-beweging.mjs';
 import { zoekwoordVoor, HOMEPAGE_WOORD, titelVoor } from './zoekwoorden.mjs';
 import { MODULE_CSS, MODULE_JS, PORTAALBEELD, SPEELS_CSS, SPEELS_JS, LEK, VRAAG_CSS, VRAAG_JS, VRAAGBALK,
@@ -97,7 +98,7 @@ for (const p of VIEWS) {
 
   html = html.replace(`<div class="page active" id="view-${p.view}">`,
     `<div class="page active" id="view-${p.view}">${hero}`
-    + `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}${bovenblok}`);
+    + `${kruimelpad([{ naam: 'Home', url: '/' }, { naam: p.naam }])}${bovenblok}${renderViewSeoContextLinks(p.seoContextLinks)}`);
 
   // de secties van deze weergave komen op bij het scrollen, net als op de homepage
   {
@@ -118,7 +119,7 @@ for (const p of VIEWS) {
   html = html.replace('</main>',
     `<section class="inhoud-body" style="padding:10px 0 96px"><div class="wrap">${vergelijker(p.naam.toLowerCase())}${VERTREK}`
     + `${volgendeStap(false)}${mensenblok(false)}</div></section></main>`);
-  html = html.replace('</body>', `${EXTRA_HTML}\n${RING}\n${LEK}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${BEWEGING_JS}\n${ORGANISATIE_SCHEMA}\n`
+  html = html.replace('</body>', `${EXTRA_HTML}\n${RING}\n${['/frisse-blik', '/prijzen'].includes(p.pad) ? LEK : ''}\n${INTERACTIE_JS}\n${MODULE_JS}\n${SPEELS_JS}\n${VRAAG_JS}\n${CONTEXT_JS}\n${BEWEGING_JS}\n${ORGANISATIE_SCHEMA}\n`
     + `${schemas({ isBlog: false, titel: p.titel, omschrijving: p.omschrijving, canoniek, h1: p.naam, body: html })}\n</body>`);
 
   // de hero levert de h1; een tweede h1 in de weergave zakt naar h2
@@ -154,6 +155,7 @@ for (const p of VIEWS) {
   html = metGegevens(html);
   html = maakBeweeglijk(html);
   html = hoofdletterMerk(html);
+  assertViewSeoContextLinksRendered(html, p.seoContextLinks);
   await writeFile(p.bestand, html, 'utf8');
   gemaakt++;
 }

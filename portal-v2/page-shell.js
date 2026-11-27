@@ -32,6 +32,8 @@ import { mountNeedDiscovery } from './modules/need-discovery.js';
 import { mountSecurityTrustWorkspace, disposeSecurityTrustWorkspace } from './modules/security-trust-workspace.js';
 import { mountAiModelChoice } from './modules/ai-model-choice.js';
 import { mountKwartaalrapporten } from './modules/kwartaalrapporten.js';
+import {mountVerifiedConnectorData} from './verified-connector-data.js';
+import { renderImportedDataOnPage } from './imported-data-pages.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -408,6 +410,9 @@ export function openPortalPage(pageId){
     native.prepend(wizard);
     mountChangeWizard(wizard,{domainState:portalContext.domainState,onSaved:()=>openPortalPage('wijzigingen')});
   }
+  // Render real saved CSV/XLSX rows on the confirmed business destination,
+  // not just in the import modal; preserves every native page's original model.
+  renderImportedDataOnPage(native,{pageId,stateClient:portalContext.stateClient,openPage:openPortalPage});
   ensureRuntimeEvidence();
   mountContextualForesight(native,{pageId,state:portalStateSnapshot(),openPage:openPortalPage}).catch(()=>null);
   mountTrustedAdvisorAssurance(root.querySelector('.pvbody'),{pageId,state:portalStateSnapshot(),openPage:openPortalPage});
@@ -416,6 +421,11 @@ export function openPortalPage(pageId){
   // the original ingestion store independently proves actual business records.
   if(pageId!=='koppelingen'&&portalContext.stateClient?.currentUser?.()&&native?.append){
     void mountConnectedDataSources(native,{pageId});
+    // True source records come from authenticated connector source snapshots, never configuration metadata.
+    void mountVerifiedConnectorData(native,{pageId,getIdentity:()=>{
+      const c=portalContext.stateClient;
+      return c?.isDemo?.()?null:String(c?.currentUser?.()?.id||'')||null;
+    }});
   }
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;

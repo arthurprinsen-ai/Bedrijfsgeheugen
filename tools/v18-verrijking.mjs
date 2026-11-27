@@ -130,7 +130,7 @@ export function opDezePagina(koppen) {
 export function mensenblok(isBlog) {
   const tekst = isBlog
     ? 'Ik schrijf deze stukken uit wat ik bij mkb-bedrijven tegenkom: waar het werk vastloopt, wat een oplossing kost en wat er daarna verandert. Vragen over jouw situatie? Bel of app gerust.'
-    : 'Ik bouw dit zelf, samen met de mensen die er straks mee werken. Eerst kijken waar het werk vastloopt, dan pas techniek — met een vaste prijs vooraf.';
+    : 'Ik bouw dit zelf, samen met de mensen die er straks mee werken. Eerst kijken waar het werk vastloopt, dan pas techniek — met een vaste prijs vooraf. Jij houdt de leiding.';
   return `<aside class="bgx-mensen" data-op>
 <img src="/arthur.jpg" decoding="async" alt="Arthur Prinsen, oprichter van Bedrijfsgeheugen" width="96" height="96" loading="lazy">
 <div>

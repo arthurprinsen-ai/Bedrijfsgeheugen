@@ -1,0 +1,25 @@
+{
+  "fingerprint": "portal|rituals-direction|welkom-calm-css-layer|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "portal-v2 stylesheets (portal-v2/rituals-welkom.css)",
+  "obligation_id": "portal|rituals-direction|welkom-calm-css-layer|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "DESIGN_DECISION_DRIFT", "scope": "RUNTIME", "machine_enforceable": false, "repeat_count": 3, "security_sensitive": false},
+  "root_cause": "Het portaalwelkomstscherm had zware koppen en schaduwen die niet passen bij het merkbesluit van 17 nov 2026 (rust en exclusieve begeerte voor site en portaal).",
+  "correction": "Aparte CSS-laag als laatste stylesheet: lichter gewicht, ruimere ritme, zachtere hover, geen beweging bij reduced motion. Geen DOM-, kleur- of routewijziging.",
+  "prevention": [
+    "Zet een ontwerplaag als eigen laatste stylesheet; wijzig gelaagde bestaande CSS niet.",
+    "Verwijder nooit een achtergrond zonder de tekstkleur op die achtergrond te controleren; controleer elk gewijzigd element in screenshots.",
+    "Claim geen gedragseffect zonder voor/na-meting."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs"],
+    "canary": ["tests/seo-homepage-context-slider-readability.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs", "tests/seo-homepage-context-slider-readability.test.mjs"],
+    "source": ["portal-v2/rituals-welkom.css", "portal-v2/index.html"],
+    "outcome": "Lokaal: welkomstscherm rustiger op 1440x900 en 390x844; ingelogde weergave en productie-readback nog open."
+  }
+}

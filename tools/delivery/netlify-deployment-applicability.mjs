@@ -16,6 +16,9 @@ export const NETLIFY_GOVERNANCE_PREFIXES = Object.freeze([
 // They must execute full production-parity CI even when under tools/ci/.
 export const NETLIFY_BUILD_RUNTIME_EXACT = Object.freeze(new Set([
   'tools/ci/netlify-build-entry.mjs',
+  // Modifies shipped Portal V2 browser assets during the same original Netlify build.
+  // Governance-only classification here would skip the real security-scoped fix.
+  'tools/ci/build-portal-public-runtime.mjs',
 ]));
 
 export const NETLIFY_GOVERNANCE_EXACT = Object.freeze(new Set([

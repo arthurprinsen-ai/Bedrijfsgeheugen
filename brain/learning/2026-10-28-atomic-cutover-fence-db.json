@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse|growth-intelligence|atomic-cutover-fence-db|20261028-v1",
+  "compiler": {
+    "failure_class": "NON_ATOMIC_IDEMPOTENT_WRITE",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-growth-learning-store-brain-records-adapter-v1.test.mjs"],
+    "shadow": ["tests/brain-growth-learning-store-brain-records-adapter-v1.test.mjs"],
+    "canary": ["tests/brain-growth-learning-store-brain-records-adapter-v1.test.mjs"]
+  },
+  "root_cause": "De engine eiste een atomaire fence-transactie, maar de database bood die niet; een adapter die zelf een bevestiging zou verzinnen zou de eis leegmaken.",
+  "prevention": "De transactie draait in Postgres (SECURITY DEFINER, vaste search_path, alleen service_role); de adapter geeft het databaseantwoord ongewijzigd door en een databasefout is nooit een succes.",
+  "evidence": {
+    "tests": ["tests/brain-growth-learning-store-brain-records-adapter-v1.test.mjs"],
+    "workflow": ".github/workflows/required-test.yml",
+    "runtime_status": "fence INACTIVE bij oplevering; twee-sessietest op de Supabase-previewbranch staat in de PR"
+  },
+  "limitations": [
+    "De adaptertests gebruiken een nagebouwde client; gelijktijdigheid is bewezen op de previewbranch, niet in deze tests",
+    "Geen aanroepers van de engine en geen Mollie-verificatie"
+  ]
+}

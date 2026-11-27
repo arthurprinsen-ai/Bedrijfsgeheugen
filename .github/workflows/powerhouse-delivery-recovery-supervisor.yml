@@ -11,6 +11,21 @@ on:
         type: boolean
         required: false
         default: false
+      release_app_identity:
+        description: 'Read-only dedicated release App identity probe (protected main only)'
+        type: boolean
+        required: false
+        default: false
+      release_app_token:
+        description: 'Also prove exact scoped token issuance and revocation (requires identity probe)'
+        type: boolean
+        required: false
+        default: false
+      release_app_fence:
+        description: 'Prove scoped read-only branch protection inventory (requires identity, excludes token proof)'
+        type: boolean
+        required: false
+        default: false
   # Shift identical five-minute cadence off the hour's overloaded minute zero.
   # One existing owner: do not introduce a second scheduler or workflow.
   schedule:
@@ -28,7 +43,7 @@ concurrency:
 
 jobs:
   supervise:
-    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.patch_handoff != true)
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.patch_handoff != true && inputs.release_app_identity != true && inputs.release_app_token != true && inputs.release_app_fence != true)
     runs-on: ubuntu-latest
     timeout-minutes: 6
     steps:
@@ -192,7 +207,13 @@ jobs:
             echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$effective_active_runs effective active runs; recovery dispatch suppressed until authoritative backlog drains."
             exit 0
           fi
-          gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
+          # Collect complete native pages; concatenated JSON is not an inventory.
+          gh api --paginate --slurp "repos/$repo/pulls?state=open&base=main&per_page=100" > /tmp/open-pr-pages.json
+          jq -e 'if type=="array" and all(.[]; type=="array") then add // [] else error("INCOMPLETE_NATIVE_PR_PAGES") end' /tmp/open-pr-pages.json > /tmp/open-prs.json
+          # Shadow-only central slot planning. No status writes, lease or grant.
+          if ! node tools/delivery/main-wide-promotion-slot.mjs /tmp/open-prs.json /tmp/promotion-slot-shadow.json "$repo" "$current_main_sha"; then
+            echo "::warning::PROMOTION_SLOT_SHADOW_UNAVAILABLE"
+          fi
           # One bounded evidence read; sorting is advisory only. Every PR still
           # traverses the original live merge, lease, overlap and GitHub CAS gates.
           # On provider failure or malformed evidence retain the original order.
@@ -407,13 +428,40 @@ jobs:
                   echo "::warning::PR#$number main refresh compare could not prove a merge base; automatic refresh forbidden."
                   continue
                 fi
-                main_paths="$(gh api "repos/$repo/compare/$merge_base...$refresh_main_sha" --jq '.files[]?.filename' 2>/dev/null || true)"
-                candidate_paths="$(gh api "repos/$repo/compare/$merge_base...$head" --jq '.files[]?.filename' 2>/dev/null || true)"
+                # Provider errors, incomplete comparisons and rename origins cannot be empty-overlap proof.
+                if ! main_diff="$(gh api "repos/$repo/compare/$merge_base...$refresh_main_sha")" ||
+                   ! candidate_diff="$(gh api "repos/$repo/compare/$merge_base...$head")"; then
+                  echo "::warning::MAIN_SYNC_COMPARE_UNAVAILABLE:PR#$number"; continue
+                fi
+                for diff in "$main_diff" "$candidate_diff"; do
+                  if ! jq -e --arg base "$merge_base" '.status=="ahead" and .behind_by==0 and .merge_base_commit.sha==$base and (.files | type=="array" and length<300 and all(.[]; (.filename|type=="string" and length>0)))' <<<"$diff" >/dev/null; then
+                    echo "::warning::MAIN_SYNC_COMPARE_INCOMPLETE:PR#$number"; continue 2
+                  fi
+                done
+                if ! jq -e '.files | length>0' <<<"$candidate_diff" >/dev/null; then
+                  echo "::warning::MAIN_SYNC_CANDIDATE_EMPTY:PR#$number"; continue
+                fi
+                main_paths="$(jq -r '.files[] | .filename, (.previous_filename // empty)' <<<"$main_diff")"
+                candidate_paths="$(jq -r '.files[] | .filename, (.previous_filename // empty)' <<<"$candidate_diff")"
                 path_overlap="$(comm -12 <(printf '%s\n' "$main_paths" | sed '/^$/d' | sort -u) <(printf '%s\n' "$candidate_paths" | sed '/^$/d' | sort -u) || true)"
                 if [ -n "$path_overlap" ]; then
                   echo "::warning::PR#$number main refresh has path overlap and requires reconciliation; automatic refresh forbidden."
                   printf '%s\n' "$path_overlap"
                   continue
+                fi
+                # Use existing trusted policy to check shared contracts, not just filenames.
+                contract_overlap="$(MAIN_PATHS="$main_paths" CANDIDATE_PATHS="$candidate_paths" node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          import {deriveHygieneConflictContracts} from './tools/delivery/delivery-hygiene.mjs';
+          const brain=JSON.parse(readFileSync('config/brain-delivery-system.json','utf8'));
+          const hygiene=JSON.parse(readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
+          const contracts=paths=>deriveHygieneConflictContracts(paths.split('\n').filter(Boolean),brain,hygiene);
+          const main=new Set(contracts(process.env.MAIN_PATHS));
+          console.log(JSON.stringify(contracts(process.env.CANDIDATE_PATHS).filter(x=>main.has(x))));
+          NODE
+                )"
+                if [ "$contract_overlap" != '[]' ]; then
+                  echo "::warning::MAIN_SYNC_CONTRACT_OVERLAP:PR#$number:$contract_overlap"; continue
                 fi
                 fresh_pr="$(gh api "repos/$repo/pulls/$number")"
                 fresh_main="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
@@ -460,6 +508,18 @@ jobs:
                   echo "::warning::PR#$number MAIN_SYNC transition readback failed; restoring terminal lease."
                   gh api --method PATCH "repos/$repo/pulls/$number" -f body="$current_body" >/dev/null || true
                   continue
+                fi
+                # The same executable guard must approve a fresh provider readback before native mutation.
+                guard_pr="$(gh api "repos/$repo/pulls/$number")"
+                guard_main="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
+                guard_head="$(jq -r '.head.sha' <<<"$guard_pr")"
+                guard_body="$(jq -r '.body // ""' <<<"$guard_pr")"
+                if [ "$guard_body" != "$sync_body" ] || [ "$guard_main" != "$refresh_main_sha" ]; then
+                  echo "::warning::MAIN_SYNC_PREWRITE_DRIFT:PR#$number; no native CAS."; continue
+                fi
+                jq -n --arg body "$guard_body" --arg observed "$guard_head" --arg expected "$head" --arg captured "$refresh_main_sha" --arg main "$guard_main" --arg obligation "$lease_obligation" --arg owner "$lease_owner" --argjson contracts "$contract_overlap" '{body:$body,observedHeadSha:$observed,expectedHeadSha:$expected,capturedMainEpochSha:$captured,currentMainSha:$main,obligationId:$obligation,expectedOwner:$owner,mutationKind:"main-sync",mainSyncOverlap:[],mainSyncContractOverlap:$contracts}' >/tmp/main-sync-prewrite.json
+                if ! node tools/delivery/github-delivery-state-machine.mjs terminal-write-guard --input /tmp/main-sync-prewrite.json; then
+                  echo "::warning::MAIN_SYNC_PREWRITE_GUARD_DENIED:PR#$number"; continue
                 fi
                 emit_metric "$number" CAS_REQUEST "$next_drift_count"
                 if gh api --method PUT "repos/$repo/pulls/$number/update-branch" -f expected_head_sha="$head" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
@@ -595,7 +655,7 @@ jobs:
           done < <(jq -c '.[] | select(.merged_at != null)' <<<"$closed")
 
   authorized-patch-handoff:
-    if: github.event_name == 'workflow_dispatch' && inputs.patch_handoff == true && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && inputs.patch_handoff == true && inputs.release_app_identity != true && inputs.release_app_token != true && inputs.release_app_fence != true && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: writer-patch-approval
     timeout-minutes: 8
@@ -626,3 +686,55 @@ jobs:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
           WRITER_HOLDER: github-actions:${{ github.run_id }}:${{ github.run_attempt }}
         run: node scripts/ci/authorized-writer-handoff.mjs
+
+  release-app-identity-proof:
+    if: github.event_name == 'workflow_dispatch' && inputs.release_app_identity == true && inputs.patch_handoff != true && github.ref == 'refs/heads/main' && (inputs.release_app_fence != true || inputs.release_app_token != true)
+    runs-on: ubuntu-latest
+    environment: powerhouse-release-controller
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify dedicated App identity without mutation authority
+        env:
+          RELEASE_APP_FENCE_PROOF: ${{ inputs.release_app_fence }}
+          RELEASE_APP_TOKEN_PROOF: ${{ inputs.release_app_token }}
+          RELEASE_APP_ID: ${{ vars.POWERHOUSE_RELEASE_APP_ID }}
+          RELEASE_APP_PRIVATE_KEY: ${{ secrets.POWERHOUSE_RELEASE_APP_PRIVATE_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          node --input-type=module <<'NODE'
+          import {verifyReleaseApp} from './tools/delivery/release-app-identity.mjs';
+          import {proveScopedPromotionToken} from './tools/delivery/reviewed-promotion-token.mjs';
+          import {proveScopedFenceRead} from './tools/delivery/reviewed-provider-fence.mjs';
+          try {
+            if(process.env.RELEASE_APP_FENCE_PROOF==='true') {
+              if(process.env.RELEASE_APP_TOKEN_PROOF==='true') throw Error('FENCE_READ_MODE_CONFLICT');
+              const f=await proveScopedFenceRead({appId:Number(process.env.RELEASE_APP_ID),privateKey:process.env.RELEASE_APP_PRIVATE_KEY,expectedMainSha:process.env.GITHUB_SHA});
+              if(f.appId!==5916428 || f.installationId!==185660155 || f.repository!==process.env.GITHUB_REPOSITORY || f.expectedMainSha!==process.env.GITHUB_SHA || f.scopeVerified!==true || f.revocationVerified!==true || f.exclusiveWriterVerified!==false || f.mutationAuthority!==false || f.state!=='SCOPED_READ_TOKEN_REVOKED_AUTHORITY_UNPROVEN') throw Error('FENCE_READ_PROBE_CONTRACT_MISMATCH');
+              const complete=['DEDICATED_CONTEXT_MISSING','NATIVE_CONTEXT_BOUND_EXCLUSIVE_WRITER_UNPROVEN'].includes(f.fenceState);
+              console.log('RELEASE_APP_FENCE_PROOF:'+JSON.stringify({appId:f.appId,installationId:f.installationId,repository:f.repository,expectedMainSha:f.expectedMainSha,state:f.state,fenceState:complete?f.fenceState:'NATIVE_INVENTORY_UNPROVEN',scopeVerified:true,revocationVerified:true,exclusiveWriterVerified:false,mutationAuthority:false}));
+              if(!complete) throw Error('FENCE_READ_NATIVE_INVENTORY_UNPROVEN');
+            } else {
+            const proof=await verifyReleaseApp({appId:Number(process.env.RELEASE_APP_ID),privateKey:process.env.RELEASE_APP_PRIVATE_KEY});
+            if(proof.appId!==5916428 || proof.authenticated!==true || proof.exclusiveWriterVerified!==false || proof.mutationAuthority!==false) throw Error('APP_PROBE_CONTRACT_MISMATCH');
+            console.log('RELEASE_APP_IDENTITY_PROOF:'+JSON.stringify({appId:proof.appId,installationId:proof.installationId,repository:proof.repository,state:proof.state,authenticated:true,exclusiveWriterVerified:false,mutationAuthority:false}));
+            if(process.env.RELEASE_APP_TOKEN_PROOF==='true') {
+              const tokenProof=await proveScopedPromotionToken({appId:Number(process.env.RELEASE_APP_ID),privateKey:process.env.RELEASE_APP_PRIVATE_KEY});
+              if(tokenProof.scopeVerified!==true || tokenProof.revocationVerified!==true || tokenProof.exclusiveWriterVerified!==false || tokenProof.mutationAuthority!==false) throw Error('PROMOTION_TOKEN_PROBE_CONTRACT_MISMATCH');
+              console.log('RELEASE_APP_TOKEN_PROOF:'+JSON.stringify({appId:tokenProof.appId,installationId:tokenProof.installationId,repository:tokenProof.repository,state:tokenProof.state,scopeVerified:true,revocationVerified:true,exclusiveWriterVerified:false,mutationAuthority:false}));
+            }
+            }
+          } catch(e) {
+            const code=String(e?.message??'');
+            const safe=/^(APP_NATIVE_AUTH_HTTP_\d{3}|APP_IDENTITY_OR_PERMISSIONS_UNPROVEN|APP_INSTALLATION_SCOPE_UNPROVEN_(?:IDENTITY|ACCOUNT|SELECTION|SUSPENSION|PERMISSIONS)|DEDICATED_APP_CREDENTIAL_REQUIRED|APP_RSA_KEY_REQUIRED|APP_PRIVATE_KEY_PARSE_FAILED|APP_JWT_SIGN_FAILED|APP_NATIVE_NETWORK_FAILED|APP_NATIVE_RESPONSE_INVALID|APP_PROBE_CONTRACT_MISMATCH|PROMOTION_APP_ID_UNPROVEN|PROMOTION_IDENTITY_REQUEST_INVALID|PROMOTION_APP_AUTH_UNPROVEN|PROMOTION_APP_AUTH_CHANGED|PROMOTION_IDENTITY_UNPROVEN|PROMOTION_TOKEN_TRANSPORT_UNPROVEN|PROMOTION_TOKEN_RESPONSE_INVALID|PROMOTION_TOKEN_ISSUANCE_UNPROVEN|PROMOTION_TOKEN_ISSUANCE_AMBIGUOUS|PROMOTION_TOKEN_PERMISSIONS_UNPROVEN|PROMOTION_TOKEN_EXPIRY_UNPROVEN|PROMOTION_TOKEN_SCOPE_READBACK_FAILED|PROMOTION_TOKEN_REPOSITORY_SCOPE_UNPROVEN|PROMOTION_TOKEN_REVOCATION_UNPROVEN|PROMOTION_TOKEN_REVOCATION_READBACK_UNPROVEN|PROMOTION_TOKEN_PROBE_CONTRACT_MISMATCH|FENCE_READ_MODE_CONFLICT|FENCE_READ_PROBE_CONTRACT_MISMATCH|FENCE_READ_NATIVE_INVENTORY_UNPROVEN)$/.test(code)?code:'APP_PROBE_FAILED';
+            console.error(safe);process.exitCode=1;
+          }
+          NODE

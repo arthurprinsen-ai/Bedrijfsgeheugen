@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-20",
+  "status": "PROTECTED_CANDIDATE_NEEDS_MERGE",
+  "fingerprint": "powerhouse|canonical-brand-shell|duplicate-governance-allowlist-demands-unavailable-netlify-commit|20261120-v1",
+  "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "original_owner": "original Powerhouse Delivery Self Optimization / Canonical Brand Shell live readback",
+  "root_cause": "Canonical brand shell's workflow-inlined governance allowlist diverged from canonical NETLIFY_GOVERNANCE_EXACT and NETLIFY_GOVERNANCE_PREFIXES. New protected main SHA 92d63c8891132edaebc78dcb0cf01be1c66c0f96 changed only original browser verifier, original agent skill, learning, docs and tests, but canonical shell incorrectly required its own new Netlify runtime deploy. Netlify accurately canceled a no-content-change deploy 6b00cac76de18dc69d633a32.",
+  "prevention": "Reuse canonical Netlify governance exact and prefix exports in original brand shell with NETLIFY_BUILD_RUNTIME_EXACT override. Only accept live ancestor commit with an actually verified Git ancestry, unchanged hosted runtime and independent public shell+SEO+growth+browser proof. Real build entry, portal, website and Netlify functions changes must still require an exact new live provider deployment.",
+  "compiler": {
+    "scope": "RELEASE",
+    "failure_class": "DEPLOYMENT_APPLICABILITY_DRIFT",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-brand-shell-governance-supersession-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-brand-shell-governance-supersession-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-brand-shell-governance-supersession-20261120.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_website_readback_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44829960523",
+    "no_content_change_netlify_deploy": "https://app.netlify.com/projects/bedrijfsgeheugen/deploys/6b00cac76de18dc69d633a32",
+    "original_protected_browser_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6085",
+    "expected_main_sha": "92d63c8891132edaebc78dcb0cf01be1c66c0f96",
+    "regression": "tests/brain-brand-shell-governance-supersession-20261120.test.mjs",
+    "readback_status": "PROTECTED_PR_AND_NATURAL_RECURRENCE_VERIFICATION_DUE",
+    "customer_business_success_proven": false,
+    "no_new_scheduler": true,
+    "release_gate_bypass": false
+  },
+  "closure": "Protected Required and CodeQL and merge. Then canonical native production shell with unchanged actual Netlify runtime SHA, independently observed ancestor/supersession, HTTP200 pages and visible browser proof + live SEO and growth HTTP405; no fake new deploy and no terminal success if customer Heartbeat effect unmeasured."
+}

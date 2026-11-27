@@ -5,13 +5,16 @@ const lock=JSON.parse(readFileSync(new URL('../supabase/migration-history.lock.j
 const version='20261116105000';
 const name='original_infinity_missing_signal_isolated_mux_v3';
 test('native 874 source identities exactly ordered and unique',()=>{
+ // De lock groeit mee met latere native migraties; deze test bewaakt alleen dat de 874-positie
+ // (mux v3) exact op zijn plek staat en dat de lock uniek en geordend blijft.
  assert.equal(lock.source,'supabase_migration_history');
  assert.equal(lock.project_ref,'adhjwmvyoixzjtmiroln');
- assert.equal(lock.applied.length,874);
+ assert.ok(lock.applied.length>=874);
  assert.equal(new Set(lock.applied.map(x=>x.version)).size,lock.applied.length);
- assert.deepEqual(lock.applied.at(-1),{version,name});
- assert.deepEqual(lock.applied.at(-2),{version:'20261115235900',name:'company_intelligence_existing_daily_source_receipt_v1'});
- assert.equal(lock.captured_at,'2026-11-16T10:07:54.646910Z');
+ assert.deepEqual(lock.applied[873],{version,name});
+ assert.deepEqual(lock.applied[872],{version:'20261115235900',name:'company_intelligence_existing_daily_source_receipt_v1'});
+ const versions=lock.applied.map(x=>x.version);
+ assert.deepEqual(versions,[...versions].sort());
 });
 test('every locked production migration has an immutable executable source',()=>{
  const filenames=readdirSync(new URL('../supabase/migrations/',import.meta.url)).filter(x=>x.endsWith('.sql'));

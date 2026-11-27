@@ -1,0 +1,3 @@
+# Protected scoped promotion token proof — 25 November 2026
+
+Original #4661 release owner, isolated staging extraction from #6179 db3e5310da00cb9d4b50e0ad7f936aea4d8665db. Native signed identity is verified by https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45571679273. Add an explicit opt-in to the existing main-only identity job for token issuance, exact repository/permissions readback, revocation and rejection readback. No status/ref mutation or policy/grant, no second scheduler, no global secret exception. Keep original job exact-byte egress admission. Require protected CI, then native opt-in dispatch once; retain deny-all and keep #6179 draft. Actual token lifecycle and exclusive provider fence are not yet proven.

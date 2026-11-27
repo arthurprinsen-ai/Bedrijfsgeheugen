@@ -17,7 +17,7 @@ const PAD = {
 const OVERSLAAN = new Set([
   'index.html', 'index-oud.html', 'prijzen.html', 'cases.html', 'partners.html',
   'onderzoeken.html', 'templates.html', 'security.html', 'juridisch.html',
-  'help.html', 'changelog.html', 'klantportaal.html', 'klantportaal-demo.html',
+  'help.html', 'changelog.html', 'de-kloof.html', 'klantportaal.html', 'klantportaal-demo.html',
   'klant-login.html', 'afmaakindex.html'
 ]);
 const MAPPEN = ['.', 'blog'];

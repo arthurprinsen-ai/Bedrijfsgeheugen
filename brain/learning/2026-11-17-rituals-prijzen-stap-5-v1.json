@@ -1,0 +1,24 @@
+{
+  "fingerprint": "design|rituals|prijzen-hand-layer|20261117-v1",
+  "date": "2026-11-17",
+  "owner": "agent-reliability",
+  "obligation_id": "design|rituals|prijzen-hand-layer|20261117-v1",
+  "state": "CODE_CANDIDATE",
+  "production_proven": false,
+  "compiler": {"failure_class": "DESIGN_LAYER_PLACEMENT", "scope": "UI", "machine_enforceable": false, "repeat_count": 2, "security_sensitive": false},
+  "root_cause": "prijzen.html wordt door de v18-generator overgeslagen; een laag in de generator zou de pagina niet bereiken.",
+  "correction": "De laag staat als eigen style-blok in prijzen.html, alleen vorm en toon, met schermcontrole voor en na.",
+  "prevention": [
+    "Controleer eerst of een pagina in de OVERSLAAN-set van de generator staat voordat je de generator wijzigt.",
+    "Houd prijs-, tekst- en conversie-attributen onaangetast bij een stijllaag."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs"],
+    "canary": ["tests/seo-homepage-context-slider-readability.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-website-canonical-shell-idempotency-v1.test.mjs", "tests/seo-homepage-context-slider-readability.test.mjs"],
+    "source": ["prijzen.html"],
+    "outcome": "Lokaal: schermen voor/na en prijzentests groen. Live-readback open."
+  }
+}

@@ -41,6 +41,8 @@ jobs:
             tests/brain-skill-byte-audit.test.mjs \
             tests/brain-agent-skill-execution-evidence.test.mjs \
             tests/brain-innovation-original-code-delivery-20261115.test.mjs \
+            tests/brain-innovation-original-evidence-reconciliation-20261117.test.mjs \
+            tests/brain-innovation-quality-next-action-continuity-20261117.test.mjs \
             tests/brain-innovation-original-code-production-receipt-20261115.test.mjs \
             tests/powerhouse-one-loop-*.test.mjs \
             tests/powerhouse-organism-propagation.test.mjs \

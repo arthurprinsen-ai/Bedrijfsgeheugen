@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-18",
+  "status": "CANDIDATE_UNDER_REVIEW",
+  "fingerprint": "powerhouse|growth|lead-magnet-lacks-exclusive-ritual|20261118-v1",
+  "failure_class": "CONTENT_GAP",
+  "scope": "RUNTIME",
+  "owner": "portal-v2 page registry",
+  "root_cause": "Het kwartaalrapport voelde als rapport en niet als exclusieve ervaring met direct toepasbare bouwblokken.",
+  "evidence": {
+    "at_utc": "2026-11-18T06:35:00Z",
+    "source": "opdracht Arthur 18 nov 2026"
+  },
+  "fix": "Magazine De Kloof No. 04 met Kwartaalritueel en negen bouwblokken (cijfer, betekenis, risico, maandagactie), bronnen met bewijsniveau.",
+  "prevention_rule": "Elke kwartaaleditie levert bouwblokken met een maandagactie en vermeldt bron en bewijsniveau per cijfer.",
+  "regression_contract": "tests/brain-portal-kwartaalrapporten-20261106.test.mjs",
+  "compiler": {
+    "failure_class": "CONTENT_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+    ]
+  },
+  "tests": [
+    "tests/brain-portal-kwartaalrapporten-20261106.test.mjs"
+  ],
+  "production_proven": false,
+  "required_proof": [
+    "Protected exact-head checks",
+    "merge",
+    "PDF in portaal toont 21 pagina's"
+  ]
+}

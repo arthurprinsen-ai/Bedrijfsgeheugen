@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse|linkedin-personal|original-publisher-shared-guard-prod-bundle-stale|20261120-v1",
+  "owner": "original-powerhouse-social-publisher",
+  "event_date": "2026-11-20",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs"
+    ]
+  },
+  "root_cause": "Protected #6072 merged and Supabase native deployed original orchestrator 1129/reviewer 1081 with source-scope founder claim guard, but ORIGINAL powerhouse-social-publisher remained older deployed bundle 1347 without the shared module's new personalFounderDecisionSourceScopeViolations function. GitHub source parity of shared module cannot imply deployed provider last-mile parity across importers. Exact production get_edge_function independently exposed this discrepancy.",
+  "prevention_rule": "When a shared security/identity/first-person truth module changes, all original deployed importers that use it must be included in protected deployment and independently read back at the destination. Explicitly invoke the source-scope veto inside original publisher before final exact hash+personalLastMilePublicationViolations+Composio provider create, never rely solely on successful independent reviewer. Never re-send consumed original post. Track provider-GET 403 as verification_pending. No parallel sender, cron or authorization relaxation.",
+  "evidence": {
+    "protected_fixed_reviewer_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6072",
+    "production_supabase_project": "adhjwmvyoixzjtmiroln",
+    "original_orchestrator_version": 1129,
+    "original_reviewer_version": 1081,
+    "original_publisher_stale_version": 1347,
+    "source_guard": "personalFounderDecisionSourceScopeViolations",
+    "new_code_path": "supabase/functions/powerhouse-social-publisher/index.ts",
+    "original_provider_urn": "urn:li:share:7529541605742018561",
+    "post_create_receipt_status": "PUBLISHED",
+    "post_readback": "403 Forbidden verification_pending; not independently full-content-proven",
+    "realized_gain_proven": false,
+    "historical_shadow_canary": "tests/brain-personal-founder-directive-source-scope-20261120.test.mjs"
+  },
+  "fences": [
+    "Only original publisher can send",
+    "An independent reviewer PASS is not original deployed publisher gate proof",
+    "Code merge not production deployment",
+    "No repost of original published day",
+    "No false content or engagement green"
+  ],
+  "implementation_state": "CODE_CANDIDATE_NEEDS_PROTECTED_CI_AND_PRODUCTION_READBACK"
+}

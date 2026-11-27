@@ -23,9 +23,9 @@ const topic=(text:string)=>{
  if(isSpreadsheetBusinessContext(t)||/verschillende cijfers|losse bestanden/.test(t))return'excel-chaos';
  if(/dubbel.*invoe|handmatig.*overzet|crm.*erp|erp.*crm|overtypen/.test(t))return'dubbele-invoer';
  if(/projectmarge|projectbudget|meerwerk/.test(t))return'projectmarge';
- if(/groei.*winst|omzet.*marge/.test(t))return'groei-zonder-winst';
+ if(/groei.*winst|omzet.*marge|krappe marges|marges? onder druk/.test(t))return'groei-zonder-winst';
  if(/personeelstekort|capaciteitsplann|backlog|planning.*vol/.test(t))return'capaciteitsplanning';
- if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling/.test(t))return'debiteuren';
+ if(/debiteur|dso|openstaande factur|oninbare vorder|onbetaalde factur|betalingsachterstand|factuur.*onbetaald|achterstallige betaling|factuurfout|foutieve factu(?:u)?r|onjuiste factu(?:u)?r/.test(t))return'debiteuren';
  if(/late factur|facturatie.*vertraging|facturering.*te laat|werk.*niet gefactureerd/.test(t))return'late-facturering';
  if(/klantconcentratie|klantafhankelijk|afhankelijk.*grote klant/.test(t))return'klantafhankelijkheid';
  if(/klantverlies|churn|klant.*minder bestell/.test(t))return'klantverlies';
@@ -301,10 +301,15 @@ Deno.serve(async(req:Request)=>{
    });
    if(observed.error)errors.push('personal_source_supply_brain_receipt_failed');
  }
- const allSourceReady=supply.ok&&personalPublishingSourceReady;
+ // Existing Mira business/source candidate must not be blocked by the independent
+ // personal first-person source gate. Keep personal fail-closed and BRAIN-reported.
+ const miraBusinessSourceReady=supply.ok&&errors.length===0;
+ const allSourceReady=miraBusinessSourceReady&&personalPublishingSourceReady;
  return json({
-   ok:errors.length===0&&allSourceReady,
-   state:allSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   ok:miraBusinessSourceReady,
+   state:!miraBusinessSourceReady?'SOURCE_RECOVERY_DUE':allSourceReady?'SOURCE_READY':'MIRA_SOURCE_READY_PERSONAL_RECOVERY_DUE',
+   miraBusinessSourceState:miraBusinessSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
+   allSourceReady,
    personalSourceState:!personalStoryDue?'NOT_DUE':personalPublishingSourceReady?'SOURCE_READY':'SOURCE_RECOVERY_DUE',
    personalSourceRecovery:personalPublishingSourceReady?null:{owner:'powerhouse-content-orchestrator / original user-fact source intake',reason:'PERSONAL_USER_EXPERIENCE_NOT_VERIFIED',public_news_not_authority:true,sendsAuthorized:false},
    sourceRecovery:supply.ok?null:{
@@ -316,5 +321,5 @@ Deno.serve(async(req:Request)=>{
    runDate,stored,eligible,personalStored,personalEligible,providers,max_age_days:MAX_AGE_DAYS,
    sourceIntake:{providerCandidates:sourceCandidates,rejections:sourceRejectCounts,samples:sourceRejectSamples},
    materialized:mat.data,personalSourceRotation:personalRotation.data||null,personalStoryDue,genuinePersonalStoryReady,errors
- }, classifyMiraRadarHttpStatus({sourceReady:allSourceReady,errors}));
+ }, classifyMiraRadarHttpStatus({sourceReady:miraBusinessSourceReady,errors}));
 });

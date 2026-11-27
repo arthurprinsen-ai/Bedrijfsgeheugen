@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-25",
+  "fingerprint": "delivery|scoped-token-revocation-readback|20261125-v1",
+  "status": "CANDIDATE",
+  "owner": "Original #4661 release-control owner",
+  "root_cause": "Immediate post-DELETE-204 GET not 401; possible propagation delay not yet proven",
+  "fix": "Bounded same-token read-only polling on 200, strict 401, request deadlines",
+  "prevention_rule": "Never infer rejection from 204 alone, never reissue before prior token expiry or proven invalidation",
+  "compiler": {
+    "failure_class": "PROMOTION_TOKEN_REVOCATION_READBACK_UNPROVEN",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-writer-reviewed-promotion-token.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-writer-reviewed-promotion-token.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-writer-reviewed-promotion-token.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45585737753/job/139106756468",
+    "retry_not_before": "2026-11-25T10:30:00Z",
+    "production_verified": false
+  }
+}
