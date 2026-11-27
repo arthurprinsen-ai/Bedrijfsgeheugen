@@ -373,6 +373,17 @@ jobs:
                   echo "::notice::PR#$number failed gate remains fail-closed; current metadata is not an exact terminal lease."
                   continue
                 fi
+                # A body-only correction cannot create missing files on an immutable head.
+                # Preserve the original regulatory writer; do not spend CI budget on its
+                # known incomplete one-path source projection. Owner must supply a real bundle.
+                if grep -qx 'Regulatory-Candidate-Type: source-observation' <<<"$body"; then
+                  live_pr="$(gh api "repos/$repo/pulls/$number" 2>/dev/null || echo '{}')"
+                  if jq -e --arg head "$head" '.state=="open" and .head.sha==$head and .changed_files==1' <<<"$live_pr" >/dev/null &&
+                     jq -e '(.files | type=="array") and (.files | length==1) and .files[0].filename=="data/regulatory-source-state.json"' <<<"$compare_json" >/dev/null; then
+                    echo "::warning::PR#$number REGULATORY_SOURCE_CLOSURE_OWNER_REQUIRED: immutable one-path projection cannot acquire closure artifacts by metadata retry."
+                    continue
+                  fi
+                fi
                 admission_failed=0
                 if [ -n "$latest_required_id" ]; then
                   admission_failed="$(gh api "repos/$repo/actions/runs/$latest_required_id/jobs?filter=latest&per_page=100" --jq '[.jobs[] | select(.name=="hygiene / admission" and .conclusion=="failure")] | length' 2>/dev/null || echo 0)"

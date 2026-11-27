@@ -1,0 +1,28 @@
+{
+  "status": "CANDIDATE_TEST_ONLY",
+  "fingerprint": "maintenance-dependency-pr-5595",
+  "root_cause": "Native admission requires same-candidate closure evidence; runtime authority regression pins previous setup-cli action.",
+  "prevention_rule": "Verify upstream action tag and preserve exact CLI version, protected main authority and read-only provider attestation in existing regression.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "invariants": [
+      "No direct provider deploy; exact CLI 2.119.0 remains pinned; only verified upstream setup action digest changes."
+    ]
+  },
+  "evidence": {
+    "failed_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46018687650",
+    "upstream_release": "https://github.com/supabase/setup-cli/releases/tag/v3.2.0",
+    "production_verified": false
+  }
+}

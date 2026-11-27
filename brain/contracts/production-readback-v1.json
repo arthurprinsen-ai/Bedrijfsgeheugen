@@ -94,6 +94,7 @@
       "data/i18n/"
     ],
     "netlifyRuntimePaths": [
+      "data/regulatory-source-state.json",
       "netlify.toml",
       "_redirects",
       "_headers",

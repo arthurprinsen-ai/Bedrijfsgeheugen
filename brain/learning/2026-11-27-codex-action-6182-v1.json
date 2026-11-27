@@ -1,0 +1,29 @@
+{
+  "status": "CANDIDATE_TEST_ONLY",
+  "fingerprint": "maintenance-dependency-pr-6182",
+  "root_cause": "Native admission requires same-candidate closure evidence; existing editorial regression test still pins previous action digest.",
+  "prevention_rule": "For action version changes independently verify upstream tag-to-commit identity, update exact pin regression and keep existing sandbox and writer safety assertions; no bypass.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-codex-hosted-sandbox-20261102.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-codex-hosted-sandbox-20261102.test.mjs"
+    ],
+    "invariants": [
+      "Exact upstream pin, workspace profile, Ubuntu 24.04 editorial runners and protected writer path remain enforced."
+    ]
+  },
+  "evidence": {
+    "failed_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46018684924",
+    "upstream_release": "https://github.com/openai/codex-action/releases/tag/v1.14",
+    "upstream_commit": "306c6a196a99dcc6582530c396a19d2672d5e9ec",
+    "production_verified": false
+  }
+}
