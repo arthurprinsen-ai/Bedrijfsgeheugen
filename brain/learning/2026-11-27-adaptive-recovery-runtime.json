@@ -1,0 +1,23 @@
+{
+  "fingerprint": "delivery|adaptive-recovery-runtime|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Fixed budget one remains in existing supervisor after advisory module merge #6209.",
+  "prevention_rule": "Invoke canonical capacity with raw pressure and reserve pending fanout; never increase cycle budget after dispatch; preserve authority gates.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-adaptive-recovery-runtime-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-adaptive-recovery-runtime-20261127.test.mjs"
+    ],
+    "invariants": [
+      "No new writer or scheduler; fail closed on provider read error."
+    ]
+  }
+}

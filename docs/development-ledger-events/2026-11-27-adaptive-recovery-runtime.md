@@ -1,0 +1,2 @@
+## Adaptive recovery runtime
+Fixed budget one observed in the existing supervisor. Use merged recoveryBudget with raw initial pressure; re-read provider counts after each counted recovery, reserve three runs per action against eventual consistency, and only reduce cycle budget. Existing scheduler, writer lease, exact-head checks and circuit breaker unchanged. Raw pressure is deliberately conservative; fanout assumption and throughput remain unverified. No production claim before protected merge and runtime readback.

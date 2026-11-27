@@ -102,7 +102,7 @@ test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
   assert.match(yaml,/schedule:\s*\n\s*- cron: '2-57\/5 \* \* \* \*'/);
   assert.match(yaml,/ACTIVE_RUN_CIRCUIT_BREAKER: '12'/);
   assert.match(yaml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
-  assert.match(yaml,/RECOVERY_PR_BUDGET: '1'/);
+  assert.match(yaml,/RECOVERY_PR_BUDGET: '5'/);
   assert.match(yaml,/RECOVERY_PR_BUDGET_EXHAUSTED/);
   assert.match(yaml,/active_for_pr/);
   assert.match(yaml,/duplicate dispatch suppressed/);

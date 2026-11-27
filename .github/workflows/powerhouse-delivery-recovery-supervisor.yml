@@ -57,7 +57,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ACTIVE_RUN_CIRCUIT_BREAKER: '12'
-          RECOVERY_PR_BUDGET: '1'
+          RECOVERY_PR_BUDGET: '5'
           MAX_MAIN_DRIFT_REFRESHES: '2'
           STALE_QUEUE_MIN_AGE_SECONDS: '60'
           STALE_QUEUE_CANCEL_BUDGET: '100'
@@ -229,12 +229,40 @@ jobs:
           else
             echo "::warning::RECOVERY_PRIORITY_PROVIDER_READ_FAILED:original-provider-order-preserved"
           fi
+          # Use raw pressure for new capacity; never spend unverified ghost credits.
+          initial_active_runs="$active_runs"
+          recovery_budget() {
+            node --input-type=module - "$1" "$ACTIVE_RUN_CIRCUIT_BREAKER" "$RECOVERY_PR_BUDGET" <<'NODE'
+          import { recoveryBudget } from './tools/delivery/adaptive-recovery-capacity.mjs';
+          const [activeRuns,limit,max]=process.argv.slice(2).map(Number);
+          process.stdout.write(String(recoveryBudget({activeRuns,limit,max})));
+          NODE
+          }
+          cycle_budget="$(recovery_budget "$initial_active_runs")"
           recovered_prs=0
+          checked_after=0
           while read -r pr; do
-            if [ "$recovered_prs" -ge "$RECOVERY_PR_BUDGET" ]; then
-              echo "::notice::RECOVERY_PR_BUDGET_EXHAUSTED:$RECOVERY_PR_BUDGET"
+            # Recheck only after a counted recovery; reserve fanout even before
+            # GitHub's eventually consistent run inventory reflects dispatch.
+            if [ "$recovered_prs" -gt "$checked_after" ]; then
+              observed=0
+              for active_status in queued in_progress pending waiting requested; do
+                status_count="$(gh api --paginate "repos/$repo/actions/runs?status=$active_status&per_page=100" --jq '.workflow_runs[] | .id' | wc -l | tr -d ' ')"
+                observed=$((observed + status_count))
+              done
+              reserved_pressure=$((initial_active_runs + 3 * recovered_prs))
+              [ "$observed" -le "$reserved_pressure" ] || reserved_pressure="$observed"
+              remaining="$(recovery_budget "$reserved_pressure")"
+              candidate_budget=$((recovered_prs + remaining))
+              [ "$candidate_budget" -ge "$cycle_budget" ] || cycle_budget="$candidate_budget"
+              checked_after="$recovered_prs"
+            fi
+            echo "::notice::ADAPTIVE_RECOVERY_BUDGET:$cycle_budget used:$recovered_prs"
+            if [ "$recovered_prs" -ge "$cycle_budget" ]; then
+              echo "::notice::RECOVERY_PR_BUDGET_EXHAUSTED:$cycle_budget"
               break
             fi
+
             number="$(jq -r '.number' <<<"$pr")"
             head="$(jq -r '.head.sha' <<<"$pr")"
             branch="$(jq -r '.head.ref' <<<"$pr")"
