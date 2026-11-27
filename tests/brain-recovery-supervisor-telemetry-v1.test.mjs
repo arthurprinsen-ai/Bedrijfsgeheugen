@@ -87,7 +87,7 @@ test('single existing Janitor owns observation and never starts a second schedul
   const supervisor=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.match(supervisor,/expected_head_sha="\$head"/);
   assert.match(supervisor,/MAX_MAIN_DRIFT_REFRESHES: '2'/);
-  assert.match(supervisor,/RECOVERY_PR_BUDGET: '1'/);
+  assert.match(supervisor,/RECOVERY_PR_BUDGET:\s*'5'/); assert.ok(supervisor.includes('cycle_budget="$(recovery_budget "$initial_active_runs")"')); assert.ok(supervisor.includes('reserved_pressure=$((initial_active_runs + 3 * recovered_prs))')); assert.ok(supervisor.includes('remaining="$(recovery_budget "$reserved_pressure")"')); assert.ok(supervisor.includes('[ "$recovered_prs" -ge "$cycle_budget" ]'));
 });
 
 test('actual supervisor missing-terminal-lease warnings become deduped, typed per-run evidence',()=>{

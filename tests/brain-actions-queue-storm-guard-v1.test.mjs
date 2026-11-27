@@ -9,7 +9,7 @@ test('recovery supervisor is bounded and cannot fan out from main pushes',()=>{
   assert.doesNotMatch(workflow,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
   assert.match(workflow,/cron:\s*'2-57\/5 \* \* \* \*'/);
   assert.match(workflow,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'12'/);
-  assert.match(workflow,/RECOVERY_PR_BUDGET:\s*'1'/);
+  assert.match(workflow,/RECOVERY_PR_BUDGET:\s*'5'/); assert.ok(workflow.includes('cycle_budget="$(recovery_budget "$initial_active_runs")"')); assert.ok(workflow.includes('reserved_pressure=$((initial_active_runs + 3 * recovered_prs))')); assert.ok(workflow.includes('remaining="$(recovery_budget "$reserved_pressure")"')); assert.ok(workflow.includes('[ "$recovered_prs" -ge "$cycle_budget" ]'));
   assert.match(workflow,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
   assert.match(workflow,/STALE_QUEUE_MIN_AGE_SECONDS:\s*'60'/);
   assert.match(workflow,/STALE_QUEUE_CANCEL_BUDGET:\s*'100'/);
