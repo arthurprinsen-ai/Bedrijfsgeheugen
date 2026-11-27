@@ -11,20 +11,25 @@
   "prevention_rule": "Generic opt-in cannot grant authority over leased candidates. Delegate every declared lease/retirement field to the original owner/supervisor; fail closed on unknown body and changed identity before native expected-head CAS. No lease metadata writes, no new scheduler, no gate waiver. Metadata can still change after the final GET; provider CAS is head-only, so this is defense in depth, not an atomic lease guarantee.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-branch-reconciler.test.mjs"
+      "tests/brain-branch-reconciler.test.mjs",
+      "tests/brain-autonomous-branch-sync-4914.test.mjs"
     ],
     "shadow": [
-      "tests/brain-branch-reconciler.test.mjs"
+      "tests/brain-branch-reconciler.test.mjs",
+      "tests/brain-autonomous-branch-sync-4914.test.mjs"
     ],
     "canary": [
-      "tests/brain-branch-reconciler.test.mjs"
+      "tests/brain-branch-reconciler.test.mjs",
+      "tests/brain-autonomous-branch-sync-4914.test.mjs"
     ]
   },
   "evidence": {
     "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46012082317",
     "source_base": "89b94bcd62770015486cb08b2c1a89e5025faa20",
     "fixture": "Exact historical leased and observed heads; modeled enrollment only, actual PR did not have autonomous-sync label at readback.",
-    "production_verified": false
+    "production_verified": false,
+    "compatibility_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46016106881",
+    "compatibility_repair": "Legacy mock includes actual null PR body and two stable reads before provider mutation. Original assertions unchanged."
   },
   "status": "CANDIDATE_PENDING_PROTECTED_CI"
 }
