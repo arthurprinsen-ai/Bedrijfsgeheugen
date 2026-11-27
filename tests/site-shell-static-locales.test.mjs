@@ -42,7 +42,7 @@ test('static locale routes are built and language switching navigates between th
   assert.match(runtime,/window\.location\.assign\(localizedHref\(target\)\)/);
   assert.match(runtime,/window\.location\.assign\(href\)/);
   assert.doesNotMatch(runtime,/location\.replace\(localizedHref\('en'\)\)/);
-  assert.match(runtime,/data-bg-static-translated/);
+  assert.match(runtime,/document\.documentElement\.dataset\.bgStaticTranslated !== 'false'/);
   assert.match(runtime,/routed === 'en' && !staticTranslated/);
 });
 
