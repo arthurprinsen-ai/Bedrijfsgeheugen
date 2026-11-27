@@ -1,0 +1,8 @@
+{
+  "status": "CANDIDATE_TEST_ONLY",
+  "owner": "agent-integration-control-plane",
+  "sourceBase": "59a2836ad53a97ce7239fd6b3b90a56c17335cad",
+  "localTests": 10,
+  "runtimeVerified": false,
+  "mergeAuthorized": false
+}
