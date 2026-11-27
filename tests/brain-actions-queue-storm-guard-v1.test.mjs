@@ -52,5 +52,6 @@ test('effective Actions pressure uses a fully paginated status census',()=>{
   assert.match(workflow,/for active_status in queued in_progress pending waiting requested/);
   assert.match(workflow,/gh api --paginate "repos\/\$repo\/actions\/runs\?status=\$active_status&per_page=100"/);
   assert.match(workflow,/active_runs=\$\(\(active_runs \+ status_count\)\)/);
-  assert.match(workflow,/effective_active_runs=\$\(\(active_runs - obsolete_uncancellable\)\)/);
+  assert.match(workflow,/effective_active_runs="\$active_runs"/);
+  assert.doesNotMatch(workflow,/effective_active_runs=\$\(\(active_runs - obsolete_uncancellable\)\)/);
 });
