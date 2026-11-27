@@ -1,0 +1,37 @@
+{
+  "fingerprint": "delivery|regulatory-source-recovery-budget|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2
+  },
+  "root_cause": "The Supervisor treated PR metadata timestamps as evidence of corrected admission although the immutable regulatory source candidate changes only the projection; the three mandatory closure artifacts cannot be created by metadata changes.",
+  "prevention_rule": "On failed gate recovery, hold a native exact-head regulatory source-observation PR when independent PR and compare evidence prove the sole changed path is data/regulatory-source-state.json. Route to its original owner; preserve source ingest, other candidates, leases, protected checks and the existing budget. Do not infer closure from metadata or retry without material repair.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-source-recovery-budget-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-source-recovery-budget-20261127.test.mjs"
+    ],
+    "invariants": [
+      "No changed scheduler, retry budget, provider authority or branch protection.",
+      "Actual multi-file successor retains existing recovery path."
+    ]
+  },
+  "evidence": {
+    "main": "6b81d58ba52d3e73815d2e3a62be202a01499f36",
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46020657765/job/140579156308",
+    "supervisor_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46020580635",
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4661#issuecomment-7221488677",
+    "open_prs": 72,
+    "regulatory_source_candidates": 20,
+    "local_regression_passed": 48,
+    "local_regression_failed": 0,
+    "runtime_verified": false,
+    "owner_adoption_verified": false,
+    "operational_recall": "NOT_CONFIGURED"
+  }
+}
