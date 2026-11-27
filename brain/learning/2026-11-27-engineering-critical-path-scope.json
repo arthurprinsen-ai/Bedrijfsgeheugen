@@ -4,10 +4,22 @@
   "compiler": {
     "failure_class": "PR_MACHINE_METADATA_INVALID"
   },
-  "root_cause": "Original admission event lacked obligation ID, lane, candidate type and base SHA; the candidate subsequently received those fields. Material source changes also require repository closure artifacts.",
-  "prevention": "Compile authoritative metadata, exact changed paths and all three closure artifacts before first protected CI run; mixed known/unknown material paths fail closed to Required; prioritize longest dependency chains under existing capacity and conflicts.",
+  "root_cause": "Original admission event lacked obligation ID, lane, candidate type and base SHA; the candidate subsequently received those fields. Material source changes also require repository closure artifacts. The second attempt was admitted but my learning record incorrectly supplied incident objects where the canonical gate requires executable test paths.",
+  "prevention": "Compile authoritative metadata, exact changed paths and all three closure artifacts before first protected CI run; mixed known/unknown material paths fail closed to Required; prioritize longest dependency chains under existing capacity and conflicts. Store incident observations in evidence.historical_provider_runs; supply existing executable regression paths in evaluation.historical_replay; validate the exact canonical schema before CI.",
   "evaluation": {
     "historical_replay": [
+      "tests/brain-parallel-engineering-fabric.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_log": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45981402643/job/140445930372",
+    "obligation_id": "f5ce0355-1d4e-43d3-a9df-fd13a6855870",
+    "tests": "Existing exact-head regression source includes critical-path and mixed-scope tests; prior PR author reports 20/20. New protected evaluation must execute the listed test file.",
+    "fixture": "Five packages, capacity 2: four waves to three reported by PR author; no runtime speed claim.",
+    "codeql": "SUCCESS on original head",
+    "production_readback": null,
+    "next": "Protected exact-head admission and Required/CodeQL, then authorized merge and independent runtime readback; measure real lead time and first-time-right.",
+    "historical_provider_runs": [
       {
         "pr": 6199,
         "base": "5ce4c1e80d7a5342de43f106ccceffb4dcc217aa",
@@ -28,16 +40,15 @@
         "run": 45981764502,
         "job": 140454200134,
         "result": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+      },
+      {
+        "pr": 6199,
+        "head": "4df84f1e3511878cc6d216904a705a2d6e3cf0fb",
+        "run": 45989245516,
+        "job": 140472579507,
+        "result": "ADMITTED_THEN_LEARNING_CANONICALIZATION_BLOCKED",
+        "error": "LEARNING_EVALUATION_TEST_PATH_INVALID:historical_replay:[object Object]"
       }
     ]
-  },
-  "evidence": {
-    "provider_log": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45981402643/job/140445930372",
-    "obligation_id": "f5ce0355-1d4e-43d3-a9df-fd13a6855870",
-    "tests": "PR description reports 20/20 Node 24 tests, including critical path fixture and fail-closed mixed scope; independently confirmed diff contains both tests. Protected Required remains failed at original admission.",
-    "fixture": "Five packages, capacity 2: four waves to three reported by PR author; no runtime speed claim.",
-    "codeql": "SUCCESS on original head",
-    "production_readback": null,
-    "next": "Protected exact-head admission and Required/CodeQL, then authorized merge and independent runtime readback; measure real lead time and first-time-right."
   }
 }
