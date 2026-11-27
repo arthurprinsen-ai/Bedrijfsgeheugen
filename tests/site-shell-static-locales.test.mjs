@@ -38,7 +38,10 @@ test('static locale routes are built and language switching navigates between th
   assert.match(runtime,/pathLocale/);
   assert.match(runtime,/localizedHref/);
   assert.match(runtime,/location\.assign\(localizedHref\(normalized\)\)/);
-  assert.match(runtime,/location\.replace\(localizedHref\('en'\)\)/);
+  assert.match(runtime,/locale = portal \? preferredLocale\(\) : \(routed \|\| 'nl'\)/);
+  assert.match(runtime,/window\.location\.assign\(localizedHref\(target\)\)/);
+  assert.match(runtime,/window\.location\.assign\(href\)/);
+  assert.doesNotMatch(runtime,/location\.replace\(localizedHref\('en'\)\)/);
   assert.match(runtime,/data-bg-static-translated/);
   assert.match(runtime,/routed === 'en' && !staticTranslated/);
 });
