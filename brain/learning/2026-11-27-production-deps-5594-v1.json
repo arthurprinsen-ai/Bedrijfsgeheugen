@@ -2,7 +2,7 @@
   "status": "CANDIDATE_TEST_ONLY",
   "fingerprint": "maintenance-dependency-pr-5594",
   "root_cause": "Admission lacks same-candidate closure evidence and static locale test hardcodes prior parse5 pin.",
-  "prevention_rule": "Require exact declared dependency pins, preserve locale invariants and independently validate installed dependency behavior before protected release.",
+  "prevention_rule": "Require exact declared dependency pins, preserve locale invariants and independently validate installed dependency behavior before protected release. Follow canonical build entry and per-route completeness semantics, not stale implementation strings.",
   "compiler": {
     "failure_class": "RECOVERY",
     "scope": "delivery",
@@ -23,6 +23,7 @@
   "evidence": {
     "failed_required_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46018686183",
     "production_verified": false,
-    "installed_dependency_compatibility_verified": false
+    "installed_dependency_compatibility_verified": false,
+    "static_locale_initial_replay": "0/2: stale build command and per-route metadata assertions"
   }
 }

@@ -11,7 +11,9 @@ test('static locale routes are built and language switching navigates between th
   assert.equal(pkg.dependencies.parse5,'8.1.1');
   assert.equal(pkg.dependencies['@netlify/blobs'],'11.1.11');
   assert.equal(pkg.dependencies['@netlify/identity'],'2.0.1');
-  assert.match(netlify,/build-localized-routes\.mjs/);
+  assert.match(netlify,/command = "node tools\/ci\/netlify-build-entry\.mjs"/);
+  const entry = fs.readFileSync('tools/ci/netlify-build-entry.mjs','utf8');
+  assert.match(entry,/\['localized-routes','tools\/site-shell\/build-localized-routes\.mjs'\]/);
   assert.match(build,/const LOCALES = \['nl','en'\]/);
   assert.match(build,/hreflang/);
   assert.match(build,/x-default/);
@@ -39,10 +41,13 @@ test('static locale routes are built and language switching navigates between th
 test('offline production builds still emit English routes with explicit runtime fallback', () => {
   const build = fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
   assert.match(build,/data-bg-static-translated/);
-  assert.match(build,/setLocaleMetadata\(enDoc,'en',route,Boolean\(translations\)\)/);
-  assert.match(build,/const enDoc = parse\(sourceHtml\)/);
-  assert.match(build,/fs\.writeFileSync\(enOut,serialize\(enDoc\)\)/);
-  assert.match(build,/runtimeFallback:!translations/);
+  assert.match(build,/setLocaleMetadata\(enDoc,'en',route,missingForRoute\.length===0\)/);
+  assert.match(build,/const enDoc\s*=\s*parse\(sourceHtml\)/);
+  assert.match(build,/const enSerialized=serialize\(enDoc\)/);
+  assert.match(build,/fs\.writeFileSync\(enOut,enSerialized\)/);
+  assert.match(build,/allowMissing:!productionTranslationRequired/);
+  assert.match(build,/untranslatedRefs\+=missingForRoute\.length/);
+  assert.match(build,/runtimeFallback:!translations\s*\|\|\s*aggregate\.untranslatedRefs > 0/);
   assert.match(build,/Missing static English translation/);
   assert.match(build,/Translation response shape mismatch/);
   assert.match(build,/translateResilient/);
