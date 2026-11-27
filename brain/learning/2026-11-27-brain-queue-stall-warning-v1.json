@@ -13,17 +13,19 @@
     "historical_replay": [
       "tests/brain-brain-queue-stall-warning-20261127.test.mjs"
     ],
-    "shadow": {
-      "required": true,
-      "mode": "read-only",
-      "promotion_authority": false
-    }
+    "shadow": [
+      "tests/brain-brain-queue-stall-warning-20261127.test.mjs"
+    ],
+    "invariants": [
+      "Historical replay and shadow both execute bounded read-only warnings; no mutation authority; no change to original 24h repair gate."
+    ]
   },
   "evidence": {
     "original_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655#issuecomment-7201192009",
     "run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45652120063",
     "isolated_tests": "4/4 on exact candidate module with unused controller import stub, log_dP9JiVQoQlsi",
     "model": "1-exp(-(age/15min)^1.5) heuristic advisory, not calibrated probability; no production effectiveness yet",
-    "provider_block_open": true
+    "provider_block_open": true,
+    "learning_contract_repair": "Native admission 46003239971: LEARNING_EVALUATION_TESTS_REQUIRED:shadow; use exact executable paths and run canonical gate before push."
   }
 }
