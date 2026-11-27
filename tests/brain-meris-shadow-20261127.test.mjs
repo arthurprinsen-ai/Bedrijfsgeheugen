@@ -1,0 +1,12 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {rankCandidates} from '../tools/delivery/meris.mjs';
+const s='a'.repeat(40), b='b'.repeat(40);const c=(id,extra={})=>({id,head:s,testedHead:s,base:b,currentBase:b,ownerAuthorized:true,mergeable:true,requiredChecksGreen:true,paths:['src/'+id],value:10,duration:2,failureProbability:.1,rework:3,uncertainty:1,...extra});
+test('ranks value per risk adjusted duration',()=>assert.equal(rankCandidates([c('a'),c('b',{value:30})]).ranked[0].id,'b'));
+test('defers unauthorized',()=>assert.equal(rankCandidates([c('a',{ownerAuthorized:false})]).deferred[0].reason,'OWNER_UNVERIFIED'));
+test('defers stale base',()=>assert.equal(rankCandidates([c('a',{currentBase:s})]).deferred[0].reason,'STALE_EVIDENCE'));
+test('defers unknown merge',()=>assert.equal(rankCandidates([c('a',{mergeable:null})]).ranked.length,0));
+test('defers red CI',()=>assert.equal(rankCandidates([c('a',{requiredChecksGreen:false})]).ranked.length,0));
+test('separates overlapping scopes',()=>assert.equal(rankCandidates([c('a',{paths:['src']}),c('b')]).independentValidationWave.length,1));
+test('permits independent validation',()=>assert.equal(rankCandidates([c('a'),c('b')]).independentValidationWave.length,2));
+test('rejects invalid estimates',()=>assert.equal(rankCandidates([c('a',{duration:0})]).ranked.length,0));
+test('rejects duplicate ids',()=>assert.throws(()=>rankCandidates([c('a'),c('a')])));
+test('never authorizes merge',()=>assert.equal(rankCandidates([c('a')]).mergeAuthorized,false));

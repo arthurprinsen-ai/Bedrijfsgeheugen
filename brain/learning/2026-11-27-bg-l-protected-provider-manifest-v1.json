@@ -1,0 +1,24 @@
+{
+  "fingerprint": "delivery|supabase|bg-l-existing-provider-manifest|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Merged original PR #6125 included the existing bg-l source but the manifest lacked its registered slug. Native Edge authority failed before parity: SUPABASE_EDGE_FUNCTION_NOT_DECLARED_IN_CONFIG:bg-l.",
+  "prevention": "Register the existing function in protected deployment config before submission, retain provider-observed verify_jwt=false; assert exact changed function scope and require independent provider source parity. No new route, permission, deployment authority or external send.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bg-l-protected-provider-manifest-20261127.test.mjs"
+    ]
+  },
+  "evidence": {
+    "original_pr": 6125,
+    "main": "c42277b1fdf46c67a9fce61cf7345611c60247e9",
+    "failed_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45999621714",
+    "isolated_fixture": "1/1 PASS log_6T4E0Ury-x-P",
+    "provider_observed": "bg-l v10 ACTIVE verify_jwt=false, source not yet identical; publisher v1430 entrypoint identical; original terminal still open"
+  }
+}
