@@ -90,7 +90,7 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { readFile, appendFile } from 'node:fs/promises';
           import { deriveNetlifyDeploymentApplicability } from './tools/delivery/netlify-deployment-applicability.mjs';
-          import { reconcileNetlifyLiveGap } from './tools/delivery/netlify-live-gap-reconcile.mjs';
+          import { reconcileNetlifyLiveGap, readVerifiedPublishedSha, releaseDriftStatus } from './tools/delivery/netlify-live-gap-reconcile.mjs';
           const parent=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const parentChangedPaths=execFileSync('git',['diff','--name-only',`${parent}...HEAD`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
@@ -98,9 +98,7 @@ jobs:
           const forceDeployment=manual && process.env.DEPLOY_INPUT === 'true';
           let publishedSha=null,publishedIsAncestor=false,publishedChangedPaths=null;
           try{
-            const url='https://www.bedrijfsgeheugen.nl/release.json?reconcile='+encodeURIComponent(process.env.GITHUB_SHA);
-            const res=await fetch(url,{headers:{'cache-control':'no-cache'},signal:AbortSignal.timeout(6000)});
-            if(res.ok)publishedSha=String((await res.json()).commit_ref||'').trim();
+            publishedSha=await readVerifiedPublishedSha();
             if(/^[a-f0-9]{40}$/.test(publishedSha||'')&&publishedSha!==process.env.GITHUB_SHA){
               execFileSync('git',['merge-base','--is-ancestor',publishedSha,process.env.GITHUB_SHA],{stdio:'ignore'});
               publishedIsAncestor=true;
@@ -116,6 +114,15 @@ jobs:
             forceDeployment:forceDeployment||gap.forceDeployment,
             skipDeployment:manual&&!forceDeployment,
           });
+          // Do not infer release eligibility age from commit time; unknown remains unknown.
+          const driftStatus=releaseDriftStatus({
+            headSha:process.env.GITHUB_SHA,publishedSha,
+            ancestor:publishedIsAncestor&&Array.isArray(publishedChangedPaths),
+            requiresDeployment:applicability.reason==='explicit-no-deploy'?undefined:applicability.deploymentRequired,
+          });
+          console.log('NETLIFY_RDI_STATUS',JSON.stringify({status:driftStatus,
+            targetSha:process.env.GITHUB_SHA,publishedSha,eligibleAgeMinutes:null,productionVerified:false}));
+          await appendFile(process.env.GITHUB_STEP_SUMMARY,`### RDI-1 release source status\n- Status: **${driftStatus}**\n- Runtime health: requires independent readback\n- Eligible age: not measured\n`);
           console.log('NETLIFY_LIVE_GAP_DECISION',JSON.stringify({
             headSha:process.env.GITHUB_SHA,publishedSha,reason:gap.reason,
             unpublishedChangedPaths:gap.changedPaths.length,force:gap.forceDeployment,
