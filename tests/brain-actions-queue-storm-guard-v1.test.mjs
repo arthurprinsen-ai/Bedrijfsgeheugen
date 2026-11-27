@@ -21,7 +21,8 @@ test('recovery supervisor is bounded and cannot fan out from main pushes',()=>{
   assert.match(workflow,/pr_head_sha/);
   assert.match(workflow,/current_branch_sha/);
   assert.match(workflow,/actions\/runs\/\$run_id\/cancel/);
-  assert.match(workflow,/PROVIDER_CONTROL_PLANE_ZOMBIE/);
+  assert.match(workflow,/PROVIDER_CANCELLATION_UNPROVEN/);
+  assert.doesNotMatch(workflow,/classified:PROVIDER_CONTROL_PLANE_ZOMBIE/);
   assert.match(workflow,/effective_active_runs/);
   assert.match(workflow,/ACTIONS_ACTIVE_RUNS_RAW/);
 });

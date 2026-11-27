@@ -62,3 +62,38 @@ test('native unknown ref/status read never proves obsolete or permits deletion',
  }
  }finally{fs.rmSync(dir,{recursive:true,force:true});}
 });
+
+
+import {collectRecoveryQueueEvidence,remainingProvenRecoveryCapacity} from '../tools/delivery/adaptive-recovery-capacity.mjs';
+test('read-only native census excludes only independently verified incident ghosts',async()=>{
+ const now=Date.parse('2026-11-27T16:00:00Z'),old='2026-11-25T15:00:00Z';
+ const main='b'.repeat(40),sha='a'.repeat(40);
+ const ghosts=Array.from({length:5},(_,i)=>({id:100+i,status:'queued',conclusion:null,head_sha:sha,head_branch:'old',created_at:old,updated_at:old}));
+ const active=Array.from({length:4},(_,i)=>({...ghosts[0],id:200+i,status:'in_progress',head_sha:main,head_branch:'main'}));
+ const read=async path=>{
+  if(path==='/git/ref/heads/main')return {object:{sha:main}};
+  if(path.startsWith('/pulls?'))return [];
+  if(path==='/issues/4655')return {number:4655,state:'open',body:ghosts.map(x=>'GHOST_RUN_PROVIDER_BLOCKED:'+x.id).join('\n')};
+  if(path.startsWith('/issues/4655/comments?'))return [];
+  if(path.startsWith('/actions/runs?')){const status=new URL('https://example.invalid'+path).searchParams.get('status');const rows=status==='queued'?ghosts:status==='in_progress'?active:[];return {total_count:rows.length,workflow_runs:rows};}
+  if(path.includes('/jobs?'))return {total_count:0,jobs:[]};
+  const run=ghosts.find(x=>path==='/actions/runs/'+x.id);if(run)return run;
+  throw Error('unexpected read: '+path);
+ };
+ const collect=reader=>collectRecoveryQueueEvidence({read:reader,repo:'owner/repo',now:()=>now});
+ const snapshot=await collect(read);
+ assert.equal(snapshot.queued,5);assert.equal(snapshot.inProgress,4);
+ assert.equal(snapshot.queueEvidence.runProofs.length,5);
+ const bound=remainingProvenRecoveryCapacity({initial:snapshot,observed:snapshot});
+ assert.equal(bound.remaining,2);assert.equal(bound.active,4);assert.equal(bound.mutationAuthority,false);
+ const withJob=await collect(async path=>path.includes('/100/jobs?')?{total_count:1,jobs:[{id:1}]}:read(path));
+ assert.equal(withJob.queueEvidence.runProofs.length,4);
+ assert.equal(remainingProvenRecoveryCapacity({initial:withJob,observed:withJob}).remaining,1);
+ await assert.rejects(collect(async path=>path==='/actions/runs/100'?{}:read(path)),/RECOVERY_EXACT_RUN_UNPROVEN/);
+ await assert.rejects(collect(async path=>path.includes('status=queued')?{total_count:6,workflow_runs:ghosts}:read(path)),/RECOVERY_QUEUE_INCOMPLETE/);
+ await assert.rejects(collect(async path=>path.includes('status=queued')?{total_count:5,workflow_runs:[...ghosts.slice(0,4),ghosts[0]]}:read(path)),/RECOVERY_QUEUE_INCOMPLETE/);
+ let mainReads=0;
+ await assert.rejects(collect(async path=>path==='/git/ref/heads/main'&&++mainReads>1?{object:{sha:'c'.repeat(40)}}:read(path)),/RECOVERY_AUTHORITY_EPOCH_CHANGED/);
+ const stale={...snapshot,queueEvidence:{...snapshot.queueEvidence,now:now+600001}};
+ assert.equal(remainingProvenRecoveryCapacity({initial:stale,observed:stale}).remaining,0);
+});
