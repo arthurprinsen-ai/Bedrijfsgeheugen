@@ -33,13 +33,13 @@ function hasHeadingText(html, tag, text) {
   return String(html).includes(raw) || String(html).includes(encoded);
 }
 
-function verifyOne(html, path, expectedCommit, pricing = false) {
+function verifyOne(html, path, expectedCommit, pricing = false, verifyPricingSemantics = true) {
   assert.equal(readReleaseMarker(html), expectedCommit, `${path}: release marker wijkt af van productiecommit`);
   for (const text of TRUST) assert.ok(html.includes(text), `${path}: trustbalk mist “${text}”`);
   for (const text of MOBILE) assert.ok(html.includes(text), `${path}: mobiel menu mist “${text}”`);
   for (const token of CONTACT) assert.ok(!beforeFooter(html).includes(token), `${path}: contactgegeven staat buiten footer: ${token}`);
 
-  if (pricing) {
+  if (pricing && verifyPricingSemantics !== false) {
     for (const [attr, value] of [
       ['href', '#saas'],
       ['href', '#expertise'],
@@ -71,7 +71,7 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
   verifyPageShell(html, path);
 }
 
-export function verifyLiveSite({ home, pricing, content, expectedCommit }) {
+export function verifyLiveSite({ home, pricing, content, expectedCommit, verifyPricingSemantics = true }) {
   assert.ok(expectedCommit && expectedCommit !== 'local', 'expectedCommit is verplicht voor live readback');
   const pages = [
     { path: 'index.html', html: String(home), pricing: false },
@@ -79,7 +79,7 @@ export function verifyLiveSite({ home, pricing, content, expectedCommit }) {
     { path: 'over-ons.html', html: String(content), pricing: false }
   ];
 
-  for (const p of pages) verifyOne(p.html, p.path, expectedCommit, p.pricing);
+  for (const p of pages) verifyOne(p.html, p.path, expectedCommit, p.pricing, verifyPricingSemantics);
 
   const base = new Map();
   for (const p of pages) {

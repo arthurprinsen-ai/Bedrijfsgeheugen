@@ -112,3 +112,35 @@ assert.throws(() => verifyLiveSite({
 }), /release marker/i);
 
 console.log('canonical built-pricing live contract: OK');
+
+// Readback-mode contract: CLI stays strict unless explicitly opted in.
+const { mkdtempSync,writeFileSync,rmSync,readFileSync } = await import('node:fs');
+const {tmpdir}=await import('node:os');
+const {join}=await import('node:path');
+const {spawnSync}=await import('node:child_process');
+const {fileURLToPath}=await import('node:url');
+const dir=mkdtempSync(join(tmpdir(),'shell-readback-'));
+try {
+ const cli=fileURLToPath(new URL('./check-live-production.mjs',import.meta.url));
+ const files={LIVE_HOME_FILE:join(dir,'home.html'),LIVE_PRICING_FILE:join(dir,'pricing.html'),LIVE_CONTENT_FILE:join(dir,'content.html')};
+ const run=(args=[],pages={home,pricing,content})=>{
+  for(const [key,value] of Object.entries(pages))writeFileSync(files['LIVE_'+key.toUpperCase()+'_FILE'],value);
+  return spawnSync(process.execPath,[cli,...args],{env:{...process.env,...files,EXPECTED_COMMIT:COMMIT},encoding:'utf8'});
+ };
+ const bad={home,pricing:shell(),content};
+ assert.equal(run().status,0);
+ assert.notEqual(run([],bad).status,0);
+ assert.equal(run(['--identity-only'],bad).status,0);
+ assert.notEqual(run(['--identity-only','--other'],bad).status,0);
+ assert.notEqual(run(['--other'],bad).status,0);
+ assert.notEqual(run(['--identity-only'],{...bad,home:ensureReleaseMarker(home,'f'.repeat(40))}).status,0);
+ assert.notEqual(run(['--identity-only'],{...bad,content:shell({mobile:'Oplossingen Platform Kennis Over ons Meer'})}).status,0);
+ assert.notEqual(run(['--identity-only'],{...bad,home:shell({extraBeforeFooter:'<a href="mailto:arthur@bedrijfsgeheugen.nl">bovenaan</a>'})}).status,0);
+ const workflow=readFileSync(new URL('../../.github/workflows/production-release-readback.yml',import.meta.url),'utf8');
+ const canonical=readFileSync(new URL('../../.github/workflows/canonical-brand-shell-live-readback.yml',import.meta.url),'utf8');
+ assert.ok(workflow.includes('BROWSER_REQUIRED: $'+'{{ steps.scope.outputs.browser_required }}'));
+ assert.ok(workflow.includes('if [[ "$BROWSER_REQUIRED" == "true" ]]; then readback_args=(--identity-only); fi'));
+ assert.ok(workflow.includes("steps.routes.outcome == 'success' && steps.pricing.outcome == 'success'"));
+ assert.ok(!canonical.includes('--identity-only'));
+ console.log('scoped identity-only CLI + caller preservation: 12/12 OK');
+}finally{rmSync(dir,{recursive:true,force:true})}

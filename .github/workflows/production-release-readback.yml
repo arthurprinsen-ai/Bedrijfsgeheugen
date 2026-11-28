@@ -136,6 +136,7 @@ jobs:
         if: steps.scope.outputs.deployment_required == 'true'
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
+          BROWSER_REQUIRED: ${{ steps.scope.outputs.browser_required }}
         run: |
           set -euo pipefail
           for attempt in $(seq 1 40); do
@@ -144,7 +145,9 @@ jobs:
               && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?bg_release_readback=${nonce}" -o live-prijzen.html \
               && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_release_readback=${nonce}" -o live-over-ons.html \
               && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?bg_release_readback=${nonce}" -o live-release.json; then
-              if EXPECTED_COMMIT="${EXPECTED_COMMIT}" node tools/site-shell/check-live-production.mjs; then
+              readback_args=()
+              if [[ "$BROWSER_REQUIRED" == "true" ]]; then readback_args=(--identity-only); fi
+              if EXPECTED_COMMIT="${EXPECTED_COMMIT}" node tools/site-shell/check-live-production.mjs "${readback_args[@]}"; then
                 if EXPECTED_COMMIT="${EXPECTED_COMMIT}" node --input-type=module - <<'NODE'
           import { appendFile, readFile, writeFile } from 'node:fs/promises';
           const release=JSON.parse(await readFile('live-release.json','utf8'));
@@ -347,7 +350,7 @@ jobs:
           --supersession-safe '${{ steps.deploy.outputs.supersession_safe }}'
           --deployment-required 'true'
           --routes-json '${{ steps.scope.outputs.routes }}'
-          --routes-ok '${{ steps.routes.outcome == 'success' }}'
+          --routes-ok '${{ steps.routes.outcome == 'success' && steps.pricing.outcome == 'success' }}'
           --output .artifacts/production-release-readback.json
       - name: Evaluate immutable Netlify backend production truth
         if: steps.scope.outputs.deployment_required == 'true' && steps.scope.outputs.browser_required != 'true' && steps.deploy.outcome == 'success'
