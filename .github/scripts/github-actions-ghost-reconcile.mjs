@@ -10,6 +10,33 @@ export const GHOST_INCIDENT = 4655;
 const DAY = 24 * 60 * 60 * 1000;
 const MAX_REPAIR_PER_SWEEP = 8;
 
+// Provider resilience: bounded, observational Beta-Bernoulli start-delay model.
+// A prediction is never evidence of identity, ghost status, or permission.
+const MATERIALIZATION_WINDOW_MS = 15 * 60_000;
+const HISTORY_SAMPLE_LIMIT = 12;
+export function estimateProviderStartFailure(observations, {asOf, windowMs=MATERIALIZATION_WINDOW_MS}={}) {
+  if(!Array.isArray(observations)||!Number.isFinite(asOf)||!Number.isFinite(windowMs)||windowMs<=0) throw new Error('INVALID_PROVIDER_SAMPLE');
+  const counts=new Map();
+  for(const o of observations) if(Number.isSafeInteger(o?.id)&&o.id>0) counts.set(o.id,(counts.get(o.id)||0)+1);
+  let s=0,f=0,excluded=0;
+  for(const o of observations){
+    const created=Date.parse(o?.createdAt||''),started=Date.parse(o?.firstJobStartedAt||''),completed=Date.parse(o?.completedAt||'');
+    if(counts.get(o?.id)!==1||o?.exactReadback!==true||o?.attempt!==1||!Number.isFinite(created)||!Number.isFinite(started)||!Number.isFinite(completed)||created>started||started>completed||completed>asOf||created+windowMs>asOf){excluded++;continue;}
+    if(started-created<=windowMs)s++;else f++;
+  }
+  const n=s+f, alpha=1+f,beta=1+s;
+  return {mode:'SHADOW_ONLY',sampleCount:n,successes:s,failures:f,excluded,windowMs,
+    posteriorMean:n?alpha/(alpha+beta):null,
+    posteriorStdDev:n?Math.sqrt(alpha*beta/((alpha+beta)**2*(alpha+beta+1))):null,
+    status:n>=8?'OBSERVATIONAL_ESTIMATE':n?'INSUFFICIENT_SAMPLE':'NO_EVIDENCE',
+    mutationAuthority:false};
+}
+export function providerInvestigationPriority({probability,verifiedDependentProcesses,blockedMinutes,investigationMinutes,dependencyProof}={}){
+  if(dependencyProof!==true||!Number.isFinite(probability)||probability<0||probability>1||!Number.isSafeInteger(verifiedDependentProcesses)||verifiedDependentProcesses<0||!Number.isFinite(blockedMinutes)||blockedMinutes<0||!Number.isFinite(investigationMinutes)||investigationMinutes<=0)return null;
+  const score=probability*verifiedDependentProcesses*blockedMinutes/investigationMinutes;
+  return Number.isFinite(score)?score:null;
+}
+
 // Advisory, not a calibrated failure probability. No mutation authority.
 const STALL_PROBE_BUDGET=8;
 const STALL_SCALE_MS=15*60_000;
@@ -115,6 +142,34 @@ async function main() {
       const score=classifyBrainQueueStall(run,{jobsTotal:jobs.total_count});
       if(score.state==='EARLY_STALL_WARNING')earlyBrainStalls.push({run_id:run.id,head_sha:run.head_sha,...score,providerBoundary:known.blocked.has(run.id),identityProven:false});
     }catch{earlyBrainStalls.push({run_id:item.id,state:'READBACK_UNVERIFIED',mutationAuthority:false});}
+  }
+  // Same workflow/event/main cohort only. Completed single-attempt records with
+  // complete native job lists provide observed start delays; missing data is not a failure.
+  // Fixed bounded budget: one history page plus <=12 exact job reads, no new scheduler.
+  const historicalSamples=[];
+  let historyReadState='NOT_REQUESTED';
+  if(earlyBrainStalls.some(x=>x.state==='EARLY_STALL_WARNING')){
+    historyReadState='COMPLETE_BOUNDED_SAMPLE';
+    try{
+      const cutoff=Date.now();
+      const history=await required('/actions/workflows/unified-brain-delivery.yml/runs?branch=main&event=workflow_dispatch&status=completed&per_page='+HISTORY_SAMPLE_LIMIT);
+      if(!Array.isArray(history.workflow_runs))throw new Error('INVALID_HISTORY');
+      for(const item of history.workflow_runs.slice(0,HISTORY_SAMPLE_LIMIT)){
+        if(item.path!=='.github/workflows/unified-brain-delivery.yml'||item.event!=='workflow_dispatch'||item.head_branch!=='main'||item.status!=='completed'||item.run_attempt!==1||!Number.isSafeInteger(item.id))continue;
+        try{
+          const jobs=await required('/actions/runs/'+item.id+'/attempts/1/jobs?per_page=100');
+          const rows=jobs.jobs;
+          if(!Array.isArray(rows)||jobs.total_count!==rows.length||!rows.length||rows.some(j=>j.run_id!==item.id||!Number.isSafeInteger(j.id))||new Set(rows.map(j=>j.id)).size!==rows.length)continue;
+          const starts=rows.filter(j=>j.started_at!=null).map(j=>Date.parse(j.started_at));
+          if(!starts.length||starts.some(t=>!Number.isFinite(t)))continue;
+          historicalSamples.push({id:item.id,attempt:1,createdAt:item.created_at,completedAt:item.updated_at,firstJobStartedAt:new Date(Math.min(...starts)).toISOString(),exactReadback:true});
+        }catch{historyReadState='PARTIAL_READBACK';}
+      }
+      const estimate=estimateProviderStartFailure(historicalSamples,{asOf:cutoff});
+      for(const warning of earlyBrainStalls){
+        if(warning.state==='EARLY_STALL_WARNING')warning.providerStartDelayModel={...estimate,historyReadState,dependencyPriority:null,dependencyProof:'NOT_AVAILABLE'};
+      }
+    }catch{historyReadState='HISTORY_UNAVAILABLE';}
   }
   let repairCount = 0;
   for (const item of queued) {
@@ -224,7 +279,7 @@ async function main() {
     independentlyQueuedKnownIds,
     providerIncidentStillOpen: reports.length > 0 || [...known.blocked].some(id => !known.completed.has(id) && !resolvedNew.includes(id)),
     collectionMissingKnownProviderIds,
-    earlyBrainStalls, earlyBrainStallProbeBudget: STALL_PROBE_BUDGET, earlyBrainStallUnprobed: Math.max(0,earlyProbeCandidates.length-STALL_PROBE_BUDGET),
+    providerHistoryReadState: historyReadState, earlyBrainStalls, earlyBrainStallProbeBudget: STALL_PROBE_BUDGET, earlyBrainStallUnprobed: Math.max(0,earlyProbeCandidates.length-STALL_PROBE_BUDGET),
     ghosts: reports, attempts: newAttempts.length,
     provider_blocks: newAttempts.filter(x => x.marker.includes('BLOCKED')).length, newly_resolved: resolvedNew };
   await mkdir('.artifacts', { recursive: true });

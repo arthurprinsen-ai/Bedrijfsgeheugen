@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {estimateProviderStartFailure,providerInvestigationPriority,classifyGhost,classifyBrainQueueStall} from '../.github/scripts/github-actions-ghost-reconcile.mjs';
+const t=Date.parse('2026-11-25T16:00:00Z');
+const row=(id,delay,extra={})=>({id,attempt:1,createdAt:new Date(t).toISOString(),firstJobStartedAt:new Date(t+delay*60000).toISOString(),completedAt:new Date(t+60*60000).toISOString(),exactReadback:true,...extra});
+const opt={asOf:t+120*60000};
+test('Beta posterior uses completed observed starts',()=>{const e=estimateProviderStartFailure([row(1,5),row(2,20),row(3,15)],opt);assert.equal(e.posteriorMean,2/5);assert.equal(e.successes,2);assert.equal(e.failures,1);assert.equal(e.mutationAuthority,false);assert.ok(e.posteriorStdDev>0);});
+test('no observations means unknown not a fabricated prediction',()=>assert.equal(estimateProviderStartFailure([],opt).posteriorMean,null));
+test('duplicate IDs excluded rather than independent samples',()=>assert.equal(estimateProviderStartFailure([row(1,5),row(1,20)],opt).sampleCount,0));
+test('future or incomplete observations and reruns excluded',()=>{assert.equal(estimateProviderStartFailure([row(1,5,{attempt:2}),row(2,5,{exactReadback:false}),row(3,5,{firstJobStartedAt:null}),row(4,5,{completedAt:new Date(t+180*60000).toISOString()})],opt).sampleCount,0)});
+test('invalid temporal ordering excluded',()=>assert.equal(estimateProviderStartFailure([row(1,-5),row(2,70)],opt).sampleCount,0));
+test('small sample explicitly marked insufficient',()=>assert.equal(estimateProviderStartFailure([row(1,5)],opt).status,'INSUFFICIENT_SAMPLE'));
+test('minimum observational sample remains shadow only',()=>{const e=estimateProviderStartFailure(Array.from({length:8},(_,i)=>row(i+1,5)),opt);assert.equal(e.status,'OBSERVATIONAL_ESTIMATE');assert.equal(e.mode,'SHADOW_ONLY')});
+test('priority requires dependency proof and valid time estimate',()=>{const x={probability:.5,verifiedDependentProcesses:3,blockedMinutes:20,investigationMinutes:5,dependencyProof:true};assert.equal(providerInvestigationPriority(x),6);assert.equal(providerInvestigationPriority({...x,dependencyProof:false}),null);assert.equal(providerInvestigationPriority({...x,investigationMinutes:0}),null)});
+test('advisory probability does not authorize mutation of current main',()=>{const run={head_sha:'main',head_branch:'main',status:'queued',conclusion:null,created_at:new Date(t).toISOString(),updated_at:new Date(t).toISOString()};assert.equal(classifyGhost(run,{jobsTotal:0,mainSha:'main',now:t+48*3600000}).eligible,false);assert.equal(classifyBrainQueueStall(run,{jobsTotal:0,now:t+48*3600000}).mutationAuthority,false)});

@@ -1,0 +1,29 @@
+{
+  "fingerprint": "delivery|janitor|provider-resilience-calibration|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "root_cause": "Existing merged #6203 warning uses an uncalibrated age curve; no historical native-start observations or uncertainty are reported. Provider backend cause remains unverified.",
+  "prevention_rule": "Original Janitor only: bounded read-only completed first-attempt history, exact job-list validation, censored/missing/duplicate exclusion, Beta posterior with uncertainty and no mutation authority. Never infer identity or provider resolution. No new scheduler.",
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-resilience-calibration-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-provider-resilience-calibration-20261127.test.mjs"
+    ],
+    "invariants": [
+      "Unknown or incomplete observations never imply failure; current-head protection unchanged; no new dispatch authority."
+    ]
+  },
+  "evidence": {
+    "source": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6203",
+    "incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4655",
+    "production_verified": false,
+    "calibration_verified": false
+  }
+}
