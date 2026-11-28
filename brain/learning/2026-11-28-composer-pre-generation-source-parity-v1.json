@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse|commercial|composer-pre-generation-source-parity|20261128-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "observed_at": "2026-11-28",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Original composerSourcePreflight accepted role+company for email first contact/reconnect while the existing post-generation natural copy guard rejected the same identity-only source. This admitted model generation on source-ineligible records.",
+  "prevention_rule": "Use the existing substantive-source and observed-intent predicates before email model generation and before the original research handoff, then retain the original final copy, consent, suppression, source and provider gates. Never treat role/company or LinkedIn membership alone as substantive evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-composer-pre-generation-source-parity-20261128.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-composer-pre-generation-source-parity-20261128.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-composer-pre-generation-source-parity-20261128.test.mjs"
+    ],
+    "invariants": [
+      "No external send or new permission; no new owner, scheduler, queue or sender."
+    ]
+  },
+  "tests": [
+    "tests/brain-composer-pre-generation-source-parity-20261128.test.mjs",
+    "tests/brain-composer-relationship-fact-20261106.test.mjs",
+    "tests/brain-commercial-composer-quality-provenance-20261029.test.mjs",
+    "tests/brain-outreach-human-intent-quality-20261121.test.mjs",
+    "tests/brain-verified-research-composer-handoff-20261109.test.mjs"
+  ],
+  "evidence": {
+    "historical_replay": "Unchanged exact protected main failed two of five new regressions; corrected candidate passed five of five. All five focused suites passed 58/58 with exact source blobs, no stubs.",
+    "shadow": "Isolated non-email, reply, follow-up and existing research recovery compatibility tests passed.",
+    "canary": "Local source-gate negative controls and positive substantive-source fixture only; no production canary executed.",
+    "baseline": {
+      "email_evaluations": 501,
+      "distinct_original_actions": 9,
+      "identity_only_rejections": 501,
+      "false_green_within_cohort": 0,
+      "observed_from": "2026-11-22T06:29:38Z",
+      "observed_to": "2026-11-24T07:44:39Z"
+    },
+    "protected_main": "b790431dae69b20431059b6d8e69df4fb1a99a6e",
+    "tested_source_blob": "2d7b4d75e2d45024eddee106bde13904bd589bb6",
+    "runtime_verified": false,
+    "current_effect_verified": false
+  },
+  "rollback": "Revert the one scoped source change through existing protected delivery; retain the existing post-generation guard and consent controls."
+}
