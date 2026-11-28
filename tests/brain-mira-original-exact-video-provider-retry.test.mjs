@@ -122,3 +122,30 @@ test('original visual identity and final Meta publisher gates remain unchanged',
  assert.match(router,/MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED/);
  assert.match(router,/MIRA_FACE_DRIFT_ACROSS_REEL_FRAMES/);
 });
+
+test('owner-approved single extra verification: bound to job+history, same video, never more than four',()=>{
+ const review={approved_by:'arthur',approved_at:'2026-11-18T21:55:00Z',extra_attempts:1,
+  job_id:job.id,history_id:history,approval_ref:'chat:arthur-20261118-2155',no_regeneration:true};
+ const exhausted={...job,status:'WAITING_PROOF',last_error:'MIRA_FRAME_VISION_PROVIDER_UNAVAILABLE',
+  asset_manifest:{...manifest,vision_resume_contract:MIRA_EXACT_VERIFICATION_RESUME,
+   vision_retry_count:3,vision_retry_after:'2026-11-18T10:18:58Z'}};
+ const failedOb={...ob,status:'FAILED'};
+ // without owner review: exhausted, and a FAILED obligation is not eligible
+ assert.equal(assess({job:exhausted}).kind,'EXHAUSTED');
+ assert.equal(assess({job:exhausted,ob:failedOb}).kind,'NOT_APPLICABLE');
+ // with review: exactly one more attempt on the same history, no new video
+ const approved={...exhausted,asset_manifest:{...exhausted.asset_manifest,owner_review_extra_verification:review}};
+ const p=assess({job:approved,ob:failedOb,now:Date.parse('2026-11-18T21:56:00Z')});
+ assert.equal(p.kind,'RETRY_EXACT_MEDIA');
+ assert.equal(p.attempts,4);
+ assert.equal(p.history_id,history);
+ // fourth attempt used -> exhausted again, review is not renewable
+ const used4={...approved,asset_manifest:{...approved.asset_manifest,vision_retry_count:4}};
+ assert.equal(assess({job:used4,ob:failedOb}).kind,'EXHAUSTED');
+ // review bound to other job/history, wrong approver or regeneration allowed -> ignored
+ for(const bad of [{job_id:'other'},{history_id:'other'},{approved_by:'agent'},{extra_attempts:2},{no_regeneration:false},{approval_ref:''}]){
+  const j={...exhausted,asset_manifest:{...exhausted.asset_manifest,owner_review_extra_verification:{...review,...bad}}};
+  assert.equal(assess({job:j,ob:failedOb}).kind,'NOT_APPLICABLE',JSON.stringify(bad));
+  assert.equal(assess({job:j}).kind,'EXHAUSTED',JSON.stringify(bad));
+ }
+});
