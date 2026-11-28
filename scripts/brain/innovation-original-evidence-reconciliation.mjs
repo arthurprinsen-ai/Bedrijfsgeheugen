@@ -20,7 +20,8 @@ export const QUALITY_NEXT=Object.freeze({
   'release-promotion-observability':'ORIGINAL_PROTECTED_MERGE_AND_EXACT_PRODUCTION_CHECK',
   'approved-blog-publisher':'ORIGINAL_BLOG_CANDIDATE_TO_PROVIDER_READBACK',
   'brain-content-closed-loop':'ORIGINAL_PUBLIC_API_DIAGNOSTICS_PRIVACY_REPLAY',
-  'supabase-schema-replay-parity':'ORIGINAL_SUPABASE_PRODUCTION_SCHEMA_PARITY_READBACK'
+  'supabase-schema-replay-parity':'ORIGINAL_SUPABASE_PRODUCTION_SCHEMA_PARITY_READBACK',
+  'powerhouse-commercial-message-composer':'ORIGINAL_COMMERCIAL_COMPOSER_REGRESSION_AND_EXACT_PRODUCTION_RECHECK'
 });
 const METRIC_TYPES=new Set(['number','boolean']);
 export function planOriginalInnovationEvidence({snapshot,report,qualityRows,observedAt=new Date().toISOString()}={}){
@@ -35,7 +36,7 @@ export function planOriginalInnovationEvidence({snapshot,report,qualityRows,obse
   const byQuality=new Map(qualityRows.map(x=>[String(x.fingerprint),x]));
   requireTrue(byOb.size===obligations.length&&byOp.size===intakes.length&&
     byQuality.size===qualityRows.length,'DUPLICATE_SOURCE');
-  const work=[],held=[],summary={quality:0,cro:0,concrete:0,pr_reconcile:0,nochange:0,release:0};
+  const work=[],held=[],qualityBlocked=[],summary={quality:0,cro:0,concrete:0,pr_reconcile:0,nochange:0,release:0};
   for(const c of candidates){
     const id=String(c.candidate_id);
     const b=byOb.get(id),op=byOp.get('innovation-delivery:'+id);
@@ -72,6 +73,19 @@ export function planOriginalInnovationEvidence({snapshot,report,qualityRows,obse
       sourceFingerprint=c.baseline.quality_fingerprint;
       requireTrue(FINGERPRINT.test(sourceFingerprint),'QUALITY_FINGERPRINT_MISSING');
       const q=byQuality.get(sourceFingerprint);
+      // A newly unguarded exact historical source is not a valid receipt.
+      // Isolate only this known source state; identity/schema drift still fails closed.
+      if(q?.status==='guard_required'){
+        requireTrue(q.fingerprint===sourceFingerprint&&q.capability_id===c.component_id&&
+          typeof q.escaped_to_production==='boolean'&&Number.isFinite(Date.parse(q.updated_at))&&
+          isObject(q.performance_evidence)&&!op.evidence?.original_evidence_reconciliation,
+          'QUALITY_SOURCE_NOT_VERIFIABLE');
+        qualityBlocked.push({candidate_id:id,original_operation_id:op.id,
+          original_owner:owner,source_revision:b.evidence.source_revision,
+          reason:'ORIGINAL_QUALITY_GUARD_REQUIRED',next_action:'PROVE_ORIGINAL_REGRESSION_GUARD_AND_RECHECK_SOURCE',
+          consumer_ack_verified:false,terminal_success:false});
+        continue;
+      }
       requireTrue(q&&q.fingerprint===sourceFingerprint&&
         q.capability_id===c.component_id&&
         ['verified','guarded'].includes(q.status)&&
@@ -149,7 +163,7 @@ export function planOriginalInnovationEvidence({snapshot,report,qualityRows,obse
       evidence:op.evidence,receipt:readiness});
   }
   return Object.freeze({contract:CONTRACT,count:candidates.length,
-    work,held,summary,consumer_ack_verified:0,terminal_success:0,
+    work,held,qualityBlocked,summary,consumer_ack_verified:0,terminal_success:0,
     new_queue:false,new_scheduler:false,original_operation_status:'PLANNED'});
 }
 
@@ -255,7 +269,8 @@ async function main(){
   const plan=planOriginalInnovationEvidence({snapshot,report,qualityRows});
   const publicReport={contract:CONTRACT,original_candidates:plan.count,
     stage_distribution:plan.summary,due_for_reconciliation:plan.work.length,
-    already_identical:plan.held.length,all_original_operations_open:true,
+    already_identical:plan.held.length,blocked_source_quality:plan.qualityBlocked.length,
+    blocked_original_candidates:plan.qualityBlocked,all_original_operations_open:true,
     no_terminal_business_success_claimed:true};
   if(process.argv[2]==='--audit'){
     process.stdout.write(JSON.stringify({...publicReport,mode:'read_only'})+'\n');return;
@@ -264,7 +279,7 @@ async function main(){
   process.stdout.write(JSON.stringify({...publicReport,mode:'native_CAS_and_independent_GET',
     updated:outcome.updated,already:outcome.already,failed:outcome.failed,
     errors:outcome.errors})+'\n');
-  if(outcome.failed)process.exitCode=1;
+  if(outcome.failed||plan.qualityBlocked.length)process.exitCode=1;
 }
 if(process.argv[1]&&fileURLToPath(import.meta.url)===process.argv[1])
   main().catch(err=>{
