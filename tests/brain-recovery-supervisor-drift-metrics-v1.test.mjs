@@ -27,7 +27,7 @@ test('sole Recovery Supervisor retains native CAS, one writer and protected deli
   assert.equal((y.match(/^name: Powerhouse Delivery Recovery Supervisor$/gm)||[]).length,1);
   assert.equal((y.match(/^jobs:$/gm)||[]).length,1);
   assert.match(y,/cancel-in-progress: false/);
-  assert.match(y,/RECOVERY_PR_BUDGET: '1'/);assert.match(y,/MAX_MAIN_DRIFT_REFRESHES: '2'/);
+  assert.match(y,/RECOVERY_PR_BUDGET:\s*'5'/); assert.ok(y.includes("adaptive-recovery-capacity.mjs init \"$capacity_state\"")); assert.ok(y.includes("adaptive-recovery-capacity.mjs reserve \"$capacity_state\"")); assert.ok(y.includes("reserve_recovery_capacity || return 1")); assert.ok(y.includes("[ \"$reserved_actions\" -ge \"$cycle_budget\" ]"));assert.match(y,/MAX_MAIN_DRIFT_REFRESHES: '2'/);
   assert.match(y,/expected_head_sha="\$head"/);
   for(const type of ['DRIFT_DETECTED','LEASE_DENIED','REPEATED_DRIFT','CAS_REQUEST','CAS_ACCEPTED','CAS_PROVEN','CAS_REJECTED'])
     assert.ok(y.includes(' '+type+' '),type);

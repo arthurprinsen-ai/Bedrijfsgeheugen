@@ -9,7 +9,11 @@ test('recovery supervisor is scheduled/manual only and applies repository backpr
   assert.match(yml,/workflow_dispatch:/);
   assert.match(yml,/cron:\s*'2-57\/5 \* \* \* \*'/);
   assert.match(yml,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'12'/);
-  assert.match(yml,/RECOVERY_PR_BUDGET:\s*'1'/);
+  assert.match(yml,/RECOVERY_PR_BUDGET:\s*'5'/);
+  assert.ok(yml.includes("adaptive-recovery-capacity.mjs init \"$capacity_state\""));
+  assert.ok(yml.includes("adaptive-recovery-capacity.mjs reserve \"$capacity_state\""));
+  assert.ok(yml.includes("reserve_recovery_capacity || return 1"));
+  assert.ok(yml.includes("[ \"$reserved_actions\" -ge \"$cycle_budget\" ]"));
   assert.match(yml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
   // A lease-bearing recovery writer must finish its native CAS and readback;
   // a newer cron tick must never interrupt that critical section.
