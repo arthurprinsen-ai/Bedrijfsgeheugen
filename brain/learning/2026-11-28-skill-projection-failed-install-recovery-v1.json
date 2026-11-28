@@ -1,0 +1,40 @@
+{
+  "status": "CANDIDATE_TEST_ONLY",
+  "fingerprint": "delivery|skill-projection|failed-install-recovery|20261128-v1",
+  "root_cause": "Historical exact Skill Projection fails at npm ETARGET before evaluation. Original strict flight index cannot admit a changed protected workflow successor after completed failed replay.",
+  "prevention_rule": "Recover once only through original terminal owner with exact failed attempt/job/log and skipped evaluation, changed protected workflow, unchanged learning, complete paginated inventory and main SHA fence. Retain failed evidence and exact artifact verification.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-skill-projection-failed-install-recovery-20261128.test.mjs",
+      "tests/brain-skill-projection-exact-replay-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-skill-projection-failed-install-recovery-20261128.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-skill-projection-failed-install-recovery-20261128.test.mjs"
+    ],
+    "invariants": [
+      "One successor only; no new execution on main drift or existing exact successor; original learning and artifact proof unchanged."
+    ]
+  },
+  "evidence": {
+    "original_run": 46134941323,
+    "attempt": 2,
+    "job": 140948636413,
+    "corrected_projection_run": 46143784115,
+    "terminal_release": 46143733822,
+    "tests_passed": 23,
+    "composio_receipts": [
+      "log_gES8HyGDODm3",
+      "log_F8swrVol5SK3"
+    ],
+    "production_verified": false
+  }
+}
