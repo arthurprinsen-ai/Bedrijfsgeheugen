@@ -1,0 +1,100 @@
+{
+  "candidate_id": "3b1d5796-46fe-4053-b57a-e7c2ef4aa955",
+  "operation_id": "8cf97b71-4706-4e20-96a5-3f9945f5720b",
+  "operation_version": 9,
+  "owner": "agent:agent-integration-engineer",
+  "source_key": "quality-learning-v1:approved-blog-stale-queue-existing-main-idempotency-v1",
+  "source_revision": "2026-10-09T03:02:00.367007+00:00",
+  "source_sha256": "ff396a38d75d799a7ab7dc5481ad7ee8bc96e1415f4c9dafd4c0e3355947565f",
+  "correlation_id": "innovation-delivery:3b1d5796-46fe-4053-b57a-e7c2ef4aa955",
+  "idempotency_key": "innovation-delivery:3b1d5796-46fe-4053-b57a-e7c2ef4aa955:ff396a38d75d799a",
+  "decision_fingerprint": "c1177c4fc86964e7d0c3693b007949da2b47fd0b5915a0249ff9be69f30c34b3",
+  "fingerprint": "approved-blog|stale-queue|first-page-only|20261124-v1",
+  "root_cause": "get_rows discarded the continuation cursor, so the scheduled selector exhausted its local rows after skipping an existing artifact even when another due row was on the next page.",
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-approved-blog-stale-pagination.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-approved-blog-stale-pagination.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-approved-blog-stale-pagination.test.mjs"
+    ]
+  },
+  "evaluation_evidence": {
+    "baseline": "Historical replay failed at the due-slug assertion: None instead of fresh. The exact recovery shadow passed.",
+    "local": [
+      {
+        "mode": "HISTORICAL_REPLAY",
+        "passed": true,
+        "tests": [
+          "tests/brain-innovation-approved-blog-stale-pagination.test.mjs"
+        ],
+        "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      },
+      {
+        "mode": "SHADOW",
+        "passed": true,
+        "tests": [
+          "tests/brain-innovation-approved-blog-stale-pagination.test.mjs"
+        ],
+        "output_sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+      }
+    ]
+  },
+  "review_required": true,
+  "rollback": {
+    "route": "existing_protected_delivery",
+    "required": true
+  },
+  "delivery_status": "CANDIDATE_NOT_LIVE",
+  "innovation_method_evidence": {
+    "candidate_id": "3b1d5796-46fe-4053-b57a-e7c2ef4aa955",
+    "source_revision": "2026-10-09T03:02:00.367007+00:00",
+    "source_sha256": "ff396a38d75d799a7ab7dc5481ad7ee8bc96e1415f4c9dafd4c0e3355947565f",
+    "version": "innovation-methods-20261124-v1",
+    "methods": [
+      "contract testing",
+      "champion challenger"
+    ],
+    "baseline_ref": "a7484bd2f68d1455912e8989af9486c7f52450fa, tests/brain-innovation-approved-blog-stale-pagination.test.mjs, HISTORICAL_REPLAY due-slug assertion",
+    "metric": "Correct eligible slug selected on the stale-first two-page fixture (0 or 1). Exact recovery must preserve article bytes and report SEALED.",
+    "incumbent": "First response only: 0/1 correct selections (returned None).",
+    "challenger": "Follow pagination cursors: 1/1 correct selections (returned fresh).",
+    "comparison_ref": "tests/brain-innovation-approved-blog-stale-pagination.test.mjs, HISTORICAL_REPLAY before and after; SHADOW exact-slug recovery before and after.",
+    "decision_reason": "Following the existing queue continuation preserves filters and order while unblocking the eligible slug. Exact identity validation and reconciliation stay in the wrapper. Repeated or absent continuation cursors fail closed.",
+    "rollback": "Revert the core pagination change through existing_protected_delivery (required).",
+    "current_effect_verified": false
+  },
+  "date": "2026-11-24",
+  "version": "v1",
+  "type": "POWERHOUSE_LEARNING",
+  "maturity": "OBSERVED",
+  "prevention": {
+    "regression_contract": "tests/brain-innovation-approved-blog-stale-pagination.test.mjs",
+    "follow_existing_queue_cursors": true,
+    "keep_original_filters_and_order": true,
+    "missing_or_repeated_cursor_fails_closed": true,
+    "forced_lookup_ambiguity_fails_closed": true,
+    "preserve_original_artifact_identity_and_bytes": true,
+    "protected_review_and_independent_effect_required": true,
+    "no_duplicate_publication": true
+  },
+  "evidence": {
+    "native_writer_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45437381849",
+    "original_admission_failure_run": 45438546408,
+    "original_admission_failure": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: semantic_learning",
+    "fixture_baseline_correct": 0,
+    "fixture_challenger_correct": 1,
+    "fixture_denominator": 1,
+    "production_effect_verified": false
+  }
+}

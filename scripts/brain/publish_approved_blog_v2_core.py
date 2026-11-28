@@ -25,11 +25,23 @@ def queue_conditions(force=''):
 
 
 def get_rows(force='', page_size=100):
-    return base.req(f'/data_sources/{base.QUEUE}/query', 'POST', {
+    query = {
         'filter': {'and': queue_conditions(force)},
         'sorts': [{'property': 'Publicatiedatum', 'direction': 'ascending'}],
         'page_size': page_size,
-    }).get('results') or []
+    }
+    rows = []
+    seen_cursors = set()
+    while True:
+        page = base.req(f'/data_sources/{base.QUEUE}/query', 'POST', query)
+        rows.extend(page.get('results') or [])
+        if not page.get('has_more') or (force and len(rows) >= 2):
+            return rows
+        cursor = page.get('next_cursor')
+        if not cursor or cursor in seen_cursors:
+            base.fail('Queue-paginering heeft geen nieuwe cursor')
+        seen_cursors.add(cursor)
+        query['start_cursor'] = cursor
 
 
 def get_queue(force=''):
