@@ -1,0 +1,11 @@
+# Composer pre-generation source parity (review candidate)
+
+Original owner: powerhouse-commercial-message-composer. Existing incident #4198 and prior copy-quality correction #6094. No exclusive writer lease claimed.
+
+The 28 November read-only production audit of email quality records found 501 evaluations rejected for LINKEDIN_RELATIONSHIP_ONLY_CONTEXT across nine original actions (22–24 November UTC). These are evaluations, not unique prospects or paid-model-call receipts. The existing guard rejected every one; no false green was observed in this cohort. The pre-generation relationship fact gate nevertheless admits role+company while the final copy gate rejects identity-only first contact/reconnect. Two new negative controls reproduce that discrepancy on exact main b790431dae69b20431059b6d8e69df4fb1a99a6e.
+
+The candidate imports the existing intent and substantive evidence predicates into composerSourcePreflight, scoped to existing email aliases and FIRST_CONTACT/LINKEDIN_CONNECTION_RECONNECT. It returns the existing SOURCE_SPECIFIC_EVIDENCE_REQUIRED path, so the original research handoff can recover the same action when a verified source becomes available. The later copy, consent, suppression, duplicate, provider and source guards remain intact. No new sender or model call is introduced. Other channels, observed replies and followups retain their original scope. This does not guarantee future successful messages or eliminate every retry.
+
+Tested: 58/58 across five focused Node 24.22.1 suites, 0 skipped. Old source 3/5 new tests pass, 2 fail; corrected source 5/5. Exact blob-verified dependencies. Shared preflight and action guard pass; operational recall recorder not configured. No full Required/CodeQL or production proof yet.
+
+Acceptance: original owner review, exact current protected checks, native delivery and independent deployed-source readback, then natural original owner run showing no model generation for unchanged identity-only email, existing research recovery for eligible sources, no unauthorized send, and measured actual eligible-copy and provider outcomes. Roll back through the same protected lineage if the change causes an unexpected hold. No current effect or savings claimed.

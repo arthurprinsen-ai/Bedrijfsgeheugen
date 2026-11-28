@@ -4,6 +4,23 @@ on:
   schedule:
     - cron: '17 3 * * *'
   workflow_dispatch:
+    inputs:
+      retire_predecessor:
+        description: Exact original regulatory source PR to retire after terminal successor proof; blank runs normal observation
+        type: string
+        required: false
+      terminal_successor:
+        description: Exact direct merged terminal successor PR
+        type: string
+        required: false
+      terminal_run:
+        description: Successful canonical obligation terminal closure run ID
+        type: string
+        required: false
+      expected_head:
+        description: Expected original source PR head SHA
+        type: string
+        required: false
 
 permissions:
   contents: write
@@ -15,6 +32,7 @@ concurrency:
 
 jobs:
   observe:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.retire_predecessor == '' && inputs.terminal_successor == '' && inputs.terminal_run == '' && inputs.expected_head == '')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
@@ -94,3 +112,36 @@ jobs:
             exit "$pr_status"
           fi
           gh pr merge --auto --squash "$PR_URL"
+
+  retire-terminal-predecessor:
+    if: github.event_name == 'workflow_dispatch' && (inputs.retire_predecessor != '' || inputs.terminal_successor != '' || inputs.terminal_run != '' || inputs.expected_head != '')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify and retire exact original source owner lineage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PREDECESSOR: ${{ inputs.retire_predecessor }}
+          SUCCESSOR: ${{ inputs.terminal_successor }}
+          TERMINAL_RUN: ${{ inputs.terminal_run }}
+          EXPECTED_HEAD: ${{ inputs.expected_head }}
+        run: node tools/delivery/regulatory-owner-terminal-retirement.mjs
+      - name: Preserve owner retirement receipt
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regulatory-owner-retirement-${{ github.run_id }}
+          path: .artifacts/regulatory-owner-retirement.json
+          if-no-files-found: error
+          retention-days: 90
