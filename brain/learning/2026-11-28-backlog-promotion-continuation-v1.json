@@ -1,0 +1,31 @@
+{
+  "status": "CANDIDATE_TEST_ONLY",
+  "fingerprint": "delivery|backlog|promotion-continuation|20261128-v1",
+  "root_cause": "Existing scheduled supervisor and Janitor recover gates and report, but eligible protected release handoff still requires a chat/manual trigger. Codex source-bound innovation agent is present but not a general PR-repair executor.",
+  "prevention_rule": "Use existing trusted Janitor once per natural cycle to observe exact current candidate, scope, native required checks and complete history, then request existing BG169 once. Preserve all existing security, protected gates, owner lease and independent terminal evidence. No new scheduler, no new mutation authority. Block ambiguous identity, risk and concurrent flights.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-backlog-promotion-continuation-20261128.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-backlog-promotion-continuation-20261128.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-backlog-promotion-continuation-20261128.test.mjs"
+    ],
+    "invariants": [
+      "One candidate per cycle; no direct merge or source edit; exact checked identity and scope; no security/control-plane auto-promotion; no false terminal proof."
+    ]
+  },
+  "evidence": {
+    "tests_passed": 22,
+    "composio_receipt": "log_z1f0CAm1UhQF",
+    "native_runtime_verified": false
+  }
+}
