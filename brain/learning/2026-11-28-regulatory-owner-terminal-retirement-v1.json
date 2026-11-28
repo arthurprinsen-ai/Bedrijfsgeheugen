@@ -1,0 +1,30 @@
+{
+  "fingerprint": "delivery|regulatory|owner-terminal-retirement|20261128-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "After #6216 resolved circular terminal proof and #6213 became LIVE_BEWEZEN, original source PR #6201 still has no targeted authorized retirement action. Existing Janitor cannot retire an open predecessor of a merged successor; source watch only creates fresh observations.",
+  "prevention_rule": "Existing regulatory-source-watch owner can request a mutually exclusive exact predecessor retirement only on protected-main invocation, exact original head/owner/scope/obligation, direct merged terminal successor, current source blob equality, native successful canonical terminal workflow and immutable outcome artifact. Close without merging and verify provider state, preserve source branch/raw evidence. Never close on unproven or superseded source, and never grant a competing writer.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulatory-owner-terminal-retirement-20261128.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-regulatory-owner-terminal-retirement-20261128.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-regulatory-owner-terminal-retirement-20261128.test.mjs"
+    ]
+  },
+  "evidence": {
+    "successor": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6213",
+    "predecessor": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6201",
+    "terminal_fix": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6216",
+    "source_blob": "462a0399dd33cdfdbb0f7ee15610d448d221832b",
+    "status": "Authored tests; protected CI and production retirement pending."
+  }
+}

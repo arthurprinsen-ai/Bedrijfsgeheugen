@@ -1,0 +1,3 @@
+# Regulatory source owner terminal retirement — 28 November 2026
+
+The exact predecessor #6201 stays open even after #6213 and #6216 became LIVE_BEWEZEN. Add a targeted manual mode to the existing original regulatory-source-watch workflow, retaining its concurrency group and regular schedule. The retirement job has read-only contents/actions and existing PR write authority. It checks exact owner, expected head, direct successor, native canonical terminal workflow, durable evidence step and artifact, protected ancestry and byte-identical source, then closes without merge and verifies provider readback. No new scheduler, no source write, no branch deletion, no bulk retirement. Protected CI and real run required; the original lease remains until then.
