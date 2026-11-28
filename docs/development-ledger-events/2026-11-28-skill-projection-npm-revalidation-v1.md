@@ -1,0 +1,5 @@
+# Skill Projection dependency metadata revalidation
+
+Original replay [run 46134941323](https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46134941323) attempt 1 failed at npm install, ETARGET for @netlify/blobs@11.1.11. The existing Required CI recovery was not present in Skill Projection. Public npm listing confirms the version exists, but cache causality is not proven. No dependency pins or registry settings change.
+
+The original Skill Projection workflow now uses the same bounded install shell as Required CI: exactly one metadata revalidation on ETARGET, --ignore-scripts retained, final failure preserved, allowlisted diagnostic codes only. Exact historical checkout, evidence upload, evaluation and writer lease gates unchanged. The regression executes the actual workflow shell with five mock scenarios. Composio Node 24 test passed (log_AoqcNhHvJ0qS). Native protected CI, production promotion, exact original projection and terminal readback remain required. A single native rerun of the original failed run was requested; do not dispatch a duplicate replay.
