@@ -9,5 +9,12 @@ test('skill projection bootstraps package dependencies before learning replay',(
   const canonicalize=workflow.indexOf('Evaluate changed learning before canonicalization');
   assert.ok(install>=0,'dependency bootstrap step missing');
   assert.ok(canonicalize>install,'dependency bootstrap must run before canonicalization replay');
-  assert.match(workflow,/npm install (?:--prefer-offline )?--ignore-scripts --no-audit --no-fund/);
+  const bootstrap=workflow.slice(install,canonicalize);
+  const commands=[...bootstrap.matchAll(/\bnpm install ((?:--[a-z-]+(?:=\w+)? ?)+)/g)].map(match=>match[1].trim().split(/\s+/));
+  assert.equal(commands.length,2,'one initial install and at most one revalidation command');
+  for(const [index,flags] of commands.entries()){
+    const expected=['--ignore-scripts','--no-audit','--no-fund',index===0?'--prefer-offline':'--prefer-online','--loglevel=error'];
+    assert.deepEqual([...flags].sort(),expected.sort(),'preserve exact install controls without relying on flag order');
+  }
+  assert.match(bootstrap,/code ETARGET/,'only ETARGET may trigger revalidation');
 });
