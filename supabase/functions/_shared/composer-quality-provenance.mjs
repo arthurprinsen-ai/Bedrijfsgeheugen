@@ -1,3 +1,4 @@
+import {inferObservedOutreachIntent,hasSubstantiveOutreachEvidence} from './outreach-human-copy-guard.mjs';
 // Actual composer-source provenance only. No delivery, conversion or revenue claims.
 export const COMPOSER_ACTOR_ID='powerhouse-commercial-message-composer';
 const validScore=value=>typeof value==='number'&&Number.isFinite(value)&&value>=0&&value<=1;
@@ -45,6 +46,13 @@ export function composerSourcePreflight(action,plan){
  const ev=action?.evidence||{}, pub=ev?.public_source_evidence?.evidence||{};
  const sourceText=nonempty(ev?.headline||ev?.summary||pub?.headline||pub?.summary);
  const missing=[];
+ // The existing post-generation copy guard rejects identity-only first touch.
+ // Apply the SAME decision before any model call and before original research handoff.
+ const channel=nonempty(action?.channel_norm||action?.channel).toLowerCase();
+ const intent=inferObservedOutreachIntent(action,plan);
+ if(['email','e-mail','reply_email'].includes(channel)&&
+    ['FIRST_CONTACT','LINKEDIN_CONNECTION_RECONNECT'].includes(intent)&&
+    !hasSubstantiveOutreachEvidence(action))missing.push('substantive_outreach_evidence');
  const relationship=relationshipFact(action);
  // Besluit 27 okt 2026: twee verifieerbare relatiefeiten zijn zelf leesbare context. De plan-view zet
  // human_readable_context alleen bij nieuws/headline/reply, waardoor relatie-acties anders altijd faalden.
