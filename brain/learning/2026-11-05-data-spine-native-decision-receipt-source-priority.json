@@ -1,0 +1,70 @@
+{
+  "fingerprint": "powerhouse|heartbeat|native-decision-overwritten-by-generic-cron-receipt|20261105-v1",
+  "discovered_at": "2026-11-05T15:32:00Z",
+  "owner": "original-powerhouse-runtime-scheduler-mux/data-spine-watchdog",
+  "root_cause": "Generic powerhouse_sync_loop_assurance_receipts_v1 writes scheduled_policy_execution at cron end timestamp after the native watchdog same-tick decision. Timestamp-based upsert overwrites original source authority and loses decision_kind/source_check_at.",
+  "observed_native": "2026-11-05T15:31:00.023207Z",
+  "observed_clobber": "2026-11-05T15:31:02.419347Z",
+  "action": "Exclude only data-spine-watchdog from generic cron decision promotion, retain input/readback and all other loop behaviors.",
+  "guard": "Native decision and action/outcome/learning/guard must be independent source-derived same-tick evidence after the next natural original #171 run and subsequent assurance refresh.",
+  "truth_boundary": "Cron success is not source decision, provider publication, customer benefit, forecast calibration or revenue.",
+  "independent_acceptance": [
+    "new SQL migration applied by original provider",
+    "protected GitHub Required/CodeQL and Supabase Preview success",
+    "next native ten-minute execution writes decision with original_watchdog_same_tick_source_truth",
+    "after next assurance refresh decision_kind and source_check_at remain identical to native action/guard timestamp"
+  ],
+  "status": "SOURCE_CANDIDATE_REQUIRES_PROTECTED_RELEASE",
+  "regression": "tests/brain-data-spine-decision-source-priority-20261105.test.mjs",
+  "do_not": [
+    "new scheduler",
+    "parallel writer",
+    "rewrite provider migration history",
+    "weaken auth",
+    "fake green",
+    "fabricate learning"
+  ],
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-05",
+  "failure_class": "FALSE_GREEN",
+  "canonical_incident": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "compiler": {
+    "scope": "RUNTIME",
+    "failure_class": "FALSE_GREEN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-data-spine-decision-source-priority-20261105.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-data-spine-decision-source-priority-20261105.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-data-spine-decision-source-priority-20261105.test.mjs"
+    ]
+  },
+  "prevention_rule": "Only original source-native ten-minute decisions may satisfy source decision proof. Generic cron-success is not a source health decision; retain independent provider readback and exact source timestamp across subsequent assurance sync. Explicitly retain fail-closed browser-role EXECUTE revocation in any SECURITY DEFINER migration; require historical replay, shadow and canary tests.",
+  "evidence": {
+    "observed_at_utc": "2026-11-05T15:31:02.419347Z",
+    "provider": "original Supabase production",
+    "authoritative_source": "powerhouse_loop_assurance_receipts_v1",
+    "native_source_tick_utc": "2026-11-05T15:31:00.023207Z",
+    "clobber_received_at_utc": "2026-11-05T15:31:02.419347Z",
+    "wrong_evidence_type": "scheduled_policy_execution",
+    "original_evidence_type": "original_watchdog_same_tick_source_truth",
+    "customer_conversion_verified": false,
+    "privilege_readback_before_change": {
+      "anon_exec": false,
+      "authenticated_exec": false,
+      "service_role_exec": true,
+      "postgres_exec": true
+    }
+  },
+  "tests": [
+    "tests/brain-data-spine-decision-source-priority-20261105.test.mjs"
+  ]
+}
