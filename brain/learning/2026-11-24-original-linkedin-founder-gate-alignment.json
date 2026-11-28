@@ -1,0 +1,153 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-11-24",
+  "fingerprint": "powerhouse|linkedin-personal|founder-gate-alignment|20261124-v1",
+  "status": "CANDIDATE",
+  "root_cause": "Original materializer and editor permit verified founder opinion, obligation trigger excludes it.",
+  "fix": "Materialized reviewed exact trigger definitions into CLI-generated migration; original modes preserved; mandatory founder source branch; no direct production writes.",
+  "prevention_rule": "Use exact founder source and strict review, never fallback to legacy truth, preserve original modes and protected deployment, never republish an existing post.",
+  "compiler": {
+    "failure_class": "ORIGINAL_FOUNDER_DATABASE_GATE_CONTRACT_DRIFT",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-original-linkedin-founder-gate-alignment-20261124.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-original-linkedin-founder-gate-alignment-20261124.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-original-linkedin-founder-gate-alignment-20261124.test.mjs"
+    ],
+    "isolated_trigger_replay": {
+      "scope": "pg_temp only; real source read; no production mutations",
+      "outcomes": [
+        {
+          "case_id": "actual_bad_copy",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "bad_copy_legacy_truth_flags",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "tampered_legacy_mode",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "verified_founder_opinion",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "wrong_artifact_channel",
+          "artifact_allowed": true,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "wrong_date",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "wrong_source_revision",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "wrong_tenant",
+          "artifact_allowed": true,
+          "obligation_allowed": false
+        }
+      ],
+      "all_expected_matched": true
+    },
+    "extended_isolated_trigger_replay": {
+      "scope": "pg_temp triggers and source fixture, persistent source read only",
+      "outcomes": [
+        {
+          "case_id": "baseline",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "corporate_voice",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "legacy_builder",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "legacy_observational",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "legacy_personal_truth",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "missing_direct_user_provenance",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "private_with_consent",
+          "artifact_allowed": true,
+          "obligation_allowed": true
+        },
+        {
+          "case_id": "private_without_consent",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "rejected_source",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "unverified_research",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        },
+        {
+          "case_id": "wrong_source_channel",
+          "artifact_allowed": false,
+          "obligation_allowed": false
+        }
+      ],
+      "all_expected_matched": true,
+      "combined_trigger_scenarios": 19
+    },
+    "migration_generation": {
+      "run": 45464954693,
+      "path": "supabase/migrations/20261124185702_original_linkedin_founder_identity_gate_alignment.sql",
+      "result": "SUCCESS",
+      "cli": "2.119.0"
+    }
+  },
+  "evidence": {
+    "test_evidence": {
+      "regression_source": "tests/brain-original-linkedin-founder-gate-alignment-20261124.test.mjs",
+      "isolated_native_trigger_scenarios": 19,
+      "isolated_native_expected_matches": true,
+      "scope": "pg_temp fixtures only; see evaluation.isolated_trigger_replay and evaluation.extended_isolated_trigger_replay; no production DDL or proof",
+      "migration_generation_run": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45464954693"
+    },
+    "original_admission_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45465179608",
+    "remaining": "Protected Required, CodeQL, Supabase preview, native deployment and independent production behavior remain mandatory."
+  }
+}
