@@ -10,6 +10,37 @@ const SHA=/^[0-9a-f]{40}$/i;
 const id=x=>Number.isSafeInteger(Number(x))&&Number(x)>0;
 const clean=x=>String(x??'').replace(/[\x00-\x1f]/g,' ').slice(0,160);
 
+const MAX_NATIVE_RUN_ATTEMPT = 51; // Initial attempt plus at most 50 GitHub reruns.
+const MAX_OLDER_ATTEMPT_READS_PER_WINDOW = 100;
+// GitHub's list-workflow-runs projects the CURRENT attempt. A later successful
+// rerun must not erase an immutable earlier failure. Read native attempt history
+// ONLY for rerun rows inside the same original hourly Janitor source scan.
+export async function recoverEarlierNativeAttempts(run,{api,budget=MAX_OLDER_ATTEMPT_READS_PER_WINDOW}={}){
+ const attempts=Number(run?.run_attempt);
+ if(!Number.isSafeInteger(attempts)||attempts<1||
+    attempts>MAX_NATIVE_RUN_ATTEMPT)throw Error('GITHUB_RUN_ATTEMPT_COUNT_UNVERIFIED');
+ if(!Number.isSafeInteger(budget)||budget<0||attempts-1>budget)
+   throw Error('GITHUB_RUN_ATTEMPT_HISTORY_BUDGET_EXCEEDED');
+ if(attempts===1)return {inspected:0,failures:[]};
+ if(typeof api!=='function')throw Error('GITHUB_RUN_ATTEMPT_SOURCE_REQUIRED');
+ const failures=[];
+ for(let n=1;n<attempts;n++){
+  const prior=await api('repos/'+REPO+'/actions/runs/'+run.id+'/attempts/'+n);
+  if(Number(prior?.id)!==Number(run.id)||
+     Number(prior?.workflow_id)!==Number(run.workflow_id)||
+     Number(prior?.run_attempt)!==n||
+     prior?.head_sha!==run.head_sha||
+     prior?.event!==run.event||
+     prior?.status!=='completed')
+   throw Error('GITHUB_PREVIOUS_ATTEMPT_PROVIDER_IDENTITY_INVALID');
+  const item=classifyActionsRun(prior);
+  if(item.state==='SOURCE_RUN_INVALID')
+   throw Error('GITHUB_PREVIOUS_ATTEMPT_SOURCE_INVALID');
+  if(item.state==='NATIVE_FAILURE')failures.push(item);
+ }
+ return {inspected:attempts-1,failures};
+}
+
 export function classifyActionsRun(run){
  if(!run||!id(run.id)||!id(run.workflow_id)||!id(run.run_attempt)||
     run.status!=='completed'||typeof run.conclusion!=='string')
@@ -124,6 +155,7 @@ export async function scanNativeFailures({env=process.env,api,now=new Date(),
  const result={schema:'github-actions-native-failure-observer-v1',
   window_start_date:new Date(earliest).toISOString(),windows:12,pages:0,scanned:0,
   failures:0,recorded:0,already_verified:0,completed_windows:0,
+  previous_attempts_inspected:0,previous_attempt_failures:0,
   readback_complete:false,source:'original-hourly-janitor',global_green:false};
  let auth=authority;
  const observeWindow=async items=>{
@@ -153,7 +185,8 @@ export async function scanNativeFailures({env=process.env,api,now=new Date(),
    const range=encodeURIComponent(new Date(startMs).toISOString()+'..'+
      new Date(endMs-1).toISOString());
    let total=null,seen=0,complete=false;
-   const windowFailures=new Map();
+   const windowFailures=new Map(),windowRunIds=new Set();
+   let windowAttemptReads=0;
    for(let page=1;page<=10;page++){
     const path='repos/'+REPO+'/actions/runs?status=completed&per_page=100&page='+page+
       '&created='+range;
@@ -168,11 +201,19 @@ export async function scanNativeFailures({env=process.env,api,now=new Date(),
     for(const run of response.workflow_runs){
      const verdict=classifyActionsRun(run);
      if(verdict.state==='SOURCE_RUN_INVALID')throw Error('GITHUB_RUN_SOURCE_IDENTITY_UNVERIFIED');
-     if(verdict.state==='NATIVE_FAILURE'){
-      const previous=windowFailures.get(verdict.occurrenceId);
-      if(previous&&previous.payloadSha256!==verdict.payloadSha256)
+     if(windowRunIds.has(run.id))throw Error('GITHUB_RUN_DUPLICATE_IN_SOURCE_WINDOW');
+     windowRunIds.add(run.id);
+     const history=await recoverEarlierNativeAttempts(run,{api,
+       budget:MAX_OLDER_ATTEMPT_READS_PER_WINDOW-windowAttemptReads});
+     windowAttemptReads+=history.inspected;
+     result.previous_attempts_inspected+=history.inspected;
+     result.previous_attempt_failures+=history.failures.length;
+     for(const item of [verdict,...history.failures]){
+      if(item.state!=='NATIVE_FAILURE')continue;
+      const previous=windowFailures.get(item.occurrenceId);
+      if(previous&&previous.payloadSha256!==item.payloadSha256)
        throw Error('GITHUB_RUN_SOURCE_EVIDENCE_CONFLICT');
-      windowFailures.set(verdict.occurrenceId,verdict);
+      windowFailures.set(item.occurrenceId,item);
      }
     }
     if(response.workflow_runs.length<100){complete=true;break;}
@@ -202,6 +243,8 @@ export async function scanNativeFailures({env=process.env,api,now=new Date(),
   if(error&&typeof error==='object')error.partial_checkpoint=Object.freeze({
    completed_windows:result.completed_windows,scanned:result.scanned,
    pages:result.pages,verified_failures:result.failures,
+   previous_attempts_inspected:result.previous_attempts_inspected,
+   previous_attempt_failures:result.previous_attempt_failures,
    recorded:result.recorded,already_verified:result.already_verified,
    readback_complete:false,global_green:false
   });
