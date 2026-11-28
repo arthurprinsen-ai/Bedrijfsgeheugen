@@ -609,8 +609,65 @@ jobs:
               echo "::warning::SKILL_PROJECTION_HISTORICAL_FAILURE:run=$run_id conclusion=$conclusion; require a successful protected-main descendant with identical learning"
               break
             fi
+            # Distinguish a missing native event from failed evaluation.
+            if [ -z "$run_id" ] && [ "$attempt" -ge 2 ]; then break; fi
             sleep 10
           done
+          if [ -z "$run_id" ]; then
+            pr_number="${{ steps.context.outputs.pr_number }}"
+            parent="$(git rev-parse "$MERGE_SHA^1")"
+            git diff --name-only --diff-filter=AM "$parent" "$MERGE_SHA" -- brain/learning/ | grep -E '^brain/learning/.+[.]json$' > /tmp/skill-replay-files.txt
+            test -s /tmp/skill-replay-files.txt
+            mapfile -t exact_learning < /tmp/skill-replay-files.txt
+            git fetch origin main --no-tags
+            git diff --quiet "$MERGE_SHA" origin/main -- "${exact_learning[@]}"
+            created_at="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr_number" --jq '.created_at')"
+            since="$(node -e 'import("./tools/delivery/brain-verification-flight-index.mjs").then(m=>console.log(m.originalBrainFlightSince(process.argv[1])))' "$created_at")"
+            encoded="$(node -e 'process.stdout.write(encodeURIComponent(">="+process.argv[1]))' "$since")"
+            expected_title="Skill projection replay PR #$pr_number $MERGE_SHA"
+            replay_query="repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/runs?branch=main&event=workflow_dispatch&created=$encoded&per_page=100"
+            read_replay_index() {
+              gh api --paginate --slurp "$replay_query" | node tools/delivery/skill-projection-replay.mjs index "$expected_title" "$since"
+            }
+            indexed="$(read_replay_index)"
+            if [ "$(jq -r '.safe_to_dispatch' <<<"$indexed")" = true ]; then
+              sleep 2
+              indexed="$(read_replay_index)"
+              if [ "$(jq -r '.safe_to_dispatch' <<<"$indexed")" = true ]; then
+                original="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/runs?head_sha=$MERGE_SHA&event=push&per_page=20")"
+                [ "$(jq -r '.total_count' <<<"$original")" = 0 ] || { echo "::error::SKILL_REPLAY_ORIGINAL_EVENT_ARRIVED"; exit 78; }
+                jq -n --arg pr "$pr_number" --arg sha "$MERGE_SHA" '{ref:"main",inputs:{pr_number:$pr,merge_sha:$sha}}' >/tmp/skill-replay-dispatch.json
+                gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/dispatches" --input /tmp/skill-replay-dispatch.json
+                echo "SKILL_EXACT_REPLAY_REQUESTED:$pr_number:$MERGE_SHA"
+              fi
+            fi
+            for replay_attempt in $(seq 1 48); do
+              indexed="$(read_replay_index)"
+              replay_id="$(jq -r '.run_id // empty' <<<"$indexed")"
+              if [ -n "$replay_id" ]; then
+                native="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$replay_id")"
+                jq -e --arg title "$expected_title" '.event=="workflow_dispatch" and .head_branch=="main" and .display_title==$title and .path==".github/workflows/powerhouse-skill-projection.yml"' <<<"$native" >/dev/null
+                if [ "$(jq -r '.status' <<<"$native")" = completed ]; then
+                  [ "$(jq -r '.conclusion' <<<"$native")" = success ] || { echo "::error::SKILL_EXACT_REPLAY_FAILED:$replay_id"; exit 78; }
+                  source_sha="$(jq -r '.head_sha' <<<"$native")"
+                  [[ "$source_sha" =~ ^[0-9a-f]{40}$ ]]
+                  git fetch origin main --no-tags
+                  git merge-base --is-ancestor "$MERGE_SHA" "$source_sha"
+                  git merge-base --is-ancestor "$source_sha" origin/main
+                  git diff --quiet "$MERGE_SHA" origin/main -- "${exact_learning[@]}"
+                  proof_dir="$(mktemp -d)"
+                  gh run download "$replay_id" --repo "$GITHUB_REPOSITORY" --name "learning-canonicalization-evidence-$replay_id" --dir "$proof_dir"
+                  node tools/delivery/skill-projection-replay.mjs verify "$proof_dir/learning-canonicalization-evidence.json" "$MERGE_SHA" "$parent" /tmp/skill-replay-files.txt
+                  echo "run_id=$replay_id" >> "$GITHUB_OUTPUT"
+                  echo "SKILL_EXACT_REPLAY_PROVEN:$replay_id:$MERGE_SHA"
+                  exit 0
+                fi
+              fi
+              sleep 10
+            done
+            echo "::error::SKILL_EXACT_REPLAY_NOT_TERMINAL:$MERGE_SHA"
+            exit 78
+          fi
           learning_files="$(git diff --name-only "$MERGE_SHA^1" "$MERGE_SHA" | grep -E '^brain/learning/.+[.]json$' || true)"
           [ -n "$learning_files" ] || { echo "::error::SKILL_PROJECTION_DESCENDANT_NO_LEARNING_SCOPE:$MERGE_SHA"; exit 78; }
           for attempt in $(seq 1 24); do
@@ -666,7 +723,7 @@ jobs:
           import path from 'node:path';
           import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
-          import { resolveTerminalMigrationIdentities, verifyRetiredMigrationSupersession } from './tools/delivery/terminal-migration-identity.mjs';
+          import { resolveTerminalMigrationIdentities, verifyRetiredMigrationSupersession, verifyOpenRegulatoryPredecessor } from './tools/delivery/terminal-migration-identity.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
           const obligation=process.env.OBLIGATION_ID;
@@ -715,7 +772,30 @@ jobs:
                 expected.push({version:match[1],name:match[2],source_pr:prNumber});
               }
             } else {
-              if(pr.state!=='closed') throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+              if(pr.state!=='closed'){
+                // Preserve the original writer until the successor has durable terminal proof.
+                // Narrow non-migration identity proof; all other open predecessors remain blocked.
+                if(pr.state!=='open'||metadata.supersedes!==null||!directSuccessor)
+                  throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+                if(pr.changed_files!==1) throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+                const files=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}/files?per_page=100`],{encoding:'utf8'}));
+                const source='data/regulatory-source-state.json';
+                if(!/^[0-9a-f]{40}$/.test(pr.head?.sha||'')||!directSuccessor.merged||
+                   !/^[0-9a-f]{40}$/.test(directSuccessor.merge_commit_sha||''))
+                  throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+                execFileSync('git',['fetch','origin',pr.head.sha,'--no-tags'],{stdio:'ignore'});
+                execFileSync('git',['merge-base','--is-ancestor',directSuccessor.merge_commit_sha,'origin/main']);
+                const blob=ref=>execFileSync('git',['rev-parse',`${ref}:${source}`],{encoding:'utf8'}).trim();
+                const live=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}`],{encoding:'utf8'}));
+                if(live.state!==pr.state||live.merged!==pr.merged||live.body!==pr.body||live.changed_files!==pr.changed_files)
+                  throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+                const receipt=verifyOpenRegulatoryPredecessor({predecessor:pr,successor:directSuccessor,files,
+                  originalBlob:blob(pr.head.sha),successorBlob:blob(directSuccessor.merge_commit_sha),currentBlob:blob('origin/main'),
+                  obligation,headRecheck:live.head?.sha});
+                console.log('OPEN_REGULATORY_PREDECESSOR_PROOF:'+JSON.stringify(receipt));
+                // No migrations on this one-file predecessor. Never mark it closed here.
+                break;
+              }
               if(Number(pr.changed_files)>100) throw new Error(`UNMERGED_SUPERSEDES_CHANGED_FILES_UNBOUNDED:${prNumber}`);
               const files=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}/files?per_page=100`],{encoding:'utf8'}));
               const migrationFiles=files.filter(file=>file.status!=='removed' &&
@@ -739,7 +819,7 @@ jobs:
               console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
             }
 
-            directSuccessor={number:prNumber,body:pr.body};
+            directSuccessor={number:prNumber,body:pr.body,state:pr.state,merged:pr.merged,merge_commit_sha:pr.merge_commit_sha};
             prNumber=metadata.supersedes===null ? 0 : Number(metadata.supersedes);
             if(prNumber && !Number.isInteger(prNumber)) throw new Error('SUPERSEDES_INVALID');
           }

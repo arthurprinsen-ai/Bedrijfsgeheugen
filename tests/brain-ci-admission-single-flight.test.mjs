@@ -40,8 +40,8 @@ test('PR admission ratchet is exactly Required plus Powerhouse CodeQL', async ()
 
 test('skill projection supersedes stale same-PR/ref work', async () => {
   const yml = await readFile('.github/workflows/powerhouse-skill-projection.yml','utf8');
-  assert.match(yml,/group: powerhouse-skill-projection-\$\{\{ github\.event\.pull_request\.number \|\| github\.ref_name \}\}/);
-  assert.match(yml,/cancel-in-progress: true/);
+  assert.ok(yml.includes("format('replay-{0}-{1}', inputs.pr_number, inputs.merge_sha) || github.event.pull_request.number || github.ref_name"));
+  assert.ok(yml.includes("cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}"));
 });
 
 test('Required executes this CI admission regression', async () => {

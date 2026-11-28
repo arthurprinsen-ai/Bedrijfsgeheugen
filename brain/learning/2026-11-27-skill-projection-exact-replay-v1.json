@@ -1,0 +1,32 @@
+{
+  "fingerprint": "delivery|skill-projection|exact-replay|20261127-v1",
+  "status": "CANDIDATE_TEST_ONLY",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "BG169 token promotion can omit push event, leaving exact merge #6213 unprojected and terminal closure failed despite live proof; #6211 similarly has zero projection runs.",
+  "prevention_rule": "Use existing terminal and projection workflow; dispatch only on proven absent exact native push and complete replay inventory. Pin merged PR SHA and unchanged learning blobs; require actual canonical evaluation and projection, exact native run and immutable artifact before terminal claim; stale, failed or unknown proof stays open.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-skill-projection-exact-replay-20261127.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-skill-projection-exact-replay-20261127.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-skill-projection-exact-replay-20261127.test.mjs"
+    ]
+  },
+  "evidence": {
+    "terminal_failure": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46027301180",
+    "production_proof": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46027735668",
+    "missing_projection_merges": [
+      "6e6c125d553bd805d36204bacd38a82f25f69910",
+      "95ede03e22a55d548462c5d356895109ef6f5973"
+    ],
+    "test_status": "Authored regression; protected CI and live replay pending."
+  }
+}

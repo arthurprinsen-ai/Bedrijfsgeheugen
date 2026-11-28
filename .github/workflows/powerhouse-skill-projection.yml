@@ -1,6 +1,17 @@
 name: Powerhouse Skill Projection
+run-name: "${{ github.event_name == 'workflow_dispatch' && format('Skill projection replay PR #{0} {1}', inputs.pr_number, inputs.merge_sha) || 'Powerhouse Skill Projection' }}"
 
 on:
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Merged same-repository PR
+        required: true
+        type: string
+      merge_sha:
+        description: Exact protected-main merge SHA
+        required: true
+        type: string
   push:
     branches: [main]
     paths:
@@ -17,11 +28,12 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
   # Supersede stale projection work for the same PR/ref.
-  group: powerhouse-skill-projection-${{ github.event.pull_request.number || github.ref_name }}
-  cancel-in-progress: true
+  group: powerhouse-skill-projection-${{ github.event_name == 'workflow_dispatch' && format('replay-{0}-{1}', inputs.pr_number, inputs.merge_sha) || github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: ${{ github.event_name != 'workflow_dispatch' }}
 
 jobs:
   skill-projection-contract:
@@ -30,6 +42,34 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 2
+      - name: Pin authorized merged learning replay
+        id: replay
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          MERGE_SHA: ${{ inputs.merge_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [ "$GITHUB_REF" = refs/heads/main ]
+          [[ "$PR_NUMBER" =~ ^[1-9][0-9]*$ && "$MERGE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          pr="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
+          jq -e --arg repo "$GITHUB_REPOSITORY" --arg sha "$MERGE_SHA" '.merged == true and .base.ref == "main" and .head.repo.full_name == $repo and .merge_commit_sha == $sha' <<<"$pr" >/dev/null
+          if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+            git fetch --unshallow origin main --no-tags
+          else
+            git fetch origin main --no-tags
+          fi
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+          git merge-base --is-ancestor "$MERGE_SHA" "$GITHUB_SHA"
+          parent="$(git rev-parse "$MERGE_SHA^1")"
+          mapfile -t learning < <(git diff --name-only --diff-filter=AM "$parent" "$MERGE_SHA" -- brain/learning/ | grep -E '^brain/learning/.+[.]json$')
+          [ "${#learning[@]}" -gt 0 ]
+          git diff --quiet "$MERGE_SHA" "$GITHUB_SHA" -- "${learning[@]}"
+          git checkout --detach "$MERGE_SHA"
+          test "$(git rev-parse HEAD)" = "$MERGE_SHA"
+          printf 'base_sha=%s\nhead_sha=%s\n' "$parent" "$MERGE_SHA" >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v5
         with:
           node-version: 24
@@ -44,8 +84,8 @@ jobs:
 
       - name: Evaluate changed learning before canonicalization
         env:
-          POWERHOUSE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
-          POWERHOUSE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          POWERHOUSE_BASE_SHA: ${{ steps.replay.outputs.base_sha || github.event.pull_request.base.sha || github.event.before }}
+          POWERHOUSE_HEAD_SHA: ${{ steps.replay.outputs.head_sha || github.event.pull_request.head.sha || github.sha }}
         run: node scripts/brain/learning-canonicalization-gate.mjs
 
       - name: Publish learning canonicalization evidence

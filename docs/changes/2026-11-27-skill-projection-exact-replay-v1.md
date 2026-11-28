@@ -1,0 +1,3 @@
+# Exact merged learning replay — 27 November 2026
+
+Native BG169 can suppress push events. Existing terminal closure now requests the original skill projection workflow only on proven missing push plus complete exact replay inventory. Scope is merged same-repo PR, protected main ancestry, original changed learning JSON and unchanged current learning bytes. Existing failed-push descendant path remains. Evaluation artifact and native successful run required; no fake green, new scheduler or grant. Skill-only and changed historical learning stay fail-closed. Full protected tests and live recovery pending.

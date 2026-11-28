@@ -79,3 +79,28 @@ export function verifyRetiredMigrationSupersession({
   }
   return results;
 }
+
+/** An open one-path regulatory source observation can be non-migration evidence
+ * only if its direct merged successor adopted the exact bytes, still on main.
+ * This is NOT permission to close or release the original writer. */
+export function verifyOpenRegulatoryPredecessor({predecessor,successor,files,originalBlob,successorBlob,currentBlob,obligation,headRecheck}={}){
+ const fail=()=>{throw Error('OPEN_REGULATORY_PREDECESSOR_UNPROVEN');};
+ const sha=/^[0-9a-f]{40}$/;
+ const path='data/regulatory-source-state.json';
+ const line=(body,key,value)=>String(body||'').split(/\r?\n/).filter(l=>l.startsWith(key+':')).length===1&&String(body||'').split(/\r?\n/).includes(key+': '+value);
+ if(!predecessor||!successor||!/^regulatory-source-watch-[1-9]\d*$/.test(obligation)||
+    predecessor.state!=='open'||predecessor.merged!==false||successor.state!=='closed'||successor.merged!==true||
+    !Number.isSafeInteger(predecessor.number)||predecessor.number<1||!Number.isSafeInteger(successor.number)||successor.number<=predecessor.number||
+    !sha.test(predecessor.head?.sha)||headRecheck!==predecessor.head.sha||!sha.test(successor.merge_commit_sha)||
+    predecessor.changed_files!==1||!Array.isArray(files)||files.length!==1||files[0]?.filename!==path||
+    !['added','modified'].includes(files[0]?.status)||!sha.test(originalBlob)||files[0].sha!==originalBlob||
+    originalBlob!==successorBlob||originalBlob!==currentBlob||
+    !line(predecessor.body,'Obligation-ID',obligation)||!line(successor.body,'Obligation-ID',obligation)||
+    !line(predecessor.body,'Regulatory-Candidate-Type','source-observation')||
+    !line(predecessor.body,'Writer-Lease-State','TERMINAL_DELIVERY')||
+    !line(predecessor.body,'Writer-Lease-Head',predecessor.head.sha)||
+    !line(predecessor.body,'Writer-Lease-Obligation',obligation)||
+    !line(predecessor.body,'Writer-Lease-NonOwner-Action','DEFER')||
+    !line(successor.body,'Supersedes',String(predecessor.number)))fail();
+ return {status:'OPEN_REGULATORY_NON_MIGRATION_PROVEN',predecessor:predecessor.number,successor:successor.number,source_blob:originalBlob,predecessor_head:predecessor.head.sha,successor_merge:successor.merge_commit_sha,writer_lease_released:false};
+}
