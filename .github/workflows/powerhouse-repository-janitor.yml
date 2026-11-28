@@ -502,6 +502,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REQUESTED_MODE: ${{ github.event.inputs.mode }}
         run: node tools/delivery/daily-learning-liveness-recovery.mjs
+      - name: Continue one eligible protected release without chat
+        if: ${{ !cancelled() && github.ref == 'refs/heads/main' && (github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe')) }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUESTED_MODE: ${{ github.event.inputs.mode }}
+        run: node tools/delivery/backlog-promotion-continuation.mjs
       - name: Agent observation and incident writeback on the same original Janitor
         if: always()
         env:
@@ -540,6 +546,7 @@ jobs:
             .artifacts/powerhouse-supervisor-execution-evidence.json
             .artifacts/powerhouse-merge-freshness.json
             .artifacts/powerhouse-daily-learning-liveness.json
+            .artifacts/powerhouse-backlog-continuation.json
           if-no-files-found: error
 
   # The reconciliation runs independently of preceding cleanup failures.
