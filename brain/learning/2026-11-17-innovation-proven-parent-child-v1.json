@@ -1,0 +1,53 @@
+{
+  "contract": "ORIGINAL_INNOVATION_PROVEN_DISTINCT_PARENT_PR_V1",
+  "observed_on": "2026-11-17",
+  "fingerprint": "powerhouse|innovation|bounded-code-child-parent-pr-false-negative|20261117-v1",
+  "root_cause": "Original Engineering selector rejected any source action with proposed_action.parent_pr even when this was an exact already-protected, disjoint prerequisite PR rather than a duplicate of the original child change. Production original candidate 55bb0754 source read-model stayed PLANNED despite native PR #5109 being merged and its 20261029122836 SQL migration applied.",
+  "correction": "In the existing original code candidate selector allow a previously blocked parent only for source-bound component powerhouse-sales-cycle-execution-read-model, after independent native GitHub PR main merge, exact main ancestry and parent/child source-path disjointness. Preserve original hash, owner, rollback, exact source revision and original candidate duplicate checks. Record immutable parent merge proof in child workorder and protected PR metadata. Current protected main already contains #5981's selector. Preserve it, add native exact ancestry proof and enforce canonical material semantic closure before candidate publication. No duplicate selector.",
+  "prevention_rule": "Never classify a distinct child as already built merely because its action contains an existing protected parent PR reference; equally never bypass duplicate gates for unauthenticated, unmerged, same-source or mismatched parent or changed source revision. Before opening an original candidate PR, call the exact existing material closure evaluator; missing prevention/evidence or ledger must fail closed.",
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-innovation-proven-parent-child-source-20261117.test.mjs",
+      "tests/brain-innovation-original-code-delivery-20261115.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-innovation-proven-parent-child-source-20261117.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-innovation-proven-parent-child-source-20261117.test.mjs"
+    ]
+  },
+  "evidence": {
+    "before": "Existing original code_recovery GitHub run https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/44166050762 succeeded but reported selected=false, NO_NEW_SOURCE_BOUND_SAFE_CODE_CANDIDATE. Original candidate 55bb had source-bound actionable source + rollback but parent_pr=5109.",
+    "independent_parent": "Native GitHub PR https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/5109 confirmed merged on protected main at merge SHA 722468c45cd3646755d79188a06dfb187468a946, source-only SQL migration 20261029122836 applied to original EU Supabase; parent SQL paths disjoint from child existing read-model paths.",
+    "realized_customer_outcome": "NOT_VERIFIED",
+    "child_code_implementation": "NOT_YET_BUILT_PENDING_PROTECTED_MERGE_AND_ORIGINAL_WORKFLOW_DISPATCH",
+    "native_proof_only": true,
+    "no_new_executor_scheduler_or_queue": true,
+    "original_semantic_failure": {
+      "run": 45438546408,
+      "job": 138603048562,
+      "reason": "INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE: semantic_learning",
+      "candidate_pr": 6153,
+      "corrected_admission_job": 138604026396
+    },
+    "native_parent_ancestry": {
+      "base": "722468c45cd3646755d79188a06dfb187468a946",
+      "main": "cb0ff42d90f15e5d9670eb1572ca90305e2fc703",
+      "status": "ahead",
+      "behind_by": 0
+    }
+  },
+  "review_required": true,
+  "external_side_effect_authorized": false,
+  "terminal_success": false,
+  "next_safe_action": "Pass exact Required, CodeQL and protected merge, then invoke existing original_code_recovery once on main to verify exact candidate ID selected and protected sandbox implementation or honest nochange; follow with original producer, deployment, independent effects, Heartbeat learning.",
+  "delivery_status": "CANDIDATE_NOT_LIVE"
+}

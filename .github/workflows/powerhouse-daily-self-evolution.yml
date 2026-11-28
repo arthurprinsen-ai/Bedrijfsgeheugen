@@ -333,7 +333,9 @@ jobs:
             Only change a listed allowed_source_path, create a NEW named
             tests/brain-innovation-*.test.mjs regression and a NEW
             brain/learning/2026-11-*-innovation-*.json learning record with
-            compiler.failure_class, root_cause, fingerprint and evaluation evidence.
+            compiler.failure_class, root_cause, fingerprint, explicit nonempty prevention
+            (or prevention_rule), and concrete test evidence. The existing material
+            writeback closure guard runs before PR creation; do not fabricate evidence.
             Determine REQUIRED evaluation modes using the existing
             scripts/brain/learning-canonicalization-gate.mjs compiler:
             historical_replay always, shadow for relevant recovery/security,

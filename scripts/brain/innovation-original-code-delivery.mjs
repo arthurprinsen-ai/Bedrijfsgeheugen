@@ -6,6 +6,7 @@ import {readCanonicalRows, evaluateOriginalOwnerHandoff} from './innovation-orig
 import {trustedBrainReadConfig} from './planned-action-review-audit.mjs';
 import {compileLearningEvaluationPlan, validateEvaluationContract} from './learning-canonicalization-gate.mjs';
 import {sourceQualityNextAction} from './innovation-original-delivery-continuity.mjs';
+import {evaluateMaterialWritebackClosure} from './material-writeback-closure-guard.mjs';
 
 export const CONTRACT='ORIGINAL_INNOVATION_BOUNDED_CODE_CANDIDATE_V1';
 export const WORK_ORDER='artifacts/quality/original-innovation-code-workorder.json';
@@ -320,12 +321,25 @@ export function isVerifiedMergedHistoricalParentPr({pr,parentPr,candidate,allowe
   return pr.files.every(file=>typeof file?.path==='string'&&
      file.path.length>0&&!allowedSourcePaths.includes(file.path));
 }
+export function verifyOriginalParentAncestry({pr,mainSha,comparison}={}){
+  const parentSha=pr?.mergeCommit?.oid;
+  return /^[a-f0-9]{40}$/i.test(parentSha??'')&&/^[a-f0-9]{40}$/i.test(mainSha??'')&&
+    ['ahead','identical'].includes(comparison?.status)&&comparison?.behind_by===0&&
+    comparison?.base_commit?.sha===parentSha&&comparison?.merge_base_commit?.sha===parentSha;
+}
 function verifiedHistoricalParentFor(number,candidate,allowedSourcePaths){
   const pr=JSON.parse(execFileSync('gh',
     ['pr','view',String(number),'--repo',REPO,
       '--json','number,state,mergedAt,mergeCommit,baseRefName,files,body'],
     {encoding:'utf8',timeout:25000,maxBuffer:4000000}));
-  return isVerifiedMergedHistoricalParentPr({pr,parentPr:number,candidate,allowedSourcePaths});
+  if(!isVerifiedMergedHistoricalParentPr({pr,parentPr:number,candidate,allowedSourcePaths}))return false;
+  const main=JSON.parse(execFileSync('gh',['api','repos/'+REPO+'/branches/main'],
+    {encoding:'utf8',timeout:25000,maxBuffer:3000000}));
+  const mainSha=main?.commit?.sha;
+  if(!/^[a-f0-9]{40}$/i.test(mainSha??''))return false;
+  const comparison=JSON.parse(execFileSync('gh',['api','repos/'+REPO+'/compare/'+pr.mergeCommit.oid+'...'+mainSha],
+    {encoding:'utf8',timeout:25000,maxBuffer:4000000}));
+  return verifyOriginalParentAncestry({pr,mainSha,comparison});
 }
 
 export function selectOriginalCodeCandidate({snapshot,report,existingPrFor=()=>false,historicalParentFor=()=>false}={}){
@@ -517,6 +531,12 @@ export function classifyOriginalCodeDiff({workorder,changed,deleted=[]}={}){
   const checked=checkChangedPaths({workorder,changed,deleted});
   return Object.freeze({...checked,has_changes:true,status:'BOUNDED_CODE_CANDIDATE'});
 }
+export function verifyOriginalInnovationLearningClosure({changedPaths,rootDir=process.cwd()}={}){
+  const closure=evaluateMaterialWritebackClosure({changedPaths,rootDir});
+  if(!closure.material||!closure.ok)
+    fail('MATERIAL_CLOSURE_REQUIRED:'+JSON.stringify([...closure.missing,...closure.semantic_learning.missing]));
+  return closure;
+}
 function recordOutput(name,value){
   if(process.env.GITHUB_OUTPUT)appendFileSync(process.env.GITHUB_OUTPUT,name+'='+value+'\n');
 }
@@ -549,6 +569,7 @@ async function main(){
         result:result.status,implementation_verified:false,original_remains_planned:true})+'\n');
       return;
     }
+    verifyOriginalInnovationLearningClosure({changedPaths:result.changed});
     for(const path of result.learn){
       const lesson=JSON.parse(readFileSync(path,'utf8'));
       if(!lesson.compiler?.failure_class||!lesson.fingerprint||!lesson.root_cause)
