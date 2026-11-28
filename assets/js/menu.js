@@ -157,6 +157,8 @@
 
   var nav = document.createElement('div');
   nav.id = 'bgSharedMobileNav';
+  // The drilldown stylesheet arrives asynchronously: hide the real panel natively before insertion.
+  nav.setAttribute('hidden', '');
   nav.setAttribute('aria-hidden', 'true');
   nav.setAttribute('aria-label', 'Mobiele hoofdnavigatie');
   nav.innerHTML = '<div class="bg-shared-mobile-shell"><div class="bg-shared-mobile-brandline"><span class="bg-shared-mobile-kicker">Bedrijfsgeheugen</span></div></div>';
@@ -237,6 +239,7 @@
   }
 
   function sluit() {
+    nav.setAttribute('hidden', '');
     nav.setAttribute('aria-hidden', 'true');
     knop.setAttribute('aria-expanded', 'false');
     knop.setAttribute('aria-label', 'Open menu');
@@ -247,6 +250,7 @@
   }
 
   function open() {
+    nav.removeAttribute('hidden');
     nav.setAttribute('aria-hidden', 'false');
     knop.setAttribute('aria-expanded', 'true');
     knop.setAttribute('aria-label', 'Sluit menu');
