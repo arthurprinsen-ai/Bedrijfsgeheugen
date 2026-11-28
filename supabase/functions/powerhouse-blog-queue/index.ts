@@ -2,6 +2,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 import { canRebindUnsentBlog, originalBlogSlugGuard } from '../_shared/blog-null-lineage-recovery.mjs';
 import { assessOfficialBlogDateTruth } from '../_shared/blog-official-date-truth.mjs';
 import { assessBlogQueueAdmission } from '../_shared/blog-queue-admission-contract.mjs';
+import {decideBlogAutoApproval,BLOG_AUTO_APPROVAL_VERSION,BLOG_VETO_WINDOW_HOURS} from '../_shared/blog-auto-approval.mjs';
 
 const VERSION='v8-null-safe-blog-lineage-cas';
 const clean=(v:unknown)=>String(v??'').trim();
@@ -36,7 +37,7 @@ Deno.serve(async(req)=>{
   const [{data:a,error:ae},{data:d,error:de},{data:o,error:oe}]=await Promise.all([
     db.from('powerhouse_content_artifacts').select('title,body,cta,content_brief,generation_evidence,status').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
     db.from('powerhouse_channel_decisions').select('decision,state,delivery_evidence').eq('run_date',runDate).eq('channel','blog').maybeSingle(),
-    db.from('content_publication_obligations').select('status,slug,approved_at,external_id,published_at,live_proven_at,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
+    db.from('content_publication_obligations').select('publication_date,status,slug,content_id,canonical_url,generated_at,approved_at,external_id,published_at,live_proven_at,evidence').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog').maybeSingle()
   ]);
   if(ae||de||oe) return json({ok:false,error:'READ_FAILED'},500);
   // The canonical obligation is authoritative. A historical date, explicit
@@ -84,7 +85,55 @@ Deno.serve(async(req)=>{
     if(reboundError || !rebound || clean(rebound.slug)!==slug){
       return json({ok:false,error:'BLOG_LINEAGE_REBIND_FAILED',recovery_required:true,runDate},409);
     }
+    // Preserve the original CAS result for the subsequent existing policy
+    // decision. Approval must always bind the corrected source slug/content ID.
+    o.slug=rebound.slug;o.content_id=rebound.content_id;o.canonical_url=rebound.canonical_url;
   }
+  // Same ORIGINAL, scheduler-token-protected blog queue owns the last-mile
+  // 6-hour auto-approval. Its server-scoped Supabase key is already proven by
+  // the queue's source read; GitHub's separate stale REST credential must not
+  // strand publication. This does not create a second publisher or cron.
+  const approval=decideBlogAutoApproval({
+    obligation:o?{...o,evidence:jsonObject(o.evidence)}:null,
+    artifact:a,decision:d,now:new Date(),today:localDate()
+  });
+  if(approval.action==='APPROVE'){
+    const approvedAt=new Date().toISOString();
+    const payload={
+      p_tenant_id:'canonical',
+      p_publication_date:runDate,p_channel:'blog',p_status:'APPROVED',
+      p_content_id:clean(o?.content_id),p_slug:clean(o?.slug),
+      p_canonical_url:clean(o?.canonical_url)||null,
+      p_evidence:{auto_approval:{
+        version:BLOG_AUTO_APPROVAL_VERSION,approved_at:approvedAt,
+        veto_window_hours:BLOG_VETO_WINDOW_HOURS,eligible_at:approval.eligible_at,
+        gates:approval.gates,
+        veto_instruction:'Set content_publication_obligations.evidence.veto before eligible_at to stop publication; after approval withdraw via protected PR.'
+      }},
+      p_metrics:{},
+      p_next_action:'Canonical hourly GitHub publisher -> same-date protected candidate -> required checks -> merge -> Netlify -> exact public readback.',
+      p_error:null
+    };
+    const {data:approved,error:approveError}=await db.rpc('record_content_publication_state',payload);
+    if(approveError)return json({ok:false,queued:false,error:'BLOG_ORIGINAL_AUTO_APPROVAL_RPC_FAILED',runDate,recovery_required:true},503);
+    // Independent read-back from the SAME canonical source, not just RPC ACK.
+    const {data:readback,error:proofError}=await db.from('content_publication_obligations')
+      .select('status,slug,content_id,approved_at,evidence')
+      .eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','blog')
+      .maybeSingle();
+    const evidence=jsonObject(readback?.evidence);
+    if(proofError||!readback||clean(readback.status)!=='APPROVED'||
+      clean(readback.content_id)!==clean(o?.content_id)||
+      clean(readback.slug)!==clean(o?.slug)||
+      !clean(readback.approved_at)||
+      clean(evidence?.auto_approval?.eligible_at)!==clean(approval.eligible_at)||
+      clean(evidence?.auto_approval?.version)!==BLOG_AUTO_APPROVAL_VERSION){
+      return json({ok:false,queued:false,error:'BLOG_ORIGINAL_AUTO_APPROVAL_READBACK_MISSING',runDate,recovery_required:true},503);
+    }
+    if(o){o.status='APPROVED';o.approved_at=readback.approved_at;o.evidence=evidence;}
+  }
+
+
   const evidence={
     ...deliveryEvidence,
     provider:'github-protected-daily-blog',

@@ -61,16 +61,44 @@ jobs:
           set -euo pipefail
           node --test tests/brain-powerhouse-blog-export-security-contract.test.mjs
 
-      - name: Approve the same-date blog after the veto window
+      - name: Verify source-owned approval through original private blog exporter
         if: steps.day.outputs.run == 'true' && github.event_name != 'workflow_dispatch'
         env:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
           DATE: ${{ steps.day.outputs.date }}
         run: |
           set -euo pipefail
-          # Lifts only the last-mile publication permission. Reader-ready, official-date and
-          # protected PR gates stay downstream. A veto in obligation evidence stops it.
-          node tools/content-growth/blog-auto-approval.mjs "$DATE"
+          # Original Powerhouse content-loop -> authenticated powerhouse-blog-queue
+          # now owns the 6-hour veto-gated approval. GitHub NEVER approves via
+          # its stale PostgREST credential; it only verifies the same source.
+          [ -n "${SUPABASE_SERVICE_ROLE_KEY:-}" ] || { echo "::error::BLOG_EXPORT_SERVICE_AUTH_MISSING"; exit 1; }
+          status="$(curl -sS --max-time 30 -o /tmp/blog-approval-probe.json -w '%{http_code}' \
+            -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
+            "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export?date=${DATE}" || true)"
+          if [ "$status" = 200 ]; then
+            DATE="$DATE" node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const body=JSON.parse(fs.readFileSync('/tmp/blog-approval-probe.json','utf8'));
+          if(body.ok!==true || body.run_date!==process.env.DATE ||
+             !['APPROVED','PUBLISHED','LIVE_PROVEN'].includes(body.obligation_status) ||
+             !body.content_id || !body.slug ||
+             body.reader_ready!==true) {
+            console.error('::error::BLOG_ORIGINAL_SOURCE_APPROVAL_PROOF_MISMATCH');process.exit(1);
+          }
+          console.log('BLOG_ORIGINAL_QUEUE_APPROVED_AND_EXPORT_PROVEN:'+process.env.DATE+':no-new-sender');
+          NODE
+            exit 0
+          fi
+          # Before the 6-hour veto window, no blog is legally due. At 07:00+
+          # the original source queue should have completed the permission;
+          # missing approval becomes a failure, not a fictitious green run.
+          local_hour="$(TZ=Europe/Amsterdam date +%H)"
+          if [ "$status" = 403 ] && [ "$((10#$local_hour))" -lt 7 ]; then
+            echo "BLOG_ORIGINAL_VETO_WINDOW_PENDING:$DATE:HTTP403"
+            exit 0
+          fi
+          echo "::error::BLOG_ORIGINAL_QUEUE_EXPORT_NOT_READY:$DATE:HTTP$status"
+          exit 1
 
       - name: Reuse the existing writer for this obligation
         if: steps.day.outputs.run == 'true'

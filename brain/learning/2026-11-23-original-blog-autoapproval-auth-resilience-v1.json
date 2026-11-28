@@ -1,0 +1,60 @@
+{
+  "fingerprint": "powerhouse|daily-blog|github-rest-401-source-queue-native-autoapproval|20261123-v1",
+  "observed_at": "2026-11-23",
+  "original_owner": "powerhouse-content-loop -> powerhouse-blog-queue -> original powerhouse-daily-blog",
+  "parent_issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/4198",
+  "source_observation": {
+    "failed_original_schedule": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45142661254",
+    "exact_failure": "BLOG_AUTO_APPROVAL_READ_FAILED:powerhouse_content_artifacts:401",
+    "api_key_metadata": "GitHub SUPABASE_SERVICE_ROLE_KEY last changed 2026-09-16; actual secret value never read, root classification credential/context mismatch, not independently proven key revocation",
+    "authorized_source": "public.powerhouse_content_artifacts 2026-11-23 content_ready; powerhouse_channel_decisions publish/content_ready; exact original 6h veto elapsed and no veto",
+    "manual_same_original_rpc_approval_at": "2026-11-23T09:31:10.64553Z",
+    "original_approved_canonical_id": "content-publication:2026-11-23:blog",
+    "observed_original_runner": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/45147823265",
+    "website_publication": "PENDING_UNTIL_PR_6123_PROTECTED_DEPLOY_READBACK"
+  },
+  "root_causes": [
+    "GitHub's original approval script uses an Actions Supabase REST credential that received HTTP401 on existing publish-ready blog sources, halting even valid same-date source at the 6-hour veto boundary.",
+    "The already-authenticated source-owning powerhouse-blog-queue ran from original hourly content-loop but did not carry its own existing pure 6-hour approval check, so the original writer was dependent on unrelated GitHub credential health.",
+    "A successful scheduled GitHub event is not a content delivery receipt: unapproved content may leave the publisher with no action and no external outcome."
+  ],
+  "fix": [
+    "Reuse the SAME pure decideBlogAutoApproval and original record_content_publication_state RPC inside existing scheduler-token-authenticated powerhouse-blog-queue, not a second Edge endpoint, cron or publisher.",
+    "Read back exact canonical APPROVED status, original content ID/slug, approved_at and recorded policy evidence before publishing the original handoff.",
+    "Keep 6-hour veto, same Amsterdam business date, approved content, official factual-date gate, no side effects, writer idempotency and original BG169 publication authority.",
+    "Replace failing GitHub PostgREST approval step with read-only current-date confirmation via the ORIGINAL private service-key blog exporter; 403 after 07:00 Amsterdam fails visibly rather than a false green."
+  ],
+  "prevention": [
+    "A stale GitHub PostgREST approval credential cannot silently stop the ORIGINAL server-side source-owner from approving a valid due article.",
+    "Never bypass a factual veto, RLS, six-hour embargo, source lineage or prepublish reader-ready quality just to post.",
+    "One current-day post/PR remains idempotent and stored public proof requires actual protected GitHub merge, Netlify exact deployment, HTTP article readback and ONE BRAIN/Heartbeat consumer."
+  ],
+  "evidence": {
+    "original_content_source": "public.powerhouse_content_artifacts",
+    "same_date_provider_blog_source": "2026-11-23",
+    "natural_queue_cron": "public.powerhouse_content_closed_loop_tick_v1, existing cron #140",
+    "source_authorization": "server-side scheduler token + original server-owned Supabase service role",
+    "original_rpc": "public.record_content_publication_state",
+    "first_original_successful_daily_blog_proof": "https://www.bedrijfsgeheugen.nl/blog/voorbereiden-op-een-twinfield-koppeling-voor-mobiele-betalingen-prakti/",
+    "future_recurrence": "NOT_YET_PROVEN"
+  },
+  "compiler": {
+    "failure_class": "CONTENT_PUBLICATION",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-original-queue-auto-approval-recovery-20261123.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-blog-original-queue-auto-approval-recovery-20261123.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-blog-original-queue-auto-approval-recovery-20261123.test.mjs"
+    ]
+  },
+  "current_state": "SOURCE_CANDIDATE_NOT_LIVE"
+}
