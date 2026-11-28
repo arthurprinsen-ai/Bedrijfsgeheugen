@@ -12,6 +12,10 @@ on:
         description: Merged PR number to resume on the same canonical obligation lineage
         required: true
         type: string
+      projection_failed_run_id:
+        description: Optional exact failed pre-evaluation projection run to recover once on changed protected workflow
+        required: false
+        type: string
 
 permissions:
   # Only the original trusted terminal workflow may dispatch a read-only BRAIN
@@ -592,6 +596,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
+          PROJECTION_FAILED_RUN_ID: ${{ inputs.projection_failed_run_id }}
         run: |
           set -euo pipefail
           # A failed original projection never becomes success by retrying metadata.
@@ -626,8 +631,39 @@ jobs:
             encoded="$(node -e 'process.stdout.write(encodeURIComponent(">="+process.argv[1]))' "$since")"
             expected_title="Skill projection replay PR #$pr_number $MERGE_SHA"
             replay_query="repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/runs?branch=main&event=workflow_dispatch&created=$encoded&per_page=100"
+            # Explicit recovery is scoped to one terminal owner, exact historical
+            # learning bytes and a genuinely changed, protected workflow revision.
+            recovery_proof=""
+            if [ -n "${PROJECTION_FAILED_RUN_ID:-}" ]; then
+              [[ "$PROJECTION_FAILED_RUN_ID" =~ ^[1-9][0-9]*$ ]]
+              prior="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PROJECTION_FAILED_RUN_ID")"
+              jq -e --arg title "$expected_title" '.event=="workflow_dispatch" and .head_branch=="main" and .display_title==$title and .path==".github/workflows/powerhouse-skill-projection.yml" and .status=="completed" and .conclusion=="failure"' <<<"$prior" >/dev/null
+              old_source="$(jq -r '.head_sha' <<<"$prior")"
+              prior_attempt="$(jq -r '.run_attempt' <<<"$prior")"
+              [[ "$old_source" =~ ^[0-9a-f]{40}$ ]] && [[ "$prior_attempt" =~ ^[1-9][0-9]*$ ]]
+              git merge-base --is-ancestor "$MERGE_SHA" "$old_source"
+              git merge-base --is-ancestor "$old_source" "$GITHUB_SHA"
+              git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+              git diff --quiet "$MERGE_SHA" "$GITHUB_SHA" -- "${exact_learning[@]}"
+              old_blob="$(git rev-parse "$old_source:.github/workflows/powerhouse-skill-projection.yml")"
+              new_blob="$(git rev-parse "$GITHUB_SHA:.github/workflows/powerhouse-skill-projection.yml")"
+              [ "$old_blob" != "$new_blob" ]
+              prior_jobs="$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$PROJECTION_FAILED_RUN_ID/attempts/$prior_attempt/jobs?per_page=100")"
+              job_id="$(jq -er 'select(.total_count==1 and (.jobs|length)==1) | .jobs[0].id' <<<"$prior_jobs")"
+              [[ "$job_id" =~ ^[1-9][0-9]*$ ]]
+              log_file="$(mktemp)"
+              gh run view "$PROJECTION_FAILED_RUN_ID" --repo "$GITHUB_REPOSITORY" --job "$job_id" --log > "$log_file" || { rm -f "$log_file"; exit 78; }
+              if ! grep -Eq 'npm (error|ERR!) code ETARGET([[:space:]]|$)' "$log_file"; then rm -f "$log_file"; exit 78; fi
+              rm -f "$log_file"
+              recovery_proof="$(mktemp)"
+              jq -n --argjson prior "$prior" --argjson jobs "$prior_jobs" --argjson job "$job_id" --arg old "$old_blob" --arg new "$new_blob" --arg source "$GITHUB_SHA" '{protectedDescendant:true,learningUnchanged:true,oldBlob:$old,newBlob:$new,newSourceSha:$source,errorCode:"ETARGET",priorRun:$prior,priorJobs:$jobs,logJobId:$job}' > "$recovery_proof"
+            fi
             read_replay_index() {
-              gh api --paginate --slurp "$replay_query" | node tools/delivery/skill-projection-replay.mjs index "$expected_title" "$since"
+              if [ -n "$recovery_proof" ]; then
+                gh api --paginate --slurp "$replay_query" | node tools/delivery/skill-projection-replay.mjs recovery-index "$expected_title" "$since" "$recovery_proof"
+              else
+                gh api --paginate --slurp "$replay_query" | node tools/delivery/skill-projection-replay.mjs index "$expected_title" "$since"
+              fi
             }
             indexed="$(read_replay_index)"
             if [ "$(jq -r '.safe_to_dispatch' <<<"$indexed")" = true ]; then
@@ -636,6 +672,9 @@ jobs:
               if [ "$(jq -r '.safe_to_dispatch' <<<"$indexed")" = true ]; then
                 original="$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/runs?head_sha=$MERGE_SHA&event=push&per_page=20")"
                 [ "$(jq -r '.total_count' <<<"$original")" = 0 ] || { echo "::error::SKILL_REPLAY_ORIGINAL_EVENT_ARRIVED"; exit 78; }
+                if [ -n "$recovery_proof" ]; then
+                  [ "$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq '.object.sha')" = "$GITHUB_SHA" ] || { echo "::error::SKILL_RECOVERY_MAIN_DRIFT"; exit 78; }
+                fi
                 jq -n --arg pr "$pr_number" --arg sha "$MERGE_SHA" '{ref:"main",inputs:{pr_number:$pr,merge_sha:$sha}}' >/tmp/skill-replay-dispatch.json
                 gh api --method POST "repos/$GITHUB_REPOSITORY/actions/workflows/powerhouse-skill-projection.yml/dispatches" --input /tmp/skill-replay-dispatch.json
                 echo "SKILL_EXACT_REPLAY_REQUESTED:$pr_number:$MERGE_SHA"
