@@ -9,7 +9,9 @@ const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const NON_INDEXED_ROUTE = new Set([...PUBLIC_UTILITY_ROUTES,'/portal-v2','/klantportaal','/aanmelden','/offerte','/bedankt',
   // Both NL and EN checkout routes are real, independently browser-tested,
   // and deliberately noindex; they must not appear in the SEO sitemap.
-  '/afsluiten','/en/afsluiten','/pakketadvies']);
+  '/afsluiten','/en/afsluiten','/pakketadvies',
+  // Exact localized login is a verified reachable noindex utility, not an SEO canonical.
+  '/en/inloggen']);
 const NON_INDEXED_PREFIX = ['/api/','/.netlify/','/assets/','/fonts/','/images/','/img/','/portal-v2/'];
 const PUBLIC_ASSET = /\.(?:pdf|png|jpe?g|webp|gif|avif|svg|css|m?js|json|xml|txt|zip|ico|woff2?|ttf|eot|mp4|webm)$/i;
 

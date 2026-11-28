@@ -1,0 +1,56 @@
+{
+  "fingerprint": "seo|original-sitewide-health-and-ahrefs-source-proof|20261112-v1:method-coverage-v2",
+  "date": "2026-11-24",
+  "state": "SOURCE_CANDIDATE",
+  "release_proven": false,
+  "owner": "Original Powerhouse SEO Order Engine / BG169",
+  "failure_class": "SEO_AUDIT_COVERAGE_FALSE_COMPLETE",
+  "root_cause": "Equal route counts were accepted even when the expected and observed sitemap route sets differed; declared locale targets lacked reciprocal verification; broader SEO methods had no explicit evidence status. Independent live replay also exposed first-robots-meta-only false negatives in both sitemap generation and browser collection.",
+  "fix": [
+    "Require exact unique expected/observed route-set equality",
+    "Verify declared hreflang self and reciprocal links where observed",
+    "Expose source-grounded 12-method coverage; unmeasured external results stay unmeasured",
+    "Collect every applicable robots meta and navigation X-Robots-Tag; final sitemap generator excludes restrictive noindex/none even if an earlier tag says index."
+  ],
+  "tests": [
+    "tests/brain-sitewide-seo-health-score-20261112.test.mjs",
+    "tests/brain-standalone-visibility-navigation-race-v1.test.mjs",
+    "tests/brain-website-layout-shift-evidence-20261022.test.mjs",
+    "tests/brain-sitewide-href-integrity-20261112.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-sitewide-seo-health-score-20261112.test.mjs",
+      "tests/brain-standalone-visibility-navigation-race-v1.test.mjs",
+      "tests/brain-website-layout-shift-evidence-20261022.test.mjs",
+      "tests/brain-sitewide-href-integrity-20261112.test.mjs"
+    ]
+  },
+  "producer_evidence": [
+    "tools/site-shell/seo-health-score.mjs",
+    "tools/genereer-sitemap.mjs",
+    "tools/site-shell/standalone-visibility-check.mjs"
+  ],
+  "consumer_processed_ack": "NOT_YET_PROVEN",
+  "production_http_readback": "NOT_YET_PROVEN",
+  "prevention": [
+    "No health score on missing, unexpected or duplicate routes",
+    "No full SEO method pass based on DOM only",
+    "No new scheduler or producer",
+    "Never override restrictive robots directives; re-test conflicting tags, agent-specific directives and response headers against final output.",
+    "Before terminal delivery run every existing test that reads a changed browser source; preserve verified replacement navigation response, bounded retry, original visibility and CLS failure gates.",
+    "Distinguish exact verified nonindexed functional destinations from missing SEO canonicals. Preserve restrictive login robots tags and all invalid-link checks; do not allow arbitrary /en/ routes."
+  ],
+  "observed_live_baseline": {
+    "release_sha": "6463a356f79aeb7244c687d806e84078a190de6e",
+    "sitemap_routes": 295,
+    "confirmed_min_indexability_defects": 1,
+    "evidence_url": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/6142#issuecomment-7125338987"
+  }
+}

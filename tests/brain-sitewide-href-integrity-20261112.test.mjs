@@ -86,3 +86,12 @@ test('installed app dock never emits HTTP preview anchors into the public HTML h
   assert.deepEqual(r.failures,[]);
   assert.ok(check(['http://127.0.0.1:4173/prijzen']).failures.some(x=>x.startsWith('UNSAFE_OR_HTTP_HREF')));
 });
+
+test('localized login remains navigable outside sitemap without allowing arbitrary EN targets',()=>{
+  const valid=check(['https://www.bedrijfsgeheugen.nl/inloggen','https://www.bedrijfsgeheugen.nl/en/inloggen'],'/en/prijzen');
+  assert.deepEqual(valid.failures,[]);
+  assert.equal(valid.internal,2);
+  assert.ok(check(['https://www.bedrijfsgeheugen.nl/en/inloggen-onbekend'],'/en/prijzen').failures.includes('INTERNAL_TARGET_NOT_IN_FINAL_SITEMAP:/en/inloggen-onbekend'));
+  assert.ok(check(['https://www.bedrijfsgeheugen.nl/en/inloggen/private'],'/en/prijzen').failures.includes('INTERNAL_TARGET_NOT_IN_FINAL_SITEMAP:/en/inloggen/private'));
+  assert.ok(check(['http://www.bedrijfsgeheugen.nl/en/inloggen'],'/en/prijzen').failures.some(x=>x.startsWith('UNSAFE_OR_HTTP_HREF')));
+});
