@@ -36,7 +36,7 @@ export function planRegulatoryOwnerRetirement({predecessor,successor,files,origi
  const mode=evidence.production_readback_mode;
  const expectedProduction=mode==='canonical_run'&&num(evidence.production_readback_run_id)?'run:'+evidence.production_readback_run_id:
    mode==='github_main'?'main:'+evidence.production_observed_sha:
-   mode==='descendant'&&typeof evidence.production_deploy_id==='string'&&/^[a-z0-9-]{10,100}$/.test(evidence.production_deploy_id)?'descendant:'+evidence.production_observed_sha+':deploy:'+evidence.production_deploy_id:null;
+   mode==='descendant_live'&&typeof evidence.production_deploy_id==='string'&&/^[a-z0-9-]{10,100}$/.test(evidence.production_deploy_id)?'descendant:'+evidence.production_observed_sha+':deploy:'+evidence.production_deploy_id:null;
  if(!expectedProduction||expectedProduction!==production)fail();
  const body=predecessor.body.split(/\r?\n/).filter(l=>! /^(Writer-Lease-State|Writer-Lease-Release|Superseded-By|Closure-Reason|Terminal-State|Terminal-Successor-Run):/.test(l)).join('\n').trimEnd()+'\n\n'+[
    'Writer-Lease-State: RELEASED_SUPERSEDED','Writer-Lease-Release: SUPERSEDED_BY_TERMINAL_SUCCESSOR',
