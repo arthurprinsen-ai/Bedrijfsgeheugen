@@ -2,7 +2,7 @@
   "status": "CANDIDATE_TEST_ONLY",
   "fingerprint": "delivery|skill-projection|npm-etarget-revalidation|20261128-v1",
   "root_cause": "Original Skill Projection exact replay failed at dependency installation with npm ETARGET for @netlify/blobs@11.1.11; the existing Required CI bounded metadata revalidation was absent in this consumer. Cache causality remains unproven.",
-  "prevention_rule": "Keep exact pins and configured registry; reuse the existing Required CI install semantics inline in original Skill Projection, retry once only on exact ETARGET with prefer-online, preserve --ignore-scripts and final nonzero exit, emit only bounded allowlisted error codes. Preserve original replay identity and terminal evidence gates.",
+  "prevention_rule": "Keep exact pins and configured registry; reuse the existing Required CI install semantics inline in original Skill Projection, retry once only on exact ETARGET with prefer-online, preserve --ignore-scripts and final nonzero exit, emit only bounded allowlisted error codes. Preserve original replay identity and terminal evidence gates. Apply identical bounded recovery to original backend lane. Assert exact flags independent of ordering. Preserve original review cases and automation bridge.",
   "compiler": {
     "failure_class": "RECOVERY",
     "scope": "delivery",
@@ -11,13 +11,22 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-skill-projection-npm-revalidation-20261128.test.mjs"
+      "tests/brain-skill-projection-npm-revalidation-20261128.test.mjs",
+      "tests/brain-backend-npm-revalidation-20261128.test.mjs",
+      "tests/brain-skill-projection-dependency-bootstrap-v1.test.mjs",
+      "tests/brain-skill-projection-npm-etarget-20261128.test.mjs"
     ],
     "shadow": [
-      "tests/brain-skill-projection-npm-revalidation-20261128.test.mjs"
+      "tests/brain-skill-projection-npm-revalidation-20261128.test.mjs",
+      "tests/brain-backend-npm-revalidation-20261128.test.mjs",
+      "tests/brain-skill-projection-dependency-bootstrap-v1.test.mjs",
+      "tests/brain-skill-projection-npm-etarget-20261128.test.mjs"
     ],
     "canary": [
-      "tests/brain-skill-projection-npm-revalidation-20261128.test.mjs"
+      "tests/brain-skill-projection-npm-revalidation-20261128.test.mjs",
+      "tests/brain-backend-npm-revalidation-20261128.test.mjs",
+      "tests/brain-skill-projection-dependency-bootstrap-v1.test.mjs",
+      "tests/brain-skill-projection-npm-etarget-20261128.test.mjs"
     ],
     "invariants": [
       "No version or registry change; no lifecycle script execution; no false success; no raw npm log output; no duplicate scheduler or replay authority."
@@ -31,6 +40,15 @@
     "observed_code": "ETARGET",
     "observed_package": "@netlify/blobs@11.1.11",
     "local_mock": "1 executable test covering five scenarios passed on Node 24 via Composio; log_AoqcNhHvJ0qS",
-    "production_verified": false
+    "production_verified": false,
+    "combined": {
+      "run": 46135219417,
+      "backend_job": 140949092697,
+      "duplicate_pr": 6221,
+      "duplicate_head": "c5ef2b4fbf4ae30ec8ccf773469ae8051d60d666",
+      "tests_passed": 8,
+      "composio_receipt": "log_nTJq0n4T_xLH",
+      "production_verified": false
+    }
   }
 }

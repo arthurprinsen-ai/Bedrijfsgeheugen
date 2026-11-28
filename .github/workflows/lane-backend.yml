@@ -38,7 +38,35 @@ jobs:
         # postinstall blocked all migration-guard PRs (run #42056751095).
         # Install real JS dependencies and retain every backend test. Scripts
         # needed for production media remain protected by their own runtime lane.
-        run: npm install --ignore-scripts --prefer-offline --no-audit --no-fund
+        run: |
+          set -euo pipefail
+          install_log="$(mktemp)"
+          trap 'rm -f "$install_log"' EXIT
+          if npm install --ignore-scripts --prefer-offline --no-audit --no-fund --loglevel=error >"$install_log" 2>&1; then
+            echo "NPM_INSTALL_SUCCEEDED"
+          else
+            install_status=$?
+            # An observed ETARGET can be caused by stale cached registry metadata.
+            # Retry once with revalidation; no changed pins, registry, or lifecycle policy.
+            if grep -Eq '^(npm error|npm ERR!) code ETARGET[[:space:]]*$' "$install_log"; then
+              echo "NPM_INSTALL_ETARGET_REVALIDATE_ONCE"
+              if npm install --ignore-scripts --prefer-online --no-audit --no-fund --loglevel=error >"$install_log" 2>&1; then
+                echo "NPM_INSTALL_SUCCEEDED_AFTER_REVALIDATION"
+                exit 0
+              else
+                install_status=$?
+              fi
+            fi
+            # Never print raw npm output: only allowlisted, bounded error codes.
+            node --input-type=module - "$install_log" <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const log=readFileSync(process.argv[2],'utf8').slice(0,262144);
+          const allowed=new Set(['EAI_AGAIN','ENOTFOUND','ECONNRESET','ECONNREFUSED','ETIMEDOUT','E401','E403','E404','E429','E500','E502','E503','E504','ETARGET','ERESOLVE','EINTEGRITY','EBADENGINE','EACCES','EPERM','ENOSPC','ELOCKVERIFY','EJSONPARSE','ENOTEMPTY','ENOENT','EEXIST','ERR_INVALID_URL','ERR_INVALID_ARG_TYPE']);
+          const codes=[...new Set(Array.from(log.matchAll(/^(?:npm error|npm ERR!) code ([A-Z][A-Z0-9_]{1,31})\s*$/gm),m=>m[1]).filter(code=>allowed.has(code)))].slice(0,5);
+          console.log('NPM_INSTALL_ERROR_CODES:'+(codes.join(',')||'UNCLASSIFIED'));
+          NODE
+            exit "$install_status"
+          fi
       - name: Verify backend Brain runtime and Quality Intelligence contracts
         run: >-
           node --test
