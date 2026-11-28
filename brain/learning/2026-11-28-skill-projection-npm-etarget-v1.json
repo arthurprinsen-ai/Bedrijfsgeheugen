@@ -1,0 +1,29 @@
+{
+  "status": "CANDIDATE_TEST_ONLY",
+  "fingerprint": "delivery|skill-projection|npm-etarget-revalidation|20261128-v1",
+  "root_cause": "Exact projection run 46134941323 failed npm ETARGET @netlify/blobs@11.1.11 after restoring older cache; Required had bounded online revalidation but projection did not. Cache causality is a hypothesis, not independently proven.",
+  "prevention_rule": "Reuse existing Required bounded ETARGET-only online metadata revalidation; unchanged pins, registry, ignore-scripts, safe diagnostics and final error status. No retry for other codes; no terminal evidence before real projection succeeds.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "delivery",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-skill-projection-npm-etarget-20261128.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-skill-projection-npm-etarget-20261128.test.mjs"
+    ],
+    "invariants": [
+      "No dependency pin, registry, scheduler, permissions or lifecycle change. Exactly one ETARGET retry; raw logs suppressed; persistent failure remains nonzero."
+    ]
+  },
+  "evidence": {
+    "failed_projection": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46134941323",
+    "failed_terminal": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/actions/runs/46134780060",
+    "production_verified": false,
+    "local_mock_scenarios": 5
+  }
+}
