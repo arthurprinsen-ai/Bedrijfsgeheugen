@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="theme-color" content="#59222d" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="PW MO14 Coach" />
+<meta name="description" content="PW MO14-1 Coach: één app voor zaal en veld, opstellingen, keepers, wissels, speeldagen, tactiek en downloads." />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" href="./icons/icon-192.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="./icons/icon-192.png" />
+<title>PW Enschede · MO14-1 Coach | Zaal & Veld</title>
+<style>
+:root{--ink:#321c25;--navy:#59222d;--navy2:#3b1721;--white:#fff;--text:#30232a;--muted:#746b6d;--line:#dce5ed;--bg:#f4f7fa;--blue:#822f42;--green:#118950;--orange:#e7802f;--soft:#f8eff1;--err:#aa3040;--shadow:0 8px 32px rgba(15,46,82,.07)}
+*,*:before,*:after{box-sizing:border-box}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;line-height:1.45;-webkit-tap-highlight-color:transparent}button,select,input{font:inherit}button{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #62afe8;outline-offset:3px}button:disabled{opacity:.43;cursor:not-allowed}svg{display:block;width:21px;height:21px}h1,h2,h3,p{margin-top:0}.sr-only{position:absolute;clip:rect(0,0,0,0);width:1px;height:1px;overflow:hidden}
+.app-header{background:var(--navy2);color:white;padding:calc(12px + env(safe-area-inset-top)) max(24px,calc((100vw - 1160px)/2)) 19px;position:relative;overflow:hidden}.app-header:after{content:"";position:absolute;width:400px;height:400px;border:1px solid #8fbcff22;border-radius:50%;right:-130px;top:-290px;pointer-events:none}.app-header:before{content:"";position:absolute;width:300px;height:300px;border:1px solid #8fbcff25;border-radius:50%;right:-45px;top:-245px;pointer-events:none}
+.brandrow{display:flex;align-items:center;justify-content:space-between;gap:14px;position:relative;z-index:1}.brand{display:flex;align-items:center;gap:11px}.brandlogo{width:43px;height:43px;display:grid;place-items:center;border-radius:15px;background:#ffffff;color:#3b1721;font-weight:1000;font-size:23px;letter-spacing:-2px;box-shadow:inset 0 -4px #3b172130}.brand-kicker{font-size:10px;letter-spacing:.16em;font-weight:900;color:#9eb7d8;text-transform:uppercase}.brandname{font-size:22px;line-height:1;font-weight:900;letter-spacing:-.7px}.brandname em{font-weight:450;font-style:normal;color:#b8cef0}.header-actions{display:flex;align-items:center;gap:8px}.saved-pill{border:1px solid #6581a055;color:#c9d8ee;font-size:11px;border-radius:50px;padding:7px 10px;white-space:nowrap;display:flex;align-items:center;gap:6px}.save-dot{width:7px;height:7px;background:#ffffff;border-radius:50%}.install-btn{border:1px solid #8099bc66;background:#752d3d;color:white;padding:8px 11px;border-radius:10px;font-size:12px;font-weight:850;white-space:nowrap}.header-sub{font-size:12px;color:#adbed5;margin:15px 0 0;line-height:1.35}
+.app-container{max-width:1160px;margin:0 auto;padding:0 20px 100px}.matchbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:center;background:white;padding:17px 21px;margin-top:-2px;border:1px solid #e0e7ee;border-radius:0 0 20px 20px;box-shadow:var(--shadow)}.micro{font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.11em;color:#73859a}.match-picker-row{display:flex;align-items:center;gap:9px;margin-top:4px}.weeknav{border:1px solid #e0e7f0;background:#f0f5fa;color:#6d3441;width:31px;height:31px;display:grid;place-items:center;border-radius:9px;flex:none}.weeknav svg{width:17px;height:17px}#match{min-width:0;max-width:230px;font-weight:900;font-size:19px;letter-spacing:-.4px;color:#542330;border:0;background:transparent;padding:2px 4px;appearance:auto}.match-quick{display:flex;align-items:center;gap:16px}.match-quick div{text-align:right}.match-quick b{display:block;color:#692a39;font-size:14px}.match-quick small{color:#70829a;font-size:11px}.match-avatar{background:#e9f9f0;border-radius:12px;padding:11px;color:#137d51;display:grid;place-items:center}.match-avatar svg{width:24px;height:24px}
+.tab-nav{display:flex;align-items:center;gap:7px;background:#e9eef4;border-radius:16px;padding:6px;margin:22px 0}.navtab{flex:1;border:0;background:transparent;color:#667d96;display:flex;align-items:center;justify-content:center;gap:9px;min-height:50px;border-radius:12px;font-size:13px;font-weight:850}.navtab svg{width:20px;height:20px}.navtab.is-active{background:white;color:#642638;box-shadow:0 2px 11px #1e39521a}.view-panel{display:none;animation:appear .18s ease-out}.view-panel.is-active{display:block}@keyframes appear{from{opacity:.55;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.view-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:25px 0 14px}.eyebrow{font-size:11px;color:#742c3c;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}.view-head h1,.view-head h2{font-size:clamp(25px,4vw,34px);font-weight:900;letter-spacing:-.95px;line-height:1.1;color:var(--navy);margin:0}.lead{color:#64778b;font-size:13px;margin:7px 0 0;max-width:650px}.pill{font-size:11px;font-weight:900;background:#e5f0fb;color:#6e3440;border-radius:40px;padding:7px 10px;display:inline-block;white-space:nowrap}
+.surface{background:white;border:1px solid #dce6ee;border-radius:21px;box-shadow:var(--shadow);overflow:hidden}.surface-pad{padding:22px}.surface +.surface{margin-top:15px}.separator{height:1px;background:#e9edf2;margin:17px 0}.section-title{font-weight:900;font-size:17px;letter-spacing:-.3px;color:#642b3b;margin:0 0 8px}
+.topstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 13px}.stat{background:#fff;border:1px solid #dfe8f0;border-radius:15px;padding:13px 15px;min-width:0}.stat b{display:block;font-size:23px;font-weight:950;color:#612934;line-height:1.1}.stat span{display:block;font-size:10px;letter-spacing:.07em;color:#6e8097;font-weight:900;margin-top:4px;text-transform:uppercase}.stat:last-child{background:#e8f7eb;border-color:#d3e9d7}.stat:last-child b{color:#137d4c}.pitch-toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 22px;border-bottom:1px solid #ecf0f4}.pitch-toolbar h3{font-weight:950;font-size:18px;color:#5b2634;margin:0;letter-spacing:-.45px}.pitch-toolbar p{margin:2px 0 0;color:#7c8ba0;font-size:11px}.block-switch{display:flex;align-items:center;gap:10px}.square-btn{width:39px;height:39px;border:1px solid #dce7ef;background:#f1f6fb;border-radius:12px;display:grid;place-items:center;color:#6d3441}.square-btn svg{width:21px;height:21px}.current-block{min-width:92px;text-align:center;font-weight:950;color:#642b3b;font-size:14px}.current-block small{display:block;color:#76879c;font-size:10px;font-weight:750}
+.pitchside{display:grid;grid-template-columns:minmax(0,1fr) 250px;gap:18px;padding:20px;align-items:start}.pitch{height:525px;position:relative;overflow:hidden;border:5px solid #fff;border-radius:18px;background:repeating-linear-gradient(0deg,#15834c 0px,#15834c 75px,#189454 75px,#189454 150px);box-shadow:0 2px 0 1px #acd4bc,0 8px 25px #052b171c;touch-action:pan-y}.pitch:before{content:"";position:absolute;left:5%;right:5%;top:5%;bottom:7%;border:2px solid #ffffff90}.pitch:after{content:"";position:absolute;left:15%;right:15%;top:-19%;height:40%;border:2px solid #ffffffa6;border-radius:0 0 50% 50%}.pitch-middle{position:absolute;left:5%;right:5%;top:50%;border-top:2px solid #ffffff9a}.pitch-bottom{position:absolute;bottom:-12%;left:15%;width:70%;height:27%;border:2px solid #ffffff9d;border-radius:48% 48% 0 0}.pitch-goal{position:absolute;bottom:1%;left:40%;width:20%;height:12px;border:2px solid #fff;background:repeating-linear-gradient(90deg,#fff8 0 3px,transparent 3px 8px)}.pitchdot{position:absolute;transform:translate(-50%,-50%);z-index:2;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:79px}.pitchdot i{height:45px;width:45px;display:grid;place-items:center;background:#143b8f;border:3px solid #fff;border-radius:50%;box-shadow:0 3px 9px #08301f6b;color:white;font-size:16px;font-weight:900;font-style:normal}.pitchdot small{background:#0b244acc;border-radius:8px;color:white;font-size:13px;font-weight:900;max-width:100px;overflow:hidden;text-overflow:ellipsis;padding:4px 8px;text-align:center;white-space:nowrap}.pitchdot span{font-size:10px;color:#e9fff0;font-weight:850;text-shadow:0 1px 4px #123d27}.pitchdot.gk{top:88%;left:50%}.pitchdot.gk i{background:#e17a32}.pitchdot.f-left{left:29%;top:20%}.pitchdot.f-right{left:71%;top:20%}.pitchdot.mid{left:50%;top:48%}.pitchdot.b-left{left:28%;top:72%}.pitchdot.b-right{left:72%;top:72%}.bench-stack{display:grid;gap:12px}.bench-box{border:1px solid #dfe7ed;border-radius:16px;padding:17px;background:#f7fafd}.mini-heading{font-size:11px;text-transform:uppercase;letter-spacing:.11em;font-weight:950;color:#436281;margin-bottom:13px}.benchnames{display:grid;gap:8px}.bencher{display:flex;align-items:center;gap:9px;background:white;border-radius:10px;padding:8px;font-weight:850;font-size:14px;border:1px solid #edf1f6}.round{background:#e7eefb;color:#1b478e;border-radius:50%;height:29px;min-width:29px;font-size:12px;font-weight:950;display:grid;place-items:center}.subbox{background:#fff7ec;border-color:#f1dec4}.subbox .mini-heading{color:#ab6729}.swaps{display:grid;gap:9px;font-size:14px;color:#1c3451}.swaps strong{font-weight:950}.swaps>strong{font-size:17px;color:#163457}.next-out{color:#ba2f45;line-height:1.5}.next-in{color:#187b4f;line-height:1.5}
+.timeline-wrap{border-top:1px solid #e8eff5;padding:14px 20px 16px}.timeline-hint{font-size:10px;text-transform:uppercase;color:#7f90a5;font-weight:900;letter-spacing:.1em;margin-bottom:10px}.timeline{display:flex;gap:9px;overflow-x:auto;scrollbar-width:thin;scroll-snap-type:x mandatory;padding-bottom:4px}.timebtn{flex:1 0 75px;min-width:64px;border:1px solid #dfe7f1;border-radius:10px;background:#f4f8fd;padding:12px 7px;scroll-snap-align:center;text-align:center;color:#536d86}.timebtn strong{display:block;font-size:14px;font-weight:900}.timebtn span{display:block;font-size:10px;font-weight:750}.timebtn.active{background:#652431;color:white;border-color:#652431}.timebtn.rest-after{border-bottom:4px solid #ee9b48}.status{border:1px solid #bfdef0;background:#eef8ff;color:#1c536f;border-radius:12px;padding:13px 15px;font-size:13px;line-height:1.5}.status.good{background:#ecf9f0;color:#1b744b;border-color:#d1ebd9}.status.warn{background:#fff6e6;color:#855c15;border-color:#f3deb1}.status.error{background:#fff0f1;color:#9b2738;border-color:#f0c9d1}.pitch-footer{padding:4px 20px 20px}.action-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.btn{border:1px solid transparent;background:#ebf1f7;border-radius:13px;min-height:45px;padding:11px 15px;font-weight:900;color:#173e6d;font-size:13px;transition:filter .15s}.btn:hover{filter:brightness(.97)}.btn.primary{background:#822f42;color:white;box-shadow:0 3px 10px #245de01d}.btn.dark{background:#0d3262;color:white}.btn.light{background:#edf4fc;color:#1b4c85}.btn.outline{background:white;border:1px solid #cad9e8}.btn.small{font-size:12px;min-height:37px;padding:8px 11px}.btn.block{width:100%}.btn svg{display:inline-block;vertical-align:middle;margin-right:5px;width:17px;height:17px}
+.roster{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.player{border:1px solid #dce6ed;display:flex;align-items:center;gap:11px;border-radius:14px;padding:13px 12px;background:#fff;font-size:14px;font-weight:900;min-height:57px}.player input{accent-color:#752e3d;width:20px;height:20px;flex:none}.player span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.player.unavailable{background:#f1f3f6;color:#97a2ae;text-decoration:line-through}.player[data-goalkeeper="true"]{background:#fff4e6;border-color:#ebc893}.role-tag{margin-left:auto;color:#a86d2b;font-size:10px;text-decoration:none}.fieldlabel{display:block;font-size:11px;font-weight:950;text-transform:uppercase;color:#496581;letter-spacing:.07em;margin-bottom:8px}.control{display:block;min-width:0;width:100%;background:#f7fafc;border:1px solid #d4e2ec;border-radius:12px;color:#183c62;min-height:49px;padding:10px 12px;font-size:15px;font-weight:750}.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.settingrow{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.settingrow>label{display:block}.team-actions{display:flex;gap:8px;flex-wrap:wrap}.team-card .surface-pad{padding:23px}.team-top-row{display:grid;grid-template-columns:260px 1fr;gap:20px}.card-soft{background:#f6f9fb;border-radius:17px;border:1px solid #e1e8ee;padding:18px}.card-soft p{font-size:12px;color:#63788e;margin-bottom:0}.team-note{padding:12px 14px;background:#f0f7fd;color:#42647e;font-size:12px;border-radius:11px}details{border-top:1px solid #ecf1f4}details summary{cursor:pointer;padding:17px 20px;color:#183b64;font-weight:900}details[open] summary{border-bottom:1px solid #edf2f5}.roleedit{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #eaf0f4}.roleedit b{font-size:13px}.checks{display:flex;gap:11px}.checks label{font-size:12px;font-weight:850}.checks input{accent-color:#822f42}.input-add{display:flex;gap:8px;margin-top:15px}.input-add input{flex:1;min-width:0}.role-panel{max-width:740px}.hint{color:#72859a;font-size:12px}.roster-note{font-size:12px;color:#73879c;margin:11px 0 0}.count-tag{font-size:11px;font-weight:900;color:#1d744f;background:#e3f7e9;padding:4px 8px;border-radius:30px}
+.minutes-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px 23px}.minute-row{font-size:13px}.minute-head{display:flex;justify-content:space-between;gap:10px;margin-bottom:7px}.minute-head strong{font-weight:850}.minute-head span{font-variant-numeric:tabular-nums;color:#4b6d8b;font-weight:850}.bar{height:9px;background:#e9f0f6;border-radius:9px;overflow:hidden}.bar>span{height:100%;background:#2fa66e;border-radius:9px;display:block}.minutes-summary{padding:15px;background:#edf8ef;color:#27764a;font-size:13px;border-radius:13px;margin:18px 0 0}.season-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.season-row{display:flex;align-items:center;justify-content:space-between;padding:11px 12px;background:#f6f9fc;border-radius:11px;border:1px solid #e8eef4;font-size:13px}.season-row strong{color:#0e315d}.season-row span{font-variant-numeric:tabular-nums;color:#6a7f94}
+.export-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.download-card{background:white;padding:22px;border:1px solid #dde6ef;border-radius:18px;min-width:0}.download-card.emphasis{background:linear-gradient(130deg,#0a2a55,#194c82);color:white;border-color:#173e72}.download-card h3{font-size:18px;font-weight:950;margin:11px 0 6px}.download-card p{font-size:12px;color:#61788e;min-height:48px;margin-bottom:14px}.download-card.emphasis p{color:#c6d9ee}.download-icon{border-radius:12px;background:#eef4fa;color:#235583;width:43px;height:43px;display:grid;place-items:center}.download-card.emphasis .download-icon{background:#ffffff20;color:#ffffff}.download-card .btn{width:100%}.export-foot{padding:17px 20px;margin-top:14px;background:#f0f6fb;border:1px solid #d9e7f3;border-radius:14px;font-size:12px;color:#42647f}.bottom-nav{display:none}.footer{font-size:11px;text-align:center;color:#8090a1;padding:26px 15px}.progress{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0d2b55;color:white;padding:15px 23px;border-radius:16px;z-index:120;box-shadow:0 8px 28px #203f5f50;font-weight:900;font-size:13px;max-width:95vw}.progress.show{display:block}
+dialog{border:0;border-radius:18px;padding:0;max-width:min(420px,90vw);box-shadow:0 14px 90px #09192d6e}dialog::backdrop{background:#09203a9c}.dialog-body{padding:25px}.dialog-body h3{margin:0 0 10px;font-size:20px;color:#0c315c}.dialog-body p{font-size:14px;color:#536b82}.dialog-body button{margin-top:8px}
+@media(max-width:860px){.app-header{padding-left:20px;padding-right:20px}.pitchside{grid-template-columns:minmax(0,1fr) 220px}.pitch{height:450px}.pitchdot i{width:41px;height:41px}.roster{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.app-header{padding:calc(13px + env(safe-area-inset-top)) 16px 21px}.brandlogo{width:39px;height:39px;border-radius:12px}.brandname{font-size:19px}.saved-pill{display:none}.install-btn{font-size:11px;padding:8px}.header-sub{font-size:11px;max-width:330px;margin-top:12px}.app-container{padding:0 12px calc(106px + env(safe-area-inset-bottom))}.matchbar{padding:13px 14px;border-radius:0 0 17px 17px;gap:6px}.match-quick{gap:6px}.match-avatar{display:none}.match-quick b{font-size:12px}.match-quick small{font-size:10px}#match{font-size:16px;max-width:165px}.weeknav{width:28px;height:30px}.tab-nav{display:none}.bottom-nav{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:100;align-items:stretch;justify-content:space-around;background:#fff;border-top:1px solid #dce5ed;box-shadow:0 -7px 30px #193e611c;padding:7px 5px calc(7px + env(safe-area-inset-bottom))}.bottom-nav .navtab{display:flex;flex-direction:column;gap:3px;font-size:10px;min-height:54px;padding:6px 2px;border-radius:11px;flex:1}.bottom-nav .navtab svg{width:23px;height:23px}.bottom-nav .navtab.is-active{background:#eaf1fe;color:#1d4fc0;box-shadow:none}.view-head{margin:19px 3px 12px}.view-head h2{font-size:27px}.lead{font-size:12px}.pill{font-size:10px;padding:6px 8px}.surface{border-radius:18px}.surface-pad{padding:17px}.topstats{gap:7px;margin-bottom:11px}.stat{padding:11px 9px;border-radius:13px}.stat b{font-size:22px}.stat span{font-size:9px}.pitch-toolbar{padding:13px 13px;gap:8px}.pitch-toolbar h3{font-size:15px}.block-switch{gap:5px}.square-btn{width:33px;height:34px;border-radius:10px}.current-block{min-width:73px;font-size:13px}.pitchside{display:block;padding:11px}.pitch{height:400px;border-radius:14px;border-width:4px}.pitchdot{min-width:70px}.pitchdot i{height:39px;width:39px;border-width:2px;font-size:14px}.pitchdot small{font-size:11px;padding:4px 7px;max-width:85px}.pitchdot span{font-size:9px}.pitchdot.f-left{left:27%}.pitchdot.f-right{left:73%}.pitchdot.b-left{left:27%}.pitchdot.b-right{left:73%}.bench-stack{display:grid;grid-template-columns:1fr 1.2fr;gap:8px;margin-top:11px}.bench-box{padding:11px 10px;border-radius:12px}.mini-heading{font-size:9px;margin-bottom:7px}.benchnames{gap:6px}.bencher{padding:6px;gap:5px;font-size:11px}.round{min-width:23px;height:23px;font-size:10px}.swaps{gap:5px;font-size:11px}.swaps>strong{font-size:13px}.timeline-wrap{padding:11px 12px 14px}.timebtn{flex:0 0 60px;min-width:60px;padding:9px 4px}.pitch-footer{padding:4px 12px 14px}.status{font-size:12px;padding:11px 12px}.action-row{gap:8px;margin:12px 0}.action-row .btn{flex:1;font-size:12px;padding:10px 11px}.team-card .surface-pad{padding:17px}.team-top-row{grid-template-columns:1fr;gap:11px}.roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.player{font-size:12px;padding:10px 8px;min-height:51px;gap:7px}.player input{width:18px;height:18px}.role-tag{font-size:8px}.settingrow{gap:9px}.minutes-list{grid-template-columns:1fr;gap:13px}.season-grid{grid-template-columns:1fr}.export-grid{grid-template-columns:1fr;gap:10px}.download-card{padding:16px}.download-card h3{margin-top:6px}.download-card p{min-height:0;margin:0 0 13px}.download-card.emphasis{order:-1}.footer{padding:10px 15px}.progress{bottom:calc(79px + env(safe-area-inset-bottom))}}
+@media(max-width:360px){.pitch{height:365px}.pitchdot small{font-size:10px}.bench-stack{grid-template-columns:1fr 1fr}.match-quick{display:none}.view-head h2{font-size:25px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* === Zaalcoach navigation v4: Apple HIG-inspired tabs, menu and start page === */
+.header-menu-btn{display:grid;place-items:center;width:42px;height:42px;flex:none;border:1px solid #7394bb55;border-radius:12px;color:#fff;background:#27446680}.header-menu-btn svg{width:23px;height:23px}.header-menu-btn:hover{background:#385f91}
+.home-hero{border-radius:24px;background:linear-gradient(135deg,#082c5e,#0b4f8b);box-shadow:0 18px 42px #0e3e7028;padding:25px;color:#fff;overflow:hidden;position:relative}.home-hero:after{content:"";position:absolute;width:230px;height:230px;border:1px solid #ffffff26;border-radius:50%;right:-95px;top:-90px;pointer-events:none}.home-hero-top{display:flex;justify-content:space-between;align-items:center;gap:12px}.home-chip{font-size:11px;font-weight:850;letter-spacing:.11em;color:#c5f5b0}.home-hero-round{padding:7px 12px;border-radius:99px;background:#ffffff1c;font-size:12px;font-weight:800}.home-heading{font-size:clamp(27px,4.5vw,37px);font-weight:950;letter-spacing:-1px;margin-top:21px}.home-hero p{color:#d3e5fa;font-size:14px;margin:3px 0 17px}.home-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;background:#ffffff14;border:1px solid #ffffff26;border-radius:17px;padding:13px;margin-bottom:18px}.home-facts div{text-align:center}.home-facts b{display:block;font-size:26px;line-height:1.2}.home-facts span{color:#cbdeef;font-weight:700;font-size:11px}.home-hero-actions{display:flex;gap:10px;align-items:center}.home-primary,.home-secondary{min-height:48px;border-radius:13px;padding:11px 15px;font-weight:850}.home-primary{display:inline-flex;align-items:center;gap:8px;color:#05214a;border:0;background:#b8ff74;flex:1;justify-content:center}.home-primary svg{width:20px;height:20px}.home-secondary{background:#ffffff1a;color:#fff;border:1px solid #ffffff50}.home-next{margin-top:14px;display:flex;align-items:center;gap:13px;background:#fff;border:1px solid #dfe7f1;border-radius:18px;padding:15px 14px;box-shadow:var(--shadow)}.home-next-icon{display:grid;place-items:center;width:42px;height:42px;flex:none;border-radius:13px;background:#e9f8eb;color:#177a4c}.home-next-icon svg{width:21px;height:21px}.home-next>div:nth-child(2){flex:1;min-width:0}.home-next strong{color:#0c2d50;font-size:14px}.home-next p{margin:3px 0 0;font-size:12px;color:#60738b}.home-next>button{display:grid;place-items:center;border:0;background:#f2f6fd;border-radius:10px;min-width:36px;min-height:36px;color:#32577a}.home-next>button svg{width:20px;height:20px}.home-section-head{margin:23px 0 12px}.home-section-head h2{font-size:21px;margin:0;color:#092951;letter-spacing:-.5px}.home-section-head p{font-size:12px;margin:3px 0 0;color:#708199}.home-rounds{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}.home-round{width:100%;min-height:103px;text-align:left;background:#fff;border:1px solid #dae4ee;border-radius:16px;padding:14px;box-shadow:0 2px 12px #122d4609;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between}.home-round.active{border:2px solid #7d394a;background:#f9eef0;padding:13px}.home-round-heading{display:flex;width:100%;justify-content:space-between;gap:5px;align-items:center;font-weight:900;color:#0f3056}.home-round-heading b{font-size:15px}.home-round-heading i{font-style:normal;font-size:11px;color:#1855a8}.home-round small{font-size:11px;font-weight:650;color:#677e98}.home-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin:15px 0 28px}.home-action-tile{background:#fff;border:1px solid #dce7f1;border-radius:16px;min-height:93px;padding:13px 12px;display:flex;align-items:center;gap:9px;text-align:left;color:#18436a}.home-action-tile>svg:first-child{flex:none;width:23px;height:23px;color:#1860d8}.home-action-tile>span{min-width:0;flex:1}.home-action-tile b{display:block;font-size:12px;line-height:1.2}.home-action-tile small{display:block;margin-top:4px;color:#6b7f93;font-size:10px}.home-action-tile>svg:last-child{width:15px;height:15px;flex:none}
+.menu-group-label{margin:22px 3px 8px;font-size:11px;text-transform:uppercase;letter-spacing:.11em;font-weight:900;color:#637a92}.menu-list{overflow:hidden;background:#fff;border:1px solid #dce6f0;border-radius:17px;box-shadow:var(--shadow)}.menu-tile{width:100%;min-height:73px;padding:12px 16px;background:white;color:#1b3657;border:0;display:flex;align-items:center;gap:14px;text-align:left;border-bottom:1px solid #edf1f5}.menu-tile:last-child{border-bottom:0}.menu-tile:hover{background:#f5f8fc}.menu-tile-icon{height:41px;width:41px;flex:none;border-radius:13px;background:#edf4fc;display:grid;place-items:center;color:#1a5db5}.menu-tile-icon svg{height:21px;width:21px}.menu-tile>span:nth-child(2){flex:1}.menu-tile b{display:block;font-size:14px}.menu-tile small{display:block;color:#718499;font-size:11px;margin-top:3px}.menu-tile>svg:last-child{width:17px;height:17px;color:#8fa6bc}.menu-disclaimer{display:flex;align-items:flex-start;gap:10px;color:#6a7e92;font-size:12px;line-height:1.55;margin:23px 5px 32px}.menu-disclaimer svg{width:17px;height:17px;flex:none;margin-top:1px}
+.app-drawer{position:fixed;margin:0 0 0 auto;top:0;right:0;bottom:0;left:auto;width:min(370px,90vw);max-width:none;max-height:none;border:0;border-radius:23px 0 0 23px;padding:0;background:#f5f8fc;box-shadow:-20px 0 90px #06162a3d}.app-drawer::backdrop{background:#081c35a9;backdrop-filter:blur(3px)}.drawer-head{background:#082b5b;color:#fff;padding:calc(25px + env(safe-area-inset-top)) 23px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px}.drawer-head strong{font-weight:950;font-size:18px;display:block}.drawer-head small{font-size:12px;color:#bbd8f4}.drawer-head button{border:1px solid #ffffff44;background:#ffffff1c;color:white;width:39px;height:39px;font-size:29px;border-radius:12px;line-height:1}.drawer-items{padding:13px;max-height:calc(100vh - 165px);overflow-y:auto}.drawer-items button{display:flex;align-items:center;gap:12px;border:0;border-bottom:1px solid #e5edf5;width:100%;background:#fff;color:#1b3a62;text-align:left;padding:14px 13px;min-height:55px}.drawer-items button:first-child{border-radius:14px 14px 0 0}.drawer-items button:last-child{border-bottom:0;border-radius:0 0 14px 14px}.drawer-items button svg{width:20px;height:20px;color:#2363ba}.drawer-items button svg:last-child{width:15px;height:15px;color:#91a7bd;margin-left:auto}.drawer-items button span{font-size:14px;font-weight:850}.drawer-foot{padding:10px 22px;text-align:center;color:#8493a5;font-size:11px}
+@media(max-width:650px){.tab-nav{display:none!important}.app-header .header-actions{gap:7px}.header-menu-btn{width:40px;height:40px}.app-header .install-btn{display:none}.home-hero{padding:19px}.home-heading{font-size:29px}.home-hero-actions{flex-direction:column}.home-primary,.home-secondary{width:100%;justify-content:center}.home-facts{margin-bottom:15px}.home-rounds{gap:8px}.home-round{min-height:99px;padding:12px}.home-round.active{padding:11px}.home-actions{grid-template-columns:1fr}.home-action-tile{min-height:65px}.bottom-nav .navtab{font-size:10px;padding:7px 1px 3px}.bottom-nav .navtab svg{width:21px;height:21px}.bottom-nav{gap:0}.app-container{padding-bottom:calc(111px + env(safe-area-inset-bottom))}}
+@media(min-width:651px){.bottom-nav{display:none}.tab-nav{position:sticky;top:0;z-index:9;box-shadow:0 5px 17px #142c4418}.home-rounds{grid-template-columns:repeat(4,minmax(0,1fr))}.home-actions{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:365px){.home-facts b{font-size:22px}.navtab span{font-size:9px}.home-hero-top{font-size:10px}}
+
+/* Clubhuisstijl PW Enschede – bordeauxrood, wit, zwart met origineel schildlogo. */
+:root{--ink:#321c25;--navy:#59222d;--navy2:#39181f;--bg:#f9f6f6;--blue:#803048;--soft:#f8edef;--line:#eadde0;--text:#302228;--muted:#756b71}
+.app-header{background:linear-gradient(130deg,#39181f 0%,#602734 90%)}
+.brandlogo{width:50px;height:54px;border-radius:12px;background:white;border:2px solid #fff;overflow:hidden;box-shadow:0 3px 12px #1d090f33}
+.brandlogo img{width:100%;height:100%;object-fit:contain;display:block}
+.brand-kicker{color:#fae1e6}.brandname em{color:#ffffff}.header-sub{color:#f2d5dc}
+.brandname{color:#fff}.install-btn{background:#783544;color:white;border-color:#c68c98}
+.home-hero{background:linear-gradient(145deg,#441721 0%,#7d3345 100%)}
+.home-chip{color:#fff;background:#ffffff1d;border:1px solid #ffffff42}.home-game-date{color:#fff;font-size:16px;font-weight:900;margin:0 0 9px}
+.home-round{display:flex;flex-direction:column;align-items:stretch;min-width:0;overflow:hidden}
+.home-round-open{border:0;background:transparent;color:inherit;text-align:left;padding:0;display:flex;flex-direction:column;align-items:stretch;gap:4px;cursor:pointer;width:100%;flex:1}
+.home-round-open:focus-visible{outline:3px solid #914051;outline-offset:-2px}
+.home-round-date{font-size:14px;font-weight:950;color:#682b39;line-height:1.25}
+.home-round-date-edit{display:flex;flex-direction:column;gap:3px;border-top:1px solid #e7d5dc;padding-top:9px;margin-top:10px;font-size:11px;font-weight:800;color:#76525e}
+.home-round-date-edit input{width:100%;font-size:13px;min-height:37px;border-radius:10px;border:1px solid #cfbdc3;padding:4px 8px;background:#fff;color:#471c29}
+.match-date-inline{display:flex;align-items:flex-start;gap:4px;flex-direction:column;margin-top:8px}
+.match-date-inline label{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#7c4253;font-weight:900}
+.match-date-inline input{border:1px solid #d9bcc6;border-radius:8px;padding:5px 8px;color:#612734;background:white;font-size:12px;max-width:188px;min-height:35px}
+.match-date-inline span{font-size:11px;color:#6f4a56;font-weight:800}
+.home-round.active{border-color:#8d4658;background:#faf1f3;box-shadow:0 0 0 1px #8d4658}
+.navtab.is-active,.bottom-nav .navtab.is-active{color:#702d3d}
+.btn.primary,.home-primary{background:#6b2838;border-color:#6b2838;color:white}
+.btn.primary:hover,.home-primary:hover{background:#54202e}
+@media(max-width:650px){.brandlogo{width:44px;height:48px}.match-date-inline{margin-top:3px}.match-date-inline input{min-height:33px}.matchbar{align-items:start}.match-quick{align-self:center}.home-game-date{font-size:14px}}
+
+/* V6 fixture-first planning: one matchday can have multiple independent fixtures. */
+.fixture-day{margin:18px 0 27px}.fixture-day-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 2px 12px;border-bottom:2px solid #d9c2c9}.fixture-day-header h3{margin:0;color:#59222d;font-size:1rem;text-transform:capitalize}.fixture-day-header small{font-weight:650;color:#80616a}.fixture-day-export{background:#59222d;color:white;border:0;border-radius:12px;padding:10px 12px;min-height:42px;font-weight:800;white-space:nowrap;cursor:pointer}.fixture-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,270px),1fr));gap:12px;margin-top:13px}.fixture-card{margin:0;min-width:0;overflow:hidden}.fixture-card .home-round-open{width:100%;display:flex;flex-direction:column;gap:5px;text-align:left;padding:15px;align-items:stretch}.fixture-kickoff{display:flex;align-items:center;gap:10px;color:#59222d}.fixture-kickoff strong{font-size:1.32rem}.fixture-kickoff span{font-size:.69rem;font-weight:900;border-radius:7px;background:#f0e1e5;padding:4px 7px}.fixture-opponent{font-size:1rem;line-height:1.4;color:#24343f}.fixture-edit{border-top:1px solid #ead9de;padding:7px 13px 11px}.fixture-edit summary{font-size:.77rem;cursor:pointer;color:#762e41;font-weight:850;padding:8px 0}.fixture-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding:6px 0}.fixture-form label{display:flex;flex-direction:column;gap:5px;font-size:.7rem;font-weight:800;color:#5c3743}.fixture-form input,.fixture-form select{width:100%;min-width:0;padding:9px 7px;border:1px solid #dec9ce;border-radius:9px;background:white;font:inherit;color:#28252b;min-height:42px}.home-section-head{align-items:center;flex-wrap:wrap}.home-section-head #addFixture{flex-shrink:0}@media(max-width:460px){.fixture-day-header h3{font-size:.92rem}.fixture-day-export{font-size:.75rem}.fixture-form{grid-template-columns:1fr 1fr}}
+
+/* V7: adaptive mobile-first matchday layout; one full-width day per row. */
+:root{--pw-burgundy:#59222d;--pw-burgundy-dark:#39181f;--pw-cream:#faf7f8;--pw-line:#e7dbe0}
+html,body{max-width:100%;overflow-x:clip}
+*,*::before,*::after{box-sizing:border-box}
+.app-container,.view-panel,.home-rounds,.fixture-day,.fixture-day-header,.fixture-cards,.fixture-card{min-width:0}
+.home-rounds{display:block!important;width:100%!important;max-width:100%!important;grid-template-columns:none!important}
+.fixture-day{display:block;width:100%;max-width:100%;margin:0 0 26px;padding:0 0 8px}
+.fixture-day+.fixture-day{padding-top:15px;border-top:1px solid var(--pw-line)}
+.fixture-day-header{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;padding:15px 0 14px;border-bottom:1px solid #dfcbd1}
+.fixture-day-header>div{min-width:0}
+.fixture-day-header h3{margin:0 0 4px;color:var(--pw-burgundy-dark);font-size:clamp(1.08rem,2.2vw,1.36rem);font-weight:850;line-height:1.25;letter-spacing:-.018em;overflow-wrap:normal;word-break:normal}
+.fixture-day-header small{display:block;color:#826770;font-size:.83rem;line-height:1.4;font-weight:650}
+.fixture-day-export{position:static;flex:0 0 auto;max-width:100%;white-space:normal;line-height:1.2;min-height:44px;padding:10px 12px;border:1px solid #d5bcc4;background:#fff;color:var(--pw-burgundy);border-radius:12px;font-size:.82rem;font-weight:800;box-shadow:none;cursor:pointer}
+.fixture-day-export:active{transform:scale(.99)}
+.fixture-day-export:hover{background:#f6edf0}
+.fixture-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.fixture-card.home-round,.fixture-card.home-round.active{width:100%;min-height:0;padding:0!important;display:block!important;align-items:stretch;justify-content:stretch;border:1px solid #e3d7dd;border-radius:18px;box-shadow:0 4px 18px #59222d0d;overflow:hidden}
+.fixture-card.home-round.active{border:2px solid #8a4156;background:#fbf5f6}
+.fixture-card .home-round-open{display:flex;width:100%;min-width:0;flex-direction:column;gap:8px;align-items:stretch;min-height:170px;padding:16px!important;border:0;text-align:left;cursor:pointer;overflow-wrap:normal}
+.fixture-card .home-round-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#5e2a39}
+.fixture-card .home-round-heading b{font-size:.9rem;line-height:1.25}
+.fixture-card .home-round-heading i{color:#6d3545;background:#f1e5e9;padding:4px 8px;border-radius:8px;white-space:nowrap;font-size:.72rem;font-weight:850}
+.fixture-card .fixture-kickoff{display:flex;align-items:center;gap:12px;margin-top:3px}
+.fixture-card .fixture-kickoff strong{font-variant-numeric:tabular-nums;font-size:1.52rem;letter-spacing:-.045em;color:#59222d}
+.fixture-card .fixture-kickoff span{font-size:.7rem;font-weight:850;letter-spacing:.04em}
+.fixture-card .fixture-opponent{display:block;white-space:normal;overflow-wrap:break-word;word-break:normal;font-size:1.02rem;line-height:1.4;color:#243847}
+.fixture-card .home-round-open small{font-size:.79rem;line-height:1.45;color:#6d7b83}
+.fixture-card .fixture-edit{padding:8px 16px 12px;border-top:1px solid var(--pw-line)}
+.fixture-card .fixture-edit summary{display:block;min-height:44px;padding:11px 0 9px;color:#632a3b;font-weight:750;cursor:pointer}
+.fixture-card .fixture-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+.fixture-card .fixture-form input,.fixture-card .fixture-form select{font-size:16px!important;min-height:44px}
+.fixture-day-export:focus-visible,.fixture-card button:focus-visible,.fixture-card summary:focus-visible,.navtab:focus-visible{outline:3px solid #b16b82;outline-offset:3px}
+.bottom-nav{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);background:#fffffff2}
+.bottom-nav .navtab{min-height:54px}
+.bottom-nav .navtab.is-active{background:#f4e8eb!important;color:#6b2838!important}
+.switch-summary{color:#62404b;font-size:.79rem;line-height:1.45;margin:9px 0 1px;font-weight:750;padding:9px 11px;background:#f7eef1;border-radius:10px}
+.next-out,.next-in,.next-stays{display:flex;flex-direction:column;gap:4px;margin-top:10px;line-height:1.5}
+.next-out strong{color:#a03a4b}.next-in strong{color:#177c4a}.next-stays strong{color:#673343}
+.next-minute{color:#59222d;font-size:.94rem;font-weight:900;letter-spacing:.03em}
+@media(max-width:720px){
+  .app-container{padding-left:clamp(12px,4vw,19px);padding-right:clamp(12px,4vw,19px);padding-bottom:calc(120px + env(safe-area-inset-bottom))}
+  .fixture-day-header{grid-template-columns:minmax(0,1fr);gap:10px;align-items:start}
+  .fixture-day-header h3{font-size:clamp(1.12rem,5vw,1.38rem);line-height:1.23}
+  .fixture-day-header small{font-size:.81rem}
+  .fixture-day-export{width:max-content;max-width:100%;justify-self:start;min-height:44px;padding:10px 15px}
+  .fixture-cards{grid-template-columns:minmax(0,1fr)!important;gap:12px}
+  .fixture-card .home-round-open{min-height:0;padding:16px!important;gap:7px}
+  .fixture-card .fixture-form{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .fixture-day{margin-bottom:20px}
+  .home-section-head{gap:12px;align-items:flex-start}
+  .home-section-head #addFixture{min-height:44px}
+  .bottom-nav{padding-bottom:calc(9px + env(safe-area-inset-bottom));z-index:90}
+}
+@media(min-width:721px){.fixture-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.home-rounds{max-width:880px!important;margin-left:auto;margin-right:auto}}
+@media(max-width:350px){.fixture-card .fixture-form{grid-template-columns:minmax(0,1fr)}.fixture-day-header h3{font-size:1.08rem}}
+@media(prefers-reduced-motion:reduce){.view-panel{animation:none!important}.fixture-day-export:active{transform:none}}
+
+a.menu-tile{text-decoration:none;color:inherit}a.field-menu-link{display:block;padding:13px 18px;margin:5px 12px;border-radius:13px;background:#f5e8ec;color:#59222d;font-weight:800;text-decoration:none;min-height:44px;}</style>
+<link rel="stylesheet" href="./coach-plus.css" />
+<link rel="stylesheet" href="./field-unified.css" />
+<link rel="stylesheet" href="./field-live.css" />
+<link rel="stylesheet" href="./field-complete.css" />
+</head>
+<body>
+<header class="app-header">
+ <div class="brandrow"><div class="brand"><div class="brandlogo"><img src="./pw-logo.png" width="45" height="45" alt="Clublogo PW Hockey Enschede" /></div><div><div class="brand-kicker">PW HOCKEY ENSCHEDE</div><div class="brandname">MO14-1 <em>Coach</em></div></div></div><div class="header-actions"><button type="button" class="header-menu-btn" id="openAppMenu" aria-label="Open hoofdmenu" aria-haspopup="dialog" aria-controls="appDrawer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button><span class="saved-pill"><span class="save-dot"></span>Opgeslagen op dit apparaat</span><button type="button" class="install-btn" id="installApp">+ Zet op beginscherm</button></div></div>
+ <p class="header-sub">Jouw team. Jouw keeper. Een heldere wissel, precies op tijd.</p>
+</header>
+<div class="app-container">
+<section class="coach-sport-switch" aria-label="Kies spelvorm"><button type="button" data-sport-choice="zaal" data-go="home" aria-pressed="true" class="is-current"><span class="mode-symbol" aria-hidden="true">🏠</span><span class="mode-copy">Zaalhockey<small>6 spelers · zaal</small></span></button><button type="button" data-sport-choice="field" data-go="field" aria-pressed="false"><span class="mode-symbol" aria-hidden="true">🏑</span><span class="mode-copy">Veldhockey<small>11 spelers · veld</small></span></button></section>
+ <section class="matchbar" aria-label="Huidige wedstrijd"><div><div class="micro">Je plant nu</div><div class="match-picker-row"><button class="weeknav" type="button" id="prevMatch" aria-label="Vorige wedstrijd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><label class="sr-only" for="match">Wedstrijd</label><select id="match"></select><button class="weeknav" type="button" id="nextMatch" aria-label="Volgende wedstrijd"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div><div class="match-date-inline"><label for="matchDate">Wedstrijddatum</label><input id="matchDate" type="date" aria-label="Datum geselecteerde wedstrijd" /><span id="matchDateLabel">Datum nog invullen</span></div></div><div class="match-quick"><div><b id="heroKeeper">Coco op doel</b><small id="heroRoster">10 aanwezig · 4 bank</small></div><div class="match-avatar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg></div></div></section>
+ <nav class="tab-nav" aria-label="Hoofdnavigatie" role="tablist"><button type="button" class="navtab is-active" data-view="home" role="tab" aria-selected="true" aria-controls="screen-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Start</span></button><button type="button" class="navtab " data-view="plan" role="tab" aria-selected="false" aria-controls="screen-plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg><span>Zaal</span></button><button type="button" class="navtab" data-view="field" role="tab" aria-selected="false" aria-controls="screen-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18M5 8h3M16 16h3"/></svg><span>Veld</span></button><button type="button" class="navtab " data-view="stats" role="tab" aria-selected="false" aria-controls="screen-stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-11"/><path d="M2 20h20"/></svg><span>Minuten</span></button><button type="button" class="navtab " data-view="more" role="tab" aria-selected="false" aria-controls="screen-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button></nav>
+ <main id="appMain">
+<section class="view-panel is-active" id="screen-home" data-view-panel="home" role="tabpanel" aria-label="Start">
+ <div class="view-head"><div><div class="eyebrow">Jouw wedstrijddag</div><h1>Jouw PW Coach</h1><p class="lead">Één app voor zaal en veld. Kies de spelvorm en open direct jouw opstellingen en wissels.</p></div></div>
+ <div class="coach-home-choices" aria-label="Kies jouw spelvorm"><button type="button" data-go="plan"><span class="choice-emoji" aria-hidden="true">🏠</span><span><strong>Zaalhockey</strong><small>12 wedstrijden, keeper en wissels</small></span></button><button type="button" data-go="field"><span class="choice-emoji" aria-hidden="true">🏑</span><span><strong>Veldhockey</strong><small>Selectie, minuten en opstellingen</small></span></button></div>
+ <div class="home-hero"><div class="home-hero-top"><span class="home-chip">● PW ENSCHEDE • MO14-1 ZAAL</span><span class="home-hero-round" id="homeRound">1 / 12</span></div><div class="home-heading" id="homeMatchTitle">Wedstrijd 1</div><p class="home-game-date" id="homeGameDate">Datum nog invullen</p><p id="homeKeeperText">Keeper: Coco</p><div class="home-facts"><div><b id="homePresent">10</b><span>Aanwezig</span></div><div><b id="homeBench">4</b><span>Op de bank</span></div><div><b id="homeBlocks">4</b><span>Wisselblokken</span></div></div><div class="home-hero-actions"><button type="button" class="home-primary" data-go="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg>Bekijk opstelling</button><button type="button" class="home-secondary" data-go="team">Selectie aanpassen</button></div></div>
+ <div class="home-next"><div class="home-next-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l5 5L20 6"/></svg></div><div><strong>Volgende wissel</strong><p id="homeNextText">Selecteer een wedstrijd om de wissels te zien.</p></div><button type="button" data-go="plan" aria-label="Bekijk volgende wissel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
+ <div class="home-section-head"><div><h2 id="homeMatchesHeading">12 wedstrijden · 6 speeldagen</h2><p>Per speeldag staan alle wedstrijden met begintijd en tegenstander. Maak voor elke wedstrijd een apart wisselplan.</p></div><button type="button" class="btn small outline" id="addFixture">+ Wedstrijd toevoegen</button></div><div class="home-rounds" id="homeRounds" aria-label="Kies een wedstrijd"></div>
+ <div class="home-actions"><button type="button" class="home-action-tile" data-go="export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg><span><b>Platen downloaden</b><small>PDF en afbeeldingen</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button type="button" class="home-action-tile" data-go="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-11"/><path d="M2 20h20"/></svg><span><b>Speeltijden bekijken</b><small>Iedereen eerlijk ingedeeld</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div>
+</section>
+
+ <section class="view-panel" id="screen-plan" data-view-panel="plan" role="tabpanel">
+  <div class="view-head"><div><div class="eyebrow">Wedstrijdplan</div><h2>Wie staat waar?</h2><p class="lead">Vijf veldspeelsters als de vijf op een dobbelsteen. Tik op een blok om de opstelling te zien.</p></div><span class="pill" id="roundLabel">1 / 12</span></div>
+  <div class="topstats"><div class="stat"><b id="blocksCount">4</b><span>Speelblokken</span></div><div class="stat"><b id="pitchCount">5</b><span>Op het veld</span></div><div class="stat"><b id="benchCount">4</b><span>Op de bank</span></div></div>
+  <div class="surface">
+   <div class="pitch-toolbar"><div><h3>Opstelling</h3><p id="blockLabel">Blok 1 · 0–10 min</p></div><div class="block-switch"><button type="button" class="square-btn" id="prevBlock" aria-label="Vorig speelblok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button><div class="current-block"><span id="currentBlockNumber">Blok 1</span><small id="currentBlockTime">0–10 min</small></div><button type="button" class="square-btn" id="nextBlock" aria-label="Volgend speelblok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div></div>
+   <div class="pitchside"><div class="pitch" id="pitch" role="img" aria-label="Zaalhockey veld met 5 speelsters en 1 keeper. Veeg horizontaal voor het volgende blok."><div class="pitch-middle"></div><div class="pitch-bottom"></div><div class="pitch-goal"></div><div id="pitchPlayers"></div></div>
+    <div class="bench-stack"><div class="bench-box"><div class="mini-heading">Op de bank</div><div id="bench" class="benchnames"></div></div><div class="bench-box subbox"><div class="mini-heading">Volgende wissel</div><div id="upcoming" class="swaps"></div><p id="switchSummary" class="switch-summary" aria-live="polite"></p></div></div>
+   </div>
+   <div class="timeline-wrap"><div class="timeline-hint" id="rotationHint">Vier blokken, iedere 10 minuten één wisselmoment</div><div id="timeline" class="timeline"></div></div>
+   <div class="pitch-footer"><div id="planNotice" class="status good"></div><div class="action-row"><button type="button" class="btn outline" id="goTeam"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1"/></svg> Pas selectie aan</button><button type="button" class="btn primary" id="goExport"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg> Download platen</button></div></div>
+  </div>
+ </section>
+ <section class="view-panel" id="screen-team" data-view-panel="team" role="tabpanel">
+  <div class="view-head"><div><div class="eyebrow">Stap 1 • Samenstellen</div><h2>Wie speelt er mee?</h2><p class="lead">Wijzig je keeper en vink alleen de aanwezige speelsters aan. Je opstelling wordt direct opnieuw berekend.</p></div></div>
+  <div class="surface team-card"><div class="surface-pad"><div class="team-top-row"><div class="card-soft"><label for="keeper" class="fieldlabel">Keeper van deze wedstrijd</label><select id="keeper" class="control"></select><p>De keeper speelt de hele wedstrijd en telt niet als veldspeelster.</p></div><div><div style="display:flex;align-items:center;justify-content:space-between;gap:9px;margin-bottom:12px"><h3 class="section-title" style="margin:0">Aanwezigheid</h3><span class="count-tag" id="countAvailable"></span></div><div id="roster" class="roster"></div><p class="roster-note">Aangevinkt = aanwezig. De keeper staat altijd op aanwezig.</p></div></div><div class="separator"></div><div id="setupMessage" class="status good" role="status"></div><div class="team-actions" style="margin-top:13px"><button id="copyPresenceDay" class="btn small primary">Kopieer naar andere wedstrijd vandaag</button><button id="copyPresence" class="btn small outline">Kopieer naar andere wedstrijden</button><button id="resetMatch" class="btn small light">Herstel deze wedstrijd</button></div></div></div>
+  
+  <div class="action-row"><button class="btn primary block" id="teamDone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg> Bekijk de nieuwe opstelling</button></div>
+ </section>
+ <section class="view-panel" id="screen-stats" data-view-panel="stats" role="tabpanel"><div class="view-head"><div><div class="eyebrow">Eerlijke verdeling</div><h2>Hoeveel speelt iedereen?</h2><p class="lead">Inclusief de keeper, en rekening houdend met afwezigheid. Het groene gedeelte is de speeltijd.</p></div></div><div class="surface surface-pad"><h3 class="section-title">Deze wedstrijd</h3><div id="minutes" class="minutes-list"></div><p id="equity" class="minutes-summary"></p></div><div class="surface surface-pad"><h3 class="section-title">Alle wedstrijden</h3><p class="lead" style="margin-bottom:16px">Totaal aantal speelminuten volgens je huidige instellingen.</p><div id="seasonMinutes" class="season-grid"></div></div></section>
+ <section class="view-panel" id="screen-export" data-view-panel="export" role="tabpanel"><div class="view-head"><div><div class="eyebrow">Voor langs de lijn</div><h2>Jouw platen, klaar om te delen</h2><p class="lead">Exporteer alle wisselplaten van één wedstrijd, of de complete planning voor alle wedstrijdrondes.</p></div></div><div class="export-grid">
+ <div class="download-card emphasis"><div class="download-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></div><h3>Alle platen van deze wedstrijd</h3><p>Elke opstelling apart, met alle speelsters op het veld én de meiden op de bank.</p><button class="btn primary" id="pdfGame">Download wedstrijd-PDF</button><button class="btn outline" id="pdfDay" style="margin-top:8px">Download alle wedstrijden van deze speeldag</button></div>
+ <div class="download-card"><div class="download-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg></div><h3>Wedstrijd in één overzicht</h3><p>Alle blokken, wissels, banken en speeltijden op één overzichtsplaat.</p><button class="btn dark" id="pdfSummary">Download overzicht-PDF</button></div>
+ <div class="download-card"><div class="download-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg></div><h3>Deze opstellingsplaat</h3><p>De huidige opstelling als losse afbeelding om snel te bewaren of te delen.</p><button class="btn outline" id="pngBlock">Bewaar huidige PNG</button></div>
+ <div class="download-card"><div class="download-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-11"/><path d="M2 20h20"/></svg></div><h3>Overzicht als afbeelding</h3><p>Handig voor een ouderapp of groepschat met trainers en ouders.</p><button class="btn outline" id="pngSummary">Bewaar overzicht-PNG</button></div>
+ </div><div class="surface surface-pad" style="margin-top:13px"><h3 class="section-title">Hele zaalcompetitie</h3><p class="lead" style="margin-bottom:15px">Alle wedstrijden in één PDF, met een andere startindeling per ronde.</p><button id="pdfAll" class="btn dark block"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg> Download alle wedstrijden</button></div><div class="export-foot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s9-4 9-11V5l-9-3-9 3v6c0 7 9 11 9 11Z"/><path d="m9 11 2 2 4-4"/></svg> <b>Privé op jouw apparaat.</b> Je teamkeuzes worden lokaal bewaard. PDF's en afbeeldingen worden op je telefoon gemaakt, zonder account of upload. Op iPhone vind je het bestand via Downloads of het deelmenu.</div></section>
+ <section class="view-panel" id="screen-settings" data-view-panel="settings" role="tabpanel" aria-label="Instellingen"><div class="view-head"><div><div class="eyebrow">Wedstrijd configureren</div><h2>Instellingen</h2><p class="lead">Bepaal speeltijd, wisselstijl en de voorkeursposities van je team.</p></div></div><div class="surface" style="margin-top:14px"><details open><summary>Wedstrijdduur en wisselinstellingen</summary><div class="surface-pad"><div class="settingrow"><label><span class="fieldlabel">Minuten per helft</span><select id="half" class="control"><option value="20">20 minuten (standaard)</option><option value="15">15 minuten</option><option value="25">25 minuten</option></select></label><label><span class="fieldlabel">Bloklengte</span><select id="step" class="control"><option value="10">10 minuten · 4 blokken (advies)</option><option value="5">5 minuten · 8 blokken</option><option value="4">4 minuten · 10 blokken</option></select></label></div><div style="margin-top:13px"><label for="rotation" class="fieldlabel">Wisselstijl</label><select id="rotation" class="control"><option value="balanced">Maximaal wisselen én eerlijk verdelen</option><option value="calm">Maximaal wisselen, rustig positioneren</option></select></div><p class="hint">De zaalwedstrijdduur kan per competitie of toernooi afwijken. Controleer je wedstrijdprogramma.</p></div></details><details><summary>Spelers en voorkeurslinies beheren</summary><div class="surface-pad role-panel"><p class="hint">A = achter, M = midden, V = voor. Pas dit aan als iemand op een andere positie kan spelen.</p><div id="roles"></div><div class="input-add"><input id="newPlayer" class="control" placeholder="Naam van nieuwe speelster" aria-label="Nieuwe speelster"><button class="btn primary small" id="addPlayer">Toevoegen</button></div><div style="margin-top:15px"><button id="resetAll" class="btn small outline">Herstel alle wedstrijden</button></div></div></details></div><div class="action-row"><button class="btn primary block" type="button" data-go="team">Terug naar selectie</button></div></section><section class="view-panel" id="screen-more" data-view-panel="more" role="tabpanel" aria-label="Menu">
+<div class="view-head"><div><div class="eyebrow">PW MO14-1 Coach</div><h2>Menu</h2><p class="lead">Alles voor je wedstrijd, op één plek.</p></div></div>
+<div class="menu-group-label">Wedstrijddag</div><div class="menu-list">
+<button class="menu-tile" type="button" data-go="field" aria-label="Open Veldhockey in dezelfde app"><span class="menu-tile-icon">🏑</span><span><b>Veldhockey · 11-tal</b><small>Jackie keeper · Coco-Mijn voorhoede · 6 blokken</small></span><span aria-hidden="true">›</span></button>
+<button class="menu-tile" type="button" data-go="home"><span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span><span><b>Start</b><small>Alle wedstrijden op één plek</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+<button class="menu-tile" type="button" data-go="plan"><span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg></span><span><b>Opstelling en wissels</b><small>Veld, bank en volgende wissel</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+<button class="menu-tile" type="button" data-go="team"><span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1"/></svg></span><span><b>Keeper en aanwezigheid</b><small>Wie is er vandaag?</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+<button class="menu-tile" type="button" data-go="stats"><span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-11"/><path d="M2 20h20"/></svg></span><span><b>Speeltijden</b><small>Verdeelde minuten per meisje</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+</div><div class="menu-group-label">Bestanden en voorkeuren</div><div class="menu-list">
+<button class="menu-tile" type="button" data-go="export"><span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg></span><span><b>Downloads</b><small>Opstellingsplaten als PDF of PNG</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+<button class="menu-tile" type="button" data-go="settings"><span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2 1 .6 2.5 2.2.9 2.2-1.3 2 2-1.3 2.2.9 2.2 2.4.5v3l-2.4.5-.9 2.2 1.3 2.2-2 2-2.2-1.3-2.2.9L14 22h-4l-.6-2.5-2.2-.9L5 20l-2-2 1.3-2.2-.9-2.2L1 13v-2l2.4-.6.9-2.2L3 6l2-2 2.2 1.3 2.2-.9L10 2z"/><circle cx="12" cy="12" r="3"/></svg></span><span><b>Instellingen</b><small>Wedstrijdduur, posities en wissels</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+<button class="menu-tile" type="button" data-action="install"><span class="menu-tile-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg></span><span><b>Installeer Zaalcoach</b><small>Zet deze app op je beginscherm</small></span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+</div><div class="menu-disclaimer"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 11v6M12 7h.01"/></svg> Je keuzes worden alleen op dit apparaat opgeslagen. De app past zelf geen KNHB-programma of officiële wedstrijdgegevens aan.</div></section><section class="view-panel" id="screen-field" data-view-panel="field" role="tabpanel" aria-label="Veldhockey-opstelling en wissels">
+  <div class="view-head"><div><div class="eyebrow">PW MO14-1 · Veldhockey</div><h2>Veldopstelling & wissels</h2><p class="lead">11 speelsters, zes opstellingen, steeds twee op de bank. Jackie keept; Coco-Mijn speelt voorin.</p></div></div>
+  <div class="fc-callout"><span>Jackie keeper · 70 minuten</span><span>Coco-Mijn voorhoede</span><span>4-4-2 ruit</span></div>
+  <div class="fc-panel">
+    <div class="fc-controls" aria-label="Kies veldhockey-wisselblok">
+      <button type="button" data-field-block="0" aria-pressed="true">Blok 1<small>0–12 min</small></button><button type="button" data-field-block="1" aria-pressed="false">Blok 2<small>12–24 min</small></button><button type="button" data-field-block="2" aria-pressed="false">Blok 3<small>24–35 min</small></button><button type="button" data-field-block="3" aria-pressed="false">Blok 4<small>35–47 min</small></button><button type="button" data-field-block="4" aria-pressed="false">Blok 5<small>47–59 min</small></button><button type="button" data-field-block="5" aria-pressed="false">Blok 6<small>59–70 min</small></button>
+    </div>
+    <div id="fieldCards"></div>
+    <div class="fc-actions">
+      <button type="button" id="fieldPrevious" class="alt">Vorig blok</button>
+      <button type="button" id="fieldNext">Volgend blok</button>
+      <button type="button" id="fieldPdf">PDF · alle 6 platen</button>
+      <button type="button" id="fieldPng" class="alt">PNG · huidig veld</button>
+    </div>
+    <p class="fc-status" id="fieldBlockStatus" role="status" aria-live="polite">Blok 1 van 6</p>
+    <div id="fieldPrint" hidden aria-hidden="true"></div>
+  </div>
+  <p class="fc-helper">Veld en Zaal hebben ieder hun eigen spelregels en opstellingen. Veld en zaal hebben elk een eigen teamselectie, keeper en wisselplanning. In Veld kun je tien beginposities instellen, minuten registreren en tactiek tekenen.</p>
+</section>
+</main>
+ <footer class="footer">MO14-1 Coach · Zaal & Veld · Alleen lokaal opgeslagen · Speelduur zo nodig afstemmen met de wedstrijdorganisatie.</footer>
+</div>
+<nav class="bottom-nav" aria-label="Hoofdnavigatie" role="tablist"><button type="button" class="navtab is-active" data-view="home" role="tab" aria-selected="true" aria-controls="screen-home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Start</span></button><button type="button" class="navtab " data-view="plan" role="tab" aria-selected="false" aria-controls="screen-plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg><span>Zaal</span></button><button type="button" class="navtab" data-view="field" role="tab" aria-selected="false" aria-controls="screen-field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 12h18M12 3v18M5 8h3M16 16h3"/></svg><span>Veld</span></button><button type="button" class="navtab " data-view="stats" role="tab" aria-selected="false" aria-controls="screen-stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-11"/><path d="M2 20h20"/></svg><span>Minuten</span></button><button type="button" class="navtab " data-view="more" role="tab" aria-selected="false" aria-controls="screen-more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span></button></nav>
+<div class="progress" id="progress" role="status" aria-live="polite"></div>
+<dialog id="appDrawer" class="app-drawer" aria-label="Hoofdmenu"><div class="drawer-head"><div><strong>MO14-1 Coach</strong><small>Snel naar jouw wedstrijd</small></div><button type="button" id="closeAppMenu" aria-label="Sluit menu">×</button></div><div class="drawer-items"><button class="field-menu-link" type="button" data-go="field">🏑 Veldhockey · Jackie keeper</button>
+<button type="button" data-go="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg><span>Start</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button type="button" data-go="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 12h18M8 3v4a4 4 0 0 0 8 0V3M8 21v-4a4 4 0 0 1 8 0v4"/></svg><span>Veld</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button type="button" data-go="team"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3 20v-2a6 6 0 0 1 12 0v2M16 5a3 3 0 0 1 0 6M18 14a5 5 0 0 1 3 5v1"/></svg><span>Selectie</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button type="button" data-go="stats"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20v-11"/><path d="M2 20h20"/></svg><span>Minuten</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button type="button" data-go="more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menu</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button type="button" data-go="export"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></svg><span>Downloads</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button type="button" data-go="settings"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2 1 .6 2.5 2.2.9 2.2-1.3 2 2-1.3 2.2.9 2.2 2.4.5v3l-2.4.5-.9 2.2 1.3 2.2-2 2-2.2-1.3-2.2.9L14 22h-4l-.6-2.5-2.2-.9L5 20l-2-2 1.3-2.2-.9-2.2L1 13v-2l2.4-.6.9-2.2L3 6l2-2 2.2 1.3 2.2-.9L10 2z"/><circle cx="12" cy="12" r="3"/></svg><span>Instellingen</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button><button type="button" data-action="install"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></svg><span>Zet op beginscherm</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button></div><div class="drawer-foot">Jouw coaching, lokaal opgeslagen</div></dialog><dialog id="installDialog"><div class="dialog-body"><h3>MO14 Coach op je beginscherm</h3><p>Open deze pagina in Safari. Tik op <strong>Delen</strong>, kies <strong>Zet op beginscherm</strong> en daarna <strong>Voeg toe</strong>.</p><p>Daarna start de planner als een eigen app, zonder browserbalk.</p><button class="btn primary block" id="closeInstallDialog">Begrepen</button></div></dialog>
+<script>
+
+'use strict';
+const INITIAL=[
+ {id:'jackie',name:'Jackie',num:7,roles:['M','V']},
+ {id:'bobbi',name:'Bobbi',num:12,roles:['A','M']},
+ {id:'nine',name:'Nine',num:13,roles:['V','M']},
+ {id:'coco',name:'Coco',num:10,roles:[]},
+ {id:'ella',name:'Ella',num:5,roles:['A','M']},
+ {id:'eline',name:'Eline',num:9,roles:['M','V']},
+ {id:'lidewij',name:'Lidewij',num:8,roles:['M','V']},
+ {id:'tess',name:'Tess',num:3,roles:['A']},
+ {id:'cato',name:'Cato',num:11,roles:['A','M']},
+ {id:'steffi',name:'Steffi',num:6,roles:['M']}
+];
+const OFFICIAL_FIXTURES=[
+ {
+  "fixtureId": "pw-2026-12-06-1200",
+  "date": "2026-12-06",
+  "time": "12:00",
+  "opponent": "MO14-2 zaal",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2026-12-06-1340",
+  "date": "2026-12-06",
+  "time": "13:40",
+  "opponent": "Twente MO14-2",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2026-12-13-1205",
+  "date": "2026-12-13",
+  "time": "12:05",
+  "opponent": "Zutphen MO14-1",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2026-12-13-1255",
+  "date": "2026-12-13",
+  "time": "12:55",
+  "opponent": "Twente MO14-2",
+  "home": false
+ },
+ {
+  "fixtureId": "pw-2026-12-19-1520",
+  "date": "2026-12-19",
+  "time": "15:20",
+  "opponent": "Haackey MO14-1-mix",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2026-12-19-1610",
+  "date": "2026-12-19",
+  "time": "16:10",
+  "opponent": "Apeldoorn MO14-3",
+  "home": false
+ },
+ {
+  "fixtureId": "pw-2027-01-09-1130",
+  "date": "2027-01-09",
+  "time": "11:30",
+  "opponent": "Apeldoorn MO14-2",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2027-01-09-1310",
+  "date": "2027-01-09",
+  "time": "13:10",
+  "opponent": "Apeldoorn MO14-3",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2027-01-24-1130",
+  "date": "2027-01-24",
+  "time": "11:30",
+  "opponent": "Haackey MO14-1-mix",
+  "home": false
+ },
+ {
+  "fixtureId": "pw-2027-01-24-1220",
+  "date": "2027-01-24",
+  "time": "12:20",
+  "opponent": "MO14-2 zaal",
+  "home": true
+ },
+ {
+  "fixtureId": "pw-2027-02-13-1200",
+  "date": "2027-02-13",
+  "time": "12:00",
+  "opponent": "Apeldoorn MO14-2",
+  "home": false
+ },
+ {
+  "fixtureId": "pw-2027-02-13-1250",
+  "date": "2027-02-13",
+  "time": "12:50",
+  "opponent": "Zutphen MO14-1",
+  "home": false
+ }
+];
+const toMatch=f=>({...f,absent:[],keeper:'coco'});
+const DEFAULTS=()=>({roster:structuredClone(INITIAL),half:20,step:10,rotation:'balanced',rotationEngineVersion:3,selectedMatch:0,selectedBlock:0,scheduleVersion:2,matches:OFFICIAL_FIXTURES.map(toMatch)});
+let state;
+try{const saved=JSON.parse(localStorage.getItem('mo14_zaal_v2'));state=saved&&Array.isArray(saved.roster)&&Array.isArray(saved.matches)?saved:DEFAULTS()}catch(e){state=DEFAULTS()}
+if(state.scheduleVersion!==2){
+ const previous=state.matches.slice();
+ state.matches=OFFICIAL_FIXTURES.map((f,i)=>({...toMatch(f),keeper:previous[i]?.keeper||'coco',absent:Array.isArray(previous[i]?.absent)?previous[i].absent.slice():[]}));
+ state.scheduleVersion=2;state.selectedMatch=Math.min(state.selectedMatch||0,state.matches.length-1);
+}else{
+ const existingIds=new Set(state.matches.map(m=>m.fixtureId));
+ OFFICIAL_FIXTURES.forEach((f,i)=>{if(!existingIds.has(f.fixtureId))state.matches.splice(i,0,toMatch(f))});
+}
+state.matches.forEach((m,i)=>{if(typeof m.date!=='string'||(m.date&&!/^\d{4}-\d{2}-\d{2}$/.test(m.date)))m.date='';if(!Array.isArray(m.absent))m.absent=[];if(typeof m.time!=='string'||!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(m.time))m.time='';if(typeof m.opponent!=='string')m.opponent='';if(typeof m.home!=='boolean')m.home=true;if(!m.fixtureId)m.fixtureId='extra-'+i});
+state.selectedMatch=Math.max(0,Math.min(Number(state.selectedMatch)||0,state.matches.length-1));
+if(state.rotationEngineVersion!==3){state.step=state.half%10===0?10:5;state.rotation='balanced';state.rotationEngineVersion=3;}
+const $=id=>document.getElementById(id);let cache={};const ALLPOS=['AL','AR','M','VL','VR'];const POSROLE=p=>p[0]==='A'?'A':p[0]==='V'?'V':'M';const POSLABEL={AL:'Linksachter',AR:'Rechtsachter',M:'Midden',VL:'Linksvoor',VR:'Rechtsvoor'};
+function save(){try{localStorage.setItem('mo14_zaal_v2',JSON.stringify(state))}catch(e){}}
+function find(id){return state.roster.find(p=>p.id===id)}
+function formatMatchDate(i){const val=state.matches[i]?.date;if(!val)return 'Datum nog invullen';const dt=new Date(val+'T12:00:00');return Number.isNaN(dt.valueOf())?'Datum nog invullen':new Intl.DateTimeFormat('nl-NL',{weekday:'short',day:'numeric',month:'short',year:'numeric'}).format(dt)}
+function formatKickoff(i){const m=state.matches[i];return `${formatMatchDate(i)}${m?.time?' · '+m.time+' uur':''}`}
+function fixtureTitle(i){const m=state.matches[i];return `${m?.home!==false?'PW MO14-1 · '+(m?.opponent||'Tegenstander onbekend'):(m?.opponent||'Tegenstander onbekend')+' · PW MO14-1'}`}
+function canvasMatchDate(i){const m=state.matches[i];return `${formatKickoff(i).toUpperCase()}  •  ${m?.home===false?'UIT':'THUIS'}  •  ${m?.opponent?.toUpperCase()||'TEGENSTANDER NOG INVULLEN'}`}
+function safe(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function invalidate(){cache={};save();render()}
+function seeded(n){let x=n>>>0;return ()=>{x+=0x6D2B79F5;let t=x;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
+function shuffled(arr,rng){let out=arr.slice();for(let j=out.length-1;j>0;j--){let k=Math.floor(rng()*(j+1));[out[j],out[k]]=[out[k],out[j]]}return out}
+function rotationsFor(matchIndex,keepers){let m=state.matches[matchIndex];let available=state.roster.filter(p=>!m.absent.includes(p.id));let keeper=available.find(p=>p.id===m.keeper);if(!keeper)return {error:'Kies een aanwezige keeper.'};let reserveOnly=available.filter(p=>p.id!==keeper.id&&!p.roles.length);let pool=available.filter(p=>p.id!==keeper.id&&p.roles.length);if(pool.length<5)return {error:`Er zijn ${pool.length} veldspeelsters aanwezig. Je hebt er minimaal vijf nodig.`};if(available.length>12)return {error:'Maximaal twaalf speelsters per wedstrijd (inclusief keeper). Vink extra speelsters af.'};let total=Number(state.half)*2,step=Number(state.step);if(state.half%step!==0)return {error:'De gekozen blokduur moet precies passen binnen één helft.'};let blocks=total/step,n=pool.length, rng=seeded(3331+matchIndex*12377+pool.reduce((a,p)=>a+[...p.id].reduce((b,c)=>b+c.charCodeAt(0),0),0)+keeper.id.length*41+step*73+(state.rotation==='calm'?9:0));
+const previous=matchIndex>0?(cache[matchIndex-1]&&cache[matchIndex-1].sets?cache[matchIndex-1].sets[0]:null):null;
+let best=null;
+const historicalStarts=new Set(Object.keys(cache).filter(k=>Number(k)<matchIndex&&cache[k]?.sets?.[0]).map(k=>cache[k].sets[0].map(x=>x.id).sort().join('|')));
+const theoreticalSwaps=Math.min(5,n-5);
+const pin=m.manualStart&&ALLPOS.every(pos=>typeof m.manualStart[pos]==='string'&&m.manualStart[pos]);
+const pinned=pin?ALLPOS.map(pos=>pool.find(p=>p.id===m.manualStart[pos])):null;
+if(pin&&(!pinned.every(Boolean)||new Set(pinned.map(p=>p.id)).size!==5))return {error:'De gekozen startopstelling bevat afwezige of dubbele speelsters. Kies vijf verschillende aanwezige veldspeelsters.'};
+const before=Object.fromEntries(pool.map(p=>[p.id,0])),appearances=Object.fromEntries(pool.map(p=>[p.id,0]));
+for(let h=0;h<matchIndex;h++){const q=cache[h];if(!q||q.error)continue;for(const p of pool){if(q.counts[p.id]!==undefined){before[p.id]+=q.counts[p.id]*q.step;appearances[p.id]++;}}}
+
+for(let iter=0;iter<Math.max(140,n*20);iter++){
+ let order=pinned?[...pinned,...shuffled(pool.filter(q=>!pinned.some(p=>p.id===q.id)),rng)]:shuffled(pool,rng);
+ let phase=pinned?0:(matchIndex+Math.floor(rng()*n))%n;
+ let st=5; // Next five players in a cyclic ring: maximal simultaneous substitutions.
+ let groups=[];let counts=Object.fromEntries(pool.map(p=>[p.id,0]));let last={},sumRoleCost=0,swapCount=0,streak={};let maxStreak=0,misfits=[];
+ for(let b=0;b<blocks;b++){
+   let members=Array.from({length:5},(_,i)=>order[(phase+b*st+i)%n]);
+   let ass=bestAssignment(members,last,pinned&&b===0?m.manualStart:null);groups.push({members,ass:ass.map,cost:ass.cost});sumRoleCost+=ass.cost;
+   members.forEach(p=>counts[p.id]++);
+   if(b){swapCount+=members.filter(p=>!groups[b-1].members.some(q=>q.id===p.id)).length}
+   const curr=new Set(members.map(p=>p.id));for(let p of pool){streak[p.id]=curr.has(p.id)?(streak[p.id]||0)+1:0;maxStreak=Math.max(maxStreak,streak[p.id]||0)}
+   last=ass.map;
+   for(let pos of ALLPOS){let p=ass.map[pos],role=POSROLE(pos);if(!p.roles.includes(role)){misfits.push({block:b,name:p.name,pos})}}
+ }
+ let vals=Object.values(counts),avg=5*blocks/n,variance=vals.reduce((s,v)=>s+(v-avg)**2,0),startNew=previous&&groups[0].members.every(p=>previous.some(x=>x.id===p.id));
+ let signature=groups[0].members.map(x=>x.id).sort().join('|');
+ let cumulativeRates=pool.map(p=>(before[p.id]+counts[p.id]*step)/(appearances[p.id]+1));
+ let fairMean=cumulativeRates.reduce((a,b)=>a+b,0)/n,seasonVariance=cumulativeRates.reduce((a,b)=>a+(b-fairMean)**2,0);
+ let cost=variance*55+seasonVariance*220+misfits.length*55+sumRoleCost*.65+Math.max(0,maxStreak-3)*15+(startNew?280:0)+(historicalStarts.has(signature)?420:0)+rng()*2;
+ // The cyclic ring guarantees each boundary changes min(5,n-5) field players.
+ if(groups.some((g,i)=>i>0&&g.members.filter(p=>!groups[i-1].members.some(q=>q.id===p.id)).length!==theoreticalSwaps))continue;
+ if(!best||cost<best.cost){best={cost,groups,counts,misfits,keeper,pool,step,total,half:Number(state.half)}}
+ if(best&&best.misfits.length===0&&variance<2&&iter>180)break;
+}
+if(!best)return {error:'Er kon geen opstelling worden berekend.'};
+let blocksOut=best.groups.map((g,i)=>{let members=g.members;let on=new Set(members.map(p=>p.id));let bench=[...best.pool.filter(p=>!on.has(p.id)),...reserveOnly];let next=best.groups[i+1];let outs=next?members.filter(p=>!next.members.some(x=>x.id===p.id)):[];let ins=next?next.members.filter(p=>!members.some(x=>x.id===p.id)):[];let stays=next?members.filter(p=>next.members.some(x=>x.id===p.id)):[];return{number:i+1,start:i*step,end:(i+1)*step,map:g.ass,members,bench,outs,ins,stays}});
+return {...best,reserveOnly,blocks:blocksOut,maxSwaps:theoreticalSwaps,playersStaying:5-theoreticalSwaps,sets:best.groups.map(g=>g.members)};
+}
+function bestAssignment(members,prev,locked=null){let chosen={},used=new Set(),best={cost:Infinity,map:null};let lineup=ALLPOS.slice();function dfs(i,cost){if(cost>=best.cost)return;if(i===5){best={cost,map:{...chosen}};return}let pos=lineup[i],role=POSROLE(pos);for(let p of members){if(used.has(p.id)||(locked&&locked[pos]&&locked[pos]!==p.id))continue;let fit=p.roles.includes(role);let base=fit?0:20; // try preferred position, but allow tactical emergency roles
+ let prevPos=Object.keys(prev).find(x=>prev[x].id===p.id);if(prevPos&&prevPos!==pos){base+=POSROLE(prevPos)===role?0.9:2.8}
+ if(p.id==='lidewij'&&role==='V')base+=2;if(p.id==='tess'&&role!=='A')base+=15;
+ used.add(p.id);chosen[pos]=p;dfs(i+1,cost+base);used.delete(p.id);delete chosen[pos];}}
+dfs(0,0);return best}
+function getPlan(i){for(let k=0;k<=i;k++)if(!cache[k])cache[k]=rotationsFor(k);return cache[i]}
+function matchData(){return state.matches[state.selectedMatch]}
+function makeSelect(){let selector=$('match');selector.innerHTML=state.matches.map((m,i)=>`<option value="${i}">W${i+1} · ${safe(m.date||'Datum onbekend')} ${safe(m.time||'')} · ${safe(m.opponent||'Tegenstander onbekend')}</option>`).join('');selector.value=state.selectedMatch;$('roundLabel').textContent=`Wedstrijd ${state.selectedMatch+1} / ${state.matches.length}`;$('matchDate').value=matchData().date||'';$('matchDateLabel').textContent=`${formatKickoff(state.selectedMatch)} · ${fixtureTitle(state.selectedMatch)}`}
+function renderSettings(){makeSelect();$('half').value=state.half;$('step').value=state.step;$('rotation').value=state.rotation;let m=matchData();let keeperOpts=state.roster.filter(p=>!m.absent.includes(p.id)).map(p=>`<option value="${safe(p.id)}">${safe(p.name)}</option>`).join('');$('keeper').innerHTML=keeperOpts;$('keeper').value=m.keeper;if(!Array.from($('keeper').options).some(x=>x.value===m.keeper)){$('keeper').selectedIndex=0;m.keeper=$('keeper').value;save()}
+ $('roster').innerHTML=state.roster.map(p=>{let absent=m.absent.includes(p.id),goal=p.id===m.keeper;return `<label class="player ${absent?'unavailable':''}" data-goalkeeper="${goal}"><input type="checkbox" data-id="${safe(p.id)}" ${!absent?'checked':''} ${goal?'disabled':''}><span>${safe(p.name)}</span>${goal?'<small class="role-tag">KEEPER</small>':''}</label>`}).join('');$('countAvailable').textContent=`(${state.roster.length-m.absent.length} aanwezig)`;
+ $('roles').innerHTML=state.roster.map(p=>`<div class="roleedit"><b>${safe(p.name)}</b><div class="checks">${['A','M','V'].map(r=>`<label><input type="checkbox" data-person="${safe(p.id)}" data-role="${r}" ${p.roles.includes(r)?'checked':''}>${r}</label>`).join('')}</div></div>`).join('')}
+function render(){renderSettings();let p=getPlan(state.selectedMatch),err=Boolean(p.error);$('setupMessage').className=`status ${err?'error':p.misfits.length?'warn':'good'}`;$('setupMessage').textContent=err?p.error:p.misfits.length?`Opgelet: ${p.misfits.length} posities vallen buiten de opgegeven voorkeurslinies. Pas de rollen aan voor een betere indeling.`:`Plan: ${p.blocks.length} blokken · elke ${p.step} minuten ${p.maxSwaps} speelsters tegelijk wisselen; ${p.playersStaying} blijven staan. Keeper ${p.keeper.name} blijft in doel.${p.reserveOnly.length?' Reservekeeper/geen veldrol: '+p.reserveOnly.map(x=>x.name).join(', ')+'.':''}`;
+for(let id of ['pdfGame','pdfDay','pdfSummary','pngBlock','pngSummary','pdfAll'])$(id).disabled=err;
+if(err){$('pitchPlayers').innerHTML='';$('bench').innerHTML='';$('upcoming').textContent='Geen geldige opstelling';$('timeline').innerHTML='';$('minutes').innerHTML='';$('planNotice').textContent=p.error;$('switchSummary').textContent='';$('rotationHint').textContent='Pas de selectie aan voor een geldige wisselplanning.';return}
+state.selectedBlock=Math.min(state.selectedBlock,p.blocks.length-1);let b=p.blocks[state.selectedBlock];$('blockLabel').textContent=`Blok ${b.number} · ${b.start}–${b.end} min`;$('blocksCount').textContent=p.blocks.length;$('pitchCount').textContent='5';$('benchCount').textContent=b.bench.length;$('prevBlock').disabled=state.selectedBlock===0;$('nextBlock').disabled=state.selectedBlock===p.blocks.length-1;
+let marker=(person,cls,label)=>`<div class="pitchdot ${cls}"><i>${person.num||'•'}</i><small>${safe(person.name)}</small>${label?`<span>${label}</span>`:''}</div>`;
+$('pitchPlayers').innerHTML=marker(p.keeper,'gk','keeper')+marker(b.map.VL,'f-left','voor')+marker(b.map.VR,'f-right','voor')+marker(b.map.M,'mid','midden')+marker(b.map.AL,'b-left','achter')+marker(b.map.AR,'b-right','achter');
+$('bench').innerHTML=b.bench.length?b.bench.map(x=>`<div class="bencher"><span class="round">${x.num||'•'}</span>${safe(x.name)}</div>`).join(''):'<span class="hint">Geen wissels</span>';
+$('upcoming').innerHTML=state.selectedBlock===p.blocks.length-1?'<span class="hint">Einde wedstrijd</span>':`<div class="next-minute">MINUUT ${b.end}${b.end===p.half?' · RUST':''}</div><div class="next-out"><strong>ERUIT (${b.outs.length})</strong><span>${safe(b.outs.map(x=>x.name).join(', ')||'Niemand')}</span></div><div class="next-in"><strong>ERIN (${b.ins.length})</strong><span>${safe(b.ins.map(x=>x.name).join(', ')||'Niemand')}</span></div><div class="next-stays"><strong>BLIJFT STAAN (${b.stays.length})</strong><span>${safe(b.stays.map(x=>x.name).join(', ')||'Niemand')}</span></div>`;
+$('switchSummary').textContent=state.selectedBlock===p.blocks.length-1?'Klaar voor de volgende wedstrijd.':`${b.outs.length} tegelijk wisselen · ${b.stays.length} ${b.stays.length===1?'speelster blijft':'speelsters blijven'} · keeper blijft in doel`;
+$('rotationHint').textContent=`${p.blocks.length} blokken van ${p.step} minuten · maximaal ${p.maxSwaps} veldspeelsters tegelijk wisselen`;
+$('timeline').innerHTML=p.blocks.map((x,i)=>`<button class="timebtn ${i===state.selectedBlock?'active':''} ${x.end===p.half?'rest-after':''}" data-block="${i}" aria-label="Blok ${i+1}, ${x.start} tot ${x.end} min"><strong>B${i+1}</strong><span>${x.start}–${x.end}</span></button>`).join('');
+let counts=[{name:p.keeper.name,count:p.blocks.length,isKeeper:true},...p.pool.map(x=>({name:x.name,count:p.counts[x.id],isKeeper:false}))].sort((a,b)=>b.isKeeper-a.isKeeper||a.name.localeCompare(b.name));$('minutes').innerHTML=counts.map(x=>`<div class="minute-row"><div class="minute-head"><strong>${safe(x.name)}${x.isKeeper?' 🥅':''}</strong><span>${x.count*p.step} min</span></div><div class="bar"><span style="width:${x.count/p.blocks.length*100}%;background:${x.isKeeper?'#e7882c':'#2f9d70'}"></span></div></div>`).join('');
+let vals=p.pool.map(x=>p.counts[x.id]*p.step),min=Math.min(...vals),max=Math.max(...vals);$('equity').textContent=`Veldspeelsters: ${min}–${max} minuten · verschil ${max-min} minuten. Keeper ${p.keeper.name}: ${p.total} minuten.`;
+$('planNotice').className=`status ${p.misfits.length?'warn':'good'}`;$('planNotice').textContent=`Vijf veldspeelsters in dobbelsteenopstelling: twee achter, één midden, twee voor. Elke ${p.step} min wisselen maximaal ${p.maxSwaps} speelsters tegelijk; ${p.playersStaying} blijven in het veld. ${p.misfits.length?`${p.misfits.length} noodpositioneringen buiten de voorkeurslinie.`:'De posities volgen de voorkeuren.'}${p.reserveOnly.length?' '+p.reserveOnly.map(x=>x.name).join(', ')+' is uitsluitend reserve.':''}`;
+}
+function updateMatch(index){if(!Number.isInteger(index)||index<0||index>=state.matches.length)return;state.selectedMatch=index;state.selectedBlock=0;save();render()}
+function toast(message){let e=$('progress');e.textContent=message;e.classList.add('show');return e}
+function untoast(){ $('progress').classList.remove('show') }
+$('match').addEventListener('change',e=>updateMatch(Number(e.target.value)));
+$('keeper').addEventListener('change',e=>{let m=matchData();m.keeper=e.target.value;m.absent=m.absent.filter(id=>id!==m.keeper);invalidate()});
+$('roster').addEventListener('change',e=>{let c=e.target.closest('input[data-id]');if(!c)return;let id=c.dataset.id,m=matchData();m.absent=c.checked?m.absent.filter(x=>x!==id):[...m.absent,id];if(m.absent.includes(m.keeper))m.keeper=state.roster.find(p=>!m.absent.includes(p.id))?.id||'';invalidate()});
+$('roles').addEventListener('change',e=>{let x=e.target;if(!x.dataset.person)return;let p=find(x.dataset.person),role=x.dataset.role;p.roles=x.checked?[...new Set([...p.roles,role])]:p.roles.filter(r=>r!==role);invalidate()});
+$('half').addEventListener('change',e=>{state.half=Number(e.target.value);invalidate()});$('step').addEventListener('change',e=>{state.step=Number(e.target.value);invalidate()});$('rotation').addEventListener('change',e=>{state.rotation=e.target.value;invalidate()});
+$('prevBlock').addEventListener('click',()=>{state.selectedBlock--;save();render()});$('nextBlock').addEventListener('click',()=>{state.selectedBlock++;save();render()});$('timeline').addEventListener('click',e=>{let b=e.target.closest('[data-block]');if(b){state.selectedBlock=Number(b.dataset.block);save();render()}});
+$('copyPresence').addEventListener('click',()=>{let source=matchData().absent.slice();if(!confirm('Neem de aanwezigheidslijst van deze wedstrijd over naar alle andere wedstrijden? Keepers worden indien nodig opnieuw gekozen.'))return;state.matches.forEach((m,i)=>{if(i!==state.selectedMatch){m.absent=source.slice();if(m.absent.includes(m.keeper))m.keeper=state.roster.find(p=>!m.absent.includes(p.id))?.id||''}});invalidate()});
+$('copyPresenceDay').addEventListener('click',()=>{
+ const source=matchData(),other=state.matches.filter((m,i)=>i!==state.selectedMatch&&m.date===source.date);
+ if(!source.date||!other.length){alert('Op deze datum staat geen tweede wedstrijd.');return}
+ if(!confirm('Neem de aanwezige speelsters over naar de andere wedstrijd(en) op deze speeldag?'))return;
+ other.forEach(m=>{m.absent=source.absent.slice();if(m.absent.includes(m.keeper))m.keeper=source.keeper&&!m.absent.includes(source.keeper)?source.keeper:(state.roster.find(p=>!m.absent.includes(p.id))?.id||'')});invalidate();
+});
+$('resetMatch').addEventListener('click',()=>{state.matches[state.selectedMatch]={...matchData(),absent:[],keeper:'coco'};invalidate()});$('resetAll').addEventListener('click',()=>{if(confirm('Alle instellingen en aanwezigheid van '+state.matches.length+' wedstrijden herstellen?')){state=DEFAULTS();invalidate()}});
+$('addPlayer').addEventListener('click',()=>{let name=$('newPlayer').value.trim().slice(0,32);if(!name)return;if(state.roster.some(p=>p.name.toLowerCase()===name.toLowerCase())){alert('Deze naam bestaat al.');return}let id='p'+Date.now().toString(36);state.roster.push({id,name,num:0,roles:['M']});$('newPlayer').value='';invalidate()});
+// === Canvas drawing: the exported diagrams contain the same deterministic positions as the on-screen plan. ===
+function canvas(w,h){let c=document.createElement('canvas');c.width=w;c.height=h;return c}
+function round(ctx,x,y,w,h,r,color,stroke,width=1){ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fillStyle=color;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=width;ctx.stroke()}}
+function txt(ctx,s,x,y,size=24,color='#122f55',weight=700,align='left',max=undefined){ctx.fillStyle=color;ctx.font=`${weight} ${size}px system-ui,Arial,sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(String(s),x,y,max)}
+function wrap(ctx,s,x,y,maxW,lineH,maxLines=3,size=24,color='#122f55',weight=700){let words=s.split(' '),line='',out=[];ctx.font=`${weight} ${size}px system-ui`;for(let w of words){let trial=line?line+' '+w:w;if(ctx.measureText(trial).width>maxW&&line){out.push(line);line=w}else line=trial}if(line)out.push(line);out.slice(0,maxLines).forEach((z,i)=>txt(ctx,z,x,y+i*lineH,size,color,weight))}
+function pitchArt(ctx,x,y,w,h,b,keeper,opt={}){
+round(ctx,x,y,w,h,14,'#16884b','#e1f6e9',3);ctx.save();ctx.beginPath();ctx.roundRect(x+8,y+8,w-16,h-16,8);ctx.clip();for(let k=0;k<6;k++)ctx.fillStyle=k%2?'#ffffff09':'#00000006',ctx.fillRect(x+8,y+8+k*(h-16)/6,w-16,(h-16)/6);
+ctx.strokeStyle='#ffffffa8';ctx.lineWidth=Math.max(2,w/160);ctx.strokeRect(x+w*.045,y+h*.08,w*.91,h*.85);ctx.beginPath();ctx.ellipse(x+w/2,y-h*.06,w*.36,h*.27,0,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.moveTo(x+w*.045,y+h*.5);ctx.lineTo(x+w*.955,y+h*.5);ctx.stroke();ctx.beginPath();ctx.ellipse(x+w/2,y+h*1.015,w*.32,h*.16,0,Math.PI,2*Math.PI);ctx.stroke();ctx.fillStyle='#ffffffb9';ctx.fillRect(x+w*.39,y+h*.94,w*.22,h*.025);
+const pts=[['VL',.27,.23],['VR',.73,.23],['M',.50,.49],['AL',.27,.72],['AR',.73,.72]];let size=Math.max(12,Math.min(26,w*.055)),fs=Math.max(11,Math.min(21,w*.038));for(let [pos,px,py] of pts){let p=b.map[pos],cx=x+px*w,cy=y+py*h;ctx.beginPath();ctx.arc(cx,cy-size*.35,size,0,Math.PI*2);ctx.fillStyle='#096dd4';ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=2;ctx.stroke();txt(ctx,p.num||'•',cx,cy-size*.35,size*.67,'#fff',900,'center');round(ctx,cx-w*.105,cy+size*.66,w*.21,fs*1.55,6,'#052b60');txt(ctx,p.name,cx,cy+size*.66+fs*.78,fs,'#fff',800,'center',w*.20)}
+let kx=x+w/2,ky=y+h*.865;ctx.beginPath();ctx.arc(kx,ky,size,0,Math.PI*2);ctx.fillStyle='#eb7e31';ctx.fill();ctx.strokeStyle='white';ctx.stroke();txt(ctx,keeper.num||'•',kx,ky,size*.7,'#fff',900,'center');round(ctx,kx-w*.12,ky+size*.75,w*.24,fs*1.55,6,'#052b60');txt(ctx,keeper.name,kx,ky+size*.75+fs*.76,fs,'#fff',800,'center',w*.23);ctx.restore()
+}
+function detailCanvas(p,b,matchIndex){let c=canvas(1100,1556),g=c.getContext('2d');g.fillStyle='#f5f8fc';g.fillRect(0,0,c.width,c.height);round(g,30,26,1040,132,19,'#59222d');txt(g,`PW ENSCHEDE  |  MO14-1 ZAAL  |  WEDSTRIJD ${matchIndex+1} / ${state.matches.length}`,59,69,37,'#fff',900);txt(g,`${canvasMatchDate(matchIndex)}  •  BLOK ${b.number}  •  ${b.start}–${b.end} MIN`,59,119,31,'#fff1dd',850,undefined,970);round(g,30,181,1040,988,19,'white','#d7e2ec',2);
+pitchArt(g,61,212,689,909,b,p.keeper);round(g,777,212,260,418,12,'#eef5fc','#d3e4f4',2);txt(g,'OP DE BANK',797,250,25,'#0b3266',900);b.bench.forEach((q,i)=>{round(g,798,278+i*77,215,61,9,'#fff');round(g,806,289+i*77,41,39,19,'#0a70d2');txt(g,q.num||'•',827,307+i*77,17,'#fff',900,'center');txt(g,q.name,859,309+i*77,23,'#123453',800)});
+round(g,777,652,260,290,12,'#fff6eb','#f1d2a3',2);txt(g,'VOLGENDE WISSEL',795,691,22,'#813e0f',900);if(b.end===p.total)txt(g,'Einde wedstrijd',795,734,20,'#6b727b',750);else{txt(g,`Minuut ${b.end}`,795,731,24,'#0b3266',900);txt(g,'ERUIT',795,774,17,'#c33940',900);wrap(g,b.outs.length?b.outs.map(x=>x.name).join(', '):'Niemand',795,806,225,30,2,20);txt(g,'ERIN',795,872,17,'#248750',900);wrap(g,b.ins.length?b.ins.map(x=>x.name).join(', '):'Niemand',795,899,225,25,1,18);if(b.stays.length)txt(g,'BLIJFT: '+b.stays.map(q=>q.name).join(', '),795,930,15,'#59222d',800,undefined,230)}
+round(g,777,963,260,157,12,'#e3effa');txt(g,'VASTE OPSTELLING',795,997,17,'#0b3266',900);wrap(g,'Twee achter · één midden · twee voor',795,1034,225,28,3,18);
+round(g,30,1191,1040,278,17,'#fff','#d5e3ec',2);txt(g,'SPEELSTERS IN DIT BLOK',57,1231,24,'#0b3266',900);let posRows=[['LINKSVOOR',b.map.VL],['RECHTSVOOR',b.map.VR],['MIDDEN',b.map.M],['LINKSACHTER',b.map.AL],['RECHTSACHTER',b.map.AR]];posRows.forEach(([lab,v],i)=>{let col=i%2,row=Math.floor(i/2);let bx=57+col*507,by=1287+row*60;txt(g,lab,bx,by,16,'#6a8196',900);txt(g,v.name,bx+155,by,22,'#0b3266',850)});txt(g,`KEEPER  ${p.keeper.name}`,585,1406,22,'#b35112',900);txt(g,'COACHAANWIJZING: wissel pas als de uitgaande speelster het veld heeft verlaten.',51,1512,15,'#5b7690',700);return c}
+function overviewCanvas(p,matchIndex){let c=canvas(1700,1200),g=c.getContext('2d');g.fillStyle='#f4f8fb';g.fillRect(0,0,1700,1200);round(g,26,24,1648,109,17,'#59222d');txt(g,`PW ENSCHEDE · MO14-1 ZAAL  •  WEDSTRIJD ${matchIndex+1} VAN ${state.matches.length}`,58,65,36,'white',900);txt(g,`${canvasMatchDate(matchIndex)}  •  ${p.half} + ${p.half} min  •  keeper ${p.keeper.name}  •  ${p.step} min per blok`,59,105,20,'#f7e5e9',700,undefined,1570);let cols=4,rows=Math.ceil(p.blocks.length/cols),gap=13,y0=160,cellw=(1648-gap*3)/4,cellh=Math.min(440,(930-gap*(rows-1))/rows);for(let i=0;i<p.blocks.length;i++){let b=p.blocks[i],col=i%4,row=Math.floor(i/4),x=26+col*(cellw+gap),y=y0+row*(cellh+gap);round(g,x,y,cellw,cellh,12,'white','#d9e4f0',2);round(g,x+6,y+6,cellw-12,42,8,'#0a3670');txt(g,`BLOK ${b.number}  •  ${b.start}–${b.end} MIN`,x+17,y+28,18,'#fff',900);let px=x+10,py=y+58,pw=cellw*.54,ph=cellh-116;pitchArt(g,px,py,pw,ph,b,p.keeper);let sx=x+cellw*.585;txt(g,'BANK',sx,y+77,18,'#0a3670',900);b.bench.forEach((q,j)=>txt(g,q.name,sx,y+112+j*27,16,'#5e3943',750,undefined,cellw*.37));if(i===p.blocks.length-1)txt(g,'EINDE',x+17,y+cellh-29,16,'#4d677a',800);else{txt(g,'ERUIT: '+(b.outs.map(q=>q.name).join(', ')||'-'),x+17,y+cellh-45,15,'#aa3849',850,undefined,cellw-30);txt(g,'ERIN: '+(b.ins.map(q=>q.name).join(', ')||'-'),x+17,y+cellh-22,15,'#1a8b4e',850,undefined,cellw-30)}}
+let below=y0+rows*(cellh+gap)+7;txt(g,'SPEELMINUTEN',35,below,23,'#59222d',900);let field=p.pool.map(q=>({name:q.name,mins:p.counts[q.id]*p.step}));let range=[Math.min(...field.map(x=>x.mins)),Math.max(...field.map(x=>x.mins))];txt(g,`${field.map(x=>x.name+' '+x.mins).join('   •   ')}`,35,below+38,17,'#335b78',650,undefined,1630);txt(g,`Keeper ${p.keeper.name}: ${p.total} min   |   Veld: ${range[0]}–${range[1]} min   |   Rust: 3 min tussen de helften`,35,below+71,16,'#6a8197',700);return c}
+function pdfParts(jpgs){const enc=new TextEncoder(),parts=[],offsets=[0];let off=0;function push(x){let b=typeof x==='string'?enc.encode(x):x;parts.push(b);off+=b.length}function begin(i){offsets[i]=off;push(i+' 0 obj\n')}function end(){push('\nendobj\n')};let count=jpgs.length,kids=[];push('%PDF-1.4\n%\xB5\xB5\xB5\xB5\n');begin(1);push('<< /Type /Catalog /Pages 2 0 R >>');end();begin(2);for(let i=0;i<count;i++)kids.push((3+i*3)+' 0 R');push(`<< /Type /Pages /Kids [${kids.join(' ')}] /Count ${count} >>`);end();for(let i=0;i<count;i++){let item=jpgs[i],page=3+i*3,img=page+1,content=page+2;let w=595.28,h=841.89;if(item.canvas.width>item.canvas.height){w=841.89;h=595.28}begin(page);push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${w} ${h}] /Resources << /XObject << /Im0 ${img} 0 R >> >> /Contents ${content} 0 R >>`);end();begin(img);push(`<< /Type /XObject /Subtype /Image /Width ${item.canvas.width} /Height ${item.canvas.height} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${item.bytes.length} >>\nstream\n`);push(item.bytes);push('\nendstream');end();let str=`q ${w} 0 0 ${h} 0 0 cm /Im0 Do Q\n`;begin(content);push(`<< /Length ${enc.encode(str).length} >>\nstream\n${str}endstream`);end()}let startxref=off;push(`xref\n0 ${3+count*3}\n0000000000 65535 f \n`);for(let i=1;i<3+count*3;i++)push(String(offsets[i]).padStart(10,'0')+' 00000 n \n');push(`trailer\n<< /Size ${3+count*3} /Root 1 0 R >>\nstartxref\n${startxref}\n%%EOF`);return new Blob(parts,{type:'application/pdf'})}
+async function jpeg(c){return new Uint8Array(await new Promise(res=>c.toBlob(b=>b.arrayBuffer().then(res),'image/jpeg',.86)))}
+function download(blob,name){let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(url);a.remove()},4000)}
+async function png(c,name){let b=await new Promise(resolve=>c.toBlob(resolve,'image/png'));download(b,name)}
+async function createPdf(all,summary,dayIndices=null){toast('PDF wordt samengesteld…');await new Promise(r=>setTimeout(r,55));try{let jpgs=[];let matchIndices=Array.isArray(dayIndices)?dayIndices:(all?Array.from({length:state.matches.length},(_,i)=>i):[state.selectedMatch]);for(let i of matchIndices){let p=getPlan(i);if(p.error){alert(`Wedstrijd ${i+1}: ${p.error}`);continue}let canvases=summary?[overviewCanvas(p,i)]:p.blocks.map(b=>detailCanvas(p,b,i));for(let c of canvases){jpgs.push({canvas:c,bytes:await jpeg(c)})}await new Promise(r=>setTimeout(r,15))}if(!jpgs.length)return;download(pdfParts(jpgs),dayIndices?`PW_MO14-1_speeldag_${state.matches[dayIndices[0]]?.date||'onbekend'}_${dayIndices.length}_wedstrijden.pdf`:all?'PW_MO14-1_alle_'+state.matches.length+'_wedstrijden.pdf':summary?`MO14-1_zaal_wedstrijd_${state.selectedMatch+1}_overzicht.pdf`:`MO14-1_zaal_wedstrijd_${state.selectedMatch+1}_8_platen.pdf`)}catch(e){console.error(e);alert('Download mislukt: '+e.message)}finally{untoast()}}
+function pdfForDay(day){const indices=state.matches.map((m,i)=>m.date===day?i:-1).filter(i=>i>=0);if(!day||!indices.length){alert('Vul eerst een wedstrijddatum in.');return}createPdf(false,false,indices)}
+$('pdfDay').addEventListener('click',()=>pdfForDay(matchData().date));
+$('pdfGame').addEventListener('click',()=>createPdf(false,false));$('pdfSummary').addEventListener('click',()=>createPdf(false,true));$('pdfAll').addEventListener('click',()=>createPdf(true,false));
+$('pngBlock').addEventListener('click',()=>{let p=getPlan(state.selectedMatch);png(detailCanvas(p,p.blocks[state.selectedBlock],state.selectedMatch),`MO14-1_wedstrijd_${state.selectedMatch+1}_blok_${state.selectedBlock+1}.png`)});
+$('pngSummary').addEventListener('click',()=>{let p=getPlan(state.selectedMatch);png(overviewCanvas(p,state.selectedMatch),`MO14-1_wedstrijd_${state.selectedMatch+1}_overzicht.png`)});
+render();
+
+
+// === Mobile app shell (without replacing the proven lineup/export algorithm) ===
+const VIEW_IDS=['home','plan','field','team','stats','more','export','settings','field-home','field-team','field-stats','field-tactics','field-export','field-settings','field-more'];
+let activeView = VIEW_IDS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'home';
+function showView(next, scrollTop=true, addHistory=true){
+  if(!VIEW_IDS.includes(next))return;
+  activeView=next;
+  for(const panel of document.querySelectorAll('[data-view-panel]'))panel.classList.toggle('is-active',panel.dataset.viewPanel===next);
+  for(const b of document.querySelectorAll('[data-view]')){
+    const sel=b.dataset.view===(['export','settings'].includes(next)?'more':next);
+    b.classList.toggle('is-active',sel);
+    b.setAttribute('aria-selected',String(sel));
+  }
+  if(location.hash.slice(1)!==next){if(addHistory)history.pushState({view:next},'','#'+next);else history.replaceState(null,'','#'+next);}
+  if(scrollTop)window.scrollTo({top:0,behavior:'instant'});
+}
+function updateChrome(){
+  const m=matchData(),p=getPlan(state.selectedMatch);
+  $('heroKeeper').textContent=p.error? 'Controleer je selectie':(p.keeper.name+' op doel');
+  $('heroRoster').textContent=p.error? p.error : `${state.roster.length-m.absent.length} aanwezig · ${p.blocks[state.selectedBlock]?.bench.length??0} bank`;
+  $('prevMatch').disabled=state.selectedMatch===0;
+  $('nextMatch').disabled=state.selectedMatch===state.matches.length-1;
+  if(!p.error){
+    const b=p.blocks[state.selectedBlock];
+    $('currentBlockNumber').textContent=`Blok ${b.number}`;
+    $('currentBlockTime').textContent=`${b.start}–${b.end} min`;
+  }
+  let items=[];
+  for(let i=0;i<state.matches.length;i++){
+    let q=getPlan(i);
+    if(q.error)continue;
+    for(const person of q.pool){let found=items.find(x=>x.id===person.id);if(!found){found={id:person.id,name:person.name,total:0,present:0};items.push(found)}found.total+=q.counts[person.id]*q.step;found.present++;}
+    let k=items.find(x=>x.id===q.keeper.id);if(!k){k={id:q.keeper.id,name:q.keeper.name,total:0,present:0};items.push(k)}k.total+=q.total;k.present++;
+  }
+  items.sort((a,b)=>b.total-a.total||a.name.localeCompare(b.name));
+  $('seasonMinutes').innerHTML=items.map(x=>`<div class="season-row"><strong>${safe(x.name)}</strong><span>${x.total} min · ${x.present}×</span></div>`).join('')||'<p class="hint">Nog geen geldige wedstrijden.</p>';
+}
+
+// Native app navigation v4 - all menu items use the single existing app state.
+function renderHomeHub(){
+  const m=matchData(),p=getPlan(state.selectedMatch),error=Boolean(p.error),total=state.matches.length;
+  $('homeRound').textContent=`${state.selectedMatch+1} / ${total}`;
+  $('homeMatchTitle').textContent=`W${state.selectedMatch+1} · ${m.opponent||'Tegenstander nog invullen'}`;
+  $('homeGameDate').textContent=formatKickoff(state.selectedMatch);
+  $('homeKeeperText').textContent=error?'Controleer je selectie':`Keeper: ${p.keeper.name}`;
+  $('homePresent').textContent=state.roster.length-m.absent.length;
+  $('homeBench').textContent=error?'–':(p.blocks[state.selectedBlock]?.bench.length??0);
+  $('homeBlocks').textContent=error?'–':p.blocks.length;
+  const b=!error?p.blocks[state.selectedBlock]:null;
+  $('homeNextText').textContent=error?p.error:b?.end===p.total?'Einde wedstrijd':`Minuut ${b.end}: ${b.outs.length} eruit, ${b.ins.length} erin · ${b.stays.map(x=>x.name).join(', ')||'niemand'} blijft staan`;
+  const days=new Map();
+  state.matches.forEach((fixture,i)=>{const key=fixture.date||'';if(!days.has(key))days.set(key,[]);days.get(key).push(i)});
+  $('homeMatchesHeading').textContent=`${total} wedstrijden · ${days.size} speeldagen`;
+  const heading=key=>key?new Intl.DateTimeFormat('nl-NL',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).format(new Date(key+'T12:00:00')):'Datum nog invullen';
+  $('homeRounds').innerHTML=Array.from(days.entries()).sort(([a],[b])=>!a?1:!b?-1:a.localeCompare(b)).map(([day,indices])=>`
+    <section class="fixture-day" data-day="${safe(day)}">
+      <div class="fixture-day-header"><div><h3>${safe(heading(day))}</h3><small>${indices.length} ${indices.length===1?'wedstrijd':'wedstrijden'} op deze datum</small></div>
+        ${day?`<button type="button" class="fixture-day-export" data-day-pdf="${safe(day)}" aria-label="Download wisselplaten van ${safe(heading(day))}">PDF speeldag</button>`:''}</div>
+      <div class="fixture-cards">${indices.map(i=>{
+        const mm=state.matches[i],qp=getPlan(i),active=i===state.selectedMatch;
+        const keeper=qp.error?'Selectie controleren':qp.keeper.name+' keept';
+        return `<article class="home-round fixture-card ${active?'active':''}">
+          <button type="button" class="home-round-open" data-match-id="${i}" aria-current="${active?'true':'false'}" aria-label="Open wedstrijd ${i+1}, ${safe(formatKickoff(i))}, ${safe(fixtureTitle(i))}">
+            <span class="home-round-heading"><b>Wedstrijd ${i+1}</b>${active?'<i>Gekozen ✓</i>':''}</span>
+            <span class="fixture-kickoff"><strong>${safe(mm.time||'Tijd onbekend')}</strong> <span>${mm.home===false?'UIT':'THUIS'}</span></span>
+            <strong class="fixture-opponent">${safe(fixtureTitle(i))}</strong>
+            <small>${safe(keeper)} · ${state.roster.length-mm.absent.length} aanwezig · ${mm.absent.length} afwezig</small>
+          </button>
+          <details class="fixture-edit"><summary>Wedstrijdgegevens wijzigen</summary><div class="fixture-form">
+            <label>Datum<input type="date" data-fixture-field="date" data-fixture-index="${i}" value="${safe(mm.date||'')}"></label>
+            <label>Begintijd<input type="time" data-fixture-field="time" data-fixture-index="${i}" value="${safe(mm.time||'')}"></label>
+            <label>Tegenstander<input type="text" maxlength="60" data-fixture-field="opponent" data-fixture-index="${i}" value="${safe(mm.opponent||'')}" placeholder="Naam tegenstander"></label>
+            <label>Thuis / uit<select data-fixture-field="home" data-fixture-index="${i}"><option value="true" ${mm.home!==false?'selected':''}>Thuis</option><option value="false" ${mm.home===false?'selected':''}>Uit</option></select></label>
+          </div></details>
+        </article>`;
+      }).join('')}</div>
+    </section>`).join('');
+}
+
+$('matchDate').addEventListener('change',e=>{state.matches[state.selectedMatch].date=e.target.value||'';save();render()});
+document.addEventListener('change',e=>{const input=e.target.closest('[data-match-date]');if(!input)return;const i=Number(input.dataset.matchDate);if(!Number.isInteger(i)||i<0||i>=state.matches.length)return;state.matches[i].date=input.value||'';save();render()});
+document.addEventListener('change',e=>{
+ const field=e.target.closest('[data-fixture-field]');if(!field)return;
+ const i=Number(field.dataset.fixtureIndex),key=field.dataset.fixtureField;
+ if(!Number.isInteger(i)||i<0||i>=state.matches.length)return;
+ const m=state.matches[i];
+ if(key==='date'){if(field.value&&!/^\d{4}-\d{2}-\d{2}$/.test(field.value))return;m.date=field.value||''}
+ else if(key==='time'){if(field.value&&!/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(field.value))return;m.time=field.value||''}
+ else if(key==='opponent')m.opponent=field.value.trim().slice(0,60);
+ else if(key==='home')m.home=field.value==='true';
+ else return;
+ invalidate();
+});
+$('addFixture').addEventListener('click',()=>{
+ const selected=matchData();const date=selected.date||'',keeper=selected.keeper||'coco';
+ state.matches.push({...toMatch({fixtureId:'custom-'+Date.now().toString(36)+'-'+state.matches.length,date,time:'',opponent:'',home:true}),keeper});
+ updateMatch(state.matches.length-1);showView('home');
+});
+const appDrawer=$('appDrawer');
+$('openAppMenu').addEventListener('click',()=>{if(!appDrawer.open)appDrawer.showModal()});
+$('closeAppMenu').addEventListener('click',()=>appDrawer.close());
+appDrawer.addEventListener('click',e=>{if(e.target===appDrawer)appDrawer.close()});
+document.addEventListener('click',e=>{
+  const dayDownload=e.target.closest('[data-day-pdf]');if(dayDownload){pdfForDay(dayDownload.dataset.dayPdf);return}
+  const match=e.target.closest('[data-match-id]');
+  if(match){const i=Number(match.dataset.matchId);if(Number.isInteger(i)&&i>=0&&i<state.matches.length){updateMatch(i);showView('plan')}return;}
+  const target=e.target.closest('[data-go]');
+  if(target){if(appDrawer.open)appDrawer.close();showView(target.dataset.go);return;}
+  if(e.target.closest('[data-action="install"]')){if(appDrawer.open)appDrawer.close();$('installApp').click()}
+});
+window.addEventListener('popstate',()=>{const view=location.hash.slice(1);showView(VIEW_IDS.includes(view)?view:'home',false,false)});
+
+const originalRender=render;
+render=function(){originalRender();updateChrome();renderHomeHub()};
+for(const button of document.querySelectorAll('[data-view]'))button.addEventListener('click',()=>showView(button.dataset.view));
+$('goTeam').addEventListener('click',()=>showView('team'));
+$('goExport').addEventListener('click',()=>showView('export'));
+$('teamDone').addEventListener('click',()=>showView('plan'));
+$('prevMatch').addEventListener('click',()=>{if(state.selectedMatch>0){updateMatch(state.selectedMatch-1);showView('plan')}});
+$('nextMatch').addEventListener('click',()=>{if(state.selectedMatch<state.matches.length-1){updateMatch(state.selectedMatch+1);showView('plan')}});
+window.addEventListener('hashchange',()=>{const view=location.hash.slice(1);showView(VIEW_IDS.includes(view)?view:'home',false,false)});
+const pitch=$('pitch');let startX=null,startY=null;
+pitch.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;startX=e.touches[0].clientX;startY=e.touches[0].clientY},{passive:true});
+pitch.addEventListener('touchend',e=>{if(startX===null)return;let dx=e.changedTouches[0].clientX-startX,dy=e.changedTouches[0].clientY-startY;startX=null;startY=null;if(Math.abs(dx)<55||Math.abs(dx)<Math.abs(dy)*1.5)return;let p=getPlan(state.selectedMatch);if(p.error)return;let next=state.selectedBlock+(dx<0?1:-1);if(next<0||next>=p.blocks.length)return;state.selectedBlock=next;save();render();},{passive:true});
+let installPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();installPrompt=e;});
+$('installApp').addEventListener('click',async()=>{if(installPrompt){const prompt=installPrompt;installPrompt=null;await prompt.prompt();return;}if(window.matchMedia('(display-mode: standalone)').matches){toast('Deze app staat al op je beginscherm.');setTimeout(untoast,2500);return;}const d=$('installDialog');if(d?.showModal)d.showModal();else alert('Open Safari → Delen → Zet op beginscherm.');});
+$('closeInstallDialog').addEventListener('click',()=>$('installDialog').close());
+if('serviceWorker' in navigator && location.protocol==='https:')window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{scope:'./'}).catch(err=>console.warn('Offline-cache niet beschikbaar',err)));
+showView(activeView,false,false);updateChrome();renderHomeHub();
+
+</script>
+<script src="./coach-core.js"></script>
+<script src="./coach-ui.js"></script>
+<script src="./field-unified.js"></script>
+<script src="./field-engine.js"></script>
+<script src="./field-complete.js"></script>
+<script src="./field-live-engine.js"></script>
+<script src="./field-live.js"></script>
+</body></html>
